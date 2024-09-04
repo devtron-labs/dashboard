@@ -115,7 +115,6 @@ export interface SecurityScanType {
 }
 
 export interface SecurityScanListResponseType {
-    responseCode: number
     result: {
         offset: number
         totalCount: number

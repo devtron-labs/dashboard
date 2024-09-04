@@ -108,8 +108,8 @@ export const K8SResourceList = ({
     const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
 
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
-        () => {
-            return abortPreviousRequests(
+        () =>
+            abortPreviousRequests(
                 () =>
                     getResourceList(
                         getResourceListPayload(
@@ -121,8 +121,7 @@ export const K8SResourceList = ({
                         abortControllerRef.current.signal,
                     ),
                 abortControllerRef,
-            )
-        },
+            ),
         [selectedResource, clusterId, selectedNamespace, filters],
         selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
@@ -176,15 +175,16 @@ export const K8SResourceList = ({
         }
     }, [initialSortKey])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             if (!searchWorkerRef.current) {
                 return
             }
             searchWorkerRef.current.postMessage({ type: 'stop' })
             searchWorkerRef.current = null
-        }
-    }, [])
+        },
+        [],
+    )
 
     useEffect(() => {
         setResourceListOffset(0)
@@ -281,103 +281,99 @@ export const K8SResourceList = ({
 
     const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
-        return (
-            <div
-                key={`${resourceData.id}-${resourceData.name}`}
-                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
-                style={{ gridTemplateColumns }}
-            >
-                {resourceList?.headers.map((columnName) =>
-                    columnName === 'name' ? (
-                        <div
-                            key={`${resourceData.id}-${columnName}`}
-                            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
-                            data-testid="created-resource-name"
-                        >
-                            <Tooltip content={resourceData.name}>
-                                <button
-                                    type="button"
-                                    className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
-                                    data-name={resourceData.name}
-                                    data-namespace={resourceData.namespace}
-                                    onClick={handleResourceClick}
-                                    aria-label={`Select ${resourceData.name}`}
-                                >
-                                    <span
-                                        className="dc__link cursor"
-                                        // eslint-disable-next-line react/no-danger
-                                        dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(
-                                                highlightSearchText({
-                                                    searchText,
-                                                    text: String(resourceData.name),
-                                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                                }),
-                                            ),
-                                        }}
-                                    />
-                                </button>
-                            </Tooltip>
-                            <ClipboardButton
-                                content={String(resourceData.name)}
-                                rootClassName="p-4 dc__visible-hover--child"
-                            />
-                            <ResourceBrowserActionMenu
-                                clusterId={clusterId}
-                                resourceData={resourceData}
-                                getResourceListData={reloadResourceListData as () => Promise<void>}
-                                selectedResource={selectedResource}
-                                handleResourceClick={handleResourceClick}
-                            />
-                        </div>
-                    ) : (
-                        <div
-                            key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center ${
-                                columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
-                                    : ''
-                            }`}
-                        >
-                            <ConditionalWrap
-                                condition={columnName === 'node'}
-                                wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
+        <div
+            key={`${resourceData.id}-${resourceData.name}`}
+            className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+            style={{ gridTemplateColumns }}
+        >
+            {resourceList?.headers.map((columnName) =>
+                columnName === 'name' ? (
+                    <div
+                        key={`${resourceData.id}-${columnName}`}
+                        className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                        data-testid="created-resource-name"
+                    >
+                        <Tooltip content={resourceData.name}>
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                data-name={resourceData.name}
+                                data-namespace={resourceData.namespace}
+                                onClick={handleResourceClick}
+                                aria-label={`Select ${resourceData.name}`}
                             >
-                                <Tooltip content={resourceData[columnName]}>
-                                    <span
-                                        className="dc__truncate"
-                                        data-testid={`${columnName}-count`}
-                                        // eslint-disable-next-line react/no-danger
-                                        dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(
-                                                highlightSearchText({
-                                                    searchText,
-                                                    text: renderResourceValue(resourceData[columnName]?.toString()),
-                                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                                }),
-                                            ),
-                                        }}
+                                <span
+                                    className="dc__link cursor"
+                                    // eslint-disable-next-line react/no-danger
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            highlightSearchText({
+                                                searchText,
+                                                text: String(resourceData.name),
+                                                highlightClasses: 'p-0 fw-6 bcy-2',
+                                            }),
+                                        ),
+                                    }}
+                                />
+                            </button>
+                        </Tooltip>
+                        <ClipboardButton
+                            content={String(resourceData.name)}
+                            rootClassName="p-4 dc__visible-hover--child"
+                        />
+                        <ResourceBrowserActionMenu
+                            clusterId={clusterId}
+                            resourceData={resourceData}
+                            getResourceListData={reloadResourceListData as () => Promise<void>}
+                            selectedResource={selectedResource}
+                            handleResourceClick={handleResourceClick}
+                        />
+                    </div>
+                ) : (
+                    <div
+                        key={`${resourceData.id}-${columnName}`}
+                        className={`flexbox dc__align-items-center ${
+                            columnName === 'status'
+                                ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
+                                : ''
+                        }`}
+                    >
+                        <ConditionalWrap
+                            condition={columnName === 'node'}
+                            wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
+                        >
+                            <Tooltip content={resourceData[columnName]}>
+                                <span
+                                    className="dc__truncate"
+                                    data-testid={`${columnName}-count`}
+                                    // eslint-disable-next-line react/no-danger
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            highlightSearchText({
+                                                searchText,
+                                                text: renderResourceValue(resourceData[columnName]?.toString()),
+                                                highlightClasses: 'p-0 fw-6 bcy-2',
+                                            }),
+                                        ),
+                                    }}
+                                />
+                            </Tooltip>
+                            <span>
+                                {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                                    <PodRestartIcon
+                                        clusterId={clusterId}
+                                        name={resourceData.name}
+                                        namespace={resourceData.namespace}
                                     />
-                                </Tooltip>
-                                <span>
-                                    {columnName === 'restarts' &&
-                                        Number(resourceData.restarts) !== 0 &&
-                                        PodRestartIcon && (
-                                            <PodRestartIcon
-                                                clusterId={clusterId}
-                                                name={resourceData.name}
-                                                namespace={resourceData.namespace}
-                                            />
-                                        )}
-                                </span>
-                            </ConditionalWrap>
-                        </div>
-                    ),
-                )}
-            </div>
-        )
-    }
+                                )}
+                            </span>
+                        </ConditionalWrap>
+                    </div>
+                ),
+            )}
+        </div>
+    )
 
     const emptyStateActionHandler = () => {
         setSearchText('')
@@ -424,38 +420,36 @@ export const K8SResourceList = ({
         handleSorting(columnName)
     }
 
-    const renderResourceList = (): JSX.Element => {
-        return (
+    const renderResourceList = (): JSX.Element => (
+        <div
+            ref={resourceListRef}
+            className={`${getScrollableResourceClass(
+                'scrollable-resource-list',
+                showPaginatedView,
+                showStaleDataWarning,
+            )} dc__overflow-scroll`}
+        >
             <div
-                ref={resourceListRef}
-                className={`${getScrollableResourceClass(
-                    'scrollable-resource-list',
-                    showPaginatedView,
-                    showStaleDataWarning,
-                )} dc__overflow-scroll`}
+                className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                style={{ gridTemplateColumns }}
             >
-                <div
-                    className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
-                    style={{ gridTemplateColumns }}
-                >
-                    {resourceList?.headers.map((columnName) => (
-                        <SortableTableHeaderCell
-                            key={columnName}
-                            showTippyOnTruncate
-                            title={columnName}
-                            triggerSorting={triggerSortingHandler(columnName)}
-                            isSorted={sortBy === columnName}
-                            sortOrder={sortOrder}
-                            disabled={false}
-                        />
-                    ))}
-                </div>
-                {filteredResourceList
-                    .slice(resourceListOffset, resourceListOffset + pageSize)
-                    .map((clusterData) => renderResourceRow(clusterData))}
+                {resourceList?.headers.map((columnName) => (
+                    <SortableTableHeaderCell
+                        key={columnName}
+                        showTippyOnTruncate
+                        title={columnName}
+                        triggerSorting={triggerSortingHandler(columnName)}
+                        isSorted={sortBy === columnName}
+                        sortOrder={sortOrder}
+                        disabled={false}
+                    />
+                ))}
             </div>
-        )
-    }
+            {filteredResourceList
+                .slice(resourceListOffset, resourceListOffset + pageSize)
+                .map((clusterData) => renderResourceRow(clusterData))}
+        </div>
+    )
 
     const renderList = (): JSX.Element => {
         if (filteredResourceList?.length === 0 || resourceListDataError) {

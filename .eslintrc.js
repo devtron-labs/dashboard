@@ -39,7 +39,7 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'airbnb',
         'airbnb/hooks',
-        'plugin:prettier/recommended',
+        'prettier',
     ],
     rules: {
         'prettier/prettier': ['error'],
@@ -138,5 +138,5 @@ module.exports = {
         },
         'import/ignore': ['\\.png$', '\\.jpg$', '\\.svg$'],
     },
-    ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
+    ignorePatterns: ['.eslintrc.cjs', 'vite.config.mts'],
 }

@@ -42,9 +42,7 @@ export const getChartList = async (): Promise<DeploymentChartType[]> => {
     }
 }
 
-export const validateChart = (payload: FormData): Promise<ChartUploadResponse> => {
-    return post(Routes.VALIDATE_CUSTOM_CHART, payload, {}, true)
-}
-export const uploadChart = (payload: ChartUploadType): Promise<ChartUploadResponse> => {
-    return put(Routes.UPLOAD_CUSTOM_CHART, payload)
-}
+export const validateChart = (payload: FormData): Promise<ChartUploadResponse> =>
+    post(Routes.VALIDATE_CUSTOM_CHART, payload, {}, true)
+export const uploadChart = (payload: ChartUploadType): Promise<ChartUploadResponse> =>
+    put(Routes.UPLOAD_CUSTOM_CHART, payload)
