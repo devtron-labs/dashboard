@@ -398,7 +398,7 @@ export interface ValueNameInputType {
     valueNameDisabled: boolean
 }
 
-export interface ChaartValuesGUIFormType {
+export interface ChartValuesGUIFormType {
     schemaJson: Map<string, any>
     valuesYamlDocument: YAML.Document.Parsed
     fetchingSchemaJson: boolean

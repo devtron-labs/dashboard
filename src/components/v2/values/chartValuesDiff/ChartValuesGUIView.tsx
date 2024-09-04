@@ -25,7 +25,7 @@ import {
     StyledFormBox,
 } from '../../../common/formFields/Widgets/Widgets'
 import { UpdateApplicationButton } from './ChartValuesView.component'
-import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
+import { ChartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
@@ -236,7 +236,7 @@ const renderGUIWidget = (
     return null
 }
 
-const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
+const ChartValuesGUIForm = (props: ChartValuesGUIFormType): JSX.Element => {
     if (props.fetchingSchemaJson) {
         return <Progressing size={32} fullHeight />
     }
