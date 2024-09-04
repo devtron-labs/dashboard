@@ -67,7 +67,7 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps, GetFilteredHelmAppListReturnType } from './AppListType'
+import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
 
 const HelmAppList = ({
     serverMode,
@@ -101,46 +101,44 @@ const HelmAppList = ({
             ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
             : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
 
-    const getFilteredAppList = (): GetFilteredHelmAppListReturnType =>
-        useMemo(() => {
-            let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
-            if (searchKey) {
-                const searchLowerCase = searchKey.toLowerCase()
-                filteredHelmAppList = filteredHelmAppList.filter((app) => app.appName.includes(searchLowerCase))
-            }
-            if (project.length) {
-                const projectMap = new Map<string, boolean>(project.map((projectId) => [projectId, true]))
-                filteredHelmAppList = filteredHelmAppList.filter(
-                    (app) => projectMap.get(String(app.projectId)) ?? false,
-                )
-            }
-            if (environment.length) {
-                const environmentMap = new Map<string, boolean>(environment.map((envId) => [envId, true]))
-                filteredHelmAppList = filteredHelmAppList.filter(
-                    (app) => environmentMap.get(String(app.environmentDetail.environmentId)) ?? false,
-                )
-            }
-            if (namespace.length) {
-                const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
-                filteredHelmAppList = filteredHelmAppList.filter(
-                    (app) =>
-                        namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ??
-                        false,
-                )
-            }
-            if (appStatus.length) {
-                filteredHelmAppList = filteredHelmAppList.filter((app) => appStatus.includes(app.appStatus))
-            }
-            filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
 
-            const filteredListTotalSize = filteredHelmAppList.length
+    const { filteredHelmAppList, filteredListTotalSize } = useMemo(() => {
+        let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
+        if (searchKey) {
+            const searchLowerCase = searchKey.toLowerCase()
+            filteredHelmAppList = filteredHelmAppList.filter((app) => app.appName.includes(searchLowerCase))
+        }
+        if (project.length) {
+            const projectMap = new Map<string, boolean>(project.map((projectId) => [projectId, true]))
+            filteredHelmAppList = filteredHelmAppList.filter(
+                (app) => projectMap.get(String(app.projectId)) ?? false,
+            )
+        }
+        if (environment.length) {
+            const environmentMap = new Map<string, boolean>(environment.map((envId) => [envId, true]))
+            filteredHelmAppList = filteredHelmAppList.filter(
+                (app) => environmentMap.get(String(app.environmentDetail.environmentId)) ?? false,
+            )
+        }
+        if (namespace.length) {
+            const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
+            filteredHelmAppList = filteredHelmAppList.filter(
+                (app) =>
+                    namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ??
+                    false,
+            )
+        }
+        if (appStatus.length) {
+            filteredHelmAppList = filteredHelmAppList.filter((app) => appStatus.includes(app.appStatus))
+        }
+        filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
 
-            filteredHelmAppList = filteredHelmAppList.slice(offset, offset + pageSize)
+        const filteredListTotalSize = filteredHelmAppList.length
 
-            return { filteredHelmAppList, filteredListTotalSize }
-        }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
+        filteredHelmAppList = filteredHelmAppList.slice(offset, offset + pageSize)
 
-    const { filteredHelmAppList, filteredListTotalSize } = getFilteredAppList()
+        return { filteredHelmAppList, filteredListTotalSize }
+    }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
 
     // component load
     useEffect(() => {

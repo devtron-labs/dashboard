@@ -36,9 +36,12 @@ import {
     handleUTCTime,
     stringComparatorBySortOrder,
     ModuleNameMap,
+    Teams,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppFilters, getClusterListMinWithoutAuth } from '@Services/service'
 import { getProjectList } from '@Components/project/service'
+import { Cluster } from '@Services/service.types'
 import { useAppContext } from '../../common'
 import { SERVER_MODE, DOCUMENTATION, URLS } from '../../../config'
 import HelmAppList from './HelmAppList'
@@ -88,10 +91,10 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
-    const [currentTab, setCurrentTab] = useState(getCurrentTabName(params.appType))
-    const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
-    const [appCount, setAppCount] = useState(0)
-    const [showPulsatingDot, setShowPulsatingDot] = useState(false)
+    const [currentTab, setCurrentTab] = useState<string>(getCurrentTabName(params.appType))
+    const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
+    const [appCount, setAppCount] = useState<number>(0)
+    const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
 
     // check for external argoCD app
     const isExternalArgo =
@@ -166,13 +169,13 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     )
 
     const [projectListLoading, projectListResponse, projectListError, reloadProjectOptions] = useAsync(
-        () => getProjectList(),
+        getProjectList,
         [],
         serverMode === SERVER_MODE.EA_ONLY,
     )
 
     const [clusterListLoading, clusterListResponse, clusterListError, reloadClusterOptions] = useAsync(
-        () => getClusterListMinWithoutAuth(),
+        getClusterListMinWithoutAuth,
         [],
         serverMode === SERVER_MODE.EA_ONLY,
     )
@@ -209,6 +212,12 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         }
     }
 
+    const getProjectOptions = (projectList: Teams[]): OptionType[] =>
+        projectList.map((team) => ({
+            label: team.name,
+            value: String(team.id),
+        })) ?? []
+
     const projectOptions: GroupedOptionsType[] = useMemo(
         () =>
             appListFilterResponse?.result
@@ -217,14 +226,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       appListFilterResponse?.result.teams.length > 0 && {
                           label: 'Projects',
                           options: [
-                              ...(appListFilterResponse?.result?.teams.map((team) => ({
-                                  label: team.name,
-                                  value: String(team.id),
-                              })) ?? []),
-                              ...(projectListResponse?.result?.map((team) => ({
-                                  label: team.name,
-                                  value: String(team.id),
-                              })) ?? []),
+                              ...getProjectOptions(appListFilterResponse?.result.teams),
+                              ...getProjectOptions(projectListResponse?.result),
                           ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
                       },
                   ]
@@ -257,16 +260,23 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         [clusterGroupedEnvOptions],
     )
 
+    const handleVirtualClusterFiltering = (clusterList: Cluster[]): Cluster[] => {
+        if (isExternalArgo || isExternalFlux) {
+            return clusterList.filter((clusterItem) => !clusterItem.isVirtualCluster)
+        }
+        return clusterList
+    }
+
+    const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
+        handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
+            label: clusterItem.cluster_name,
+            value: String(clusterItem.id),
+        })) ?? []
+
     const clusterOptions: SelectPickerOptionType[] = useMemo(
         () => [
-            ...(appListFilterResponse?.result.clusters.map((clusterItem) => ({
-                label: clusterItem.cluster_name,
-                value: String(clusterItem.id),
-            })) ?? []),
-            ...(clusterListResponse?.result.map((clusterItem) => ({
-                label: clusterItem.cluster_name,
-                value: clusterItem.id,
-            })) ?? []),
+            ...getClusterOptions(appListFilterResponse?.result.clusters),
+            ...getClusterOptions(clusterListResponse?.result),
         ],
         [appListFilterResponse],
     )
@@ -444,7 +454,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isDisabled={appListFilterLoading || projectListLoading}
                                 isLoading={appListFilterLoading || projectListLoading}
                                 optionListError={appListFiltersError || projectListError}
-                                reloadOptionList={reloadAppFilters || reloadProjectOptions}
+                                reloadOptionList={appListFilterResponse ? reloadAppFilters : reloadProjectOptions}
                             />
                             <div className="dc__border-right h-16" />
                             {serverMode === SERVER_MODE.FULL && (
@@ -506,7 +516,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isLoading={appListFilterLoading || clusterListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                                 optionListError={appListFiltersError || clusterListError}
-                                reloadOptionList={reloadAppFilters || reloadClusterOptions}
+                                reloadOptionList={appListFilterResponse ? reloadAppFilters : reloadClusterOptions}
                             />
                             {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                         </div>

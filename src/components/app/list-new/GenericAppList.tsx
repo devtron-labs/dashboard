@@ -56,7 +56,6 @@ import {
     GenericAppListProps,
     GenericAppListResponse,
     GenericAppType,
-    GetFilteredGenericAppListReturnType,
 } from './AppListType'
 import { renderIcon } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
@@ -84,39 +83,35 @@ const GenericAppList = ({
 
     const { searchKey, sortBy, sortOrder, templateType, namespace, cluster, offset, pageSize } = filterConfig
 
-    // Filtering
-    const getFilteredAppList = (): GetFilteredGenericAppListReturnType =>
-        useMemo(() => {
-            let filteredAppsList = appsList
-            if (searchKey) {
-                const searchLowerCase = searchKey.toLowerCase()
-                filteredAppsList = filteredAppsList.filter((app) => app.appName.includes(searchLowerCase))
-            }
-            if (templateType.length) {
-                const templateTypeMap = new Map<string, boolean>(templateType.map((template) => [template, true]))
+    const { filteredAppsList, filteredListTotalSize } = useMemo(() => {
+        let filteredAppsList = appsList
+        if (searchKey) {
+            const searchLowerCase = searchKey.toLowerCase()
+            filteredAppsList = filteredAppsList.filter((app) => app.appName.includes(searchLowerCase))
+        }
+        if (templateType.length) {
+            const templateTypeMap = new Map<string, boolean>(templateType.map((template) => [template, true]))
 
-                filteredAppsList = filteredAppsList.filter(
-                    (app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false,
-                )
-            }
-            if (namespace.length) {
-                const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
+            filteredAppsList = filteredAppsList.filter(
+                (app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false,
+            )
+        }
+        if (namespace.length) {
+            const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
 
-                filteredAppsList = filteredAppsList.filter(
-                    (app) => namespaceMap.get(`${app.clusterId}_${app.namespace}`) ?? false,
-                )
-            }
-            filteredAppsList = filteredAppsList.sort((a, b) =>
-                stringComparatorBySortOrder(a.appName, b.appName, sortOrder),
-            ) // Sorting
+            filteredAppsList = filteredAppsList.filter(
+                (app) => namespaceMap.get(`${app.clusterId}_${app.namespace}`) ?? false,
+            )
+        }
+        filteredAppsList = filteredAppsList.sort((a, b) =>
+            stringComparatorBySortOrder(a.appName, b.appName, sortOrder),
+        ) // Sorting
 
-            const filteredListTotalSize = filteredAppsList.length
+        const filteredListTotalSize = filteredAppsList.length
 
-            filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
-            return { filteredAppsList, filteredListTotalSize }
-        }, [appsList, filterConfig])
-
-    const { filteredAppsList, filteredListTotalSize } = getFilteredAppList()
+        filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
+        return { filteredAppsList, filteredListTotalSize }
+    }, [appsList, filterConfig])
 
     const closeSseConnection = (sseConnection: EventSource) => {
         sseConnection.close()
