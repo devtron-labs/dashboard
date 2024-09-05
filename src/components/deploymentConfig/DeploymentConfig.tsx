@@ -810,7 +810,7 @@ export default function DeploymentConfig({
         }
 
         // TODO: Should be default case
-        if (selectedTab === DeploymentTemplateTabsType.EDIT && editMode === ConfigurationType.GUI) {
+        if (selectedTab === DeploymentTemplateTabsType.EDIT) {
             return (
                 <DeploymentTemplateForm
                     editMode={editMode}
@@ -822,6 +822,7 @@ export default function DeploymentConfig({
             )
         }
 
+        // TODO: Won;t reach here
         return (
             <DeploymentTemplateEditorView
                 defaultValue={state.publishedState?.tempFormData ?? state.data}

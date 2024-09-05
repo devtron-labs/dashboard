@@ -62,6 +62,8 @@ const DeploymentTemplateGUIView = ({
         }
     }, [value])
 
+    // TODO: Can look if we need to update editor template
+
     const state = useMemo(() => {
         try {
             const parsedGUISchema = JSON.parse(guiSchema)

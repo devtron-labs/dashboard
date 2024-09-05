@@ -6,3 +6,10 @@ export interface DeploymentTemplateFormProps
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     readOnly: boolean
 }
+
+export interface DeploymentTemplateEditorProps {
+    editedDocument: string
+    uneditedDocument: string
+    showDiff: boolean
+    readOnly: boolean
+}

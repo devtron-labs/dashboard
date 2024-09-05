@@ -8,6 +8,7 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
 import { DeploymentTemplateFormProps } from './types'
+import DeploymentTemplateEditor from './DeploymentTemplateEditor'
 
 const useDeploymentTemplateComputedData = importComponentFromFELibrary(
     'useDeploymentTemplateComputedData',
@@ -24,27 +25,27 @@ const DeploymentTemplateForm = ({
 }: DeploymentTemplateFormProps) => {
     const { editorOnChange } = useDeploymentTemplateContext()
 
-    const { editedDocument, isResolvingVariables, uneditedDocumentWithoutLockedKeys } =
+    const { editedDocument, isResolvingVariables, uneditedDocumentWithoutLockedKeys, uneditedDocument } =
         useDeploymentTemplateComputedData({
             resolveScopedVariables,
             hideLockedKeys,
         })
 
+    const formKey = getDeploymentTemplateEditorKey({
+        hideLockedKeys,
+        resolveScopedVariables,
+        isResolvingVariables,
+    })
+
+    if (isResolvingVariables) {
+        return (
+            <div className="flex h-100 dc__overflow-scroll">
+                <Progressing pageLoader />
+            </div>
+        )
+    }
+
     if (editMode === ConfigurationType.GUI) {
-        if (isResolvingVariables) {
-            return (
-                <div className="flex h-100 dc__overflow-scroll">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-
-        const formKey = getDeploymentTemplateEditorKey({
-            hideLockedKeys,
-            resolveScopedVariables,
-            isResolvingVariables,
-        })
-
         return (
             <DeploymentTemplateGUIView
                 uneditedDocument={uneditedDocumentWithoutLockedKeys}
@@ -57,14 +58,20 @@ const DeploymentTemplateForm = ({
                 editorOnChange={editorOnChange}
                 // TODO: Look into this later
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                key={formKey}
+                key={`${formKey}-gui-view`}
             />
         )
     }
 
-    // TODO: Add support for YAML editor
-
-    return null
+    return (
+        <DeploymentTemplateEditor
+            editedDocument={editedDocument}
+            uneditedDocument={uneditedDocument}
+            showDiff={false}
+            readOnly={readOnly}
+            key={`${formKey}-gui-view`}
+        />
+    )
 }
 
 export default DeploymentTemplateForm
