@@ -203,6 +203,7 @@ export const DEPLOYMENT_HISTORY_TAB = {
     VALUES_YAML: 'values.yaml',
     HELM_GENERATED_MANIFEST: 'Helm generated manifest',
     ARTIFACTS: 'Artifacts',
+    SECURITY: 'Security',
 }
 
 export const API_COMPONENTS = {

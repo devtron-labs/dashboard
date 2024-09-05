@@ -60,6 +60,7 @@ import {
 } from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
+const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -101,11 +102,14 @@ const ChartDeploymentHistory = ({
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
 
+    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
+
     const deploymentTabs = () => {
         const tabs = [
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
+            DEPLOYMENT_HISTORY_TAB.SECURITY,
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -204,7 +208,8 @@ const ChartDeploymentHistory = ({
     const getDeploymentData = (_selectedDeploymentTabName: string, _selectedDeploymentHistoryIndex: number) => {
         if (
             _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.STEPS ||
-            _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SOURCE
+            _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SOURCE ||
+            _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SECURITY
         ) {
             // Checking if the tab in not source, then fetching api for all except source tab
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
@@ -585,6 +590,9 @@ const ChartDeploymentHistory = ({
                         params={paramsData}
                         status={deployment.status}
                     />
+                )}
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && isScanV2Enabled && ChartSecurityTab && (
+                    <ChartSecurityTab installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version} />
                 )}
             </div>
         )
