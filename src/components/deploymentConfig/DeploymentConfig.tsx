@@ -33,6 +33,8 @@ import {
     DeploymentTemplateProvider,
     DeploymentConfigStateAction,
     DeploymentConfigStateWithDraft,
+    ConfigKeysWithLockType,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -46,10 +48,7 @@ import {
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
-import {
-    ConfigKeysWithLockType,
-    DeploymentConfigProps,
-} from './types'
+import { DeploymentConfigProps } from './types'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { groupDataByType, handleConfigProtectionError } from './DeploymentConfig.utils'
@@ -134,6 +133,10 @@ export default function DeploymentConfig({
     } = useUrlFilters<never, DeploymentTemplateQueryParamsType>({
         parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
     })
+
+    const handleUpdateRemovedPatches = (patches: Operation[]) => {
+        removedPatches.current = patches
+    }
 
     // TODO: Rename this method
     const setHideLockedKeys = (value: boolean) => {
@@ -730,6 +733,7 @@ export default function DeploymentConfig({
         let valuesOverride = obj
         const shouldReapplyRemovedLockedKeys = hideLockedKeys && reapplyRemovedLockedKeysToYaml
 
+        // TODO: Can look if we can move this to a hook and send removedPatches inside it.
         if (shouldReapplyRemovedLockedKeys) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
@@ -797,6 +801,14 @@ export default function DeploymentConfig({
         const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
         const isReadOnlyView = isCompareAndApprovalState || resolveScopedVariables
 
+        if (state.chartConfigLoading) {
+            return (
+                <div className="flex h-100 dc__overflow-scroll">
+                    <Progressing pageLoader />
+                </div>
+            )
+        }
+
         // TODO: Should be default case
         if (selectedTab === DeploymentTemplateTabsType.EDIT && editMode === ConfigurationType.GUI) {
             return (
@@ -806,7 +818,6 @@ export default function DeploymentConfig({
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     readOnly={isReadOnlyView}
                     resolveScopedVariables={resolveScopedVariables}
-                    handleDisableResolveScopedVariables={handleDisableResolveScopedVariables}
                 />
             )
         }
@@ -893,6 +904,10 @@ export default function DeploymentConfig({
         handleChangeToYAMLMode,
         handleChangeToGUIMode,
         editorOnChange,
+        handleDisableResolveScopedVariables,
+        lockedConfigKeysWithLockType,
+        removedPatches,
+        handleUpdateRemovedPatches,
     })
 
     return (

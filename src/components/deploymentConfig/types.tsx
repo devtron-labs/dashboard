@@ -22,14 +22,10 @@ import {
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     ChartMetadataType,
+    ConfigKeysWithLockType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as jsonpatch from 'fast-json-patch'
 import { EnvironmentOverrideComponentProps } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-
-export interface ConfigKeysWithLockType {
-    config: string[]
-    allowed: boolean
-}
 
 export interface DeploymentConfigState {
     code: number

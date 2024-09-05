@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import YAML from 'yaml'
 import {
     InfoColourBar,

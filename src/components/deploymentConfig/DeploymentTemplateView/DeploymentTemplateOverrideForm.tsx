@@ -18,12 +18,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { DeploymentTemplateProvider, Progressing, YAMLStringify, DeploymentConfigStateActionTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentTemplateProvider, Progressing, YAMLStringify, DeploymentConfigStateActionTypes, ConfigKeysWithLockType } from '@devtron-labs/devtron-fe-common-lib'
 import { compare as jsonpatchCompare, Operation } from 'fast-json-patch'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-filled.svg'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../../common'
-import { ConfigKeysWithLockType } from '../types'
 import { createDeploymentTemplate, updateDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import DeploymentTemplateOptionsTab from './DeploymentTemplateOptionsTab'
 import DeploymentTemplateEditorView from './DeploymentTemplateEditorView'
@@ -86,6 +85,10 @@ export default function DeploymentTemplateOverrideForm({
             editorOnChange('')
         }
     }, [state.duplicate])
+
+    const handleUpdateRemovedPatches = (patches: Operation[]) => {
+        removedPatches.current = patches
+    }
 
     const handleSetHideLockedKeys = (value: boolean) => {
         if (!state.wasGuiOrHideLockedKeysEdited) {
@@ -660,6 +663,11 @@ export default function DeploymentTemplateOverrideForm({
         environments: environments || [],
         changeEditorMode,
         reloadEnvironments,
+        // TODO: Replace from useURLFilters
+        handleDisableResolveScopedVariables: () => {},
+        lockedConfigKeysWithLockType,
+        handleUpdateRemovedPatches,
+        removedPatches,
     })
 
     return (
