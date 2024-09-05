@@ -1,5 +1,6 @@
 import {
     ConfigurationType,
+    getDeploymentTemplateEditorKey,
     Progressing,
     useDeploymentTemplateComputedData as useCommonDeploymentTemplateComputedData,
     useDeploymentTemplateContext,
@@ -21,10 +22,7 @@ const DeploymentTemplateForm = ({
     readOnly,
     resolveScopedVariables,
 }: DeploymentTemplateFormProps) => {
-    const {
-        state: { chartConfigLoading },
-        editorOnChange,
-    } = useDeploymentTemplateContext()
+    const { editorOnChange } = useDeploymentTemplateContext()
 
     const { editedDocument, isResolvingVariables, uneditedDocumentWithoutLockedKeys } =
         useDeploymentTemplateComputedData({
@@ -33,16 +31,19 @@ const DeploymentTemplateForm = ({
         })
 
     if (editMode === ConfigurationType.GUI) {
-        // TODO: Ideally chartConfigLoading should be handled outside of this component
-        if (isResolvingVariables || chartConfigLoading) {
+        if (isResolvingVariables) {
             return (
                 <div className="flex h-100 dc__overflow-scroll">
                     <Progressing pageLoader />
                 </div>
             )
         }
-        // Can remove isResolvingVariables if not needed, TODO: Can move to hook itself
-        const formKey = `${resolveScopedVariables ? 'resolved' : 'unresolved'}-${hideLockedKeys ? 'hide-lock' : 'show-locked'}-${isResolvingVariables ? 'loading' : 'loaded'}-deployment-template`
+
+        const formKey = getDeploymentTemplateEditorKey({
+            hideLockedKeys,
+            resolveScopedVariables,
+            isResolvingVariables,
+        })
 
         return (
             <DeploymentTemplateGUIView
@@ -60,6 +61,8 @@ const DeploymentTemplateForm = ({
             />
         )
     }
+
+    // TODO: Add support for YAML editor
 
     return null
 }
