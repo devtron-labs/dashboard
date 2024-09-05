@@ -94,6 +94,8 @@ export const SecurityScansTab = () => {
         ],
     )
 
+    const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
+
     const [clusterEnvListLoading, clusterEnvListResult] = useAsync(() => getVulnerabilityFilterData())
 
     const getClusterLabelFromId = (clusterId: string) =>
@@ -358,19 +360,8 @@ export const SecurityScansTab = () => {
     }
 
     const renderScanListContainer = () => {
-        if (!scanListLoading && !securityScansResult?.result.securityScans.length) {
-            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
-            if (areFiltersActive) {
-                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
-            }
-
-            return (
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                    classname="flex-grow-1"
-                />
-            )
+        if (!scanListLoading && !securityScansResult?.result.securityScans.length && areFiltersActive) {
+            return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
         }
 
         return (
@@ -379,6 +370,16 @@ export const SecurityScansTab = () => {
                 {renderScanList()}
                 {renderScanDetailsModal()}
             </>
+        )
+    }
+
+    if (!scanListLoading && !securityScansResult?.result.securityScans.length && !areFiltersActive) {
+        return (
+            <GenericEmptyState
+                image={AppNotDeployed}
+                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                classname="flex-grow-1"
+            />
         )
     }
 
