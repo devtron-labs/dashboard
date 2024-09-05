@@ -89,13 +89,17 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     </Link>
                     {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
                     <div className="cursor dc__visible-hover--child ml-8">
-                        <div className="flexbox dc__align-items-center">
+                        <div className="flexbox dc__align-items-center dc__gap-4">
                             {clusterData.nodeCount && !clusterListLoader && isSuperAdmin && (
-                                <TerminalIcon
-                                    data-testid={`cluster-terminal-${clusterData.name}`}
-                                    className="icon-dim-16 dc__no-shrink"
-                                    onClick={getOpenTerminalHandler(clusterData)}
-                                />
+                                <Tooltip alwaysShowTippyOnHover content="View terminal">
+                                    <div className="flex">
+                                        <TerminalIcon
+                                            data-testid={`cluster-terminal-${clusterData.name}`}
+                                            className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
+                                            onClick={getOpenTerminalHandler(clusterData)}
+                                        />
+                                    </div>
+                                </Tooltip>
                             )}
                             {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
                         </div>

@@ -4295,6 +4295,22 @@ textarea::placeholder {
     color: var(--B500);
 }
 
+.dc__hover-color-n800:hover {
+    color: var(--N800);
+
+    &.fill:hover {
+        path {
+            fill: var(--N800);
+        }
+    }
+
+    &.stroke:hover {
+        path {
+            stroke: var(--N800);
+        }
+    }
+}
+
 .dc__hover-n100:hover {
     background-color: var(--N100);
 }
