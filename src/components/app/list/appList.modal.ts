@@ -140,8 +140,8 @@ export const getDevtronAppListPayload = (
             : getEnvironmentsFromClusterNamespace({
                   selectedClusterIds: cluster.map((clusterId) => +clusterId),
                   selectedNamespaces: namespace,
-                  environmentList: environmentList,
-                  namespaceList: namespaceList,
+                  environmentList,
+                  namespaceList,
               }),
         teams: project.map((team) => +team),
         namespaces: namespace,

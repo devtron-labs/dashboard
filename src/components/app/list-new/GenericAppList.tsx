@@ -28,6 +28,7 @@ import {
     SortableTableHeaderCell,
     DEFAULT_BASE_PAGE_SIZE,
     stringComparatorBySortOrder,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -92,9 +93,7 @@ const GenericAppList = ({
         if (templateType.length) {
             const templateTypeMap = new Map<string, boolean>(templateType.map((template) => [template, true]))
 
-            filteredAppsList = filteredAppsList.filter(
-                (app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false,
-            )
+            filteredAppsList = filteredAppsList.filter((app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false)
         }
         if (namespace.length) {
             const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
@@ -103,9 +102,7 @@ const GenericAppList = ({
                 (app) => namespaceMap.get(`${app.clusterId}_${app.namespace}`) ?? false,
             )
         }
-        filteredAppsList = filteredAppsList.sort((a, b) =>
-            stringComparatorBySortOrder(a.appName, b.appName, sortOrder),
-        ) // Sorting
+        filteredAppsList = filteredAppsList.sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName, sortOrder)) // Sorting
 
         const filteredListTotalSize = filteredAppsList.length
 
@@ -139,6 +136,7 @@ const GenericAppList = ({
                 setAppsList((currAppList) => [...currAppList, ...receivedExternalFluxApps])
                 setDataStateType(AppListViewType.LIST)
             } catch (err) {
+                showError(err)
                 setDataStateType(AppListViewType.ERROR)
             }
         }
@@ -175,6 +173,14 @@ const GenericAppList = ({
         getExternalInstalledFluxApps(clusterIdsCsv)
     }
 
+    const handleAppListing = () => {
+        if (isArgoCDAppList) {
+            handleArgoAppListing()
+            return
+        }
+        handleFluxAppListing()
+    }
+
     useEffect(() => {
         if (!clusterIdsCsv) {
             setAppsList([])
@@ -182,11 +188,15 @@ const GenericAppList = ({
             return
         }
         setShowPulsatingDot(false)
-        isArgoCDAppList ? handleArgoAppListing() : handleFluxAppListing()
+        handleAppListing()
     }, [clusterIdsCsv])
 
     const init = () => {
-        clusterIdsCsv ? setDataStateType(AppListViewType.LOADING) : setDataStateType(AppListViewType.LIST)
+        if (clusterIdsCsv) {
+            setDataStateType(AppListViewType.LOADING)
+        } else {
+            setDataStateType(AppListViewType.LIST)
+        }
         setAppsList([])
         if (sseConnection) {
             sseConnection.close()

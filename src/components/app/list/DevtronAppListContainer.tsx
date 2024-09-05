@@ -220,7 +220,7 @@ const DevtronAppList = ({
         return renderGuidedCards()
     }
 
-    const renderEnvironmentList = (app) => {
+    const renderEnvironmentList = (app: App) => {
         const envCount = app.environments.length
         if (envCount) {
             const isEnvConfigured = app.defaultEnv && app.defaultEnv.name

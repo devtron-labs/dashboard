@@ -744,7 +744,9 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     <HelmAppList
                         serverMode={serverMode}
                         filterConfig={filterConfig}
-                        clusterList={appListFilterResponse?.result.clusters}
+                        clusterList={
+                            appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse.result
+                        }
                         handleSorting={handleSorting}
                         clearAllFilters={clearFilters}
                         fetchingExternalApps={fetchingExternalApps}
@@ -771,7 +773,9 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     key={params.appType}
                     clearAllFilters={clearFilters}
                     filterConfig={filterConfig}
-                    clusterList={appListFilterResponse?.result.clusters}
+                    clusterList={
+                        appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse.result
+                    }
                     clusterIdsCsv={clusterIdsCsv}
                     appType={params.appType}
                     changePage={changePage}
