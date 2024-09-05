@@ -63,6 +63,7 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
+import ButtonPage from './ButtonPage'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -457,6 +458,9 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
+                                         <Route path="/good-button">
+                                            <ButtonPage />
+                                        </Route>,
                                         ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
                                             ? [
                                                   <Route
