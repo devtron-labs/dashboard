@@ -25,6 +25,8 @@ import {
     HeaderWithCreateButton,
     AppListConstants,
     useUrlFilters,
+    TabGroup,
+    TabProps,
     SearchBar,
     ComponentSizeType,
     FilterSelectPicker,
@@ -577,67 +579,71 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         />
     )
 
-    function renderAppTabs() {
-        return (
-            <div className="dc__border-bottom flexbox dc__content-space px-20 dc__align-items-center">
-                <ul className="tab-list">
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <li className="tab-list__tab">
-                            <a
-                                className={`tab-list__tab-link ${
-                                    currentTab === AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
-                                }`}
-                                onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}
-                            >
-                                Devtron Apps
-                            </a>
-                        </li>
-                    )}
-                    <li className="tab-list__tab">
-                        <a
-                            className={`tab-list__tab-link ${
-                                currentTab === AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
-                            }`}
-                            onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}
-                            data-testid="helm-app-list-button"
-                        >
-                            Helm Apps
-                        </a>
-                    </li>
-                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && (
-                        <li className="tab-list__tab">
-                            <a
-                                className={`tab-list__tab-link ${
-                                    currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
-                                }`}
-                                onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
-                                data-testid="argo-app-list-button"
-                            >
-                                {AppListConstants.AppTabs.ARGO_APPS}
-                            </a>
-                        </li>
-                    )}
-                    {window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
-                        <li className="tab-list__tab">
-                            <a
-                                className={`tab-list__tab-link ${
-                                    currentTab === AppListConstants.AppTabs.FLUX_APPS ? 'active' : ''
-                                }`}
-                                onClick={() => changeAppTab(AppListConstants.AppTabs.FLUX_APPS)}
-                                data-testid="flux-app-list-button"
-                            >
-                                {AppListConstants.AppTabs.FLUX_APPS}
-                            </a>
-                        </li>
-                    )}
-                </ul>
-                <div className="app-tabs-sync fs-13">
-                    {lastDataSyncTimeString &&
-                        (params.appType === AppListConstants.AppType.DEVTRON_APPS ||
-                            (params.appType === AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
-                            <span data-testid="sync-now-text">
-                                {lastDataSyncTimeString}&nbsp;
-                                {!isDataSyncing && (
+    const renderAppTabs = () => {
+        const tabs: TabProps[] = [
+            ...(serverMode === SERVER_MODE.FULL
+                ? [
+                      {
+                          id: 'devtron-apps',
+                          label: 'Devtron Apps',
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS),
+                          },
+                      },
+                  ]
+                : []),
+            {
+                id: 'helm-apps',
+                label: 'Helm Apps',
+                tabType: 'navLink',
+                props: {
+                    to: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
+                    onClick: () => changeAppTab(AppListConstants.AppTabs.HELM_APPS),
+                    'data-testid': 'helm-app-list-button',
+                },
+            },
+            ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD
+                ? [
+                      {
+                          id: 'argo-cd-apps',
+                          label: AppListConstants.AppTabs.ARGO_APPS,
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.ARGO_APPS),
+                              'data-testid': 'argo-app-list-button',
+                          },
+                      },
+                  ]
+                : []),
+            ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE
+                ? [
+                      {
+                          id: 'flux-cd-apps',
+                          label: AppListConstants.AppTabs.FLUX_APPS,
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.FLUX_APPS),
+                              'data-testid': 'flux-app-list-button',
+                          },
+                      },
+                  ]
+                : []),
+        ]
+
+        const rightComponent = (
+            <div className="flex fs-13">
+                {lastDataSyncTimeString &&
+                    (params.appType === AppListConstants.AppType.DEVTRON_APPS ||
+                        (params.appType === AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
+                        <>
+                            <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
+                            {!isDataSyncing && (
+                                <>
+                                    &nbsp;
                                     <button
                                         className="btn btn-link p-0 fw-6 cb-5 mb-2"
                                         type="button"
@@ -646,13 +652,19 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                     >
                                         Sync now
                                     </button>
-                                )}
-                            </span>
-                        )}
-                    {params.appType === AppListConstants.AppType.HELM_APPS &&
-                        fetchingExternalApps &&
-                        renderDataSyncingText()}
-                </div>
+                                </>
+                            )}
+                        </>
+                    )}
+                {params.appType === AppListConstants.AppType.HELM_APPS &&
+                    fetchingExternalApps &&
+                    renderDataSyncingText()}
+            </div>
+        )
+
+        return (
+            <div className="app-tabs-wrapper px-20">
+                <TabGroup tabs={tabs} rightComponent={rightComponent} alignActiveBorderWithContainer />
             </div>
         )
     }

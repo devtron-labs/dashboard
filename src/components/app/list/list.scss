@@ -409,6 +409,16 @@
     }
 }
 
+.app-tabs-wrapper {
+    position: relative;
+    border-bottom: 1px solid #ddd;
+}
+
+.app-tabs-wrapper .tab-list {
+    padding-left: 20px;
+    background-color: white;
+}
+
 .filter-divider {
     width: 1px;
     height: 20px;
