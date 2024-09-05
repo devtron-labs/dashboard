@@ -56,6 +56,48 @@ export const isEnvProtected = (
     isBaseConfigProtected?: boolean,
 ) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
+/**
+ * Returns the application and environment IDs for comparison based on the given parameters.
+ *
+ * @param params - Object containing appId, envId, environments, type, compareTo, and compareWith.
+ * @param params.appId - The application ID.
+ * @param params.envId - The environment ID.
+ * @param params.environments - The list of environments.
+ * @param params.type - The type of comparison (e.g., 'appGroup').
+ * @param params.compareTo - The environment name to compare to.
+ * @param params.compareWith - The environment name to compare with.
+ * @returns Object containing compareToAppId, compareWithAppId, compareToEnvId, and compareWithEnvId.
+ */
+export const getAppAndEnvIds = ({
+    appId,
+    envId,
+    environments,
+    type,
+    compareTo,
+    compareWith,
+}: Pick<DeploymentConfigCompareProps, 'environments' | 'type'> & {
+    appId: string
+    envId: string
+    compareTo: string
+    compareWith: string
+}) => {
+    // Default: use appId and envId
+    let compareToAppId = +appId
+    let compareWithAppId = +appId
+    let compareToEnvId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+    let compareWithEnvId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+
+    // If type is 'appGroup', switch appId & envId
+    if (type === 'appGroup') {
+        compareToAppId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+        compareWithAppId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+        compareToEnvId = +envId
+        compareWithEnvId = +envId
+    }
+
+    return { compareToAppId, compareWithAppId, compareToEnvId, compareWithEnvId }
+}
+
 export const parseCompareWithSearchParams =
     ({
         environments,

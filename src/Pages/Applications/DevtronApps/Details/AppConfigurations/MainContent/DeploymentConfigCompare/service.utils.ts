@@ -9,6 +9,7 @@ import {
 import { getDeploymentManisfest } from '@Components/deploymentConfig/service'
 
 import { DeploymentConfigCompareProps } from '../../AppConfig.types'
+import { getEnvironmentIdByEnvironmentName } from './utils'
 
 export const getConfigDiffData = ({
     type,
@@ -71,22 +72,36 @@ export const getDeploymentTemplateData = ({
 }
 
 export const getManifestData = ({
-    appId,
-    envId,
+    type,
+    appId: _appId,
+    envId: _envId,
     configType,
+    compareName,
     values,
     identifierId,
     pipelineId,
     manifestChartRefId,
+    environments,
 }: {
-    appId: number
-    envId: number
+    appId: string
+    envId: string
     configType: AppEnvDeploymentConfigType
+    compareName: string
     values: string
     identifierId: number
     pipelineId: number
     manifestChartRefId: number
-}) => {
+} & Pick<DeploymentConfigCompareProps, 'type' | 'environments'>) => {
+    // Default: use appId and envId
+    let appId = +_appId
+    let envId = getEnvironmentIdByEnvironmentName(environments, compareName)
+
+    // If type is 'appGroup', switch appId & envId
+    if (type === 'appGroup') {
+        appId = getEnvironmentIdByEnvironmentName(environments, compareName)
+        envId = _envId ? +_envId : null
+    }
+
     const nullResponse = {
         code: 200,
         status: 'OK',
@@ -102,31 +117,28 @@ export const getManifestData = ({
         configType === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT
     const isDefaultSelected = configType === AppEnvDeploymentConfigType.DEFAULT_VERSION
 
-    return !isDraftSelected || values
-        ? getDeploymentManisfest({
-              appId: +appId,
-              valuesAndManifestFlag: 2,
-              chartRefId: manifestChartRefId,
-              ...(envId
-                  ? {
-                        envId: +envId,
-                    }
-                  : {}),
-              ...(envId && !values && !isDefaultSelected
-                  ? {
-                        type:
-                            identifierId && pipelineId
-                                ? TemplateListType.DeployedOnSelfEnvironment
-                                : TemplateListType.PublishedOnEnvironments,
-                        deploymentTemplateHistoryId: identifierId,
-                        pipelineId,
-                    }
-                  : {}),
-              ...(values && !isDefaultSelected
-                  ? {
-                        values,
-                    }
-                  : {}),
-          })
-        : nullResponse
+    const deploymentManifestRequestData: Record<string, string | number> = {
+        appId: +appId,
+        valuesAndManifestFlag: 2,
+        chartRefId: manifestChartRefId,
+    }
+
+    if (envId > -1) {
+        deploymentManifestRequestData.envId = envId
+
+        if (!values && !isDefaultSelected) {
+            deploymentManifestRequestData.type =
+                identifierId && pipelineId
+                    ? TemplateListType.DeployedOnSelfEnvironment
+                    : TemplateListType.PublishedOnEnvironments
+            deploymentManifestRequestData.deploymentTemplateHistoryId = identifierId
+            deploymentManifestRequestData.pipelineId = pipelineId
+        }
+    }
+
+    if (values && !isDefaultSelected) {
+        deploymentManifestRequestData.values = values
+    }
+
+    return !isDraftSelected || values ? getDeploymentManisfest(deploymentManifestRequestData) : nullResponse
 }

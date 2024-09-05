@@ -28,7 +28,6 @@ import {
 } from '../../AppConfig.types'
 import {
     getCompareEnvironmentSelectorOptions,
-    getEnvironmentIdByEnvironmentName,
     getPreviousDeploymentOptionValue,
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
@@ -37,6 +36,7 @@ import {
     getConfigChartRefId,
     getManifestRequestValues,
     getDeploymentConfigDiffTabs,
+    getAppAndEnvIds,
 } from './utils'
 import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
 
@@ -52,9 +52,6 @@ export const DeploymentConfigCompare = ({
     // HOOKS
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
-
-    // CONSTANTS
-    const isManifestView = resourceType === EnvResourceType.Manifest
 
     // SEARCH PARAMS & SORTING
     const {
@@ -85,23 +82,27 @@ export const DeploymentConfigCompare = ({
         })
     }, [])
 
+    // CONSTANTS
+    const isManifestView = resourceType === EnvResourceType.Manifest
+    const { compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId } = useMemo(
+        () =>
+            getAppAndEnvIds({
+                type,
+                environments,
+                appId,
+                envId,
+                compareWith,
+                compareTo,
+            }),
+        [type, compareWith, compareTo, appId, envId, environments],
+    )
+
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
-    const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(() => {
-        let compareToAppId = +appId
-        let compareWithAppId = +appId
-        let compareToEnvId = getEnvironmentIdByEnvironmentName(environments, compareTo)
-        let compareWithEnvId = getEnvironmentIdByEnvironmentName(environments, compareWith)
-
-        if (type === 'appGroup') {
-            compareToAppId = getEnvironmentIdByEnvironmentName(environments, compareTo)
-            compareWithAppId = getEnvironmentIdByEnvironmentName(environments, compareWith)
-            compareToEnvId = +envId
-            compareWithEnvId = +envId
-        }
-
-        return Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)])
-    }, [compareTo, compareWith])
+    const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
+        () => Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)]),
+        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
+    )
 
     // Options for previous deployments and default versions
     const currentEnvOptions = useMemo(
@@ -117,10 +118,10 @@ export const DeploymentConfigCompare = ({
     const [chartReferencesLoader, chartReferences, chartReferencesErr, reloadChartReferences] = useAsync(
         () =>
             Promise.all([
-                getChartReferencesForAppAndEnv(+appId, getEnvironmentIdByEnvironmentName(environments, compareTo)),
-                getChartReferencesForAppAndEnv(+appId, getEnvironmentIdByEnvironmentName(environments, compareWith)),
+                getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId),
+                getChartReferencesForAppAndEnv(compareWithAppId, compareWithEnvId),
             ]),
-        [isManifestView, appId, compareTo, compareWith],
+        [isManifestView, compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
         isManifestView,
     )
 
@@ -163,19 +164,25 @@ export const DeploymentConfigCompare = ({
 
         return Promise.all([
             getManifestData({
-                appId: +appId,
-                envId: envId ? +envId : null,
-                manifestChartRefId: _manifestChartRefId,
+                appId,
+                envId,
+                type,
+                environments,
+                compareName: compareTo,
                 configType,
+                manifestChartRefId: _manifestChartRefId,
                 values: currentManifestRequestValues?.data,
                 identifierId,
                 pipelineId,
             }),
             getManifestData({
-                appId: +appId,
-                envId: compareWith ? getEnvironmentIdByEnvironmentName(environments, compareWith) : null,
-                manifestChartRefId: _compareWithManifestChartRefId,
+                appId,
+                envId,
+                type,
+                environments,
+                compareName: compareWith,
                 configType: compareWithConfigType,
+                manifestChartRefId: _compareWithManifestChartRefId,
                 values: compareManifestRequestValues?.data,
                 identifierId: compareWithIdentifierId,
                 pipelineId: compareWithPipelineId,
