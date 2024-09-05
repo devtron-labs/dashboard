@@ -1,5 +1,7 @@
+import React from 'react'
 import type { Preview } from '@storybook/react'
 import '../src/css/application.scss'
+import { BrowserRouter } from 'react-router-dom'
 
 const preview: Preview = {
     parameters: {
@@ -11,6 +13,7 @@ const preview: Preview = {
         },
     },
     tags: ['autodocs'],
+    decorators: (Story) => <BrowserRouter><Story /></BrowserRouter>
 }
 
 export default preview
