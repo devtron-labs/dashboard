@@ -1,0 +1,26 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install --network-timeout 600000
+
+COPY .storybook/ .storybook
+COPY src/ src
+COPY nginx.conf .
+COPY tsconfig.json .
+COPY vite.config.mts .
+COPY . .
+
+RUN yarn build-storybook
+
+FROM nginx:stable
+
+# RUN useradd -ms /bin/bash devtron
+COPY --from=builder /app/storybook-static/ /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+
+# RUN chown -R devtron:devtron /usr/share/nginx/html
+# USER devtron
+CMD ["/bin/bash", "-c", "nginx -g \"daemon off;\""]
