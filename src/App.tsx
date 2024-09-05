@@ -17,7 +17,7 @@
 import { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import './application.scss';
+import './css/application.scss';
 import {
     showError,
     BreadcrumbStore,
