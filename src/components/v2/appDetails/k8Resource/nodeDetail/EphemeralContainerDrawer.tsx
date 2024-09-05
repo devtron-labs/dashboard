@@ -24,6 +24,7 @@ import {
     InfoIconTippy,
     CodeEditor,
     SelectOption,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -178,7 +179,7 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pb-10 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
                     <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
@@ -353,32 +354,30 @@ const EphemeralContainerDrawer = ({
     const renderEphemeralContainerType = () => {
         return (
             <div className="dc__border-bottom pl-20">
-                <ul role="tablist" className="tab-list">
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active' : ''
-                            }`}
-                        >
-                            Basic
-                        </div>
-                    </li>
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active ' : ''
-                            }`}
-                        >
-                            Advanced
-                        </div>
-                    </li>
-                </ul>
+                <TabGroup
+                    tabs={[
+                        {
+                            id: 'basic-tab',
+                            label: 'Basic',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.BASIC,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC),
+                            },
+                        },
+                        {
+                            id: 'advanced-tab',
+                            label: 'Advanced',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.ADVANCED,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED),
+                            },
+                        },
+                    ]}
+                    hideTopPadding
+                    alignActiveBorderWithContainer
+                />
             </div>
         )
     }
