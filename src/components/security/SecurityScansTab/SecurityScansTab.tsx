@@ -22,7 +22,7 @@ import {
     SecurityModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
-import { getSeverityWithCount } from '@Components/common'
+import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import {
@@ -38,6 +38,8 @@ import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchPa
 import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import { SecurityScanType } from '../security.types'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const SecurityScansTab = () => {
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
@@ -63,7 +65,7 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
 
     const payload: ScanListPayloadType = {
         offset,

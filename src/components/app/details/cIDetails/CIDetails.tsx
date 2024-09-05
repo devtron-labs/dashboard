@@ -714,28 +714,37 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError || executionDetailsError) {
         return <Reload />
     }
-    if (artifactId && !executionDetailsResponse?.result?.scanned) {
-        if (!executionDetailsResponse?.result?.scanEnabled) {
+    if (!executionDetailsResponse?.result.scanned || !scanResultResponse?.result.scanned) {
+        if (!executionDetailsResponse?.result.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
         }
         return <ImageNotScannedView />
     }
-    if (
-        artifactId &&
-        executionDetailsResponse.result?.scanned &&
-        !executionDetailsResponse.result?.vulnerabilities.length
-    ) {
-        return <NoVulnerabilityViewWithTool scanToolId={executionDetailsResponse.result?.scanToolId} />
-    }
-
     const imageScanSeverities = scanResultResponse?.result?.imageScan?.vulnerability.summary.severities // For scan-result Api
-    const severityCount: SeverityCount = isSecurityScanV2Enabled ? {
-        critical: imageScanSeverities?.CRITICAL,
-        high: imageScanSeverities?.HIGH,
-        medium: imageScanSeverities?.MEDIUM,
-        low: imageScanSeverities?.LOW,
-        unknown: imageScanSeverities?.UNKNOWN,
-    } : executionDetailsResponse.result?.severityCount
+    const severityCount: SeverityCount = isSecurityScanV2Enabled
+        ? {
+              critical: imageScanSeverities?.CRITICAL || 0,
+              high: imageScanSeverities?.HIGH || 0,
+              medium: imageScanSeverities?.MEDIUM || 0,
+              low: imageScanSeverities?.LOW || 0,
+              unknown: imageScanSeverities?.UNKNOWN || 0,
+          }
+        : executionDetailsResponse?.result.severityCount
+
+    const totalSeverities =
+        (severityCount.critical || 0) +
+        (severityCount.high || 0) +
+        (severityCount.medium || 0) +
+        (severityCount.low || 0) +
+        (severityCount.unknown || 0)
+
+    if (artifactId && !totalSeverities) {
+        return (
+            <NoVulnerabilityViewWithTool
+                scanToolId={isSecurityScanV2Enabled ? 3 : executionDetailsResponse.result?.scanToolId}
+            />
+        )
+    }
 
     return (
         <>
@@ -745,10 +754,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                     scanToolId={executionDetailsResponse.result?.scanToolId}
                     rootClassName="w-500"
                     {...(isSecurityScanV2Enabled
-                        ? { appDetailsPayload: { appId, artifactId } }
+                        ? { appDetailsPayload: { appId: appId ?? appIdFromParent, artifactId } }
                         : {
                               executionDetailsPayload: {
-                                  appId,
+                                  appId: appId ?? appIdFromParent,
                                   artifactId,
                               },
                           })}
