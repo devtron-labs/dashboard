@@ -2474,6 +2474,10 @@ button.anchor {
     max-width: 180px;
 }
 
+.dc__mxw-150 {
+    max-width: 150px;
+}
+
 .dc__mxw-155 {
     max-width: 155px;
 }
@@ -4748,8 +4752,8 @@ textarea::placeholder {
     outline: none;
 
     &:focus-visible {
-        outline: 5px auto -webkit-focus-ring-color !important;
-        outline-offset: 1px;
+        outline: 2px solid var(--B500) !important;
+        outline-offset: 2px;
     }
 }
 
