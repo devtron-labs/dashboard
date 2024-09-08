@@ -377,8 +377,8 @@ a:focus {
     top: 26px;
 }
 
-.dc__top-38 {
-    top: 38px;
+.dc__top-36 {
+    top: 36px;
 }
 
 .dc__top-40 {
@@ -405,8 +405,8 @@ a:focus {
     top: 77px;
 }
 
-.dc__top-82 {
-    top: 82px;
+.dc__top-80 {
+    top: 80px;
 }
 
 .dc__top-88 {
@@ -2414,6 +2414,10 @@ button.anchor {
     max-width: 250px;
 }
 
+.dc__mxw-280 {
+    max-width: 280px;
+}
+
 .dc__mxw-300 {
     max-width: 300px;
 }
@@ -2468,6 +2472,10 @@ button.anchor {
 
 .dc__mxw-180 {
     max-width: 180px;
+}
+
+.dc__mxw-150 {
+    max-width: 150px;
 }
 
 .dc__mxw-155 {
@@ -4234,6 +4242,7 @@ textarea::placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+    word-break: break-all;
 }
 
 // opacity
@@ -4507,6 +4516,7 @@ textarea::placeholder {
     background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
     background-size: 800px 104px;
     position: relative;
+    border-radius: 2px;
 }
 
 @keyframes shimmer-loading {
@@ -4663,6 +4673,10 @@ textarea::placeholder {
     border: 1px solid var(--B500) !important;
 }
 
+.dc__hover-border-n1:hover {
+    border: 1px solid var(--N100) !important;
+}
+
 .placeholder-cn5::placeholder {
     color: var(--N500);
 }
@@ -4738,8 +4752,8 @@ textarea::placeholder {
     outline: none;
 
     &:focus-visible {
-        outline: 5px auto -webkit-focus-ring-color !important;
-        outline-offset: 1px;
+        outline: 2px solid var(--B500) !important;
+        outline-offset: 2px;
     }
 }
 
@@ -4955,4 +4969,11 @@ textarea::placeholder {
 .dc__grid-half {
     display: grid;
     grid-template-columns: 50% 50%;
+}
+
+.cd-material {
+    // Replace bulk ci/cd sidebar css with this one when moving a common component
+    &__container-with-sidebar {
+        grid-template-columns: 234px auto;
+    }
 }

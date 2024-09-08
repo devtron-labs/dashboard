@@ -184,14 +184,12 @@ export const RestartWorkloadModal = ({
         }
     }
 
-    const renderHeaderSection = (): JSX.Element => {
-        return (
-            <div className="flex dc__content-space dc__border-bottom pt-12 pr-20 pb-12 pl-20">
-                <div className="fs-16 fw-6 lh-1-5">{` Restart workloads on '${envName}'`}</div>
-                <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
-            </div>
-        )
-    }
+    const renderHeaderSection = (): JSX.Element => (
+        <div className="flex dc__content-space dc__border-bottom pt-12 pr-20 pb-12 pl-20">
+            <div className="fs-16 fw-6 lh-1-5">{` Restart workloads on '${envName}'`}</div>
+            <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
+        </div>
+    )
 
     const handleWorkloadSelection = (
         appId: number,
@@ -355,56 +353,52 @@ export const RestartWorkloadModal = ({
         )
     }
 
-    const renderRestartWorkloadModalListItems = () => {
-        return (
-            <div className="drawer-body-section__list-drawer dc__overflow-auto bcn-0">
-                {Object.keys(bulkRotatePodsMap).map((appId) => {
-                    return (
-                        <div className="pl-16 pr-16" key={appId}>
-                            <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
-                                <Checkbox
-                                    rootClassName={`mt-3 mb-3 w-28 ${Object.keys(bulkRotatePodsMap[appId].resources).length === 0 ? 'dc__disabled' : ''}`}
-                                    dataTestId="enforce-policy"
-                                    isChecked={bulkRotatePodsMap[appId].isChecked}
-                                    value={bulkRotatePodsMap[appId].value}
-                                    onClick={stopPropagation}
-                                    name={APP_DETAILS_TEXT.APP_NAME}
-                                    disabled={Object.keys(bulkRotatePodsMap[appId].resources).length === 0}
-                                    onChange={() =>
-                                        handleWorkloadSelection(
-                                            +appId,
-                                            bulkRotatePodsMap[appId].appName,
-                                            APP_DETAILS_TEXT.APP_NAME,
-                                        )
-                                    }
+    const renderRestartWorkloadModalListItems = () => (
+        <div className="drawer-body-section__list-drawer dc__overflow-auto bcn-0">
+            {Object.keys(bulkRotatePodsMap).map((appId) => (
+                <div className="pl-16 pr-16" key={appId}>
+                    <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
+                        <Checkbox
+                            rootClassName={`mt-3 mb-3 w-28 ${Object.keys(bulkRotatePodsMap[appId].resources).length === 0 ? 'dc__disabled' : ''}`}
+                            dataTestId="enforce-policy"
+                            isChecked={bulkRotatePodsMap[appId].isChecked}
+                            value={bulkRotatePodsMap[appId].value}
+                            onClick={stopPropagation}
+                            name={APP_DETAILS_TEXT.APP_NAME}
+                            disabled={Object.keys(bulkRotatePodsMap[appId].resources).length === 0}
+                            onChange={() =>
+                                handleWorkloadSelection(
+                                    +appId,
+                                    bulkRotatePodsMap[appId].appName,
+                                    APP_DETAILS_TEXT.APP_NAME,
+                                )
+                            }
+                        />
+                        <div
+                            className="flex dc__content-space w-100 pt-12 pb-12"
+                            onClick={() => toggleWorkloadCollapse(+appId)}
+                        >
+                            <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
+                            <div className="flex dc__gap-4">
+                                {bulkRotatePodsMap[appId]?.errorResponse?.length > 0
+                                    ? APP_DETAILS_TEXT.RESTART_NOT_ALLOWED
+                                    : `${Object.keys(bulkRotatePodsMap[appId].resources).length} workload`}
+                                <DropdownIcon
+                                    className={`icon-dim-16 rotate ${expandedAppIds.includes(+appId) ? 'dc__flip-90' : 'dc__flip-270'}`}
                                 />
-                                <div
-                                    className="flex dc__content-space w-100 pt-12 pb-12"
-                                    onClick={() => toggleWorkloadCollapse(+appId)}
-                                >
-                                    <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
-                                    <div className="flex dc__gap-4">
-                                        {bulkRotatePodsMap[appId]?.errorResponse?.length > 0
-                                            ? APP_DETAILS_TEXT.RESTART_NOT_ALLOWED
-                                            : `${Object.keys(bulkRotatePodsMap[appId].resources).length} workload`}
-                                        <DropdownIcon
-                                            className={`icon-dim-16 rotate ${expandedAppIds.includes(+appId) ? 'dc__flip-90' : 'dc__flip-270'}`}
-                                        />
-                                    </div>
-                                </div>
                             </div>
-                            {renderWorkloadDetails(
-                                +appId,
-                                bulkRotatePodsMap[appId].appName,
-                                bulkRotatePodsMap[appId].resources,
-                                bulkRotatePodsMap[appId].errorResponse,
-                            )}
                         </div>
-                    )
-                })}
-            </div>
-        )
-    }
+                    </div>
+                    {renderWorkloadDetails(
+                        +appId,
+                        bulkRotatePodsMap[appId].appName,
+                        bulkRotatePodsMap[appId].resources,
+                        bulkRotatePodsMap[appId].errorResponse,
+                    )}
+                </div>
+            ))}
+        </div>
+    )
 
     const renderRestartWorkloadModalList = () => {
         if (showStatusModal) {
@@ -497,14 +491,13 @@ export const RestartWorkloadModal = ({
         setBulkRotatePodsMap((prev) => ({ ...prev, [appId]: _bulkRotatePodsMetaData }))
     }
 
-    const postRestartPodBatchFunction = (payload) => () => {
-        return postRestartWorkloadRotatePods(payload).then((response) => {
+    const postRestartPodBatchFunction = (payload) => () =>
+        postRestartWorkloadRotatePods(payload).then((response) => {
             if (response.result) {
                 // showing the status modal in case batch promise resolved
                 updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
             }
         })
-    }
 
     const createFunctionCallsFromRestartPodMap = () => {
         // default case for restart workload for all apps
@@ -533,17 +526,15 @@ export const RestartWorkloadModal = ({
 
                 const _resources = Object.keys(bulkRotatePodsMetaData.resources)
                     .filter(predicateFnResources)
-                    .map((kindName) => {
-                        return {
-                            name: bulkRotatePodsMetaData.resources[kindName].name,
-                            namespace: bulkRotatePodsMetaData.namespace,
-                            groupVersionKind: {
-                                Group: bulkRotatePodsMetaData.resources[kindName].group,
-                                Version: bulkRotatePodsMetaData.resources[kindName].version,
-                                Kind: bulkRotatePodsMetaData.resources[kindName].kind,
-                            },
-                        }
-                    })
+                    .map((kindName) => ({
+                        name: bulkRotatePodsMetaData.resources[kindName].name,
+                        namespace: bulkRotatePodsMetaData.namespace,
+                        groupVersionKind: {
+                            Group: bulkRotatePodsMetaData.resources[kindName].group,
+                            Version: bulkRotatePodsMetaData.resources[kindName].version,
+                            Kind: bulkRotatePodsMetaData.resources[kindName].kind,
+                        },
+                    }))
                 const payload = {
                     appId: +appId,
                     environmentId: +envId,
@@ -588,35 +579,33 @@ export const RestartWorkloadModal = ({
         return null
     }
 
-    const renderFooterSection = () => {
-        return (
-            <div className="pl-20 pr-20 pt-16 pb-16 dc__border-top">
-                <div className={`flex ${showStatusModal ? 'dc__content-space' : 'right'} w-100 dc__gap-12 `}>
-                    {showStatusModal && (
-                        <button
-                            type="button"
-                            onClick={closeDrawer}
-                            className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
-                        >
-                            Close
-                        </button>
-                    )}
-                    <ButtonWithLoader
-                        rootClassName={`cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8 ${isDisabled() ? 'dc__disabled' : ''}`}
-                        isLoading={restartLoader}
-                        onClick={onSave}
+    const renderFooterSection = () => (
+        <div className="pl-20 pr-20 pt-16 pb-16 dc__border-top">
+            <div className={`flex ${showStatusModal ? 'dc__content-space' : 'right'} w-100 dc__gap-12 `}>
+                {showStatusModal && (
+                    <button
+                        type="button"
+                        onClick={closeDrawer}
+                        className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                     >
-                        {showStatusModal ? (
-                            <Retry className="icon-dim-16 icon-dim-16 scn-0 dc__no-svg-fill" />
-                        ) : (
-                            <RotateIcon className="dc__no-svg-fill icon-dim-16 scn-0" />
-                        )}
-                        {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
-                    </ButtonWithLoader>
-                </div>
+                        Close
+                    </button>
+                )}
+                <ButtonWithLoader
+                    rootClassName={`cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8 ${isDisabled() ? 'dc__disabled' : ''}`}
+                    isLoading={restartLoader}
+                    onClick={onSave}
+                >
+                    {showStatusModal ? (
+                        <Retry className="icon-dim-16 icon-dim-16 scn-0 dc__no-svg-fill" />
+                    ) : (
+                        <RotateIcon className="dc__no-svg-fill icon-dim-16 scn-0" />
+                    )}
+                    {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
+                </ButtonWithLoader>
             </div>
-        )
-    }
+        </div>
+    )
 
     const renderBodySection = () => {
         if (errorStatusCode) {
