@@ -19,7 +19,6 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
-    multiSelectStyles,
     Progressing,
     ReleaseTag,
     ImageComment,
