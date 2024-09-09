@@ -42,23 +42,31 @@ const renderPopUpMenu = (items: EnvironmentOverviewTableRow['popUpMenuItems']) =
         <PopupMenu.Button isKebab rootClassName="p-4 flex dc__no-border cursor">
             <ICMoreOption className="icon-dim-16 fcn-6 rotateBy--90" />
         </PopupMenu.Button>
-        <PopupMenu.Body rootClassName="dc__border py-4 w-150">
-            {items.map(({ label, onClick, disabled, Icon, iconType = 'fill' }) => (
-                <button
-                    key={label}
-                    type="button"
-                    className="dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 dc__hover-n50"
-                    onClick={onClick}
-                    disabled={disabled}
-                >
-                    {Icon && (
-                        <Icon
-                            className={`icon-dim-16 ${iconType === 'fill' ? 'fcn-7' : ''} ${iconType === 'stroke' ? 'scn-7' : ''}`}
-                        />
-                    )}
-                    <span className="dc__truncate cn-9 fs-13 lh-20">{label}</span>
-                </button>
-            ))}
+        <PopupMenu.Body rootClassName="dc__border py-4 w-180">
+            {items.map((popUpMenuItem) => {
+                if ('label' in popUpMenuItem) {
+                    const { label, onClick, disabled, Icon, iconType = 'fill' } = popUpMenuItem
+
+                    return (
+                        <button
+                            key={label}
+                            type="button"
+                            className={`dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 ${disabled ? ' dc__opacity-0_5 cursor-not-allowed' : 'dc__hover-n50'}`}
+                            onClick={onClick}
+                            disabled={disabled}
+                        >
+                            {Icon && (
+                                <Icon
+                                    className={`icon-dim-16 ${iconType === 'fill' ? 'fcn-7' : ''} ${iconType === 'stroke' ? 'scn-7' : ''}`}
+                                />
+                            )}
+                            <span className="dc__truncate cn-9 fs-13 lh-20">{label}</span>
+                        </button>
+                    )
+                }
+
+                return popUpMenuItem
+            })}
         </PopupMenu.Body>
     </PopupMenu>
 )

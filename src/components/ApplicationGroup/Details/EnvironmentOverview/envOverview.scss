@@ -62,3 +62,14 @@
         height: calc(100vh - 190px);
     }
 }
+
+.clone-pipeline-button {
+    >svg {
+        height: 16px;
+        width: 16px;
+
+        path {
+            stroke: var(--N700);
+        }
+    }
+}

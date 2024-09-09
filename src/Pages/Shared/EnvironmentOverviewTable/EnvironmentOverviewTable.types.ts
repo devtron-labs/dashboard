@@ -1,4 +1,4 @@
-import { FunctionComponent, MouseEvent, SVGProps } from 'react'
+import { FunctionComponent, MouseEvent, ReactElement, SVGProps } from 'react'
 import { EnvironmentOverviewTableHeaderKeys } from './EnvironmentOverview.constants'
 
 export interface EnvironmentOverviewTableRowData {
@@ -12,13 +12,15 @@ export interface EnvironmentOverviewTableRowData {
     [EnvironmentOverviewTableHeaderKeys.DEPLOYED_BY]: string
 }
 
-export interface EnvironmentOverviewTablePopUpMenuItem {
-    label: string
-    Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
-    iconType?: 'fill' | 'stroke'
-    disabled?: boolean
-    onClick?: (event: MouseEvent<HTMLButtonElement>) => void
-}
+export type EnvironmentOverviewTablePopUpMenuItem =
+    | {
+          label: string
+          Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+          iconType?: 'fill' | 'stroke'
+          disabled?: boolean
+          onClick?: (event: MouseEvent<HTMLButtonElement>) => void
+      }
+    | ReactElement
 
 export interface EnvironmentOverviewTableRow {
     environment: EnvironmentOverviewTableRowData
