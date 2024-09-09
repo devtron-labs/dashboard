@@ -26,6 +26,7 @@ import {
     YAMLStringify,
     DeploymentDetailSteps,
     CodeEditor,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -378,24 +379,21 @@ const ChartDeploymentHistory = ({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                {deploymentTabs().map((tab, index) => {
-                    return (
-                        <li
-                            onClick={() => onClickDeploymentTabs(tab)}
-                            key={`deployment-tab-${index}`}
-                            className="tab-list__tab"
-                        >
-                            <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
-                                data-testid={`nav-bar-option-${index}`}
-                            >
-                                {tab}
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
+            <div className="dc__border-bottom px-20">
+                <TabGroup
+                    tabs={deploymentTabs().map((tab, index) => ({
+                        id: `deployment-tab-${index}`,
+                        label: tab,
+                        tabType: 'button',
+                        active: selectedDeploymentTabName === tab,
+                        props: {
+                            onClick: () => onClickDeploymentTabs(tab),
+                            'data-testid': `nav-bar-option-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
+            </div>
         )
     }
 

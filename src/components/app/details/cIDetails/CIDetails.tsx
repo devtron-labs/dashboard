@@ -43,12 +43,11 @@ import {
     SecuritySummaryCard,
     getSecurityScan,
     SeverityCount,
+    TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     SCAN_TOOL_ID_TRIVY,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
-import { importComponentFromFELibrary } from '@Components/common'
+import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -67,6 +66,7 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -449,54 +449,57 @@ export const Details = ({
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                     />
-                    <ul className="tab-list dc__border-bottom pl-50 pr-20 pt-8 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="logs"
-                                data-testid="logs-link"
-                            >
-                                Logs
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="source-code"
-                                data-testid="source-code-link"
-                            >
-                                Source
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="artifacts"
-                                data-testid="artifacts-link"
-                            >
-                                Artifacts
-                            </NavLink>
-                        </li>
-                        {isSecurityModuleInstalled && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                    activeClassName="active"
-                                    to="security"
-                                    data-testid="security_link"
-                                >
-                                    Security
-                                </NavLink>
-                            </li>
-                        )}
-                    </ul>
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    id: 'logs-tab',
+                                    label: 'Logs',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'logs',
+                                        replace: true,
+                                        'data-testid': 'logs-link',
+                                    },
+                                },
+                                {
+                                    id: 'source-tab',
+                                    label: 'Source',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'source-code',
+                                        replace: true,
+                                        'data-testid': 'source-code-link',
+                                    },
+                                },
+                                {
+                                    id: 'artifacts-tab',
+                                    label: 'Artifacts',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'artifacts',
+                                        replace: true,
+                                        'data-testid': 'artifacts-link',
+                                    },
+                                },
+                                ...(isSecurityModuleInstalled
+                                    ? [
+                                          {
+                                              id: 'security-tab',
+                                              label: 'Security',
+                                              tabType: 'navLink' as const,
+                                              props: {
+                                                  to: 'security',
+                                                  replace: true,
+                                                  'data-testid': 'security_link',
+                                              },
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 </>
             )}
 
