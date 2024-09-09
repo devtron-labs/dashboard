@@ -82,7 +82,7 @@ export const HibernateModal = ({
             return (
                 <>
                     <span>
-                        Pods for the selected application(s) will be &nbsp;
+                        Pods for the selected application(s) will be&nbsp;
                         <span className="fw-6">
                             {openedHibernateModalType === MODAL_TYPE.HIBERNATE
                                 ? `scaled down to 0 on ${envName} environment.`

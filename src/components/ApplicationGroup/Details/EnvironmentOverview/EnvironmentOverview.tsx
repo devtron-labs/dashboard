@@ -62,6 +62,8 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'function',
 )
 const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
+const ClonePipelineMenuButton = importComponentFromFELibrary('ClonePipelineMenuButton', null, 'function')
+const ClonePipelineModal = importComponentFromFELibrary('ClonePipelineModal', null, 'function')
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -85,6 +87,7 @@ export default function EnvironmentOverview({
     const [selectedAppDetails, setSelectedAppDetails] = useState<AppInfoListType>(null)
     const [openedHibernateModalType, setOpenedHibernateModalType] =
         useState<HibernateModalProps['openedHibernateModalType']>(null)
+    const [openClonePipelineConfig, setOpenClonePipelineConfig] = useState(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
         ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
@@ -251,10 +254,12 @@ export default function EnvironmentOverview({
     }
 
     const openHibernateModalPopup = () => {
+        setIsDeploymentLoading(true)
         setOpenedHibernateModalType(MODAL_TYPE.HIBERNATE)
     }
 
     const openUnHibernateModalPopup = () => {
+        setIsDeploymentLoading(true)
         setOpenedHibernateModalType(MODAL_TYPE.UNHIBERNATE)
     }
 
@@ -298,13 +303,14 @@ export default function EnvironmentOverview({
             lastDeployedImage: appInfo.lastDeployedImage,
         },
         popUpMenuItems: [
-            ...((ClonePipelineButton && appListData.environment
+            ...((ClonePipelineMenuButton && appListData.environment
                 ? [
-                      <ClonePipelineButton
+                      <ClonePipelineMenuButton
                           sourceEnvironmentName={appListData.environment}
-                          selectedAppDetailsList={selectedAppDetailsList}
-                          httpProtocol={httpProtocol.current}
-                          overrideClassName="clone-pipeline-button dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 dc__hover-n50 dc__truncate cn-9 fs-13 lh-20"
+                          onClick={() => {
+                              setSelectedAppDetails(appInfo)
+                              setOpenClonePipelineConfig(true)
+                          }}
                       />,
                   ]
                 : []) as EnvironmentOverviewTableRow['popUpMenuItems']),
@@ -466,6 +472,17 @@ export default function EnvironmentOverview({
                     showHibernateStatusDrawer={showHibernateStatusDrawer}
                     hibernateInfoMap={hibernateInfoMap}
                     isDeploymentWindowLoading={isDeploymentLoading}
+                />
+            )
+        }
+
+        if (ClonePipelineModal && isAppSelected && openClonePipelineConfig) {
+            return (
+                <ClonePipelineModal
+                    sourceEnvironmentName={appListData.environment}
+                    selectedAppDetailsList={selectedApps}
+                    handleCloseClonePipelineModal={() => setOpenClonePipelineConfig(null)}
+                    httpProtocol={httpProtocol}
                 />
             )
         }

@@ -1,7 +1,5 @@
 import { ChangeEvent, Fragment, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { followCursor } from 'tippy.js'
 
 import {
     AppStatus,
@@ -16,6 +14,7 @@ import {
     PopupMenu,
     stringComparatorBySortOrder,
     handleRelativeDateSorting,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
@@ -207,25 +206,23 @@ export const EnvironmentOverviewTable = ({
                         value="CHECKED"
                         rootClassName={`mb-0 ml-2 ${!isPartialChecked ? 'dc__visible-hover--child' : ''}`}
                     />
-                    {!isVirtualEnv && <AppStatus appStatus={status} hideStatusMessage />}
+                    {!isVirtualEnv && (
+                        <AppStatus
+                            appStatus={deployedAt ? status : StatusConstants.NOT_DEPLOYED.noSpaceLower}
+                            hideStatusMessage
+                        />
+                    )}
                     <div className="flexbox dc__align-items-center dc__content-space dc__gap-8">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={name}
-                            followCursor="horizontal"
-                            plugins={[followCursor]}
-                        >
+                        <Tooltip content={name}>
                             <Link
-                                className="py-2 dc__truncate flex-grow-1"
+                                className="py-2 dc__truncate dc__no-decor"
                                 to={redirectLink}
                                 target="_blank"
                                 rel="noreferrer"
                             >
                                 {name}
                             </Link>
-                        </Tippy>
+                        </Tooltip>
                         {!!popUpMenuItems?.length && renderPopUpMenu(popUpMenuItems)}
                     </div>
                 </div>
@@ -258,9 +255,9 @@ export const EnvironmentOverviewTable = ({
                                 >
                                     {deployedBy[0]}
                                 </span>
-                                <Tippy className="default-tt" arrow={false} placement="bottom" content={deployedBy}>
+                                <Tooltip content={deployedBy}>
                                     <span className="dc__truncate">{deployedBy}</span>
-                                </Tippy>
+                                </Tooltip>
                             </div>
                         </>
                     )}
