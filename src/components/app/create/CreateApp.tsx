@@ -55,8 +55,6 @@ const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSel
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
 
-    _inputAppName: HTMLInputElement
-
     createAppRef = null
 
     constructor(props) {
@@ -102,10 +100,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         } catch (err) {
             this.setState({ view: ViewType.ERROR })
             showError(err)
-        } finally {
-            if (this._inputAppName) {
-                this._inputAppName.focus()
-            }
         }
         document.addEventListener('keydown', this.escKeyPressHandler)
         document.addEventListener('click', this.outsideClickHandler)
@@ -333,7 +327,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
                         <CustomInput
-                            ref={(node) => (this._inputAppName = node)}
                             data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
                             name="app-name"
                             label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
