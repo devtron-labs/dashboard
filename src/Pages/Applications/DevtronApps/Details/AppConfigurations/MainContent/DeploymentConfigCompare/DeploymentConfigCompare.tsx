@@ -57,13 +57,6 @@ export const DeploymentConfigCompare = ({
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
 
-    // STATES
-    const [selectedTab, setSelectedTab] = useState(
-        resourceType === EnvResourceType.Manifest
-            ? deploymentConfigDiffTabs.MANIFEST
-            : deploymentConfigDiffTabs.CONFIGURATION,
-    )
-
     // SEARCH PARAMS & SORTING
     const {
         compareWith,
@@ -108,6 +101,11 @@ export const DeploymentConfigCompare = ({
         [type, compareWith, compareTo, appId, envId, environments],
     )
 
+    // STATES
+    const [selectedTab, setSelectedTab] = useState(
+        isManifestView ? deploymentConfigDiffTabs.MANIFEST : deploymentConfigDiffTabs.CONFIGURATION,
+    )
+
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
     const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
@@ -140,7 +138,9 @@ export const DeploymentConfigCompare = ({
         const currentManifestRequestValues = getManifestRequestValues(currentList)
         const compareManifestRequestValues = getManifestRequestValues(compareList)
 
-        // Fetch chartReferences for chartRefIds, in case of draft chartRefId does not exist and config type is 'PUBLISHED_ONLY' or 'PUBLISHED_WITH_DRAFT' (Saved with draft)
+        // Fetch chart references based on chartRefIds.
+        // For draft configurations, chartRefId may not exist.
+        // This applies when the config type is either 'PUBLISHED_ONLY' or 'PUBLISHED_WITH_DRAFT' (Saved with draft).
         const chartReferences = await Promise.all([
             !currentManifestRequestValues?.chartRefId && isConfigTypePublished(configType)
                 ? getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId)
@@ -224,8 +224,8 @@ export const DeploymentConfigCompare = ({
             compareWithManifestChartRefId,
         ],
         isManifestView
-            ? (isConfigTypeNonDraftOrPublished(configType) ? !!manifestChartRefId : true) &&
-                  (isConfigTypeNonDraftOrPublished(compareWithConfigType) ? !!compareWithManifestChartRefId : true)
+            ? (!isConfigTypeNonDraftOrPublished(configType) || !!manifestChartRefId) &&
+                  (!isConfigTypeNonDraftOrPublished(compareWithConfigType) || !!compareWithManifestChartRefId)
             : !!configType && !!compareWithConfigType,
     )
 

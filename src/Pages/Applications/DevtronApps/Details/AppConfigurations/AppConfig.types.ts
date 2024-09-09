@@ -241,6 +241,7 @@ export interface ExtendedCollapsibleListItem
     configState: ResourceConfigState
 }
 
+// DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- START
 export interface DeploymentConfigParams {
     appId: string
     envId: string
@@ -292,3 +293,27 @@ export interface AppEnvDeploymentConfigQueryParamsType {
     manifestChartRefId?: number
     compareWithManifestChartRefId?: number
 }
+
+export type GetConfigDiffDataProps = Pick<DeploymentConfigCompareProps, 'appName' | 'envName' | 'type'> & {
+    configType: AppEnvDeploymentConfigType
+    compareName: string
+    identifierId: number
+    pipelineId: number
+}
+
+export type GetDeploymentTemplateDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'appName' | 'envName'> & {
+    configType: AppEnvDeploymentConfigType
+    compareName: string
+}
+
+export type GetManifestDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'environments'> & {
+    appId: string
+    envId: string
+    configType: AppEnvDeploymentConfigType
+    compareName: string
+    values: string
+    identifierId: number
+    pipelineId: number
+    manifestChartRefId: number
+}
+// DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- END

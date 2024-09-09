@@ -8,8 +8,8 @@ import {
 
 import { getDeploymentManisfest } from '@Components/deploymentConfig/service'
 
-import { DeploymentConfigCompareProps } from '../../AppConfig.types'
-import { getEnvironmentIdByEnvironmentName } from './utils'
+import { GetConfigDiffDataProps, GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
+import { getAppAndEnvIds } from './utils'
 
 export const getConfigDiffData = ({
     type,
@@ -19,10 +19,7 @@ export const getConfigDiffData = ({
     configType,
     identifierId,
     pipelineId,
-}: { configType: AppEnvDeploymentConfigType; compareName: string; identifierId: number; pipelineId: number } & Pick<
-    DeploymentConfigCompareProps,
-    'appName' | 'envName' | 'type'
->) =>
+}: GetConfigDiffDataProps) =>
     getAppEnvDeploymentConfig({
         ...(type === 'app'
             ? {
@@ -44,10 +41,7 @@ export const getDeploymentTemplateData = ({
     appName,
     envName,
     compareName,
-}: { configType: AppEnvDeploymentConfigType; compareName: string } & Pick<
-    DeploymentConfigCompareProps,
-    'type' | 'appName' | 'envName'
->) => {
+}: GetDeploymentTemplateDataProps) => {
     const nullResponse: ResponseType<AppEnvDeploymentConfigDTO> = {
         code: 200,
         status: 'OK',
@@ -82,25 +76,15 @@ export const getManifestData = ({
     pipelineId,
     manifestChartRefId,
     environments,
-}: {
-    appId: string
-    envId: string
-    configType: AppEnvDeploymentConfigType
-    compareName: string
-    values: string
-    identifierId: number
-    pipelineId: number
-    manifestChartRefId: number
-} & Pick<DeploymentConfigCompareProps, 'type' | 'environments'>) => {
-    // Default: use appId and envId
-    let appId = +_appId
-    let envId = getEnvironmentIdByEnvironmentName(environments, compareName)
-
-    // If type is 'appGroup', switch appId & envId
-    if (type === 'appGroup') {
-        appId = getEnvironmentIdByEnvironmentName(environments, compareName)
-        envId = _envId ? +_envId : null
-    }
+}: GetManifestDataProps) => {
+    const { compareToAppId: appId, compareToEnvId: envId } = getAppAndEnvIds({
+        appId: _appId,
+        envId: _envId,
+        compareTo: compareName,
+        compareWith: compareName,
+        environments,
+        type,
+    })
 
     const nullResponse = {
         code: 200,

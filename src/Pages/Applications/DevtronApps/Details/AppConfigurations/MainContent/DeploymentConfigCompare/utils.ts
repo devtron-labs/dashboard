@@ -262,13 +262,20 @@ export const getDeploymentConfigDiffTabs = (): DeploymentConfigDiffProps['tabCon
 export const getConfigChartRefId = (data: any) =>
     data.latestEnvChartRef || data.latestAppChartRef || data.latestChartRef
 
-const getDraftConfigChartRefId = (config: AppEnvDeploymentConfigDTO) => {
-    const parsedDraftData = JSON.parse(
-        config?.deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null,
-    )
+const getDeploymentDraftData = (config: AppEnvDeploymentConfigDTO) => {
+    try {
+        const parsedDraftData = JSON.parse(
+            config?.deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null,
+        )
 
-    return parsedDraftData?.chartRefId ?? null
+        return parsedDraftData
+    } catch {
+        return null
+    }
 }
+
+const getDraftConfigChartRefId = (config: AppEnvDeploymentConfigDTO) =>
+    getDeploymentDraftData(config)?.chartRefId ?? null
 
 export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { data: string; chartRefId: number } => {
     if (!config) {
@@ -276,9 +283,7 @@ export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { d
     }
 
     const { deploymentTemplate } = config
-    const parsedDraftData = JSON.parse(
-        deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null,
-    )
+    const parsedDraftData = getDeploymentDraftData(config)
     const _data =
         parsedDraftData?.envOverrideValues ||
         parsedDraftData?.valuesOverride ||
