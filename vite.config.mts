@@ -138,7 +138,8 @@ export default defineConfig(({ mode }) => {
                     maximumFileSizeToCacheInBytes: 8000000,
                 },
             }),
-            jsToBottomNoModule(),
+            // jsToBottomNoModule is not to be added for storybook
+            ...(process.env.IS_STORYBOOK ? [] : [jsToBottomNoModule()]),
         ],
         // test: {
         //     globals: true,

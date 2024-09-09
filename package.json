@@ -71,8 +71,8 @@
         "test:ci": "jest --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
         "jest": "jest",
         "lint-staged": "lint-staged",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "storybook": "IS_STORYBOOK=true storybook dev -p 6006",
+        "build-storybook": "IS_STORYBOOK=true storybook build"
     },
     "browserslist": [
         ">0.2%",

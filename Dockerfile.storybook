@@ -13,15 +13,12 @@ COPY tsconfig.json .
 COPY vite.config.mts .
 COPY . .
 
-# RUN yarn build-storybook
+RUN yarn build-storybook
 
-# FROM nginx:stable
+FROM nginx:stable
 
-# COPY --from=builder /app/storybook-static/ /usr/share/nginx/html
-# WORKDIR /usr/share/nginx/html
+COPY --from=builder /app/storybook-static/ /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
 
-# CMD ["/bin/bash", "-c", "nginx -g \"daemon off;\""]
-
-# Change to build-storybook and nginx when the static build is working
-CMD ["yarn", "storybook", "--exact-port", "--no-open"]
-EXPOSE 6006
+CMD ["/bin/bash", "-c", "nginx -g \"daemon off;\""]
+EXPOSE 80
