@@ -44,6 +44,7 @@ import {
     getSecurityScan,
     SeverityCount,
     TRIGGER_STATUS_PROGRESSING,
+    SCAN_TOOL_ID_TRIVY,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -57,7 +58,7 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { getLastExecutionByArtifactId } from '../../../../services/service'
+import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -482,7 +483,7 @@ export const Details = ({
                                 Artifacts
                             </NavLink>
                         </li>
-                        {!isJobCard && isSecurityModuleInstalled && (
+                        {isSecurityModuleInstalled && (
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
@@ -629,16 +630,17 @@ const HistoryLogs = ({
                         </div>
                     )}
                 </Route>
-                {!isJobCard && (
+                {
                     <Route path={`${path}/security`}>
                         <SecurityTab
                             ciPipelineId={triggerDetails.ciPipelineId}
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
+                            isJobCI={isJobCI}
                         />
                     </Route>
-                )}
+                }
                 <Redirect
                     to={
                         !isJobView && triggerDetails.status.toLowerCase() === 'succeeded'
@@ -667,19 +669,19 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
+const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobCI }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
 
     const [scanResultLoading, scanResultResponse, scanResultError] = useAsync(
-        () => getSecurityScan({ appId: appId ?? appIdFromParent, artifactId }),
+        () => getSecurityScan({ artifactId, ...(isJobCI && { appId: appId ?? appIdFromParent }) }),
         [artifactId],
         isSecurityScanV2Enabled,
     )
 
     const [executionDetailsLoading, executionDetailsResponse, executionDetailsError] = useAsync(
-        () => getLastExecutionByArtifactId(appId ?? appIdFromParent, artifactId),
+        () => getLastExecutionByAppArtifactId(artifactId, isJobCI ? appId ?? appIdFromParent : null),
         [artifactId],
         !isSecurityScanV2Enabled,
     )
@@ -714,20 +716,24 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError || executionDetailsError) {
         return <Reload />
     }
-    if (!executionDetailsResponse?.result.scanned || !scanResultResponse?.result.scanned) {
-        if (!executionDetailsResponse?.result.scanEnabled) {
+    if (
+        (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
+        (scanResultResponse && !scanResultResponse.result.scanned)
+    ) {
+        if (!executionDetailsResponse.result.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
         }
         return <ImageNotScannedView />
     }
-    const imageScanSeverities = scanResultResponse?.result?.imageScan?.vulnerability.summary.severities // For scan-result Api
+
+    const imageScanSeverities = scanResultResponse?.result.imageScan.vulnerability.summary.severities // For scan-result Api
     const severityCount: SeverityCount = isSecurityScanV2Enabled
         ? {
-              critical: imageScanSeverities?.CRITICAL || 0,
-              high: imageScanSeverities?.HIGH || 0,
-              medium: imageScanSeverities?.MEDIUM || 0,
-              low: imageScanSeverities?.LOW || 0,
-              unknown: imageScanSeverities?.UNKNOWN || 0,
+              critical: imageScanSeverities.CRITICAL || 0,
+              high: imageScanSeverities.HIGH || 0,
+              medium: imageScanSeverities.MEDIUM || 0,
+              low: imageScanSeverities.LOW || 0,
+              unknown: imageScanSeverities.UNKNOWN || 0,
           }
         : executionDetailsResponse?.result.severityCount
 
@@ -741,7 +747,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (artifactId && !totalSeverities) {
         return (
             <NoVulnerabilityViewWithTool
-                scanToolId={isSecurityScanV2Enabled ? 3 : executionDetailsResponse.result?.scanToolId}
+                scanToolId={isSecurityScanV2Enabled ? SCAN_TOOL_ID_TRIVY : executionDetailsResponse.result?.scanToolId} // Since v2 scan is via trivy only
             />
         )
     }

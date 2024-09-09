@@ -26,6 +26,8 @@ import {
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    getUrlWithSearchParams,
+    ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -264,11 +266,6 @@ export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVeri
     return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
-function getLastExecution(queryString: number | string): Promise<ResponseType> {
-    const URL = `security/scan/executionDetail?${queryString}`
-    return get(URL)
-}
-
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     const vulnerabilities = response.result.vulnerabilities || []
     const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
@@ -301,12 +298,12 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
     }
 }
 
-export function getLastExecutionByArtifactId(
-    appId: string | number,
-    artifact: string | number,
+export function getLastExecutionByAppArtifactId(
+    artifactId: string | number,
+    appId?: string | number,
 ): Promise<LastExecutionResponseType> {
-    const queryString = `artifactId=${artifact}&appId=${appId}`
-    return getLastExecution(queryString).then((response) => {
+    const url = getUrlWithSearchParams(ROUTES.SECURITY_SCAN_EXECUTION_DETAILS, { appId, artifactId })
+    return get(url).then((response) => {
         return parseLastExecutionResponse(response)
     })
 }
@@ -330,6 +327,7 @@ export function getLastExecutionMinByAppAndEnv(
                     low: response.result.severityCount.low,
                     unknown: response.result.severityCount.unknown,
                 },
+                scanned: response.result.scanned,
             },
         }
     })

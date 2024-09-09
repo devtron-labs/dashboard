@@ -36,7 +36,7 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import { getLastExecutionByArtifactId } from '../../../../services/service'
+import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -97,7 +97,7 @@ export const SourceInfo = ({
         try {
             const {
                 result: { scanEnabled, scanned },
-            } = await getLastExecutionByArtifactId(appId, ciArtifactId)
+            } = await getLastExecutionByAppArtifactId(ciArtifactId, appId)
             if (scanEnabled && scanned) {
                 // If scanEnabled and scanned is true, then show the vulnerabilities card
                 setShowVulnerabilitiesCard(true)
@@ -207,10 +207,7 @@ export const SourceInfo = ({
                                     </button>
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -228,10 +225,7 @@ export const SourceInfo = ({
                                     </ConditionalWrap>
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -337,13 +331,13 @@ export const SourceInfo = ({
                           {!appDetails?.deploymentAppDeleteRequest &&
                               !helmMigratedAppNotTriggered &&
                               (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
-                                  <SecurityVulnerabilityCard
-                                      cardLoading={cardLoading}
-                                      appId={params.appId}
-                                      envId={params.envId}
-                                      isExternalCI={isExternalCI}
-                                  />
-                              )}
+                              <SecurityVulnerabilityCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  isExternalCI={isExternalCI}
+                              />
+                          )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

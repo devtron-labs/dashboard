@@ -61,4 +61,5 @@ export interface SecurityTabType {
     artifactId: number
     status: string
     appIdFromParent?: string
+    isJobCI: boolean
 }

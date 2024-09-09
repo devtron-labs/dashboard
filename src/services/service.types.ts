@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, DeploymentStrategy, ResponseType, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentStrategy,
+    ResponseType,
+    SeverityCount,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -106,6 +111,7 @@ export interface LastExecutionMinResponseType {
         lastExecution: string
         imageScanDeployInfoId: number
         severityCount: SeverityCount
+        scanned: boolean
     }
 }
 
