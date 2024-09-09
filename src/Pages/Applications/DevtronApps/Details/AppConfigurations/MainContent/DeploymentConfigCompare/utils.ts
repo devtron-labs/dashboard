@@ -1,4 +1,3 @@
-import { generatePath } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
 
@@ -6,7 +5,6 @@ import {
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
     DeploymentConfigDiffProps,
-    EnvResourceType,
     SelectPickerOptionType,
     TemplateListDTO,
     YAMLStringify,
@@ -19,7 +17,6 @@ import {
     EnvironmentOptionType,
     AppEnvDeploymentConfigQueryParams,
     DeploymentConfigCompareProps,
-    DeploymentConfigParams,
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 
@@ -254,27 +251,13 @@ export const getEnvironmentConfigTypeOptions = (
     },
 ]
 
-export const getDeploymentConfigDiffTabs = (
-    path: string,
-    params: DeploymentConfigParams,
-): DeploymentConfigDiffProps['tabConfig']['tabs'] => [
-    {
-        value: 'Configuration',
-        href: generatePath(path, {
-            ...params,
-            resourceType: EnvResourceType.DeploymentTemplate,
-            resourceName: null,
-        }),
-    },
-    {
-        value: 'Manifest Output',
-        href: generatePath(path, {
-            ...params,
-            resourceType: EnvResourceType.Manifest,
-            resourceName: null,
-        }),
-    },
-]
+export const deploymentConfigDiffTabs = {
+    CONFIGURATION: 'Configuration',
+    MANIFEST: 'Manifest Output',
+}
+
+export const getDeploymentConfigDiffTabs = (): DeploymentConfigDiffProps['tabConfig']['tabs'] =>
+    Object.values(deploymentConfigDiffTabs)
 
 export const getConfigChartRefId = (data: any) =>
     data.latestEnvChartRef || data.latestAppChartRef || data.latestChartRef
@@ -308,3 +291,11 @@ export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { d
         chartRefId: getDraftConfigChartRefId(config),
     }
 }
+
+export const isConfigTypeNonDraftOrPublished = (type: AppEnvDeploymentConfigType) =>
+    type !== AppEnvDeploymentConfigType.DRAFT_ONLY &&
+    type !== AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT &&
+    type !== AppEnvDeploymentConfigType.PUBLISHED_ONLY
+
+export const isConfigTypePublished = (type: AppEnvDeploymentConfigType) =>
+    type === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT || type === AppEnvDeploymentConfigType.PUBLISHED_ONLY

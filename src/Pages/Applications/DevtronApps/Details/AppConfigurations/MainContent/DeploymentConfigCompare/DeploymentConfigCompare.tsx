@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -35,8 +35,11 @@ import {
     isEnvProtected,
     getConfigChartRefId,
     getManifestRequestValues,
+    deploymentConfigDiffTabs,
     getDeploymentConfigDiffTabs,
     getAppAndEnvIds,
+    isConfigTypeNonDraftOrPublished,
+    isConfigTypePublished,
 } from './utils'
 import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
 
@@ -50,8 +53,16 @@ export const DeploymentConfigCompare = ({
     getNavItemHref,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
+    const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
+
+    // STATES
+    const [selectedTab, setSelectedTab] = useState(
+        resourceType === EnvResourceType.Manifest
+            ? deploymentConfigDiffTabs.MANIFEST
+            : deploymentConfigDiffTabs.CONFIGURATION,
+    )
 
     // SEARCH PARAMS & SORTING
     const {
@@ -114,31 +125,6 @@ export const DeploymentConfigCompare = ({
         [options, optionsLoader],
     )
 
-    // Load chartReferences for the environment
-    const [chartReferencesLoader, chartReferences, chartReferencesErr, reloadChartReferences] = useAsync(
-        () =>
-            Promise.all([
-                getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId),
-                getChartReferencesForAppAndEnv(compareWithAppId, compareWithEnvId),
-            ]),
-        [isManifestView, compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
-        isManifestView,
-    )
-
-    useEffect(() => {
-        if (!chartReferencesLoader && chartReferences) {
-            const currentChartRefId = getConfigChartRefId(chartReferences[0].result)
-            const compareChartRefId = getConfigChartRefId(chartReferences[1].result)
-
-            updateSearchParams({
-                manifestChartRefId: currentChartRefId,
-                compareWithManifestChartRefId: compareChartRefId,
-            })
-        }
-
-        return null
-    }, [chartReferencesLoader, chartReferences])
-
     const fetchManifestData = async () => {
         const [{ result: currentList }, { result: compareList }] = await Promise.all([
             getDeploymentTemplateData({ type, appName, envName, configType, compareName: compareTo }),
@@ -154,13 +140,21 @@ export const DeploymentConfigCompare = ({
         const currentManifestRequestValues = getManifestRequestValues(currentList)
         const compareManifestRequestValues = getManifestRequestValues(compareList)
 
-        const _manifestChartRefId = currentManifestRequestValues?.chartRefId ?? manifestChartRefId
-        const _compareWithManifestChartRefId = compareManifestRequestValues?.chartRefId ?? compareWithManifestChartRefId
+        // Fetch chartReferences for chartRefIds, in case of draft chartRefId does not exist and config type is 'PUBLISHED_ONLY' or 'PUBLISHED_WITH_DRAFT' (Saved with draft)
+        const chartReferences = await Promise.all([
+            !currentManifestRequestValues?.chartRefId && isConfigTypePublished(configType)
+                ? getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId)
+                : null,
+            !compareManifestRequestValues?.chartRefId && isConfigTypePublished(compareWithConfigType)
+                ? getChartReferencesForAppAndEnv(compareWithAppId, compareWithEnvId)
+                : null,
+        ])
+        const currentChartRefId = chartReferences[0] ? getConfigChartRefId(chartReferences[0].result) : null
+        const compareChartRefId = chartReferences[1] ? getConfigChartRefId(chartReferences[1].result) : null
 
-        updateSearchParams({
-            manifestChartRefId: _manifestChartRefId,
-            compareWithManifestChartRefId: _compareWithManifestChartRefId,
-        })
+        const _manifestChartRefId = currentManifestRequestValues?.chartRefId ?? currentChartRefId ?? manifestChartRefId
+        const _compareWithManifestChartRefId =
+            compareManifestRequestValues?.chartRefId ?? compareChartRefId ?? compareWithManifestChartRefId
 
         return Promise.all([
             getManifestData({
@@ -230,14 +224,14 @@ export const DeploymentConfigCompare = ({
             compareWithManifestChartRefId,
         ],
         isManifestView
-            ? !!manifestChartRefId && !!compareWithManifestChartRefId
+            ? (isConfigTypeNonDraftOrPublished(configType) ? !!manifestChartRefId : true) &&
+                  (isConfigTypeNonDraftOrPublished(compareWithConfigType) ? !!compareWithManifestChartRefId : true)
             : !!configType && !!compareWithConfigType,
     )
 
     const reload = () => {
         reloadOptions()
         reloadComparisonData()
-        reloadChartReferences()
     }
 
     // Generate the deployment configuration list for the environments using comparison data
@@ -325,12 +319,12 @@ export const DeploymentConfigCompare = ({
                             ? {
                                   identifierId: null,
                                   pipelineId: null,
-                                  manifestChartRefId: isManifestView ? manifestChartRefId : null,
+                                  manifestChartRefId: null,
                               }
                             : {
                                   compareWithIdentifierId: null,
                                   compareWithPipelineId: null,
-                                  compareWithManifestChartRefId: isManifestView ? compareWithManifestChartRefId : null,
+                                  compareWithManifestChartRefId: null,
                               }),
                     })
                 }
@@ -440,20 +434,21 @@ export const DeploymentConfigCompare = ({
         return `Showing files from ${compareWithText} & ${compareToText}`
     }
 
-    const deploymentConfigDiffTabs = getDeploymentConfigDiffTabs(path, params)
-
     const onTabClick = (tab: string) => {
-        const _isManifestView = tab === deploymentConfigDiffTabs[1].value
-        if (!_isManifestView) {
-            updateSearchParams({
-                manifestChartRefId: null,
-                compareWithManifestChartRefId: null,
-            })
-        }
+        setSelectedTab(tab)
+        const _isManifestView = tab === deploymentConfigDiffTabs.MANIFEST
+        push(
+            generatePath(path, {
+                ...params,
+                resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
+                resourceName: null,
+            }),
+        )
     }
 
     const tabConfig: DeploymentConfigDiffProps['tabConfig'] = {
-        tabs: deploymentConfigDiffTabs,
+        tabs: getDeploymentConfigDiffTabs(),
+        activeTab: selectedTab,
         onClick: onTabClick,
     }
 
@@ -469,10 +464,8 @@ export const DeploymentConfigCompare = ({
         <DeploymentConfigDiff
             isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
             errorConfig={{
-                error:
-                    (comparisonDataErr || optionsErr || chartReferencesErr) &&
-                    !(comparisonDataLoader || optionsLoader || chartReferencesLoader),
-                code: comparisonDataErr?.code || optionsErr?.code || chartReferencesErr?.code,
+                error: (comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader),
+                code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}
             {...appEnvDeploymentConfigList}
