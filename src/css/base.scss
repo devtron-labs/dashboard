@@ -381,10 +381,6 @@ a:focus {
     top: 36px;
 }
 
-.dc__top-38 {
-    top: 38px;
-}
-
 .dc__top-40 {
     top: 40px;
 }
@@ -409,8 +405,8 @@ a:focus {
     top: 77px;
 }
 
-.dc__top-82 {
-    top: 82px;
+.dc__top-80 {
+    top: 80px;
 }
 
 .dc__top-88 {
@@ -2478,6 +2474,10 @@ button.anchor {
     max-width: 180px;
 }
 
+.dc__mxw-150 {
+    max-width: 150px;
+}
+
 .dc__mxw-155 {
     max-width: 155px;
 }
@@ -2958,7 +2958,7 @@ textarea,
 }
 
 .dc__ff-monospace {
-    font-family: monospace;
+    font-family: 'Source Code Pro', monospace;
 }
 
 @mixin tab-container($bgColor, $color) {
@@ -4308,6 +4308,22 @@ textarea::placeholder {
     color: var(--B500);
 }
 
+.dc__hover-color-n800:hover {
+    color: var(--N800);
+
+    &.fill:hover {
+        path {
+            fill: var(--N800);
+        }
+    }
+
+    &.stroke:hover {
+        path {
+            stroke: var(--N800);
+        }
+    }
+}
+
 .dc__hover-n100:hover {
     background-color: var(--N100);
 }
@@ -4752,8 +4768,8 @@ textarea::placeholder {
     outline: none;
 
     &:focus-visible {
-        outline: 5px auto -webkit-focus-ring-color !important;
-        outline-offset: 1px;
+        outline: 2px solid var(--B500) !important;
+        outline-offset: 2px;
     }
 }
 
@@ -4969,4 +4985,11 @@ textarea::placeholder {
 .dc__grid-half {
     display: grid;
     grid-template-columns: 50% 50%;
+}
+
+.cd-material {
+    // Replace bulk ci/cd sidebar css with this one when moving a common component
+    &__container-with-sidebar {
+        grid-template-columns: 234px auto;
+    }
 }

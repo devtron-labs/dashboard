@@ -459,6 +459,7 @@ const ConfigMapSecretDataEditor = ({
                 }
             }}
             headerComponent={renderSecretShowHide(false)}
+            validateEmptyKeys
         />
     )
 

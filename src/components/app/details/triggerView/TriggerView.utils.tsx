@@ -15,7 +15,6 @@
  */
 
 import {
-    KeyValueListType,
     showError,
     DeploymentWithConfigType,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
@@ -23,7 +22,7 @@ import {
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
-import { RuntimeParamsValidatorReturnType, TriggerViewDeploymentConfigType } from './types'
+import { TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -209,41 +208,4 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
     }
 
     return diffForOptions
-}
-
-export const validateAndGetValidRuntimeParams = (
-    runtimeParams: KeyValueListType[],
-): RuntimeParamsValidatorReturnType => {
-    // Checking if any key is duplicated
-    const keysFrequencyMap = {}
-    runtimeParams.forEach((param) => {
-        if (keysFrequencyMap[param.key]) {
-            keysFrequencyMap[param.key] += 1
-        } else {
-            keysFrequencyMap[param.key] = 1
-        }
-    })
-
-    const areKeysDuplicated = Object.keys(keysFrequencyMap).some((key) => keysFrequencyMap[key] > 1)
-    if (areKeysDuplicated) {
-        return {
-            isValid: false,
-            message: 'Duplicate keys found',
-        }
-    }
-
-    const validParams = {
-        envVariables: runtimeParams.reduce((acc, param) => {
-            if (param.key) {
-                acc[param.key] = param.value
-            }
-            return acc
-        }, {}),
-    }
-
-    // filtering empty keys
-    return {
-        isValid: true,
-        validParams,
-    }
 }
