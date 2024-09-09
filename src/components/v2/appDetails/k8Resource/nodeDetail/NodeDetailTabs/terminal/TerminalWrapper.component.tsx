@@ -76,7 +76,7 @@ export default function TerminalWrapper({
         <div className={className} data-testid={dataTestId}>
             <div className="flex bcn-0 pl-20 h-32 terminal-action-strip">{firstStrip()}</div>
             {selectionListData.secondRow && (
-                <div className="flex left bcn-0 pl-20 dc__border-top h-28 terminal-action-strip">{secondStrip()}</div>
+                <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip">{secondStrip()}</div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())

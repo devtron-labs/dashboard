@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation, NavLink } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import {
     ServerErrors,
     showError,
@@ -34,6 +34,8 @@ import {
     getPluginsDetail,
     ErrorScreenManager,
     getUpdatedPluginStore,
+    TabProps,
+    TabGroup,
     ModuleNameMap,
     SourceTypeMap,
     DEFAULT_ENV,
@@ -743,35 +745,28 @@ export default function CIPipeline({
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
-        const showAlert = !formDataErrorObj[stageName].isValid
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
+        const showError = !formDataErrorObj[stageName].isValid
         const showWarning =
             mandatoryPluginData &&
             ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
                 (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-0 pb-8 flexbox"
-                    activeClassName="active"
-                    to={toLink}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
-                    {(showAlert || showWarning) && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-2 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}-tab`,
+            label: isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName],
+            tabType: 'navLink',
+            props: {
+                to: toLink,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+            showError,
+            showWarning,
+        }
     }
 
     const contextValue = useMemo(() => {
@@ -823,20 +818,24 @@ export default function CIPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isJobCard ? (
-                            <>
-                                {getNavLink(`build`, BuildStageVariable.Build)}
-                                {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                            </>
-                        ) : (
-                            <>
-                                {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                                {getNavLink(`build`, BuildStageVariable.Build)}
-                                {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                            </>
-                        )}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={
+                                isJobCard
+                                    ? [
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                      ]
+                                    : [
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                                      ]
+                            }
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
