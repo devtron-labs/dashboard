@@ -31,9 +31,10 @@ import {
     noop,
     CustomInput,
     ButtonWithLoader,
+    SelectPicker,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
@@ -54,8 +55,6 @@ const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSel
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
-
-    _inputAppName: HTMLInputElement
 
     createAppRef = null
 
@@ -86,7 +85,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             createAppLoader: false,
         }
         this.createApp = this.createApp.bind(this)
-        this.handleAppname = this.handleAppname.bind(this)
+        this.handleAppName = this.handleAppName.bind(this)
         this.handleProject = this.handleProject.bind(this)
         this.escKeyPressHandler = this.escKeyPressHandler.bind(this)
         this.outsideClickHandler = this.outsideClickHandler.bind(this)
@@ -98,14 +97,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         try {
             const { result } = await getTeamListMin()
             sortObjectArrayAlphabetically(result, 'name')
-            this.setState({ view: ViewType.FORM, projects: result })
+            const _projects: OptionType[] = result.map((project) => ({ value: project.id.toString(), label: project.name }))
+            this.setState({ view: ViewType.FORM, projects: _projects })
         } catch (err) {
             this.setState({ view: ViewType.ERROR })
             showError(err)
-        } finally {
-            if (this._inputAppName) {
-                this._inputAppName.focus()
-            }
         }
         document.addEventListener('keydown', this.escKeyPressHandler)
         document.addEventListener('click', this.outsideClickHandler)
@@ -134,17 +130,17 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
-    handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
+    handleAppName(event: React.ChangeEvent<HTMLInputElement>): void {
         const { form, isValid } = { ...this.state }
         form.appName = event.target.value
         isValid.appName = this.rules.appName(event.target.value).isValid
         this.setState({ form, isValid, appNameErrors: true })
     }
 
-    handleProject(item: number): void {
+    handleProject(_projectId: number): void {
         const { form, isValid } = { ...this.state }
-        form.projectId = item
-        isValid.projectId = !!item
+        form.projectId = _projectId
+        isValid.projectId = !!_projectId
         this.setState({ form, isValid })
     }
 
@@ -333,7 +329,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
                         <CustomInput
-                            ref={(node) => (this._inputAppName = node)}
                             data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
                             name="app-name"
                             label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
@@ -341,7 +336,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                             autoFocus
                             tabIndex={1}
-                            onChange={this.handleAppname}
+                            onChange={this.handleAppName}
                             isRequiredField
                             error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
                         />
@@ -445,23 +440,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 )}
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
-                    <ReactSelect
+                    <SelectPicker
                         classNamePrefix="create-app__select-project"
-                        className="m-0"
-                        tabIndex={4}
-                        isMulti={false}
+                        inputId="create-app__select-project"
+                        name="create-app__select-project"
                         isClearable={false}
                         options={this.state.projects}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.id}`}
-                        styles={this._multiSelectStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                        onChange={(selected) => {
-                            this.handleProject(selected.id)
-                        }}
+                        onChange={(selected: OptionType) => this.handleProject(+selected.value)}
                         placeholder="Select project"
                     />
                     <span className="form__error">
