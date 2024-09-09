@@ -40,10 +40,11 @@ import {
     LogsRenderer,
     ModuleNameMap,
     EMPTY_STATE_STATUS,
+    TabGroup,
     ScanVulnerabilitiesTable,
     TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
+import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -445,54 +446,57 @@ export const Details = ({
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                     />
-                    <ul className="tab-list dc__border-bottom pl-50 pr-20 pt-8 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="logs"
-                                data-testid="logs-link"
-                            >
-                                Logs
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="source-code"
-                                data-testid="source-code-link"
-                            >
-                                Source
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                activeClassName="active"
-                                to="artifacts"
-                                data-testid="artifacts-link"
-                            >
-                                Artifacts
-                            </NavLink>
-                        </li>
-                        {!isJobCard && isSecurityModuleInstalled && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
-                                    activeClassName="active"
-                                    to="security"
-                                    data-testid="security_link"
-                                >
-                                    Security
-                                </NavLink>
-                            </li>
-                        )}
-                    </ul>
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    id: 'logs-tab',
+                                    label: 'Logs',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'logs',
+                                        replace: true,
+                                        'data-testid': 'logs-link',
+                                    },
+                                },
+                                {
+                                    id: 'source-tab',
+                                    label: 'Source',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'source-code',
+                                        replace: true,
+                                        'data-testid': 'source-code-link',
+                                    },
+                                },
+                                {
+                                    id: 'artifacts-tab',
+                                    label: 'Artifacts',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'artifacts',
+                                        replace: true,
+                                        'data-testid': 'artifacts-link',
+                                    },
+                                },
+                                ...(!isJobCard && isSecurityModuleInstalled
+                                    ? [
+                                          {
+                                              id: 'security-tab',
+                                              label: 'Security',
+                                              tabType: 'navLink' as const,
+                                              props: {
+                                                  to: 'security',
+                                                  replace: true,
+                                                  'data-testid': 'security_link',
+                                              },
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 </>
             )}
 
@@ -776,7 +780,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <div className='px-24 security-scan-table'>
+                    <div className="px-24 security-scan-table">
                         <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
                     </div>
                 )}
