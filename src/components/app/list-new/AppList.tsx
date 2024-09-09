@@ -40,6 +40,7 @@ import {
     ModuleNameMap,
     Teams,
     OptionType,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppFilters, getClusterListMinWithoutAuth } from '@Services/service'
 import { getProjectList } from '@Components/project/service'
@@ -65,7 +66,6 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import {
     getAppStatusFormattedValue,
     getChangeAppTabURL,
-    getCurrentTabName,
     getFormattedFilterLabel,
     parseSearchParams,
 } from './list.utils'
@@ -93,7 +93,6 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
-    const [currentTab, setCurrentTab] = useState<string>(getCurrentTabName(params.appType))
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [appCount, setAppCount] = useState<number>(0)
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
@@ -258,7 +257,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
 
     const environmentOptions: GroupedOptionsType[] = useMemo(
         () =>
-            clusterGroupedEnvOptions?.map((clusterItem) => ({
+            clusterGroupedEnvOptions.map((clusterItem) => ({
                 label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
                 options: clusterItem.options,
             })) ?? [],
@@ -284,7 +283,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             ...getClusterOptions(appListFilterResponse?.result.clusters),
             ...getClusterOptions(clusterListResponse?.result),
         ],
-        [appListFilterResponse],
+        [appListFilterResponse, params.appType],
     )
 
     const namespaceOptions: GroupedOptionsType[] = useMemo(
@@ -363,7 +362,6 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
 
     // on page load
     useEffect(() => {
-        setCurrentTab(getCurrentTabName(params.appType))
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
     }, [syncListData])
@@ -389,14 +387,6 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
 
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
-    }
-
-    function changeAppTab(appTabType) {
-        if (appTabType === currentTab) {
-            return
-        }
-        history.push(getChangeAppTabURL(appTabType))
-        setCurrentTab(appTabType)
     }
 
     const syncNow = (): void => {
@@ -498,7 +488,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                     <FilterSelectPicker
                                         placeholder="Template Type"
                                         inputId="app-list-template-type-filter"
-                                        options={TEMPLATE_TYPE_FILTER_OPTIONS}
+                                        options={structuredClone(TEMPLATE_TYPE_FILTER_OPTIONS)}
                                         appliedFilterOptions={selectedTemplateTypes}
                                         handleApplyFilter={handleUpdateFilters(AppListUrlFilters.templateType)}
                                         isDisabled={!clusterIdsCsv}
@@ -588,8 +578,18 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           label: 'Devtron Apps',
                           tabType: 'navLink' as const,
                           props: {
-                              to: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
-                              onClick: () => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS),
+                              to: {
+                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
+                                  search: getUrlWithSearchParams('', {
+                                      appStatus,
+                                      project,
+                                      environment,
+                                      cluster,
+                                      namespace,
+                                      searchKey,
+                                  }),
+                              },
+                              'data-testid': 'devtron-app-list-button',
                           },
                       },
                   ]
@@ -599,8 +599,17 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 label: 'Helm Apps',
                 tabType: 'navLink',
                 props: {
-                    to: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
-                    onClick: () => changeAppTab(AppListConstants.AppTabs.HELM_APPS),
+                    to: {
+                        pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
+                        search: getUrlWithSearchParams('', {
+                            appStatus,
+                            project,
+                            environment,
+                            cluster,
+                            namespace,
+                            searchKey,
+                        }),
+                    },
                     'data-testid': 'helm-app-list-button',
                 },
             },
@@ -611,8 +620,14 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           label: AppListConstants.AppTabs.ARGO_APPS,
                           tabType: 'navLink' as const,
                           props: {
-                              to: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
-                              onClick: () => changeAppTab(AppListConstants.AppTabs.ARGO_APPS),
+                              to: {
+                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
+                                  search: getUrlWithSearchParams('', {
+                                      cluster,
+                                      namespace,
+                                      searchKey,
+                                  }),
+                              },
                               'data-testid': 'argo-app-list-button',
                           },
                       },
@@ -625,8 +640,15 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           label: AppListConstants.AppTabs.FLUX_APPS,
                           tabType: 'navLink' as const,
                           props: {
-                              to: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
-                              onClick: () => changeAppTab(AppListConstants.AppTabs.FLUX_APPS),
+                              to: {
+                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
+                                  search: getUrlWithSearchParams('', {
+                                      cluster,
+                                      namespace,
+                                      templateType,
+                                      searchKey,
+                                  }),
+                              },
                               'data-testid': 'flux-app-list-button',
                           },
                       },
@@ -672,7 +694,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
         const _urlPrefix =
-            currentTab === AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
+            params.appType === AppListConstants.AppType.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}${location.search}`)
     }
 
@@ -745,7 +767,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                         serverMode={serverMode}
                         filterConfig={filterConfig}
                         clusterList={
-                            appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse.result
+                            appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse?.result
                         }
                         handleSorting={handleSorting}
                         clearAllFilters={clearFilters}
@@ -774,7 +796,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     clearAllFilters={clearFilters}
                     filterConfig={filterConfig}
                     clusterList={
-                        appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse.result
+                        appListFilterResponse ? appListFilterResponse.result.clusters : clusterListResponse?.result
                     }
                     clusterIdsCsv={clusterIdsCsv}
                     appType={params.appType}

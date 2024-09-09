@@ -20,19 +20,6 @@ import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import { AppListUrlFilters, AppStatuses, AppStatusesDTO } from './AppListType'
 
-export const getCurrentTabName = (appType: string): string => {
-    switch (appType) {
-        case AppListConstants.AppType.DEVTRON_APPS:
-            return AppListConstants.AppTabs.DEVTRON_APPS
-        case AppListConstants.AppType.ARGO_APPS:
-            return AppListConstants.AppTabs.ARGO_APPS
-        case AppListConstants.AppType.FLUX_APPS:
-            return AppListConstants.AppTabs.FLUX_APPS
-        default:
-            return AppListConstants.AppTabs.HELM_APPS
-    }
-}
-
 export const getChangeAppTabURL = (appTabType) => {
     switch (appTabType) {
         case AppListConstants.AppTabs.HELM_APPS:

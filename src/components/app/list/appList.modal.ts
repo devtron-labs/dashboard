@@ -42,14 +42,19 @@ const getEnvironmentsFromClusterNamespace = ({
         })
         return Array.from(environments)
     }
-    const clusterVsEnvMap = new Map<number, number>()
+    const clusterVsEnvMap = new Map<number, number[]>()
     environmentList?.forEach((env) => {
-        clusterVsEnvMap.set(env.cluster_id, env.id)
+        if (!clusterVsEnvMap.get(env.cluster_id)) {
+            clusterVsEnvMap.set(env.cluster_id, [env.id])
+            return
+        }
+        const envIds = [...clusterVsEnvMap.get(env.cluster_id), env.id]
+        clusterVsEnvMap.set(env.cluster_id, envIds)
     })
     selectedClusterIds.forEach((clusterId) => {
-        const envId = clusterVsEnvMap.get(clusterId)
-        if (envId) {
-            environments.add(envId)
+        const envIds = clusterVsEnvMap.get(clusterId)
+        if (envIds) {
+            envIds.forEach((envId) => environments.add(envId))
         }
     })
 
