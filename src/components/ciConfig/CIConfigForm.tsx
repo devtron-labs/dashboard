@@ -272,36 +272,20 @@ export default function CIConfigForm({
         handleOnChange(e)
 
         if (updateDockerConfigOverride) {
+            const { value } = e.target
+
             switch (e.target.name) {
                 case DockerConfigOverrideKeys.repository_name:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRepository, e.target.value)
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRepository, value)
                     break
                 case DockerConfigOverrideKeys.projectPath:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.projectPath, {
-                        ...currentCIBuildConfig,
-                        buildPackConfig: {
-                            ...currentCIBuildConfig.buildPackConfig,
-                            projectPath: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.projectPath, value)
                     break
                 case DockerConfigOverrideKeys.dockerfile:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerfileRelativePath, {
-                        ...currentCIBuildConfig,
-                        dockerBuildConfig: {
-                            ...currentCIBuildConfig.dockerBuildConfig,
-                            dockerfileRelativePath: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerfileRelativePath, value)
                     break
                 case DockerConfigOverrideKeys.buildContext:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
-                        ...currentCIBuildConfig,
-                        dockerBuildConfig: {
-                            ...currentCIBuildConfig.dockerBuildConfig,
-                            buildContext: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, value)
                     break
                 default:
                     break

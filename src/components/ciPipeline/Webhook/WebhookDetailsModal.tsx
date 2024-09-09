@@ -27,6 +27,8 @@ import {
     ButtonWithLoader,
     CodeEditor,
     SelectPicker,
+    TabGroup,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -274,27 +276,23 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setSelectedTab(e.currentTarget.dataset.key, index)
         }
         return (
-            <ul role="tablist" className={`tab-list ${isChildTab ? '' : 'dc__border-bottom'}`}>
-                {tabList.map((tabDetail) => (
-                    <li
-                        key={tabDetail.key}
-                        className="tab-list__tab pointer"
-                        onClick={tabClickHandler}
-                        data-key={tabDetail.key}
-                    >
-                        <div
-                            className={`mb-6 ${isChildTab ? 'fs-12 child-tab' : 'fs-13'} tab-hover${
-                                selectedTab === tabDetail.key ? ' fw-6 active' : ' fw-4'
-                            }`}
-                        >
-                            {tabDetail.value}
-                        </div>
-                        {selectedTab === tabDetail.key && (
-                            <div className={`tab-list_active-tab ${isChildTab ? 'child-tab' : ''}`} />
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className={`${!isChildTab ? 'dc__border-bottom' : ''}`}>
+                <TabGroup
+                    tabs={tabList.map(({ key, value }) => ({
+                        id: key,
+                        label: value,
+                        tabType: 'button',
+                        active: selectedTab === key,
+                        props: {
+                            onClick: tabClickHandler,
+                            'data-key': key,
+                        },
+                    }))}
+                    hideTopPadding
+                    alignActiveBorderWithContainer={!isChildTab}
+                    size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
+                />
+            </div>
         )
     }
 
