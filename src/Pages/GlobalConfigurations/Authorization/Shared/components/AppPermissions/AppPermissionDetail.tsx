@@ -41,7 +41,7 @@ const AppPermissionDetail = ({
             <div className={`w-100 pt-6 pb-6 dc__gap-8 display-grid ${rowClass} fw-6 fs-12 cn-7 dc__uppercase`}>
                 <label className="mb-0">Project</label>
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 3 : 0 }}>
-                    Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'or cluster/namespace' : ''}
+                    Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? ' or cluster/namespace' : ''}
                 </label>
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 1 : 0 }}>
                     {isAccessTypeJob ? 'Job Name' : 'Application'}

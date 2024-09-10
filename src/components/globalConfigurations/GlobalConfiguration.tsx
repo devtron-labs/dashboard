@@ -560,7 +560,7 @@ const NavItem = ({ serverMode }) => {
     )
 }
 
-const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
+const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
@@ -586,101 +586,102 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     )
                 }}
             />
-            {!window._env_.K8S_CLIENT && [
-                serverMode !== SERVER_MODE.EA_ONLY && (
+            {!window._env_.K8S_CLIENT && (
+                <>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route
+                            key={URLS.GLOBAL_CONFIG_HOST_URL}
+                            path={URLS.GLOBAL_CONFIG_HOST_URL}
+                            render={(props) => {
+                                return (
+                                    <HostURLConfiguration
+                                        {...props}
+                                        isSuperAdmin={isSuperAdmin}
+                                        refreshGlobalConfig={getHostURLConfig}
+                                        handleChecklistUpdate={handleChecklistUpdate}
+                                    />
+                                )
+                            }}
+                        />
+                    )}
                     <Route
-                        key={URLS.GLOBAL_CONFIG_HOST_URL}
-                        path={URLS.GLOBAL_CONFIG_HOST_URL}
+                        key={URLS.GLOBAL_CONFIG_GITOPS}
+                        path={URLS.GLOBAL_CONFIG_GITOPS}
+                        render={(props) => {
+                            return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                        }}
+                    />
+                    <Route
+                        key={URLS.GLOBAL_CONFIG_PROJECT}
+                        path={URLS.GLOBAL_CONFIG_PROJECT}
+                        render={(props) => {
+                            return <Project {...props} isSuperAdmin={isSuperAdmin} />
+                        }}
+                    />
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route
+                            key={URLS.GLOBAL_CONFIG_GIT}
+                            path={URLS.GLOBAL_CONFIG_GIT}
+                            render={(props) => {
+                                return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                            }}
+                        />
+                    )}
+                    <Route
+                        key={URLS.GLOBAL_CONFIG_DOCKER}
+                        path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                         render={(props) => {
                             return (
-                                <HostURLConfiguration
+                                <Docker
                                     {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
                                     handleChecklistUpdate={handleChecklistUpdate}
+                                    isSuperAdmin={isSuperAdmin}
+                                    isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
                                 />
                             )
                         }}
                     />
-                ),
-                <Route
-                    key={URLS.GLOBAL_CONFIG_GITOPS}
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                    }}
-                />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_PROJECT}
-                    path={URLS.GLOBAL_CONFIG_PROJECT}
-                    render={(props) => {
-                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                serverMode !== SERVER_MODE.EA_ONLY && (
                     <Route
-                        key={URLS.GLOBAL_CONFIG_GIT}
-                        path={URLS.GLOBAL_CONFIG_GIT}
+                        key={URLS.GLOBAL_CONFIG_CHART}
+                        path={URLS.GLOBAL_CONFIG_CHART}
                         render={(props) => {
-                            return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                            return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                         }}
                     />
-                ),
-                <Route
-                    key={URLS.GLOBAL_CONFIG_DOCKER}
-                    path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
-                    render={(props) => {
-                        return (
-                            <Docker
-                                {...props}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                                isSuperAdmin={isSuperAdmin}
-                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                            />
-                        )
-                    }}
-                />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_CHART}
-                    path={URLS.GLOBAL_CONFIG_CHART}
-                    render={(props) => {
-                        return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                serverMode !== SERVER_MODE.EA_ONLY && (
+                    ,
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route
+                            key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                            path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                        >
+                            <DeploymentChartsRouter />
+                        </Route>
+                    )}
+                    <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />
                     <Route
-                        key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                        path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                    >
-                        <DeploymentChartsRouter />
+                        key={URLS.GLOBAL_CONFIG_NOTIFIER}
+                        path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
+                        render={(props) => {
+                            return <AddNotification {...props} />
+                        }}
+                    />
+                    <Route
+                        key={URLS.GLOBAL_CONFIG_NOTIFIER}
+                        path={URLS.GLOBAL_CONFIG_NOTIFIER}
+                        render={(props) => {
+                            return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
+                        }}
+                    />
+                    <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
+                        <ExternalLinks />
                     </Route>
-                ),
-                <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
-                    render={(props) => {
-                        return <AddNotification {...props} />
-                    }}
-                />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    path={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    render={(props) => {
-                        return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                    <ExternalLinks />
-                </Route>,
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                              <BuildInfra isSuperAdmin={isSuperAdmin} />
-                          </Route>,
-                      ]
-                    : []),
-            ]}
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                            <BuildInfra isSuperAdmin={isSuperAdmin} />
+                        </Route>
+                    )}
+                </>
+            )}
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route
                     key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
@@ -701,13 +702,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                             <DeploymentWindow isSuperAdmin={isSuperAdmin} />
                         </Route>
                     )}
-                    ,
                     {ImagePromotion && (
                         <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
                             <ImagePromotion isSuperAdmin={isSuperAdmin} />
                         </Route>
                     )}
-                    ,
                     {PluginsPolicy && (
                         <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                             <PluginsPolicy />
@@ -799,18 +798,6 @@ export const List = ({ dataTestId = '', children = null, className = '', ...prop
             {children}
         </div>
     )
-}
-
-function handleError(error: any): any[] {
-    if (!error) {
-        return []
-    }
-
-    if (!Array.isArray(error)) {
-        return [error]
-    }
-
-    return error
 }
 
 export const ProtectedInput = ({
