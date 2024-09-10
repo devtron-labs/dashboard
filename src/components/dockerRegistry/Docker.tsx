@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KeyboardEventHandler, useEffect, useState } from 'react'
+import { KeyboardEventHandler, ReactElement, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -1838,7 +1838,7 @@ const DockerForm = ({
         password: RegistryType
         placeholderText: string
         registryURL: RegistryType
-        startIcon
+        startIcon: ReactElement
     }
     // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
@@ -1853,34 +1853,7 @@ const DockerForm = ({
                         selectedDockerRegistryType.value === RegistryType.GCR ? 'mb-16' : ''
                     }`}
                 >
-                    <div className="flex left column top w-100">
-                        {/* <label htmlFor="" className="form__label w-100 cb-7 dc__required-field">
-                            Registry provider
-                        </label>
-                         <ReactSelect
-                            classNamePrefix="select-container-registry-type"
-                            className="m-0 w-100"
-                            tabIndex={1}
-                            isMulti={false}
-                            isClearable={false}
-                            options={
-                                isHyperionMode
-                                    ? Object.values(EA_MODE_REGISTRY_TYPE_MAP)
-                                    : Object.values(REGISTRY_TYPE_MAP)
-                            }
-                            getOptionLabel={(option) => `${option.label}`}
-                            getOptionValue={(option) => `${option.value}`}
-                            value={selectedDockerRegistryType}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: registryOptions,
-                                Control: registryControls,
-                            }}
-                            onChange={handleRegistryTypeChange}
-                            isDisabled={!!id}
-                        /> */}
-
+                    <div>
                         <SelectPicker
                             inputId="container-registry-type"
                             label="Registry provider"
