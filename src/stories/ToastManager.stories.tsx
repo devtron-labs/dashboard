@@ -38,13 +38,10 @@ export const Default: Story = {
             description:
                 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia aspernatur, odio vero vitae omnis quos cumque quaerat debitis minus blanditiis, autem distinctio, animi exercitationem nesciunt nostrum commodi id consequuntur unde!',
         },
-        toastOptions: {
-            autoClose: false,
-        },
     },
 }
 
-export const WithCustomTitle: Story = {
+export const CustomTitle: Story = {
     ...Default,
     args: {
         ...Default.args,
@@ -69,13 +66,24 @@ export const WithButton: Story = {
     },
 }
 
-export const WithCustomTitleAndButton: Story = {
+export const CustomTitleAndButton: Story = {
     ...Default,
     args: {
         ...Default.args,
         toastProps: {
-            ...WithCustomTitle.args.toastProps,
+            ...CustomTitle.args.toastProps,
             ...WithButton.args.toastProps,
+        },
+    },
+}
+
+export const AutoCloseDisabled: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        toastOptions: {
+            ...Default.args.toastOptions,
+            autoClose: false,
         },
     },
 }
