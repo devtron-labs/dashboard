@@ -23,6 +23,8 @@ import {
     useBreadcrumb,
     useEffectAfterMount,
     PageHeader,
+    versionComparatorBySortOrder,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -131,8 +133,9 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         try {
             const { result } = await getChartVersionsMin(chartId)
             if (result?.length) {
-                setChartVersions(result)
-                selectVersion(result[0]?.id)
+                const sorted = [...result].sort((a, b) => versionComparatorBySortOrder(a, b, 'version', SortingOrder.DESC))
+                setChartVersions(sorted)
+                selectVersion(sorted[0].id)
             } else {
                 toast.error('Some error occurred. Please try reloading the page')
             }
