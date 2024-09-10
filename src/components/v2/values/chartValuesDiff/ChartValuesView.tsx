@@ -1455,7 +1455,7 @@ const ChartValuesView = ({
     const renderChartValuesEditor = () => {
         return (
             <div className="chart-values-view__editor">
-                {(commonState.activeTab === 'manifest' && commonState.valuesEditorError) || true ? (
+                {(commonState.activeTab === 'manifest' && commonState.valuesEditorError) ? (
                     // TODO: using an icon here which doesn't look imo; also missing messaging
                     <GenericEmptyState
                         SvgImage={ErrorExclamation}
