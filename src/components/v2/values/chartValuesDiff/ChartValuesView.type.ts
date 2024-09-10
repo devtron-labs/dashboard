@@ -402,11 +402,8 @@ export interface ChartValuesGUIFormProps {
     schemaJson: ChartValuesViewState['schemaJson']
     valuesYamlDocument: YAML.Document.Parsed
     fetchingSchemaJson: boolean
-    openReadMe: boolean
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
-    isDeployChartView: boolean
-    isCreateValueView: boolean
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>

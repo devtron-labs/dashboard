@@ -350,36 +350,13 @@ export default function ChartValuesEditor({
         }
     }
 
-    const getDynamicClassName = (): string => {
-        if (isDeployChartView) {
-            if (!showInfoText || showEditorHeader) {
-                return 'sub130-vh'
-            }
-            return manifestView ? 'sub193-vh' : 'sub160-vh'
-        }
-
-        if (comparisonView) {
-            if (manifestView) {
-                return 'sub193-vh'
-            }
-            return 'sub160-vh'
-        }
-
-        if (manifestView) {
-            return 'sub222-vh'
-        }
-        if (showEditorHeader) {
-            return 'sub160-vh'
-        }
-        return 'sub189-vh'
-    }
-
     return (
         <div
-            className={`code-editor-container manifest-view ${getDynamicClassName()}`}
+            className="code-editor-container"
             data-testid="code-editor-container"
         >
             <CodeEditor
+                height="0"
                 defaultValue={
                     comparisonView
                         ? manifestView
@@ -396,7 +373,7 @@ export default function ChartValuesEditor({
                 customLoader={
                     <DetailsProgressing size={32}>
                         {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8 dc__align-center">
+                            <span className="fs-13 fw-4 cn-7 mt-8">
                                 Generating the manifest. <br /> Please wait...
                             </span>
                         )}

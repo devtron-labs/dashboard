@@ -1290,7 +1290,7 @@ const ChartValuesView = ({
 
     const renderValuesTabsContainer = () => {
         return (
-            <div className="chart-values-view__tabs-container flex dc__content-space">
+            <div className="chart-values-view__tabs-container flex dc__content-space dc__border-bottom">
                 {renderValuesTabs()}
                 <div className="flex">
                     <ConditionalWrap
@@ -1455,11 +1455,11 @@ const ChartValuesView = ({
     const renderChartValuesEditor = () => {
         return (
             <div className="chart-values-view__editor">
-                {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
+                {(commonState.activeTab === 'manifest' && commonState.valuesEditorError) || true ? (
+                    // TODO: using an icon here which doesn't look imo; also missing messaging
                     <GenericEmptyState
                         SvgImage={ErrorExclamation}
-                        classname="dc__align-reload-center"
-                        title=""
+                        title=''
                         subTitle={commonState.valuesEditorError}
                     />
                 ) : (
@@ -1496,13 +1496,6 @@ const ChartValuesView = ({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
-                <UpdateApplicationButton
-                    isUpdateInProgress={commonState.isUpdateInProgress}
-                    isDeleteInProgress={commonState.isDeleteInProgress}
-                    isDeployChartView={isDeployChartView}
-                    isCreateValueView={isCreateValueView}
-                    deployOrUpdateApplication={deployOrUpdateApplication}
-                />
             </div>
         )
     }
@@ -1581,16 +1574,8 @@ const ChartValuesView = ({
         )
     }
 
-    const getDynamicWrapperClassName = (): string => {
-        if (isDeployChartView) {
-            return 'sub162-vh'
-        }
-        return 'sub189-vh'
-    }
-
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
-        const wrapperClassName = getDynamicWrapperClassName()
         const showDeploymentTools =
             !isExternalApp &&
             !isCreateValueView &&
@@ -1599,16 +1584,15 @@ const ChartValuesView = ({
             !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
+                className={`chart-values-view__container flexbox-col h-100 bcn-0 dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
                 }`}
             >
                 {renderValuesTabsContainer()}
-                <div className="chart-values-view__hr-divider bcn-2" />
-                <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
-                    <div className="chart-values-view__details">
+                <div className={`chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden`}>
+                    <div className="chart-values-view__details dc__border-right dc__overflow-scroll">
                         {isCreateValueView && (
                             <ValueNameInput
                                 valueName={valueName}
@@ -1802,17 +1786,13 @@ const ChartValuesView = ({
                             activeReadMe={commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0)}
                         />
                     )}
-                    {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
                     {commonState.activeTab === 'gui' ? (
                         <ChartValuesGUIForm
                             schemaJson={commonState.schemaJson}
                             valuesYamlDocument={commonState.valuesYamlDocument}
                             fetchingSchemaJson={commonState.fetchingReadMe}
-                            openReadMe={commonState.openReadMe}
                             isUpdateInProgress={commonState.isUpdateInProgress}
                             isDeleteInProgress={commonState.isDeleteInProgress}
-                            isDeployChartView={isDeployChartView}
-                            isCreateValueView={isCreateValueView}
                             deployOrUpdateApplication={deployOrUpdateApplication}
                             dispatch={dispatch}
                             formValidationError={commonState.formValidationError}
@@ -1821,6 +1801,15 @@ const ChartValuesView = ({
                         renderChartValuesEditor()
                     )}
                 </div>
+                <footer className="flexbox dc__content-end dc__border-top px-16 py-10">
+                    <UpdateApplicationButton
+                        isUpdateInProgress={commonState.isUpdateInProgress}
+                        isDeleteInProgress={commonState.isDeleteInProgress}
+                        isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
+                        deployOrUpdateApplication={deployOrUpdateApplication}
+                    />
+                </footer>
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
                         appName={

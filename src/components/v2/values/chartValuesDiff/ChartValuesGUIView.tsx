@@ -25,23 +25,14 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
 import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
-import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'
-
-// TODO: add support for Slider in RJSF
 
 const ChartValuesGUIForm = ({
     schemaJson,
     fetchingSchemaJson,
     valuesYamlDocument,
     dispatch,
-    isDeleteInProgress,
-    isDeployChartView,
-    isCreateValueView,
-    openReadMe,
-    isUpdateInProgress,
-    deployOrUpdateApplication,
 }: ChartValuesGUIFormProps): JSX.Element => {
     const [formData, setFormData] = useState(valuesYamlDocument?.toJS() ?? {})
 
@@ -86,12 +77,7 @@ const ChartValuesGUIForm = ({
     }
 
     return (
-        // TODO: look at css
-        <div
-            className={`chart-values-view__gui-form-container ${
-                !isDeployChartView && !isCreateValueView ? 'values-update-view' : ''
-            } ${openReadMe ? 'chart-values-view__full-mode' : ''}`}
-        >
+        <div className="chart-values-view__gui-form-container">
             <RJSFForm
                 key={state.json}
                 schema={state.json}
@@ -101,14 +87,6 @@ const ChartValuesGUIForm = ({
                 experimental_defaultFormStateBehavior={{
                     emptyObjectFields: 'skipDefaults',
                 }}
-            />
-            {/* // TODO: how to update the schema? */}
-            <UpdateApplicationButton
-                isUpdateInProgress={isUpdateInProgress}
-                isDeleteInProgress={isDeleteInProgress}
-                isDeployChartView={isDeployChartView}
-                isCreateValueView={isCreateValueView}
-                deployOrUpdateApplication={deployOrUpdateApplication}
             />
         </div>
     )

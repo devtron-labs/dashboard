@@ -241,7 +241,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     </div>
                 </Route>
                 <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}>
-                    <div className="deploy-chart__container">
+                    <div className="flexbox-col h-100">
                         <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                         {!chartInformation.chartName ||
                         !selectedVersion ||
