@@ -595,13 +595,12 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
-
-
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                <ReactSelect
+                    <label className="form__label">Select repository containing code</label>
+                    <ReactSelect
                         classNamePrefix="build-config__select-repository-containing-code"
                         className="m-0"
                         tabIndex={3}
@@ -632,7 +631,6 @@ export default function CIBuildpackBuildOptions({
                         }}
                         onChange={handleFileLocationChange}
                     />
-
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>
