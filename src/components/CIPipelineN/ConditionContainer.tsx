@@ -166,7 +166,6 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
     }
 
     const handleConditionOnVariableChange = (selectedValue: OptionType, index: number): void => {
-        console.log(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOnVariable'

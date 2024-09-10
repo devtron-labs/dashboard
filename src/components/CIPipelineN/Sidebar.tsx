@@ -175,7 +175,6 @@ export const Sidebar = ({
             addConfigSecrets(updatedList)
         }
 
-        console.log('configMapAndSecrets', configMapAndSecrets)
         return (
             <>
                 <div className="sidebar-action-container-border pb-12">
