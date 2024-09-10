@@ -646,8 +646,6 @@ export default function CDPipeline({
             }),
         }
 
-        const _userApprovalConfig = getUserApprovalConfigPayload(formData.userApprovalConfig)
-
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -663,7 +661,9 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            userApprovalConfig: _userApprovalConfig,
+            ...(getUserApprovalConfigPayload ? {
+                userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig)
+            }: {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
