@@ -851,89 +851,89 @@ button.anchor {
     transition: transform 0.3s;
 }
 
-.Toastify__toast-container--top-right {
-    top: 8em;
-}
+// .Toastify__toast-container--top-right {
+//     top: 8em;
+// }
 
-.Toastify__toast--default,
-.Toastify__toast--info,
-.Toastify__toast--warning,
-.Toastify__toast--error,
-.Toastify__toast--success {
-    font-family: inherit;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px 0 rgba(0, 51, 102, 0.2);
+// .Toastify__toast--default,
+// .Toastify__toast--info,
+// .Toastify__toast--warning,
+// .Toastify__toast--error,
+// .Toastify__toast--success {
+//     font-family: inherit;
+//     border-radius: 8px;
+//     box-shadow: 0 4px 12px 0 rgba(0, 51, 102, 0.2);
 
-    &.devtron-toast {
-        background: #2c3354;
-        position: relative;
-        padding: 12px 16px;
+//     &.devtron-toast {
+//         background: #2c3354;
+//         position: relative;
+//         padding: 12px 16px;
 
-        &:before {
-            background-repeat: no-repeat;
-            background-position: top center;
-            content: '';
-            flex: 0 0 32px;
-        }
+//         &:before {
+//             background-repeat: no-repeat;
+//             background-position: top center;
+//             content: '';
+//             flex: 0 0 32px;
+//         }
 
-        .devtron-toast__body {
-            color: white;
-            font-size: 13px;
-            margin: 0 0 0 16px;
-            flex: 0 0 213px;
-            word-wrap: anywhere;
-            white-space: pre-line;
-            padding: 0;
+//         .devtron-toast__body {
+//             color: white;
+//             font-size: 13px;
+//             margin: 0 0 0 16px;
+//             flex: 0 0 213px;
+//             word-wrap: anywhere;
+//             white-space: pre-line;
+//             padding: 0;
 
-            .Toastify__toast-icon {
-                display: none;
-            }
-        }
+//             .Toastify__toast-icon {
+//                 display: none;
+//             }
+//         }
 
-        .Toastify__close-button {
-            color: white;
-            opacity: 0.5;
-            padding: 0 4px;
+//         .Toastify__close-button {
+//             color: white;
+//             opacity: 0.5;
+//             padding: 0 4px;
 
-            &:hover {
-                opacity: 1;
-            }
-        }
-    }
-}
+//             &:hover {
+//                 opacity: 1;
+//             }
+//         }
+//     }
+// }
 
-.Toastify__toast--info,
-.Toastify__toast--default {
-    &.devtron-toast {
-        &:before {
-            background-image: url('../assets/icons/ic-info-filled-lg.svg');
-        }
-    }
-}
+// .Toastify__toast--info,
+// .Toastify__toast--default {
+//     &.devtron-toast {
+//         &:before {
+//             background-image: url('../assets/icons/ic-info-filled-lg.svg');
+//         }
+//     }
+// }
 
-.Toastify__toast--success {
-    &.devtron-toast {
-        &:before {
-            background-image: url('../assets/icons/ic-success.svg');
-        }
-    }
-}
+// .Toastify__toast--success {
+//     &.devtron-toast {
+//         &:before {
+//             background-image: url('../assets/icons/ic-success.svg');
+//         }
+//     }
+// }
 
-.Toastify__toast--warning {
-    &.devtron-toast {
-        &:before {
-            background-image: url('../assets/icons/ic-warning.svg');
-        }
-    }
-}
+// .Toastify__toast--warning {
+//     &.devtron-toast {
+//         &:before {
+//             background-image: url('../assets/icons/ic-warning.svg');
+//         }
+//     }
+// }
 
-.Toastify__toast--error {
-    &.devtron-toast {
-        &:before {
-            background-image: url('../assets/icons/misc/errorInfo.svg');
-        }
-    }
-}
+// .Toastify__toast--error {
+//     &.devtron-toast {
+//         &:before {
+//             background-image: url('../assets/icons/misc/errorInfo.svg');
+//         }
+//     }
+// }
 
 .dc__no-apps {
     background-color: var(--window-bg);
