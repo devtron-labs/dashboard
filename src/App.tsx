@@ -44,17 +44,6 @@ const NavigationRoutes = lazy(() => import('./components/common/navigation/Navig
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
-toast.configure({
-    autoClose: 3000,
-    hideProgressBar: true,
-    pauseOnHover: true,
-    pauseOnFocusLoss: true,
-    closeOnClick: false,
-    newestOnTop: true,
-    toastClassName: 'devtron-toast',
-    bodyClassName: 'devtron-toast__body',
-})
-
 export default function App() {
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
