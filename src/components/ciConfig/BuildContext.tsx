@@ -198,6 +198,15 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             }}
                             onChange={handleBuildContextPathChange}
                         />
+                        {/* <SelectPicker
+                            label="Select repo containing build context"
+                            inputId="build-context-repo"
+                            classNamePrefix="build-config__select-repository-containing-build-context"
+                            isClearable={false}
+                            options={sourceConfig.material}
+                            value={getSelectedBuildContextGitMaterial()}
+                            onChange={handleBuildContextPathChange}
+                        /> */}
 
                         {repositoryError && <label className="form__error">{repositoryError}</label>}
                     </div>

@@ -115,6 +115,7 @@ export default function ColumnSelector() {
         setSelectedColumns(appliedColumns)
     }
 
+    // Will be replacing with the FilterSelectPicker component
     return (
         <ReactSelect
             classNamePrefix="node-column-list-filter"
