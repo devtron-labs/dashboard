@@ -16,8 +16,8 @@
 
 import React from 'react'
 import ReactGA from 'react-ga4'
-import { NavLink, Link, useParams, useRouteMatch } from 'react-router-dom'
-import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useParams, useRouteMatch } from 'react-router-dom'
+import { PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
@@ -39,61 +39,60 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
         )
     }
     const renderExternalHelmApp = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DETAILS}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
+        const tabs: TabProps[] = [
+            {
+                id: 'app-details-tab',
+                label: 'App details',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    onClick: () => {
+                        ReactGA.event({
+                            category: 'External App',
+                            action: 'External App Details Clicked',
+                        })
+                    },
+                },
+            },
+        ]
+
+        if (!showAppDetailsOnly) {
+            tabs.push(
+                {
+                    id: 'configure-tab',
+                    label: 'Configure',
+                    tabType: 'navLink',
+                    icon: Settings,
+                    props: {
+                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        onClick: () => {
                             ReactGA.event({
                                 category: 'External App',
-                                action: 'External App Details Clicked',
+                                action: 'External App Values Clicked',
                             })
-                        }}
-                    >
-                        App details
-                    </NavLink>
-                </li>
-                {!showAppDetailsOnly && (
-                    <>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                activeClassName="active"
-                                to={`${match.url}/${URLS.APP_VALUES}`}
-                                className="tab-list__tab-link flex"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'External App',
-                                        action: 'External App Values Clicked',
-                                    })
-                                }}
-                            >
-                                <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
-                                Configure
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                activeClassName="active"
-                                to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                                className="tab-list__tab-link"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'External App',
-                                        action: 'External App Deployment history Clicked',
-                                    })
-                                }}
-                            >
-                                Deployment history
-                            </NavLink>
-                        </li>
-                    </>
-                )}
-            </ul>
-        )
+                        },
+                    },
+                },
+                {
+                    id: 'deployment-history-tab',
+                    label: 'Deployment history',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        onClick: () => {
+                            ReactGA.event({
+                                category: 'External App',
+                                action: 'External App Deployment history Clicked',
+                            })
+                        },
+                    },
+                },
+            )
+        }
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
+
     return (
         <div className="app-header-wrapper helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <PageHeader

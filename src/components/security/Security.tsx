@@ -15,13 +15,13 @@
  */
 
 import { Component } from 'react'
-import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
+import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
+import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
@@ -42,23 +42,29 @@ export class Security extends Component<SecurityProps> {
     renderSecurityTabs = () => {
         const { path } = this.props.match
         return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink activeClassName="active" to={`${path}/scans`} className="tab-list__tab-link">
-                        Security Scans
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${path}/policies`}
-                        className="tab-list__tab-link"
-                        data-testid="security-policy"
-                    >
-                        Security Policies
-                    </NavLink>
-                </li>
-            </ul>
+            <TabGroup
+                tabs={[
+                    {
+                        id: 'security-scans-tab',
+                        label: 'Security Scans',
+                        tabType: 'navLink',
+                        props: {
+                            to: `${path}/scans`,
+                        },
+                    },
+                    {
+                        id: 'security-policies-tab',
+                        label: 'Security Policies',
+                        tabType: 'navLink',
+                        props: {
+                            to: `${path}/policies`,
+                            'data-testid': 'security-policy',
+                        },
+                    },
+                ]}
+                hideTopPadding
+                alignActiveBorderWithContainer
+            />
         )
     }
 
