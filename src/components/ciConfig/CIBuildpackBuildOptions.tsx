@@ -93,30 +93,6 @@ export const getSelectedMaterialValue = (selectedMaterial) => {
     return null
 }
 
-// TODO: Remove console after testing,
-
-export const getLanguageOptions = (languages) => {
-    console.log(languages, 'languages')
-    return languages.map((_language) => {
-        return {
-            value: _language.value.label,
-            label: _language.value.label,
-            startIcon: _language.value.icon,
-        }
-    })
-}
-
-export const getSelectedLanguageValue = (selectedLanguage) => {
-    console.log(selectedLanguage, 'selectedLanguage')
-    if (selectedLanguage.name) {
-        return {
-            label: selectedLanguage.value.label,
-            value: selectedLanguage.value.label,
-            startIcon: getGitProviderIcon(selectedLanguage.value.icon),
-        }
-    }
-    return null
-}
 
 
 export const repositoryOption = (props): JSX.Element => {
@@ -625,27 +601,38 @@ export default function CIBuildpackBuildOptions({
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    {/* <label className="form__label">Select repository containing code</label> */}
-
-{console.log(sourceConfig)}
-{console.log('selectedMaterial', selectedMaterial)}
-                    <SelectPicker
-                        label="Select repository containing code"
-                        inputId="build-pack-repository-select"
+                <ReactSelect
                         classNamePrefix="build-config__select-repository-containing-code"
+                        className="m-0"
+                        tabIndex={3}
                         isSearchable={false}
                         options={sourceConfig.material}
-                        // getOptionLabel={(option) => `${option.name}`}
-                        // getOptionValue={(option) => `${option.checkoutPath}`}
+                        getOptionLabel={(option) => `${option.name}`}
+                        getOptionValue={(option) => `${option.checkoutPath}`}
                         value={selectedMaterial}
-                        // components={{
-                        //     IndicatorSeparator: null,
-                        //     Option: repositoryOption,
-                        //     Control: repositoryControls,
-                        // }}
+                        styles={getCommonSelectStyle({
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
+                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                cursor: 'pointer',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                marginTop: '0',
+                                minWidth: '226px',
+                            }),
+                        })}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: repositoryOption,
+                            Control: repositoryControls,
+                        }}
                         onChange={handleFileLocationChange}
-                        size={ComponentSizeType.large}
                     />
+
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>

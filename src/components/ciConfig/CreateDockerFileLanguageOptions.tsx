@@ -130,20 +130,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 classNamePrefix="build-config__select-repository-containing-code"
             />
 
-            {/* // TODO: Will be deleting this code after testing */}
-            {/* <SelectPicker
-                inputId="select-repository-containing-dockerfile"
-                name="select-repository-containing-dockerfile"
-                label="Select repository containing Dockerfile"
-                classNamePrefix="build-config__select-repository-containing-dockerfile"
-                isClearable={false}
-                options={getGitRepositoryOptions(materialOptions)}
-                value={getSelectedMaterialValue(selectedMaterial)}
-                onChange={handleGitRepoChange}
-                size={ComponentSizeType.large}
-                variant={SelectPickerVariantType.BORDER_LESS}
-            /> */}
-
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
             <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
             <ReactSelect
@@ -160,18 +146,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 }}
                 onChange={handleLanguageSelection}
             />
-
-            {/* // TODO: Will be deleting this code after testing */}
-            {/* <SelectPicker
-                inputId="select-create-dockerfile-language-dropdown"
-                name="select-create-dockerfile-language-dropdown"
-                label="Language"
-                classNamePrefix="select-create-dockerfile-language-dropdown"
-                options={getLanguageOptions(languages)}
-                value={getSelectedLanguageValue(selectedLanguage)}
-                isSearchable={false}
-                onChange={handleLanguageSelection}
-            /> */}
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
@@ -190,18 +164,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                         }}
                         onChange={handleFrameworkSelection}
                     />
-
-                    {/* // TODO: Will be deleting this code after testing */}
-                    {/* <SelectPicker
-                        inputId="build-config__select-framework"
-                        name="build-config__select-framework"
-                        label="Framework"
-                        classNamePrefix="build-config__select-framework"
-                        options={getLanguageOptions(languages)}
-                        value={selectedFramework}
-                        isSearchable={false}
-                        onChange={handleFrameworkSelection}
-                    /> */}
                 </>
             )}
             <ResetEditorChanges resetChanges={resetChanges} editorData={editorData} editorValue={editorValue} />

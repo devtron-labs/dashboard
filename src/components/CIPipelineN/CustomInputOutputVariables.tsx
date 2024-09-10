@@ -16,7 +16,6 @@
 
 import { useContext } from 'react'
 import { ConditionType, CustomInput, RefVariableType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -139,15 +138,18 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
         setFormData(_formData)
     }
 
-    const handleFormatChange = (selectedValue: OptionType, index: number): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
-            selectedValue.label
-        if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+    const handleFormatChange =
+        (index: number) =>
+        (selectedValue: OptionType): void => {
+            const _formData = { ...formData }
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][
+                index
+            ].format = selectedValue.label
+            if (type === PluginVariableType.OUTPUT) {
+                calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            }
+            setFormData(_formData)
         }
-        setFormData(_formData)
-    }
 
     const isDateFormat = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
         VariableFieldType[type]
@@ -184,9 +186,9 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        Standardized date formats
-                                    </a>{' '}
-                                    <span className="cn-9">identified by Devtron</span>{' '}
+                                        Standardized date formats&nbsp;
+                                    </a>
+                                    <span className="cn-9">identified by Devtron</span>
                                 </span>
                             </div>
                         </div>
@@ -239,13 +241,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                             </div>
 
                                             {type === PluginVariableType.OUTPUT && (
-                                                <div
-                                                    style={{
-                                                        width: '20%',
-                                                        borderTopRightRadius: '4px',
-                                                    }}
-                                                    className="dc__border-right"
-                                                >
+                                                <div className="dc__border-right w-20 dc__top-right-radius-4">
                                                     <SelectPicker
                                                         inputId="output-variable-format-select"
                                                         name="output-variable-format-select"
@@ -255,9 +251,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                                 ? { label: variable.format, value: variable.format }
                                                                 : formatOptions[0]
                                                         }
-                                                        onChange={(selectedValue: OptionType) => {
-                                                            handleFormatChange(selectedValue, index)
-                                                        }}
+                                                        onChange={handleFormatChange(index)}
                                                         options={formatOptions}
                                                         isSearchable={false}
                                                     />
@@ -267,14 +261,10 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">
-                                            <div className="dc__border-left" style={{ width: '80%' }}>
+                                            <div className="dc__border-left w-80">
                                                 <CustomInputVariableSelect selectedVariableIndex={index} />
                                             </div>
-                                            <div
-                                                style={{
-                                                    width: '10%',
-                                                }}
-                                            >
+                                            <div className="w-20">
                                                 <SelectPicker
                                                     value={
                                                         variable.format
@@ -283,9 +273,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                     }
                                                     classNamePrefix="input-variable-format-select"
                                                     inputId="input-variable"
-                                                    onChange={(selectedValue: OptionType) => {
-                                                        handleFormatChange(selectedValue, index)
-                                                    }}
+                                                    onChange={handleFormatChange(index)}
                                                     options={formatOptions}
                                                     isSearchable={false}
                                                     name="format"

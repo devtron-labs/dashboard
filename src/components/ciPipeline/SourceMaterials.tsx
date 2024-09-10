@@ -87,21 +87,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
         )
     }
 
-    // Todo: Will be removing after select testing
-    // const Option = (_props) => {
-    //     const { selectProps, selectOption, data } = _props
-    //     selectProps.styles.option = getCustomOptionSelectionStyle({
-    //         backgroundColor: data.isSelected ? 'var(--B100)' : _props.isFocused ? 'var(--N100)' : 'white',
-    //         color: data.isSelected ? 'var(--B500)' : 'var(--N900)',
-    //     })
-
-    //     return (
-    //         <div className="flex left">
-    //             <components.Option {..._props}>{_props.children}</components.Option>
-    //         </div>
-    //     )
-    // }
-
     async function onBlur() {
         if (props.handleOnBlur) {
             await props.handleOnBlur()
