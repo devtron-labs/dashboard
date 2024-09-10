@@ -68,7 +68,7 @@ export default function AboutAppInfoModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <SelectPicker
-                inputId='overview-project-menu-list'
+                inputId="overview-project-menu-list"
                 name="overview-project-menu-list"
                 classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
