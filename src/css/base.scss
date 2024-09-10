@@ -2958,7 +2958,7 @@ textarea,
 }
 
 .dc__ff-monospace {
-    font-family: monospace;
+    font-family: 'Source Code Pro', monospace;
 }
 
 @mixin tab-container($bgColor, $color) {
@@ -4306,6 +4306,22 @@ textarea::placeholder {
 
 .dc__hover-color-b500:hover {
     color: var(--B500);
+}
+
+.dc__hover-color-n800:hover {
+    color: var(--N800);
+
+    &.fill:hover {
+        path {
+            fill: var(--N800);
+        }
+    }
+
+    &.stroke:hover {
+        path {
+            stroke: var(--N800);
+        }
+    }
 }
 
 .dc__hover-n100:hover {

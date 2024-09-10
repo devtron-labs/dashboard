@@ -67,8 +67,6 @@ export interface SESConfigModalState {
 }
 
 export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModalState> {
-    _configName
-
     awsRegionListParsed = awsRegionList.map((region) => {
         return { label: region.name, value: region.value }
     })
@@ -131,9 +129,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     state.secretKey = response.result.secretKey
                     this.setState(state)
                 })
-                .then(() => {
-                    this._configName?.focus()
-                })
                 .catch((error) => {
                     showError(error)
                 })
@@ -142,11 +137,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.default = this.props.shouldBeDefault
             state.view = ViewType.FORM
             this.setState(state)
-            setTimeout(() => {
-                if (this._configName) {
-                    this._configName.focus()
-                }
-            }, 100)
         }
     }
 
@@ -285,7 +275,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             <CustomInput
                                 label="Configuration Name"
                                 data-testid="add-ses-configuration-name"
-                                ref={(node) => (this._configName = node)}
                                 name="configname"
                                 value={this.state.form.configName}
                                 onChange={this.handleConfigNameChange}
