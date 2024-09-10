@@ -25,7 +25,7 @@ import { renderWithRouter } from '../../Details/EnvironmentConfig/__test__/Appli
 
 describe('EnvironmentList', () => {
     it('EnvironmentList renders without crashing', () => {
-        const { container } = render(<EnvironmentsListView isSuperAdmin={false} removeAllFilters={jest.fn()} />, {
+        const { container } = render(<EnvironmentsListView isSuperAdmin={false} clearFilters={jest.fn()} />, {
             wrapper: BrowserRouter,
         })
         expect(container).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('EnvironmentList', () => {
         let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockFetch)
         await act(async () => {
-            component = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
+            component = render(<EnvironmentsListView isSuperAdmin={true} clearFilters={jest.fn()} />, {
                 wrapper: BrowserRouter,
             })
         })

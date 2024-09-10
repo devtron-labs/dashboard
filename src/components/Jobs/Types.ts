@@ -15,7 +15,13 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
-import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResponseType,
+    SelectPickerOptionType,
+    ServerError,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AppListPayloadType } from '@Components/app/list-new/AppListType'
 
 export enum JobListStateActionTypes {
     view = 'view',
@@ -81,10 +87,20 @@ export interface ExpandedRowProps {
     close: (e: any) => void
 }
 
-export interface JobListProps {
-    payloadParsedFromUrl?: any
-    clearAllFilters: () => void
-    sortJobList: (key: string) => void
+export interface JobListPayload
+    extends Pick<
+        AppListPayloadType,
+        'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
+    > {
+    sortBy: JobsListSortableKeys
+}
+
+export interface JobListProps
+    extends Pick<
+        UseUrlFiltersReturnType<JobsListSortableKeys>,
+        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
+    > {
+    payloadParsedFromUrl: JobListPayload
     jobListCount: number
     isSuperAdmin: boolean
     openJobCreateModel: (event) => void
@@ -93,14 +109,16 @@ export interface JobListProps {
     renderAppliedFilters: () => JSX.Element
 }
 
-export interface JobListViewProps extends JobListState, RouteComponentProps<{}> {
+export interface JobListViewProps
+    extends JobListState,
+        RouteComponentProps<{}>,
+        Pick<
+            UseUrlFiltersReturnType<JobsListSortableKeys>,
+            'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
+        > {
     expandRow: (id: number | null) => void
     closeExpandedRow: (id: number | null) => void
-    sort: (key: string) => void
     handleEditJob: (jobId: number) => void
-    clearAll: () => void
-    changePage: (pageNo: number) => void
-    changePageSize: (size: number) => void
     jobListCount: number
     isSuperAdmin: boolean
     openJobCreateModel: (e) => void
@@ -132,3 +150,37 @@ export type JobList = ResponseType<{
     }[]
     jobCount: number
 }>
+
+export enum JobsListSortableKeys {
+    APP_NAME = 'appNameSort',
+}
+
+export enum JobListUrlFilters {
+    status = 'status',
+    project = 'project',
+    environment = 'environment',
+}
+
+export interface JobListUrlFiltersType extends Record<JobListUrlFilters, string[]> {}
+
+export interface JobsMasterFilters {
+    status: SelectPickerOptionType[]
+    projects: SelectPickerOptionType[]
+    environments: SelectPickerOptionType[]
+}
+
+export enum JobListStatus {
+    STARTING = 'Starting',
+    RUNNING = 'Running',
+    SUCCEEDED = 'Succeeded',
+    CANCELLED = 'Cancelled',
+    FAILED = 'Failed',
+}
+
+export enum JobListStatusDTO {
+    STARTING = 'Starting',
+    RUNNING = 'Running',
+    SUCCEEDED = 'Succeeded',
+    CANCELLED = 'CANCELLED',
+    FAILED = 'Failed',
+}

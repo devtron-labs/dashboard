@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Reducer, useEffect, useReducer, useRef } from 'react'
+import { Reducer, useEffect, useReducer, useRef } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { showError, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import * as queryString from 'query-string'
-import { URLS } from '../../../config'
-import { getInitialJobListState, jobListModal, jobListReducer, populateQueryString } from '../Utils'
+import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
 import { JobListProps, JobListState, JobListStateAction, JobListStateActionTypes } from '../Types'
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
@@ -28,14 +26,16 @@ import '../../app/list/list.scss'
 
 export default function JobListContainer({
     payloadParsedFromUrl,
-    clearAllFilters,
-    sortJobList,
+    clearFilters,
+    handleSorting,
     jobListCount,
     isSuperAdmin,
     openJobCreateModel,
     setJobCount,
     renderMasterFilters,
     renderAppliedFilters,
+    changePage,
+    changePageSize,
 }: JobListProps) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -109,21 +109,6 @@ export default function JobListContainer({
             })
     }
 
-    const changePage = (pageNo: number): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = state.pageSize * (pageNo - 1)
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
-    const changePageSize = (size: number): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = 0
-        query['pageSize'] = size
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
     const expandRow = (id: number): void => {
         dispatch({
             type: JobListStateActionTypes.expandedRow,
@@ -171,9 +156,9 @@ export default function JobListContainer({
                 history={history}
                 expandRow={expandRow}
                 closeExpandedRow={closeExpandedRow}
-                sort={sortJobList}
+                handleSorting={handleSorting}
                 handleEditJob={handleEditJob}
-                clearAll={clearAllFilters}
+                clearFilters={clearFilters}
                 changePage={changePage}
                 changePageSize={changePageSize}
                 isSuperAdmin={isSuperAdmin}

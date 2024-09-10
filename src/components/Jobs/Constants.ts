@@ -14,31 +14,6 @@
  * limitations under the License.
  */
 
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-
-export const _multiSelectStyles = {
-    ...multiSelectStyles,
-    control: (base) => ({
-        ...base,
-        cursor: 'pointer',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: 'auto',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: '0px',
-        maxHeight: '180px',
-    }),
-}
-
-export const JobCreationType = {
-    Blank: 'BLANK',
-    Existing: 'EXISTING',
-}
-
 export const JobListViewType = {
     LOADING: 'LOADING',
     LIST: 'LIST',
@@ -61,39 +36,4 @@ export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJobInfoText:
         'Jobs allow manual and automated execution of developer actions. Increase productivity by automating the tedious. Get started by creating your first job.',
     createJobButtonLabel: 'Create Job',
-}
-
-export const JobsFilterTypeText = {
-    PROJECT: 'team',
-    APP_STATUS: 'appStatus',
-    StatusText: 'Status',
-    SearchStatus: 'Search job status',
-    ProjectText: 'Projects',
-    SearchProject: 'Search Project',
-    ENVIRONMENT: 'environment',
-    EnvironmentText: 'Environments',
-    SearchEnvironment: 'Search Environment',
-}
-
-export const JobsStatusConstants = {
-    APP_STATUS: {
-        noSpaceLower: 'appStatus',
-        normalText: 'App status',
-    },
-    PROJECT: {
-        pluralLower: 'projects',
-        lowerCase: 'project',
-    },
-    ENVIRONMENT: {
-        pluralLower: 'environments',
-        lowerCase: 'environment',
-    },
-}
-
-export const JOB_STATUS = {
-    Starting: 'Starting',
-    Running: 'Running',
-    Succeeded: 'Succeeded',
-    Cancelled: 'CANCELLED',
-    Failed: 'Failed',
 }

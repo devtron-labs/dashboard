@@ -15,12 +15,11 @@
  */
 
 import moment from 'moment'
-import { get, post, APIOptions, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, APIOptions, ZERO_TIME_STRING, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
-import { JOB_STATUS } from './Constants'
-import { JobCIPipeline, JobList } from './Types'
+import { JobCIPipeline, JobList, JobListStatus, JobListStatusDTO, JobsMasterFilters } from './Types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 
 export const getJobs = (request, options?: APIOptions) => {
@@ -35,64 +34,41 @@ export const getJobCIPipelines = (jobId: number) => {
     return get(`${Routes.JOB_CI_PIPELINE_LIST}/${jobId}`)
 }
 
-export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Promise<any> => {
+export const getJobsInitFilters = (): Promise<JobsMasterFilters> => {
     return Promise.all([getProjectList(), getEnvironmentListMinPublic()]).then(([projectsRes, environmentsRes]) => {
-        const filterApplied = {
-            teams: new Set(payloadParsedFromUrl.teams),
-            appStatus: new Set(payloadParsedFromUrl.appStatuses),
-        }
-        const filters = {
-            projects: [],
-            appStatus: [],
-            environments: [],
-        }
-
-        // set filter projects starts
-        filters.projects = (
-            projectsRes.result
-                ? projectsRes.result.map((team) => {
+        const filters: JobsMasterFilters = {
+            projects: (projectsRes.result
+                ? projectsRes.result.map((team: Teams) => {
                       return {
-                          key: team.id,
                           label: team.name.toLocaleLowerCase(),
-                          isSaved: true,
-                          isChecked: filterApplied.teams.has(team.id),
+                          value: String(team.id),
                       }
                   })
                 : []
-        ).sort((a, b) => {
-            return sortOptionsByLabel(a, b)
-        })
-
-        // set filter appStatus starts
-        filters.appStatus = Object.entries(JOB_STATUS).map(([keys, values]) => {
-            return {
-                key: values,
-                label: keys,
-                isSaved: true,
-                isChecked: filterApplied.appStatus.has(values),
-            }
-        })
-
-        filters.environments = (
-            environmentsRes.result
+            ).sort((a, b) => {
+                return sortOptionsByLabel(a, b)
+            }),
+            status: [
+                {label: JobListStatus.SUCCEEDED, value: JobListStatusDTO.SUCCEEDED},
+                {label: JobListStatus.STARTING, value: JobListStatusDTO.STARTING},
+                {label: JobListStatus.RUNNING, value: JobListStatusDTO.RUNNING},
+                {label: JobListStatus.CANCELLED, value: JobListStatusDTO.CANCELLED},
+                {label: JobListStatus.FAILED, value: JobListStatusDTO.FAILED},
+            ],
+            environments: (environmentsRes.result
                 ? environmentsRes.result.map((team) => {
                       return {
-                          key: team.id,
-                          label: team.environment_name.toLocaleLowerCase(),
-                          isSaved: true,
-                          isChecked: filterApplied.teams.has(team.id),
+                          label: String(team.environment_name.toLocaleLowerCase()),
+                          value: String(team.id),
                       }
                   })
                 : []
-        ).sort((a, b) => {
-            return sortOptionsByLabel(a, b)
-        })
-
-        return {
-            projectsRes,
-            environmentsRes,
-            filters,
+            ).sort((a, b) => {
+                return sortOptionsByLabel(a, b)
+            }),
         }
+
+        return filters
     })
 }
 

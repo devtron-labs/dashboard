@@ -20,7 +20,6 @@ import {
     ConditionalWrap,
     VisibleModal,
     DetailsProgressing,
-    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -37,7 +36,6 @@ export default function ExportToCsv({
     className = '',
     disabled = false,
     showOnlyIcon = false,
-    size = ComponentSizeType.medium,
 }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
@@ -157,7 +155,7 @@ export default function ExportToCsv({
 
     return (
         <div
-            className={`export-to-csv-button ${showOnlyIcon ? 'w-32' : ''} ${size === ComponentSizeType.medium ? 'h-32' : 'h-36'} ${className}`}
+            className={`export-to-csv-button ${showOnlyIcon ? 'w-32' : ''} h-32 ${className}`}
         >
             <ConditionalWrap
                 condition={disabled}
@@ -168,7 +166,7 @@ export default function ExportToCsv({
                 )}
             >
                 <button
-                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'w-32 mw-none' : 'w-100'} ${size === ComponentSizeType.medium ? 'h-32' : 'h-36'} ${
+                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'w-32 mw-none' : 'w-100'} h-32 ${
                         disabled ? 'nothing-to-export' : ''
                     }`}
                     onClick={generateDataToExport}

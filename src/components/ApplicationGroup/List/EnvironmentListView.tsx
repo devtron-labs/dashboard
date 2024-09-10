@@ -22,7 +22,7 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
@@ -57,62 +57,38 @@ const EnvironmentLink = ({
     )
 }
 
-export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }: EnvironmentsListViewType) {
-    const match = useRouteMatch()
-    const location = useLocation()
-    const history = useHistory()
+export default function EnvironmentsListView({
+    isSuperAdmin,
+    filterConfig,
+    clearFilters,
+    changePage,
+    changePageSize,
+}: EnvironmentsListViewType) {
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
     const [envCount, setEnvCount] = useState<number>()
-    const [paginationParamsChange, setPaginationParamsChange] = useState({ pageSize: 20, offset: 0 })
-    const params = new URLSearchParams(location.search)
-    const paramObj = {
-        envName: params.get('search'),
-        clusterIds: params.get('cluster'),
-        offset: params.get('offset') || '0',
-        size: params.get('pageSize') || '20',
-    }
-    const [paramsData, setParamsData] = useState(paramObj)
-    const [loading, appList] = useAsync(() => getEnvAppList(paramsData), [paramsData])
-    const emptyStateData = paramObj.clusterIds
+    const { cluster } = filterConfig
+    const [loading, appList] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
+    const emptyStateData = cluster.join()
         ? { title: 'No app groups found', subTitle: "We couldn't find any matching app groups." }
         : { title: '', subTitle: '' }
-
-    useEffect(() => {
-        setParamsData(paramObj)
-    }, [location.search])
 
     useEffect(() => {
         if (appList?.result?.envList) {
             setFilteredEnvList(appList.result.envList)
             setEnvCount(appList.result.envCount)
-            setPaginationParamsChange({ pageSize: +params.get('pageSize') || 20, offset: +params.get('offset') })
         } else {
             setFilteredEnvList([])
         }
     }, [appList?.result])
 
-    const changePage = (pageNo: number): void => {
-        const pageSize = params.get('pageSize') || '20'
-        const newOffset = +pageSize * (pageNo - 1)
-        params.set('pageSize', pageSize)
-        params.set('offset', newOffset.toString())
-        history.push(`${match.url}?${params.toString()}`)
-    }
-
-    const changePageSize = (size: number): void => {
-        params.set('pageSize', size.toString())
-        params.set('offset', '0')
-        history.push(`${match.url}?${params.toString()}`)
-    }
-
     const renderPagination = () => {
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="flex dc__content-space px-20 dc__border-top"
+                    rootClassName="flex dc__content-space px-20"
                     size={envCount}
-                    pageSize={paginationParamsChange.pageSize}
-                    offset={paginationParamsChange.offset}
+                    pageSize={filterConfig.pageSize}
+                    offset={filterConfig.offset}
                     changePage={changePage}
                     changePageSize={changePageSize}
                 />
@@ -139,7 +115,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
             <EnvEmptyStates
                 title={emptyStateData.title}
                 subTitle={emptyStateData.subTitle}
-                actionHandler={removeAllFilters}
+                actionHandler={clearFilters}
             />
         )
     }

@@ -27,6 +27,7 @@ import {
     AppInfoListType,
     GVKType,
     RuntimeParamsListItemType,
+    UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
@@ -254,9 +255,15 @@ export interface ApplicationRouteType {
     fetchEnvConfig: () => void
 }
 
-export interface EnvironmentsListViewType {
-    removeAllFilters: () => void
+export interface AppGroupFilterConfig
+    extends Pick<UseUrlFiltersReturnType<never>, 'searchKey' | 'offset' | 'pageSize'> {
+    cluster: string[]
+}
+
+export interface EnvironmentsListViewType
+    extends Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'> {
     isSuperAdmin: boolean
+    filterConfig: AppGroupFilterConfig
 }
 
 export interface EnvironmentLinkProps {
@@ -591,3 +598,9 @@ export interface ManageAppsResponseType {
     id: string
     error: string
 }
+
+export enum AppGroupUrlFilters {
+    cluster = 'cluster',
+}
+
+export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
