@@ -139,15 +139,18 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
         setFormData(_formData)
     }
 
-    const handleFormatChange = (selectedValue: OptionType, index: number): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
-            selectedValue.label
-        if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+    const handleFormatChange =
+        (index: number) =>
+        (selectedValue: OptionType): void => {
+            const _formData = { ...formData }
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][
+                index
+            ].format = selectedValue.label
+            if (type === PluginVariableType.OUTPUT) {
+                calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            }
+            setFormData(_formData)
         }
-        setFormData(_formData)
-    }
 
     const isDateFormat = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
         VariableFieldType[type]
@@ -255,9 +258,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                                 ? { label: variable.format, value: variable.format }
                                                                 : formatOptions[0]
                                                         }
-                                                        onChange={(selectedValue: OptionType) => {
-                                                            handleFormatChange(selectedValue, index)
-                                                        }}
+                                                        onChange={handleFormatChange(index)}
                                                         options={formatOptions}
                                                         isSearchable={false}
                                                     />
@@ -283,9 +284,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                     }
                                                     classNamePrefix="input-variable-format-select"
                                                     inputId="input-variable"
-                                                    onChange={(selectedValue: OptionType) => {
-                                                        handleFormatChange(selectedValue, index)
-                                                    }}
+                                                    onChange={handleFormatChange(index)}
                                                     options={formatOptions}
                                                     isSearchable={false}
                                                     name="format"
