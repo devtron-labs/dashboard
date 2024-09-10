@@ -34,9 +34,10 @@ export default function DeploymentConfigToolbar({
     handleReadMeClick,
     convertVariables,
     setConvertVariables,
+    unableToParseYaml,
 }: DeploymentConfigToolbarProps) {
     const getTabClassName = (index: number) =>
-        `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
+        `flex fs-12 lh-20 pb-8 dc__transparent dc__gap-4 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
 
     const getTabIconClass = (index: number) => `icon-dim-16 dc__no-shrink ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
@@ -88,6 +89,7 @@ export default function DeploymentConfigToolbar({
                                 color="var(--B500)"
                                 onSelect={handleViewVariablesClick}
                                 Icon={ViewVariablesIcon}
+                                disabled={unableToParseYaml}
                             />
                         </div>
                     </li>

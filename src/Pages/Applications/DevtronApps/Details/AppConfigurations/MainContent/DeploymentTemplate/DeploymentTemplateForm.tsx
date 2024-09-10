@@ -1,75 +1,69 @@
 import {
+    CodeEditor,
     ConfigurationType,
-    getDeploymentTemplateEditorKey,
-    Progressing,
-    useDeploymentTemplateComputedData as useCommonDeploymentTemplateComputedData,
-    useDeploymentTemplateContext,
+    DeploymentTemplateTabsType,
+    MODES,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
 import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
 import { DeploymentTemplateFormProps } from './types'
-import DeploymentTemplateEditor from './DeploymentTemplateEditor'
-
-const useDeploymentTemplateComputedData = importComponentFromFELibrary(
-    'useDeploymentTemplateComputedData',
-    useCommonDeploymentTemplateComputedData,
-    'function',
-)
 
 const DeploymentTemplateForm = ({
     editMode,
     hideLockedKeys,
     lockedConfigKeysWithLockType,
     readOnly,
-    resolveScopedVariables,
+    selectedTab,
+    currentEditorTemplateData,
+    isUnSet,
+    wasGuiOrHideLockedKeysEdited,
+    handleEnableWasGuiOrHideLockedKeysEdited,
+    handleChangeToYAMLMode,
+    editorOnChange,
+    editedDocument,
+    uneditedDocument,
 }: DeploymentTemplateFormProps) => {
-    const { editorOnChange } = useDeploymentTemplateContext()
-
-    const { editedDocument, isResolvingVariables, uneditedDocumentWithoutLockedKeys, uneditedDocument } =
-        useDeploymentTemplateComputedData({
-            resolveScopedVariables,
-            hideLockedKeys,
-        })
-
-    const formKey = getDeploymentTemplateEditorKey({
-        hideLockedKeys,
-        resolveScopedVariables,
-        isResolvingVariables,
-    })
-
-    if (isResolvingVariables) {
-        return (
-            <div className="flex h-100 dc__overflow-scroll">
-                <Progressing pageLoader />
-            </div>
-        )
+    if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
+        // TODO: Implement compare view
+        return null
     }
 
     if (editMode === ConfigurationType.GUI) {
         return (
             <DeploymentTemplateGUIView
-                uneditedDocument={uneditedDocumentWithoutLockedKeys}
+                // TODO: This is with locked keys so original value is passed
+                uneditedDocument={uneditedDocument}
                 editedDocument={editedDocument}
                 value={editedDocument}
                 // TODO: Look into this later for readme, etc
                 readOnly={readOnly}
-                // TODO: Look into this later
                 hideLockedKeys={hideLockedKeys}
                 editorOnChange={editorOnChange}
-                // TODO: Look into this later
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                key={`${formKey}-gui-view`}
+                isUnSet={isUnSet}
+                selectedChart={currentEditorTemplateData.selectedChart}
+                guiSchema={currentEditorTemplateData.guiSchema}
+                wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
+                handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
+                handleChangeToYAMLMode={handleChangeToYAMLMode}
+                rootClassName="flexbox-col flex-grow-1"
             />
         )
     }
 
     return (
-        <DeploymentTemplateEditor
-            editedDocument={editedDocument}
-            uneditedDocument={uneditedDocument}
-            showDiff={false}
+        <CodeEditor
+            defaultValue={uneditedDocument}
+            value={editedDocument}
+            chartVersion={currentEditorTemplateData.selectedChart?.version.replace(/\./g, '-')}
+            onChange={readOnly ? noop : editorOnChange}
+            mode={MODES.YAML}
+            validatorSchema={currentEditorTemplateData.schema}
+            // TODO: Can look into this
+            diffView={false}
             readOnly={readOnly}
-            key={`${formKey}-gui-view`}
+            noParsing
+            height="100%"
         />
     )
 }

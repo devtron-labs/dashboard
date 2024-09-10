@@ -60,7 +60,6 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import { applyCompareDiffOfTempFormDataOnOriginalData, getDeploymentTemplateQueryParser } from './utils'
-import DeploymentTemplateForm from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentTemplate/DeploymentTemplateForm'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -309,9 +308,9 @@ export default function DeploymentConfig({
             readme,
             schema,
         } = JSON.parse(latestDraft.data)
-
         const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
+        // FIXME: Should not we set gui schema here as well?
         const payload: Partial<DeploymentConfigStateWithDraft> = {
             template: valuesOverride,
             chartConfig: {
@@ -809,20 +808,6 @@ export default function DeploymentConfig({
             )
         }
 
-        // TODO: Should be default case
-        if (selectedTab === DeploymentTemplateTabsType.EDIT) {
-            return (
-                <DeploymentTemplateForm
-                    editMode={editMode}
-                    hideLockedKeys={hideLockedKeys}
-                    lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                    readOnly={isReadOnlyView}
-                    resolveScopedVariables={resolveScopedVariables}
-                />
-            )
-        }
-
-        // TODO: Won;t reach here
         return (
             <DeploymentTemplateEditorView
                 defaultValue={state.publishedState?.tempFormData ?? state.data}

@@ -21,6 +21,7 @@ import {
     MarkDown,
     CodeEditor,
     useDeploymentTemplateContext,
+    DeploymentConfigStateActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentTemplateReadOnlyEditorViewProps } from '../types'
@@ -38,7 +39,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
     hideLockedKeys,
     uneditedDocument,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
-    const { state } = useDeploymentTemplateContext()
+    const { state, isUnSet, handleChangeToYAMLMode, dispatch } = useDeploymentTemplateContext()
     const addOperationsRef = useRef([])
 
     // NOTE: the following can throw error but not putting it in try block
@@ -55,6 +56,10 @@ export default function DeploymentTemplateReadOnlyEditorView({
                 simpleKeys: true,
             })
         }
+    }
+
+    const handleEnableWasGuiOrHideLockedKeysEdited = () => {
+        dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
     }
 
     const renderCodeEditor = (): JSX.Element => {
@@ -93,6 +98,14 @@ export default function DeploymentTemplateReadOnlyEditorView({
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
             readOnly
             uneditedDocument={uneditedDocument}
+
+            isUnSet={isUnSet}
+            handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
+            handleChangeToYAMLMode={handleChangeToYAMLMode}
+            wasGuiOrHideLockedKeysEdited={state.wasGuiOrHideLockedKeysEdited}
+            isLoading={state.chartConfigLoading}
+            guiSchema={state.guiSchema}
+            selectedChart={state.selectedChart}
         />
     )
 }

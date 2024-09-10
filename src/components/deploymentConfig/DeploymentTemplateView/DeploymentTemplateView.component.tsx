@@ -55,6 +55,7 @@ import { getPosition, handleConfigProtectionError, textDecider } from '../Deploy
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
 import '../deploymentConfig.scss'
 
+// TODO: Convert to select picker
 export const ChartTypeVersionOptions = ({
     isUnSet,
     disableVersionSelect,

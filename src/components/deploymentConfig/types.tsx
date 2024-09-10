@@ -326,7 +326,7 @@ export interface DeploymentConfigToolbarProps {
     handleReadMeClick: () => void
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
-    componentType: string
+    unableToParseYaml: boolean
 }
 
 export interface DropdownContainerProps {
@@ -356,6 +356,18 @@ export interface DeploymentTemplateGUIViewProps
     readOnly: boolean
     uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']
     editedDocument?: DeploymentTemplateEditorViewProps['editedDocument']
+
+    isUnSet: boolean
+    handleEnableWasGuiOrHideLockedKeysEdited: () => void
+    wasGuiOrHideLockedKeysEdited: boolean
+    handleChangeToYAMLMode: () => void
+    /**
+     * @default - false
+     */
+    isLoading?: boolean
+    guiSchema: string
+    selectedChart: DeploymentChartVersionType
+    rootClassName?: string
 }
 
 export interface Schema {

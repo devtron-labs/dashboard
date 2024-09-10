@@ -26,6 +26,7 @@ import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
+import DeploymentConfig from '@Components/deploymentConfig/DeploymentConfig'
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
@@ -34,7 +35,7 @@ import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
-const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
+const DeploymentTemplate = lazy(() => import('./DeploymentTemplate/DeploymentTemplate'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
@@ -202,7 +203,16 @@ const AppComposeRouter = () => {
             )}
             {isUnlocked.deploymentTemplate && (
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                    <DeploymentConfig
+                    {/* TODO: Based on flag can toggle */}
+                    {/* <DeploymentConfig
+                        respondOnSuccess={respondOnSuccess}
+                        isUnSet={!isUnlocked.workflowEditor}
+                        isCiPipeline={isCiPipeline}
+                        environments={environments}
+                        isProtected={isBaseConfigProtected}
+                        reloadEnvironments={reloadEnvironments}
+                    /> */}
+                    <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}

@@ -83,6 +83,7 @@ export const applyCompareDiffOfTempFormDataOnOriginalData = (
     updateTempFormData?: (data: string) => void,
 ) => {
     const updated = applyCompareDiffOnUneditedDocument(YAML.parse(unedited), YAML.parse(edited))
+    // TODO: Can add simpleKeys?
     updateTempFormData?.(YAMLStringify(updated))
     return updated
 }

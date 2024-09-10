@@ -67,7 +67,7 @@ const DeploymentTemplateEditorView = ({
     uneditedDocument,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const { isUnSet, state, environments, dispatch } = useDeploymentTemplateContext()
+    const { isUnSet, state, environments, dispatch, handleChangeToYAMLMode } = useDeploymentTemplateContext()
     const [fetchingValues, setFetchingValues] = useState(false)
     const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
@@ -228,6 +228,10 @@ const DeploymentTemplateEditorView = ({
             triggerEditorLoadingState()
         }
     }, [state.selectedTabIndex])
+
+    const handleEnableWasGuiOrHideLockedKeysEdited = () => {
+        dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+    }
 
     const setSelectedOption = (selectedOption: DeploymentChartOptionType) => {
         dispatch({
@@ -483,6 +487,14 @@ const DeploymentTemplateEditorView = ({
             hideLockedKeys={hideLockedKeys}
             editorOnChange={editorOnChange}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+
+            isUnSet={isUnSet}
+            handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
+            handleChangeToYAMLMode={handleChangeToYAMLMode}
+            wasGuiOrHideLockedKeysEdited={state.wasGuiOrHideLockedKeysEdited}
+            isLoading={state.chartConfigLoading}
+            guiSchema={state.guiSchema}
+            selectedChart={state.selectedChart}
         />
     )
 }

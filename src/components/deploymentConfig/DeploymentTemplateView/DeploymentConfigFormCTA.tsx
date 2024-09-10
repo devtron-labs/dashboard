@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import { useState } from 'react'
 import {
     CHECKBOX_VALUE,
     Checkbox,
@@ -57,7 +57,7 @@ export default function DeploymentConfigFormCTA({
     handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } = useDeploymentTemplateContext()
-    const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
+    const [approveChangesClicked, setApproveChangesClicked] = useState<boolean>(false)
     const { isSuperAdmin } = useMainContext()
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading || convertVariables

@@ -25,8 +25,6 @@ import {
     joinObjects,
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    useDeploymentTemplateContext,
-    DeploymentConfigStateActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
@@ -45,13 +43,16 @@ const DeploymentTemplateGUIView = ({
     lockedConfigKeysWithLockType,
     uneditedDocument,
     editedDocument,
+
+    isUnSet,
+    handleEnableWasGuiOrHideLockedKeysEdited,
+    wasGuiOrHideLockedKeysEdited,
+    handleChangeToYAMLMode,
+    isLoading = false,
+    guiSchema,
+    selectedChart,
+    rootClassName,
 }: DeploymentTemplateGUIViewProps) => {
-    const {
-        isUnSet,
-        state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
-        dispatch,
-        handleChangeToYAMLMode,
-    } = useDeploymentTemplateContext()
     const [formData, setFormData] = useState(null)
 
     useEffect(() => {
@@ -109,14 +110,14 @@ const DeploymentTemplateGUIView = ({
 
     const handleFormChange: FormProps['onChange'] = (data) => {
         if (!wasGuiOrHideLockedKeysEdited) {
-            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+            handleEnableWasGuiOrHideLockedKeysEdited()
         }
         editorOnChange?.(YAML.stringify(data.formData))
     }
 
     const renderContent = () => {
         // TODO: Can remove
-        if (chartConfigLoading) {
+        if (isLoading) {
             return <Progressing pageLoader />
         }
 
@@ -138,7 +139,7 @@ const DeploymentTemplateGUIView = ({
 
         return (
             <RJSFForm
-                className="w-650-px"
+                className="w-650"
                 schema={state.guiSchema}
                 formData={formData || {}}
                 onChange={handleFormChange}
@@ -152,6 +153,14 @@ const DeploymentTemplateGUIView = ({
         )
     }
 
+    const guiContainerClassName = rootClassName
+        ? `${rootClassName} dc__overflow-scroll ${
+              !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
+          } ${state.error ? 'dc__border-bottom-n1 gui--no-infobar' : ''}`
+        : `form__row--gui-container dc__overflow-scroll ${
+              !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
+          } ${state.error ? 'dc__border-bottom-n1 gui--no-infobar' : ''}`
+
     return (
         <>
             {isUnSet && (
@@ -161,13 +170,7 @@ const DeploymentTemplateGUIView = ({
                 </div>
             )}
 
-            <div
-                className={`form__row--gui-container dc__overflow-scroll ${
-                    !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
-                } ${state.error ? 'dc__border-bottom-n1 gui--no-infobar' : ''}`}
-            >
-                {renderContent()}
-            </div>
+            <div className={guiContainerClassName}>{renderContent()}</div>
 
             {/* In case of readOnly makes no sense */}
             {!state.error && (
