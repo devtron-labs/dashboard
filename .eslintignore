@@ -207,7 +207,6 @@ src/components/charts/list/DeployedChartFilters.tsx
 src/components/charts/list/DiscoverCharts.tsx
 src/components/charts/modal/ChartGroupBasicDeploy.tsx
 src/components/charts/modal/CreateChartGroup.tsx
-src/components/charts/modal/DeployChart.tsx
 src/components/charts/useChartGroup.ts
 src/components/charts/util/ChartGroupCard.tsx
 src/components/charts/util/ChartSelect.tsx
@@ -482,7 +481,6 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.reducer.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.utils.ts
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
-src/components/v2/values/common/ReadmeColumn.component.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx

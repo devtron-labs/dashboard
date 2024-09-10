@@ -24,8 +24,6 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState> {
-    _inputName: HTMLInputElement
-
     constructor(props) {
         super(props)
         this.state = {
@@ -38,9 +36,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     componentDidMount() {
         if (this.props.match.params.workflowId) {
             this.getWorkflow()
-        }
-        if (this._inputName) {
-            this._inputName.focus()
         }
     }
 
@@ -60,9 +55,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-        if (this._inputName) {
-            this._inputName.focus()
-        }
     }
 
     handleWorkflowName = (event): void => {
@@ -116,12 +108,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             >
                 <label className="form__row">
                     <CustomInput
-                        ref={(node) => {
-                            if (node) {
-                                node.focus()
-                            }
-                            this._inputName = node
-                        }}
                         name="workflow-name"
                         label="Workflow Name"
                         value={this.state.name}

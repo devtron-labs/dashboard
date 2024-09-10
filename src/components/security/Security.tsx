@@ -16,12 +16,12 @@
 
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
+import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 
 interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE

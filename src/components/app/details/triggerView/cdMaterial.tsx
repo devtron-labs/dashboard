@@ -15,7 +15,7 @@
  */
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
 import { Prompt, useHistory } from 'react-router-dom'
@@ -66,6 +66,9 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
     SearchBar,
     CDMaterialSidebarType,
     RuntimeParamsListItemType,
@@ -95,9 +98,9 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
-import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact@2x.png'
 import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
-import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
+import { CDButtonLabelMap, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
     getRecentDeploymentConfig,
@@ -105,7 +108,6 @@ import {
     triggerCDNode,
 } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     DEPLOYMENT_CONFIGURATION_NAV_MAP,
     LAST_SAVED_CONFIG_OPTION,
@@ -1208,7 +1210,7 @@ const CDMaterial = ({
         ) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No eligible image found"
                     subTitle={renderFilterEmptyStateSubtitle()}
                     isButtonAvailable={!noMoreImages}
@@ -1220,7 +1222,7 @@ const CDMaterial = ({
         if (searchImageTag) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No matching image available"
                     subTitle="We couldn't find any matching image"
                     isButtonAvailable
@@ -1244,7 +1246,7 @@ const CDMaterial = ({
 
         return (
             <GenericEmptyState
-                image={noartifact}
+                image={noArtifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     materialType == MATERIAL_TYPE.rollbackMaterialList
@@ -1877,33 +1879,23 @@ const CDMaterial = ({
                     !showConfigDiffView &&
                     stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
-                            <div className="flex">
-                                <ReactSelect
+                            <div className="flex px-16">
+                                <span className="fs-13 fw-4 cn-9">Deploy:&nbsp;</span>
+                                <SelectPicker
+                                    inputId="deploy-config-select"
+                                    name="deploy-config-select"
+                                    variant={SelectPickerVariantType.BORDER_LESS}
                                     options={getDeployConfigOptions(
                                         state.isRollbackTrigger,
                                         state.recentDeploymentConfig !== null,
                                     )}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                        ValueContainer: customValueContainer,
-                                    }}
                                     isDisabled={state.checkingDiff}
                                     isSearchable={false}
-                                    formatOptionLabel={formatOptionLabel}
                                     classNamePrefix="deploy-config-select"
                                     placeholder="Select Config"
-                                    menuPlacement="top"
                                     value={state.selectedConfigToDeploy}
-                                    styles={getCommonConfigSelectStyles({
-                                        valueContainer: (base, state) => ({
-                                            ...base,
-                                            minWidth: '135px',
-                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                        }),
-                                    })}
                                     onChange={handleConfigSelection}
+                                    menuSize={ComponentSizeType.medium}
                                 />
                             </div>
                             <span className="dc__border-left h-100" />

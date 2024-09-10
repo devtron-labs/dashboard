@@ -21,12 +21,11 @@ import {
     getNamespaceListMin as getNamespaceList,
     EnvironmentListHelmResponse,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppFilters } from '../../../services/service'
+import { getAppFilters, getClusterListMinWithoutAuth } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
 import { Cluster } from '../../../services/service.types'
 import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
-import { getClusterList } from '../../cluster/cluster.service'
 import { HelmAppListResponse, FluxCDTemplateType } from './AppListType'
 import { InitialEmptyMasterFilters } from './Constants'
 
@@ -34,7 +33,7 @@ async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
         return getAppFilters()
     }
-    return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
+    return Promise.all([getProjectList(), getClusterListMinWithoutAuth()]).then(([projectListRes, clusterListResp]) => {
         return { result: { Teams: projectListRes?.result, Clusters: clusterListResp?.result } }
     })
 }
