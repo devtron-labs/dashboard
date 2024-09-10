@@ -16,7 +16,6 @@
 
 import { useContext } from 'react'
 import { ConditionType, CustomInput, RefVariableType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -187,9 +186,9 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        Standardized date formats
-                                    </a>{' '}
-                                    <span className="cn-9">identified by Devtron</span>{' '}
+                                        Standardized date formats&nbsp;
+                                    </a>
+                                    <span className="cn-9">identified by Devtron</span>
                                 </span>
                             </div>
                         </div>
@@ -242,13 +241,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                             </div>
 
                                             {type === PluginVariableType.OUTPUT && (
-                                                <div
-                                                    style={{
-                                                        width: '20%',
-                                                        borderTopRightRadius: '4px',
-                                                    }}
-                                                    className="dc__border-right"
-                                                >
+                                                <div className="dc__border-right w-20 dc__top-right-radius-4">
                                                     <SelectPicker
                                                         inputId="output-variable-format-select"
                                                         name="output-variable-format-select"
@@ -268,14 +261,10 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">
-                                            <div className="dc__border-left" style={{ width: '80%' }}>
+                                            <div className="dc__border-left w-80">
                                                 <CustomInputVariableSelect selectedVariableIndex={index} />
                                             </div>
-                                            <div
-                                                style={{
-                                                    width: '10%',
-                                                }}
-                                            >
+                                            <div className="w-20">
                                                 <SelectPicker
                                                     value={
                                                         variable.format
