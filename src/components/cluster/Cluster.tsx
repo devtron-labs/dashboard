@@ -53,7 +53,7 @@ import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCre
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
-import Environment from './Environment'
+import { Environment } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/Environment'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -354,7 +354,6 @@ const Cluster = ({
     })
     const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
-    const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
 
     const isDefaultCluster = (): boolean => {
@@ -519,9 +518,9 @@ const Cluster = ({
     const getEnvironmentPayload = () => {
         return {
             id: environment.id,
-            environment_name: environment.environment_name,
-            cluster_id: environment.cluster_id,
-            prometheus_endpoint: environment.prometheus_endpoint,
+            environment_name: environment.environmentName,
+            cluster_id: environment.clusterId,
+            prometheus_endpoint: environment.prometheusEndpoint,
             namespace: environment.namespace || '',
             active: true,
             default: environment.isProduction,
@@ -573,18 +572,6 @@ const Cluster = ({
         }
     }
 
-    const outsideClickHandler = (evt): void => {
-        if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
-            setShowWindow(false)
-        }
-    }
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
-
     const envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     const renderNoEnvironmentTab = () => {
@@ -613,10 +600,10 @@ const Cluster = ({
     const addCluster = () => {
         setEnvironment({
             id: null,
-            environment_name: null,
-            cluster_id: clusterId,
+            environmentName: null,
+            clusterId,
             namespace: null,
-            prometheus_url,
+            prometheusEndpoint: prometheus_url,
             isProduction: null,
             description: null,
         })
@@ -744,10 +731,10 @@ const Cluster = ({
                                             onClick={() =>
                                                 setEnvironment({
                                                     id,
-                                                    environment_name,
-                                                    cluster_id: clusterId,
+                                                    environmentName: environment_name,
+                                                    clusterId,
                                                     namespace,
-                                                    prometheus_url,
+                                                    prometheusEndpoint: prometheus_url,
                                                     isProduction,
                                                     description,
                                                 })
@@ -813,7 +800,7 @@ const Cluster = ({
                                 setDeleting={clusterDelete}
                                 deleteComponent={deleteEnvironment}
                                 payload={getEnvironmentPayload()}
-                                title={environment.environment_name}
+                                title={environment.environmentName}
                                 toggleConfirmation={toggleConfirmation}
                                 component={DeleteComponentsName.Environment}
                                 confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
@@ -858,16 +845,13 @@ const Cluster = ({
             </article>
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <div className="h-100 bcn-0" ref={editLabelRef}>
-                        <Environment
-                            reload={reload}
-                            cluster_name={cluster_name}
-                            {...environment}
-                            hideClusterDrawer={hideClusterDrawer}
-                            isNamespaceMandatory={!isVirtualCluster}
-                            isVirtual={isVirtualCluster}
-                        />
-                    </div>
+                    <Environment
+                        reload={reload}
+                        cluster_name={cluster_name}
+                        {...environment}
+                        hideClusterDrawer={hideClusterDrawer}
+                        isVirtual={isVirtualCluster}
+                    />
                 </Drawer>
             )}
         </>
