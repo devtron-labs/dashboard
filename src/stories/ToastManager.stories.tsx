@@ -35,22 +35,22 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
     args: {
         toastProps: {
-            title: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia aspernatur, odio vero vitae omnis quos cumque quaerat debitis minus blanditiis, autem distinctio, animi exercitationem nesciunt nostrum commodi id consequuntur unde!',
+            description:
+                'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia aspernatur, odio vero vitae omnis quos cumque quaerat debitis minus blanditiis, autem distinctio, animi exercitationem nesciunt nostrum commodi id consequuntur unde!',
         },
-        // toastOptions: {
-        //     autoClose: false,
-        // },
+        toastOptions: {
+            autoClose: false,
+        },
     },
 }
 
-export const WithDescription: Story = {
+export const WithCustomTitle: Story = {
     ...Default,
     args: {
         ...Default.args,
         toastProps: {
             ...Default.args.toastProps,
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure animi possimus, itaque commodi perspiciatis omnis adipisci, eum voluptatem facilis exercitationem voluptate aspernatur dolorem quasi! Odio, voluptates! Quas ipsum quaerat enim? Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure animi possimus, itaque commodi perspiciatis omnis adipisci, eum voluptatem facilis exercitationem voluptate aspernatur dolorem quasi! Odio, voluptates! Quas ipsum quaerat enim?',
+            title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure animi possimus, itaque commodi perspiciatis omnis adipisci, eum voluptatem facilis exercitationem voluptate aspernatur dolorem quasi! Odio, voluptates! Quas ipsum quaerat enim? Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure animi possimus, itaque commodi perspiciatis omnis adipisci, eum voluptatem facilis exercitationem voluptate aspernatur dolorem quasi! Odio, voluptates! Quas ipsum quaerat enim?',
         },
     },
 }
@@ -69,12 +69,12 @@ export const WithButton: Story = {
     },
 }
 
-export const WithDescriptionAndButton: Story = {
+export const WithCustomTitleAndButton: Story = {
     ...Default,
     args: {
         ...Default.args,
         toastProps: {
-            ...WithDescription.args.toastProps,
+            ...WithCustomTitle.args.toastProps,
             ...WithButton.args.toastProps,
         },
     },
