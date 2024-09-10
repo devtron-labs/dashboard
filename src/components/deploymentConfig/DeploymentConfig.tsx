@@ -732,7 +732,6 @@ export default function DeploymentConfig({
         let valuesOverride = obj
         const shouldReapplyRemovedLockedKeys = hideLockedKeys && reapplyRemovedLockedKeysToYaml
 
-        // TODO: Can look if we can move this to a hook and send removedPatches inside it.
         if (shouldReapplyRemovedLockedKeys) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
@@ -877,6 +876,16 @@ export default function DeploymentConfig({
         </div>
     )
 
+    const getSaveChangeModalCTAContent = () => {
+        if (state.loading) {
+            return <Progressing />
+        }
+        if (state.chartConfig.id) {
+            return 'Update'
+        }
+        return 'Save'
+    }
+
     // TODO: Should be memoized
     const getValueForContext = () => ({
         isUnSet: readOnlyPublishedMode ? false : isUnSet,
@@ -942,7 +951,10 @@ export default function DeploymentConfig({
                             onSave={save}
                             showAsModal={!state.showLockedTemplateDiff}
                             closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
-                        />
+                            isLoading={state.loading}
+                        >
+                            {getSaveChangeModalCTAContent()}
+                        </SaveConfirmationDialog>
                     )}
 
                     {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (

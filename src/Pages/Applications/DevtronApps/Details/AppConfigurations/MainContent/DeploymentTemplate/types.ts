@@ -1,3 +1,4 @@
+import { SyntheticEvent } from 'react'
 import {
     ConfigKeysWithLockType,
     DeploymentTemplateQueryParamsType,
@@ -72,4 +73,17 @@ export interface DeploymentTemplateFormProps
 export interface ResolvedEditorTemplateType {
     originalTemplate: string
     templateWithoutLockedKeys: string
+}
+
+export interface DeploymentTemplateCTAProps
+    extends Pick<DeploymentTemplateQueryParamsType, 'showReadMe' | 'selectedTab'>,
+        Pick<DeploymentTemplateProps, 'isCiPipeline'> {
+    isLoading: boolean
+    isDisabled: boolean
+    isAppMetricsConfigured: boolean
+    isAppMetricsEnabled: boolean
+    selectedChart: DeploymentChartVersionType
+    isInheriting: boolean
+    handleSave: (e: SyntheticEvent) => void
+    toggleAppMetrics: () => void
 }

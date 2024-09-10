@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { ReactNode } from 'react'
 import {
     ResponseType,
     ServerError,
@@ -345,6 +345,11 @@ export interface SaveConfirmationDialogProps {
     onSave: () => void
     showAsModal: boolean
     closeLockedDiffDrawerWithChildModal: () => void
+    isLoading: boolean
+    /**
+     * cta text content
+     */
+    children: ReactNode
 }
 
 export interface DeploymentTemplateGUIViewProps

@@ -446,12 +446,16 @@ export const SuccessToastBody = ({ chartConfig }) => (
     </div>
 )
 
+/**
+ * @deprecated
+ */
 export const SaveConfirmationDialog = ({
     onSave,
     showAsModal,
     closeLockedDiffDrawerWithChildModal,
+    isLoading,
+    children,
 }: SaveConfirmationDialogProps) => {
-    const { state } = useDeploymentTemplateContext()
     const saveConfirmationContent = () => (
         <div
             className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
@@ -478,22 +482,13 @@ export const SaveConfirmationDialog = ({
                     type="button"
                     className="cta"
                     onClick={onSave}
+                    disabled={isLoading}
                 >
-                    {getButtonState()}
+                    {children}
                 </button>
             </div>
         </div>
     )
-
-    const getButtonState = () => {
-        if (state.loading) {
-            return <Progressing />
-        }
-        if (state.chartConfig.id) {
-            return 'Update'
-        }
-        return 'Save'
-    }
 
     return (
         <>
