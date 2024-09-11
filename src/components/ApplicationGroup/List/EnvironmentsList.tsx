@@ -16,7 +16,6 @@
 
 import { useMemo } from 'react'
 import {
-    DevtronProgressing,
     useAsync,
     PageHeader,
     SearchBar,
@@ -25,11 +24,10 @@ import {
     FilterSelectPicker,
     FilterChips,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import './EnvironmentsList.scss'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
-import { AppGroupAdminType, AppGroupUrlFiltersType } from '../AppGroup.types'
+import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
 import { parseSearchParams } from '../AppGroup.utils'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
@@ -67,14 +65,17 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         updateSearchParams({ cluster: clusterOptions.map((clusterItem) => String(clusterItem.value)) })
     }
 
-    const getClusterLabelFromValue = (clusterId: string) => {
-        console.log(clusterOptions)
-        console.log(clusterId)
-        return clusterOptions.find((clusterItem) => clusterItem.value === clusterId).label
+    const getFormattedValue = (filterKey: AppGroupUrlFilters , filterValue: string) => {
+        switch (filterKey) {
+            case AppGroupUrlFilters.cluster:
+                return clusterOptions.find((clusterItem) => clusterItem.value === filterValue)?.label
+            default:
+                return filterValue
+        }
     }
 
     const selectedClusters: SelectPickerOptionType[] = cluster.map((clusterItem) => ({
-        label: getClusterLabelFromValue(clusterItem),
+        label: getFormattedValue(AppGroupUrlFilters.cluster, clusterItem),
         value: clusterItem,
     }))
 
@@ -99,7 +100,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
             clearFilters={clearFilters}
             className="px-20"
             onRemoveFilter={updateSearchParams}
-            getFormattedValue={getClusterLabelFromValue}
+            getFormattedValue={getFormattedValue}
         />
     )
 
