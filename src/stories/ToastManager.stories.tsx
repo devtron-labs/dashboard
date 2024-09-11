@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 
 type ShowToastParameters = Parameters<typeof ToastManager.showToast>
 
@@ -61,6 +62,7 @@ export const WithButton: Story = {
             buttonProps: {
                 dataTestId: 'button',
                 text: 'Reload',
+                startIcon: <ICArrowClockwise />,
             },
         },
     },
