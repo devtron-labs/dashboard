@@ -1,5 +1,6 @@
+import { MouseEvent } from 'react'
+
 import { TagType } from '@devtron-labs/devtron-fe-common-lib'
-import { Dispatch, MouseEvent, SetStateAction } from 'react'
 
 export interface EnvironmentLabelTextProps {
     heading: string
@@ -8,7 +9,7 @@ export interface EnvironmentLabelTextProps {
 
 export interface EnvironmentLabelsProps {
     tags: TagType[]
-    setTags: Dispatch<SetStateAction<TagType[]>>
+    setTags: (tags: TagType[]) => void
     isLoading?: boolean
     isError?: boolean
     error?: string

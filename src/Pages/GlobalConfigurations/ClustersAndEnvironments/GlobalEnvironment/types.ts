@@ -26,4 +26,7 @@ export type GetGlobalEnvironmentUpdatePayloadType = Pick<
     GlobalEnvironmentProps,
     'clusterId' | 'id' | 'prometheusEndpoint' | 'isVirtual'
 > &
-    Pick<ClusterNamespacesDTO, 'resourceVersion'> & { data: GlobalEnvironmentFormProps; namespaceLabels: TagType[] }
+    Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
+        data: GlobalEnvironmentFormProps
+        namespaceLabels?: TagType[]
+    }

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CustomInput,
     DeleteComponent,
     noop,
-    Progressing,
     showError,
     TagType,
-    useAsync,
+    ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -39,6 +41,7 @@ import { getClusterNamespaces } from '@Pages/GlobalConfigurations/ClustersAndEnv
 import { GlobalEnvironmentFormProps, GlobalEnvironmentProps } from './types'
 import { getClusterNamespaceByName, getGlobalEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { globalEnvironmentFormValidationSchema } from './schema'
+import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const renderVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
@@ -56,33 +59,76 @@ export const GlobalEnvironment = ({
     isVirtual,
 }: GlobalEnvironmentProps) => {
     // STATES
-    const [loading, setLoading] = useState(false)
-    const [confirmation, toggleConfirmation] = useState<boolean>(false)
-    // State is set when namespace labels have been externally modified which causes conflicts.
-    const [namespaceLabelsConflictErr, setNamespaceLabelsConflictErr] = useState(null)
-    // State used for `shouldRun` param of `useAsync` hook for fetching cluster namespaces.
-    const [fetchClusterNamespaces, setFetchClusterNamespaces] = useState(false)
-    // State for storing namespace labels fetched from cluster.
-    const [namespaceLabels, setNamespaceLabels] = useState<TagType[]>(null)
+    // Manages the loading state for create and update actions
+    const [crudLoading, setCrudLoading] = useState(false)
+    // Controls the visibility of the delete confirmation dialog
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+    // Stores namespace labels and resourceVersion fetched from the cluster
+    const [namespaceLabels, setNamespaceLabels] = useState<{ labels: TagType[]; resourceVersion: string }>({
+        labels: null,
+        resourceVersion: null,
+    })
+    // Stores the response from the clusterNamespaces API, including fetching state, data, and any error messages
+    const [clusterNamespaces, setClusterNamespaces] = useState<{
+        isFetching: boolean
+        data: ClusterNamespacesDTO[]
+        error: string
+    }>({
+        isFetching: false,
+        data: null,
+        error: null,
+    })
 
-    // REFS
-    // Ref to store the namespace resource version (used by BE to check if namespace labels have been modified externally).
-    const resourceVersion = useRef<string>(null)
     /**
-     * Tracks whether the environment update button has been clicked.
+     * Fetches the list of namespaces from the cluster and updates the state accordingly. \
+     * Optionally sets namespace labels after the fetch is complete.
      *
-     * This ref is used to determine if the user has initiated an environment update,
-     * which may influence subsequent logic or state updates in the component.
+     * @param _namespace - The specific namespace to fetch.
+     * @param [setNamespaceLabelsAfterFetch=true] - Flag to determine if namespace labels should be updated after fetching.
+     *
+     * @returns A promise that resolves to the fetched list of namespaces or `null` if the fetch fails.
      */
-    const isEnvironmentUpdateButtonClicked = useRef(false)
+    const fetchClusterNamespaces = async (_namespace: string, setNamespaceLabelsAfterFetch = true) => {
+        // Update clusterNamespaces state to reflect fetching state and reset data and error
+        setClusterNamespaces((prev) => ({
+            ...prev,
+            isFetching: setNamespaceLabelsAfterFetch,
+            data: null,
+            error: null,
+            resourceVersion: null,
+        }))
 
-    // ASYNC CALLS
-    const [clusterNamespacesLoader, clusterNamespaces, clusterNamespacesErr, reloadClusterNamespaces] = useAsync(
-        () => getClusterNamespaces(clusterId),
-        [clusterId, fetchClusterNamespaces],
-        fetchClusterNamespaces,
-        { resetOnChange: false },
-    )
+        try {
+            // Fetch namespaces from the cluster
+            const { result } = await getClusterNamespaces(clusterId)
+
+            // Update clusterNamespaces state with fetched data
+            setClusterNamespaces({
+                isFetching: false,
+                data: result,
+                error: null,
+            })
+
+            // Find the specific namespace and update namespaceLabels state
+            const clusterNamespace = getClusterNamespaceByName(result, _namespace)
+            setNamespaceLabels({
+                labels: setNamespaceLabelsAfterFetch ? getNamespaceLabels(clusterNamespace) : namespaceLabels.labels,
+                resourceVersion: clusterNamespace?.resourceVersion ?? null,
+            })
+
+            return result
+        } catch (err) {
+            // Handle error and update state with error message
+            setClusterNamespaces((prev) => ({
+                ...prev,
+                isFetching: false,
+                data: null,
+                error: err.errors[0].userMessage,
+            }))
+
+            return null
+        }
+    }
 
     // FORM METHODS
     const { data, errors, handleChange, handleSubmit, trigger } = useForm<GlobalEnvironmentFormProps>({
@@ -95,72 +141,55 @@ export const GlobalEnvironment = ({
         validations: globalEnvironmentFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
 
-    const onValidation: UseFormSubmitHandler<GlobalEnvironmentFormProps> = async (formData) => {
-        const payload = getGlobalEnvironmentUpdatePayload({
-            data: formData,
-            clusterId,
-            id,
-            namespaceLabels,
-            prometheusEndpoint,
-            resourceVersion: resourceVersion.current,
-            isVirtual,
-        })
+    const onValidation =
+        (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<GlobalEnvironmentFormProps> =>
+        async (formData) => {
+            const payload = getGlobalEnvironmentUpdatePayload({
+                data: formData,
+                clusterId,
+                id,
+                namespaceLabels: namespaceLabels.labels,
+                prometheusEndpoint,
+                resourceVersion: namespaceLabels.resourceVersion,
+                isVirtual,
+            })
 
-        let api
-        if (isVirtual) {
-            api = renderVirtualClusterSaveUpdate(id)
-        } else {
-            api = id ? updateEnvironment : saveEnvironment
-        }
-
-        try {
-            setLoading(true)
-            await api(payload, id)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
-            reload()
-            hideClusterDrawer()
-            setNamespaceLabelsConflictErr(null)
-        } catch (err) {
-            showError(err)
-            if (err.code === 409) {
-                setNamespaceLabelsConflictErr(err.errors[0].userMessage)
-            }
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const withLabelEditValidation = () => {
-        setNamespaceLabelsConflictErr(null)
-        setFetchClusterNamespaces(true)
-        isEnvironmentUpdateButtonClicked.current = true
-    }
-
-    useEffect(() => {
-        if (!isEnvironmentUpdateButtonClicked.current) {
-            if (!clusterNamespacesLoader && clusterNamespaces) {
-                setFetchClusterNamespaces(false)
-                const clusterNamespace = getClusterNamespaceByName(clusterNamespaces.result, data.namespace)
-                setNamespaceLabels(getNamespaceLabels(clusterNamespace))
-                resourceVersion.current = clusterNamespace?.resourceVersion ?? null
+            let api
+            if (isVirtual) {
+                api = renderVirtualClusterSaveUpdate(id)
             } else {
-                setNamespaceLabels(null)
+                api = id ? updateEnvironment : saveEnvironment
             }
-        } else if (
-            isEnvironmentUpdateButtonClicked.current &&
-            !clusterNamespacesLoader &&
-            !clusterNamespacesErr &&
-            clusterNamespaces
-        ) {
-            isEnvironmentUpdateButtonClicked.current = false
-            setFetchClusterNamespaces(false)
-            onValidation(data)
+
+            try {
+                setCrudLoading(true)
+                await api(payload, id)
+                toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
+                reload()
+                hideClusterDrawer()
+            } catch (err) {
+                if (err.code === 409) {
+                    toast.error(<ToastBody title="Namespace manifest changed" subtitle={err.errors[0].userMessage} />)
+                    const clusterNamespace = getClusterNamespaceByName(clusterNamespacesData, formData.namespace)
+                    setNamespaceLabels({
+                        ...namespaceLabels,
+                        labels: getNamespaceLabels(clusterNamespace),
+                    })
+                } else {
+                    showError(err)
+                }
+            } finally {
+                setCrudLoading(false)
+            }
         }
 
-        if (!clusterNamespacesLoader && clusterNamespacesErr) {
-            setFetchClusterNamespaces(false)
+    const withLabelEditValidation: UseFormSubmitHandler<GlobalEnvironmentFormProps> = async () => {
+        setCrudLoading(true)
+        const response = await fetchClusterNamespaces(data.namespace, false)
+        if (response) {
+            onValidation(response)(data)
         }
-    }, [clusterNamespacesLoader, clusterNamespaces, clusterNamespacesErr])
+    }
 
     // METHODS
     const deleteEnv = () => {
@@ -168,16 +197,17 @@ export const GlobalEnvironment = ({
         reload()
     }
 
-    const addLabel = () => {
+    const setTags = (tags: TagType[]) => setNamespaceLabels((prev) => ({ ...prev, labels: tags }))
+
+    const addLabel = async () => {
         const nameSpaceErr = trigger('namespace')
         if (!nameSpaceErr) {
-            setFetchClusterNamespaces(true)
+            await fetchClusterNamespaces(data.namespace)
         }
     }
 
-    const retryClusterNamespaces = () => {
-        setNamespaceLabelsConflictErr(null)
-        reloadClusterNamespaces()
+    const refetchNamespaceLabels = async () => {
+        await fetchClusterNamespaces(data.namespace)
     }
 
     return (
@@ -195,7 +225,7 @@ export const GlobalEnvironment = ({
             </div>
             <form
                 className="flex-grow-1 flexbox-col"
-                onSubmit={handleSubmit(namespaceLabels ? withLabelEditValidation : onValidation)}
+                onSubmit={handleSubmit(namespaceLabels ? withLabelEditValidation : onValidation())}
             >
                 <div className="dc__overflow-scroll p-20 flex-grow-1">
                     <div className="mb-16">
@@ -265,45 +295,49 @@ export const GlobalEnvironment = ({
                     {!isVirtual && (
                         <div className="dc__border-top-n1 pt-16">
                             <EnvironmentLabels
-                                tags={namespaceLabels}
-                                setTags={setNamespaceLabels}
-                                isLoading={clusterNamespacesLoader}
+                                tags={namespaceLabels.labels}
+                                setTags={setTags}
+                                isLoading={clusterNamespaces.isFetching}
                                 addLabel={addLabel}
-                                isError={!!namespaceLabelsConflictErr}
-                                error={clusterNamespacesErr?.errors[0].userMessage ?? namespaceLabelsConflictErr}
-                                reload={retryClusterNamespaces}
+                                isError={!!clusterNamespaces.error}
+                                error={clusterNamespaces.error}
+                                reload={refetchNamespaceLabels}
                             />
                         </div>
                     )}
                 </div>
                 <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__position-sticky dc__bottom-0 bcn-0">
                     {id && (
-                        <button
-                            className="cta flex override-button delete scr-5 h-36 m-0-imp"
-                            type="button"
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            <DeleteEnvironment className="icon-dim-16 mr-8" />
-                            <span>Delete</span>
-                        </button>
+                        <Button
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            text="Delete"
+                            startIcon={<DeleteEnvironment />}
+                            dataTestId="environment-delete-btn"
+                            onClick={() => setShowDeleteConfirmation(true)}
+                        />
                     )}
                     <div className="flex dc__gap-12 ml-auto">
-                        <button className="cta cancel flex h-36" type="button" onClick={hideClusterDrawer}>
-                            Cancel
-                        </button>
-                        <button
-                            className="cta flex h-36"
-                            type="submit"
-                            disabled={loading || clusterNamespacesLoader}
-                            data-testid="save-and-update-environment"
-                        >
-                            {loading && <Progressing />}
-                            {!loading && (id ? 'Update' : 'Save')}
-                        </button>
+                        <Button
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.neutral}
+                            text="Cancel"
+                            dataTestId="environment-cancel-btn"
+                            onClick={hideClusterDrawer}
+                        />
+                        <Button
+                            text={id ? 'Update' : 'Save'}
+                            dataTestId="save-and-update-environment"
+                            isLoading={crudLoading}
+                            disabled={crudLoading || clusterNamespaces.isFetching}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
                     </div>
                 </div>
             </form>
-            {confirmation && (
+            {showDeleteConfirmation && (
                 <DeleteComponent
                     setDeleting={noop}
                     deleteComponent={deleteEnvironment}
@@ -311,13 +345,11 @@ export const GlobalEnvironment = ({
                         data,
                         clusterId,
                         id,
-                        namespaceLabels,
                         prometheusEndpoint,
-                        resourceVersion: resourceVersion.current,
                         isVirtual,
                     })}
                     title={data.environmentName}
-                    toggleConfirmation={toggleConfirmation}
+                    toggleConfirmation={setShowDeleteConfirmation}
                     component={DeleteComponentsName.Environment}
                     confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
                     closeCustomComponent={deleteEnv}
