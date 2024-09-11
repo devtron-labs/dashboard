@@ -22,8 +22,10 @@ import {
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
     EMPTY_STATE_STATUS,
     showError,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
+import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'
@@ -78,6 +80,23 @@ const ChartValuesGUIForm = ({
 
     return (
         <div className="chart-values-view__gui-form-container">
+            <InfoColourBar
+                classname="info_bar dc__no-border-radius dc__no-top-border dc__no-right-border dc__no-left-border"
+                Icon={ICInfoFilled}
+                message={
+                    <span className="fs-12 cn-9">
+                        This feature is in BETA. If you find an issue please&nbsp;
+                        <a
+                            className="cb-5 fw-6"
+                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            report it here.
+                        </a>
+                    </span>
+                }
+            />
             <RJSFForm
                 key={state.json}
                 schema={state.json}
