@@ -31,11 +31,10 @@ const DeploymentTemplateForm = ({
     if (editMode === ConfigurationType.GUI) {
         return (
             <DeploymentTemplateGUIView
-                // TODO: This is with locked keys so original value is passed
+                // NOTE: This is with locked keys so original value is passed
                 uneditedDocument={uneditedDocument}
                 editedDocument={editedDocument}
                 value={editedDocument}
-                // TODO: Look into this later for readme, etc
                 readOnly={readOnly}
                 hideLockedKeys={hideLockedKeys}
                 editorOnChange={editorOnChange}

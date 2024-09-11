@@ -12,7 +12,6 @@ import {
     DeploymentTemplateConfigState,
     DeploymentTemplateTabsType,
     ServerErrors,
-    SelectedChartDetailsType,
     Progressing,
     ErrorScreenManager,
     getResolvedDeploymentTemplate,
@@ -25,6 +24,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
+import { toast } from 'react-toastify'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getChartReferences } from '@Services/service'
 import {
@@ -37,8 +37,6 @@ import {
     getDeploymentTemplateQueryParser,
 } from '@Components/deploymentConfig/utils'
 import DeploymentConfigToolbar from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
-import DeploymentTemplateOptionsTab from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOptionsTab'
-import { toast } from 'react-toastify'
 import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { SuccessToastBody } from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
@@ -222,6 +220,10 @@ const DeploymentTemplate = ({
     const getCurrentEditorPayloadForScopedVariables = (
         editorTemplateData: typeof currentEditorTemplateData,
     ): string => {
+        if (isPublishedValuesView) {
+            return publishedTemplateData.editorTemplate
+        }
+
         if (hideLockedKeys) {
             try {
                 const templateWithLockedKeys = getCurrentTemplateWithLockedKeys()
@@ -264,16 +266,17 @@ const DeploymentTemplate = ({
 
     const getEditorTemplateAndLockedKeys = (
         template: string,
+        lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
     ): Pick<DeploymentTemplateEditorDataStateType, 'editorTemplate' | 'removedPatches'> => {
         const removedPatches: DeploymentTemplateEditorDataStateType['removedPatches'] = []
 
-        if (!removeLockedKeysFromYaml || !lockedConfigKeysWithLockType.config.length) {
+        if (!removeLockedKeysFromYaml || !lockedConfigKeys.length) {
             return { editorTemplate: template, removedPatches }
         }
 
         // QUESTION: Should we wrap try catch here or at usage?
         try {
-            const { document, addOperations } = removeLockedKeysFromYaml(template, lockedConfigKeysWithLockType.config)
+            const { document, addOperations } = removeLockedKeysFromYaml(template, lockedConfigKeys)
             if (addOperations.length) {
                 removedPatches.push(...addOperations)
             }
@@ -346,6 +349,7 @@ const DeploymentTemplate = ({
             // Recalculate locked keys since even variable values can be object
             const { editorTemplate: resolvedEditorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
                 currentEditorTemplate.resolvedData,
+                // No need to send locked keys here since on load we do not resolve scoped variables
             )
 
             setResolvedEditorTemplate({
@@ -355,6 +359,7 @@ const DeploymentTemplate = ({
 
             const { editorTemplate: resolvedOriginalTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
                 defaultTemplate.resolvedData,
+                // No need to send locked keys here since on load we do not resolve scoped variables
             )
 
             setResolvedOriginalTemplate({
@@ -457,6 +462,7 @@ const DeploymentTemplate = ({
     const handleFetchDeploymentTemplate = async (
         chartId: number,
         chartName: string,
+        lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
     ): Promise<Omit<DeploymentTemplateConfigState, 'selectedChartRefId' | 'selectedChart'>> => {
         // TODO: send abortController here
         const {
@@ -475,11 +481,6 @@ const DeploymentTemplate = ({
             },
         } = await getDeploymentTemplate(+appId, chartId, null, chartName)
 
-        // TODO: Should not be here, since also can be in case of chart change
-        if (guiSchema === '{}') {
-            handleChangeToYAMLMode()
-        }
-
         const stringifiedTemplate = YAMLStringify(defaultAppOverride)
         const response = {
             originalTemplate: defaultAppOverride,
@@ -491,7 +492,10 @@ const DeploymentTemplate = ({
             editorTemplate: stringifiedTemplate,
         }
 
-        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(stringifiedTemplate)
+        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+            stringifiedTemplate,
+            lockedConfigKeys,
+        )
         return { ...response, editorTemplateWithoutLockedKeys }
 
         // TODO: Handle protected state
@@ -499,10 +503,12 @@ const DeploymentTemplate = ({
 
     const handleInitializePublishedData = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+        lockedConfigKeys: string[],
     ): Promise<DeploymentTemplateConfigState> => {
         const publishedTemplateDetails = await handleFetchDeploymentTemplate(
             +chartRefsData.selectedChartRefId,
             chartRefsData.selectedChart.name,
+            lockedConfigKeys,
         )
 
         const templateDataWithSelectedChartDetails: DeploymentTemplateConfigState = {
@@ -515,16 +521,12 @@ const DeploymentTemplate = ({
         return templateDataWithSelectedChartDetails
     }
 
-    console.log({
-        publishedTemplateData,
-        draftTemplateData,
-    })
-
     // Should it be method or should duplicate?
     const handleInitializePublishedDataWithCurrentEditorData = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+        lockedConfigKeys: string[],
     ) => {
-        const publishedData = await handleInitializePublishedData(chartRefsData)
+        const publishedData = await handleInitializePublishedData(chartRefsData, lockedConfigKeys)
 
         const clonedTemplateData = structuredClone(publishedData)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
@@ -538,7 +540,10 @@ const DeploymentTemplate = ({
     }
 
     // Should remove edit draft mode in case of error?
-    const handleLoadProtectedDeploymentTemplate = async (chartRefsData: Awaited<ReturnType<typeof getChartList>>) => {
+    const handleLoadProtectedDeploymentTemplate = async (
+        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+        lockedConfigKeys: string[],
+    ) => {
         // In case of error of draftResponse
         const [draftPromiseResponse, publishedDataPromiseResponse] = await Promise.allSettled([
             getDraftByResourceName(
@@ -549,7 +554,7 @@ const DeploymentTemplate = ({
                     ? `${environmentName}-DeploymentTemplateOverride`
                     : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
             ),
-            handleInitializePublishedData(chartRefsData),
+            handleInitializePublishedData(chartRefsData, lockedConfigKeys),
         ])
 
         if (publishedDataPromiseResponse.status === 'rejected') {
@@ -557,7 +562,7 @@ const DeploymentTemplate = ({
         }
 
         if (draftPromiseResponse.status === 'rejected') {
-            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData)
+            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData, lockedConfigKeys)
             return
         }
 
@@ -585,8 +590,10 @@ const DeploymentTemplate = ({
             } = JSON.parse(latestDraft.data)
 
             const stringifiedTemplate = YAMLStringify(valuesOverride)
-            const { editorTemplate: editorTemplateWithoutLockedKeys } =
-                getEditorTemplateAndLockedKeys(stringifiedTemplate)
+            const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+                stringifiedTemplate,
+                lockedConfigKeys,
+            )
 
             const response: typeof draftTemplateData = {
                 originalTemplate: valuesOverride,
@@ -646,10 +653,18 @@ const DeploymentTemplate = ({
                 throw chartRefsDataResponse.reason
             }
             const chartRefsData = chartRefsDataResponse.value
+
+            // TODO: Can move block somewhere to make const
+            let lockedKeysConfig: typeof lockedConfigKeysWithLockType = {
+                config: [],
+                allowed: false,
+            }
             // Not handling error since user can save without locked keys
             if (lockedKeysConfigResponse.status === 'fulfilled' && lockedKeysConfigResponse.value?.result) {
-                setLockedConfigKeysWithLockType(lockedKeysConfigResponse.value.result)
+                lockedKeysConfig = structuredClone(lockedKeysConfigResponse.value.result)
             }
+
+            setLockedConfigKeysWithLockType(lockedKeysConfig)
 
             setChartDetails({
                 charts: chartRefsData.charts,
@@ -658,13 +673,13 @@ const DeploymentTemplate = ({
 
             if (isProtected && typeof getDraftByResourceName === 'function') {
                 // TODO: Ask earlier in case of error we remove draft but i guess should show error screen
-                await handleLoadProtectedDeploymentTemplate(chartRefsData)
+                await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig.config)
                 // TODO: Tab selection
                 // TODO: Here also do'nt forget to get hideLockedKeys
                 return
             }
 
-            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData)
+            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData, lockedKeysConfig.config)
         } catch (error) {
             showError(error)
             setInitialLoadError(error)
@@ -832,6 +847,22 @@ const DeploymentTemplate = ({
         }
     }
 
+    const getSelectedTabIndexFromSelectedTab = () => {
+        switch (selectedTab) {
+            case DeploymentTemplateTabsType.COMPARE:
+                return 2
+            case DeploymentTemplateTabsType.EDIT: {
+                if (isDraftMode) {
+                    return 3
+                }
+
+                return 1
+            }
+            default:
+                return 1
+        }
+    }
+
     const restoreLastSavedTemplate = () => {
         // TODO: Ask product once for this
         handleRemoveResolvedVariables()
@@ -842,6 +873,7 @@ const DeploymentTemplate = ({
             selectedTab === DeploymentTemplateTabsType.EDIT && isDraftMode ? draftTemplateData : publishedTemplateData
         const stringifiedYAML = YAMLStringify(originalTemplateData.originalTemplate)
 
+        // No need to send locked keys here since on load we do not call this while loading
         const { editorTemplate, removedPatches } = getEditorTemplateAndLockedKeys(stringifiedYAML)
 
         // When restoring would restore everything, including schema, readme, etc
@@ -863,6 +895,7 @@ const DeploymentTemplate = ({
         try {
             const { id, name, isAppMetricsSupported } = selectedChart
             setInitialLoadError(null)
+            // No need to send locked config here since won't call this method on load
             // TODO: Can be a util for whole process itself
             const templateData = await handleFetchDeploymentTemplate(+id, name)
             // TODO: Sync with product for which values to retains!!!
@@ -951,7 +984,7 @@ const DeploymentTemplate = ({
         return ''
     }
 
-    const getLockedDiffDocuments = () => {
+    const getLockedDiffModalDocuments = () => {
         const editorTemplate = getCurrentTemplateWithLockedKeys()
 
         return {
@@ -1078,7 +1111,7 @@ const DeploymentTemplate = ({
                         loading={isLoadingInitialData || isResolvingVariables || isSaving}
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                        selectedTabIndex={selectedTab}
+                        selectedTabIndex={getSelectedTabIndexFromSelectedTab()}
                         handleTabSelection={handleTabSelection}
                         noReadme={editMode === ConfigurationType.GUI}
                         showReadme={showReadMe}
@@ -1104,7 +1137,7 @@ const DeploymentTemplate = ({
                     />
                 ) : (
                     <DeploymentConfigToolbar
-                        selectedTabIndex={selectedTab}
+                        selectedTabIndex={getSelectedTabIndexFromSelectedTab()}
                         handleTabSelection={handleTabSelection}
                         noReadme={editMode === ConfigurationType.GUI}
                         showReadme={showReadMe}
@@ -1124,7 +1157,7 @@ const DeploymentTemplate = ({
                         onSave={handleSaveTemplate}
                         lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                         // TODO: Should not do this on runtime.
-                        documents={getLockedDiffDocuments()}
+                        documents={getLockedDiffModalDocuments()}
                         setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                         appId={appId}
                         envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
