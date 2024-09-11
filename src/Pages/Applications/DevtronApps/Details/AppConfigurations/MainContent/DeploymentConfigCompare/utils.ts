@@ -2,9 +2,12 @@ import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
 
 import {
+    AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
+    DeploymentConfigDiffProps,
     SelectPickerOptionType,
     TemplateListDTO,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Moment12HourFormat } from '@Config/constants'
@@ -17,9 +20,9 @@ import {
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 
-export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number) => {
+export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {
     if (identifierId && pipelineId) {
-        return `${AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS}-${identifierId}-${pipelineId}`
+        return `${AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS}-${identifierId}-${pipelineId}${chartRefId ? `-${chartRefId}` : ''}`
     }
     if (identifierId) {
         return `${AppEnvDeploymentConfigType.DEFAULT_VERSION}-${identifierId}`
@@ -34,6 +37,7 @@ export const getPreviousDeploymentValue = (value: string) => {
             configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
             identifierId: +valueSplit[1],
             pipelineId: +valueSplit[2],
+            chartRefId: valueSplit[3] ? +valueSplit[3] : null,
         }
     }
 
@@ -49,6 +53,48 @@ export const isEnvProtected = (
     isBaseConfigProtected?: boolean,
 ) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
+/**
+ * Returns the application and environment IDs for comparison based on the given parameters.
+ *
+ * @param params - Object containing appId, envId, environments, type, compareTo, and compareWith.
+ * @param params.appId - The application ID.
+ * @param params.envId - The environment ID.
+ * @param params.environments - The list of environments.
+ * @param params.type - The type of comparison (e.g., 'appGroup').
+ * @param params.compareTo - The environment name to compare to.
+ * @param params.compareWith - The environment name to compare with.
+ * @returns Object containing compareToAppId, compareWithAppId, compareToEnvId, and compareWithEnvId.
+ */
+export const getAppAndEnvIds = ({
+    appId,
+    envId,
+    environments,
+    type,
+    compareTo,
+    compareWith,
+}: Pick<DeploymentConfigCompareProps, 'environments' | 'type'> & {
+    appId: string
+    envId: string
+    compareTo: string
+    compareWith: string
+}) => {
+    // Default: use appId and envId
+    let compareToAppId = +appId
+    let compareWithAppId = +appId
+    let compareToEnvId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+    let compareWithEnvId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+
+    // If type is 'appGroup', switch appId & envId
+    if (type === 'appGroup') {
+        compareToAppId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+        compareWithAppId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+        compareToEnvId = +envId
+        compareWithEnvId = +envId
+    }
+
+    return { compareToAppId, compareWithAppId, compareToEnvId, compareWithEnvId }
+}
+
 export const parseCompareWithSearchParams =
     ({
         environments,
@@ -61,6 +107,10 @@ export const parseCompareWithSearchParams =
         const pipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.PIPELINE_ID)
         const compareWithPipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID)
         const chartRefId = searchParams.get(AppEnvDeploymentConfigQueryParams.CHART_REF_ID)
+        const manifestChartRefId = searchParams.get(AppEnvDeploymentConfigQueryParams.MANIFEST_CHART_REF_ID)
+        const compareWithManifestChartRefId = searchParams.get(
+            AppEnvDeploymentConfigQueryParams.COMPARE_WITH_MANIFEST_CHART_REF_ID,
+        )
         let configType = searchParams.get(AppEnvDeploymentConfigQueryParams.CONFIG_TYPE)
         let compareWithConfigType = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE)
         let compareWith = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH)
@@ -99,6 +149,12 @@ export const parseCompareWithSearchParams =
                 ? parseInt(compareWithPipelineId, 10)
                 : null,
             [AppEnvDeploymentConfigQueryParams.CHART_REF_ID]: chartRefId ? parseInt(chartRefId, 10) : null,
+            [AppEnvDeploymentConfigQueryParams.MANIFEST_CHART_REF_ID]: manifestChartRefId
+                ? parseInt(manifestChartRefId, 10)
+                : null,
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_MANIFEST_CHART_REF_ID]: compareWithManifestChartRefId
+                ? parseInt(compareWithManifestChartRefId, 10)
+                : null,
         }
     }
 
@@ -159,6 +215,7 @@ export const getCompareEnvironmentSelectorOptions = (
 export const getEnvironmentConfigTypeOptions = (
     previousDeploymentsList: TemplateListDTO[] = [],
     isProtected = false,
+    isManifestView = false,
 ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
     {
         label: 'Published only',
@@ -182,10 +239,68 @@ export const getEnvironmentConfigTypeOptions = (
     {
         label: 'Previous deployments',
         options: previousDeploymentsList.map(
-            ({ finishedOn, chartVersion, pipelineId, deploymentTemplateHistoryId }) => ({
+            ({ finishedOn, chartVersion, pipelineId, deploymentTemplateHistoryId, chartRefId }) => ({
                 label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
-                value: getPreviousDeploymentOptionValue(deploymentTemplateHistoryId, pipelineId),
+                value: getPreviousDeploymentOptionValue(
+                    deploymentTemplateHistoryId,
+                    pipelineId,
+                    isManifestView ? chartRefId : null,
+                ),
             }),
         ),
     },
 ]
+
+export const deploymentConfigDiffTabs = {
+    CONFIGURATION: 'Configuration',
+    MANIFEST: 'Manifest Output',
+}
+
+export const getDeploymentConfigDiffTabs = (): DeploymentConfigDiffProps['tabConfig']['tabs'] =>
+    Object.values(deploymentConfigDiffTabs)
+
+export const getConfigChartRefId = (data: any) =>
+    data.latestEnvChartRef || data.latestAppChartRef || data.latestChartRef
+
+const getDeploymentDraftData = (config: AppEnvDeploymentConfigDTO) => {
+    try {
+        const parsedDraftData = JSON.parse(
+            config?.deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null,
+        )
+
+        return parsedDraftData
+    } catch {
+        return null
+    }
+}
+
+const getDraftConfigChartRefId = (config: AppEnvDeploymentConfigDTO) =>
+    getDeploymentDraftData(config)?.chartRefId ?? null
+
+export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { data: string; chartRefId: number } => {
+    if (!config) {
+        return null
+    }
+
+    const { deploymentTemplate } = config
+    const parsedDraftData = getDeploymentDraftData(config)
+    const _data =
+        parsedDraftData?.envOverrideValues ||
+        parsedDraftData?.valuesOverride ||
+        parsedDraftData?.defaultAppOverride ||
+        deploymentTemplate?.data ||
+        null
+
+    return {
+        data: _data ? YAMLStringify(_data) ?? '' : '',
+        chartRefId: getDraftConfigChartRefId(config),
+    }
+}
+
+export const isConfigTypeNonDraftOrPublished = (type: AppEnvDeploymentConfigType) =>
+    type !== AppEnvDeploymentConfigType.DRAFT_ONLY &&
+    type !== AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT &&
+    type !== AppEnvDeploymentConfigType.PUBLISHED_ONLY
+
+export const isConfigTypePublished = (type: AppEnvDeploymentConfigType) =>
+    type === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT || type === AppEnvDeploymentConfigType.PUBLISHED_ONLY
