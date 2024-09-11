@@ -236,7 +236,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
             },
         ],
-        [appListFilterResponse],
+        [appListFilterResponse, projectListResponse],
     )
 
     const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
@@ -283,7 +283,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             ...getClusterOptions(appListFilterResponse?.result.clusters),
             ...getClusterOptions(clusterListResponse?.result),
         ],
-        [appListFilterResponse, params.appType],
+        [appListFilterResponse, clusterListResponse, params.appType],
     )
 
     const namespaceOptions: GroupedOptionsType[] = useMemo(
