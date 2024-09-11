@@ -595,8 +595,6 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
-
-
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">

@@ -86,6 +86,7 @@ import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
+    EAModeRegistryType,
     RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
@@ -1823,23 +1824,6 @@ const DockerForm = ({
         }
     }
 
-    interface RegistryType {
-        label: string
-        defaultValue: string
-        placeholder: string
-    }
-    interface EAModeRegistryType {
-        label: string
-        value: string
-        defaultRegistryURL: string
-        desiredFormat: string
-        gettingStartedLink: string
-        id: RegistryType
-        password: RegistryType
-        placeholderText: string
-        registryURL: RegistryType
-        startIcon: ReactElement
-    }
     // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']

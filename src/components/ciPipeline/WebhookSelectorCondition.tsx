@@ -38,7 +38,7 @@ export const WebhookSelectorCondition = ({
                 placeholder="Select Key"
                 isDisabled={!canEditSelectorCondition}
                 onChange={handleSelectorChange}
-                value={masterSelectorList.filter((_selector) => _selector.value == selectorCondition.selectorId)}
+                value={masterSelectorList.filter((_selector) => +_selector.value == selectorCondition.selectorId)}
                 options={masterSelectorList}
                 size={ComponentSizeType.large}
             />

@@ -414,10 +414,15 @@ export enum CIPipelineBuildType {
     NORMAL_JOB = 'NORMAL_JOB',
 }
 
+export interface SelectedConditionType {
+    selectorId: number
+    value: string
+}
+
 export interface WebhookConditionType {
     conditionIndex: number
     masterSelectorList: OptionType[]
-    selectorCondition: any
+    selectorCondition: SelectedConditionType
     onSelectorChange: (selectorId: number, value: number) => void
     onSelectorValueChange: (index: number, value: string) => void
     deleteWebhookCondition: (index: number) => void
