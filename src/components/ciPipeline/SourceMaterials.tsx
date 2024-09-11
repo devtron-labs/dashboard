@@ -170,6 +170,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             renderMenuListFooter={renderSourceMaterialDropdownFooter}
                                             isClearable={false}
                                             size={ComponentSizeType.large}
+                                            getOptionValue={(option) => `${option.value}-${option.label}`}
                                         />
 
                                         <div className="h-24" />
