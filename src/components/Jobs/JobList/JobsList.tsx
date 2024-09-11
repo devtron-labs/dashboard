@@ -127,9 +127,9 @@ const JobsList = () => {
     const getLabelFromValue = (filterKey: JobListUrlFilters, filterValue: string) => {
         switch (filterKey) {
             case JobListUrlFilters.environment:
-                return masterFilters.environments.find((env) => env.value === filterValue).label
+                return masterFilters.environments.find((env) => env.value === filterValue)?.label
             case JobListUrlFilters.project:
-                return masterFilters.projects.find((team) => team.value === filterValue).label
+                return masterFilters.projects.find((team) => team.value === filterValue)?.label
             case JobListUrlFilters.status:
                 return getJobStatusLabelFromValue(filterValue)
             default:
