@@ -50,19 +50,19 @@ export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
 export const SPECIFIC_TRIGGER_CONFIG_OPTION = {
     label: 'Config deployed with selected image',
     value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
-    infoText: 'Use configuration deployed with selected image',
+    description: 'Use configuration deployed with selected image',
 }
 
 export const LAST_SAVED_CONFIG_OPTION = {
     label: 'Last saved config',
     value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-    infoText: 'Use last saved configuration to deploy',
+    description: 'Use last saved configuration to deploy',
 }
 
 export const LATEST_TRIGGER_CONFIG_OPTION = {
     label: 'Last deployed config',
     value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-    infoText: 'Retain currently deployed configuration',
+    description: 'Retain currently deployed configuration',
 }
 
 export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
