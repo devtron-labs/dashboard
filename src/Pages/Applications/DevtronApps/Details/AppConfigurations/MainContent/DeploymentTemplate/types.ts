@@ -24,6 +24,7 @@ export interface DeploymentTemplateProps {
     environments: AppEnvironment[]
     isProtected: boolean
     reloadEnvironments: () => void
+    environmentName?: string
 }
 
 export interface DeploymentTemplateChartStateType {

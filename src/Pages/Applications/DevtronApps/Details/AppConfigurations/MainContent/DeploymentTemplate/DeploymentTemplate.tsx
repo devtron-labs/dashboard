@@ -69,6 +69,7 @@ const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTem
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 
+// FIXME: What if selectedTab is 3 and person re-freshes the page and it was approved? and cases like that
 const DeploymentTemplate = ({
     // TODO: Might have to make optional
     respondOnSuccess,
@@ -77,6 +78,7 @@ const DeploymentTemplate = ({
     environments,
     isProtected,
     reloadEnvironments,
+    environmentName,
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
@@ -157,6 +159,7 @@ const DeploymentTemplate = ({
         parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
     })
 
+    // TODO: Redundant check since published template enum is set based on isDraftMode
     const isPublishedValuesView: boolean = !!(
         selectedTab === DeploymentTemplateTabsType.PUBLISHED &&
         isProtected &&
@@ -180,43 +183,6 @@ const DeploymentTemplate = ({
 
         return chartRefsData
     }
-
-    // const handleLoadProtectedDeploymentTemplate = async (chartList: DeploymentChartVersionType[] = []) => {
-    //     const draftResponse = await getDraftByResourceName(
-    //         appId,
-    //         BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
-    //         3,
-    //         PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
-    //     )
-
-    //     if (
-    //         draftResponse?.result &&
-    //         (draftResponse.result.draftState === DraftState.Init ||
-    //             draftResponse.result.draftState === DraftState.AwaitApproval)
-    //     ) {
-    //         const latestDraft = draftResponse.result
-    //         const {
-    //             valuesOverride,
-    //             id,
-    //             refChartTemplate,
-    //             refChartTemplateVersion,
-    //             isAppMetricsEnabled,
-    //             chartRefId,
-    //             readme,
-    //             schema,
-    //         } = JSON.parse(latestDraft.data)
-
-    //         const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
-    //         setSelectedChartDetails({
-    //             selectedChartRefId: chartRefId,
-    //             selectedChart: chartList.find((chart) => chart.id === chartRefId),
-    //         })
-    //         // TODO: Handle initial tab selection
-    //     } else {
-    //         // TODO: call updateRefsData
-    //     }
-    //     // TODO: Have'nt handled published state in case of re-mount will do that later
-    // }
 
     const handleRemoveResolvedVariables = () => {
         setIsResolvingVariables(false)
@@ -509,6 +475,7 @@ const DeploymentTemplate = ({
             },
         } = await getDeploymentTemplate(+appId, chartId, null, chartName)
 
+        // TODO: Should not be here, since also can be in case of chart change
         if (guiSchema === '{}') {
             handleChangeToYAMLMode()
         }
@@ -530,8 +497,142 @@ const DeploymentTemplate = ({
         // TODO: Handle protected state
     }
 
+    const handleInitializePublishedData = async (
+        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+    ): Promise<DeploymentTemplateConfigState> => {
+        const publishedTemplateDetails = await handleFetchDeploymentTemplate(
+            +chartRefsData.selectedChartRefId,
+            chartRefsData.selectedChart.name,
+        )
+
+        const templateDataWithSelectedChartDetails: DeploymentTemplateConfigState = {
+            ...publishedTemplateDetails,
+            selectedChart: chartRefsData.selectedChart,
+            selectedChartRefId: chartRefsData.selectedChartRefId,
+        }
+
+        setPublishedTemplateData(templateDataWithSelectedChartDetails)
+        return templateDataWithSelectedChartDetails
+    }
+
+    console.log({
+        publishedTemplateData,
+        draftTemplateData,
+    })
+
+    // Should it be method or should duplicate?
+    const handleInitializePublishedDataWithCurrentEditorData = async (
+        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+    ) => {
+        const publishedData = await handleInitializePublishedData(chartRefsData)
+
+        const clonedTemplateData = structuredClone(publishedData)
+        delete clonedTemplateData.editorTemplateWithoutLockedKeys
+
+        // Since hideLockedKeys is initially false so saving it as whole
+        setCurrentEditorTemplateData({
+            ...clonedTemplateData,
+            unableToParseYaml: false,
+            removedPatches: [],
+        })
+    }
+
+    // Should remove edit draft mode in case of error?
+    const handleLoadProtectedDeploymentTemplate = async (chartRefsData: Awaited<ReturnType<typeof getChartList>>) => {
+        // In case of error of draftResponse
+        const [draftPromiseResponse, publishedDataPromiseResponse] = await Promise.allSettled([
+            getDraftByResourceName(
+                +appId,
+                +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
+                3,
+                environmentName
+                    ? `${environmentName}-DeploymentTemplateOverride`
+                    : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
+            ),
+            handleInitializePublishedData(chartRefsData),
+        ])
+
+        if (publishedDataPromiseResponse.status === 'rejected') {
+            throw publishedDataPromiseResponse.reason
+        }
+
+        if (draftPromiseResponse.status === 'rejected') {
+            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData)
+            return
+        }
+
+        const draftResponse = draftPromiseResponse.value
+        // NOTE: In case of support for version based guiSchema this won't work
+        // Since we do not have guiSchema for draft, we are using published guiSchema
+        const { guiSchema } = publishedDataPromiseResponse.value
+        // TODO: Add redirection in case of guiSchema === '{}'
+
+        if (
+            draftResponse?.result &&
+            (draftResponse.result.draftState === DraftState.Init ||
+                draftResponse.result.draftState === DraftState.AwaitApproval)
+        ) {
+            const latestDraft = draftResponse.result
+            const {
+                valuesOverride,
+                id,
+                refChartTemplate,
+                refChartTemplateVersion,
+                isAppMetricsEnabled,
+                chartRefId,
+                readme,
+                schema,
+            } = JSON.parse(latestDraft.data)
+
+            const stringifiedTemplate = YAMLStringify(valuesOverride)
+            const { editorTemplate: editorTemplateWithoutLockedKeys } =
+                getEditorTemplateAndLockedKeys(stringifiedTemplate)
+
+            const response: typeof draftTemplateData = {
+                originalTemplate: valuesOverride,
+                schema,
+                readme,
+                guiSchema,
+                isAppMetricsEnabled,
+                chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+                editorTemplate: stringifiedTemplate,
+                latestDraft,
+                selectedChartRefId: chartRefId,
+                // FIXME: Check null checks for chartRefsData, it can be null
+                selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
+                editorTemplateWithoutLockedKeys,
+            }
+
+            setDraftTemplateData(response)
+
+            const clonedTemplateData = structuredClone(response)
+            delete clonedTemplateData.editorTemplateWithoutLockedKeys
+
+            // Since hideLockedKeys is initially false so saving it as whole
+            setCurrentEditorTemplateData({
+                ...clonedTemplateData,
+                unableToParseYaml: false,
+                removedPatches: [],
+            })
+
+            // TODO: Handle initial tab selection
+            const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
+            if (isApprovalPending) {
+                updateSearchParams({ selectedTab: DeploymentTemplateTabsType.COMPARE })
+                return
+            }
+
+            updateSearchParams({ selectedTab: DeploymentTemplateTabsType.PUBLISHED })
+        }
+    }
+
     // TODO: Should move all these api calls to provider itself
     const handleInitialDataLoad = async () => {
+        // TODO: Can be collected together
+        setPublishedTemplateData(null)
+        setCurrentEditorTemplateData(null)
+        setDraftTemplateData(null)
+
         setIsLoadingInitialData(true)
         setInitialLoadError(null)
 
@@ -544,7 +645,7 @@ const DeploymentTemplate = ({
             if (chartRefsDataResponse.status === 'rejected') {
                 throw chartRefsDataResponse.reason
             }
-            const chartRefsData = chartRefsDataResponse.status === 'fulfilled' ? chartRefsDataResponse.value : null
+            const chartRefsData = chartRefsDataResponse.value
             // Not handling error since user can save without locked keys
             if (lockedKeysConfigResponse.status === 'fulfilled' && lockedKeysConfigResponse.value?.result) {
                 setLockedConfigKeysWithLockType(lockedKeysConfigResponse.value.result)
@@ -557,39 +658,19 @@ const DeploymentTemplate = ({
 
             if (isProtected && typeof getDraftByResourceName === 'function') {
                 // TODO: Ask earlier in case of error we remove draft but i guess should show error screen
-                // await handleLoadProtectedDeploymentTemplate(chartRefsData.charts)
+                await handleLoadProtectedDeploymentTemplate(chartRefsData)
                 // TODO: Tab selection
-                // TODO: Here also do'nt forget to hideLockedKeys
+                // TODO: Here also do'nt forget to get hideLockedKeys
                 return
             }
-            const publishedTemplateDetails = await handleFetchDeploymentTemplate(
-                +chartRefsData.selectedChartRefId,
-                chartRefsData.selectedChart.name,
-            )
 
-            const templateDataWithSelectedChartDetails: DeploymentTemplateConfigState = {
-                ...publishedTemplateDetails,
-                selectedChart: chartRefsData.selectedChart,
-                selectedChartRefId: chartRefsData.selectedChartRefId,
-            }
-
-            setPublishedTemplateData(templateDataWithSelectedChartDetails)
-
-            const clonedTemplateData = structuredClone(templateDataWithSelectedChartDetails)
-            delete clonedTemplateData.editorTemplateWithoutLockedKeys
-
-            // Since hideLockedKeys is initially false so saving it as whole
-            setCurrentEditorTemplateData({
-                ...clonedTemplateData,
-                unableToParseYaml: false,
-                removedPatches: [],
-            })
+            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData)
         } catch (error) {
             showError(error)
             setInitialLoadError(error)
+        } finally {
+            setIsLoadingInitialData(false)
         }
-
-        setIsLoadingInitialData(false)
     }
 
     useEffect(() => {
@@ -774,13 +855,13 @@ const DeploymentTemplate = ({
         })
     }
 
-    // TODO: Chart change not reflecting on prod?
+    // TODO: Need a method for chart change and one for chart version change
     const handleChartChange = async (selectedChart: DeploymentChartVersionType) => {
         // FIXME: Should only update config, and not editor template
         // TODO: Not the intended loading state, will change later
         setIsLoadingInitialData(true)
         try {
-            const { id, name } = selectedChart
+            const { id, name, isAppMetricsSupported } = selectedChart
             setInitialLoadError(null)
             // TODO: Can be a util for whole process itself
             const templateData = await handleFetchDeploymentTemplate(+id, name)
@@ -790,13 +871,12 @@ const DeploymentTemplate = ({
             // TODO: Ask if to retain app config
             const updatedEditorTemplateData: typeof currentEditorTemplateData = {
                 ...currentEditorTemplateData,
+                isAppMetricsEnabled: isAppMetricsSupported ? currentEditorTemplateData.isAppMetricsEnabled : false,
                 selectedChart,
                 selectedChartRefId: +id,
                 schema: templateData.schema,
                 readme: templateData.readme,
                 guiSchema: templateData.guiSchema,
-                isAppMetricsEnabled:
-                    templateData.isAppMetricsEnabled === false ? false : currentEditorTemplateData.isAppMetricsEnabled,
             }
 
             setCurrentEditorTemplateData(updatedEditorTemplateData)
@@ -1006,7 +1086,7 @@ const DeploymentTemplate = ({
                         handleReadMeClick={handleToggleReadmeMode}
                         handleCommentClick={handleToggleDraftComments}
                         commentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
-                        isDraftMode={isProtected && !!draftTemplateData?.latestDraft}
+                        isDraftMode={isDraftMode}
                         isApprovalPending={draftTemplateData?.latestDraft?.draftState === DraftState.AwaitApproval}
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}
                         showValuesPostfix
