@@ -31,7 +31,6 @@ import {
     ToastVariantType,
     TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
@@ -389,7 +388,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             .then((response) => {
                 this.setState({ showDeleteDialog: false })
                 this.getAllNotifications()
-                toast.success('Deleted Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted Successfully',
+                })
+
             })
             .catch((error) => {
                 showError(error)

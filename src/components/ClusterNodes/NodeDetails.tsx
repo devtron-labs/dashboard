@@ -37,7 +37,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
@@ -637,12 +636,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 push(_url)
                 return
             }
-            toast.error(
-                <div>
-                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
+                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
+            })
         })
     }
 
@@ -853,7 +851,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         setNodeDetail(null)
         const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
         getData(_patchData)
-        toast.dismiss(toastId.current)
+        ToastManager.dismissToast(toastId.current)
     }
 
     const saveYAML = (): void => {

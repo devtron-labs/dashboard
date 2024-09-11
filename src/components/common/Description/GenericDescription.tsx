@@ -17,7 +17,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ReactMde from 'react-mde'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import moment from 'moment'
 import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -102,7 +101,10 @@ export default function GenericDescription({
     const validateDescriptionText = (): boolean => {
         let isValid = true
         if (modifiedDescriptionText.length === 0) {
-            toast.error(CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG,
+            })
             isValid = false
         }
         return isValid
@@ -161,7 +163,10 @@ export default function GenericDescription({
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
                     appMetaInfo.note = response.result
-                    toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: CLUSTER_DESCRIPTION_UPDATE_MSG,
+                    })
                     setEditDescriptionView(true)
                 }
             })
@@ -189,7 +194,10 @@ export default function GenericDescription({
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
-                    toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: CLUSTER_DESCRIPTION_UPDATE_MSG,
+                    })
                     setEditDescriptionView(true)
                 }
             })

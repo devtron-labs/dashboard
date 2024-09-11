@@ -22,8 +22,9 @@ import {
     Drawer,
     CustomInput,
     CHECKBOX_VALUE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -128,7 +129,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 ...prevState,
                 form: { ...prevState.form, isLoading: false, isError: true },
             }))
-            toast.error('Some required fields are missing or Invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
             return
         }
         this.setState((prevState) => ({
@@ -142,7 +146,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     ...prevState,
                     form: { ...prevState.form, isLoading: false },
                 }))
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
                 if (this.props.selectSMTPFromChild) {
                     this.props.selectSMTPFromChild(response?.result[0])

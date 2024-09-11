@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
 
 import {
     abortPreviousRequests,
@@ -247,7 +246,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             }
                             setCmSecretData(_configMapSecret)
                         } else {
-                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: `The ${componentName} '${name}' has been deleted`,
+                            })
                             setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }
@@ -266,7 +268,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                                 },
                             })
                         } else if (draftDataRes.value.result.draftState === DraftState.Discarded) {
-                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: `The ${componentName} '${name}' has been deleted`,
+                            })
                             setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }

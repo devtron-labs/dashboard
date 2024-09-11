@@ -42,10 +42,11 @@ import {
     ReleaseMode,
     TabGroup,
     TabProps,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
@@ -106,7 +107,8 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType = importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
+const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType =
+    importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
 const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
@@ -239,8 +241,8 @@ export default function CDPipeline({
             isValid: true,
         },
         userApprovalConfig: {
-            isValid: true
-        }
+            isValid: true,
+        },
     })
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
@@ -881,7 +883,10 @@ export default function CDPipeline({
         }
         const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
-            toast.error('All task names must be unique')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'All task names must be unique',
+            })
             return
         }
         setLoadingData(true)
@@ -895,16 +900,23 @@ export default function CDPipeline({
         ) {
             setLoadingData(false)
             if (formData.name === '') {
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
             }
             return
         }
 
-        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } = formDataErrorObj.userApprovalConfig ?? {}
+        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } =
+            formDataErrorObj.userApprovalConfig ?? {}
 
         if (!isUserApprovalConfigValid) {
             setLoadingData(false)
-            toast.error(userApprovalConfigErrorMessage)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: userApprovalConfigErrorMessage,
+            })
             return
         }
 
@@ -993,7 +1005,10 @@ export default function CDPipeline({
                         setFormData(form)
                         setDeleteDialog(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
-                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: TOAST_INFO.PIPELINE_DELETION_INIT,
+                        })
                         hideDeleteModal()
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName

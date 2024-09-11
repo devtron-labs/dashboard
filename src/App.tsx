@@ -16,7 +16,6 @@
 
 import { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import './css/application.scss';
 import {
     showError,
@@ -226,8 +225,8 @@ export default function App() {
             navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
             if (needRefresh) {
                 update()
-            } else if (toast.isActive(updateToastRef.current)) {
-                toast.dismiss(updateToastRef.current)
+            } else if (ToastManager.isToastActive(updateToastRef.current)) {
+                ToastManager.dismissToast(updateToastRef.current)
             }
         }
     }, [location])

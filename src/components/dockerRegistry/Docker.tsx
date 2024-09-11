@@ -44,8 +44,9 @@ import {
     MultiValueChipContainer,
     OptionType,
     DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -845,7 +846,10 @@ const DockerForm = ({
 
     const handleDefaultChange = (e) => {
         if (isDefault) {
-            toast.success('Please mark another as default.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Please mark another as default.',
+            })
             return
         }
         toggleDefault(not)
@@ -906,7 +910,10 @@ const DockerForm = ({
             }
             await reload()
             await setToggleCollapse()
-            toast.success('Successfully saved.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
         } catch (err) {
             if (err instanceof ServerErrors && Array.isArray(err.errors) && err.code === 409) {
                 err.errors.map(({ userMessage, internalMessage }) => {

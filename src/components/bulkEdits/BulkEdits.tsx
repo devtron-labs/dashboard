@@ -25,8 +25,9 @@ import {
     SelectPicker,
     SelectPickerVariantType,
     ComponentSizeType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
     BulkEditsProps,
@@ -121,7 +122,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Yaml',
+            })
             this.setState({ view: ViewType.FORM })
             return
         }
@@ -163,7 +167,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Yaml',
+            })
             this.setState({ view: ViewType.FORM })
             return
         }

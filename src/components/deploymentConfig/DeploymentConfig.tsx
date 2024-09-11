@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
+import { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     showError,
     useEffectAfterMount,
@@ -26,6 +25,8 @@ import {
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -452,7 +453,10 @@ export default function DeploymentConfig({
 
     function openConfirmationOrSaveChangesModal() {
         if (!obj) {
-            toast.error(error)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: error,
+            })
         } else if (state.chartConfig.id) {
             // update flow, might have overridden
             handleConfirmationDialog(true)
@@ -502,7 +506,11 @@ export default function DeploymentConfig({
                 payload: { fetchedValues: {}, fetchedValuesManifest: {} },
             })
 
-            toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
+             ToastManager.showToast({
+                 variant: ToastVariantType.success,
+                 title: state.chartConfig.id ? 'Updated' : 'Saved',
+                 description: 'Changes will be reflected after next deployment.',
+             })
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
             if (!baseDeploymentAbortController.signal.aborted) {

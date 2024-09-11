@@ -28,7 +28,6 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
@@ -277,7 +276,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setDeleting(true)
         try {
             await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            toast.success('Successfully deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully deleted',
+            })
             setShowDeleteGroup(false)
             getSavedFilterData(
                 selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value

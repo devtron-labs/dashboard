@@ -25,9 +25,10 @@ import {
     useMainContext,
     DetectBottom,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -229,12 +230,18 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             // NOTE: This validation call also goes inside component as well discuss about it
             const validated = await validateData()
             if (!validated) {
-                toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 })
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: 'Click on highlighted charts and resolve errors.',
+                })
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
             await deployChartGroup(project.id, deployableCharts)
-            toast.success('Deployment initiated')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deployment initiated',
+            })
             setInstalling(false)
             const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
             history.push(url)

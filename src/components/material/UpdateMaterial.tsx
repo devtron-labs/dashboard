@@ -15,8 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { toast } from 'react-toastify'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
@@ -245,7 +244,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 updateMaterial(payload)
                     .then((response) => {
                         this.props.refreshMaterials()
-                        toast.success('Material Saved Successfully')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Material Saved Successfully',
+                        })
                     })
                     .catch((error) => {
                         showError(error)

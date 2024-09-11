@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { useState } from 'react'
+import { showError, Progressing, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-error-exclamation.svg'
@@ -130,7 +129,10 @@ export default function RotateResponseModal({
             callAppDetailsAPI()
             if (!result.containsError) {
                 onClose()
-                toast.success(POD_ROTATION_INITIATED)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: POD_ROTATION_INITIATED,
+                })
             } else {
                 setResult(result)
             }
