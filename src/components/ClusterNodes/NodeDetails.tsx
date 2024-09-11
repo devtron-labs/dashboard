@@ -869,7 +869,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
-                        toast.success('Node updated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Node updated',
+                        })
                         setIsReviewStates(false)
                         setIsEdit(false)
                         setIsShowWarning(false)

@@ -915,7 +915,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const copySharableURL = (): void => {
         copyToClipboard(window.location.href, () => {
-            toast.success('URL copied successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'URL copied successfully',
+            })
         })
     }
 

@@ -56,7 +56,7 @@ import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFo
 import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
 import DeploymentTemplateOptionsTab from './DeploymentTemplateView/DeploymentTemplateOptionsTab'
 import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigToolbar'
-import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
+import { SaveConfirmationDialog } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import { applyCompareDiffOfTempFormDataOnOriginalData } from './utils'
@@ -740,7 +740,10 @@ export default function DeploymentConfig({
             })
             .catch(() => {
                 setIsValues(true)
-                toast.error('Unable to fetch manifest data')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Unable to fetch manifest data',
+                })
             })
             .finally(() => {
                 setLoadingManifest(false)

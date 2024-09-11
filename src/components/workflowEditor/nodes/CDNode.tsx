@@ -200,7 +200,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
 
         if (this.props.deploymentAppDeleteRequest) {
-            toast.error(ERR_MESSAGE_ARGOCD)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: ERR_MESSAGE_ARGOCD,
+            })
             return
         }
 
