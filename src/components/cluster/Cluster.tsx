@@ -103,12 +103,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) {
             clearInterval(this.timerRef)
         }
-        Promise.all([
-            getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
-                ? { result: undefined }
-                : getEnvironmentList(),
-        ])
+        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? { result: undefined } : getEnvironmentList()])
             .then(([clusterRes, envResponse]) => {
                 const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
@@ -243,9 +238,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             return <Reload className="dc__align-reload-center" />
         }
 
-        const moduleBasedTitle = `Clusters${
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments'
-        }`
+        const moduleBasedTitle = `Clusters${window._env_.K8S_CLIENT ? '' : ' and Environments'}`
         return (
             <section className="global-configuration__component flex-1">
                 <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
@@ -723,10 +716,7 @@ const Cluster = ({
                         }}
                     />
                 )}
-                {serverMode !== SERVER_MODE.EA_ONLY &&
-                !window._env_.K8S_CLIENT &&
-                Array.isArray(newEnvs) &&
-                newEnvs.length > 1 ? (
+                {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div />
