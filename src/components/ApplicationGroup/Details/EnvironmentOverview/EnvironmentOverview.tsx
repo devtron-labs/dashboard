@@ -53,7 +53,7 @@ import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hib
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
-import { EnvironmentOverviewTable, EnvironmentOverviewTableProps } from '@Pages/Shared/EnvironmentOverviewTable'
+import { EnvironmentOverviewTable, EnvironmentOverviewTableRow } from '@Pages/Shared/EnvironmentOverviewTable'
 import './envOverview.scss'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
@@ -62,6 +62,8 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'function',
 )
 const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
+const ClonePipelineMenuButton = importComponentFromFELibrary('ClonePipelineMenuButton', null, 'function')
+const ClonePipelineModal = importComponentFromFELibrary('ClonePipelineModal', null, 'function')
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -82,8 +84,10 @@ export default function EnvironmentOverview({
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
     const [selectedAppDetailsList, setSelectedAppDetailsList] = useState<AppInfoListType[]>([])
+    const [selectedAppDetails, setSelectedAppDetails] = useState<AppInfoListType>(null)
     const [openedHibernateModalType, setOpenedHibernateModalType] =
         useState<HibernateModalProps['openedHibernateModalType']>(null)
+    const [openClonePipelineConfig, setOpenClonePipelineConfig] = useState(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
         ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
@@ -121,6 +125,8 @@ export default function EnvironmentOverview({
 
     const { searchParams } = useSearchString()
     const history = useHistory()
+    const isAppSelected = selectedAppDetails ?? !!selectedAppDetailsList.length
+    const selectedApps = selectedAppDetails ?? selectedAppDetailsList
 
     useEffect(() => {
         return () => {
@@ -131,7 +137,7 @@ export default function EnvironmentOverview({
     }, [])
 
     async function getDeploymentWindowEnvOverrideMetaData() {
-        const appEnvTuples = selectedAppDetailsList.map((appDetail) => ({
+        const appEnvTuples = (selectedAppDetails ? [selectedAppDetails] : selectedAppDetailsList).map((appDetail) => ({
             appId: +appDetail.appId,
             envId: +appDetail.envId,
         }))
@@ -144,13 +150,14 @@ export default function EnvironmentOverview({
     useEffect(() => {
         if (
             processDeploymentWindowAppGroupOverviewMap &&
+            isAppSelected &&
             (openedHibernateModalType ||
                 showHibernateStatusDrawer.showStatus ||
                 location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
         ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openedHibernateModalType, showHibernateStatusDrawer.showStatus, location.search])
+    }, [openedHibernateModalType, showHibernateStatusDrawer.showStatus, location.search, isAppSelected])
 
     useEffect(() => {
         setLoading(true)
@@ -247,10 +254,12 @@ export default function EnvironmentOverview({
     }
 
     const openHibernateModalPopup = () => {
+        setIsDeploymentLoading(true)
         setOpenedHibernateModalType(MODAL_TYPE.HIBERNATE)
     }
 
     const openUnHibernateModalPopup = () => {
+        setIsDeploymentLoading(true)
         setOpenedHibernateModalType(MODAL_TYPE.UNHIBERNATE)
     }
 
@@ -282,25 +291,66 @@ export default function EnvironmentOverview({
         })
     }
 
-    const environmentOverviewTableRows: EnvironmentOverviewTableProps['rows'] = appListData?.appInfoList?.map(
-        (appInfo) => ({
-            environment: {
-                id: appInfo.appId,
-                name: appInfo.application,
-                commits: appInfo.commits,
-                deployedAt: appInfo.lastDeployed,
-                status: appInfo.appStatus,
-                deploymentStatus: appInfo.deploymentStatus,
-                deployedBy: appInfo.lastDeployedBy,
-                lastDeployedImage: appInfo.lastDeployedImage,
+    const environmentOverviewTableRows: EnvironmentOverviewTableRow[] = appListData?.appInfoList?.map((appInfo) => ({
+        environment: {
+            id: appInfo.appId,
+            name: appInfo.application,
+            commits: appInfo.commits,
+            deployedAt: appInfo.lastDeployed,
+            status: appInfo.appStatus,
+            deploymentStatus: appInfo.deploymentStatus,
+            deployedBy: appInfo.lastDeployedBy,
+            lastDeployedImage: appInfo.lastDeployedImage,
+        },
+        popUpMenuItems: [
+            ...((ClonePipelineMenuButton && appListData.environment
+                ? [
+                      <ClonePipelineMenuButton
+                          sourceEnvironmentName={appListData.environment}
+                          onClick={() => {
+                              setSelectedAppDetails(appInfo)
+                              setOpenClonePipelineConfig(true)
+                          }}
+                      />,
+                  ]
+                : []) as EnvironmentOverviewTableRow['popUpMenuItems']),
+            {
+                label: 'Hibernate',
+                Icon: HibernateIcon,
+                iconType: null,
+                disabled: !appInfo.lastDeployed,
+                onClick: () => {
+                    setSelectedAppDetails(appInfo)
+                    openHibernateModalPopup()
+                },
             },
-            isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
-            onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
-            onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
-            deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
-            redirectLink: getAppRedirectLink(appInfo.appId, +envId),
-        }),
-    )
+            {
+                label: 'Unhibernate',
+                Icon: UnhibernateIcon,
+                iconType: null,
+                disabled: !appInfo.lastDeployed,
+                onClick: () => {
+                    setSelectedAppDetails(appInfo)
+                    openUnHibernateModalPopup()
+                },
+            },
+            {
+                label: 'Restart Workload',
+                Icon: RotateIcon,
+                iconType: 'stroke',
+                disabled: !appInfo.lastDeployed,
+                onClick: () => {
+                    setSelectedAppDetails(appInfo)
+                    onClickShowBulkRestartModal()
+                },
+            },
+        ],
+        isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
+        onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
+        onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
+        deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
+        redirectLink: getAppRedirectLink(appInfo.appId, +envId),
+    }))
 
     const renderSideInfoColumn = () => {
         return (
@@ -378,10 +428,10 @@ export default function EnvironmentOverview({
     }
 
     const renderOverviewModal = () => {
-        if (location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
+        if (isAppSelected && location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return (
                 <RestartWorkloadModal
-                    selectedAppDetailsList={selectedAppDetailsList}
+                    selectedAppDetailsList={selectedApps}
                     envName={appListData.environment}
                     envId={envId}
                     setRestartLoader={setRestartLoader}
@@ -393,10 +443,10 @@ export default function EnvironmentOverview({
             )
         }
 
-        if (openedHibernateModalType) {
+        if (isAppSelected && openedHibernateModalType) {
             return (
                 <HibernateModal
-                    selectedAppDetailsList={selectedAppDetailsList}
+                    selectedAppDetailsList={selectedApps}
                     appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
@@ -422,6 +472,17 @@ export default function EnvironmentOverview({
                     showHibernateStatusDrawer={showHibernateStatusDrawer}
                     hibernateInfoMap={hibernateInfoMap}
                     isDeploymentWindowLoading={isDeploymentLoading}
+                />
+            )
+        }
+
+        if (ClonePipelineModal && isAppSelected && openClonePipelineConfig) {
+            return (
+                <ClonePipelineModal
+                    sourceEnvironmentName={appListData.environment}
+                    selectedAppDetailsList={selectedApps}
+                    handleCloseClonePipelineModal={() => setOpenClonePipelineConfig(null)}
+                    httpProtocol={httpProtocol}
                 />
             )
         }
@@ -457,7 +518,6 @@ export default function EnvironmentOverview({
                                     httpProtocol={httpProtocol.current}
                                 />
                             )}
-
                             <button
                                 onClick={openHibernateModalPopup}
                                 className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"

@@ -39,6 +39,7 @@ export const HibernateModal = ({
     isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
+    const isCurrentSelected = !Array.isArray(selectedAppDetailsList)
 
     const handleAction = (event: SyntheticEvent) => {
         event.preventDefault()
@@ -48,7 +49,9 @@ export const HibernateModal = ({
             showStatus: false,
             inProgress: true,
         })
-        const selectedAppIds = selectedAppDetailsList.map((appDetails) => appDetails.appId)
+        const selectedAppIds = (isCurrentSelected ? [selectedAppDetailsList] : selectedAppDetailsList).map(
+            (appDetails) => appDetails.appId,
+        )
         manageApps(
             selectedAppIds,
             appDetailsList,
@@ -79,7 +82,7 @@ export const HibernateModal = ({
             return (
                 <>
                     <span>
-                        Pods for the selected applications will be &nbsp;
+                        Pods for the selected application(s) will be&nbsp;
                         <span className="fw-6">
                             {openedHibernateModalType === MODAL_TYPE.HIBERNATE
                                 ? `scaled down to 0 on ${envName} environment.`
@@ -119,9 +122,11 @@ export const HibernateModal = ({
                                 <ICUnHibernate className="dc__align-left" />
                             )}
                             <span className="fs-16 fw-6">
-                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '
-                                {selectedAppDetailsList.length}
-                                &nbsp;applications' on '{envName}'
+                                {`${openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '${
+                                    isCurrentSelected
+                                        ? selectedAppDetailsList.application
+                                        : `${selectedAppDetailsList.length} applications`
+                                }' on '${envName}'`}
                             </span>
                             {renderHibernateModalBody()}
                         </div>
