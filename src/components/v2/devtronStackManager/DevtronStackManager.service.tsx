@@ -16,7 +16,7 @@
 
 import { get, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
-import { ModuleNameMap, Routes } from '../../../config'
+import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
     LogPodNameResponse,
@@ -112,6 +112,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
                     onClick: reloadLocation,
                 },
                 icon: <ICSparkles />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
             })
             isReloadToastShown = true
         }

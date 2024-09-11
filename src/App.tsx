@@ -37,7 +37,7 @@ import {
     getApprovalModalTypeFromURL,
     reloadLocation,
 } from './components/common'
-import { URLS } from './config'
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
@@ -236,19 +236,23 @@ export default function App() {
             ToastManager.dismissToast(updateToastRef.current)
         }
 
-        updateToastRef.current = ToastManager.showToast({
-            variant: ToastVariantType.info,
-            title: 'Update available',
-            description: 'You are viewing an outdated version of Devtron UI.',
-            buttonProps: {
-                text: 'Reload',
-                dataTestId: 'reload-btn',
-                onClick: update,
+        updateToastRef.current = ToastManager.showToast(
+            {
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'You are viewing an outdated version of Devtron UI.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-btn',
+                    onClick: update,
+                },
+                icon: <ICSparkles />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
             },
-            icon: <ICSparkles />,
-        }, {
-            autoClose: false,
-        })
+            {
+                autoClose: false,
+            },
+        )
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
         }
@@ -279,6 +283,7 @@ export default function App() {
                     onClick: reloadLocation,
                 },
                 icon: <ICSparkles />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
             },
             {
                 autoClose: false,

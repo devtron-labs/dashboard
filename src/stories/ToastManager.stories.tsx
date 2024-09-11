@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Button, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 type ShowToastParameters = Parameters<typeof ToastManager.showToast>
 
@@ -98,7 +99,7 @@ export const CustomIconAndProgressBar: Story = {
         toastProps: {
             ...Default.args.toastProps,
             icon: <ICSparkles />,
-            progressBarBg: 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)',
+            progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
         },
     },
 }

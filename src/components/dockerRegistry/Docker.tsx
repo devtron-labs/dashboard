@@ -875,7 +875,6 @@ const DockerForm = ({
                 const message = error['errors'][0].userMessage
                 if (code === 400) {
                     setValidationStatus(VALIDATION_STATUS.FAILURE)
-                    // toast.error('Configuration validation failed')
                     setValidationError({ errTitle: message, errMessage: message })
                 } else {
                     // showError(error)
