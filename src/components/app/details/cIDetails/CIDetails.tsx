@@ -679,15 +679,15 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
 
     const computedAppId = appId ?? appIdFromParent
 
-    const [scanResultLoading, scanResultResponse, scanResultError] = useAsync(
+    const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
         () => getSecurityScan({ artifactId, ...(isJobCI && { appId: computedAppId }) }),
-        [artifactId],
+        [artifactId, computedAppId],
         isSecurityScanV2Enabled,
     )
 
-    const [executionDetailsLoading, executionDetailsResponse, executionDetailsError] = useAsync(
+    const [executionDetailsLoading, executionDetailsResponse, executionDetailsError, reloadExecutionDetails] = useAsync(
         () => getLastExecutionByAppArtifactId(artifactId, isJobCI ? computedAppId : null),
-        [artifactId],
+        [artifactId, computedAppId],
         !isSecurityScanV2Enabled,
     )
 
@@ -719,7 +719,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         return <Progressing pageLoader />
     }
     if (scanResultError || executionDetailsError) {
-        return <Reload />
+        return <Reload reload={isSecurityScanV2Enabled ? reloadScanResult : reloadScanResult} />
     }
     if (
         (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
@@ -740,7 +740,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
               low: imageScanSeverities.LOW || 0,
               unknown: imageScanSeverities.UNKNOWN || 0,
           }
-        : executionDetailsResponse?.result.severityCount
+        : executionDetailsResponse?.result.severityCount ?? { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
 
     const totalSeverities =
         (severityCount.critical || 0) +
@@ -758,20 +758,20 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
     }
 
     return (
-            <div className="p-16">
-                <SecuritySummaryCard
-                    severityCount={severityCount}
-                    scanToolId={executionDetailsResponse.result?.scanToolId}
-                    rootClassName="w-500"
-                    {...(isSecurityScanV2Enabled
-                        ? { appDetailsPayload: { appId: computedAppId, artifactId } }
-                        : {
-                              executionDetailsPayload: {
-                                  appId: computedAppId,
-                                  artifactId,
-                              },
-                          })}
-                />
-            </div>
+        <div className="p-16">
+            <SecuritySummaryCard
+                severityCount={severityCount}
+                scanToolId={executionDetailsResponse.result?.scanToolId}
+                rootClassName="w-500"
+                {...(isSecurityScanV2Enabled
+                    ? { appDetailsPayload: { appId: computedAppId, artifactId } }
+                    : {
+                          executionDetailsPayload: {
+                              appId: computedAppId,
+                              artifactId,
+                          },
+                      })}
+            />
+        </div>
     )
 }
