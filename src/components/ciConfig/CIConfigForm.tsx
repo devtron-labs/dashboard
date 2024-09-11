@@ -214,7 +214,7 @@ export default function CIConfigForm({
 
         const requestBody = {
             id: ciConfig?.id ?? null,
-            appId: +appId ?? null,
+            appId: +appId,
             dockerRegistry: registry.value || '',
             dockerRepository: repository_name.value?.replace(/\s/g, '') || '',
             beforeDockerBuild: [],

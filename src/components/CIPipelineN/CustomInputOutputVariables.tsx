@@ -264,7 +264,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                             <div className="dc__border-left w-80">
                                                 <CustomInputVariableSelect selectedVariableIndex={index} />
                                             </div>
-                                            <div className="w-20">
+                                            <div className="w-20-per">
                                                 <SelectPicker
                                                     value={
                                                         variable.format

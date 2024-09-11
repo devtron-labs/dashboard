@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,

@@ -15,18 +15,16 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import ReactSelect, { MultiValue } from 'react-select'
+import { MultiValue } from 'react-select'
 import { useLocation, useHistory } from 'react-router-dom'
 import * as queryString from 'query-string'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
-import { Select, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
 const ColumnFilterContext = React.createContext(null)
 

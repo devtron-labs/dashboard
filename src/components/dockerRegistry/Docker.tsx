@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KeyboardEventHandler, ReactElement, useEffect, useState } from 'react'
+import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,

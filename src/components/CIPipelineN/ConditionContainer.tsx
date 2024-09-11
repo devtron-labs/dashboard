@@ -244,9 +244,9 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
     return (
         <div>
             <div className="mb-10 flexbox justify-space">
-                <span className="fw-6 fs-13 cn-9" onClick={handleConditionCollapse}>
+                <div className="fw-6 fs-13 cn-9" onClick={handleConditionCollapse}>
                     {type} Condition
-                </span>
+                </div>
 
                 <Dropdown
                     className="pointer"
