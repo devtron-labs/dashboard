@@ -32,7 +32,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { JobListViewType } from '../Constants'
+import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
@@ -57,11 +57,7 @@ const JobsList = () => {
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [filtersLoading, setFiltersLoading] = useState<boolean>(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>(0)
-    const [masterFilters, setMasterFilters] = useState<JobsMasterFilters>({
-        status: [],
-        projects: [],
-        environments: [],
-    })
+    const [masterFilters, setMasterFilters] = useState<JobsMasterFilters>(INITIAL_EMPTY_MASTER_FILTERS)
     const [jobCount, setJobCount] = useState<number>(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
     const showExportCsvButton = userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1

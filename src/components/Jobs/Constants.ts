@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JobsMasterFilters } from './Types'
+
 export const JobListViewType = {
     LOADING: 'LOADING',
     LIST: 'LIST',
@@ -36,4 +38,10 @@ export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJobInfoText:
         'Jobs allow manual and automated execution of developer actions. Increase productivity by automating the tedious. Get started by creating your first job.',
     createJobButtonLabel: 'Create Job',
+}
+
+export const INITIAL_EMPTY_MASTER_FILTERS: JobsMasterFilters = {
+    status: [],
+    projects: [],
+    environments: [],
 }
