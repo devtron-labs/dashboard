@@ -40,9 +40,11 @@ import {
     Environment,
     PipelineFormType,
     ReleaseMode,
+    TabGroup,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
@@ -69,7 +71,6 @@ import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
 import { getGlobalVariable } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import './cdPipeline.scss'
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
@@ -645,8 +646,6 @@ export default function CDPipeline({
             }),
         }
 
-        const _userApprovalConfig = getUserApprovalConfigPayload(formData.userApprovalConfig)
-
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -662,7 +661,9 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            userApprovalConfig: _userApprovalConfig,
+            ...(getUserApprovalConfigPayload ? {
+                userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig)
+            }: {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -1045,31 +1046,23 @@ export default function CDPipeline({
         }
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
         const showAlert = !formDataErrorObj[stageName].isValid
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-0 pb-8 flexbox"
-                    activeClassName="active"
-                    to={`${toLink}?${urlParams}`}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {CDDeploymentTabText[stageName]}
-                    {showAlert && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-2 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${CDDeploymentTabText[stageName]}-tab`,
+            label: CDDeploymentTabText[stageName],
+            tabType: 'navLink',
+            showError: showAlert,
+            props: {
+                to: `${toLink}?${urlParams}`,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+        }
     }
 
     const renderSecondaryButton = () => {
@@ -1183,11 +1176,17 @@ export default function CDPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={[
+                                getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                getNavLink(`build`, BuildStageVariable.Build),
+                                getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>

@@ -33,8 +33,6 @@ import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
-    _configName
-
     constructor(props) {
         super(props)
         this.state = {
@@ -83,9 +81,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         },
                     }))
                 })
-                .then(() => {
-                    this._configName?.focus()
-                })
                 .catch((error) => {
                     showError(error)
                 })
@@ -95,11 +90,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 form: { ...prevState.form, default: this.props.shouldBeDefault },
                 view: ViewType.FORM,
             }))
-            setTimeout(() => {
-                if (this._configName) {
-                    this._configName.focus()
-                }
-            }, 100)
         }
     }
 
@@ -205,7 +195,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="configName"
                                 label="Configuration name"
                                 data-testid="add-smtp-configuration-name"
-                                ref={(node) => (this._configName = node)}
                                 value={this.state.form.configName}
                                 onChange={this.handleInputChange}
                                 handleOnBlur={this.handleBlur}
