@@ -931,7 +931,7 @@ node-details-full-screen
                 customComponent: renderTabs,
             },
             {
-                type: TerminalWrapperType.CONNCTION_SWITCH,
+                type: TerminalWrapperType.CONNECTION_SWITCH,
                 hideTerminalStripComponent: hideShell,
                 classNamePrefix: 'cluster-terminal-select-shell',
                 stopTerminalConnection,
