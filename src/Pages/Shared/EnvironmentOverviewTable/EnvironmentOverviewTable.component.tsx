@@ -214,12 +214,7 @@ export const EnvironmentOverviewTable = ({
                     )}
                     <div className="flexbox dc__align-items-center dc__content-space dc__gap-8">
                         <Tooltip content={name}>
-                            <Link
-                                className="py-2 dc__truncate dc__no-decor"
-                                to={redirectLink}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <Link className="py-2 dc__truncate dc__no-decor" to={redirectLink}>
                                 {name}
                             </Link>
                         </Tooltip>
@@ -245,7 +240,13 @@ export const EnvironmentOverviewTable = ({
                     <CommitChipCell handleClick={onCommitClick} commits={commits} />
                     {deployedBy && (
                         <>
-                            <Link to={deployedAtLink}>{processDeployedTime(deployedAt, true)}</Link>
+                            {deployedAt ? (
+                                <Link className="dc__no-decor" to={deployedAtLink}>
+                                    {processDeployedTime(deployedAt, true)}
+                                </Link>
+                            ) : (
+                                <span />
+                            )}
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <span
                                     className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
