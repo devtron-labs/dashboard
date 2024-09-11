@@ -758,7 +758,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
     }
 
     return (
-        <>
             <div className="p-16">
                 <SecuritySummaryCard
                     severityCount={severityCount}
@@ -774,6 +773,5 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
                           })}
                 />
             </div>
-        </>
     )
 }
