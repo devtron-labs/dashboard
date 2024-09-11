@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -9,16 +25,27 @@ import {
     put,
     DATE_TIME_FORMAT_STRING,
     DeploymentWithConfigType,
+    History,
     noop,
+    handleUTCTime,
+    createGitCommitUrl,
+    PromiseAllStatusType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
-import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
-import { History } from './details/cicdHistory/types'
-import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
-import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
-import { BulkResponseStatus, BULK_CD_RESPONSE_STATUS_TEXT } from '../ApplicationGroup/Constants'
+import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
+import { getAPIOptionsWithTriggerTimeout, importComponentFromFELibrary } from '../common'
+import {
+    AppDetails,
+    ArtifactsCiJob,
+    EditAppRequest,
+    AppMetaInfo,
+    TriggerCDNodeServiceProps,
+    TriggerCDPipelinePayloadType,
+} from './types'
+import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
+
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 const stageMap = {
     PRECD: 'PRE',
@@ -29,62 +56,6 @@ const stageMap = {
 
 export const getAppList = (request, options?) => {
     return post(Routes.APP_LIST, request, options)
-}
-
-export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
-    const URL = `${Routes.APP}/material-info/${params.envId}/${params.ciArtifactId}`
-    return get(URL)
-}
-
-export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
-    return getCITriggerInfo(params).then((response) => {
-        let materials = response?.result?.ciMaterials || []
-        materials = materials.map((mat) => {
-            return {
-                id: mat.id,
-                gitMaterialName: mat.gitMaterialName || '',
-                gitMaterialId: mat.gitMaterialId || 0,
-                gitURL: mat.url || '',
-                type: mat.type || '',
-                value: mat.value || '',
-                active: mat.active || false,
-                history: mat.history.map((hist, index) => {
-                    return {
-                        commitURL: mat.url ? createGitCommitUrl(mat.url, hist.Commit) : '',
-                        commit: hist.Commit || '',
-                        author: hist.Author || '',
-                        date: hist.Date ? ISTTimeModal(hist.Date, false) : '',
-                        message: hist.Message || '',
-                        changes: hist.Changes || [],
-                        showChanges: index === 0,
-                        webhookData: hist.WebhookData,
-                    }
-                }),
-                lastFetchTime: mat.lastFetchTime || '',
-            }
-        })
-        if (materials.length > 0 && !materials.find((mat) => mat.isSelected)) {
-            materials[0].isSelected = true
-        }
-        return {
-            code: response.code,
-            result: {
-                materials,
-                triggeredByEmail: response.result.triggeredByEmail || '',
-                lastDeployedTime: response.result.lastDeployedTime
-                    ? handleUTCTime(response.result.lastDeployedTime, false)
-                    : '',
-                environmentName: response.result.environmentName || '',
-                environmentId: response.result.environmentId || 0,
-                appName: response.result.appName || '',
-                appReleaseTags: response?.result?.imageTaggingData?.appReleaseTags,
-                imageComment: response?.result?.imageTaggingData?.imageComment,
-                imageReleaseTags: response?.result?.imageTaggingData?.imageReleaseTags,
-                image: response?.result?.image,
-                tagsEditable: response?.result?.imageTaggingData?.tagsEditable,
-            },
-        }
-    })
 }
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
@@ -192,7 +163,7 @@ const gitTriggersModal = (triggers, materials) => {
             author: triggers[key].Author,
             message: triggers[key].Message,
             url: material?.url || '',
-            date: triggers[key].Date ? ISTTimeModal(triggers[key].Date) : '',
+            date: triggers[key].Date ? handleUTCTime(triggers[key].Date) : '',
         }
     })
 }
@@ -245,7 +216,7 @@ const processCIMaterialResponse = (response) => {
                 ...material,
                 isSelected: index == 0,
                 gitURL: material.gitMaterialUrl || '',
-                lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
                 showAllCommits: false,
                 ...processMaterialHistoryAndSelectionError(material),
@@ -277,16 +248,6 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const cancelCiTrigger = (params, isForceAbort) => {
-    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
-    return trash(URL)
-}
-
-export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
-    const URL = `${Routes.CD_CONFIG}/${pipelineId}/workflowRunner/${workflowRunner}`
-    return trash(URL)
-}
-
 export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
     return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
 }
@@ -299,24 +260,34 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
     return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
 }
 
-export const triggerCINode = (request) => {
+export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
-    return post(URL, request)
+    const options = {
+        signal: abortSignal,
+    }
+    return post(URL, request, options)
 }
 
-export const triggerCDNode = (
-    pipelineId: any,
-    ciArtifactId: any,
-    appId: string,
-    stageType: DeploymentNodeType,
-    deploymentWithConfig?: string,
-    wfrId?: number,
-) => {
-    const request = {
+export const triggerCDNode = ({
+    pipelineId,
+    ciArtifactId,
+    appId,
+    stageType,
+    deploymentWithConfig,
+    wfrId,
+    abortSignal,
+    runtimeParams = [],
+}: TriggerCDNodeServiceProps) => {
+    const areRuntimeParamsConfigured =
+        getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
+    const runtimeParamsPayload = areRuntimeParamsConfigured ? getRuntimeParamsPayload(runtimeParams) : null
+
+    const request: TriggerCDPipelinePayloadType = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
+        ...(areRuntimeParamsConfigured && runtimeParamsPayload),
     }
 
     if (deploymentWithConfig) {
@@ -330,6 +301,7 @@ export const triggerCDNode = (
         }
     }
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
 
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
@@ -337,37 +309,39 @@ export const triggerCDNode = (
 export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
     return new Promise((resolve) => {
         ApiQueuingWithBatch(
-            appIds.map((appId) =>
-                () => put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
-                    appIds: [appId],
-                    environmentId: envId,
-                    value: value,
-                }),
+            appIds.map(
+                (appId) => () =>
+                    put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                        appIds: [appId],
+                        environmentId: envId,
+                        value: value,
+                    }),
             ),
             httpProtocol,
         )
-            .then((results) => {
+            .then((results: any[]) => {
+                // Adding for legacy code since have move API Queueing to generics with unknown as default response
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.apps[0]
                         }
                         const response = {
                             appId: appIds[index],
                             status: '',
-                            message: ''
+                            message: '',
                         }
                         const errorReason = result.reason
                         switch (errorReason.code) {
                             case 403:
                             case 422:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
                                 response.status = BulkResponseStatus.UNAUTHORIZE
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                                 break
                             case 409:
                             default:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
                                 response.status = BulkResponseStatus.FAIL
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                         }
                         return response
                     }),
@@ -470,13 +444,6 @@ export function handleTimeWithOffset(ts: string) {
         console.error('Error Parsing Date:', ts)
     }
     return timestamp
-}
-
-export function getArtifact(pipelineId, workflowId) {
-    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${workflowId}`
-    return get(URL).then((response) => {
-        return response
-    })
 }
 
 export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {

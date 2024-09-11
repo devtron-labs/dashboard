@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext } from 'react'
 import { ConditionType, CustomInput, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
@@ -11,7 +27,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
@@ -26,7 +41,6 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
         setFormDataErrorObj,
         validateTask,
     } = useContext(pipelineContext)
-    const validationRules = new ValidationRules()
 
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
         label: format,

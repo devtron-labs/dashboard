@@ -1,20 +1,39 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { not, stopPropagation, CIMaterialSidebarType } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect, useContext } from 'react'
+import {
+    not,
+    stopPropagation,
+    CIMaterialSidebarType,
+    CiPipelineSourceConfig,
+    MaterialHistory,
+    CIMaterialType,
+    SearchBar,
+    SourceTypeMap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory } from 'react-router'
-import { useLocation } from 'react-router-dom'
-import { SourceTypeMap } from '../../config'
-import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
+import { useHistory, useLocation } from 'react-router-dom'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
@@ -24,7 +43,7 @@ import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 // TODO: ADD prop type
@@ -56,8 +75,8 @@ export default function GitInfoMaterial({
     // Not required for BulkCI
     handleSidebarTabChange,
     runtimeParams,
-    handleRuntimeParametersChange,
-    ciBlockState = null,
+    handleRuntimeParamChange,
+    handleRuntimeParamError,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -123,9 +142,9 @@ export default function GitInfoMaterial({
 
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                {GitInfoMaterialTabs && !isJobCI && !isJobView ? (
+                {RuntimeParamTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
-                        <GitInfoMaterialTabs
+                        <RuntimeParamTabs
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}
@@ -157,9 +176,7 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
         return (
             <div
-                className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${
-                    selectedMaterial.regex ? 'cursor' : ''
-                } cn-9`}
+                className={`fs-13 lh-20 fw-6 flex ${selectedMaterial.regex ? 'cursor' : ''} cn-9`}
                 style={{ background: 'var(--window-bg)' }}
                 onClick={onClickHeader}
             >
@@ -205,23 +222,9 @@ export default function GitInfoMaterial({
         setSearchText('')
     }
 
-    const handleInputChange = (event): void => {
-        setSearchText(event.target.value)
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            if (event.target.value) {
-                handleFilterChanges(event.target.value)
-                setSearchApplied(true)
-            } else if (searchApplied) {
-                setSearchApplied(false)
-                clearSearch(event)
-            }
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch(event)
-        }
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setSearchText(_searchText)
+        handleFilterChanges(_searchText)
     }
 
     const goToWorkFlowEditor = () => {
@@ -235,23 +238,16 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    data-testid="ci-trigger-search-by-commit-hash"
-                    type="text"
-                    placeholder="Search by commit hash"
-                    value={searchText}
-                    className="search__input"
-                    onChange={handleInputChange}
-                    onKeyDown={handleFilterKeyPress}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
+            <SearchBar
+                initialSearchText={searchText}
+                containerClassName="w-250"
+                handleEnter={handleFilterKeyPress}
+                inputProps={{
+                    placeholder: 'Search by commit hash',
+                    autoFocus: true,
+                }}
+                dataTestId="ci-trigger-search-by-commit-hash"
+            />
         )
     }
 
@@ -317,12 +313,12 @@ export default function GitInfoMaterial({
 
         return (
             <div
-                className="flex dc__content-space dc__position-sticky "
+                className="flex dc__content-space dc__position-sticky py-8 px-16"
                 style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
             >
                 <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                 {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                    <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
+                    <div className="flex right dc__gap-8">
                         {renderSearch()}
                         {excludeIncludeEnv && renderExcludedCommitsOption()}
                     </div>
@@ -332,7 +328,7 @@ export default function GitInfoMaterial({
     }
 
     const getRuntimeParametersHeading = () => {
-        const headingPrefix = 'Pass parameters'
+        const headingPrefix = 'Runtime parameters'
         const headingSuffix = appName ? `for '${appName}'` : ''
         return `${headingPrefix} ${headingSuffix}`
     }
@@ -383,10 +379,12 @@ export default function GitInfoMaterial({
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
                 <RuntimeParameters
+                    // Have to add key for appId since key value config would not be updated incase of app change
+                    key={`runtime-parameters-${appId}`}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
-                    handleKeyValueChange={handleRuntimeParametersChange}
-                    isJobCI={isJobCI}
+                    handleChange={handleRuntimeParamChange}
+                    onError={handleRuntimeParamError}
                 />
             )
         }
@@ -411,14 +409,14 @@ export default function GitInfoMaterial({
                         </span>
                     </div>
                 )}
-
-                <MaterialHistory
-                    material={selectedMaterial}
-                    pipelineName={pipelineName}
-                    ciPipelineId={pipelineId}
-                    selectCommit={triggerViewContext.selectCommit}
-                    toggleChanges={triggerViewContext.toggleChanges}
-                />
+                <div className="flexbox-col dc__gap-12 py-12 px-16">
+                    <MaterialHistory
+                        material={selectedMaterial}
+                        pipelineName={pipelineName}
+                        ciPipelineId={pipelineId}
+                        selectCommit={triggerViewContext.selectCommit}
+                    />
+                </div>
             </div>
         )
     }

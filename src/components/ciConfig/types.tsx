@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import {
     ServerError,
@@ -5,20 +21,17 @@ import {
     CIBuildType,
     DockerConfigOverrideType,
     MandatoryPluginDataType,
-    PluginDetailType,
     VariableType,
-    MandatoryPluginDetailType,
     CommonNodeAttr,
     WorkflowType,
     Material,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { Environment } from '../cdPipeline/cdPipeline.types'
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
@@ -328,8 +341,6 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
     mandatoryPluginData?: MandatoryPluginDataType
-    pluginList: PluginDetailType[]
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
@@ -343,7 +354,6 @@ export interface CIPipelineSidebarType {
 
 export interface TaskListType {
     withWarning: boolean
-    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

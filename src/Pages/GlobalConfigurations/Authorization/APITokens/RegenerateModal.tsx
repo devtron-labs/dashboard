@@ -1,4 +1,20 @@
-import React, { useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState } from 'react'
 import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
@@ -48,18 +64,16 @@ const RegeneratedModal = ({
         }
     }
 
-    const renderModalHeader = () => {
-        return (
-            <div className="modal__header p-16 dc__border-bottom w-100 mb-0">
-                <h2 className="modal__title fs-16 flex dc__content-space w-100">
-                    <span>Regenerate API token</span>
-                    <button type="button" className=" dc__transparent" onClick={close} aria-label="Close modal">
-                        <Close className="icon-dim-24" />
-                    </button>
-                </h2>
-            </div>
-        )
-    }
+    const renderModalHeader = () => (
+        <div className="modal__header p-16 dc__border-bottom w-100 mb-0">
+            <h2 className="modal__title fs-16 flex dc__content-space w-100">
+                <span>Regenerate API token</span>
+                <button type="button" className=" dc__transparent" onClick={close} aria-label="Close modal">
+                    <Close className="icon-dim-24" />
+                </button>
+            </h2>
+        </div>
+    )
 
     const handleRegenrateToken = async () => {
         if (selectedExpirationDate.label === 'Custom' && !customDate) {

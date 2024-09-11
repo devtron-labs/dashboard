@@ -1,8 +1,20 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .cluster-list-main-container {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
-    }
     .cluster-list-row {
         display: grid;
         grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
@@ -51,16 +63,25 @@
     .setting-icon path {
         stroke: var(--N600);
     }
+
     .node-list-row {
         display: grid;
-        grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;
         column-gap: 16px;
-    }
+        width: max-content;
+        min-width: 100%;
 
-    .sticky-column {
-        left: 0;
-        z-index: 1;
-        background-color: var(--N0);
+        & > :first-child {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            padding-left: 20px;
+            background-color: var(--N0);
+            border-right: 1px solid var(--N200);
+        }
+
+        & > :last-child {
+            padding-right: 20px;
+        }
     }
 
     .node-actions-menu-icon {
@@ -165,28 +186,31 @@
             }
             .pods-grid {
                 display: grid;
-                grid-template-columns: 1fr;
                 grid-template-rows: auto 1fr;
-                grid-template-areas:
-                    'header'
-                    'main';
-                header {
-                    grid-area: header;
+                main,
+                header,
+                .row-wrapper {
                     display: grid;
-                    grid-template-columns: minmax(150px, 200px) minmax(100px, auto) repeat(4, 100px) 75px;
+                }
+                main {
+                    grid-template-rows: auto;
+                    & > .row-wrapper:not(:last-child) {
+                        border-bottom: 1px solid var(--N100);
+                    }
+                }
+                header {
                     position: sticky;
                     top: 46px;
                     z-index: 1;
                 }
-                main {
-                    grid-area: main;
-                    display: grid;
-                    grid-template-columns: minmax(150px, 200px) minmax(100px, auto) repeat(4, 100px) 75px;
+                .row-wrapper,
+                header {
+                    padding: 8px 20px;
+                    line-height: 24px;
+                    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) repeat(4, 100px) 75px;
+                    gap: 8px;
                 }
-                .row-wrapper {
-                    display: contents;
-                }
-                .row-wrapper:hover > div {
+                .row-wrapper:hover {
                     background-color: var(--N50);
                 }
             }
@@ -224,28 +248,6 @@
     .list-title {
         .mw-85px {
             max-width: 85px;
-        }
-        .sort-column {
-            background-image: url('../../assets/icons/misc/sort.svg');
-            display: inline-block;
-            height: 20px;
-            width: 16px;
-            background-size: 100% 100%;
-            -o-background-size: 100% 100%;
-            -webkit-background-size: 100% 100%;
-        }
-        &.sort-by {
-            .sort-icon {
-                background-image: url('../../assets/icons/ic-sort-arrow-down.svg');
-                display: inline-block;
-                height: 12px;
-                width: 12px;
-                position: relative;
-                top: -4px;
-            }
-            .desc {
-                transform: rotate(180deg);
-            }
         }
     }
 }
@@ -471,16 +473,4 @@
 
 .node-code-editor-header {
     background: var(--terminal-bg);
-}
-
-.cluster-terminal-hidden {
-    visibility: hidden;
-    height: 0;
-    .terminal-action-strip {
-        display: none;
-      }
-}
-
-.cluster-terminal-hidden * {
-    height: 0 !important;
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext } from 'react'
 import { CustomInput, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
@@ -19,7 +35,6 @@ export default function BranchRegexModal({
     title,
     isChangeBranchClicked,
     onClickNextButton,
-    onShowCIModal,
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
@@ -96,7 +111,6 @@ export default function BranchRegexModal({
 
     const onClickBackArrow = (): void => {
         onCloseBranchRegexModal()
-        onShowCIModal()
     }
 
     const getErrorMessage = (regexValue) => {

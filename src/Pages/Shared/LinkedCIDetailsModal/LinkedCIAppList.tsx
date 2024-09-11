@@ -1,9 +1,23 @@
-import React from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { SortableTableHeaderCell, AppStatus, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
-import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
 import { getLinkedCIAppUrl } from './utils'
@@ -38,22 +52,7 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
 
 const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedCIAppListProps) => {
     if (!isLoading && (totalCount === 0 || appList.length === 0)) {
-        const renderClearFilterButton = () => (
-            <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
-                Clear Filters
-            </button>
-        )
-
-        return (
-            <GenericEmptyState
-                image={EmptyStateImage}
-                classname="flex-grow-1"
-                title="No Results"
-                subTitle="We could not find any matching results"
-                isButtonAvailable
-                renderButton={renderClearFilterButton}
-            />
-        )
+        return <GenericFilterEmptyState classname="flex-grow-1" handleClearFilters={urlFilters.clearFilters} />
     }
     const { sortOrder, handleSorting } = urlFilters
 

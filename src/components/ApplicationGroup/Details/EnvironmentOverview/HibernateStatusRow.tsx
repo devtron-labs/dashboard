@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { HibernateResponseRowType, HibernateStatusRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
@@ -43,17 +59,23 @@ export const HibernateStatusRow = ({
     }
 
     const getMessage = () => {
-        if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
+        if (
+            hibernateInfoMap[rowData.id] &&
+            hibernateInfoMap[rowData.id].userActionState &&
+            hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED
+        ) {
             return (
                 <div>
-                    {hibernateInfoMap[rowData.id].userActionState === ACTION_STATE.BLOCKED && <div>
-                        You are not authorised to deploy&nbsp;
-                        {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
-                            ? 'during'
-                            : 'outside'}&nbsp;
-                        {hibernateInfoMap[rowData.id].type.toLowerCase()} window
-                    </div>
-        }
+                    {hibernateInfoMap[rowData.id].userActionState === ACTION_STATE.BLOCKED && (
+                        <div>
+                            You are not authorised to deploy&nbsp;
+                            {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
+                                ? 'during'
+                                : 'outside'}
+                            &nbsp;
+                            {hibernateInfoMap[rowData.id].type.toLowerCase()} window
+                        </div>
+                    )}
                     <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[rowData.id].excludedUserEmails} />
                 </div>
             )

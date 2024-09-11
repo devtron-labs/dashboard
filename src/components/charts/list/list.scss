@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .chart-list-page {
     display: grid;
     grid-template-rows: 80px 58px 1fr;
@@ -13,9 +29,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-auto-rows: min-content;
-    grid-gap: 16px;
+    grid-gap: 12px;
     padding: 16px 20px;
-    background-color: var(--window-bg);
 }
 
 .chart-grid.list-view {
@@ -121,7 +136,7 @@
 
 .chart-grid-item:hover {
     text-decoration: none;
-    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
 }
 
 .select-chart-view__multi-chart-summary--chart-group {
@@ -583,7 +598,7 @@
         display: grid;
         grid-template-rows: 36px 36px;
         z-index: 2;
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
     }
 
     .empty-state img {
@@ -600,7 +615,7 @@
         }
     }
 
-    .chart-list__row .list{
+    .chart-list__row .list {
         height: 36px;
         cursor: auto;
     }
@@ -612,7 +627,7 @@
     display: grid;
     grid-template-rows: 36px 36px;
     z-index: 2;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
 .add-repo-row:hover,
@@ -620,6 +635,6 @@
     background-color: var(--N50);
 }
 
-.accordian-add-position{
+.accordian-add-position {
     top: 350px;
 }

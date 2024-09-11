@@ -1,20 +1,37 @@
-import React, { useEffect, useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useState } from 'react'
 import {
     AppStatus,
     showError,
-    Progressing,
     ErrorScreenManager,
     ServerErrors,
     Host,
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+    handleUTCTime,
+    DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useHistory } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps } from './AppListService'
-import { Pagination, LazyImage, handleUTCTime } from '../../common'
+import { LazyImage } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -49,7 +66,8 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
-import { AppListResponse, HelmApp } from './AppListType'
+import { HelmAppListResponse, HelmApp } from './AppListType'
+import moment from 'moment'
 
 export default function HelmAppList({
     serverMode,
@@ -117,11 +135,11 @@ export default function HelmAppList({
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
                 _getExternalHelmApps()
-                updateDataSyncing(false)
             }
+            updateDataSyncing(false)
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv, appStatus)
-                .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
+                .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
                             ? devtronInstalledHelmAppsListResponse.result.helmApps
@@ -201,35 +219,39 @@ export default function HelmAppList({
         _externalAppFetchErrors: string[],
         _sseConnection: EventSource,
     ) {
-        const externalAppData: AppListResponse = JSON.parse(message.data)
-        if (!externalAppData.result.clusterIds?.length) {
-            return
-        }
-
-        const _clusterId = externalAppData.result.clusterIds[0].toString()
-        if (_externalAppRecievedClusterIds.includes(_clusterId)) {
-            return
-        }
-
-        if (externalAppData.result.errored) {
-            const _cluster = masterFilters.clusters.find((cluster) => {
-                return cluster.key == _clusterId
-            })
-            let _errorMsg = ''
-            if (_cluster) {
-                _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
+        try {
+            const externalAppData: HelmAppListResponse = JSON.parse(message.data)
+            if (!externalAppData.result.clusterIds?.length) {
+                return
             }
-            _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
-            _externalAppFetchErrors.push(_errorMsg)
-            setExternalHelmListFetchErrors([..._externalAppFetchErrors])
+
+            const _clusterId = externalAppData.result.clusterIds[0].toString()
+            if (_externalAppRecievedClusterIds.includes(_clusterId)) {
+                return
+            }
+
+            if (externalAppData.result.errored) {
+                const _cluster = masterFilters.clusters.find((cluster) => {
+                    return cluster.key == _clusterId
+                })
+                let _errorMsg = ''
+                if (_cluster) {
+                    _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
+                }
+                _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
+                _externalAppFetchErrors.push(_errorMsg)
+                setExternalHelmListFetchErrors([..._externalAppFetchErrors])
+            }
+
+            _externalAppRecievedClusterIds.push(_clusterId)
+            const _newExternalAppList = externalAppData.result.helmApps || []
+            _newExternalAppList.every((element) => (element.isExternal = true))
+
+            _externalAppRecievedHelmApps.push(..._newExternalAppList)
+            setExternalHelmAppsList([..._externalAppRecievedHelmApps])
+        } catch (err) {
+            showError(err)
         }
-
-        _externalAppRecievedClusterIds.push(_clusterId)
-        const _newExternalAppList = externalAppData.result.helmApps || []
-        _newExternalAppList.every((element) => (element.isExternal = true))
-
-        _externalAppRecievedHelmApps.push(..._newExternalAppList)
-        setExternalHelmAppsList([..._externalAppRecievedHelmApps])
 
         // Show guided content card for connecting cluster or installing CI/CD integration
         // when there's only one cluster & no app other than devtron-operator is installed
@@ -485,7 +507,7 @@ export default function HelmAppList({
                             className="default-tt"
                             arrow
                             placement="top"
-                            content={handleUTCTime(app.lastDeployedAt, false)}
+                            content={moment(app.lastDeployedAt).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                         >
                             <p className="dc__truncate-text  m-0">{handleUTCTime(app.lastDeployedAt, true)}</p>
                         </Tippy>
@@ -696,6 +718,7 @@ export default function HelmAppList({
             filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={filteredHelmAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

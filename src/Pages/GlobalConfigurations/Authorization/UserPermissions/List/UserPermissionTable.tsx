@@ -1,10 +1,25 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     BulkSelection,
     Pagination,
     SortableTableHeaderCell,
     UserListSortableKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { handleToggleCheckForBulkSelection } from '../../utils'
@@ -63,6 +78,16 @@ const UserPermissionTable = ({
                     sortOrder={sortOrder}
                     disabled={isActionsDisabled}
                 />
+                {showStatus && (
+                    <SortableTableHeaderCell
+                        title="User groups"
+                        triggerSorting={null}
+                        isSorted={null}
+                        sortOrder={null}
+                        disabled={null}
+                        isSortable={false}
+                    />
+                )}
                 <SortableTableHeaderCell
                     title="Last Login"
                     triggerSorting={sortByLastLogin}
@@ -83,6 +108,7 @@ const UserPermissionTable = ({
                     >
                         <span className="child child-shimmer-loading" />
                         <span className="child child-shimmer-loading" />
+                        {showStatus && <span className="child child-shimmer-loading" />}
                         <span className="child child-shimmer-loading" />
                         {showStatus && <span className="child child-shimmer-loading" />}
                     </div>

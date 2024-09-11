@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .form__app-compose {
     width: 1012px;
     margin: 0 auto;
@@ -306,20 +322,19 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
-.form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='BULK_CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-bulk-check.svg');
 }
 
 .any-selected {
-
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
@@ -353,7 +368,7 @@ p.sentence-case:first-letter {
     margin-right: 10px;
 }
 
-.form__radio-group input {
+.form__radio-group input[type="radio"] {
     position: absolute;
     opacity: 0;
 }

@@ -1,42 +1,31 @@
-import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
-import { PipelineBuildStageType } from '../workflowEditor/types'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+    DeploymentStrategy,
+    Environment,
+    SavedDeploymentStrategy,
+    UserApprovalConfigType,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
     UPDATE: 2,
     DEPLOYMENT_PARTIAL_DELETE: 3,
-}
-
-export interface DeploymentStrategy {
-    deploymentTemplate: string
-    config: any
-    default: boolean
-}
-
-export interface SavedDeploymentStrategy {
-    deploymentTemplate: string
-    config: any
-    default: boolean
-    isCollapsed?: boolean
-    defaultConfig?: any
-    yamlStr?: any
-    jsonStr?: any
-}
-
-export interface CDPipelineProps
-    extends RouteComponentProps<{ appId: string; ciPipelineId: string; cdPipelineId?: string; workflowId: string }> {
-    appName: string
-    downstreamNodeSize: number
-    getWorkflows: () => void
-    close: (
-        showSuccessCD?: boolean,
-        environmentId?: number,
-        environmentName?: string,
-        successTitle?: string,
-        showWebhookTippy?: boolean,
-    ) => void
-    refreshParentWorkflows: () => void
 }
 
 export interface CDStageType {
@@ -47,19 +36,7 @@ export interface CDStageType {
     cdWorkflowId?: number
     cdWorkflowRunnerId?: number
 }
-export interface Environment {
-    description?: string
-    id: number
-    name: string
-    namespace: string
-    active: boolean
-    clusterName: string
-    clusterId: string
-    isClusterCdActive: boolean
-    isVirtualEnvironment?: boolean
-    allowedDeploymentTypes?: DeploymentAppTypes[]
-    isDigestEnforcedForEnv?: boolean
-}
+
 export interface CommonError {
     isValid: boolean
     message: string
@@ -68,46 +45,6 @@ export interface CommonError {
 export enum GeneratedHelmPush {
     PUSH = 'PUSH',
     DO_NOT_PUSH = 'DO_NOT_PUSH',
-}
-export interface CDPipelineState {
-    environments: Environment[]
-    view: string
-    code: number
-    loadingData: boolean
-    strategies: DeploymentStrategy[]
-    pipelineConfig: PipelineConfig & {
-        environmentName?: string
-        deploymentAppType: string
-        deploymentAppCreated: boolean
-        isVirtualEnvironment?: boolean
-        repoName: string
-        containerRegistryName: string
-    }
-    showDeleteModal: boolean
-    shouldDeleteApp: boolean
-    showForceDeleteDialog: boolean
-    showError: boolean
-    errorForm: {
-        pipelineNameError: CommonError
-        envNameError: CommonError
-        nameSpaceError: CommonError
-        containerRegistryError: CommonError
-        repositoryError: CommonError
-    }
-    showPreStage: boolean
-    showDeploymentStage: boolean
-    showPostStage: boolean
-    requiredApprovals: string
-    isAdvanced: boolean
-    forceDeleteDialogMessage: string
-    forceDeleteDialogTitle: string
-    isVirtualEnvironmentOnEnvSelection?: boolean
-    showNonCascadeDeleteDialog: boolean
-    clusterName: string
-    allowedDeploymentTypes: DeploymentAppTypes[]
-    dockerRegistries
-    generatedHelmPushAction: string
-    selectedRegistry: any
 }
 
 export interface PipelineConfig {
@@ -133,9 +70,7 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 
@@ -189,44 +124,6 @@ export interface AdvanceCDPipelineModalProps {
     selectStrategy: (selection: string) => void
     deleteStage: (key: 'preStage' | 'postStage') => void
     renderAddStage: (key: 'preStage' | 'postStage') => void
-}
-
-interface ConfigSecretType {
-    label: string
-    value: string
-    type: string
-}
-
-export interface CDFormType {
-    name: string
-    ciPipelineId: number
-    environmentId: number
-    environmentName: string
-    namespace: string
-    environments: Environment[]
-    deploymentAppType: string
-    triggerType: string
-    preBuildStage?: PipelineBuildStageType
-    postBuildStage?: PipelineBuildStageType
-    strategies: DeploymentStrategy[]
-    savedStrategies: SavedDeploymentStrategy[]
-    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
-    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
-    requiredApprovals: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
-    isClusterCdActive: boolean
-    deploymentAppCreated: boolean
-    clusterId: string
-    clusterName: string
-    runPreStageInEnv: boolean
-    runPostStageInEnv: boolean
-    allowedDeploymentTypes: DeploymentAppTypes[]
-    containerRegistryName: string
-    repoName: string
-    selectedRegistry: any
-    generatedHelmPushAction: string
 }
 
 export interface InputVariablesFromInputListType {

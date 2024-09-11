@@ -1,4 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect, useMemo } from 'react'
 import {
     showError,
     Progressing,
@@ -7,19 +23,36 @@ import {
     useAsync,
     PipelineType,
     ScannedByToolModal,
+    Sidebar,
+    LogResizeButton,
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
+    FetchIdDataStatus,
+    Scroller,
+    GitChanges,
+    TriggerDetails,
+    useScrollable,
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    Artifacts,
+    LogsRenderer,
+    ModuleNameMap,
+    EMPTY_STATE_STATUS,
+    TabGroup,
+    ScanVulnerabilitiesTable,
+    TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
     getTriggerHistory,
-    getArtifact,
     getTagDetails,
     getArtifactForJobCi,
 } from '../../service'
-import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
-import { URLS, ModuleNameMap } from '../../../../config'
+import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -28,15 +61,10 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
-import { TriggerDetails } from '../cicdHistory/TriggerDetails'
-import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus } from '../cicdHistory/types'
-import LogsRenderer from '../cicdHistory/LogsRenderer'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
+import { getSeverityWithCount } from '@Components/common'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -56,6 +84,12 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+buildId)
+    // This is only meant for logsRenderer
+    const [scrollableParentRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
+    })
 
     const [initDataLoading, initDataResults] = useAsync(
         () =>
@@ -210,64 +244,68 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                 </div>
             )}
             <div className="ci-details__body">
-                {!pipelineId ? (
-                    // Empty state if there is no pipeline
-                    <GenericEmptyState
-                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
-                        subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
-                            isJobView ? 'to see execution details' : 'to start seeing CI builds'
-                        }.`}
-                    />
-                ) : (
-                    pipeline && (
-                        <>
-                            {triggerHistory.size > 0 || fetchBuildIdData ? (
-                                <Route
-                                    path={`${path
-                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                >
-                                    <Details
-                                        fullScreenView={fullScreenView}
-                                        synchroniseState={synchroniseState}
-                                        triggerHistory={triggerHistory}
-                                        isSecurityModuleInstalled={
-                                            initDataResults[1]?.['value']?.['result']?.status ===
-                                                ModuleStatus.INSTALLED || false
-                                        }
-                                        isBlobStorageConfigured={
-                                            initDataResults[2]?.['value']?.['result']?.enabled || false
-                                        }
-                                        isJobView={isJobView}
-                                        tagsEditable={tagsEditable}
-                                        appReleaseTags={appReleaseTags}
-                                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                        fetchIdData={fetchBuildIdData}
-                                        isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
-                                    />
-                                </Route>
-                            ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                // Empty state if there is no linked pipeline
-                                <GenericEmptyState
-                                    title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
-                                    subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
-                                    isButtonAvailable
-                                    renderButton={renderSourcePipelineButton}
-                                />
-                            ) : (
-                                !loading && (
-                                    // Empty state if there is no pipeline
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                    {!pipelineId ? (
+                        // Empty state if there is no pipeline
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
+                                isJobView ? 'to see execution details' : 'to start seeing CI builds'
+                            }.`}
+                        />
+                    ) : (
+                        pipeline && (
+                            <>
+                                {triggerHistory.size > 0 || fetchBuildIdData ? (
+                                    <Route
+                                        path={`${path
+                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                                    >
+                                        <Details
+                                            fullScreenView={fullScreenView}
+                                            synchroniseState={synchroniseState}
+                                            triggerHistory={triggerHistory}
+                                            isSecurityModuleInstalled={
+                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED || false
+                                            }
+                                            isBlobStorageConfigured={
+                                                initDataResults[2]?.['value']?.['result']?.enabled || false
+                                            }
+                                            isJobView={isJobView}
+                                            tagsEditable={tagsEditable}
+                                            appReleaseTags={appReleaseTags}
+                                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                            fetchIdData={fetchBuildIdData}
+                                            isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                            scrollToTop={scrollToTop}
+                                            scrollToBottom={scrollToBottom}
+                                        />
+                                    </Route>
+                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
+                                    // Empty state if there is no linked pipeline
                                     <GenericEmptyState
-                                        title={`${isJobView ? 'Job' : 'Build'} ${
-                                            EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
-                                        }`}
-                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
+                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
+                                        isButtonAvailable
+                                        renderButton={renderSourcePipelineButton}
                                     />
-                                )
-                            )}
-                        </>
-                    )
-                )}
+                                ) : (
+                                    !loading && (
+                                        // Empty state if there is no pipeline
+                                        <GenericEmptyState
+                                            title={`${isJobView ? 'Job' : 'Build'} ${
+                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                            }`}
+                                            subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                        />
+                                    )
+                                )}
+                            </>
+                        )
+                    )}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>
@@ -287,6 +325,8 @@ export const Details = ({
     appReleaseTags,
     hideImageTaggingHardDelete,
     fetchIdData,
+    scrollToTop,
+    scrollToBottom,
 }: BuildDetails) => {
     const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
@@ -386,77 +426,80 @@ export const Details = ({
     }
     return (
         <>
-            <div className="trigger-details-container">
-                {!fullScreenView && (
-                    <>
-                        <TriggerDetails
-                            type={HistoryComponentType.CI}
-                            status={triggerDetails.status}
-                            startedOn={triggerDetails.startedOn}
-                            finishedOn={triggerDetails.finishedOn}
-                            triggeredBy={triggerDetails.triggeredBy}
-                            triggeredByEmail={triggerDetails.triggeredByEmail}
-                            ciMaterials={triggerDetails.ciMaterials}
-                            gitTriggers={triggerDetails.gitTriggers}
-                            message={triggerDetails.message}
-                            podStatus={triggerDetails.podStatus}
-                            stage={triggerDetails.stage}
-                            artifact={triggerDetails.artifact}
-                            environmentName={triggerDetails.environmentName}
-                            isJobView={isJobView}
-                            workerPodName={triggerDetails.podName}
+            {!fullScreenView && (
+                <>
+                    <TriggerDetails
+                        type={HistoryComponentType.CI}
+                        status={triggerDetails.status}
+                        startedOn={triggerDetails.startedOn}
+                        finishedOn={triggerDetails.finishedOn}
+                        triggeredBy={triggerDetails.triggeredBy}
+                        triggeredByEmail={triggerDetails.triggeredByEmail}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        gitTriggers={triggerDetails.gitTriggers}
+                        message={triggerDetails.message}
+                        podStatus={triggerDetails.podStatus}
+                        stage={triggerDetails.stage}
+                        artifact={triggerDetails.artifact}
+                        environmentName={triggerDetails.environmentName}
+                        isJobView={isJobView}
+                        workerPodName={triggerDetails.podName}
+                        renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                    />
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    id: 'logs-tab',
+                                    label: 'Logs',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'logs',
+                                        replace: true,
+                                        'data-testid': 'logs-link',
+                                    },
+                                },
+                                {
+                                    id: 'source-tab',
+                                    label: 'Source',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'source-code',
+                                        replace: true,
+                                        'data-testid': 'source-code-link',
+                                    },
+                                },
+                                {
+                                    id: 'artifacts-tab',
+                                    label: 'Artifacts',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'artifacts',
+                                        replace: true,
+                                        'data-testid': 'artifacts-link',
+                                    },
+                                },
+                                ...(!isJobCard && isSecurityModuleInstalled
+                                    ? [
+                                          {
+                                              id: 'security-tab',
+                                              label: 'Security',
+                                              tabType: 'navLink' as const,
+                                              props: {
+                                                  to: 'security',
+                                                  replace: true,
+                                                  'data-testid': 'security_link',
+                                              },
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                            alignActiveBorderWithContainer
                         />
-                        <ul className="tab-list dc__border-bottom pl-20 pr-20">
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to="logs"
-                                    data-testid="logs-link"
-                                >
-                                    Logs
-                                </NavLink>
-                            </li>
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to="source-code"
-                                    data-testid="source-code-link"
-                                >
-                                    Source
-                                </NavLink>
-                            </li>
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to="artifacts"
-                                    data-testid="artifacts-link"
-                                >
-                                    Artifacts
-                                </NavLink>
-                            </li>
-                            {!isJobCard && isSecurityModuleInstalled && (
-                                <li className="tab-list__tab">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to="security"
-                                        data-testid="security_link"
-                                    >
-                                        Security
-                                    </NavLink>
-                                </li>
-                            )}
-                        </ul>
-                    </>
-                )}
-            </div>
+                    </div>
+                </>
+            )}
+
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
@@ -467,6 +510,9 @@ export const Details = ({
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                scrollToTop={scrollToTop}
+                scrollToBottom={scrollToBottom}
+                fullScreenView={fullScreenView}
             />
         </>
     )
@@ -481,16 +527,17 @@ const HistoryLogs = ({
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
+    scrollToTop,
+    scrollToBottom,
+    fullScreenView,
 }: HistoryLogsType) => {
     const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
-    const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
+
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
+    const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
@@ -516,7 +563,7 @@ const HistoryLogs = ({
                 status={triggerDetails.status}
                 artifact={ciJobArtifact[index]}
                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                getArtifactPromise={_getArtifactPromise}
+                downloadArtifactUrl={downloadArtifactUrl}
                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
                 isJobView={isJobView}
                 isJobCI={isJobCI}
@@ -528,52 +575,59 @@ const HistoryLogs = ({
                 appReleaseTagNames={appReleaseTags}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 type={HistoryComponentType.CI}
-                jobCIClass="pb-0-imp"
+                rootClassName="pb-0-imp"
+                renderCIListHeader={renderCIListHeader}
             />
         )
     })
     return (
-        <div className="trigger-outputs-container">
+        <div className="trigger-outputs-container flexbox-col flex-grow-1">
             <Switch>
                 <Route path={`${path}/logs`}>
-                    <div ref={ref} className="dark-background h-100 dc__overflow-auto">
-                        <LogsRenderer
-                            triggerDetails={triggerDetails}
-                            isBlobStorageConfigured={isBlobStorageConfigured}
-                            parentType={HistoryComponentType.CI}
-                        />
-                    </div>
+                    <LogsRenderer
+                        triggerDetails={triggerDetails}
+                        isBlobStorageConfigured={isBlobStorageConfigured}
+                        parentType={HistoryComponentType.CI}
+                        fullScreenView={fullScreenView}
+                    />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
-                            style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                            style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
                             {...{ scrollToTop, scrollToBottom }}
                         />
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
+                    <GitChanges
+                        gitTriggers={triggerDetails.gitTriggers}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        renderCIListHeader={renderCIListHeader}
+                    />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
-                    {isJobCI && !loading && CiArtifactsArrayCards}
+                    {isJobCI && !loading && <div className="p-16 flexbox-col dc__gap-8">{CiArtifactsArrayCards}</div>}
                     {!loading && (
-                        <Artifacts
-                            status={triggerDetails.status}
-                            artifact={triggerDetails.artifact}
-                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            getArtifactPromise={_getArtifactPromise}
-                            isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                            isJobView={isJobView}
-                            isJobCI={isJobCI}
-                            imageComment={triggerDetails.imageComment}
-                            imageReleaseTags={triggerDetails.imageReleaseTags}
-                            ciPipelineId={triggerDetails.ciPipelineId}
-                            artifactId={triggerDetails.artifactId}
-                            tagsEditable={tagsEditable}
-                            appReleaseTagNames={appReleaseTags}
-                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                            type={HistoryComponentType.CI}
-                        />
+                        <div className="p-16 flex-grow-1">
+                            <Artifacts
+                                status={triggerDetails.status}
+                                artifact={triggerDetails.artifact}
+                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                downloadArtifactUrl={downloadArtifactUrl}
+                                isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                                isJobView={isJobView}
+                                isJobCI={isJobCI}
+                                imageComment={triggerDetails.imageComment}
+                                imageReleaseTags={triggerDetails.imageReleaseTags}
+                                ciPipelineId={triggerDetails.ciPipelineId}
+                                artifactId={triggerDetails.artifactId}
+                                tagsEditable={tagsEditable}
+                                appReleaseTagNames={appReleaseTags}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                type={HistoryComponentType.CI}
+                                renderCIListHeader={renderCIListHeader}
+                            />
+                        </div>
                     )}
                 </Route>
                 {!isJobCard && (
@@ -621,8 +675,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         lastExecution: '',
         severityCount: {
             critical: 0,
-            moderate: 0,
+            high: 0,
+            medium: 0,
             low: 0,
+            unknown: 0,
         },
         scanEnabled: false,
         scanned: false,
@@ -676,10 +732,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const { severityCount } = securityData
-    const total = severityCount.critical + severityCount.moderate + severityCount.low
-
-    if (['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (['failed', 'cancelled'].includes(status.toLowerCase()) || !artifactId ) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
@@ -719,16 +772,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
                     <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
-                    {severityCount.critical !== 0 ? (
-                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="dc__fill-low">{severityCount.low} Low</span>
-                    ) : null}
+                    {getSeverityWithCount(securityData.severityCount)}
                     <div className="security-scan__type flex">
                         <ScannedByToolModal scanToolId={scanToolId} />
                     </div>
@@ -736,44 +780,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <table className="security-scan-table">
-                        <tr className="security-scan-table__header">
-                            <th className="security-scan-table__title security-scan-table__cve">CVE</th>
-                            <th className="security-scan-table__title">SEVERITY</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">PACKAGE</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">CURRENT VERSION</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">FIXED IN VERSION</th>
-                        </tr>
-                        {securityData.vulnerabilities.map((item) => {
-                            return (
-                                <tr className="security-scan-table__row">
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
-                                        <a
-                                            href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            {item.name}
-                                        </a>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl">
-                                        <span className={`fill-${item.severity}`} data-testid="severity-check">
-                                            {item.severity}
-                                        </span>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.package}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.version}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.fixedVersion}
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </table>
+                    <div className="px-24 security-scan-table">
+                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
+                    </div>
                 )}
             </div>
         </>

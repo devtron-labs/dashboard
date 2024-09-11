@@ -1,10 +1,32 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { ConfirmationDialog, Progressing, VisibleModal, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConfirmationDialog,
+    Progressing,
+    SortingOrder,
+    VisibleModal2,
+    DropdownIndicator,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
-import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-filled.svg'
@@ -28,7 +50,7 @@ import {
 } from '../constants'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
+import { deleteDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
 import '../deploymentConfig.scss'
@@ -127,6 +149,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
     setConvertVariables,
+    triggerEditorLoadingState,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -139,6 +162,7 @@ export const CompareWithDropdown = ({
         label: `${DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
             globalChartRef?.version ? `(v${globalChartRef.version})` : ''
         }`,
+        environmentId: -1,
         environmentName: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         chartRefId: globalChartRef?.id || '',
         chartVersion: globalChartRef?.version || '',
@@ -217,6 +241,7 @@ export const CompareWithDropdown = ({
     const onChange = (selected: DeploymentChartOptionType) => {
         setConvertVariables(false)
         setSelectedOption(selected)
+        triggerEditorLoadingState()
     }
 
     return (
@@ -249,10 +274,10 @@ export const getCodeEditorHeight = (
     if (openComparison || showReadme) {
         return 'calc(100vh - 220px)'
     }
-    if (isEnvOverride) {
+    if (isEnvOverride || isUnSet) {
         return 'calc(100vh - 272px)'
     }
-    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
+    return 'calc(100vh - 240px)'
 }
 
 export const renderEditorHeading = (
@@ -425,7 +450,7 @@ export const SaveConfirmationDialog = ({
     showAsModal,
     closeLockedDiffDrawerWithChildModal,
 }: SaveConfirmationDialogProps) => {
-    const { state, dispatch } = useContext(DeploymentConfigContext)
+    const { state } = useContext(DeploymentConfigContext)
     const saveConfirmationContent = () => (
         <div
             className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
@@ -472,7 +497,7 @@ export const SaveConfirmationDialog = ({
     return (
         <>
             {showAsModal ? (
-                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
+                <VisibleModal2 className="">{saveConfirmationContent()}</VisibleModal2>
             ) : (
                 saveConfirmationContent()
             )}

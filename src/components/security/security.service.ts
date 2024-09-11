@@ -1,53 +1,35 @@
-import { DATE_TIME_FORMAT_STRING, get, getClusterListMin, getEnvironmentListMinPublic, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+    get,
+    getClusterListMin,
+    getEnvironmentListMinPublic,
+    handleUTCTime,
+    post,
+    ResponseType,
+    sortCallback,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
+import { ScanListPayloadType } from './SecurityScansTab/types'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
     return get(URL)
-}
-
-export function getInitData(payload) {
-    return Promise.all([getEnvironmentListMinPublic(), getClusterListMinNoAuth(), getSecurityScanList(payload)]).then(
-        ([envResponse, clusterResponse, securityScanResponse]) => {
-            let environments = envResponse.result
-                ? envResponse.result.map((env) => {
-                      return {
-                          label: env.environment_name,
-                          value: env.id,
-                      }
-                  })
-                : []
-            let clusters = clusterResponse.result
-                ? clusterResponse.result.map((cluster) => {
-                      return {
-                          label: cluster.cluster_name,
-                          value: cluster.id,
-                      }
-                  })
-                : []
-            environments = environments.sort((a, b) => {
-                return sortCallback('label', a, b)
-            })
-            clusters = clusters.sort((a, b) => {
-                return sortCallback('label', a, b)
-            })
-            return {
-                responseCode: securityScanResponse.responseCode,
-                filters: {
-                    severity: [
-                        { label: 'Crtitical', value: 2 },
-                        { label: 'Moderate', value: 1 },
-                        { label: 'Low', value: 0 },
-                    ],
-                    clusters,
-                    environments,
-                },
-                ...securityScanResponse.result,
-            }
-        },
-    )
 }
 
 export function getVulnerabilityFilterData() {
@@ -56,7 +38,7 @@ export function getVulnerabilityFilterData() {
             ? envResponse.result.map((env) => {
                   return {
                       label: env.environment_name,
-                      value: env.id,
+                      value: `${env.id}`,
                   }
               })
             : []
@@ -64,7 +46,7 @@ export function getVulnerabilityFilterData() {
             ? clusterResponse.result.map((cluster) => {
                   return {
                       label: cluster.cluster_name,
-                      value: cluster.id,
+                      value: `${cluster.id}`,
                   }
               })
             : []
@@ -77,9 +59,11 @@ export function getVulnerabilityFilterData() {
         return {
             filters: {
                 severity: [
-                    { label: 'Crtitical', value: 2 },
-                    { label: 'Moderate', value: 1 },
-                    { label: 'Low', value: 0 },
+                    { label: 'Critical', value: 'critical' },
+                    { label: 'High', value: 'high' },
+                    { label: 'Medium', value: 'medium' },
+                    { label: 'Low', value: 'low' },
+                    { label: 'Unknown', value: 'unknown' },
                 ],
                 clusters,
                 environments,
@@ -88,30 +72,30 @@ export function getVulnerabilityFilterData() {
     })
 }
 
-export function getSecurityScanList(payload): Promise<SecurityScanListResponseType> {
-    const URL = `security/scan/list`
-    return post(URL, payload).then((response) => {
+export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: AbortSignal): Promise<SecurityScanListResponseType> {
+    const URL = 'security/scan/list'
+    return post(URL, payload, {signal: abortSignal}).then((response) => {
         const securityScans = response.result.scanList || []
         return {
-            responseCode: response.code,
             result: {
                 offset: response.result.offset,
-                size: response.result.total,
+                totalCount: response.result.total,
                 pageSize: response.result.size || 20,
                 securityScans: securityScans.map((scan) => {
                     return {
                         appId: scan.appId,
                         envId: scan.envId,
                         name: scan.name,
-                        type: scan.type,
                         imageScanDeployInfoId: scan.imageScanDeployInfoId,
                         environment: scan.environment,
                         severityCount: {
-                            critical: scan.severityCount.high,
-                            moderate: scan.severityCount.moderate,
+                            critical: scan.severityCount.critical,
+                            high: scan.severityCount.high,
+                            medium: scan.severityCount.medium,
                             low: scan.severityCount.low,
+                            unknown: scan.severityCount.unknown,
                         },
-                        lastExecution: moment(scan.lastChecked).utc(false).format(DATE_TIME_FORMAT_STRING),
+                        lastExecution: scan.lastChecked || '-',
                     }
                 }),
             },

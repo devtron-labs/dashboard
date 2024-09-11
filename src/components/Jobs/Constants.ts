@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export const _multiSelectStyles = {
@@ -10,14 +26,12 @@ export const _multiSelectStyles = {
         ...base,
         marginTop: 'auto',
     }),
-    menuList: (base) => {
-        return {
-            ...base,
-            position: 'relative',
-            paddingBottom: '0px',
-            maxHeight: '180px',
-        }
-    },
+    menuList: (base) => ({
+        ...base,
+        position: 'relative',
+        paddingBottom: '0px',
+        maxHeight: '180px',
+    }),
 }
 
 export const JobCreationType = {
@@ -47,9 +61,6 @@ export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJobInfoText:
         'Jobs allow manual and automated execution of developer actions. Increase productivity by automating the tedious. Get started by creating your first job.',
     createJobButtonLabel: 'Create Job',
-    noJobsFound: 'No jobs found',
-    noJobFoundInfoText: `We couldn't find any matching applications.`,
-    noJobsButtonLabel: 'Clear filters',
 }
 
 export const JobsFilterTypeText = {

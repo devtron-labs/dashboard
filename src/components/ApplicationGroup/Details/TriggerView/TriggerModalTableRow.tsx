@@ -1,5 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState } from 'react'
+import { Progressing, useDownload } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
@@ -9,17 +25,11 @@ import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
 
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 
-export const TriggerModalRow = ({
-    rowData,
-    index,
-    isVirtualEnv,
-    envName,
-    setDownloadPopupOpen,
-}: TriggerModalRowType) => {
-    const [downloader, setDownLoader] = useState(false)
-    const [isDownloaded, setIsDownLoad] = useState(false)
+export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
+    const { isDownloading, handleDownload } = useDownload()
+    const [isDownloaded, setIsDownloaded] = useState(false)
     const params = {
         appId: rowData.appId,
         envId: rowData.envId,
@@ -41,17 +51,15 @@ export const TriggerModalRow = ({
 
     const downloadPackage = (e) => {
         e.stopPropagation()
-        setIsDownLoad(true)
-        if (getDeployManifestDownload) {
-            getDeployManifestDownload(params, setDownLoader, true)
+        if (!getDownloadManifestUrl) {
+            return
+        }
+        const downloadUrl = getDownloadManifestUrl(params)
+        const downloadError = handleDownload({ downloadUrl, fileName: params.appName, showSuccessfulToast: false })
+        if (!downloadError) {
+            setIsDownloaded(true)
         }
     }
-
-    useEffect(() => {
-        if (typeof setDownloadPopupOpen === 'function') {
-            setDownloadPopupOpen(downloader)
-        }
-    }, [downloader])
 
     return (
         <div
@@ -70,7 +78,7 @@ export const TriggerModalRow = ({
                     data-testid={`bulk-cd-manifest-download-button-${index}`}
                     onClick={downloadPackage}
                 >
-                    {downloader ? (
+                    {isDownloading ? (
                         <span className="flex">
                             <Progressing />
                             <span className="fs-13 flex fw-4 ml-6 cn-7">Downloading</span>

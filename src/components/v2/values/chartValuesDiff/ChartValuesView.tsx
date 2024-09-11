@@ -1,5 +1,21 @@
-import React, { useState, useEffect, useReducer } from 'react'
-import { useHistory, useRouteMatch, useParams } from 'react-router'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useState, useEffect, useReducer, useRef } from 'react'
+import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
@@ -16,6 +32,10 @@ import {
     StyledRadioGroup as RadioGroup,
     useMainContext,
     YAMLStringify,
+    usePrompt,
+    getIsRequestAborted,
+    deepEqual,
+    useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -43,8 +63,10 @@ import {
 } from '../../../charts/charts.service'
 import {
     ConfigurationType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     URLS,
     checkIfDevtronOperatorHelmRelease,
 } from '../../../../config'
@@ -114,13 +136,14 @@ import {
     EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
+import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/Secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
-import { AUTO_GENERATE_GITOPS_REPO } from './constant'
+import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
+const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -143,6 +166,8 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
+    const { handleDownload } = useDownload()
+    const chartValuesAbortRef = useRef<AbortController>(new AbortController())
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -157,6 +182,7 @@ const ChartValuesView = ({
     const [staleData, setStaleData] = useState<boolean>(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
+    const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -178,7 +204,35 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-    
+
+    const isPresetValueView =
+        isCreateValueView && !!chartValueId && chartValueId === CHART_VALUE_ID.CREATE_CHART_VALUE_VIEW // Create a new preset value view
+    const isUpdateAppView = !isCreateValueView && !isDeployChartView && !isExternalApp // update and deploy helm app view
+
+    // Current values of chart version id and chart values id, used to compare dirty state with initial values
+    const currentChartVersionValues = {
+        chartVersionId: commonState.selectedVersion,
+        chartValuesId: commonState.chartValues?.id,
+    }
+    // detects changes in chart version and chart values from initial mount
+    const isChartValueVersionUpdated = !deepEqual(currentChartVersionValues, commonState.initialChartVersionValues)
+
+    const isCreateValueFormDirty = isPresetValueView && (!!valueName || isChartValueVersionUpdated)
+
+    const isDeployChartFormDirty =
+        isDeployChartView &&
+        (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || isChartValueVersionUpdated)
+
+    const isUpdateAppFormDirty =
+        isUpdateAppView &&
+        (commonState.installedConfig.appStoreId !== commonState.repoChartValue?.chartId || isChartValueVersionUpdated)
+
+    const isFormDirty = !!isCreateValueFormDirty || !!isDeployChartFormDirty || !!isUpdateAppFormDirty
+
+    const enablePrompt = shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty)
+
+    usePrompt({ shouldPrompt: enablePrompt })
+
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
     }
@@ -186,18 +240,19 @@ const ChartValuesView = ({
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
-            if (result.isInstalled && !result.isConfigured) {
-                dispatch({
-                    type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-                    payload: true,
-                })
-            }
+            dispatch({
+                type: ChartValuesViewActionTypes.updateGitOpsConfiguration,
+                payload: {
+                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured,
+                    authMode: result.authMode,
+                },
+            })
             setAllowedCustomBool(result.allowCustomRepository === true)
         } catch (error) {}
     }
 
     useEffect(() => {
-        if(!isExternalApp){
+        if (!isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
@@ -280,6 +335,10 @@ const ChartValuesView = ({
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: _valuesYaml,
+                                initialChartVersionValues: {
+                                    chartVersionId: _chartVersionData.id,
+                                    chartValuesId: _chartValues.id,
+                                },
                             },
                         })
                     }
@@ -302,7 +361,12 @@ const ChartValuesView = ({
                 dispatch,
             )
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
+            fetchChartVersionsData(
+                appDetails.appStoreChartId,
+                dispatch,
+                appDetails.appStoreAppVersion,
+                appDetails.appStoreInstalledAppVersionId,
+            )
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -347,6 +411,11 @@ const ChartValuesView = ({
 
         if (!isDeployChartView && !isCreateValueView) {
             getHelmAppMetaInfoRes()
+        }
+
+        chartValuesAbortRef.current = new AbortController()
+        return () => {
+            chartValuesAbortRef.current.abort()
         }
     }, [])
 
@@ -528,7 +597,6 @@ const ChartValuesView = ({
                 convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                 dispatch,
             )
-
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -542,6 +610,10 @@ const ChartValuesView = ({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
+                    initialChartVersionValues: {
+                        ...commonState.initialChartVersionValues,
+                        chartValuesId: _installedAppInfo.installedAppVersionId,
+                    },
                 },
             })
         } catch (e: any) {
@@ -746,11 +818,11 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                commonState.selectedEnvironment.clusterId,
-                commonState.selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: commonState.selectedEnvironment.clusterId,
+                namespace: commonState.selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
 
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
@@ -859,15 +931,21 @@ const ChartValuesView = ({
         }
 
         const onClickManifestDownload = (appId: number, envId: number, appName: string, helmPackageName: string) => {
-            const downloadManifetsDownload = {
+            if (!getDownloadManifestUrl) {
+                return
+            }
+            const downloadManifestDownload = {
                 appId,
                 envId,
                 appName: helmPackageName ?? appName,
                 isHelmApp: true,
             }
-            if (getDeployManifestDownload) {
-                getDeployManifestDownload(downloadManifetsDownload)
-            }
+            const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
+            handleDownload({
+                downloadUrl,
+                fileName: downloadManifestDownload.appName,
+                downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+            })
         }
 
         try {
@@ -907,8 +985,9 @@ const ChartValuesView = ({
                         ? DeploymentAppTypes.MANIFEST_DOWNLOAD
                         : commonState.deploymentAppType,
                     gitRepoURL: commonState.gitRepoURL,
+                    ...(ToggleSecurityScan && { isManifestScanEnabled: commonState.isManifestScanEnabled }),
                 }
-                res = await installChart(payload)
+                res = await installChart(payload, chartValuesAbortRef.current?.signal)
             } else if (isCreateValueView) {
                 const payload = {
                     name: valueName,
@@ -925,7 +1004,7 @@ const ChartValuesView = ({
                     res = await updateChartValues(payload)
                 } else {
                     toastMessage = CHART_VALUE_TOAST_MSGS.Created
-                    res = await createChartValues(payload)
+                    res = await createChartValues(payload, chartValuesAbortRef.current.signal)
                 }
             } else {
                 const payload: UpdateAppReleaseRequest = {
@@ -935,10 +1014,11 @@ const ChartValuesView = ({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     installedAppId: commonState.installedConfig.installedAppId,
                     appStoreVersion: commonState.selectedVersionUpdatePage.id,
+                    ...(ToggleSecurityScan && { isManifestScanEnabled: commonState.isManifestScanEnabled }),
                 }
-                res = await updateAppRelease(payload)
+                res = await updateAppRelease(payload, chartValuesAbortRef.current.signal)
             }
-
+            setShouldShowPrompt(false)
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
@@ -980,13 +1060,14 @@ const ChartValuesView = ({
             } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
                 setAllowedCustomBool(true)
                 handleDrawerState(true)
-            } else {
+            } else if (!getIsRequestAborted(err)) {
                 showError(err)
             }
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
             })
+            setShouldShowPrompt(true)
         }
     }
 
@@ -1242,6 +1323,13 @@ const ChartValuesView = ({
                 </div>
             </div>
         )
+    }
+
+    const handleToggleSecurityScan = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
+            payload: !commonState.isManifestScanEnabled,
+        })
     }
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
@@ -1508,11 +1596,10 @@ const ChartValuesView = ({
             !isCreateValueView &&
             !isVirtualEnvironmentOnSelector &&
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-            !appDetails?.isVirtualEnvironment &&
-            !commonState.installedConfig?.isOCICompliantChart
+            !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container bcn-0 ${
+                className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
@@ -1596,7 +1683,6 @@ const ChartValuesView = ({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
@@ -1683,7 +1769,15 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-
+                        {window._env_.ENABLE_RESOURCE_SCAN_V2 &&
+                            !isExternalApp &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
@@ -1782,6 +1876,10 @@ const ChartValuesView = ({
                         }
                     />
                 )}
+                <Prompt
+                    when={enablePrompt}
+                    message={isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE}
+                />
             </div>
         )
     }

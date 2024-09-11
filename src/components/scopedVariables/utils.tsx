@@ -1,6 +1,21 @@
-// @ts-nocheck
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import yaml from 'yaml'
-import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { YAMLStringify, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
@@ -53,7 +68,6 @@ export const validator: ValidatorType = ({ data, type }) => {
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
-                    debugger
                     const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,
@@ -65,7 +79,6 @@ export const validator: ValidatorType = ({ data, type }) => {
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
-                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
@@ -114,7 +127,7 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
         return 0
     })
 
-    // Soring on the basis of category
+    // Sorting on the basis of category
     const precedingOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
     mutatedVariablesObj.spec.forEach((variablesObj) => {
         variablesObj.values.sort((a, b) => {
@@ -144,4 +157,20 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
     })
 
     return mutatedVariablesObj
+}
+
+export const parseURLViewToValidView = (
+    urlView: string,
+    isEnvironmentListEnabled: boolean,
+): ScopedVariablesFileViewType => {
+    switch (urlView) {
+        case ScopedVariablesFileViewType.ENVIRONMENT_LIST:
+            return isEnvironmentListEnabled
+                ? ScopedVariablesFileViewType.ENVIRONMENT_LIST
+                : ScopedVariablesFileViewType.YAML
+        case ScopedVariablesFileViewType.SAVED:
+            return ScopedVariablesFileViewType.SAVED
+        default:
+            return ScopedVariablesFileViewType.YAML
+    }
 }

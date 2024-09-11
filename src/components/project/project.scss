@@ -1,19 +1,35 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .project-title {
-	font-size: 14px;
-	font-weight: normal;
-	line-height: 1.43;
-	letter-spacing: normal;
-	color: var(--N900);
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
 }
 .project__row {
-	&:hover {
-		box-shadow: 0 2px 4px -1px rgb(0 56 112 / 30%);
-		height: 66px;
-		.project__row__trash {
-			display: block;
-		}
-	}
+    &:hover {
+        box-shadow: 0 2px 4px -1px rgb(0 56 112 / 30%);
+        height: 66px;
+        .project__row__trash {
+            display: block;
+        }
+    }
 }
 .project__row__trash {
-	display: none;
+    display: none;
 }

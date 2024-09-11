@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
-import { CIMaterialType } from '../../MaterialHistory'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
@@ -138,8 +153,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         placement="top"
                         content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
-                        <button type="button" className="link-count cursor dc__hover-border-n300 flex dc__gap-4" onClick={this.handleLinkedCIWorkflowChipClick}>
-                            <IcLink  className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                        <button
+                            type="button"
+                            className="link-count cursor dc__hover-border-n300 flex dc__gap-4"
+                            onClick={this.handleLinkedCIWorkflowChipClick}
+                        >
+                            <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                             <span>{this.props.linkedCount}</span>
                         </button>
                     </Tippy>

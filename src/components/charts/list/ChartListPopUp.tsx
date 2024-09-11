@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import {
     showError,
@@ -6,14 +22,13 @@ import {
     GenericEmptyState,
     ImageType,
     stopPropagation,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import { ChartListPopUpType } from '../charts.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
@@ -33,18 +48,13 @@ const ChartListPopUp = ({
     setFilteredChartList,
     setShowSourcePopoUp,
 }: ChartListPopUpType) => {
-    const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
     const [fetching, setFetching] = useState<boolean>(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
     const isEmpty = chartList.length && !filteredChartList.length
 
-    const setStore = (event): void => {
-        setSearchText(event.target.value)
-    }
-
     const closeChartPopUpModalOnBlur = (e) => {
-        e.stopPropagation()
+        stopPropagation(e)
         if (showAddPopUp) {
             setShowAddPopUp(false)
         } else {
@@ -52,23 +62,28 @@ const ChartListPopUp = ({
         }
     }
 
+    const closeChartPopUpOnly = (e) => {
+        stopPropagation(e)
+        setShowAddPopUp(false)
+    }
+
     const toggleAddPopUp = (event: React.MouseEvent): void => {
-        event.stopPropagation()
+        stopPropagation(event)
         setShowAddPopUp(!showAddPopUp)
     }
 
     const renderChartListHeaders = () => {
         return (
-            <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
+            <div className="px-16 py-12 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
-                <div className="flex">
-                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
-                        <Add className="icon-dim-20 fcb-5 mr-8" />
+                <div className="flex dc__gap-12">
+                    <div className="flex cb-5 fw-6 cursor dc__gap-4" onClick={toggleAddPopUp}>
+                        <Add className="icon-dim-20 fcb-5" />
                         Add
                     </div>
                     {renderGlobalRefetch()}
-                    <div className="dc__divider ml-12 mr-4" />
-                    <button className="dc__transparent flex mr-8" onClick={onClose}>
+                    <div className="dc__divider" />
+                    <button className="dc__transparent flex" onClick={onClose}>
                         <Close className="dc__page-header__close-icon icon-dim-20 cursor" />
                     </button>
                 </div>
@@ -160,43 +175,24 @@ const ChartListPopUp = ({
         setFilteredChartList(_filteredData)
     }
 
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
-        }
-        setSearchText('')
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
+    const handleFilterKeyPress = (searchKey: string): void => {
+        handleFilterChanges(searchKey)
+        setSearchText(searchKey)
     }
 
     const renderChartListSearch = () => {
         return (
-            <div className="dc__position-rel dc__block en-2 bw-1 br-4 h-32 m-12">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search by repository or registry"
-                    value={searchText}
-                    className="search__input"
-                    onChange={setStore}
-                    data-testid="chart-store-list-search-box"
-                    onKeyDown={handleFilterKeyPress}
-                    autoFocus
+            <div className="p-12">
+                <SearchBar
+                    initialSearchText={searchText}
+                    containerClassName="dc__mxw-250 flex-grow-1 max-w-100"
+                    handleEnter={handleFilterKeyPress}
+                    inputProps={{
+                        placeholder: 'Search by repository or registry',
+                        autoFocus: true,
+                    }}
+                    dataTestId="chart-store-search-box"
                 />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
             </div>
         )
     }
@@ -232,11 +228,16 @@ const ChartListPopUp = ({
         )
     }
 
+    const onClickChartListPopUp = (e) => {
+        stopPropagation(e)
+        closeChartPopUpOnly(e)
+    }
+
     return (
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
             <div
                 className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
-                onClick={stopPropagation}
+                onClick={onClickChartListPopUp}
             >
                 {renderChartListHeaders()}
                 {renderChartListBody()}

@@ -1,11 +1,27 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
+import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
+import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
-import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
+import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
@@ -17,6 +33,7 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -28,7 +45,6 @@ const NodeComponent = ({
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
-    isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -207,9 +223,11 @@ const NodeComponent = ({
                                     <div className="" key={node.name}>
                                         {text}
                                     </div>
-                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
-                                        <ClipboardButton content={text} />
-                                    </div>
+                                    <button type="button" className="dc__unset-button-styles" onClick={stopPropagation}>
+                                        <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                            <ClipboardButton content={text} />
+                                        </div>
+                                    </button>
                                 </div>
                             )
                         }
@@ -332,14 +350,22 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8"><ClipboardButton content={node.name} /></div>
+                                                <button
+                                                    type="button"
+                                                    className="dc__unset-button-styles"
+                                                    onClick={stopPropagation}
+                                                >
+                                                    <div className="pl-8 pr-8">
+                                                        <ClipboardButton content={node.name} />
+                                                    </div>
+                                                </button>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
                                                     } en-2 bw-1 br-4 dc__w-fit-content`}
                                                 >
-                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                    {getNodeDetailTabs(node.kind as NodeType).map((kind, index) => {
                                                         return (
                                                             <div
                                                                 key={`tab__${index}`}
@@ -351,7 +377,8 @@ const NodeComponent = ({
                                                                         ? ''
                                                                         : 'resource-action-tabs__active'
                                                                 }  ${
-                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                    index ===
+                                                                    getNodeDetailTabs(node.kind as NodeType)?.length - 1
                                                                         ? ''
                                                                         : 'dc__border-right'
                                                                 } pl-6 pr-6`}
@@ -455,7 +482,7 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' && !isExternalApp && (
+                            node?.kind !== 'EndpointSlice' && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}
@@ -465,7 +492,6 @@ const NodeComponent = ({
                                 </div>
                             )}
                     </div>
-
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
@@ -522,7 +548,7 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
-            {PodRestart && <PodRestart />}
+            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload(appDetails)} />}
         </>
     )
 }

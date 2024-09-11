@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -9,19 +25,12 @@ import {
     CommonNodeAttr,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    CdPipelineResult,
-    CiPipelineResult,
-    WorkflowResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
+import { CdPipelineResult, CiPipelineResult, WorkflowResult, CiPipeline } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import {
-    ApiQueuingWithBatchResponseItem,
-    ApiQueuingBatchStatusType,
     AppGroupList,
     CIConfigListType,
     CheckPermissionResponse,
@@ -33,7 +42,6 @@ import {
     EnvGroupListResponse,
     EnvGroupResponse,
     WorkflowsResponseType,
-    batchConfigType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -249,66 +257,4 @@ export const deleteEnvGroup = (
 
 export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
-}
-
-const eachCall = (batchConfig, functionCalls, resolve, reject, shouldRejectOnError) => {
-    const callIndex = batchConfig.lastIndex
-    Promise.resolve(functionCalls[callIndex]())
-        .then((result) => {
-            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.FULFILLED, value: result }
-        })
-        .catch((error) => {
-            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.REJECTED, reason: error }
-        })
-        .finally(() => {
-            if (shouldRejectOnError && batchConfig.results[callIndex].status === ApiQueuingBatchStatusType.REJECTED) {
-                reject(batchConfig.results[callIndex].reason)
-                return
-            }
-
-            batchConfig.completedCalls++
-            if (batchConfig.lastIndex < functionCalls.length) {
-                eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
-                batchConfig.lastIndex++
-            } else if (batchConfig.completedCalls === functionCalls.length) {
-                resolve(batchConfig.results)
-            }
-        })
-}
-
-/**
- * Executes a batch of function calls concurrently with queuing.
- * @param functionCalls The array of function calls returning promise to be executed.
- * @param batchSize The maximum number of function calls to be executed concurrently. Defaults to the value of `window._env_.API_BATCH_SIZE`.
- * @param shouldRejectOnError If set to true, the promise will reject if any of the function calls rejects, i.e, acts like Promise.all else Promise.allSettled . Defaults to false.
- * @returns A promise that resolves to a array of objects containing the status and value of the batch execution.
- */
-export const ApiQueuingWithBatch = (
-    functionCalls,
-    httpProtocol: string,
-    shouldRejectOnError: boolean = false,
-    batchSize: number = window._env_.API_BATCH_SIZE,
-): Promise<ApiQueuingWithBatchResponseItem[]> => {
-    if (!batchSize || batchSize <= 0) {
-        batchSize = ['http/0.9', 'http/1.0', 'http/1.1'].indexOf(httpProtocol) !== -1 ? 5 : 30
-    }
-
-    return new Promise((resolve, reject) => {
-        if (functionCalls.length === 0) {
-            resolve([])
-        }
-        const batchConfig: batchConfigType = {
-            lastIndex: 0,
-            concurrentCount: batchSize,
-            results: functionCalls.map(() => null),
-            completedCalls: 0,
-        }
-        for (
-            let index = 0;
-            index < batchConfig.concurrentCount && index < functionCalls.length;
-            index++, batchConfig.lastIndex++
-        ) {
-            eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
-        }
-    })
 }

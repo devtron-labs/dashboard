@@ -1,9 +1,24 @@
-import React from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
-import { DisableType, SourceTypeCardProps } from './types'
+import { SourceTypeCardProps } from './types'
 
-export default function SourceTypeCard({
+const SourceTypeCard = ({
     title,
     subtitle,
     image,
@@ -12,27 +27,17 @@ export default function SourceTypeCard({
     type,
     handleCardAction,
     disableInfo,
-}: Readonly<SourceTypeCardProps>) {
-    function renderTippy(children) {
-        return (
-            <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
-                {/* Since in disabled state Tippy does'nt work */}
-                <span>{children}</span>
-            </Tippy>
-        )
-    }
+}: Readonly<SourceTypeCardProps>) => {
+    const renderTippy = (children) => (
+        <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
+            {/* Since in disabled state Tippy does'nt work */}
+            <span>{children}</span>
+        </Tippy>
+    )
 
     return (
-        <ConditionalWrap wrap={renderTippy} condition={!!disableInfo && disableInfo !== DisableType.COMING_SOON}>
+        <ConditionalWrap wrap={renderTippy} condition={!!disableInfo}>
             <div className={disableInfo ? 'cursor-not-allowed dc__position-rel' : ''}>
-                {disableInfo === DisableType.COMING_SOON && (
-                    <div className="ribbon-wrapper dc__position-abs dc__top-0 dc__overflow-hidden dc__align-center w-120">
-                        <div className="ribbon-content flex fs-8 fw-6 cn-7 lh-12 pl-8 pr-8 pt-0 pb-0 bcn-1 dc__flip-45 dc__position-rel">
-                            {DisableType.COMING_SOON}
-                        </div>
-                    </div>
-                )}
-
                 <div
                     className={`flexbox p-12 dc__gap-12 dc__align-self-stretch br-4 dc__border-n1 bcn-0 dc__hover-n50  ${
                         disableInfo ? 'dc__disable-click dc__opacity-0_5' : ''
@@ -61,3 +66,5 @@ export default function SourceTypeCard({
         </ConditionalWrap>
     )
 }
+
+export default SourceTypeCard

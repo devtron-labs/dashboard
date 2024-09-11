@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import {
     showError,
@@ -12,10 +28,13 @@ import {
     useAsync,
     MODAL_TYPE,
     ACTION_STATE,
+    processDeploymentStatusDetailsData,
+    aggregateNodes,
+    ArtifactInfoModal,
+    ReleaseMode,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -49,10 +68,8 @@ import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arro
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
-    aggregateNodes,
     getSelectedNodeItems,
     getPodNameSuffix,
-    processDeploymentStatusDetailsData,
     ValueContainer,
     NoParamsNoEnvContext,
     NoParamsWithEnvContext,
@@ -61,7 +78,6 @@ import {
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
-import { TriggerInfoModal } from '../../list/TriggerInfo'
 import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -93,6 +109,7 @@ import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8R
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import IssuesListingModal from './IssuesListingModal'
 import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
+import { renderCIListHeader } from '../cdDetails/utils'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
@@ -287,7 +304,7 @@ export const Details: React.FC<DetailsType> = ({
         })
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
-    const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
+    const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
@@ -386,9 +403,11 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
+        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
-                if (!response.result.appName && !response.result.environmentName) {
+                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
+                // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
+                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
@@ -399,7 +418,6 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
-                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
@@ -419,7 +437,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
+        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
@@ -550,7 +568,7 @@ export const Details: React.FC<DetailsType> = ({
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvRef.current
+        !appDetails?.isPipelineTriggered
     ) {
         return (
             <>
@@ -756,12 +774,20 @@ export const Details: React.FC<DetailsType> = ({
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
+            {urlInfo && (
+                <TriggerUrlModal
+                    appId={params.appId}
+                    envId={params.envId}
+                    appType={appDetails.appType}
+                    close={() => setUrlInfo(false)}
+                />
+            )}
             {commitInfo && (
-                <TriggerInfoModal
+                <ArtifactInfoModal
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
-                    close={() => showCommitInfo(false)}
+                    handleClose={() => showCommitInfo(false)}
+                    renderCIListHeader={renderCIListHeader}
                 />
             )}
             {hibernateConfirmationModal && renderHibernateModal()}
@@ -771,6 +797,7 @@ export const Details: React.FC<DetailsType> = ({
                     clusterName={appDetails?.clusterName}
                     namespace={appDetails?.namespace}
                     clusterId={appDetails?.clusterId}
+                    isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
         </>
@@ -832,7 +859,7 @@ export const EnvSelector = ({
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '280px' }),
+        menu: (base) => ({ ...base, width: '280px', zIndex: 12 }),
     }
 
     const sortedEnvironments =
@@ -877,6 +904,11 @@ export const EnvSelector = ({
 
             return acc
         }, []) || []
+
+        // Pushing the virtual environment group to the end of the list
+        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+            groupList.reverse()
+        }
 
     return (
         <>
@@ -1482,29 +1514,6 @@ export const SyncStatusMessage = (app: Application) => {
         default:
             return <span>{message}</span>
     }
-}
-
-const getOperationStateTitle = (app: Application) => {
-    const appOperationState = getAppOperationState(app)
-    const operationType = getOperationType(app)
-    switch (operationType) {
-        case 'Delete':
-            return 'Deleting'
-        case 'Sync':
-            switch (appOperationState.phase) {
-                case 'Running':
-                    return 'Syncing'
-                case 'Error':
-                    return 'Sync error'
-                case 'Failed':
-                    return 'Sync failed'
-                case 'Succeeded':
-                    return 'Sync OK'
-                case 'Terminating':
-                    return 'Terminated'
-            }
-    }
-    return 'Unknown'
 }
 
 export const getAppOperationState = (app: Application) => {

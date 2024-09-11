@@ -1,4 +1,20 @@
-import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -40,7 +56,6 @@ export const Routes = {
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -77,11 +92,6 @@ export const Routes = {
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
 
-    DEPLOYMENT_GROUP_LIST: 'deployment-group/dg/fetch/all',
-    DEPLOYMENT_GROUP_DEPLOY: 'deployment-group/release/trigger',
-    DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
-    DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
-    LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
     LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
@@ -135,6 +145,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
     ARGO_APPS: 'argo-application',
+    FLUX_APPS: 'flux-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -182,9 +193,8 @@ export const Routes = {
     APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
-    PLUGIN_LIST: 'plugin/global/list',
-    PLUGIN_DETAIL: 'plugin/global',
     GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
+    PLUGIN_GLOBAL_CREATE: 'plugin/global/create',
     DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
@@ -196,7 +206,6 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
-    CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
@@ -254,13 +263,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -312,7 +322,7 @@ export const repoType = {
 }
 
 /**
- * @deprecated - use from fe-common
+ * @deprecated use from fe-common
  */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
@@ -326,59 +336,116 @@ export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
 
 export const DOCUMENTATION = {
-    HOME_PAGE: DOCUMENTATION_HOME_PAGE,
-    APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application`,
-    APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/git-material`,
-    APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration`,
-    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
-    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
-    APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/config-maps`,
-    APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets`,
-    APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/workflow`,
-    APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/environment-overrides`,
-    BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/bulk-update`,
-    CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart`,
-    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/chart-group`,
-    CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/overview-of-charts`,
-    CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/overview-of-charts#custom-values`,
-    SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/security-features`,
-    GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
-    GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
-    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/container-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
-    GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
-    GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
-    GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
-    GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
-    GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/sso-login`,
-    GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/user-access`,
-    GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/permission-groups`,
-    HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
-    BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#build-stage`,
-    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
-    CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts`,
-    CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts#prerequisites`,
-    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/install/install-devtron#devtron-admin-credentials`,
-    EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/external-links`,
-    GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops#4.-git-access-credential`,
-    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/upgrade`,
-    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/app-details/app-metrics`,
-    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets#external-secrets`,
-    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/installation-configuration#configuration-of-blob-storage`,
-    DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
-    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
-    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/job-and-cronjob`,
-    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
-    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
-    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
-    APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
-    APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
-    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
-    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
-    JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
-    JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
+    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/install/install-devtron#devtron-admin-credentials`,
+    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
+    APP_CREATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/create-application`,
+    APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/docker-build-configuration`,
+    APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/config-maps`,
+    APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/environment-overrides`,
+    APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/git-material`,
+    APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/secrets`,
+    APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow`,
+    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template`,
+    APP_EPHEMERAL_CONTAINER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/app-details/ephemeral-containers`,
+    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/app-details/app-metrics`,
+    APP_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/create-application#tags`,
+    APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/overview#manage-tags`,
+    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline#build-stage`,
+    BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/bulk-update`,
+    CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/deploy-chart`,
+    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/deploy-chart/chart-group`,
+    CHART_LIST: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/deploy-chart/overview-of-charts`,
+    CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/custom-charts`,
+    CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/custom-charts#prerequisites`,
+    CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/deploy-chart/overview-of-charts#custom-values`,
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/deployment`,
+    DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template`,
+    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/upgrade`,
+    EXECUTE_CUSTOM_SCRIPT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins#execute-custom-script`,
+    EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/external-links`,
+    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/secrets#external-secrets`,
+    // Global Configurations
+    GLOBAL_CONFIG_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/api-tokens`,
+    GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/authorization/user-access`,
+    GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/chart-repo`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries`,
+    GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/git-accounts`,
+    GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/gitops`,
+    GLOBAL_CONFIG_GITOPS_GITHUB: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/gitops#github`,
+    GLOBAL_CONFIG_GITOPS_GITLAB: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/gitops#gitlab`,
+    GLOBAL_CONFIG_GITOPS_AZURE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/gitops#azure`,
+    GLOBAL_CONFIG_GITOPS_BITBUCKET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/gitops#bitbucket`,
+    GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/permission-groups`,
+    GLOBAL_CONFIG_HOST_URL: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/host-url`,
+    GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
+    GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/projects`,
+    GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/sso-login`,
+    GLOBAL_CONFIG_SCOPED_VARIABLES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/scoped-variables`,
+    GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/user-access`,
+    HOME_PAGE: DOCUMENTATION_HOME_PAGE,
+    HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
+    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/jobs/configuration-job`,
+    JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/jobs/workflow-editor-job`,
+    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
     MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
+    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
+    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    SECURITY: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/security-features`,
+    SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`,
+    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+}
+
+export const HEADER_TEXT = {
+    API_TOKEN: {
+        title: 'API Token',
+        description: 'Tokens you have generated that can be used to access the Devtron API.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN,
+    },
+    CHART_REPOSITORY: {
+        title: 'Chart Repository',
+        description: 'Manage your organization’s chart repositories.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_CHART,
+    },
+    HOST_URL: {
+        title: 'Host URL',
+        description: 'Host URL is the domain address at which your devtron dashboard can be reached.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_HOST_URL,
+    },
+    GITOPS: {
+        title: 'GitOps',
+        description: 'Devtron uses GitOps configuration to store kubernetes configuration files of applications.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_GITOPS,
+    },
+    GIT_ACCOUNTS: {
+        title: 'Git Accounts',
+        description: 'Manage your organization’s git accounts.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
+    },
+    NOTIFICATIONS: {
+        title: 'Notifications',
+        description: 'Manage notifications for build and deployment pipelines.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION,
+    },
+    PROJECTS: {
+        title: 'Projects',
+        description: "Manage your organization's projects.",
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_PROJECT,
+    },
+    SSO_LOGIN: {
+        title: 'SSO Login Service',
+        description: 'Configure and manage login service for your organization.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_SSO,
+    },
+    SCOPED_VARIABLES: {
+        title: 'Scoped Variables',
+        description: 'Scoped variables are used to define environment-specific variables.',
+        docLink: DOCUMENTATION.GLOBAL_CONFIG_SCOPED_VARIABLES,
+    },
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -399,30 +466,6 @@ export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
 
 export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
 
-// APP LIST STARTS
-export const AppListConstants = {
-    SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
-    CREATE_DEVTRON_APP_URL: 'create-d-app',
-    AppTabs: {
-        DEVTRON_APPS: 'Devtron Apps',
-        HELM_APPS: 'Helm Apps',
-        ARGO_APPS: 'ArgoCD Apps',
-    },
-    AppType: {
-        DEVTRON_APPS: 'd',
-        HELM_APPS: 'h',
-        ARGO_APPS: 'a',
-    },
-    FilterType: {
-        PROJECT: 'team',
-        CLUTSER: 'cluster',
-        NAMESPACE: 'namespace',
-        ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus',
-    },
-}
-// APP LIST ENDS
-
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
     FULL = 'FULL',
@@ -434,6 +477,12 @@ export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', // helm app work flow
     JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
+}
+
+export enum APP_TYPE {
+    HELM_CHART = 'helm-chart',
+    DEVTRON_APPS = 'app',
+    JOB = 'job',
 }
 
 export enum MODES {
@@ -476,7 +525,7 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
-    heading: 'Custom Charts',
+    heading: 'Deployment Charts',
     infoText: 'Devtron provides charts that cover most use cases.',
     additionalParagraphText:
         'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
@@ -575,43 +624,6 @@ export const APP_STATUS_CUSTOM_MESSAGES = {
     INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
 }
 
-export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
-    DEPLOYMENT_TEMPLATE: {
-        DISPLAY_NAME: 'Deployment template',
-        VALUE: 'deployment-template',
-    },
-    PIPELINE_STRATEGY: {
-        DISPLAY_NAME: 'Pipeline configurations',
-        VALUE: 'pipeline-strategy',
-    },
-    CONFIGMAP: {
-        DISPLAY_NAME: 'ConfigMap',
-        VALUE: 'configmap',
-    },
-    SECRET: {
-        DISPLAY_NAME: 'Secret',
-        VALUE: 'secret',
-    },
-}
-
-export const EXTERNAL_TYPES = {
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
-        '': 'Kubernetes Secret',
-        KubernetesSecret: 'Kubernetes External Secret',
-        AWSSecretsManager: 'AWS Secrets Manager',
-        AWSSystemManager: 'AWS System Manager',
-        HashiCorpVault: 'Hashi Corp Vault',
-        ESO_HashiCorpVault: 'Hashi Corp Vault',
-        ESO_AWSSecretsManager: 'AWS Secrets Manager',
-        ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager',
-    },
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
-        '': 'Kubernetes ConfigMap',
-        KubernetesConfigMap: 'Kubernetes External ConfigMap',
-    },
-}
-
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
@@ -636,28 +648,6 @@ export const ModuleNameMap = {
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
     NOT_DEPLOYED: 'not deployed',
-}
-
-export const EVENT_STREAM_EVENTS_MAP = {
-    MESSAGE: 'message',
-    START_OF_STREAM: 'START_OF_STREAM',
-    END_OF_STREAM: 'END_OF_STREAM',
-    ERROR: 'error',
-}
-
-export const TERMINAL_STATUS_MAP = {
-    SUCCEEDED: 'succeeded',
-    HEALTHY: 'healthy',
-    RUNNING: 'running',
-    PROGRESSING: 'progressing',
-    STARTING: 'starting',
-    INITIATING: 'initiating',
-    QUEUED: 'queued',
-    FAILED: 'failed',
-    ERROR: 'error',
-    CANCELLED: 'cancelled',
-    UNABLE_TO_FETCH: 'unabletofetch',
-    TIMED_OUT: 'timedout',
 }
 
 export const POD_STATUS = {
@@ -688,9 +678,7 @@ export enum KIND {
 
 export const MODULE_STATUS_RETRY_COUNT = 3
 export const MODULE_STATUS_POLLING_INTERVAL = 15000
-export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
-export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
 export const MODULE_STATUS = {
     Installed: 'Installed',
     Failed: 'Failed',
@@ -740,6 +728,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -763,6 +754,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
@@ -839,7 +833,7 @@ export const SERVER_ERROR_CODES = {
     CHART_NAME_RESERVED: '5002',
 }
 
-export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const ENV_ALREADY_EXIST_ERROR = 'Pipeline already exists for this environment'
 export const CVE_ID_NOT_FOUND = 'CVE ID not found'
 export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
 export const NO_HOST_URL = 'Please enter host url'
@@ -932,7 +926,6 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
     'Enforced from Global Configurations. Go to Global Configurations to change.'
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
-export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,
@@ -949,3 +942,16 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  * Value for select all identifier
  */
 export const SELECT_ALL_VALUE = '*'
+export const UNSAVED_CHANGES_PROMPT_MESSAGE = 'You have unsaved changes. Are you sure you want to leave?'
+export const DEFAULT_ROUTE_PROMPT_MESSAGE =
+    "Please don't wander off! Reloading or going back might disrupt the ongoing operation."
+
+export const SwitchItemValues = {
+    Sample: 'sample',
+    Configuration: 'configuration',
+}
+
+export enum DEFAULT_CONTAINER_NAME {
+    DEBUGGER = 'debugger',
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
+}

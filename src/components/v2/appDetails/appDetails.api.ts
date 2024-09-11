@@ -1,7 +1,24 @@
-import { DeploymentAppTypes, get, post } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
+import { getDeploymentType, getK8sResourcePayloadAppType } from './k8Resource/nodeDetail/nodeDetail.util'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
@@ -32,14 +49,14 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         nodeDetails.group = ''
     }
 
-    const { appName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
-    const { group, version, kind, name } = nodeDetails
+    const { appName, deploymentAppType, clusterId, namespace, appType, appId, fluxTemplateType } = appDetails
+    const { group, version, kind, name, namespace: nodeNamespace } = nodeDetails
 
     const data = {
         appId:
             appType == AppType.DEVTRON_APP
                 ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-                : getAppId(clusterId, namespace, appName),
+                : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType ?? null }),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -47,13 +64,13 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                     Version: version,
                     Kind: kind,
                 },
-                namespace,
+                namespace: nodeNamespace,
                 name,
             },
-            forceDelete: forceDelete 
+            forceDelete: forceDelete,
         },
-        appType: appType == AppType.DEVTRON_APP ? 0 : 1,
-        deploymentType: deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,
+        appType: getK8sResourcePayloadAppType(appType),
+        deploymentType: getDeploymentType(deploymentAppType),
     }
     return post(Routes.DELETE_RESOURCE, data)
 }

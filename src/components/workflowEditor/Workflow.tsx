@@ -1,6 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
@@ -30,7 +45,6 @@ import {
     AddPipelineType,
     SelectedNode,
     ConditionalWrap,
-
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -672,7 +686,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return (
             <div className="flexbox-col dc__gap-4 w-200">
                 <p className="m-0 cn-0 fs-12 fw-6 lh-18">{CHANGE_CI_TOOLTIP.TITLE}</p>
-
                 <p className="cn-0 m-0 fs-12 fw-4 lh-18">{CHANGE_CI_TOOLTIP.DISABLED}</p>
             </div>
         )
@@ -683,7 +696,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return this.props.nodes
         }
 
-        const originalNodes = JSON.parse(JSON.stringify(this.props.nodes))
+        const originalNodes = structuredClone(this.props.nodes)
         const bufferHeight = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
         const bufferNodes = this.props.workflowPositionState?.nodes ?? []
         // would traverse through nodes if type and id matches with bufferNodes then would add bufferHeight to y
@@ -714,9 +727,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
 
-        // We are only enabling change CI when CI is linkedCD or normal CI
-        const isChangeCIEnabled =
-            ciPipeline?.isLinkedCD || (ciPipeline && !ciPipeline?.isJobCI && !ciPipeline?.isLinkedCI)
+        // If no node is present in workflow then disable change CI button
+        const isChangeCIEnabled = nodesWithBufferHeight.length > 0
 
         return (
             <ConditionalWrap
@@ -782,7 +794,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     </Tippy>
                                 )}
 
-                                {!!this.props.handleChangeCI && LinkedCDNode && !this.props.isJobView && (
+                                {!!this.props.handleChangeCI && !this.props.isJobView && (
                                     <Tippy
                                         content={this.renderChangeCITooltip(isChangeCIEnabled)}
                                         placement="top"

@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
@@ -82,17 +98,18 @@ const TerminalComponent = ({
         }
 
         const deleteEphemeralContainer = (containerName: string) => {
-            deleteEphemeralUrl(
-                getPayload(containerName),
-                appDetails.clusterId,
-                appDetails.environmentId,
-                appDetails.namespace,
-                appDetails.appName,
-                appDetails.appId,
-                appDetails.appType,
+            deleteEphemeralUrl({
+                requestData: getPayload(containerName),
+                clusterId: appDetails.clusterId,
+                environmentId: appDetails.environmentId,
+                namespace: appDetails.namespace,
+                appName: appDetails.appName,
+                appId: appDetails.appId,
+                appType: appDetails.appType,
+                fluxTemplateType: appDetails.fluxTemplateType,
                 isResourceBrowserView,
                 params,
-            )
+            })
                 .then((response: any) => {
                     const _containers: Options[] = []
                     const containerName = response.result
@@ -154,21 +171,24 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+                : getAppId({
+                      clusterId: appDetails.clusterId,
+                      namespace: appDetails.namespace,
+                      appName: appDetails.appName,
+                      templateType: appDetails.fluxTemplateType ?? null,
+                  })
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else if (isExternalArgoApp) {
-            url += `${appDetails.clusterId}`
         } else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
+        url += `/${isResourceBrowserView ? selectedResource.namespace : selectedNamespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }
@@ -254,13 +274,11 @@ const TerminalComponent = ({
     if (isDeleted || !selectedContainerName.length) {
         return (
             showTerminal && (
-                <div>
-                    <MessageUI
-                        msg="This resource no longer exists"
-                        size={32}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-                    />
-                </div>
+                <MessageUI
+                    msg="This resource no longer exists"
+                    size={32}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                />
             )
         )
     }
@@ -306,6 +324,14 @@ const TerminalComponent = ({
                     IndicatorSeparator: null,
                     Option,
                 },
+            },
+            {
+                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: false,
+                isResourceBrowserView: !!isResourceBrowserView,
+                isClusterTerminalView: false,
+                containerName: selectedContainerName,
+                appDetails,
             },
         ],
         tabSwitcher: {

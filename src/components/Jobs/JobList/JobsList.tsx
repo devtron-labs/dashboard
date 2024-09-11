@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import {
@@ -9,6 +25,8 @@ import {
     DevtronProgressing,
     useMainContext,
     HeaderWithCreateButton,
+    SearchBar,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import { URLS } from '../../../config'
@@ -19,8 +37,6 @@ import { OrderBy } from '../../app/list/types'
 import { onRequestUrlChange, populateQueryString } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
 import { getAppListDataToExport, getJobsInitData } from '../Service'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
@@ -38,9 +54,7 @@ export default function JobsList() {
     const showExportCsvButton = userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1
 
     // search
-    const [searchString, setSearchString] = useState(undefined)
-    const [searchApplied, setSearchApplied] = useState(false)
-
+    const { searchKey = '', handleSearch, clearFilters } = useUrlFilters()
     // filters
     const [masterFilters, setMasterFilters] = useState({
         appStatus: [],
@@ -48,17 +62,8 @@ export default function JobsList() {
         environments: [],
     })
     const [jobCount, setJobCount] = useState(0)
-    //  const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
 
     useEffect(() => {
-        // set search data
-        const searchQuery = location.search
-        const queryParams = queryString.parse(searchQuery)
-        if (queryParams.search) {
-            setSearchString(queryParams.search)
-            setSearchApplied(true)
-        }
-
         // Payload parsed from url
         const payloadParsedFromUrl = updatedParsedPayloadOnUrlChange()
 
@@ -125,19 +130,6 @@ export default function JobsList() {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
-    const handleAppSearchOperation = (_searchString: string): void => {
-        const query = populateQueryString(location.search)
-        if (_searchString) {
-            query['search'] = _searchString
-            query['offset'] = 0
-        } else {
-            delete query['search']
-            delete query['offset']
-        }
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
     const removeFilter = (filter, filterType: string): void => {
         const query = populateQueryString(location.search)
         query['offset'] = 0
@@ -153,21 +145,6 @@ export default function JobsList() {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
-    const removeAllFilters = (): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = 0
-        delete query['team']
-        delete query['appStatus']
-        delete query['environment']
-        delete query['search']
-
-        // delete search string
-        setSearchApplied(false)
-        setSearchString('')
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
     const sortJobList = (key: string): void => {
         const query = populateQueryString(location.search)
         query['orderBy'] = key
@@ -176,53 +153,25 @@ export default function JobsList() {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
-    const searchApp = (event: React.FormEvent) => {
-        event.preventDefault()
-        setSearchApplied(true)
-        handleAppSearchOperation(searchString)
-    }
-
-    const onChangeSearchString = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let str = event.target.value || ''
-        str = str.toLowerCase()
-        setSearchString(str)
-    }
-
-    const clearSearch = (): void => {
-        setSearchApplied(false)
-        setSearchString('')
-        handleAppSearchOperation('')
-    }
-
     const onShowHideFilterContent = (show: boolean): void => {
         setPageOverflowEnabled(!show)
     }
 
-    const getJobsDataToExport = async () => getAppListDataToExport(parsedPayloadOnUrlChange, searchString, jobCount)
+    const getJobsDataToExport = async () => getAppListDataToExport(parsedPayloadOnUrlChange, searchKey, jobCount)
 
     function renderMasterFilters() {
         return (
             <div className="search-filter-section">
-                <form style={{ display: 'inline' }} onSubmit={searchApp}>
-                    <div className="search">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            data-testid="Search-by-job-name"
-                            type="text"
-                            name="app_search_input"
-                            autoComplete="off"
-                            value={searchString}
-                            placeholder="Search by job name"
-                            className="search__input bcn-1"
-                            onChange={onChangeSearchString}
-                        />
-                        {searchApplied && (
-                            <button className="flex search__clear-button" type="button" onClick={clearSearch}>
-                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                            </button>
-                        )}
-                    </div>
-                </form>
+                <SearchBar
+                    initialSearchText={searchKey}
+                    containerClassName="dc__mxw-250 flex-grow-1"
+                    handleEnter={handleSearch}
+                    inputProps={{
+                        placeholder: 'Search by job name',
+                        autoFocus: true
+                    }}
+                    dataTestId="Search-by-job-name"
+                />
                 <div className="app-list-filters filters">
                     <Filter
                         list={masterFilters.appStatus}
@@ -320,7 +269,7 @@ export default function JobsList() {
             shouldRenderFilterChips && (
                 <div className="saved-filters__wrap dc__position-rel">
                     {keys.map((key) => appliedFilterChip(key))}
-                    <button type="button" className="saved-filters__clear-btn fs-13" onClick={removeAllFilters}>
+                    <button type="button" className="saved-filters__clear-btn fs-13" onClick={clearFilters}>
                         Clear All Filters
                     </button>
                 </div>
@@ -333,7 +282,7 @@ export default function JobsList() {
     }
 
     return (
-        <div className="jobs-view-container h-100">
+        <div className="jobs-view-container h-100 bcn-0">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="w-100 h-100vh">
                     <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80" />
@@ -345,7 +294,7 @@ export default function JobsList() {
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                        clearAllFilters={removeAllFilters}
+                        clearAllFilters={clearFilters}
                         sortJobList={sortJobList}
                         jobListCount={jobCount}
                         isSuperAdmin

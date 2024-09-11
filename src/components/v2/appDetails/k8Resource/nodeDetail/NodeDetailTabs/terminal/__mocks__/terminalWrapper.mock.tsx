@@ -1,4 +1,20 @@
-import React, { useRef } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useRef } from 'react'
 import { MainContextProvider } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../../config'
 import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
@@ -125,9 +141,9 @@ export const selectionListDataWithSecondStrip = {
     ],
 }
 
-const renderTerminalTabWrapper = (terminalView: () => JSX.Element) => {
-    return <div className="cluster-terminal__wrapper">{terminalView}</div>
-}
+const renderTerminalTabWrapper = (terminalView: () => JSX.Element) => (
+    <div className="cluster-terminal__wrapper">{terminalView}</div>
+)
 
 export const selectionListDataWithTerminalWrapper = {
     ...selectionListDataWithSecondStrip,
@@ -151,18 +167,16 @@ export const mockUseHeightObserver = jest.fn().mockImplementation(() => {
     return [ref]
 })
 
-export const renderStrip = jest.fn(() => {
-    return (
-        <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
-            {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
-        </div>
-    )
-})
+export const renderStrip = jest.fn(() => (
+    <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
+        {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
+    </div>
+))
 
 const userContextMock = {
     serverMode: SERVER_MODE.FULL,
 } as MainContext
 
-export const terminalContextWrapper = (terminalView) => {
-    return <MainContextProvider value={userContextMock}>{terminalView}</MainContextProvider>
-}
+export const terminalContextWrapper = (terminalView) => (
+    <MainContextProvider value={userContextMock}>{terminalView}</MainContextProvider>
+)

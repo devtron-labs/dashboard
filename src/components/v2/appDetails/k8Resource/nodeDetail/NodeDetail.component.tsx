@@ -1,6 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
@@ -15,8 +30,8 @@ import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
+import { getResourceFromK8SObjectMap } from '../../../../ResourceBrowser/Utils'
 import './nodeDetail.css'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../../../../ResourceBrowser/Constants'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
@@ -28,12 +43,11 @@ import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/Delete
 const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
-    markTabActiveByIdentifier,
-    addTab,
-    selectedResource,
+    k8SObjectMapRaw,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
+    updateTabUrl,
     isExternalApp,
 }: NodeDetailPropsType) => {
     const location = useLocation()
@@ -60,6 +74,7 @@ const NodeDetailComponent = ({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
             setManagedFields(true)
@@ -67,6 +82,22 @@ const NodeDetailComponent = ({
             setManagedFields(false)
         }
     }
+
+    const _selectedResource = useMemo(
+        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
+        [k8SObjectMapRaw, params.nodeType],
+    )
+
+    const selectedResource = {
+        clusterId: +params.clusterId,
+        kind: _selectedResource?.gvk.Kind as string,
+        version: _selectedResource?.gvk.Version,
+        group: _selectedResource?.gvk.Group,
+        namespace: params.namespace,
+        name: params.node,
+        containers: [],
+    }
+
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
@@ -197,18 +228,22 @@ const NodeDetailComponent = ({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const _idPrefix = `${
-            selectedResource?.kind === SIDEBAR_KEYS.eventGVK.Kind
-                ? K8S_EMPTY_GROUP
-                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
-        }_${params.namespace}`
-        const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
-            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        setSelectedTabName(_tabName)
+        updateTabUrl?.(_url)
 
-        if (!isTabFound) {
+        /**
+         * NOTE: resource browser handles creation of missing tabs;
+         * Need to remove this whole function and not keep missing tab creation
+         * logic here. Instead it should be the concern on this component & should
+         * only be done on component mount */
+        if (isResourceBrowserView) {
+            return
+        }
+
+        /* NOTE: this setTimeout is dangerous; Need to refactor later */
+        if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
             setTimeout(() => {
-                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
+                let _urlToCreate = _url
 
                 const query = new URLSearchParams(window.location.search)
 
@@ -216,15 +251,8 @@ const NodeDetailComponent = ({
                     _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
                 }
 
-                if (isResourceBrowserView) {
-                    addTab(_idPrefix, params.nodeType, params.node, _urlToCreate)
-                } else {
-                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-                }
-                setSelectedTabName(_tabName)
+                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
             }, 500)
-        } else if (selectedTabName !== _tabName) {
-            setSelectedTabName(_tabName)
         }
     }
 
@@ -298,7 +326,9 @@ const NodeDetailComponent = ({
 
     return (
         <>
-            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
+            <div
+                className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+            >
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
                         {tabs &&
@@ -311,9 +341,12 @@ const NodeDetailComponent = ({
                                             tab.toLowerCase() === selectedTabName.toLowerCase()
                                                 ? 'default-tab-row cb-5'
                                                 : 'cn-7'
-                                        } pt-6 pb-6 cursor pl-8 pr-8 top`}
+                                        } py-6 px-8 top`}
                                     >
-                                        <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
+                                        <NavLink
+                                            to={`${url}/${tab.toLowerCase()}`}
+                                            className=" dc__no-decor flex left cursor"
+                                        >
                                             <span
                                                 data-testid={`${tab.toLowerCase()}-nav-link`}
                                                 className={`${
@@ -367,12 +400,7 @@ const NodeDetailComponent = ({
             {renderPodTerminal()}
 
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
-                <MessageUI
-                    msg=""
-                    icon={MsgUIType.LOADING}
-                    size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
-                />
+                <MessageUI msg="" icon={MsgUIType.LOADING} size={24} />
             ) : (
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
@@ -386,6 +414,7 @@ const NodeDetailComponent = ({
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -398,12 +427,7 @@ const NodeDetailComponent = ({
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div
-                            className="resource-node-wrapper"
-                            style={{
-                                minHeight: isResourceBrowserView ? '200px' : '',
-                            }}
-                        >
+                        <div className="flex-grow-1 flexbox-col">
                             <LogsComponent
                                 key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
@@ -419,6 +443,7 @@ const NodeDetailComponent = ({
                             />
                         </div>
                     </Route>
+                    {/* NOTE: this seems like an obsolete component? since it can't be reached through UI */}
                     {!isResourceBrowserView && (
                         <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
                             <SummaryComponent selectedTab={handleSelectedTab} />

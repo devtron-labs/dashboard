@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
-import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getClusterListMinNoAuth } from './security.service'
 import { ViewType } from '../../config'
@@ -40,8 +56,8 @@ export class SecurityPolicyCluster extends Component<
             })
     }
 
-    handleSearchChange(e) {
-        this.setState({ clusterSearch: e.target.value })
+    handleSearchChange(_searchText: string) {
+        this.setState({ clusterSearch: _searchText})
     }
 
     renderList() {
@@ -61,17 +77,16 @@ export class SecurityPolicyCluster extends Component<
                 <tbody>
                     <tr>
                         <td className="security-policy-cluster__title w-100">
-                            <div className="dc__search-with-dropdown">
-                                <Search className="icon-dim-20 ml-8" />
-                                <input
-                                    type="text"
-                                    className="search-with-dropdown__search"
-                                    data-testid="security-policy-cluster-search"
-                                    onChange={this.handleSearchChange}
-                                    autoFocus
-                                    placeholder="Search cluster"
-                                />
-                            </div>
+                            <SearchBar
+                                initialSearchText={this.state.clusterSearch}
+                                containerClassName="flex-grow-1"
+                                handleEnter={this.handleSearchChange}
+                                inputProps={{
+                                    placeholder: 'Search cluster',
+                                    autoFocus: true
+                                }}
+                                dataTestId="security-policy-cluster-search"
+                            />
                         </td>
                     </tr>
                     {this.state.clusterList

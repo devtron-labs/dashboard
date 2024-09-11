@@ -1,4 +1,20 @@
-import React, { useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState } from 'react'
 import {
     handleUTCTime,
     getRandomColor,
@@ -27,6 +43,7 @@ import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
+const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')
 
 const UserPermissionRow = ({
     id,
@@ -40,6 +57,7 @@ const UserPermissionRow = ({
     isChecked = false,
     toggleChecked,
     showCheckbox,
+    userGroups,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
@@ -87,7 +105,7 @@ const UserPermissionRow = ({
                     isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
                 } dc__hover-n50`}
             >
-                {/* Note (v2): no checkbox for admin/system */}
+                {/* Note: no checkbox for admin/system */}
                 <div className="flex dc__content-start">
                     {(!_showCheckbox || isAdminOrSystemUser) && (
                         <span
@@ -131,6 +149,7 @@ const UserPermissionRow = ({
                         </Link>
                     </span>
                 )}
+                {showStatus && <UserGroupCell userGroups={userGroups} />}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
                     // eslint-disable-next-line react/no-unstable-nested-components

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     showError,
@@ -6,6 +22,7 @@ import {
     Drawer,
     CustomInput,
     ClipboardButton,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -14,7 +31,6 @@ import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfigu
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types'
 import CreateHeaderDetails from './CreateHeaderDetails'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -66,7 +82,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     _responseKeys.forEach((_key) => {
                         _headers.push({ key: _key, value: response.result.header[_key] })
                     })
-                    const _responsePayload = response.result?.payload ?? '';
+                    const _responsePayload = response.result?.payload ?? ''
                     state.form = {
                         ...response.result,
                         header: _headers,

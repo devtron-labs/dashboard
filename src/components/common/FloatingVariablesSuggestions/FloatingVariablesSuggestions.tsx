@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
 import { useAsync, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
 import Draggable from 'react-draggable'
@@ -16,6 +32,7 @@ import { SUGGESTIONS_SIZE } from './constants'
  * @param envId - (Optional)
  * @param clusterId - (Optional)
  * @param bounds - (Optional) To set the bounds of the suggestions
+ * @param hideObjectVariables - (Optional) To hide the object/array variables, default is true
  * @returns
  */
 const FloatingVariablesSuggestions = ({
@@ -24,13 +41,14 @@ const FloatingVariablesSuggestions = ({
     envId,
     clusterId,
     bounds,
+    hideObjectVariables = true,
 }: FloatingVariablesSuggestionsProps) => {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const [loadingScopedVariables, variablesData, error, reloadScopedVariables] = useAsync(
-        () => getScopedVariables(appId, envId, clusterId),
+        () => getScopedVariables(appId, envId, clusterId, hideObjectVariables),
         [appId, envId, clusterId],
     )
 
@@ -201,7 +219,7 @@ const FloatingVariablesSuggestions = ({
                 <Suggestions
                     handleDeActivation={handleDeActivation}
                     loading={loadingScopedVariables}
-                    variables={variablesData?.result ?? []}
+                    variables={variablesData ?? []}
                     reloadVariables={reloadScopedVariables}
                     error={error}
                 />

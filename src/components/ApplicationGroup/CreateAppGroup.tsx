@@ -1,4 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useRef, useState } from 'react'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -7,8 +23,11 @@ import {
     Drawer,
     GenericEmptyState,
     Progressing,
+    SearchBar,
     showError,
     stopPropagation,
+    TabGroup,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
@@ -19,7 +38,6 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
 import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
-import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
 import { createEnvGroup } from './AppGroup.service'
 
@@ -40,9 +58,7 @@ export default function CreateAppGroup({
         filterParentType === FilterParentType.app ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
     )
     const [allAppSearchText, setAllAppSearchText] = useState('')
-    const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
-    const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
     const [selectedAppsMap, setSelectedAppsMap] = useState<Record<string, boolean>>({})
     const [selectedAppsCount, setSelectedAppsCount] = useState<number>(0)
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
@@ -64,7 +80,7 @@ export default function CreateAppGroup({
             return
         }
         if (!FILTER_NAME_REGEX.test(name) || name.length > 30) {
-            // regex doesnt check of max length = 30
+            // regex doesn't check of max length = 30
             setShowErrorMsg(true)
         } else {
             setShowErrorMsg(false)
@@ -96,7 +112,7 @@ export default function CreateAppGroup({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Save filter</h2>
                 <button
                     type="button"
@@ -187,14 +203,21 @@ export default function CreateAppGroup({
             (app) =>
                 selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
         )
+
+        const handleAppSearchEnterChange = (_searchText: string): void => {
+            setSelectedAppSearchText(_searchText)
+        }
+
         return (
             <div>
                 <SearchBar
-                    placeholder={`Search ${filterParentTypeMsg}'s`}
-                    searchText={selectedAppSearchText}
-                    setSearchText={setSelectedAppSearchText}
-                    searchApplied={selectedAppSearchApplied}
-                    setSearchApplied={setSelectedAppSearchApplied}
+                    inputProps={{
+                        placeholder: `Search ${filterParentTypeMsg}'s`,
+                        autoFocus: true,
+                    }}
+                    initialSearchText={selectedAppSearchText}
+                    handleEnter={handleAppSearchEnterChange}
+                    dataTestId="create-app-group"
                 />
                 <div>
                     {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
@@ -215,7 +238,7 @@ export default function CreateAppGroup({
                           })}
                     {filteredUnAuthList.length > 0 && (
                         <div className="dc__bold ml-4">
-                            {`You don't have admin/manager pemission for the following ${filterParentTypeMsg}.`}
+                            {`You don't have admin/manager permission for the following ${filterParentTypeMsg}.`}
                         </div>
                     )}
                     {filteredUnAuthList.map((app) => {
@@ -225,7 +248,7 @@ export default function CreateAppGroup({
                                 className="default-tt w-200"
                                 arrow={false}
                                 placement="bottom-start"
-                                content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
+                                content={`You don't have admin/manager permission for this ${filterParentTypeMsg}.`}
                             >
                                 <div>
                                     <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
@@ -243,14 +266,20 @@ export default function CreateAppGroup({
 
     const renderAllApps = (): JSX.Element => {
         const filteredAllApps = appList.filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
+
+        const handleAllAppSearchEnterChange = (_searchText: string): void => {
+            setAllAppSearchText(_searchText)
+        }
+
         return (
             <div>
                 <SearchBar
-                    placeholder={`Search ${filterParentTypeMsg}'s`}
-                    searchText={allAppSearchText}
-                    setSearchText={setAllAppSearchText}
-                    searchApplied={allAppSearchApplied}
-                    setSearchApplied={setAllAppSearchApplied}
+                    inputProps={{
+                        placeholder: `Search ${filterParentTypeMsg}'s`,
+                        autoFocus: true,
+                    }}
+                    initialSearchText={allAppSearchText}
+                    handleEnter={handleAllAppSearchEnterChange}
                 />
                 <div>
                     {filteredAllApps.length <= 0
@@ -265,7 +294,7 @@ export default function CreateAppGroup({
                                           className="default-tt w-200"
                                           arrow={false}
                                           placement="bottom-start"
-                                          content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
+                                          content={`You don't have admin/manager permission for this ${filterParentTypeMsg}.`}
                                       >
                                           <div>{children}</div>
                                       </Tippy>
@@ -292,20 +321,18 @@ export default function CreateAppGroup({
         setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
-    const renderTabItem = (tabName: CreateGroupTabs, appCount: number): JSX.Element => {
-        return (
-            <li className="tab-list__tab pointer" data-tab-name={tabName} onClick={onTabChange}>
-                <div className={`mb-6 fs-13 tab-hover${selectedTab === tabName ? ' fw-6 active' : ' fw-4'}`}>
-                    <span className="mr-6">{CREATE_GROUP_TABS[tabName]} </span>
-                    {appCount > 0 && (
-                        <span className={`br-10 pl-5 pr-5 ${selectedTab === tabName ? 'bcb-5 cn-0' : 'bcn-1 cn-7'}`}>
-                            {appCount}
-                        </span>
-                    )}
-                </div>
-                {selectedTab === tabName && <div className="apps-tab__active-tab" />}
-            </li>
-        )
+    const renderTabItem = (tabName: CreateGroupTabs, appCount: number): TabProps => {
+        return {
+            id: `${tabName}-tab`,
+            label: CREATE_GROUP_TABS[tabName],
+            tabType: 'button',
+            active: selectedTab === tabName,
+            badge: appCount > 0 ? appCount : null,
+            props: {
+                onClick: onTabChange,
+                'data-tab-name': tabName,
+            },
+        }
     }
 
     // called when showErrorMsg is true
@@ -326,7 +353,7 @@ export default function CreateAppGroup({
             return <Progressing pageLoader />
         }
         return (
-            <div className="p-20 bcn-0 dc__overflow-auto" style={{ height: 'calc(100vh - 128px)' }}>
+            <div className="p-20 bcn-0 dc__overflow-auto flex-grow-1">
                 <div className="form__row mb-16">
                     <CustomInput
                         label="Name"
@@ -358,21 +385,26 @@ export default function CreateAppGroup({
                     )}
                 </div>
                 <div>
-                    <ul role="tablist" className="tab-list dc__border-bottom mb-8">
-                        {renderTabItem(
-                            filterParentType === FilterParentType.app
-                                ? CreateGroupTabs.SELECTED_ENV
-                                : CreateGroupTabs.SELECTED_APPS,
-                            selectedAppsCount,
-                        )}
-                        {renderTabItem(
-                            filterParentType === FilterParentType.app
-                                ? CreateGroupTabs.ALL_ENV
-                                : CreateGroupTabs.ALL_APPS,
-                            appList.length,
-                        )}
-                    </ul>
-
+                    <div className="dc__border-bottom mb-8">
+                        <TabGroup
+                            tabs={[
+                                renderTabItem(
+                                    filterParentType === FilterParentType.app
+                                        ? CreateGroupTabs.SELECTED_ENV
+                                        : CreateGroupTabs.SELECTED_APPS,
+                                    selectedAppsCount,
+                                ),
+                                renderTabItem(
+                                    filterParentType === FilterParentType.app
+                                        ? CreateGroupTabs.ALL_ENV
+                                        : CreateGroupTabs.ALL_APPS,
+                                    appList.length,
+                                ),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV
                         ? renderSelectedApps()
                         : renderAllApps()}
@@ -436,7 +468,7 @@ export default function CreateAppGroup({
 
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 w-800">
+            <div className="dc__border-top flex right bcn-0 py-16 px-20 w-800">
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
@@ -449,7 +481,7 @@ export default function CreateAppGroup({
 
     return (
         <Drawer position="right" width="800px" onEscape={closePopup}>
-            <div className="dc__window-bg h-100 create-group-container" ref={CreateGroupRef}>
+            <div className="dc__window-bg h-100 flexbox-col" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}
                 {renderFooterSection()}

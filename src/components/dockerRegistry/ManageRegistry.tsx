@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
@@ -22,6 +38,7 @@ import {
     InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { DOCUMENTATION } from '../../config'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -306,12 +323,7 @@ const ManageRegistry = ({
         return (
             <>
                 Use the&nbsp;
-                <a
-                    className="dc__link"
-                    href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                <a className="dc__link" href={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET} target="_blank" rel="noreferrer">
                     image pull secret name created via CLI
                 </a>
                 . The secret must be present in the namespaces you're deploying to.

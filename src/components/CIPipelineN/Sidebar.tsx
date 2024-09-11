@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useState } from 'react'
 import {
     RadioGroup,
@@ -5,10 +21,11 @@ import {
     Option,
     multiSelectStyles,
     CHECKBOX_VALUE,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
-import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
@@ -19,7 +36,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
 import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
-import { PipelineFormType } from '../workflowEditor/types'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
 
@@ -29,8 +45,6 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    pluginList,
-    mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -39,7 +53,6 @@ export const Sidebar = ({
     const {
         formData,
         setFormData,
-        configurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -50,6 +63,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
+        pluginDataStore,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -326,35 +340,30 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {configurationType === ConfigurationType.GUI && (
-                        <>
-                            {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
-                                <MandatoryPluginWarning
-                                    stage={activeStageName}
-                                    mandatoryPluginData={mandatoryPluginData}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    formDataErrorObj={formDataErrorObj}
-                                    setFormDataErrorObj={setFormDataErrorObj}
-                                    allPluginList={pluginList}
-                                    handleApplyPlugin={handleApplyPlugin}
-                                />
-                            )}
-                            <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <div className="pb-16 sidebar-action-container-border">
-                                <TaskList
-                                    withWarning={showMandatoryWarning()}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    isJobView={isJobCard}
-                                />
-                            </div>
-                            {isCdPipeline &&
-                                (!isVirtualEnvironment ||
-                                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
-                                triggerPipelineMode()}
-                        </>
+                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                        <MandatoryPluginWarning
+                            stage={activeStageName}
+                            mandatoryPluginData={mandatoryPluginData}
+                            formData={formData}
+                            setFormData={setFormData}
+                            formDataErrorObj={formDataErrorObj}
+                            setFormDataErrorObj={setFormDataErrorObj}
+                            pluginDataStore={pluginDataStore}
+                            handleApplyPlugin={handleApplyPlugin}
+                        />
                     )}
+                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
+                    <div className="pb-16 sidebar-action-container-border">
+                        <TaskList
+                            withWarning={showMandatoryWarning()}
+                            setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                            isJobView={isJobCard}
+                        />
+                    </div>
+                    {isCdPipeline &&
+                        (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
+                        triggerPipelineMode()}
+
                     {isJobView && (
                         <EnvironmentList
                             isBuildStage

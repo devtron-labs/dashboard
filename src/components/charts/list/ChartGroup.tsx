@@ -1,7 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation, Switch } from 'react-router'
-import { Route, Link } from 'react-router-dom'
+import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
 import ChartGroupCard from '../util/ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -42,7 +57,7 @@ const ChartGroupList = () => {
         )
     }
     return (
-        <div className="chart-group-list-page">
+        <div className="chart-group-list-page bcn-0">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} renderActionButtons={renderCreateGroupButton} />
             <div className="chart-group-list-page__body">
                 {loading ? (

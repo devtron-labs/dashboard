@@ -1,27 +1,59 @@
-import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
-import { Route } from 'react-router-dom'
-import { useInterval, mapByKey, asyncWrap, useAppContext } from '../../../common'
-import { ModuleNameMap } from '../../../../config'
-import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
-import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { getAppsCDConfigMin } from '../../AppGroup.service'
-import Sidebar from '../../../app/details/cicdHistory/Sidebar'
-import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
-import { getTriggerHistory } from '../../../app/details/cdDetails/service'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect } from 'react'
 import {
+    Progressing,
+    showError,
+    sortCallback,
+    useAsync,
+    Sidebar,
+    TriggerOutput,
+    LogResizeButton,
     CICDSidebarFilterOptionType,
     History,
     HistoryComponentType,
     FetchIdDataStatus,
-} from '../../../app/details/cicdHistory/types'
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    getTriggerHistory,
+    useScrollable,
+    TRIGGER_STATUS_PROGRESSING,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
+import { useAppContext } from '../../../common'
+import { ModuleNameMap } from '../../../../config'
+import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
+import { getAppsCDConfigMin } from '../../AppGroup.service'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderCIListHeader,
+    renderDeploymentApprovalInfo,
+    renderDeploymentHistoryTriggerMetaText,
+    renderRunSource,
+    renderVirtualHistoryArtifacts,
+} from '../../../app/details/cdDetails/utils'
 
 export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -40,6 +72,12 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+triggerId)
+    const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
+    })
+
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
@@ -49,7 +87,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
-        () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
+        () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
         [pagination, appId, envId],
         !!appId && !!pipelineId,
     )
@@ -127,7 +165,11 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
         const [error, result] = await asyncWrap(
-            getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
+            getTriggerHistory({
+                appId: +appId,
+                envId: +envId,
+                pagination: { offset: 0, size: pagination.offset + pagination.size },
+            }),
         )
         if (error) {
             showError(error)
@@ -141,34 +183,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return agg
         }, triggerHistoryMap)
         setTriggerHistory(newTriggerHistory)
-    }
-
-    function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
-        if (triggerDetailsError) {
-            if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-                setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
-            }
-            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
-            return
-        }
-        if (triggerId === triggerDetail?.id) {
-            const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
-            const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
-            const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
-            const additionalDataObject = {
-                ...(appliedFilters.length ? { appliedFilters } : {}),
-                ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
-                ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
-            }
-
-            setTriggerHistory((triggerHistory) => {
-                triggerHistory.set(triggerId,  { ...triggerDetail, ...additionalDataObject })
-                return new Map(triggerHistory)
-            })
-            if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
-                setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
-            }
-        }
     }
 
     const handleViewAllHistory = () => {
@@ -215,8 +229,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
     })
 
-    const triggerHistoryArray = Array.from(triggerHistory.values())
-
     const renderDetail = (): JSX.Element => {
         if (triggerHistory.size > 0 || fetchTriggerIdData) {
             const deploymentAppType = pipelineList.find(
@@ -230,21 +242,28 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 >
                     <TriggerOutput
                         fullScreenView={fullScreenView}
-                        syncState={syncState}
+                        deploymentHistoryResult={deploymentHistoryResult ?? null}
                         triggerHistory={triggerHistory}
+                        setTriggerHistory={setTriggerHistory}
                         setFullScreenView={setFullScreenView}
                         setDeploymentHistoryList={setDeploymentHistoryList}
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                        deploymentHistoryResult={
-                            deploymentHistoryResult?.result?.cdWorkflows || triggerHistoryArray || []
-                        }
                         appReleaseTags={appReleaseTags}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchTriggerIdData}
+                        setFetchTriggerIdData={setFetchTriggerIdData}
                         selectedEnvironmentName={currentEnvironmentName}
+                        renderRunSource={renderRunSource}
+                        renderCIListHeader={renderCIListHeader}
+                        renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                        renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                        renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
+                        processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                        scrollToTop={scrollToTop}
+                        scrollToBottom={scrollToBottom}
                     />
                 </Route>
             )
@@ -278,11 +297,14 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         setPagination={setPagination}
                         fetchIdData={fetchTriggerIdData}
                         handleViewAllHistory={handleViewAllHistory}
+                        renderRunSource={renderRunSource}
                     />
                 </div>
             )}
             <div className="ci-details__body">
-                {renderDetail()}
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                    {renderDetail()}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>

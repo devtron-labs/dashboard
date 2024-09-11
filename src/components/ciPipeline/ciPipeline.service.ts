@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -6,13 +22,14 @@ import {
     ScriptType,
     PluginType,
     RefVariableType,
+    PipelineBuildStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
+import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -395,6 +412,7 @@ function migrateOldData(
         defaultValue: '',
         variableType: RefVariableType.GLOBAL,
         refVariableStepIndex: 0,
+        allowEmptyValue: false,
     }
     const updatedData = {
         id: 0,
@@ -568,14 +586,6 @@ function createCurlRequest(externalCiConfig): string {
     const json = externalCiConfig.payload
     const curl = `curl -X POST -H 'Content-type: application/json' --data '${json}' ${url}/${externalCiConfig.accessKey}`
     return curl
-}
-
-export function getPluginsData(appId: number, isCD: boolean = false): Promise<any> {
-    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : ''}`)
-}
-
-export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
-    return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }
 
 export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {

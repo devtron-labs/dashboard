@@ -1,4 +1,20 @@
-import React, { Component } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     showError,
@@ -9,11 +25,13 @@ import {
     Checkbox,
     Reload,
     GenericEmptyState,
+    CiPipelineSourceConfig,
+    EMPTY_STATE_STATUS,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
-import { Pagination } from '../common'
 import {
     getNotificationConfigurations,
     deleteNotifications,
@@ -35,9 +53,7 @@ import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { HostURLConfig } from '../../services/service.types'
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { renderPipelineTypeIcon } from './notifications.util'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export interface NotificationConfiguration {
     id: number
@@ -457,7 +473,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
             return (
-                <div className="dc__block mt-20 mb-20">
+                <div className="flex left mt-20 mb-20">
                     <Tippy placement="top" content="Delete">
                         <div className="flex">
                             <Delete
@@ -742,6 +758,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         if (this.state.pagination.size) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     offset={this.state.pagination.offset}
                     pageSize={this.state.pagination.pageSize}
                     size={this.state.pagination.size}

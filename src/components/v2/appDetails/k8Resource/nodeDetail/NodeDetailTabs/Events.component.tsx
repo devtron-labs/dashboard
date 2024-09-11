@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getEvent } from '../nodeDetail.api'
-import { ResourceInfoActionPropsType, NodeType } from '../../../appDetails.type'
+import { ResourceInfoActionPropsType } from '../../../appDetails.type'
 import MessageUI from '../../../../common/message.ui'
 import { EventsTable } from './EventsTable'
 import { MESSAGING_UI } from '../../../../../../config/constants'
@@ -26,14 +42,9 @@ const EventsComponent = ({
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const appDetails = IndexStore.getAppDetails()
-    const pods = IndexStore.getNodesByKind(NodeType.Pod)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
-
-        if (!appDetails) {
-            // Refresh case -- need to sent to k8 , histrory push
-        }
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
@@ -70,25 +81,23 @@ const EventsComponent = ({
         }
     }, [params.podName, params.node, params.nodeType, params.namespace])
 
+    const renderContent = () => {
+        if (isDeleted) {
+            return (
+                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} minHeight={isResourceBrowserView ? '200px' : ''} />
+            )
+        }
+
+        if (events.length) {
+            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+        }
+
+        return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
+    }
+
     return (
-        <div
-            className="events-table-container"
-            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
-        >
-            {isDeleted ? (
-                <div>
-                    <MessageUI
-                        msg={MESSAGING_UI.NO_RESOURCE}
-                        size={32}
-                        minHeight={isResourceBrowserView ? '200px' : ''}
-                    />
-                </div>
-            ) : (
-                (isResourceBrowserView || (pods && pods.length > 0)) && (
-                    <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
-                )
-            )}
-            {!isResourceBrowserView && pods.length === 0 && <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />}
+        <div className="flex-grow-1" style={{ background: 'var(--terminal-bg)' }}>
+            {renderContent()}
         </div>
     )
 }

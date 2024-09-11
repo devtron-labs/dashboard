@@ -1,7 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, CIBuildType, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, ClipboardButton, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
 import { RootBuildContext } from './ciConfigConstant'

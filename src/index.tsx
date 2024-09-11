@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import * as Sentry from '@sentry/browser'
@@ -5,7 +21,7 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
-import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -100,7 +116,7 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        HIDE_DEPLOYMENT_GROUPS: true,
+        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
@@ -127,7 +143,15 @@ if (!window || !window._env_) {
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
-        ENABLE_GITOPS_BITBUCKET_SOURCE: false,
+        HIDE_RELEASES: true,
+        HIDE_RESOURCE_WATCHER: true,
+        ORGANIZATION_NAME: '',
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
+        FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        HIDE_NETWORK_STATUS_INTERFACE: true,
+        SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
+        FEATURE_STEP_WISE_LOGS_ENABLE: true,
+        FEATURE_IMAGE_PROMOTION_ENABLE: false,
     }
 }
 
@@ -135,7 +159,9 @@ ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
             <BrowserRouter basename={window.__BASE_URL__}>
-                <App />
+                <UserEmailProvider>
+                    <App />
+                </UserEmailProvider>
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,

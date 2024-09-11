@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, memo, useEffect } from 'react'
 import { GenericEmptyState, Progressing, Reload, DebouncedSearch } from '@devtron-labs/devtron-fe-common-lib'
 import SuggestionItem from './SuggestionItem'
@@ -5,12 +21,12 @@ import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
-import { SuggestionsProps, SuggestionType } from './types'
+import { SuggestionsProps, ScopedVariableType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
 const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) => {
-    const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables)
+    const [suggestions, setSuggestions] = useState<ScopedVariableType[]>(variables)
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')
 
@@ -98,7 +114,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         <>
             <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
                 {suggestions.length ? (
-                    suggestions.map((variable: SuggestionType) => (
+                    suggestions.map((variable) => (
                         <SuggestionItem
                             key={variable.variableName}
                             variableName={variable.variableName}

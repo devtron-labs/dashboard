@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
@@ -5,7 +21,7 @@ import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
-export default function DeleteCDNode({
+const DeleteCDNode = ({
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -17,7 +33,7 @@ export default function DeleteCDNode({
     deleteTitleName,
     isLoading,
     showConfirmationBar,
-}: Readonly<DeleteCDNodeProps>) {
+}: Readonly<DeleteCDNodeProps>) => {
     const [deleteInput, setDeleteInput] = useState<string>('')
     const deleteTitle = showConfirmationBar
         ? `Delete Pipeline for '${deleteTitleName}' ?`
@@ -84,3 +100,5 @@ export default function DeleteCDNode({
         </DeleteDialog>
     )
 }
+
+export default DeleteCDNode

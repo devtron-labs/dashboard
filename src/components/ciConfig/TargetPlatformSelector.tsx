@@ -1,21 +1,33 @@
-import React from 'react'
-import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { SelectPicker, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
+import { TARGET_PLATFORM_LIST } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
-import { noMatchingPlatformOptions } from '../v2/common/ReactSelect.utils'
 
-const platformMenuList = (props): JSX.Element => {
-    return (
-        <components.MenuList {...props}>
-            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">{SelectorMessaging.TARGET_SELECTOR_MENU}</div>
-            {props.children}
-        </components.MenuList>
-    )
-}
+const renderMenuListFooter = () => (
+    <div className="cn-5 px-12 py-4 dc__italic-font-style flex left dc__gap-6">
+        <ICInfoOutlineGrey className="icon-dim-16 icon-n6" />
+        {SelectorMessaging.TARGET_SELECTOR_MENU}
+    </div>
+)
 
 const TargetPlatformSelector = ({
     allowOverride,
@@ -36,54 +48,28 @@ const TargetPlatformSelector = ({
         }
     }
 
-    const platformOption = (props): JSX.Element => {
-        const { selectOption, data } = props
-        return (
-            <div
-                onClick={(e) => selectOption(data)}
-                className="flex left pl-12"
-                style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
-            >
-                {!data.__isNew__ && (
-                    <input
-                        checked={props.isSelected}
-                        type="checkbox"
-                        style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
-                    />
-                )}
-                <div className="flex left column w-100">
-                    <components.Option className="w-100" {...props} />
-                </div>
-            </div>
+    const handleCreateNewOption: SelectPickerProps<string, true>['multiSelectProps']['onCreateOption'] = (
+        inputValue,
+    ): void => {
+        const _selectedTargetPlatforms = [
+            ...selectedTargetPlatforms,
+            {
+                label: inputValue,
+                value: inputValue,
+            },
+        ]
+        setSelectedTargetPlatforms(_selectedTargetPlatforms)
+        setShowCustomPlatformWarning(!targetPlatformMap.get(inputValue))
+
+        if (configOverrideView) {
+            updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, _selectedTargetPlatforms)
+        }
+    }
+
+    const handleCreatableBlur: SelectPickerProps['onBlur'] = () => {
+        setShowCustomPlatformWarning(
+            selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
         )
-    }
-
-    const handleCreatableBlur = (event): void => {
-        if (event.target.value) {
-            const _selectedTargetPlatforms = [
-                ...selectedTargetPlatforms,
-                {
-                    label: event.target.value,
-                    value: event.target.value,
-                },
-            ]
-            setSelectedTargetPlatforms(_selectedTargetPlatforms)
-            setShowCustomPlatformWarning(!targetPlatformMap.get(event.target.value))
-
-            if (configOverrideView) {
-                updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, _selectedTargetPlatforms)
-            }
-        } else {
-            setShowCustomPlatformWarning(
-                selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
-            )
-        }
-    }
-
-    const handleKeyDown = (event): void => {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.target.blur()
-        }
     }
 
     const getOverridenValue = () => {
@@ -129,29 +115,21 @@ const TargetPlatformSelector = ({
             {!allowOverride && configOverrideView ? (
                 getOverridenValue()
             ) : (
-                <CreatableSelect
+                <SelectPicker
                     value={selectedTargetPlatforms}
                     isMulti
-                    components={{
-                        ClearIndicator: null,
-                        IndicatorSeparator: null,
-                        Option: platformOption,
-                        MenuList: platformMenuList,
+                    multiSelectProps={{
+                        isCreatable: true,
+                        onCreateOption: handleCreateNewOption,
                     }}
-                    styles={tempMultiSelectStyles}
-                    closeMenuOnSelect={false}
                     name="targetPlatform"
                     placeholder="Type to select or create"
                     options={TARGET_PLATFORM_LIST}
-                    className="basic-multi-select mb-4"
-                    classNamePrefix="target-platform__select"
+                    inputId="target-platform__select"
                     onChange={handlePlatformChange}
                     hideSelectedOptions={false}
-                    noOptionsMessage={noMatchingPlatformOptions}
+                    renderMenuListFooter={renderMenuListFooter}
                     onBlur={handleCreatableBlur}
-                    isValidNewOption={() => false}
-                    onKeyDown={handleKeyDown}
-                    captureMenuScroll={false}
                 />
             )}
             {showCustomPlatformWarning && (

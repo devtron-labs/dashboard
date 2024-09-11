@@ -1,8 +1,30 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, VisibleModal, useAsync, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    useAsync,
+    CustomInput,
+    CodeEditor,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
 import { MarkDown } from './discoverChartDetail/DiscoverChartDetails'

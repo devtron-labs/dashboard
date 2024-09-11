@@ -1,4 +1,20 @@
-import { RouteComponentProps } from 'react-router'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { RouteComponentProps } from 'react-router-dom'
 import {
     CDMaterialType,
     CDModalTabType,
@@ -18,18 +34,37 @@ import {
     Material,
     KeyValueListType,
     CIMaterialSidebarType,
-    HandleKeyValueChangeType,
-    RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
+    CIMaterialType,
+    RuntimeParamsListItemType,
+    KeyValueTableProps,
+    CDMaterialSidebarType,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { CIMaterialType } from './MaterialHistory'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps {
+export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+
+type CDMaterialBulkRuntimeParams =
+    | {
+          isFromBulkCD: true
+          bulkRuntimeParams: RuntimeParamsListItemType[]
+          handleBulkRuntimeParamChange: HandleRuntimeParamChange
+          handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
+          bulkSidebarTab: CDMaterialSidebarType
+      }
+    | {
+          isFromBulkCD?: false
+          bulkRuntimeParams?: never
+          handleBulkRuntimeParamChange?: never
+          handleBulkRuntimeParamError?: never
+          bulkSidebarTab?: never
+      }
+
+export type CDMaterialProps = {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -43,13 +78,6 @@ export interface CDMaterialProps {
         tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
-    ) => void
-    triggerDeploy?: (
-        stageType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        wfrId?: number,
     ) => void
     selectImage?: (
         index: number,
@@ -98,13 +126,18 @@ export interface CDMaterialProps {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
-    isRedirectedFromAppDetails?:  boolean
-}
+    isRedirectedFromAppDetails?: boolean
+    /**
+     * App name coming from app group view
+     * To be consumed through variable called appName
+     */
+    selectedAppName?: string
+} & CDMaterialBulkRuntimeParams
 
 export interface ConfigToDeployOptionType {
     label: string
     value: DeploymentWithConfigType
-    infoText: string
+    description?: string
 }
 
 export enum FilterConditionViews {
@@ -153,6 +186,7 @@ export interface MaterialInfo {
 export interface CIMaterialRouterProps {
     appId: string
     envId: string
+    ciNodeId: string
 }
 
 export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
@@ -173,8 +207,6 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onCloseBranchRegexModal?: () => void
     filteredCIPipelines: any[]
     onClickShowBranchRegexModal: () => void
-    showCIModal: boolean
-    onShowCIModal: () => void
     isChangeBranchClicked: boolean
     getWorkflows: () => void
     loader: boolean
@@ -193,7 +225,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
-    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    handleRuntimeParamChange: HandleRuntimeParamChange
     runtimeParams: KeyValueListType[]
 }
 
@@ -208,6 +240,7 @@ export interface CIMaterialState {
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
+    runtimeParamsErrorState: boolean
 }
 
 export interface DownStreams {
@@ -293,7 +326,9 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
+export interface WorkflowProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
@@ -337,11 +372,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps
-    extends RouteComponentProps<{
-        appId: string
-        envId: string
-    }> {
+export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
 }
@@ -364,8 +395,6 @@ export interface TriggerViewState {
     code: number
     view: string
     workflows: WorkflowType[]
-    showCDModal: boolean
-    showCIModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
@@ -393,7 +422,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    runtimeParams?: KeyValueListType[]
+    runtimeParams?: RuntimeParamsListItemType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -577,6 +606,9 @@ export interface PrePostDeployStageType {
 }
 
 // Remove this and use from fe-common
+/**
+ * @deprecated
+ */
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -639,7 +671,6 @@ export interface BranchRegexModalProps {
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
@@ -657,10 +688,9 @@ export interface TriggerViewDeploymentConfigType {
     secret: DeploymentHistoryDetail[]
 }
 
-export interface TriggerViewConfigDiffProps {
+export interface TriggerViewConfigDiffProps extends Pick<CDMaterialState, 'selectedConfigToDeploy'> {
     currentConfiguration: TriggerViewDeploymentConfigType
     baseTemplateConfiguration: TriggerViewDeploymentConfigType
-    selectedConfigToDeploy
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
@@ -722,8 +752,8 @@ export interface RenderCTAType {
     disableSelection: boolean
 }
 
-export interface RuntimeParamsValidatorReturnType {
-    isValid: boolean
-    message?: string
-    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
+export interface CIMaterialModalProps extends CIMaterialProps {
+    closeCIModal: () => void
+    abortController: AbortController
+    resetAbortController: () => void
 }

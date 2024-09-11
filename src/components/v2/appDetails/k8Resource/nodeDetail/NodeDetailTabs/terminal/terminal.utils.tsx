@@ -1,8 +1,24 @@
-import React from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
@@ -27,6 +43,8 @@ import {
 } from './terminal.type'
 import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
+
+const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) {
@@ -180,7 +198,7 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             <Tippy
                 className="default-tt cursor"
                 arrow={false}
@@ -220,7 +238,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Debug mode"
@@ -299,7 +317,7 @@ const manifestEditButtons = ({
 
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
                 <span
@@ -311,6 +329,22 @@ const manifestEditButtons = ({
                 </span>
             )}
         </>
+    )
+}
+
+const downloadFileFolderButton = (elementData): JSX.Element => {
+    if (elementData.hideTerminalStripComponent || !DownloadFileFolderButton) {
+        return null
+    }
+
+    return (
+        <DownloadFileFolderButton
+            appDetails={elementData.appDetails}
+            containerName={elementData.containerName}
+            isResourceBrowserView={elementData.isResourceBrowserView}
+            isClusterTerminalView={elementData.isClusterTerminalView}
+            clusterViewPodName={elementData.podName}
+        />
     )
 }
 
@@ -336,6 +370,8 @@ export default function terminalStripTypeData(elementData) {
             return debugModeToggleButton(elementData)
         case TerminalWrapperType.CUSTOM_COMPONENT:
             return elementData.customComponent()
+        case TerminalWrapperType.DOWNLOAD_FILE_FOLDER:
+            return downloadFileFolderButton(elementData)
         default:
             return null
     }

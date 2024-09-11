@@ -1,8 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
+import { NavLink, useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
 import { AppSelector } from '../../AppSelector'
 import { URLS } from '../../../config'
 import { OptionType } from './appHeader.type'
@@ -69,39 +84,41 @@ const AppHeaderComponent = () => {
 
     const renderHelmDetailsTabs = () => {
         return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right fs-13">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/env/${envDetails.envId}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Details Clicked',
-                            })
-                        }}
-                    >
-                        App Details
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`}
-                        className="tab-list__tab-link flex"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Values Clicked',
-                            })
-                        }}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
-                        Configure
-                    </NavLink>
-                </li>
-            </ul>
+            <TabGroup
+                tabs={[
+                    {
+                        id: 'app-details-tab',
+                        label: 'App Details',
+                        tabType: 'navLink',
+                        props: {
+                            to: `${match.url}/env/${envDetails.envId}`,
+                            onClick: () => {
+                                ReactGA.event({
+                                    category: 'App',
+                                    action: 'App Details Clicked',
+                                })
+                            },
+                        },
+                    },
+                    {
+                        id: 'configure-tab',
+                        label: 'Configure',
+                        tabType: 'navLink',
+                        icon: Settings,
+                        props: {
+                            to: `${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`,
+                            onClick: () => {
+                                ReactGA.event({
+                                    category: 'App',
+                                    action: 'Values Clicked',
+                                })
+                            },
+                        },
+                    },
+                ]}
+                hideTopPadding
+                alignActiveBorderWithContainer
+            />
         )
     }
 

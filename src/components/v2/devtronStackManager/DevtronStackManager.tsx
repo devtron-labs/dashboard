@@ -1,6 +1,28 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { showError, Progressing, ErrorScreenManager, DevtronProgressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DevtronProgressing,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
@@ -37,8 +59,7 @@ export default function DevtronStackManager({
     getCurrentServerInfo: () => Promise<void>
     isSuperAdmin: boolean
 }) {
-    const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
-        useMainContext()
+    const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useMainContext()
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({

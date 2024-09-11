@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data field are base64-encoded strings.'
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
@@ -155,6 +171,8 @@ export const BUTTON_TEXT = {
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
+    ArgoCD = 'ArgoCD',
+    FluxCD = 'FluxCD',
 }
 
 export const APP_GROUP_CD_DETAILS = {
@@ -164,9 +182,7 @@ export const APP_GROUP_CD_DETAILS = {
     },
     noDeployment: {
         title: 'No deployments',
-        getSubtitle: (appName) => {
-            return `No deployment history available for the ${appName || ''} application.`
-        },
+        getSubtitle: (appName) => `No deployment history available for the ${appName || ''} application.`,
     },
 }
 
@@ -189,11 +205,6 @@ export const DEPLOYMENT_HISTORY_TAB = {
     ARTIFACTS: 'Artifacts',
 }
 
-export const CONFIGMAPS_SECRETS = {
-    configmaps: 'configmaps',
-    secrets: 'secrets',
-}
-
 export const API_COMPONENTS = {
     TITLE: 'API tokens ',
     QUESTION_ICON_INFO:
@@ -202,6 +213,9 @@ export const API_COMPONENTS = {
     EDIT_API_TITLE: '/ Edit API token',
 }
 
+/**
+ * @deprecated - Use from fe-common
+ */
 export const EMPTY_STATE_STATUS = {
     DATA_NOT_AVAILABLE: 'Data not available',
     API_TOKEN: {
@@ -322,16 +336,6 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',
     },
 
-    NO_MATCHING_RESULT: {
-        TITLE: 'No matching results',
-        SUBTITLE: "We couldn't find any matching cluster",
-    },
-
-    CLUSTER_NODE_EMPTY_STATE: {
-        TITLE: 'No matching clusters',
-        SUBTITLE: 'We couldn’t find any matching results',
-    },
-
     CHART_EMPTY_STATE: {
         TITLE: 'No matching charts',
         SUBTITLE: "We couldn't find any matching results",
@@ -386,7 +390,6 @@ export const EMPTY_STATE_STATUS = {
 
     EXTERNAL_LINK_COMPONENT: {
         TITLE: 'Add external links',
-        SUBTITLE: "We couldn't find any matching external link configuration",
     },
     CD_MATERIAL: {
         TITLE: 'No Image Available',

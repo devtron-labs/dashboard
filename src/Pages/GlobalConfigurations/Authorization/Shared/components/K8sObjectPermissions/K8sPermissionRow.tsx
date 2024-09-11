@@ -1,11 +1,28 @@
-import React from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import Tippy from '@tippyjs/react'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { K8sPermissionActionType } from './constants'
+import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { K8sPermissionFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
 import { K8sPermissionRowProps } from './types'
@@ -42,6 +59,14 @@ const K8sPermissionRow = ({
         handleStatusUpdate(_status, _timeToLive, index)
     }
 
+    const getLabelFromArray = (array: OptionType[], label: string) => {
+        const selectAllOption = array.find((element) => element.value === SELECT_ALL_VALUE)
+        if (selectAllOption) {
+            return selectAllOption.label
+        }
+        return array.length > 1 ? `${array.length} ${label}` : array[0].label
+    }
+
     return (
         <div className={`${rowClass} cn-9 fs-13 fw-4 lh-20 dc__border-bottom-n1`}>
             <span data-testid={`k8s-permission-list-${index}-cluster`} className="dc__truncate-text">
@@ -54,10 +79,10 @@ const K8sPermissionRow = ({
                 {kind.label}
             </span>
             <span data-testid={`k8s-permission-list-${index}-namespace`} className="dc__truncate-text">
-                {namespace.label}
+                {getLabelFromArray(namespace, 'namespaces')}
             </span>
             <span data-testid={`k8s-permission-list-${index}-resource`} className="dc__truncate-text">
-                {resource.length > 1 ? `${resource.length} objects` : resource[0].label}
+                {getLabelFromArray(resource, 'objects')}
             </span>
             <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">
                 {action?.label}

@@ -1,14 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { Progressing, VisibleModal, GenericEmptyState, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useState } from 'react'
+import {
+    Progressing,
+    VisibleModal,
+    GenericEmptyState,
+    ClipboardButton,
+    EMPTY_STATE_STATUS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import { ManifestUrlList, TriggerURL } from './types'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
-export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) => {
+export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, close, appType }: TriggerURL) => {
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
@@ -30,8 +51,8 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close 
 
     async function getManifest() {
         try {
-            if (isEAMode) {
-                const response = await getManifestUrlInfo(appId)
+            if (isExternalApp) {
+                const response = await getManifestUrlInfo(appId, appType)
                 setResponse(response.result)
                 setLoading(false)
             } else {

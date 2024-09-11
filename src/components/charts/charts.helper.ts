@@ -1,5 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { toast } from 'react-toastify'
+
 import { URLS } from '../../config'
-import { ChartValuesType } from './charts.types'
+import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
+import { renderToastMessage } from './charts.util'
 
 export const MultiChartSummaryView = {
     SELECT_CHART: 'SELECT-CHART',
@@ -61,7 +80,7 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
     arr = arr.filter((str) => str.length)
     let crumbs = arr.map((ele, itemIndex) => {
         let subArr = arr.slice(0, itemIndex + 1)
-        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1]))) {
+        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1], 10))) {
             subArr = subArr.concat([arr[itemIndex + 1]])
         }
         return {
@@ -70,8 +89,39 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
         }
     })
     // filter if label is a number
-    crumbs = crumbs.filter((crumb) => !parseInt(crumb.label))
+    crumbs = crumbs.filter((crumb) => !parseInt(crumb.label, 10))
     // last element not required
     crumbs.pop()
     return crumbs
+}
+
+/**
+ * Checks if deployment of the apps of group chart are initiated based on the api response and renders toast message.
+ * @param payload Response of group chart deployment api.
+ */
+export const renderChartGroupDeploymentToastMessage = ({ chartGroupInstallMetadata }: ChartGroupDeployResponse) => {
+    const failedDeployments = chartGroupInstallMetadata.reduce((acc, metadata) => {
+        if (metadata.triggerStatus === 'failed') {
+            return acc + 1
+        }
+        return acc
+    }, 0)
+
+    let status = ''
+    let title = ''
+    let description = ''
+
+    if (failedDeployments === 0) {
+        status = 'success'
+        title = 'Deployment initiated'
+    } else if (failedDeployments === chartGroupInstallMetadata.length) {
+        status = 'error'
+        title = 'Deployment failed'
+    } else {
+        status = 'warn'
+        title = 'Deployment initiated partially'
+        description = `Deployment could not be initiated for ${failedDeployments}/${chartGroupInstallMetadata.length} applications`
+    }
+
+    toast[status](renderToastMessage(title, description))
 }

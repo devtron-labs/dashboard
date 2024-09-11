@@ -1,6 +1,22 @@
-import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { GVKType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -192,13 +208,13 @@ export const SIDEBAR_KEYS: {
     },
 }
 
-export const FIXED_GVK_Keys = {
-    node: 'nodeGVK',
-    event: 'eventGVK',
-    namespace: 'namespaceGVK',
+export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
+    events: null,
+    nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+    namespaces: null,
 }
 
-export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
+export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 15
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE =
     'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
@@ -246,30 +262,8 @@ export const SELECTE_CLUSTER_STATE_MESSAGING = {
     altText: 'No Cluster Selected',
 }
 
-export const K8_ABBREVIATES = {
-    csr: 'certificatesigningrequest',
-    cs: 'componentstatus',
-    cm: 'configmap',
-    ds: 'daemonset',
-    ns: 'namespaces',
-    deploy: 'deployment',
-    ep: 'endpoints',
-    ev: 'events',
-    hpa: 'horizontalpodautoscaler',
-    ing: 'ingress',
-    limits: 'limitrange',
-    no: 'nodes',
-    pvc: 'persistentvolumeclaim',
-    pv: 'persistentvolume',
-    po: 'pod',
-    pdb: 'poddisruptionbudget',
-    rs: 'replicaset',
-    rc: 'replicationcontroller',
-    quota: 'resourcequota',
-    sa: 'serviceaccount',
-    sc: 'storageclass',
-    svc: 'service',
-    wf: 'workflow',
-    sts: 'statefulset',
-    crd: 'customresourcedefinition',
-}
+export const SEARCH_QUERY_PARAM_KEY = 'search'
+
+export const CONNECTION_TIMEOUT_TIME = 10000
+
+export const DEFAULT_K8SLIST_PAGE_SIZE = 100

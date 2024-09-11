@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
 import {
@@ -9,7 +25,7 @@ import {
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import IndexStore from '../index.store'
@@ -31,24 +47,26 @@ import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { getEnvironmentName } from './utils'
+import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
     _init,
+    loadingDetails,
     loadingResourceTree,
     isVirtualEnvironment,
-    appType,
 }: {
     isExternalApp: boolean
     _init?: () => void
+    loadingDetails: boolean
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
-    appType: string
 }) => {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
-    const [showWorkloadsModal, setWorkloadsModal] = useState(false)
+    const [showWorkloadsModal, setShowWorkloadsModal] = useState(false)
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
@@ -59,19 +77,34 @@ const EnvironmentSelectorComponent = ({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
+    const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
+    const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
+
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || [])
                 })
-                .catch((error) => {
-                    console.error('error in fetching environments')
+                .catch(() => {
+                    showError('Error in fetching environments')
                     setEnvironments([])
                 })
         }
     }, [params.appId])
+
+    const getDeployedUsing = () => {
+        if (isGitops) {
+            return DeploymentAppTypeNameMapping.GitOps
+        }
+        if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
+            return DeploymentAppTypeNameMapping.ArgoCD
+        }
+        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
+            return DeploymentAppTypeNameMapping.FluxCD
+        }
+        return DeploymentAppTypeNameMapping.Helm
+    }
 
     useEffect(() => {
         if (!params.envId && appDetails.environmentId) {
@@ -173,8 +206,15 @@ const EnvironmentSelectorComponent = ({
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     const handleScaleWorkloads = () => {
-        setWorkloadsModal(true)
+        setShowWorkloadsModal(true)
     }
+
+    const appIdentifier = getAppId({
+        clusterId: appDetails.clusterId,
+        namespace: appDetails.namespace,
+        appName: appDetails.appName,
+        templateType: appDetails.fluxTemplateType,
+    })
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -245,32 +285,37 @@ const EnvironmentSelectorComponent = ({
                                     }}
                                 />
                             )}
-
                             {(!environments || environments.length === 0) && appDetails && (
                                 <div
                                     className="bw-1 eb-2 br-4 bcn-0 pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
+                                    {loadingDetails ? (
+                                        <span>&nbsp;</span>
+                                    ) : (
+                                        getEnvironmentName(
+                                            appDetails.clusterName,
+                                            appDetails.namespace,
+                                            appDetails.environmentName,
+                                        )
+                                    )}
                                 </div>
                             )}
                         </div>
                     </div>
-                    {(appDetails?.deploymentAppType || isExternalArgoApp) && (
+                    {(appDetails?.deploymentAppType || appDetails?.appType) && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
                             disabled={isVirtualEnvironment}
                             placement="top"
-                            content={`Deployed using ${
-                                isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-                            }`}
+                            content={`Deployed using ${getDeployedUsing()}`}
                         >
                             <div className="flex">
                                 <DeploymentTypeIcon
-                                    deploymentAppType={appDetails?.deploymentAppType}
-                                    isExternalArgoApp={isExternalArgoApp}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    appType={appDetails.appType}
                                 />
                             </div>
                         </Tippy>
@@ -287,7 +332,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && appType !== AppType.EXTERNAL_ARGO_APP && (
+            {!loadingResourceTree && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -308,14 +353,16 @@ const EnvironmentSelectorComponent = ({
                             <ScaleObjects className="mr-4" /> Scale workloads
                         </button>
                     )}
-
                     {!(
-                        deployedAppDetail &&
-                        checkIfDevtronOperatorHelmRelease(
-                            deployedAppDetail[2],
-                            deployedAppDetail[1],
-                            deployedAppDetail[0],
-                        )
+                        (deployedAppDetail &&
+                            checkIfDevtronOperatorHelmRelease(
+                                deployedAppDetail[2],
+                                deployedAppDetail[1],
+                                deployedAppDetail[0],
+                            )) ||
+                        // To hide delete application button in argo and flux app details
+                        isExternalFlux ||
+                        isExternalArgo
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
@@ -361,18 +408,22 @@ const EnvironmentSelectorComponent = ({
                     )}
                 </div>
             )}
-
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}
-                    isEAMode={appDetails.appType === AppType.EXTERNAL_HELM_CHART}
-                    appId={appDetails.appType === AppType.EXTERNAL_HELM_CHART ? params.appId : ''}
+                    isExternalApp={isExternalApp}
+                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : '' }
                     envId={params.envId}
                     close={closeUrlInfo}
+                    appType={appDetails.appType}
                 />
             )}
             {showWorkloadsModal && (
-                <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
+                <ScaleWorkloadsModal
+                    appId={appIdentifier}
+                    onClose={() => setShowWorkloadsModal(false)}
+                    history={history}
+                />
             )}
         </div>
     )

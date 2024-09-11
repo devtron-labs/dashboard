@@ -1,94 +1,20 @@
-import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
-import { FetchIdDataStatus, History } from '../cicdHistory/types'
-import {
-    DeploymentTemplateList,
-    HistoryDiffSelectorList,
-    DeploymentHistoryDetail,
-    DeploymentHistorySingleValue,
-    DeploymentHistory,
-} from './cd.type'
-import { decode } from '../../../../util/Util'
-
-export interface DeploymentHistoryResult extends ResponseType {
-    result?: DeploymentHistoryResultObject
-}
-
-export interface DeploymentHistoryResultObject {
-    cdWorkflows: History[]
-    appReleaseTagNames: string[]
-    tagsEditable: boolean
-    hideImageTaggingHardDelete: boolean
-}
-
-export async function getTriggerHistory(
-    appId: number | string,
-    envId: number | string,
-    pipelineId: number | string,
-    pagination,
-): Promise<DeploymentHistoryResult> {
-    return get(
-        `app/cd-pipeline/workflow/history/${appId}/${envId}/${pipelineId}?offset=${pagination.offset}&size=${pagination.size}`,
-    ).then(({ result, code, status }) => {
-        return {
-            result: {
-                cdWorkflows: (result.cdWorkflows || []).map((deploymentHistory: DeploymentHistory) => ({
-                    ...deploymentHistory,
-                    triggerId: deploymentHistory?.cd_workflow_id,
-                    podStatus: deploymentHistory?.pod_status,
-                    startedOn: deploymentHistory?.started_on,
-                    finishedOn: deploymentHistory?.finished_on,
-                    pipelineId: deploymentHistory?.pipeline_id,
-                    logLocation: deploymentHistory?.log_file_path,
-                    triggeredBy: deploymentHistory?.triggered_by,
-                    artifact: deploymentHistory?.image,
-                    triggeredByEmail: deploymentHistory?.email_id,
-                    stage: deploymentHistory?.workflow_type,
-                    image: deploymentHistory?.image,
-                    imageComment: deploymentHistory?.imageComment,
-                    imageReleaseTags: deploymentHistory?.imageReleaseTags,
-                    artifactId: deploymentHistory?.ci_artifact_id,
-                })),
-                appReleaseTagNames: result.appReleaseTagNames,
-                tagsEditable: result.tagsEditable,
-                hideImageTaggingHardDelete: result.hideImageTaggingHardDelete,
-            },
-            code,
-            status,
-        }
-    })
-}
-
-interface TriggerDetails extends ResponseType {
-    result?: History
-}
-
-const getTriggerDetailsQuery = (fetchIdData) => {
-    if (fetchIdData && fetchIdData === FetchIdDataStatus.FETCHING) {
-        return '?SHOW_APPLIED_FILTERS=true'
-    }
-
-    return ''
-}
-
-export function getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchIdData }): Promise<TriggerDetails> {
-    if (triggerId) {
-        return get(
-            `${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}${getTriggerDetailsQuery(fetchIdData)}`,
-        )
-    }
-    return get(
-        `${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last${getTriggerDetailsQuery(fetchIdData)}`,
-    )
-}
-
-export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
-    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
-}
-
-export interface DeploymentHistoryDetailRes extends ResponseType {
-    result?: DeploymentHistoryDetail
-}
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, decode } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentHistoryDetail, DeploymentHistorySingleValue } from './cd.type'
 
 export const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     const deploymentTemplateData = {}
@@ -219,47 +145,4 @@ export const prepareHistoryData = (
     }
     historyData.values = values
     return historyData
-}
-
-export const getDeploymentHistoryDetail = (
-    appId: string,
-    pipelineId: string,
-    id: string,
-    historyComponent: string,
-    historyComponentName: string,
-): Promise<DeploymentHistoryDetailRes> => {
-    return get(
-        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent
-            .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
-    )
-}
-export interface DeploymentConfigurationsRes extends ResponseType {
-    result?: DeploymentTemplateList[]
-}
-
-export const getDeploymentHistoryList = (
-    appId: string,
-    pipelineId: string,
-    triggerId: string,
-): Promise<DeploymentConfigurationsRes> => {
-    return get(`app/history/deployed-configuration/${appId}/${pipelineId}/${triggerId}`)
-}
-
-export interface HistoryDiffSelectorRes {
-    result?: HistoryDiffSelectorList[]
-}
-
-export const getDeploymentDiffSelector = (
-    appId: string,
-    pipelineId: string,
-    historyComponent,
-    baseConfigurationId,
-    historyComponentName,
-): Promise<HistoryDiffSelectorRes> => {
-    return get(
-        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent
-            .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
-    )
 }

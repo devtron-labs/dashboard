@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { act, render } from '@testing-library/react'
 import '@testing-library/jest-dom'
@@ -8,7 +24,6 @@ import { mockEmptyFetch, mockFetch } from '../__mocks__/EnvironmentList.mock'
 import { renderWithRouter } from '../../Details/EnvironmentConfig/__test__/ApplicationRoutes.test'
 
 describe('EnvironmentList', () => {
-
     it('EnvironmentList renders without crashing', () => {
         const { container } = render(<EnvironmentsListView isSuperAdmin={false} removeAllFilters={jest.fn()} />, {
             wrapper: BrowserRouter,
@@ -53,7 +68,6 @@ describe('EnvironmentList', () => {
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
         expect(component.getByText('No matching env')).toBeInTheDocument()
-        
     })
 
     it('EnvironmentList renders with empty state when ClusterId is available', async () => {
@@ -65,14 +79,13 @@ describe('EnvironmentList', () => {
                     <EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />
                 </Route>,
                 { route: 'application-group/list?cluster=3&offset=0' },
-                )
-            })
+            )
+        })
         expect(component.container).toBeInTheDocument()
         const emptyWrapper = component.container.querySelector('.flex.dc__border-top-n1')
         expect(emptyWrapper).toBeInTheDocument()
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
         expect(component.getByText('No app groups found')).toBeInTheDocument()
-        
     })
 })

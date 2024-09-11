@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import YAML from 'yaml'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../../appDetails/appDetails.type'
@@ -81,7 +97,6 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     invalidaEnvironment: boolean
     isVirtualEnvironmentOnSelector?: boolean
     isVirtualEnvironment?: boolean
-    isOCICompliantChart?: boolean
 }
 
 export interface DeploymentAppSelectorType {
@@ -237,6 +252,7 @@ export interface ChartInstalledConfig {
     referenceValueKind: string
     valuesSchemaJson?: string
     deploymentAppType?: string
+    isManifestScanEnabled: boolean
 }
 
 export interface ChartValuesViewState {
@@ -296,6 +312,12 @@ export interface ChartValuesViewState {
     showNoGitOpsWarning: boolean
     deploymentAppType: string
     gitRepoURL: string
+    authMode: GitOpsAuthModeType
+    initialChartVersionValues: {
+        chartVersionId: number
+        chartValuesId: number
+    }
+    isManifestScanEnabled: boolean
 }
 
 export enum ChartValuesViewActionTypes {
@@ -349,6 +371,9 @@ export enum ChartValuesViewActionTypes {
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
     setGitRepoURL = 'setGitRepoURL',
+    updateGitOpsConfiguration = 'updateGitOpsConfiguration',
+    setInitialChartVersionValues = 'setInitialChartVersionValues',
+    setIsManifestScanEnabled = 'setIsManifestScanEnabled',
 }
 
 export interface ChartValuesViewAction {

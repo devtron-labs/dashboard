@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
@@ -8,12 +24,13 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { URLS } from '../../../config'
-import AppConfig from './appConfig/AppConfig'
+import { APP_TYPE, URLS } from '../../../config'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -57,7 +74,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
-    const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [apiError, setApiError] = useState(null)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -131,6 +148,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
+            setApiError(null)
             const { result } = await getAppMetaInfo(Number(appId))
             if (result) {
                 setAppName(result.appName)
@@ -139,11 +157,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
-            if (err['code'] === 403) {
-                setErrorStatusCode(403)
-            } else {
-                showError(err)
-            }
+            setApiError(err)
+            showError(err)
         }
     }
 
@@ -291,17 +306,17 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
-    if (errorStatusCode) {
-        return <ErrorScreenManager code={errorStatusCode} />
-    }
-
     if (appListLoading) {
         return <Progressing pageLoader />
     }
 
+    if (apiError) {
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
+    }
+
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page">
+        <div className="app-details-page dc__overflow-scroll">
             {!isV2 && (
                 <AppHeader
                     appName={appName}
@@ -353,7 +368,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
-                                appType="app"
+                                appType={APP_TYPE.DEVTRON_APPS}
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}
@@ -378,7 +393,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
+                            <AppConfig appName={appName} resourceKind={ResourceKindType.devtronApplication} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

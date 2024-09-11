@@ -1,15 +1,39 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { DynamicTabs } from '..'
-import { dynamicTabsData, fixedTabsData, mockedRemoveTabByIdentifier, mockedStopTabByIdentifier, tabsData } from '../__mocks__/DynamicTabs.mock'
+import {
+    dynamicTabsData,
+    fixedTabsData,
+    mockedRemoveTabByIdentifier,
+    tabsData,
+} from '../__mocks__/DynamicTabs.mock'
 
 describe('DynamicTabs component', () => {
     it('Component renders properly', () => {
-        const { container } = render(<DynamicTabs tabs={[]} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()}/>, {
-            wrapper: BrowserRouter,
-        })
+        const { container } = render(
+            <DynamicTabs tabs={[]} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()} />,
+            {
+                wrapper: BrowserRouter,
+            },
+        )
 
         expect(container.querySelector('.dynamic-tabs-section')).toBeInTheDocument()
         expect(container.querySelector('.fixed-tabs-container')).not.toBeInTheDocument()
@@ -52,9 +76,12 @@ describe('DynamicTabs component', () => {
     })
 
     it('Fixed & Dynamic tabs are rendered properly', () => {
-        const { container, getByText } = render(<DynamicTabs tabs={tabsData} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()} />, {
-            wrapper: BrowserRouter,
-        })
+        const { container, getByText } = render(
+            <DynamicTabs tabs={tabsData} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()} />,
+            {
+                wrapper: BrowserRouter,
+            },
+        )
 
         expect(container.querySelector('.fixed-tabs-container')).toBeInTheDocument()
 
@@ -78,9 +105,12 @@ describe('DynamicTabs component', () => {
     })
 
     it('More tabs option works properly', () => {
-        const { container, getByText } = render(<DynamicTabs tabs={tabsData} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()} />, {
-            wrapper: BrowserRouter,
-        })
+        const { container, getByText } = render(
+            <DynamicTabs tabs={tabsData} removeTabByIdentifier={jest.fn()} stopTabByIdentifier={jest.fn()} />,
+            {
+                wrapper: BrowserRouter,
+            },
+        )
 
         expect(container.querySelector('.more-tabs-wrapper')).toBeInTheDocument()
         expect(container.querySelector('.more-tabs__menu-wrapper')).not.toBeInTheDocument()
@@ -142,7 +172,11 @@ describe('DynamicTabs component', () => {
         }
 
         const { container, rerender } = render(
-            <DynamicTabs tabs={_tabsData} removeTabByIdentifier={_removeTabByIdentifier} stopTabByIdentifier={jest.fn()} />,
+            <DynamicTabs
+                tabs={_tabsData}
+                removeTabByIdentifier={_removeTabByIdentifier}
+                stopTabByIdentifier={jest.fn()}
+            />,
             {
                 wrapper: BrowserRouter,
             },
@@ -158,7 +192,13 @@ describe('DynamicTabs component', () => {
         fireEvent.click(dynamicTabA.querySelector('.dynamic-tab__close') as HTMLElement)
 
         // Re-render component with updated tabs data
-        rerender(<DynamicTabs tabs={_tabsData} removeTabByIdentifier={_removeTabByIdentifier} stopTabByIdentifier={jest.fn()} />)
+        rerender(
+            <DynamicTabs
+                tabs={_tabsData}
+                removeTabByIdentifier={_removeTabByIdentifier}
+                stopTabByIdentifier={jest.fn()}
+            />,
+        )
         expect(_tabsData).toHaveLength(3) // 1 fixed tab & 2 dynamic tabs
         expect((container.querySelector('.dynamic-tabs-wrapper') as HTMLElement).children).toHaveLength(4) // 2 tabs + 2 borders
     })

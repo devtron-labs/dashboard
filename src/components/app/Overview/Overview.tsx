@@ -1,8 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -33,7 +49,7 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
-import { getAppConfig, getGitProviderIcon } from './utils'
+import { getAppConfig, getGitProviderIcon, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -43,6 +59,7 @@ const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const DependencyList = importComponentFromFELibrary('DependencyList')
 const DeploymentWindowOverview = importComponentFromFELibrary('DeploymentWindowOverview')
+const PartOfReleaseTrack = importComponentFromFELibrary('PartOfReleaseTrack', null, 'function')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
@@ -55,8 +72,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const isUpdateDependencyModalOpen =
         activeTab === OVERVIEW_TABS.DEPENDENCIES && searchParams.get(MODAL_STATE.key) === MODAL_STATE.value
     const config = getAppConfig(appType)
-    const isJobOverview = appType === 'job'
-    const isHelmChart = appType === 'helm-chart'
+    const isJobOverview = appType === APP_TYPE.JOB
+    const isHelmChart = appType === APP_TYPE.HELM_CHART
     // For helm the appId from the params is the installed appId and not the actual id of the app
     const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const [isLoading, setIsLoading] = useState(true)
@@ -290,7 +307,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {appType === 'app' && gitMaterials.length > 0 && (
+                    {appType === APP_TYPE.DEVTRON_APPS && gitMaterials.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="flexbox-col dc__gap-4">
@@ -311,6 +328,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             </div>
                         </div>
                     )}
+                    {PartOfReleaseTrack && appType === 'app' && <PartOfReleaseTrack appId={+appId} />}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}
@@ -441,7 +459,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
-                {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
+                {Catalog && <Catalog resourceId={appId} resourceType={getResourceKindFromAppType(appType)} />}
                 {DeploymentWindowOverview && (
                     <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
                 )}

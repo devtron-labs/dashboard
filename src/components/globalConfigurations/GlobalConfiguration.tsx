@@ -1,6 +1,21 @@
-import React, { lazy, useState, useEffect, Suspense } from 'react'
-import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
+import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -10,6 +25,7 @@ import {
     TippyTheme,
     useMainContext,
     PageHeader,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -29,7 +45,6 @@ import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -40,17 +55,19 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
-const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
+const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
-const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
+const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
+const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -200,9 +217,9 @@ const NavItem = ({ serverMode }) => {
     const ConfigOptional = [
         { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
-            name: 'Custom Charts',
-            href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
-            component: CustomChartList,
+            name: 'Deployment Charts',
+            href: CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+            component: DeploymentChartsRouter,
             isAvailableInEA: false,
         },
         {
@@ -243,6 +260,7 @@ const NavItem = ({ serverMode }) => {
             href: URLS.GLOBAL_CONFIG_NOTIFIER,
             component: Notifier,
             moduleName: ModuleNameMap.NOTIFICATION,
+            isAvailableInEA: false,
         },
     ]
 
@@ -272,7 +290,7 @@ const NavItem = ({ serverMode }) => {
             }
         } catch (error) {
             if (retryOnError >= 0) {
-                getModuleStatus(moduleName, retryOnError--)
+                getModuleStatus(moduleName, --retryOnError)
             }
         }
     }
@@ -303,21 +321,20 @@ const NavItem = ({ serverMode }) => {
                         onClose={onTippyClose}
                         {...tippyConfig}
                     >
-                        <div> {children}</div>
+                        {children}
                     </TippyCustomized>
                 )}
+                key={`${route.name}-${route.href}`}
             >
                 <NavLink
                     to={`${route.href}`}
-                    key={`${route.name}-${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
-                    className={`${
-                        route.name === 'API tokens' &&
+                    className={`${route.name === 'API tokens' &&
                         location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                            ? 'active-route'
-                            : ''
-                    }`}
+                        ? 'active-route'
+                        : ''
+                        }`}
                     onClick={(e) => {
                         if (!preventOnClickOp) {
                             handleGroupCollapsedState(e, route)
@@ -402,9 +419,8 @@ const NavItem = ({ serverMode }) => {
                                         key={`nav_item_${index}`}
                                         to={route.href}
                                         data-testid="user-authorization-link"
-                                        className={`cursor ${
-                                            collapsedState[route.name] ? '' : 'fw-6'
-                                        } flex dc__content-space`}
+                                        className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'
+                                            } flex dc__content-space`}
                                         onClick={(e) => {
                                             handleGroupCollapsedState(e, route)
                                         }}
@@ -430,6 +446,28 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <>
+                            {DeploymentWindow && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                                    key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Deployment Window</div>
+                                </NavLink>
+                            )}
+                            {window._env_.FEATURE_IMAGE_PROMOTION_ENABLE && ImagePromotion && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                    key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Image Promotion</div>
+                                </NavLink>
+                            )}
+                        </>
+                    )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -437,7 +475,6 @@ const NavItem = ({ serverMode }) => {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
-
                     {CatalogFramework && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
@@ -447,73 +484,73 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Catalog Framework</div>
                         </NavLink>
                     )}
-
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Scoped Variables</div>
                         </NavLink>
                     )}
-
-                    {PluginsPolicy && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_PLUGINS}
-                            key={URLS.GLOBAL_CONFIG_PLUGINS}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Plugins</div>
-                        </NavLink>
-                    )}
-
-                    {PullImageDigest && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
-                            key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Pull Image Digest</div>
-                        </NavLink>
-                    )}
-
-                    {TagListContainer && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_TAGS}
-                            key={URLS.GLOBAL_CONFIG_TAGS}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Tags</div>
-                        </NavLink>
-                    )}
-                    {FilterConditions && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
-                            key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Filter Condition</div>
-                        </NavLink>
-                    )}
-                    {LockConfiguration && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
-                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Lock Deployment Config</div>
-                        </NavLink>
-                    )}
-
                     {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Build Infra</div>
-                        </NavLink>
+                        <>
+                            {PluginsPolicy && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_PLUGINS}
+                                    key={URLS.GLOBAL_CONFIG_PLUGINS}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Plugins</div>
+                                </NavLink>
+                            )}
+
+                            {PullImageDigest && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                                    key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Pull Image Digest</div>
+                                </NavLink>
+                            )}
+
+                            {TagListContainer && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_TAGS}
+                                    key={URLS.GLOBAL_CONFIG_TAGS}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Tags</div>
+                                </NavLink>
+                            )}
+                            {FilterConditions && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                                    key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Filter Condition</div>
+                                </NavLink>
+                            )}
+                            {LockDeploymentConfiguration && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
+                                    key={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Lock Deployment Configuration</div>
+                                </NavLink>
+                            )}
+
+                            <NavLink
+                                to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                                key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                                activeClassName="active-route"
+                            >
+                                <div className="flexbox flex-justify">Build Infra</div>
+                            </NavLink>
+                        </>
                     )}
                 </>
             )}
@@ -523,7 +560,6 @@ const NavItem = ({ serverMode }) => {
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
-
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
@@ -535,7 +571,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
     }
 
     return (
-        <Switch location={location}>
+        <Switch>
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
@@ -549,20 +585,22 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 }}
             />
             {!window._env_.K8S_CLIENT && [
-                <Route
-                    key={URLS.GLOBAL_CONFIG_HOST_URL}
-                    path={URLS.GLOBAL_CONFIG_HOST_URL}
-                    render={(props) => {
-                        return (
-                            <HostURLConfiguration
-                                {...props}
-                                isSuperAdmin={isSuperAdmin}
-                                refreshGlobalConfig={getHostURLConfig}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        )
-                    }}
-                />,
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
+                    <Route
+                        key={URLS.GLOBAL_CONFIG_HOST_URL}
+                        path={URLS.GLOBAL_CONFIG_HOST_URL}
+                        render={(props) => {
+                            return (
+                                <HostURLConfiguration
+                                    {...props}
+                                    isSuperAdmin={isSuperAdmin}
+                                    refreshGlobalConfig={getHostURLConfig}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            )
+                        }}
+                    />
+                )] : [],
                 <Route
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
@@ -577,13 +615,15 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_GIT}
-                    path={URLS.GLOBAL_CONFIG_GIT}
-                    render={(props) => {
-                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
+                    <Route
+                        key={URLS.GLOBAL_CONFIG_GIT}
+                        path={URLS.GLOBAL_CONFIG_GIT}
+                        render={(props) => {
+                            return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                        }}
+                    />
+                )] : [],
                 <Route
                     key={URLS.GLOBAL_CONFIG_DOCKER}
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
@@ -605,9 +645,14 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                    <CustomChartList />
-                </Route>,
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
+                    <Route
+                        key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                        path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                    >
+                        <DeploymentChartsRouter />
+                    </Route>
+                )] : [],
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
@@ -628,47 +673,62 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 </Route>,
                 ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [
-                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                              <BuildInfra isSuperAdmin={isSuperAdmin} />
-                          </Route>,
-                      ]
+                        <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                            <BuildInfra isSuperAdmin={isSuperAdmin} />
+                        </Route>,
+                    ]
                     : []),
             ]}
-            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <Route
+                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
+                    path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                >
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {PluginsPolicy && (
-                <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
-                    <PluginsPolicy />
-                </Route>
-            )}
-            {PullImageDigest && (
-                <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                    <PullImageDigest isSuperAdmin={isSuperAdmin} />
-                </Route>
-            )}
-            {TagListContainer && (
-                <Route path={URLS.GLOBAL_CONFIG_TAGS}>
-                    <TagListContainer />
-                </Route>
-            )}
-            {FilterConditions && (
-                <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
-                    <FilterConditions isSuperAdmin={isSuperAdmin} />
-                </Route>
-            )}
-            {LockConfiguration && (
-                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
-                </Route>
-            )}
+            {serverMode !== SERVER_MODE.EA_ONLY && [
+                DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                ImagePromotion && (
+                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                PluginsPolicy && (
+                    <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
+                        <PluginsPolicy />
+                    </Route>
+                ),
+                PullImageDigest && (
+                    <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
+                        <PullImageDigest isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                TagListContainer && (
+                    <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                        <TagListContainer />
+                    </Route>
+                ),
+                FilterConditions && (
+                    <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
+                        <FilterConditions isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                LockDeploymentConfiguration && (
+                    <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
+                        <LockDeploymentConfiguration />
+                    </Route>
+                )
+            ]}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
@@ -712,7 +772,7 @@ const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...pr
 }
 
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
-    if (React.isValidElement(src)) {
+    if (isValidElement(src)) {
         return src
     }
     return (
@@ -759,7 +819,7 @@ export const ProtectedInput = ({
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur = (e) => {},
+    onBlur = (e) => { },
     isRequiredField = false,
 }: ProtectedInputType) => {
     const [shown, toggleShown] = useState(false)
@@ -822,7 +882,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => {} : onClick || defaultOnClick}
+            onClick={disabled ? () => { } : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0z" />
@@ -839,7 +899,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => {} : onClick || defaultOnClick}
+            onClick={disabled ? () => { } : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0z" />

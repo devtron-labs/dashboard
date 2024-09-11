@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component, createContext } from 'react'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import {
@@ -44,7 +60,7 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
-import NewCDPipeline from '../cdPipeline/NewCDPipeline'
+import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
@@ -205,8 +221,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflowId, showDeleteDialog: true })
     }
 
+    /**
+     * This method sets the value of changeCIPayload on click of change ci button in workflow.
+     */
     handleChangeCI = (changeCIPayload: ChangeCIPayloadType) => {
         this.setState({ changeCIPayload, showWorkflowOptionsModal: true })
+    }
+
+    resetChangeCIPayload = () => {
+        this.setState({ changeCIPayload: null })
     }
 
     handleNewPipelineModal = () => {
@@ -214,12 +237,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             return
         }
 
-        // This is meant for newPipeline
-        this.setState({ showWorkflowOptionsModal: true, changeCIPayload: null })
+        this.resetChangeCIPayload()
+        this.setState({ showWorkflowOptionsModal: true })
     }
 
     handleCloseWorkflowOptionsModal = () => {
-        // Not setting changeCIPayload to null as it is used in the routes as props
+        // Not setting changeCIPayload to null as in some cases we would open CIPipeline/CDPipeline with changeCIPayload
         this.setState({ showWorkflowOptionsModal: false })
     }
 
@@ -376,7 +399,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         if (showWebhookTippy) {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
-        this.setState({ changeCIPayload: null })
+        this.resetChangeCIPayload()
     }
 
     hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
@@ -539,7 +562,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )}
                         render={({ location, match }: { location: any; match: any }) => {
                             return (
-                                <NewCDPipeline
+                                <CDPipeline
                                     match={match}
                                     location={location}
                                     appName={this.state.appName}
@@ -641,6 +664,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       blackListedIds={this.state.blackListedCI ?? {}}
                                       deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
+                                      workflows={this.state.workflows}
                                   />
                               </Route>,
                           ]
@@ -943,6 +967,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         changeCIPayload={this.state.changeCIPayload}
                         workflows={this.state.workflows}
                         getWorkflows={this.getWorkflows}
+                        resetChangeCIPayload={this.resetChangeCIPayload}
                     />
                 )}
             </>

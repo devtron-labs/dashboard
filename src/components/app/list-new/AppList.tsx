@@ -1,6 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react'
-import { useLocation, useHistory, useParams } from 'react-router'
-import { Switch, Route } from 'react-router-dom'
+import { useLocation, useHistory, useParams, Switch, Route } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -10,15 +25,18 @@ import {
     useAsync,
     useMainContext,
     HeaderWithCreateButton,
+    AppListConstants,
+    ModuleNameMap,
+    TabGroup,
+    TabProps,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
 import { Filter, FilterOption, handleUTCTime, useAppContext } from '../../common'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat, ModuleNameMap } from '../../../config'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { SERVER_MODE, DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
@@ -29,17 +47,12 @@ import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { APP_LIST_HEADERS, StatusConstants } from './Constants'
+import { APP_LIST_HEADERS, InitialEmptyMasterFilters, InitialEmptyUrlFilters, StatusConstants } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import {
-    buildArgoAppListUrl,
-    buildDevtronAppListUrl,
-    buildHelmAppListUrl,
-    getChangeAppTabURL,
-    getCurrentTabName,
-} from './list.utils'
-import ExternalArgoList from './ExternalArgoList'
+import { getChangeAppTabURL, getCurrentTabName, getPayloadFromUrl } from './list.utils'
+import GenericAppList from './GenericAppList'
+import { PayloadParsedFromURL } from '../types'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -54,13 +67,20 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map())
 
     // check for external argoCD app
-    const isExternalArgo = location.pathname === `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
+    const isExternalArgo =
+        window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS
+
+    // check for external fluxCD app
+    const isExternalFlux =
+        window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && params.appType === AppListConstants.AppType.FLUX_APPS
+
+    // view other than devtron or helm app list
+    const isGenericAppListView = isExternalArgo || isExternalFlux
 
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
@@ -70,22 +90,17 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [searchApplied, setSearchApplied] = useState(false)
 
     // filters
-    const [masterFilters, setMasterFilters] = useState({
-        appStatus: [],
-        projects: [],
-        environments: [],
-        clusters: [],
-        namespaces: [],
-    })
+    const [masterFilters, setMasterFilters] = useState(structuredClone(InitialEmptyMasterFilters))
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
+    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState<PayloadParsedFromURL>(
+        getPayloadFromUrl(location.search, appCount, true).payload,
+    )
 
     // on page load
     useEffect(() => {
-        setCurrentTab(getCurrentTabName(params.appType, isExternalArgo))
-
         // set search data
         const searchQuery = location.search
         const queryParams = queryString.parse(searchQuery)
@@ -95,7 +110,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         // set payload parsed from url
-        const payloadParsedFromUrl = onRequestUrlChange()
+        const payloadParsedFromUrl = onRequestUrlChange(false)
         setParsedPayloadOnUrlChange(payloadParsedFromUrl)
 
         // fetch master filters data and some master data
@@ -108,7 +123,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(
                         initData.filters.clusters,
-                        getCurrentTabName(params.appType, isExternalArgo),
+                        getCurrentTabName(params.appType),
                     )
                     getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
                 }
@@ -143,7 +158,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }, [isDataSyncing])
 
     useEffect(() => {
-        setParsedPayloadOnUrlChange(onRequestUrlChange())
+        setParsedPayloadOnUrlChange(onRequestUrlChange(false))
     }, [location.search])
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
@@ -175,39 +190,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const onRequestUrlChange = (showExportCsvButton?: boolean): any => {
         const searchQuery = location.search
 
-        const params = queryString.parse(searchQuery)
-        const search = params.search || ''
-        const environments = params.environment || ''
-        const appStatus = params.appStatus || ''
-        const teams = params.team || ''
-        const clustersAndNamespaces = params.namespace || ''
+        const { payload, filterApplied } = getPayloadFromUrl(searchQuery, appCount, showExportCsvButton)
 
-        const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
-        const environmentsArr = environments
-            .toString()
-            .split(',')
-            .map((env) => +env)
-            .filter((item) => item != 0)
-        const teamsArr = teams
-            .toString()
-            .split(',')
-            .filter((team) => team != '')
-            .map((team) => Number(team))
-        const appStatusArr = appStatus
-            .toString()
-            .split(',')
-            .filter((status) => status != '')
-            .map((status) => status)
-
-        // update master filters data (check/uncheck)
-        const filterApplied = {
-            environments: new Set<number>(environmentsArr),
-            teams: new Set<number>(teamsArr),
-            appStatus: new Set<string>(appStatusArr),
-            clusterVsNamespaceMap: _clusterVsNamespaceMap,
-        }
-
-        const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
+        const _masterFilters = structuredClone(InitialEmptyMasterFilters)
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -218,7 +203,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.teams.has(project.key),
             }
         })
-
         // set clusters (check/uncheck)
         _masterFilters.clusters = masterFilters.clusters.map((cluster) => {
             return {
@@ -226,6 +210,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 label: cluster.label,
                 isSaved: true,
                 isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString()),
+                optionMetadata: cluster.optionMetadata,
             }
         })
 
@@ -267,44 +252,15 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.environments.has(env.key),
             }
         })
+
+        _masterFilters.templateType = masterFilters.templateType.map((templateType) => ({
+            key: templateType.key,
+            label: templateType.label,
+            isSaved: true,
+            isChecked: filterApplied.templateType.has(templateType.key),
+        }))
         setMasterFilters(_masterFilters)
-        /// /// update master filters data ends (check/uncheck)
-
-        const sortBy = params.orderBy || SortBy.APP_NAME
-        const sortOrder = params.sortOrder || OrderBy.ASC
-        let offset = +params.offset || 0
-        let hOffset = +params.hOffset || 0
-        let pageSize: number = +params.pageSize || 20
-        const pageSizes = new Set([20, 40, 50])
-
-        if (!pageSizes.has(pageSize)) {
-            // handle invalid pageSize
-            pageSize = 20
-        }
-        if (offset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            offset = 0
-        }
-        if (hOffset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            hOffset = 0
-        }
-
-        const payload = {
-            environments: environmentsArr,
-            teams: teamsArr,
-            namespaces: clustersAndNamespaces
-                .toString()
-                .split(',')
-                .filter((item) => item != ''),
-            appNameSearch: search,
-            appStatuses: appStatusArr,
-            sortBy,
-            sortOrder,
-            offset,
-            hOffset,
-            size: showExportCsvButton ? appCount : +pageSize,
-        }
+        // update master filters data ends (check/uncheck)
 
         // check whether to fetch namespaces from backend if any cluster is selected and not same as old
         // do it only for non page load, as on pageload getInitData is handling this logic
@@ -357,7 +313,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function openDevtronAppCreateModel() {
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
 
@@ -369,11 +325,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         let url = ''
         const _currentTab = selectedAppTab || currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
-            url = buildDevtronAppListUrl()
+            url = URLS.DEVTRON_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
-            url = buildArgoAppListUrl()
+            url = URLS.ARGO_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.HELM_APPS) {
-            url = buildHelmAppListUrl()
+            url = URLS.HELM_APP_LIST
+        } else if (_currentTab === AppListConstants.AppTabs.FLUX_APPS) {
+            url = URLS.FLUX_APP_LIST
         }
 
         history.push(`${url}${queryStr ? `?${queryStr}` : ''}`)
@@ -557,6 +515,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         delete query['namespace']
         delete query['appStatus']
         delete query['search']
+        delete query['templateType']
 
         // delete search string
         setSearchApplied(false)
@@ -583,26 +542,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
+        setParsedPayloadOnUrlChange(InitialEmptyUrlFilters)
         setCurrentTab(appTabType)
     }
 
-    const searchApp = (event: React.FormEvent) => {
-        event.preventDefault()
-        setSearchApplied(true)
-        handleAppSearchOperation(searchString)
-    }
-
-    const clearSearch = (): void => {
-        setSearchApplied(false)
-        setSearchString('')
-        handleAppSearchOperation('')
-    }
-
-    const onChangeSearchString = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let str = event.target.value || ''
-        str = str.toLowerCase()
-        setSearchString(str)
+    const handleEnterSearchApp = (_searchText: string): void => {
+        setSearchString(_searchText.toLowerCase())
+        handleAppSearchOperation(_searchText)
     }
 
     const syncNow = (): void => {
@@ -690,34 +636,34 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
             serverMode !== SERVER_MODE.EA_ONLY
 
+        // In case of apps other than devtron apps, we are hiding virtual clusters from filters
+        const clusterFilters =
+            isExternalArgo || isExternalFlux
+                ? masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
+                : masterFilters.clusters
+
+        const renderSearchText = (): JSX.Element => (
+            <SearchBar
+                initialSearchText={searchString}
+                containerClassName="w-250"
+                handleEnter={handleEnterSearchApp}
+                inputProps={{
+                    placeholder: `${
+                        currentTab === AppListConstants.AppTabs.HELM_APPS
+                            ? 'Search by app or chart name'
+                            : 'Search by app name'
+                    }`,
+                    autoFocus: true,
+                }}
+                dataTestId="Search-by-app-name"
+            />
+        )
+
         return (
             <div className="search-filter-section">
-                <form style={{ display: 'inline' }} onSubmit={searchApp}>
-                    <div className="search">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            data-testid="Search-by-app-name"
-                            type="text"
-                            name="app_search_input"
-                            autoComplete="off"
-                            value={searchString}
-                            placeholder={`${
-                                currentTab === AppListConstants.AppTabs.DEVTRON_APPS
-                                    ? 'Search by app name'
-                                    : 'Search by app or chart name'
-                            }`}
-                            className="search__input bcn-1"
-                            onChange={onChangeSearchString}
-                        />
-                        {searchApplied && (
-                            <button className="search__clear-button flex" type="button" onClick={clearSearch}>
-                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                            </button>
-                        )}
-                    </div>
-                </form>
+                {renderSearchText()}
                 <div className="app-list-filters filters">
-                    {!isExternalArgo && (
+                    {!isGenericAppListView && (
                         <>
                             {isArgoInstalled && (
                                 <>
@@ -772,8 +718,26 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span className="filter-divider" />
                         </>
                     )}
+                    {isExternalFlux && (
+                        <>
+                            <Filter
+                                labelKey="label"
+                                buttonText="Template Type"
+                                multi
+                                isDisabled={dataStateType === AppListViewType.LOADING}
+                                list={masterFilters.templateType}
+                                placeholder="Search Template Type"
+                                type={AppListConstants.FilterType.TEMPLATE_TYPE}
+                                applyFilter={applyFilter}
+                                searchable
+                                isFirstLetterCapitalize
+                            />
+                            <span className="filter-divider" />
+                        </>
+                    )}
                     <Filter
-                        list={masterFilters.clusters}
+                        list={clusterFilters}
+                        position={isGenericAppListView ? 'right' : 'left'}
                         labelKey="label"
                         buttonText="Cluster"
                         searchable
@@ -787,7 +751,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         dataTestId="cluster-filter"
                         appType={params.appType}
                     />
-                    {!isExternalArgo && (
+                    {!isGenericAppListView && (
                         <Filter
                             rootClassName="ml-0-imp"
                             position={showExportCsvButton ? 'left' : 'right'}
@@ -850,6 +814,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
                         _filterKey = StatusConstants.APP_STATUS.normalText
+                    } else if (key == StatusConstants.TEMPLATE_TYPE.noSpaceLower) {
+                        filterType = AppListConstants.FilterType.TEMPLATE_TYPE
+                        _filterKey = StatusConstants.TEMPLATE_TYPE.normalCase
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
@@ -890,54 +857,71 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return <>{count > 0 ? appliedFilters : null}</>
     }
 
-    function renderAppTabs() {
-        return (
-            <div className="app-tabs-wrapper">
-                <ul className="tab-list">
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <li className="tab-list__tab">
-                            <a
-                                className={`tab-list__tab-link ${
-                                    currentTab === AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
-                                }`}
-                                onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}
-                            >
-                                Devtron Apps
-                            </a>
-                        </li>
-                    )}
-                    <li className="tab-list__tab">
-                        <a
-                            className={`tab-list__tab-link ${
-                                currentTab === AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
-                            }`}
-                            onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}
-                            data-testid="helm-app-list-button"
-                        >
-                            Helm Apps
-                        </a>
-                    </li>
-                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && (
-                        <li className="tab-list__tab">
-                            <a
-                                className={`tab-list__tab-link ${
-                                    currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
-                                }`}
-                                onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
-                                data-testid="helm-app-list-button"
-                            >
-                                {AppListConstants.AppTabs.ARGO_APPS}
-                            </a>
-                        </li>
-                    )}
-                </ul>
-                <div className="app-tabs-sync fs-13">
-                    {lastDataSyncTimeString &&
-                        (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
-                            (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
-                            <span data-testid="sync-now-text">
-                                {lastDataSyncTimeString}&nbsp;
-                                {!isDataSyncing && (
+    const renderAppTabs = () => {
+        const tabs: TabProps[] = [
+            ...(serverMode !== SERVER_MODE.EA_ONLY
+                ? [
+                      {
+                          id: 'devtron-apps',
+                          label: 'Devtron Apps',
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS),
+                          },
+                      },
+                  ]
+                : []),
+            {
+                id: 'helm-apps',
+                label: 'Helm Apps',
+                tabType: 'navLink',
+                props: {
+                    to: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
+                    onClick: () => changeAppTab(AppListConstants.AppTabs.HELM_APPS),
+                    ['data-testid']: 'helm-app-list-button',
+                },
+            },
+            ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD
+                ? [
+                      {
+                          id: 'argo-cd-apps',
+                          label: AppListConstants.AppTabs.ARGO_APPS,
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.ARGO_APPS),
+                              ['data-testid']: 'argo-app-list-button',
+                          },
+                      },
+                  ]
+                : []),
+            ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE
+                ? [
+                      {
+                          id: 'flux-cd-apps',
+                          label: AppListConstants.AppTabs.FLUX_APPS,
+                          tabType: 'navLink' as const,
+                          props: {
+                              to: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
+                              onClick: () => changeAppTab(AppListConstants.AppTabs.FLUX_APPS),
+                              ['data-testid']: 'flux-app-list-button',
+                          },
+                      },
+                  ]
+                : []),
+        ]
+
+        const rightComponent = (
+            <div className="flex fs-13">
+                {lastDataSyncTimeString &&
+                    (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
+                        (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
+                        <>
+                            <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
+                            {!isDataSyncing && (
+                                <>
+                                    &nbsp;
                                     <button
                                         className="btn btn-link p-0 fw-6 cb-5"
                                         onClick={syncNow}
@@ -945,13 +929,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                     >
                                         Sync now
                                     </button>
-                                )}
-                            </span>
-                        )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS &&
-                        fetchingExternalApps &&
-                        renderDataSyncingText()}
-                </div>
+                                </>
+                            )}
+                        </>
+                    )}
+                {params.appType == AppListConstants.AppType.HELM_APPS &&
+                    fetchingExternalApps &&
+                    renderDataSyncingText()}
+            </div>
+        )
+
+        return (
+            <div className="app-tabs-wrapper px-20">
+                <TabGroup tabs={tabs} rightComponent={rightComponent} alignActiveBorderWithContainer />
             </div>
         )
     }
@@ -959,7 +949,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}${location.search}`)
     }
 
@@ -967,7 +957,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return (
             <Switch>
                 <Route
-                    path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.DEVTRON_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -978,7 +968,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 />
                 <Route
-                    path={`${buildHelmAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.HELM_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -997,7 +987,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
+        <div className="flexbox-col h-100 dc__overflow-scroll">
             <HeaderWithCreateButton headerName="Applications" />
             {renderMasterFilters()}
             {renderAppliedFilters()}
@@ -1050,20 +1040,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )}
-            {window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS && (
+            {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used
+                for further app lists too  */}
+            {isGenericAppListView && (
                 <>
-                    <ExternalArgoList
-                        serverMode={serverMode}
+                    <GenericAppList
+                        key={params.appType}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                        updateDataSyncing={updateDataSyncing}
                         setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}
-                        syncListData={syncListData}
-                        isArgoInstalled={isArgoInstalled}
+                        isSSE={isExternalFlux}
+                        appType={params.appType}
                     />
                     {fetchingExternalApps && (
                         <div className="mt-16">

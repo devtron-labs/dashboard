@@ -1,4 +1,20 @@
-import React, { useState, useRef } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useRef } from 'react'
 import {
     showError,
     Progressing,
@@ -14,6 +30,10 @@ import {
     useAsync,
     CustomInput,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
+    GenericFilterEmptyState,
+    CodeEditor,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -22,7 +42,6 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
@@ -40,8 +59,7 @@ import {
     RemoteConnectionTypeCluster,
 } from './cluster.type'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
-import DeleteComponent from '../../util/DeleteComponent'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
@@ -50,8 +68,7 @@ import {
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
-import CodeEditor from '../CodeEditor/CodeEditor'
-import { UPLOAD_STATE } from '../CustomChart/types'
+import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -1026,13 +1043,7 @@ export default function ClusterForm({
     }
 
     const NoMatchingResults = (): JSX.Element => {
-        return (
-            <GenericEmptyState
-                image={NoResults}
-                title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-                subTitle={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.SUBTITLE}
-            />
-        )
+        return <GenericFilterEmptyState />
     }
 
     if (loader) {

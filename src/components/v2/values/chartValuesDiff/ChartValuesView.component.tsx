@@ -1,5 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import {
     Progressing,
@@ -11,6 +27,7 @@ import {
     CustomInput,
     Drawer,
     TippyTheme,
+    GitOpsAuthModeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -57,7 +74,6 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -73,7 +89,6 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
-    isOCICompliantChart,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -82,17 +97,6 @@ export const ChartEnvironmentSelector = ({
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
-        }
-    }
-
-    const renderOCIContainerRegistryText = () => {
-        if (isOCICompliantChart) {
-            return (
-                <div className="cn-7 fs-12 pt-16 flexbox">
-                    <InfoIcon className="icon-dim-20 mr-4" />
-                    Charts from container registries can be deployed via helm only.
-                </div>
-            )
         }
     }
 
@@ -153,7 +157,6 @@ export const ChartEnvironmentSelector = ({
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
             {renderVirtualEnvironmentInfoText()}
-            {renderOCIContainerRegistryText()}
         </div>
     )
 }
@@ -199,7 +202,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target='_blank'>
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
@@ -312,12 +315,16 @@ export const GitOpsDrawer = ({
     isDrawerOpen,
     handleDrawerState,
     showRepoSelector,
-    allowedCustomBool
+    allowedCustomBool,
 }: gitOpsDrawerType): JSX.Element => {
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    const [selectedRepoType, setSelectedRepoType] = useState(
+        commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE,
+    )
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
+    const [repoURL, setRepoURL] = useState(
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL,
+    )
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -404,6 +411,7 @@ export const GitOpsDrawer = ({
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
                                     staleData={staleData}
+                                    authMode={commonState.authMode}
                                 />
                             </div>
                         </div>
@@ -437,7 +445,10 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left" onClick={toggleDrawer}>
+                        <a
+                            className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left"
+                            onClick={toggleDrawer}
+                        >
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>

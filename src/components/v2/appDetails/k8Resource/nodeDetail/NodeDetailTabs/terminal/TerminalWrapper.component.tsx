@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { useOnline } from '../../../../../../common'
@@ -12,7 +28,7 @@ export default function TerminalWrapper({
     setSocketConnection,
     className,
     dataTestId,
-    isResourceBrowserView
+    isResourceBrowserView,
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
@@ -60,7 +76,7 @@ export default function TerminalWrapper({
         <div className={className} data-testid={dataTestId}>
             <div className="flex bcn-0 pl-20 h-32 terminal-action-strip">{firstStrip()}</div>
             {selectionListData.secondRow && (
-                <div className="flex left bcn-0 pl-20 dc__border-top h-28 terminal-action-strip">{secondStrip()}</div>
+                <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip">{secondStrip()}</div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())

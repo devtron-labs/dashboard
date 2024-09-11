@@ -1,5 +1,20 @@
-import React, { Component } from 'react'
-import ReactSelect, { components } from 'react-select'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Component } from 'react'
 import {
     Progressing,
     ConditionalWrap,
@@ -11,26 +26,22 @@ import {
     stopPropagation,
     CHECKBOX_VALUE,
     CustomInput,
+    SelectPicker,
+    ComponentSizeType,
+    SelectPickerProps,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { URLS } from '../../config'
-import error from '../../assets/icons/misc/errorInfo.svg'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
-import DeleteComponent from '../../util/DeleteComponent'
+import { isAWSCodeCommitURL, renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import { deleteMaterial } from './material.service'
 import {
     DeleteComponentsName,
@@ -85,16 +96,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     onClick={this.props.toggleCollapse}
                     data-testid="already-existing-git-material"
                 >
-                    <span className="mr-8">
-                        {this.props.material.url.includes('gitlab') ? <GitLab /> : null}
-                        {this.props.material.url.includes('github') ? <GitHub /> : null}
-                        {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
-                        {this.props.material.url.includes('gitlab') ||
-                        this.props.material.url.includes('github') ||
-                        this.props.material.url.includes('bitbucket') ? null : (
-                            <Git />
-                        )}
-                    </span>
+                    <span className="mr-8">{renderMaterialIcon(this.props.material.url)}</span>
                     <div className="">
                         <div className="git__provider">{this.props.material.name}</div>
                         <p className="git__url">{this.props.material.url}</p>
@@ -122,6 +124,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             return res[0]?.authMode == 'SSH' ? 'ssh' : 'https'
         }
         if (key === 'placeholder') {
+            if (isAWSCodeCommitURL(this.props.material?.gitProvider?.url)) {
+                return 'e.g. git-codecommit.ap-south-1.amazonaws.com/v1/repos/repo_name'
+            }
+
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
         }
     }
@@ -601,10 +607,36 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
+    getGitProviderOption = (provider) => ({
+        ...provider,
+        value: provider.id,
+        label: provider.name,
+        startIcon: renderMaterialIcon(provider.url),
+    })
+
+    handleGitProviderChange: SelectPickerProps['onChange'] = (selected) => {
+        this.props.handleProviderChange(selected, this.props.material.url)
+    }
+
+    renderGitProviderOptionsFooter = () => (
+        <NavLink
+            to={URLS.GLOBAL_CONFIG_GIT}
+            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+        >
+            <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
+            <span>Add Git Account</span>
+        </NavLink>
+    )
+
     renderForm() {
         const sortedProviders: any[] = this.props.providers
             ? sortObjectArrayAlphabetically(this.props.providers, 'name')
             : []
+        const gitProviderOptions = sortedProviders.map(this.getGitProviderOption)
+        const selectedGitProviderOption = this.props.material.gitProvider
+            ? this.getGitProviderOption(this.props.material.gitProvider)
+            : null
+
         return (
             <form key={`${this.props.material.id}`} className="white-card p-20 mb-16">
                 <div
@@ -624,105 +656,20 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     ) : null}
                 </div>
                 <div className="form__row form-row__material" data-testid="add-git-repository-form">
-                    <div className="">
-                        <label className="form__label dc__required-field">Git Account</label>
-                        <ReactSelect
+                    <div>
+                        <SelectPicker
                             classNamePrefix="material-view__select-project"
-                            className="m-0"
-                            tabIndex={1}
-                            isMulti={false}
-                            isClearable={false}
-                            options={sortedProviders}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            value={this.props.material.gitProvider}
-                            styles={{
-                                ...multiSelectStyles,
-                                menuList: (base) => {
-                                    return {
-                                        ...base,
-                                        position: 'relative',
-                                        paddingBottom: '0px',
-                                        maxHeight: '250px',
-                                    }
-                                },
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: (props) => {
-                                    props.selectProps.styles.option = getCustomOptionSelectionStyle()
-                                    return (
-                                        <components.Option {...props}>
-                                            {props.data.url.includes('gitlab') ? (
-                                                <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('github') ? (
-                                                <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('bitbucket') ? (
-                                                <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
-                                                <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            )}
-
-                                            {props.label}
-                                        </components.Option>
-                                    )
-                                },
-                                MenuList: (props) => {
-                                    return (
-                                        <components.MenuList {...props}>
-                                            {props.children}
-                                            <NavLink
-                                                to={`${URLS.GLOBAL_CONFIG_GIT}`}
-                                                className="dc__border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor dc__no-decor"
-                                            >
-                                                <Add
-                                                    className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom "
-                                                    data-testid="add-git-account-option"
-                                                />
-                                                Add Git Account
-                                            </NavLink>
-                                        </components.MenuList>
-                                    )
-                                },
-                                Control: (props) => {
-                                    let value = ''
-
-                                    if (props.hasValue) {
-                                        value = props.getValue()[0].url
-                                    }
-                                    const showGit =
-                                        value &&
-                                        !value.includes('github') &&
-                                        !value.includes('gitlab') &&
-                                        !value.includes('bitbucket')
-                                    return (
-                                        <components.Control {...props}>
-                                            {value.includes('github') ? <GitHub className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('gitlab') ? <GitLab className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('bitbucket') ? (
-                                                <BitBucket className="icon-dim-20 ml-8" />
-                                            ) : null}
-                                            {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
-                                            {props.children}
-                                        </components.Control>
-                                    )
-                                },
-                            }}
-                            onChange={(selected) => {
-                                this.props.handleProviderChange(selected, this.props.material.url)
-                            }}
+                            inputId="material-view__select-project"
+                            label="Git Account"
+                            options={gitProviderOptions}
+                            value={selectedGitProviderOption}
+                            required
+                            error={this.props.isError.gitProvider}
+                            renderMenuListFooter={this.renderGitProviderOptionsFooter}
+                            onChange={this.handleGitProviderChange}
+                            name="material-view__select-project"
+                            size={ComponentSizeType.large}
                         />
-                        {this.props.isError.gitProvider && (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.props.isError.gitProvider}
-                            </span>
-                        )}
                     </div>
                     <div>
                         <CustomInput
@@ -733,6 +680,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             onChange={this.props.handleUrlChange}
                             data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
+                            rootClassName="h-36"
                         />
                     </div>
                 </div>
@@ -793,7 +741,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             }`}
                                             className="dc__link ml-4 cursor"
                                             onClick={this.props.handleLearnHowClick}
-                                            rel="noopener noreferer"
+                                            rel="noopener noreferrer"
                                             target="_blank"
                                         >
                                             {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}

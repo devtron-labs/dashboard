@@ -1,9 +1,24 @@
-import React, { useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
@@ -60,7 +75,7 @@ export default function ScopedVariablesEditor({
                 toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             }
         } catch (e) {
-            if (e instanceof ServerErrors && Array.isArray(e.errors) && e.code === 406) {
+            if (e instanceof ServerErrors && Array.isArray(e.errors)) {
                 setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
             toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
@@ -147,9 +162,10 @@ export default function ScopedVariablesEditor({
                     {infoError && (
                         <InfoColourBar
                             message={infoError}
-                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
+                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                             Icon={ICError}
                             iconClass="icon-dim-20"
+                            linkClass="dc__truncate--clamp-6"
                         />
                     )}
 

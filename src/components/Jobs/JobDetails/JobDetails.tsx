@@ -1,8 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import {
     generatePath,
-    NavLink,
     Redirect,
     Route,
     Switch,
@@ -11,9 +26,18 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
-import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
-import AppConfig from '../../app/details/appConfig/AppConfig'
+import { APP_TYPE, URLS } from '../../../config'
+import {
+    BreadCrumb,
+    Progressing,
+    showError,
+    useBreadcrumb,
+    PageHeader,
+    ResourceKindType,
+    TabProps,
+    TabGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
@@ -59,7 +83,11 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appType={APP_TYPE.JOB}
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView />
@@ -68,7 +96,7 @@ export default function JobDetails() {
                             <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} isJobView />
+                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
@@ -134,59 +162,55 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
     )
 
     const renderAppDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        data-testid="overview-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
-                        data-action="Overview Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Overview
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="trigger-job-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_TRIGGER}`}
-                        className="tab-list__tab-link"
-                        data-action="Trigger Job Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Trigger job
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="run-history-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Run History Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Run history
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab tab-list__config-tab">
-                    <NavLink
-                        data-testid="job-config-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link flex"
-                        data-action="Job Configurations Clicked"
-                        onClick={handleEventClick}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 mr-4" />
-                        Configurations
-                    </NavLink>
-                </li>
-            </ul>
-        )
+        const tabs: TabProps[] = [
+            {
+                id: 'overview-tab',
+                label: 'Overview',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'overview-link',
+                    ['data-action']: 'Overview Clicked',
+                },
+            },
+            {
+                id: 'trigger-job-tab',
+                label: 'Trigger Job',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'trigger-job-link',
+                    ['data-action']: 'Trigger Job Clicked',
+                },
+            },
+            {
+                id: 'run-history-tab',
+                label: 'Run History',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'run-history-link',
+                    ['data-action']: 'Run History Clicked',
+                },
+            },
+            {
+                id: 'job-config-tab',
+                label: 'Configurations',
+                tabType: 'navLink',
+                icon: Settings,
+                props: {
+                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'job-config-link',
+                    ['data-action']: 'Job Configurations Clicked',
+                },
+            },
+        ]
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
     const renderBreadcrumbs = () => {

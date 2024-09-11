@@ -1,12 +1,29 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, ViewType } from '../../config'
+import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
@@ -152,22 +169,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     renderPageHeader() {
         return (
-            <>
-                <h1 className="form__title" data-testid="project-list-title">
-                    Projects
-                </h1>
-                <p className="form__subtitle">
-                    Manage your organization's projects.&nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT}
-                        rel="noopener noreferer noreferrer"
-                        target="_blank"
-                    >
-                        Learn more about projects.
-                    </a>
-                </p>
-            </>
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.PROJECTS.title}
+                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
+                docLink={HEADER_TEXT.PROJECTS.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="project-list-title"
+            />
         )
     }
 

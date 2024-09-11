@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -9,6 +25,7 @@ import {
     LastExecutionResponseType,
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
+    getSortedVulnerabilities,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -243,8 +260,8 @@ export function stopStartApp(AppId, EnvironmentId, RequestType) {
     return post(`app/stop-start-app`, { AppId, EnvironmentId, RequestType })
 }
 
-export function validateToken() {
-    return get(`devtron/auth/verify`, { preventAutoLogout: true })
+export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {
+    return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
 function getLastExecution(queryString: number | string): Promise<ResponseType> {
@@ -254,25 +271,20 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     const vulnerabilities = response.result.vulnerabilities || []
-    const critical = vulnerabilities
-        .filter((v) => v.severity === 'critical')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const moderate = vulnerabilities
-        .filter((v) => v.severity === 'moderate')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const low = vulnerabilities.filter((v) => v.severity === 'low').sort((a, b) => sortCallback('cveName', a, b))
-    const groupedVulnerabilities = critical.concat(moderate, low)
+    const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
     return {
         ...response,
         result: {
             ...response.result,
             scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
+            lastExecution: response.result.executionTime,
             objectType: response.result.objectType,
             severityCount: {
-                critical: response.result?.severityCount?.high,
-                moderate: response.result?.severityCount?.moderate,
-                low: response.result?.severityCount?.low,
+                critical: response.result?.severityCount?.critical ?? 0,
+                high: response.result?.severityCount?.high ?? 0,
+                medium: response.result?.severityCount?.medium ?? 0,
+                low: response.result?.severityCount?.low ?? 0,
+                unknown: response.result?.severityCount?.unknown ?? 0,
             },
             vulnerabilities: groupedVulnerabilities.map((cve) => {
                 return {
@@ -287,23 +299,6 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
             scanToolId: response.result.scanToolId,
         },
     }
-}
-
-export function getLastExecutionById(scanExecutionId: number | string): Promise<LastExecutionResponseType> {
-    const queryString = `executionId=${scanExecutionId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByAppAndEnv(
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `envId=${envId}&appId=${appId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
 }
 
 export function getLastExecutionByImage(image: string): Promise<LastExecutionResponseType> {
@@ -347,9 +342,11 @@ export function getLastExecutionMinByAppAndEnv(
                 lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
                 imageScanDeployInfoId: response.result.imageScanDeployInfoId,
                 severityCount: {
-                    critical: response.result.severityCount.high,
-                    moderate: response.result.severityCount.moderate,
+                    critical: response.result.severityCount.critical,
+                    high: response.result.severityCount.high,
+                    medium: response.result.severityCount.medium,
                     low: response.result.severityCount.low,
+                    unknown: response.result.severityCount.unknown,
                 },
             },
         }
@@ -400,6 +397,7 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
                     isInstalled: true,
                     isConfigured: response.result.exists,
                     allowCustomRepository: response.result.allowCustomRepository,
+                    authMode: response.result.authMode,
                 },
             }
         })

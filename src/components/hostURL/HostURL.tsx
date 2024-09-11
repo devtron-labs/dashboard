@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     showError,
@@ -6,13 +22,14 @@ import {
     ErrorScreenNotAuthorized,
     InfoColourBar,
     CustomInput,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
-import { NO_HOST_URL, ViewType } from '../../config'
+import { HEADER_TEXT, NO_HOST_URL, ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
@@ -136,11 +153,13 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
     renderHostErrorMessage() {
         return (
-            <InfoColourBar
-                classname="dc__hosturl-error m-20"
-                message="Saved host URL doesn’t match the domain address in your browser."
-                Icon={Error}
-            />
+            <div className="w-100">
+                <InfoColourBar
+                    classname="error_bar"
+                    message="Saved host URL doesn’t match the domain address in your browser."
+                    Icon={Error}
+                />
+            </div>
         )
     }
 
@@ -164,7 +183,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div className='bcn-0 h-100'><Progressing pageLoader /></div>
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -174,16 +193,21 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         return (
-            <section className="global-configuration__component" data-testid="section-host-url">
-                <h2 className="form__title" data-testid="host-url-heading">
-                    Host URL
-                </h2>
-                <p className="form__subtitle">
-                    Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
-                </p>
-                <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url" onSubmit={this.onSave}>
+            <section className="flex column left top bcn-0 h-100 dc__gap-24 px-20 py-16" data-testid="section-host-url">
+                <FeatureTitleWithInfo
+                    title={HEADER_TEXT.HOST_URL.title}
+                    renderDescriptionContent={() => HEADER_TEXT.HOST_URL.description}
+                    docLink={HEADER_TEXT.HOST_URL.docLink}
+                    showInfoIconTippy
+                    dataTestId="host-url-heading"
+                />
+                <form
+                    className="flex left column dc__gap-16 bcn-0 br-8 bw-1 en-2 p-20"
+                    data-testid="form-host-url"
+                    onSubmit={this.onSave}
+                >
                     <InfoColourBar
-                        classname="hosturl__description m-20"
+                        classname="info_bar"
                         message={
                             <>
                                 Host URL is the domain address at which your devtron dashboard can be reached.
@@ -197,7 +221,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     {this.state.form.id && window.location.origin !== this.state.form.value
                         ? this.renderHostErrorMessage()
                         : ''}
-                    <div className="pl-20 pr-20">
+                    <div className="w-100">
                         <CustomInput
                             name="host-url"
                             label="Host URL"
@@ -222,18 +246,18 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 {window.location.origin}
                             </button>
                         </div>
-                        <div className="form__buttons pt-20">
+                    </div>
+                    <div className="flex left w-100 dc__border-top-n1 pt-16">
                             <button
                                 type="submit"
                                 tabIndex={2}
                                 disabled={this.state.saveLoading}
-                                className="cta"
+                                className="cta small"
                                 data-testid="host-url-update-button"
                             >
                                 {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
                             </button>
                         </div>
-                    </div>
                 </form>
             </section>
         )

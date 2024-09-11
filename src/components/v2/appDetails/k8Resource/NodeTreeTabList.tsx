@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -100,8 +116,8 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
     return (
         <div
             data-testid="resource-tree-wrapper"
-            className="resource-tree-wrapper flexbox pl-20 pr-20"
-            style={{ outline: 'none' }}
+            className="resource-tree-wrapper flexbox pl-20 pr-20 dc__position-sticky dc__zi-10"
+            style={{ outline: 'none', top: '77px' }}
             tabIndex={0}
             ref={tabRef}
         >

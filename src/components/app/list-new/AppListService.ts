@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     EnvironmentListHelmResult,
@@ -5,19 +21,19 @@ import {
     getNamespaceListMin as getNamespaceList,
     EnvironmentListHelmResponse,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppFilters } from '../../../services/service'
+import { getAppFilters, getClusterListMinWithoutAuth } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
 import { Cluster } from '../../../services/service.types'
 import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
-import { getClusterList } from '../../cluster/cluster.service'
-import { AppListResponse } from './AppListType'
+import { HelmAppListResponse, FluxCDTemplateType } from './AppListType'
+import { InitialEmptyMasterFilters } from './Constants'
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
         return getAppFilters()
     }
-    return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
+    return Promise.all([getProjectList(), getClusterListMinWithoutAuth()]).then(([projectListRes, clusterListResp]) => {
         return { result: { Teams: projectListRes?.result, Clusters: clusterListResp?.result } }
     })
 }
@@ -44,21 +60,16 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             })
         }
 
-        /// /// set master filters data starts (check/uncheck)
+        // set master filters data starts (check/uncheck)
         const filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
             appStatus: new Set(payloadParsedFromUrl.appStatuses),
+            templateType: new Set(payloadParsedFromUrl.templateType),
         }
 
-        const filters = {
-            projects: [],
-            environments: [],
-            clusters: [],
-            namespaces: [],
-            appStatus: [],
-        }
+        const filters = structuredClone(InitialEmptyMasterFilters)
 
         // set filter projects starts
         filters.projects = projectList
@@ -100,13 +111,15 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
                     label: cluster.cluster_name.toLocaleLowerCase(),
                     isSaved: true,
                     isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.id.toString()),
+                    optionMetadata: {
+                        isVirtualCluster: cluster.isVirtualCluster,
+                    },
                 })
             })
         }
         filters.clusters = filters.clusters.sort((a, b) => {
             return sortByLabel(a, b)
         })
-        // set filter clusters ends
 
         // set filter namespace starts
         const _namespaces = _buildNamespaces(
@@ -129,7 +142,18 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             }
         })
 
-        /// /// set master filters data ends (check/uncheck)
+        // set filter appStatus ends
+
+        // set filter templateType starts
+        filters.templateType = Object.entries(FluxCDTemplateType).map(([, values]) => ({
+            key: values,
+            label: values,
+            isSaved: true,
+            isChecked: filterApplied.templateType.has(values),
+        }))
+        // set filter templateType ends
+
+        // set master filters data ends (check/uncheck)
 
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
@@ -178,7 +202,10 @@ export const getNamespaces = (
     })
 }
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string): Promise<AppListResponse> => {
+export const getDevtronInstalledHelmApps = (
+    clusterIdsCsv: string,
+    appStatuses?: string,
+): Promise<HelmAppListResponse> => {
     let url = Routes.CHART_INSTALLED
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
@@ -189,16 +216,8 @@ export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?:
     return get(url)
 }
 
-export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appStatuses?: string) => {
-    let url = Routes.ARGO_APPS
-    if (clusterIdsCsv) {
-        url = `${url}?clusterIds=${clusterIdsCsv}`
-    }
-    if (appStatuses) {
-        url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
-    }
-    return get(url)
-}
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string) =>
+    get(`${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`)
 
 const sortByLabel = (a, b) => {
     if (a.label < b.label) {

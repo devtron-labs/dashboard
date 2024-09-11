@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
-import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'
 
@@ -25,6 +41,9 @@ export default function SuggestionItem({
         }
         if (typeof value === 'boolean') {
             return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
+        }
+        if (typeof value === 'object') {
+            return <pre className="cn-0 fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
         }
         return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
     }

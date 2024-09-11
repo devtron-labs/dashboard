@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { components } from 'react-select'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'
@@ -172,39 +188,32 @@ export const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             <div className="dc__position-sticky dc__top-0 bcn-0">
-                <div className="pt-6 pr-8 pl-8 env-header-tab">
-                    <ul role="tablist" className="tab-list">
-                        <li
-                            className="tab-list__tab pointer"
-                            data-selected-tab={AppFilterTabs.GROUP_FILTER}
-                            onClick={onTabChange}
-                        >
-                            <div
-                                className={`mb-6 fs-12 tab-hover ${
-                                    selectedFilterTab === AppFilterTabs.GROUP_FILTER ? 'fw-6 active' : 'fw-4'
-                                }`}
-                            >
-                                <span>Saved filters</span>
-                            </div>
-                            {selectedFilterTab === AppFilterTabs.GROUP_FILTER && (
-                                <div className="apps-tab__active-tab" />
-                            )}
-                        </li>
-                        <li
-                            className="tab-list__tab pointer"
-                            data-selected-tab={AppFilterTabs.APP_FILTER}
-                            onClick={onTabChange}
-                        >
-                            <div
-                                className={`mb-6 fs-12 tab-hover ${
-                                    selectedFilterTab === AppFilterTabs.APP_FILTER ? 'fw-6 active' : 'fw-4'
-                                }`}
-                            >
-                                <span>All {selectedType} </span>
-                            </div>
-                            {selectedFilterTab === AppFilterTabs.APP_FILTER && <div className="apps-tab__active-tab" />}
-                        </li>
-                    </ul>
+                <div className="px-8 env-header-tab">
+                    <TabGroup
+                        tabs={[
+                            {
+                                id: 'saved-filters-tab',
+                                label: 'Saved filters',
+                                tabType: 'button',
+                                active: selectedFilterTab === AppFilterTabs.GROUP_FILTER,
+                                props: {
+                                    onClick: onTabChange,
+                                    'data-selected-tab': AppFilterTabs.GROUP_FILTER,
+                                },
+                            },
+                            {
+                                id: 'all-selected-tab',
+                                label: `All ${selectedType}`,
+                                tabType: 'button',
+                                active: selectedFilterTab === AppFilterTabs.APP_FILTER,
+                                props: {
+                                    onClick: onTabChange,
+                                    'data-selected-tab': AppFilterTabs.APP_FILTER,
+                                },
+                            },
+                        ]}
+                        size={ComponentSizeType.medium}
+                    />
                 </div>
                 <div className="flex flex-justify dc__window-bg w-100 pt-6 pr-8 pb-6 pl-8">
                     <span className="fs-12 fw-6 cn-9">

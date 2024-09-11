@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
@@ -14,6 +30,8 @@ import {
     GenericEmptyState,
     IMAGE_SCAN_TOOL,
     PageHeader,
+    GenericFilterEmptyState,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -43,7 +61,6 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
@@ -239,6 +256,8 @@ export const NavItem = ({
     showInitializing,
     showVersionInfo,
 }: StackManagerNavItemType): JSX.Element => {
+    const { currentServerInfo } = useMainContext()
+
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
             <NavLink
@@ -291,8 +310,12 @@ export const NavItem = ({
         <div className="flex column left">
             <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 dc__uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
-            <hr className="mt-8 mb-8 w-100 checklist__divider" />
-            {getNavLink(AboutSection)}
+            {currentServerInfo?.serverInfo?.installationType !== InstallationType.ENTERPRISE && (
+                <>
+                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {getNavLink(AboutSection)}
+                </>
+            )}
         </div>
     )
 }
@@ -1095,8 +1118,7 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
 
     return (
         <div className="no-integrations__installed-view dc__position-rel">
-            <GenericEmptyState
-                image={NoIntegrations}
+            <GenericFilterEmptyState
                 classname="fs-16"
                 title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}
@@ -1115,9 +1137,9 @@ const ManagedByNote = (): JSX.Element => {
                     <Info className="icon-dim-20" />
                 </div>
                 <div>
-                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">Managed by Devtron Labs</h2>
+                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">Managed by Devtron Inc.</h2>
                     <p className="fs-13 fw-4 mb-0 mt-4 lh-20">
-                        Devtron stack is managed by Devtron Labs.
+                        Devtron stack is managed by Devtron Inc.
                         <br />
                         For any support, please contact your Devtron representative.
                     </p>

@@ -1,4 +1,22 @@
-import { GitProvider } from './gitops.type'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { DOCUMENTATION } from '@Config/constants'
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -22,9 +40,16 @@ export const DefaultGitOpsConfig = {
     id: null,
     provider: GitProvider.GITHUB,
     active: true,
+    enableTLSVerification: false,
+    isCADataPresent: false,
+    isTLSCertDataPresent: false,
+    isTLSKeyDataPresent: false,
+    isCADataClearedAfterInitialConfig: false,
+    isTLSCertDataClearedAfterInitialConfig: false,
+    isTLSKeyDataClearedAfterInitialConfig: false,
 }
 
-export const DefaultShortGitOps = {
+export const DefaultShortGitOps: DefaultShortGitOpsType = {
     host: '',
     username: '',
     token: '',
@@ -33,6 +58,28 @@ export const DefaultShortGitOps = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    caData: '',
+    tlsCertData: '',
+    tlsKeyData: '',
+    sshHost: '',
+    sshKey: '',
+    authMode: null,
+}
+
+export const DefaultErrorFields: GitOpsFormErrorType = {
+    host: '',
+    username: '',
+    token: '',
+    gitHubOrgId: '',
+    gitLabGroupId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
+    caData: '',
+    tlsCertData: '',
+    tlsKeyData: '',
 }
 
 export const LinkAndLabelSpec = {
@@ -63,3 +110,13 @@ export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
     `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
+
+export const PROVIDER_DOC_LINK_MAP: Record<
+    Exclude<GitProvider, GitProvider.OTHER_GIT_OPS | GitProvider.AWS_CODE_COMMIT>,
+    string
+> = {
+    [GitProvider.GITHUB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB,
+    [GitProvider.GITLAB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB,
+    [GitProvider.AZURE_DEVOPS]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE,
+    [GitProvider.BITBUCKET_CLOUD]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET,
+}

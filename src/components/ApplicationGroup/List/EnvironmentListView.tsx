@@ -1,10 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import { Progressing, toastAccessDenied, useAsync, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect } from 'react'
+import {
+    Progressing,
+    toastAccessDenied,
+    useAsync,
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
-import { Pagination, useAppContext } from '../../common'
+import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps } from '../AppGroup.types'
@@ -87,6 +109,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={envCount}
                     pageSize={paginationParamsChange.pageSize}
                     offset={paginationParamsChange.offset}

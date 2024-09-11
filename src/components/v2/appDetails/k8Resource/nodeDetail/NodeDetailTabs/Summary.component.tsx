@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import AppDetailsStore from '../../../appDetails.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 
@@ -46,7 +62,7 @@ const SummaryComponent = ({ selectedTab }) => {
     // }
 
     return (
-        <div className="p-20 bcn-0" style={{ gridColumn: '1 / span 2', overflowY: 'scroll', height: '500px' }}>
+        <div className="p-20 bcn-0 flex-grow-1" style={{ gridColumn: '1 / span 2', overflowY: 'scroll' }}>
             <div className="w-100" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="summary-view__card pt-16 pb-16 pl-16 pr-16 br-4">
                     <div className=" fw-6 fs-14">Configuration</div>

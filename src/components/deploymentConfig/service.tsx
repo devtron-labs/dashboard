@@ -1,21 +1,34 @@
-import { get, put, post, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { get, put, post, YAMLStringify, ResponseType, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
+import { addGUISchemaIfAbsent } from './utils'
 
-export function getDeploymentTemplate(
+export async function getDeploymentTemplate(
     id: number,
     chartRefId: number,
     abortSignal: AbortSignal,
-    isDefaultTemplate?: boolean,
-) {
-    if (isDefaultTemplate) {
-        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
-            signal: abortSignal,
-        })
-    }
-    return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+    chartName: string,
+): Promise<ResponseType> {
+    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
         signal: abortSignal,
     })
+    return addGUISchemaIfAbsent(response, chartName)
 }
 
 export function getDeploymentTemplateData(
@@ -44,7 +57,7 @@ export function getDeploymentManisfest(request) {
     return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, request)
 }
 
-export function getOptions(appId: number, envId: number) {
+export function getOptions(appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> {
     return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
 }
 
@@ -61,10 +74,6 @@ export const updateDeploymentTemplate = (request, abortSignal) => {
 
 export const getIfLockedConfigProtected = (request) => {
     return post(Routes.LOCKED_CONFIG_PROTECTED, request)
-}
-
-export const getIfLockedConfigNonProtected = (request) => {
-    return post(Routes.LOCKED_CONFIG_NON_PROTECTED, request)
 }
 
 export const saveDeploymentTemplate = (request, abortSignal) => {

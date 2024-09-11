@@ -1,7 +1,29 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
-import { AppStatus, ErrorScreenManager, Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    ErrorScreenManager,
+    Progressing,
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import { Pagination } from '../../common'
+import { trackByGAEvent } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -27,6 +49,7 @@ export default function JobListView(props: JobListViewProps) {
     const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
+        trackByGAEvent('Job List', event.currentTarget.dataset.action)
         props.handleEditJob(event.currentTarget.dataset.key)
     }
 
@@ -79,15 +102,15 @@ export default function JobListView(props: JobListViewProps) {
                                     />
                                 )}
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0 value cb-5" data-testid="job-list-for-sort">
                                     {job.name}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView />
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">
                                     {environmentName(job.defaultPipeline)}
                                     {environmentName(job.defaultPipeline) === DEFAULT_ENV && (
@@ -95,10 +118,10 @@ export default function JobListView(props: JobListViewProps) {
                                     )}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
@@ -108,6 +131,7 @@ export default function JobListView(props: JobListViewProps) {
                                     data-key={job.id}
                                     className="button-edit"
                                     onClick={handleEditJob}
+                                    data-action="Configure Clicked"
                                 >
                                     <Edit className="button-edit__icon" />
                                 </button>
@@ -179,6 +203,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}

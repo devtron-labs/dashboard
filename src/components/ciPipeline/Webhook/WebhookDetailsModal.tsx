@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
 import {
     showError,
@@ -9,6 +25,9 @@ import {
     CustomInput,
     ClipboardButton,
     ButtonWithLoader,
+    CodeEditor,
+    TabGroup,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -40,7 +59,6 @@ import {
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
@@ -201,12 +219,13 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.id,
                     userIdentifier: result.userIdentifier,
-                    userGroups: [],
+                    userRoleGroups: [],
                     serverMode: SERVER_MODE.FULL,
                     directPermission: [],
                     chartPermission: {} as ChartGroupPermissionsFilter,
                     k8sPermission: [],
                     permissionType: PermissionType.SPECIFIC,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
                 const { result: userPermissionResponse } = await createOrUpdateUser({
@@ -257,27 +276,23 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setSelectedTab(e.currentTarget.dataset.key, index)
         }
         return (
-            <ul role="tablist" className={`tab-list ${isChildTab ? '' : 'dc__border-bottom'}`}>
-                {tabList.map((tabDetail) => (
-                    <li
-                        key={tabDetail.key}
-                        className="tab-list__tab pointer"
-                        onClick={tabClickHandler}
-                        data-key={tabDetail.key}
-                    >
-                        <div
-                            className={`mb-6 ${isChildTab ? 'fs-12 child-tab' : 'fs-13'} tab-hover${
-                                selectedTab === tabDetail.key ? ' fw-6 active' : ' fw-4'
-                            }`}
-                        >
-                            {tabDetail.value}
-                        </div>
-                        {selectedTab === tabDetail.key && (
-                            <div className={`tab-list_active-tab ${isChildTab ? 'child-tab' : ''}`} />
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className={`${!isChildTab ? 'dc__border-bottom' : ''}`}>
+                <TabGroup
+                    tabs={tabList.map(({ key, value }) => ({
+                        id: key,
+                        label: value,
+                        tabType: 'button',
+                        active: selectedTab === key,
+                        props: {
+                            onClick: tabClickHandler,
+                            'data-key': key,
+                        },
+                    }))}
+                    hideTopPadding
+                    alignActiveBorderWithContainer={!isChildTab}
+                    size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
+                />
+            </div>
         )
     }
 
@@ -408,7 +423,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <>
                 <div className="w-400 h-32 mt-16">
                     <ReactSelect
-                        classNamePrefix='selectToken'
+                        classNamePrefix="selectToken"
                         value={selectedToken}
                         tabIndex={1}
                         onChange={setSelectedToken}
@@ -468,7 +483,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             return (
                 <a
                     className="dc__link dc__no-decor fs-13 fw-4"
-                    href={DOCUMENTATION.WEBHOOK_API_TOKEN}
+                    href={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
                     rel="noreferrer noopener"
                     target="_blank"
                 >
@@ -496,9 +511,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 data-testid="sample-script"
             >
                 <code>{value}</code>
-                {showCopyOption && (
-                        <ClipboardButton content={value} />
-                )}
+                {showCopyOption && <ClipboardButton content={value} />}
             </pre>
         )
     }
@@ -772,7 +785,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">
+                                {response.code}
+                            </div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(

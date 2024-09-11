@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import {
@@ -12,6 +28,7 @@ import {
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -25,7 +42,6 @@ import {
     getManifestResource,
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
-import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
@@ -50,11 +66,13 @@ const ManifestComponent = ({
     selectedResource,
     manifestViewRef,
     getComponentKey,
+    isExternalApp,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
+    /* TODO: can be unified later with resource browser */
     const params = useParams<{
         actionName: string
         podName: string
@@ -208,7 +226,7 @@ const ManifestComponent = ({
                         }
                     })
                     .catch((err) => {
-                        setLoading(false)
+                        /* NOTE: if the user switches tab after dismount don't set state */
                         /* if the user aborted using tab switch don't show error */
                         if (
                             err instanceof ServerErrors &&
@@ -217,6 +235,7 @@ const ManifestComponent = ({
                         ) {
                             return
                         }
+                        setLoading(false)
                         setError(true)
                         showError(err)
                     })
@@ -453,7 +472,7 @@ const ManifestComponent = ({
     }
 
     return isDeleted ? (
-        <div>
+        <div className="h-100 flex-grow-1">
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
@@ -462,9 +481,9 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container `}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flex-grow-1`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
+            style={{ background: '#0B0F22' }}
         >
             {error && !loading && (
                 <MessageUI
@@ -474,12 +493,14 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className="bcn-0">
-                    {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                <div className="bcn-0 h-100">
+                    {(isExternalApp ||
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                             appDetails.deploymentAppDeleteRequest)) && (
-                        <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
+                        <div
+                            className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky' : ''}`}
+                        >
                             {tabs.map((tab: iLink, index) => {
                                 return (!showDesiredAndCompareManifest &&
                                     (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
@@ -544,7 +565,7 @@ const ManifestComponent = ({
                             cleanData={activeTab === 'Compare'}
                             diffView={activeTab === 'Compare'}
                             theme="vs-dark--dt"
-                            height={isResourceBrowserView ? 'calc(100vh - 116px)' : '100vh'}
+                            height={isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 77px)'}
                             value={trimedManifestEditorData}
                             mode={MODES.YAML}
                             readOnly={activeTab !== 'Live manifest' || !isEditmode}
@@ -555,7 +576,7 @@ const ManifestComponent = ({
                                     msg={loadingMsg}
                                     icon={MsgUIType.LOADING}
                                     size={24}
-                                    minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
+                                    minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
                                 />
                             }
                             focus={isEditmode}

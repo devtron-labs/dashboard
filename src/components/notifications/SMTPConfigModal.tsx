@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     showError,
@@ -17,8 +33,6 @@ import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
-    _configName
-
     constructor(props) {
         super(props)
         this.state = {
@@ -67,9 +81,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         },
                     }))
                 })
-                .then(() => {
-                    this._configName?.focus()
-                })
                 .catch((error) => {
                     showError(error)
                 })
@@ -79,11 +90,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 form: { ...prevState.form, default: this.props.shouldBeDefault },
                 view: ViewType.FORM,
             }))
-            setTimeout(() => {
-                if (this._configName) {
-                    this._configName.focus()
-                }
-            }, 100)
         }
     }
 
@@ -189,7 +195,6 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="configName"
                                 label="Configuration name"
                                 data-testid="add-smtp-configuration-name"
-                                ref={(node) => (this._configName = node)}
                                 value={this.state.form.configName}
                                 onChange={this.handleInputChange}
                                 handleOnBlur={this.handleBlur}

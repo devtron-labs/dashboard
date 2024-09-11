@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
@@ -9,33 +25,29 @@ import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
-const getBuildContextAdditionalContent = () => {
-    return (
-        <div className="p-12 fs-13">
-            To build all files from the root, use (.) as the build context, or set build context by referring a
-            subdirectory path such as
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
-            or
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
-            if path not set, default path will be root dir of selected git repository
-        </div>
-    )
-}
+const getBuildContextAdditionalContent = () => (
+    <div className="p-12 fs-13">
+        To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory
+        path such as
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
+        or
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
+        if path not set, default path will be root dir of selected git repository
+    </div>
+)
 
-const InfoCard: FunctionComponent = () => {
-    return (
-        <div className="row ml-0">
-            <InfoIconTippy
-                heading="Docker build context"
-                infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                documentationLinkText="View Documentation"
-                additionalContent={getBuildContextAdditionalContent()}
-                iconClassName="icon-dim-16 fcn-6 ml-4"
-                placement="right"
-            />
-        </div>
-    )
-}
+const InfoCard: FunctionComponent = () => (
+    <div className="row ml-0">
+        <InfoIconTippy
+            heading="Docker build context"
+            infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
+            documentationLinkText="View Documentation"
+            additionalContent={getBuildContextAdditionalContent()}
+            iconClassName="icon-dim-16 fcn-6 ml-4"
+            placement="right"
+        />
+    </div>
+)
 
 const BuildContext: FunctionComponent<BuildContextProps> = ({
     readOnly,

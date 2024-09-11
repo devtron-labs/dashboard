@@ -1,8 +1,25 @@
-import { get, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { get, put, trash, ResponseType, AppType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
 import { getAPIOptionsWithTriggerTimeout } from '../common'
+import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
@@ -108,6 +125,7 @@ export interface UpdateAppReleaseRequest {
     appStoreVersion: number
     referenceValueId: number
     referenceValueKind: string
+    isManifestScanEnabled?: boolean
 }
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
@@ -136,8 +154,9 @@ export const updateAppReleaseWithoutLinking = (
     return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options)
 }
 
-export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
+export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest, abortSignal?: AbortSignal): Promise<any> => {
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
     return put(Routes.UPDATE_APP_API, requestPayload, options)
 }
 
@@ -146,7 +165,11 @@ export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<Upda
     return put(Routes.HELM_LINK_TO_CHART_STORE_API, request, options)
 }
 
-export const getManifestUrlInfo = (appId: string): Promise<ResponseType> => {
-    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+export const getManifestUrlInfo = (appId: string, appType: AppType): Promise<ResponseType> => {
+    const params = {
+        appId,
+        appType: getK8sResourcePayloadAppType(appType),
+    }
+    const url = getUrlWithSearchParams(Routes.EA_INGRESS_SERVICE_MANIFEST, params)
     return get(url)
 }

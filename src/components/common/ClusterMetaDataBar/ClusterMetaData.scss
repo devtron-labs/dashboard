@@ -1,20 +1,36 @@
-.dark-theme {
-        border-top: 1px solid #2C3354;
-        background: #0C0F21;
-        color: var(--N000);
-        z-index: 19;
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-        .resource-link__dark-theme:hover,
-        .resource-link__dark-theme:focus {
-                color: var(--N000);
-                text-decoration: none;
-        }
+.dark-theme {
+    border-top: 1px solid #2c3354;
+    background: #0c0f21;
+    color: var(--N000);
+    z-index: 19;
+
+    .resource-link__dark-theme:hover,
+    .resource-link__dark-theme:focus {
+        color: var(--N000);
+        text-decoration: none;
+    }
 }
 
 .cluster-meta-data-wrapper {
-        .resource-link__white-theme:hover,
-        .resource-link__white-theme:focus {
-                color: var(--N900) !important;
-                text-decoration: none;
-        }
+    .resource-link__white-theme:hover,
+    .resource-link__white-theme:focus {
+        color: var(--N900) !important;
+        text-decoration: none;
+    }
 }

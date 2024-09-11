@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .global-configuration {
     display: grid;
     grid-template-rows: 47px 1fr;
@@ -77,7 +93,7 @@
         border-radius: 4px;
         border: solid 1px var(--N200);
         &.form__input--error {
-          border: solid 1px var(--R500);
+            border: solid 1px var(--R500);
         }
     }
 }
@@ -167,7 +183,7 @@
     background: white;
     border-radius: 8px;
 
-    &>.list {
+    & > .list {
         border: unset;
         margin-bottom: unset;
         grid-template-columns: 1fr 20px;
@@ -176,7 +192,7 @@
     }
 
     &.cluster-list--create {
-        &>.list {
+        & > .list {
             grid-template-columns: 24px 1fr 24px;
         }
 
@@ -232,7 +248,6 @@
 }
 
 .collapsed-list {
-
     &.collapsed-list--git,
     &.collapsed-list--docker {
         border: 1px solid #d6dbdf;
@@ -302,7 +317,7 @@
     .form__buttons {
         align-items: center;
     }
-    
+
     .docker-default {
         .form__checkbox-label {
             margin-right: auto;
@@ -314,7 +329,8 @@
         }
 
         &.registry-disabled-checkbox {
-            input, .form__checkbox-container {
+            input,
+            .form__checkbox-container {
                 opacity: 0.5;
             }
         }
@@ -327,7 +343,6 @@
 }
 
 .cluster-form {
-
     .form__row--bearer-token .bearer-token {
         display: flex;
         width: 100%;
@@ -354,7 +369,7 @@
     padding: 24px;
     margin: 5% auto auto auto;
 
-    .form__title+img {
+    .form__title + img {
         margin-left: auto;
         cursor: pointer;
     }
@@ -383,7 +398,7 @@
             cursor: pointer;
         }
 
-        input:checked+span {
+        input:checked + span {
             color: var(--B500);
         }
 

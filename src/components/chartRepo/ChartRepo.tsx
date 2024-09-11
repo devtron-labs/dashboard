@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import {
     showError,
@@ -10,11 +26,13 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
+    FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
-import { useForm, getNonEditableChartRepoText } from '../common'
+import { useForm } from '../common'
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
@@ -25,10 +43,9 @@ import {
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS } from '../../config'
+import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS, HEADER_TEXT } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
@@ -62,22 +79,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     }
     return (
         <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-            <h2 className="form__title" data-testid="chart-repository-heading">
-                Chart Repository
-            </h2>
-            <p className="form__subtitle">
-                Manage your organization’s chart repositories.
-                <span>
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                    >
-                        LEARN_MORE
-                    </a>
-                </span>
-            </p>
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.CHART_REPOSITORY.title}
+                renderDescriptionContent={() => HEADER_TEXT.CHART_REPOSITORY.description}
+                docLink={HEADER_TEXT.CHART_REPOSITORY.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="chart-repository-heading"
+            />
             <CollapsedList
                 id={null}
                 default
@@ -88,6 +97,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 key={getRandomInt().toString()}
                 reload={reload}
                 isEditable
+                allowInsecureConnection={false}
             />
             <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                 Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
@@ -97,7 +107,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map(
                     (chart) =>
-                        chart.id != 1 && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />,
+                        chart.id != 1 && (
+                            <CollapsedList
+                                {...chart}
+                                allowInsecureConnection={chart.allow_insecure_connection}
+                                key={chart.id || getRandomInt()}
+                                reload={reload}
+                            />
+                        ),
                 )}
         </section>
     )
@@ -114,6 +131,7 @@ const CollapsedList = ({
     userName = '',
     password = '',
     reload,
+    allowInsecureConnection,
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -125,12 +143,8 @@ const CollapsedList = ({
     }
 
     const handleCollapse = (e) => {
-        if (isEditable || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) {
-            e.stopPropagation()
-            toggleCollapse((t) => !t)
-        } else {
-            toast.info(getNonEditableChartRepoText(name))
-        }
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
     }
 
     return (
@@ -184,6 +198,7 @@ const CollapsedList = ({
                         toggleCollapse,
                         collapsed,
                         isEditable,
+                        allowInsecureConnection,
                     }}
                 />
             )}
@@ -204,6 +219,7 @@ const ChartForm = ({
     toggleCollapse,
     collapsed,
     isEditable,
+    allowInsecureConnection,
     ...props
 }) => {
     const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
@@ -216,7 +232,7 @@ const ChartForm = ({
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
     })
-    const [secureWithTls, setSecureWithTls] = useState(false)
+    const [allowInsecure, setAllowInsecure] = useState(allowInsecureConnection)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
@@ -271,10 +287,7 @@ const ChartForm = ({
               ? CHART_REPO_AUTH_TYPE.ANONYMOUS
               : CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD,
         active: true,
-        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
-        authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
-            ? { allow_insecure_connection: !secureWithTls }
-            : {}),
+        allow_insecure_connection: allowInsecure,
         ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
         authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
             ? { username: customState.username.value, password: customState.password.value }
@@ -388,8 +401,8 @@ const ChartForm = ({
         }
     }
 
-    function toggleSkipTLSVerification(e) {
-        setSecureWithTls(!secureWithTls)
+    function allowInsecureConnectionHandler(e) {
+        setAllowInsecure(!allowInsecure)
     }
     const handleDeleteClick = () => toggleConfirmation(true)
     const handleCancelClick = () => toggleCollapse((t) => !t)
@@ -479,16 +492,17 @@ const ChartForm = ({
                             labelClassName="mt-12"
                             isRequiredField
                         />
-                        <Checkbox
-                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
-                            isChecked={secureWithTls}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={toggleSkipTLSVerification}
-                        >
-                            <div className="ml-1">Secure With TLS</div>
-                        </Checkbox>
                     </>
                 )}
+
+                <Checkbox
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                    isChecked={allowInsecure}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={allowInsecureConnectionHandler}
+                >
+                    <div className="ml-1">Allow Insecure Connection</div>
+                </Checkbox>
             </div>
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (

@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
-import { Environment } from '../../cdPipeline/cdPipeline.types'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
@@ -96,6 +111,9 @@ export const styles = {
     },
 }
 
+/**
+ * @deprecated - use SelectOption from fe-common
+ */
 export const Option = (props) => {
     const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
@@ -120,6 +138,10 @@ export const Option = (props) => {
         getOption()
     )
 }
+
+/**
+ * @deprecated - use from fe-common
+ */
 
 export const DropdownIndicator = (props) => {
     return (
@@ -201,7 +223,9 @@ export const menuComponentForImage = (props) => {
     )
 }
 
-export const menuComponent = (props, text) => {
+export const menuComponent = (props) => {
+    /* FIXME: not good practice but can be solved once & for all by unifying react-select */
+    const { text } = props.selectProps
     return (
         <components.MenuList {...props}>
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
@@ -210,10 +234,6 @@ export const menuComponent = (props, text) => {
             {props.children}
         </components.MenuList>
     )
-}
-
-export const noMatchingPlatformOptions = (): string => {
-    return 'No matching options'
 }
 
 export const GroupHeading = (props) => {

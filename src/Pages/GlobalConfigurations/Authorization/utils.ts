@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import moment from 'moment'
 import {
     BulkSelectionEvents,
@@ -26,7 +42,7 @@ import {
     PermissionGroup,
     PermissionGroupDto,
     User,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
@@ -42,7 +58,7 @@ import {
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive } from './libUtils'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -76,6 +92,7 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus,
         userRoleGroups,
         roleFilters,
+        userGroups,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
@@ -108,6 +125,7 @@ export const transformUserResponse = (_user: UserDto): User => {
                 },
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
+        userGroups: getParsedUserGroupList(userGroups),
     }
 }
 
@@ -221,11 +239,8 @@ export const handleToggleCheckForBulkSelection =
         )
     }
 
-const getSelectedPermissionValues = (options: OptionType[]) => {
-    return options.some((option) => option.value === SELECT_ALL_VALUE)
-        ? ''
-        : options.map((option) => option.value).join(',')
-}
+const getSelectedPermissionValues = (options: OptionType[]) =>
+    options.some((option) => option.value === SELECT_ALL_VALUE) ? '' : options.map((option) => option.value).join(',')
 
 const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
@@ -258,6 +273,13 @@ const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
     return labels.join(',')
 }
 
+const getCommaSeperatedNamespaceList = (namespaces: OptionType[]) => {
+    if (namespaces.some((el) => el.value === SELECT_ALL_VALUE)) {
+        return ''
+    }
+    return namespaces.map((el) => el.value).join(',')
+}
+
 export const getRoleFilters = ({
     directPermission,
     k8sPermission,
@@ -267,7 +289,7 @@ export const getRoleFilters = ({
     CreateUserPermissionPayloadParams,
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
 >) => {
-    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+    const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directPermission
             .filter(
                 (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -290,7 +312,7 @@ export const getRoleFilters = ({
             cluster: permission.cluster.label,
             group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
             kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
-            namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
+            namespace: getCommaSeperatedNamespaceList(permission.namespace),
             resource: getSelectedPermissionValues(permission.resource),
         })),
     ]
@@ -320,7 +342,7 @@ export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
-    userGroups,
+    userRoleGroups,
     serverMode,
     directPermission,
     chartPermission,
@@ -328,11 +350,12 @@ export const createUserPermissionPayload = ({
     permissionType,
     userStatus,
     timeToLive,
-}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    userGroups,
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    userRoleGroups: userGroups,
+    userRoleGroups,
     superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
@@ -342,6 +365,7 @@ export const createUserPermissionPayload = ({
         serverMode,
         chartPermission,
     }),
+    userGroups,
 })
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {

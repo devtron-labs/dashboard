@@ -1,11 +1,28 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef, useState } from 'react'
-import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
     OptionType,
     ReactSelectInputAction,
     showError,
+    TabGroup,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -173,12 +190,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsList((appList) => {
-            return missingProjects.reduce((_appList, projectId) => {
+        setAppsList((appList) =>
+            missingProjects.reduce((_appList, projectId) => {
                 _appList.set(projectId, { loading: true, result: [], error: null })
                 return _appList
-            }, appList)
-        })
+            }, appList),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
@@ -211,12 +228,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsListHelmApps((appListHelmApps) => {
-            return missingProjects.reduce((_appListHelmApps, projectId) => {
+        setAppsListHelmApps((appListHelmApps) =>
+            missingProjects.reduce((_appListHelmApps, projectId) => {
                 _appListHelmApps.set(projectId, { loading: true, result: [], error: null })
                 return _appListHelmApps
-            }, appListHelmApps)
-        })
+            }, appListHelmApps),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.HELM_APPS)
 
@@ -551,10 +568,10 @@ const AppPermissions = () => {
             const _k8sPermission = _assignedRoleFilters.map((k8s) => ({
                 entity: EntityTypes.CLUSTER,
                 cluster: { label: k8s.cluster, value: k8s.cluster },
-                namespace: {
-                    label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
-                    value: k8s.namespace === '' ? SELECT_ALL_VALUE : k8s.namespace,
-                },
+                namespace: k8s.namespace.split(',').map((namespace) => ({
+                    label: !namespace ? 'All Namespaces / Cluster' : namespace,
+                    value: !namespace ? SELECT_ALL_VALUE : namespace,
+                })),
                 group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
                 action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
                 kind: {
@@ -704,9 +721,10 @@ const AppPermissions = () => {
         const { value } = option || { value: '' }
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
-                const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
-                    return [...acc, ..._option.options]
-                }, [])
+                const allWorkflowOptions = workflowList?.options?.reduce(
+                    (acc, _option) => [...acc, ..._option.options],
+                    [],
+                )
                 tempPermissions[index].workflow = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
                 tempPermissions[index].workflowError = null
             } else {
@@ -873,23 +891,24 @@ const AppPermissions = () => {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            <ul className="tab-list dc__border-bottom-n1">
-                {navLinksConfig.map(
-                    ({ isHidden, label, tabName }) =>
-                        !isHidden && (
-                            <li className="tab-list__tab" key={tabName}>
-                                <NavLink
-                                    to={_getNavLinkUrl(tabName)}
-                                    data-testid={tabName}
-                                    className="tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize"
-                                    activeClassName="active"
-                                >
-                                    {label}
-                                </NavLink>
-                            </li>
-                        ),
-                )}
-            </ul>
+            <div className="dc__border-bottom-n1">
+                <TabGroup
+                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName }) =>
+                        !isHidden
+                            ? {
+                                  id: tabName,
+                                  label,
+                                  tabType: 'navLink',
+                                  props: {
+                                      to: _getNavLinkUrl(tabName),
+                                      'data-testid': tabName,
+                                  },
+                              }
+                            : [],
+                    )}
+                    alignActiveBorderWithContainer
+                />
+            </div>
             <div>
                 <Switch>
                     {appPermissionDetailConfig.map(

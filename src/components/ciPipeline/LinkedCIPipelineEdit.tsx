@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     ServerErrors,
@@ -72,6 +88,10 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             this.props.close()
         }
     }
+
+    getIsChangingToSamePipeline = () =>
+        this.props.changeCIPayload?.switchFromCiPipelineId &&
+        this.state.form.parentCIPipelineId === this.props.changeCIPayload.switchFromCiPipelineId
 
     selectApp({ value }): void {
         const { form, isValid } = { ...this.state }
@@ -259,6 +279,13 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         }
                     })()}
                 </Typeahead>
+                {this.getIsChangingToSamePipeline() && (
+                    <span className="flex left form__error">
+                        <Warning className="icon-dim-14 mr-4 form__icon form__icon--error" />
+                        Source CI Pipeline cannot belong to the same workflow
+                    </span>
+                )}
+
                 {this.state.showError && !this.state.isValid.parentCIPipelineId ? (
                     <span className="form__error">
                         <img src={error} alt="" className="form__icon" />
@@ -364,6 +391,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 rootClassName="cta cta--workflow flex-1"
                                 onClick={this.savePipeline}
                                 isLoading={this.state.loadingData}
+                                disabled={this.state.loadingData || this.getIsChangingToSamePipeline()}
                             >
                                 Create Linked CI Pipeline
                             </ButtonWithLoader>

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .filter {
     position: relative;
     margin: auto 8px;
@@ -12,7 +28,7 @@
     left: 0px;
     right: 0;
     height: 100vh;
-    z-index: var(--transparent-div-index)
+    z-index: var(--transparent-div-index);
 }
 
 .filter__no-result {
@@ -154,18 +170,18 @@
     padding: 8px 10px;
 }
 
-.filter-element__input:checked~.filter-element__checkmark {
+.filter-element__input:checked ~ .filter-element__checkmark {
     background-color: var(--B500);
     border: 1px solid var(--B500);
 }
 
 .filter-element__checkmark:after {
-    content: "";
+    content: '';
     position: absolute;
     display: none;
 }
 
-.filter-element__input:checked~.filter-element__checkmark:after {
+.filter-element__input:checked ~ .filter-element__checkmark:after {
     display: block;
 }
 
@@ -184,7 +200,7 @@
     background-color: #f5f5f5;
 }
 
-.filter__apply:hover~:disabled {
+.filter__apply:hover ~ :disabled {
     background-color: #0558af;
 }
 
@@ -201,7 +217,7 @@
     margin-right: 0px;
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
     .filter {
         margin: auto 10px;
     }
@@ -222,29 +238,28 @@
     animation-timing-function: linear;
 }
 
-
 @-webkit-keyframes pulse {
     0% {
-      -webkit-box-shadow: 0 0 0 0 rgba(255,131,0, 0.4);
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
     }
     70% {
-        -webkit-box-shadow: 0 0 0 10px rgba(255,131,0, 0.4);
+        -webkit-box-shadow: 0 0 0 10px rgba(255, 131, 0, 0.4);
     }
     100% {
-        -webkit-box-shadow: 0 0 0 0 rgba(255,131,0, 0.4);
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
     }
-  }
-  @keyframes pulse {
+}
+@keyframes pulse {
     0% {
-      -moz-box-shadow: 0 0 0 0 rgba(255,131,0, 0.4);
-      box-shadow: 0 0 0 0 rgba(255,131,0, 0.4);
+        -moz-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
     }
     70% {
-        -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
-        box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+        -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
     }
     100% {
-        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
-        box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
     }
 }

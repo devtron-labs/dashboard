@@ -1,5 +1,22 @@
-import React, { useState, useContext, Fragment, useEffect } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useContext, Fragment, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
+import { VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
@@ -7,7 +24,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
-    const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
+    const [collapsedSection, setCollapsedSection] = useState<boolean>(type !== PluginVariableType.INPUT)
     const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
@@ -48,7 +65,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                     <div className="fs-13 cn-7">No {type} variables</div>
                 )}
             </div>
-            {!collapsedSection && (
+            {!collapsedSection && variableLength > 0 && (
                 <div className="variable-container">
                     <div className="fs-12 fw-6 dc__uppercase">Variable</div>
                     <div className="fs-12 fw-6 dc__uppercase">Format</div>
@@ -57,7 +74,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
-                    ]?.map((variable, index) => {
+                    ]?.map((variable: VariableType, index) => {
                         const errorObj =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]
@@ -65,7 +82,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                             <Fragment key={`variable-container-${index}`}>
                                 {type === PluginVariableType.INPUT && variable.description ? (
                                     <Tippy
-                                        className="default-tt"
+                                        className="default-tt dc__word-break"
                                         arrow={false}
                                         content={
                                             <span style={{ display: 'block', width: '185px' }}>
@@ -79,16 +96,24 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                     >
                                         <div
                                             data-testid={`${variable.name}-dropdown`}
-                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right"
+                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right dc_max-width__max-content"
                                         >
-                                            <span className="text-underline-dashed">{variable.name}</span>
+                                            <span
+                                                className={`text-underline-dashed ${
+                                                    type === PluginVariableType.INPUT && !variable.allowEmptyValue
+                                                        ? 'dc__required-field'
+                                                        : ''
+                                                }`}
+                                            >
+                                                {variable.name}
+                                            </span>
                                         </div>
                                     </Tippy>
                                 ) : (
-                                    <div className="fs-13 fw-4 lh-28">{variable.name}</div>
+                                    <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.name}</span>
                                 )}
 
-                                <div className="fs-13 fw-4 lh-28">{variable.format}</div>
+                                <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.format}</span>
                                 {type === PluginVariableType.INPUT ? (
                                     <div className="fs-14 dc__position-rel">
                                         <CustomInputVariableSelect selectedVariableIndex={index} />
@@ -100,7 +125,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="fs-13 fw-4 lh-28">{variable.description}</div>
+                                    <p className="m-0 fs-13 fw-4 lh-28 dc__truncate">{variable.description}</p>
                                 )}
                             </Fragment>
                         )

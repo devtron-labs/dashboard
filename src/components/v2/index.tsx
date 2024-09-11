@@ -1,6 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, Redirect, useLocation, useHistory } from 'react-router'
-import { Switch, Route } from 'react-router-dom'
+import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
@@ -21,7 +36,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
-import { HelmAppOverview } from './HelmAppOverview/HelpAppOverview'
+import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 
 let initTimer = null
 

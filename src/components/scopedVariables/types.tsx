@@ -1,9 +1,23 @@
-import { FileReaderStatusType, FileDataType, ReadFileAs, ValidatorType } from '../common/hooks/types'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-export enum FileView {
-    YAML = 'yaml',
-    SAVED = 'saved',
-}
+import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import { useFileReader } from '../common'
+import { FileReaderStatusType, FileDataType } from '../common/hooks/types'
+import { parseIntoYAMLString } from './utils'
 
 export enum VariableCategories {
     APPLICATION_ENV = 'ApplicationEnv',
@@ -46,7 +60,7 @@ export interface UploadScopedVariablesProps {
 export interface DescriptorProps {
     children?: React.ReactNode
     showUploadButton?: boolean
-    readFile?: (file: File, validator: ValidatorType, readAs: ReadFileAs) => void
+    readFile?: ReturnType<typeof useFileReader>['readFile']
     onSearch?: (query: string) => void
 }
 
@@ -93,4 +107,22 @@ export interface SearchBarProps {
     children?: React.ReactNode
     Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     iconClass?: string
+}
+
+export interface SavedVariablesContentProps {
+    handleSearch: (searchKey: string) => void
+    readFile: ReturnType<typeof useFileReader>['readFile']
+    handleActivateEditView: () => void
+    scopedVariablesYAML: ReturnType<typeof parseIntoYAMLString>
+    variablesList: VariableType[]
+}
+
+export interface YAMLEditorDropdownItemProps extends Pick<SavedVariablesContentProps, 'scopedVariablesYAML'> {
+    item: string
+}
+
+export interface DescriptorTabProps {
+    handleCurrentViewUpdate: (view: ScopedVariablesFileViewType) => void
+    currentView: ScopedVariablesFileViewType
+    targetView: ScopedVariablesFileViewType
 }

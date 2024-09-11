@@ -1,8 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { InputActionMeta } from 'react-select'
-import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { Option, ReactSelectInputAction, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
     ApplicationFilterType,
@@ -259,55 +273,25 @@ export const ApplicationFilter = ({
 
 export const SearchInput = ({ queryParams, history, url }: URLModificationType): JSX.Element => {
     const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
-    const [searchApplied, setSearchApplied] = useState(!!queryParams.get('search'))
 
-    const handleSearchTermChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setSearchTerm(event.target.value || '')
-    }
-
-    const filterExternalLinksUsingSearch = (event: React.KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-            event.preventDefault()
-
-            if (!searchTerm) {
-                setSearchApplied(false)
-                queryParams.delete('search')
-            } else {
-                setSearchApplied(true)
-                queryParams.set('search', searchTerm)
-            }
-
-            history.push(`${url}?${queryParams.toString()}`)
-        }
-    }
-
-    const clearSearch = (): void => {
-        setSearchTerm('')
-        setSearchApplied(false)
-
-        queryParams.delete('search')
+    const handleExternalLinksUsingSearch = (_searchText: string): void => {
+        setSearchTerm(_searchText)
+            queryParams.set('search', _searchText)
         history.push(`${url}?${queryParams.toString()}`)
     }
 
     return (
         <div className="search-wrapper">
-            <Search className="search__icon icon-dim-18" />
-            <input
-                type="text"
-                name="app_search_input"
-                autoComplete="off"
-                value={searchTerm}
-                placeholder="Search"
-                className="search__input bcn-1"
-                onKeyDown={filterExternalLinksUsingSearch}
-                onChange={handleSearchTermChange}
-                data-testid="external-link-app-search"
+             <SearchBar
+                initialSearchText={searchTerm}
+                containerClassName="w-250"
+                handleEnter={handleExternalLinksUsingSearch}
+                inputProps={{
+                    placeholder: 'Search',
+                    autoFocus: true
+                }}
+                dataTestId="external-link-app-search"
             />
-            {searchApplied && (
-                <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                </button>
-            )}
         </div>
     )
 }

@@ -1,25 +1,44 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useEffect, useContext } from 'react'
+import {
+    PluginType,
+    ScriptType,
+    VariableType,
+    RefVariableType,
+    Progressing,
+    CDEmptyState,
+    PluginListContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
-import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
-import { PluginCard } from './PluginCard'
-import { PluginCardListContainer } from './PluginCardListContainer'
-import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
-import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
+import CustomScriptCard from './CustomScriptCard'
+import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
-import { YAMLScriptComponent } from './YAMLScriptComponent'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
+export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const {
         formData,
         isCdPipeline,
@@ -27,24 +46,20 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         addNewTask,
         selectedTaskIndex,
         setSelectedTaskIndex,
-        configurationType,
-        setConfigurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
         pageState,
+        pluginDataStore,
+        handlePluginDataStoreUpdate,
+        availableTags,
+        handleUpdateAvailableTags,
+        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
-    const [editorValue, setEditorValue] = useState<string>(YAMLStringify(formData[activeStageName]))
-    useEffect(() => {
-        if (configurationType === ConfigurationType.YAML) {
-            setEditorValue(YAMLStringify(formData[activeStageName]))
-        }
-    }, [configurationType])
 
     useEffect(() => {
-        setConfigurationType(ConfigurationType.GUI)
         setSelectedTaskIndex(0)
     }, [activeStageName])
 
@@ -92,11 +107,12 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
+            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId].parentPluginId
             isPluginRequired =
                 !isJobView &&
                 isRequired &&
                 !isCdPipeline &&
-                isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                isRequired(formData, mandatoryPluginsMap, activeStageName, parentPluginId, pluginDataStore, false)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -123,38 +139,37 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         }
     }
 
-    const handleEditorValueChange = (editorValue: string): void => {
-        try {
-            setEditorValue(editorValue)
-            const _form = { ...formData }
-            _form[activeStageName] = YAML.parse(editorValue)
-            setFormData(_form)
-        } catch (error) {}
+    const handlePluginSelection = (parentPluginId: number) => {
+        const latestVersionPluginId = pluginDataStore.parentPluginStore[parentPluginId].latestVersionId
+        const pluginDetails = pluginDataStore.pluginVersionStore[latestVersionPluginId]
+        setPluginType(
+            PluginType.PLUGIN_REF,
+            pluginDetails.id,
+            pluginDetails.name,
+            pluginDetails.description,
+            pluginDetails.inputVariables ?? [],
+            pluginDetails.outputVariables ?? [],
+        )
     }
 
     function renderPluginList(): JSX.Element {
         return (
-            <>
-                <div className="cn-9 fw-6 fs-14 pb-10">What do you want this task to do?</div>
+            <div className="px-20 pb-20 dc__overflow-scroll flexbox-col">
+                <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
-                    <PluginCard
-                        dataTestId="execute-custom-script-button"
-                        imgSource={PreBuildIcon}
-                        title="Execute custom script"
-                        subTitle="Write a script to perform custom tasks."
-                    />
+                    <CustomScriptCard />
                 </div>
-                <PluginCardListContainer
-                    setPluginType={setPluginType}
-                    pluginListTitle="PRESET PLUGINS"
-                    pluginList={presetPlugins}
+                <PluginListContainer
+                    availableTags={availableTags}
+                    handleUpdateAvailableTags={handleUpdateAvailableTags}
+                    pluginDataStore={pluginDataStore}
+                    handlePluginDataStoreUpdate={handlePluginDataStoreUpdate}
+                    handlePluginSelection={handlePluginSelection}
+                    isSelectable={false}
+                    persistFilters={false}
+                    rootClassName="pt-8 pre-build-plugin-list-container dc__gap-4 pb-4 flex-grow-1"
                 />
-                <PluginCardListContainer
-                    setPluginType={setPluginType}
-                    pluginListTitle="SHARED PLUGINS"
-                    pluginList={sharedPlugins}
-                />
-            </>
+            </div>
         )
     }
 
@@ -192,36 +207,29 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 />
             )
         }
+
+        if (!formData[activeStageName].steps[selectedTaskIndex]?.stepType) {
+            return renderPluginList()
+        }
+
         return (
-            <div className="p-20 ci-scrollable-content">
-                {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
-                    renderPluginList()
-                ) : (
-                    <TaskDetailComponent />
-                )}
+            <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+                <TaskDetailComponent />
             </div>
         )
     }
 
     const renderComponent = () => {
-        if (pageState === ViewType.LOADING.toString()) {
+        if (pageState === ViewType.LOADING) {
             return (
                 <div style={{ minHeight: '200px' }} className="flex">
                     <Progressing pageLoader />
                 </div>
             )
         }
-        if (configurationType === ConfigurationType.GUI) {
-            return renderGUI()
-        }
-        return (
-            <YAMLScriptComponent
-                editorValue={editorValue}
-                handleEditorValueChange={handleEditorValueChange}
-                showSample
-            />
-        )
+
+        return renderGUI()
     }
 
-    return renderComponent()
+    return <React.Fragment key={activeStageName}>{renderComponent()}</React.Fragment>
 }

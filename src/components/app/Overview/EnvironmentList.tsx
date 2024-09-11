@@ -1,4 +1,20 @@
-import React, { useMemo, useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useMemo, useState } from 'react'
 
 import {
     AppStatus,
@@ -10,27 +26,30 @@ import {
     SortingOrder,
     useAsync,
     useUrlFilters,
+    CommitChipCell,
+    ArtifactInfoModal,
+    ArtifactInfoModalProps,
+    ImageChipCell,
+    RegistryType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
 
-import { ReactComponent as DockerIcon } from '../../../assets/icons/git/docker.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as ArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import CommitChipCell from '../../../Pages/Shared/CommitChipCell'
-import { getAppOtherEnvironment } from '../../../services/service'
+import { getAppOtherEnvironment } from '@Services/service'
 import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { StatusConstants } from '../list-new/Constants'
-import { TriggerInfoModal, TriggerInfoModalProps } from '../list/TriggerInfo'
 import { AppMetaInfo, AppOverviewProps } from '../types'
 import { EnvironmentListSortableKeys, loadingEnvironmentList } from './constants'
+import { renderCIListHeader } from '../details/cdDetails/utils'
 
 const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
@@ -52,7 +71,7 @@ export const EnvironmentList = ({
     )
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
-        TriggerInfoModalProps,
+        ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
     > | null>(null)
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
@@ -143,7 +162,7 @@ export const EnvironmentList = ({
                                 onClick={toggleIsLastDeployedExpanded}
                             >
                                 <ArrowLineDown
-                                    className="icon-dim-14 scn-5 rotate"
+                                    className="icon-dim-14 scn-7 rotate"
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
@@ -203,32 +222,12 @@ export const EnvironmentList = ({
                                                     {_env.environmentName}
                                                 </Link>
                                                 {_env.lastDeployedImage ? (
-                                                    <div className="cn-7 fs-14 lh-20 flexbox">
-                                                        <Tippy
-                                                            content={_env.lastDeployedImage}
-                                                            className="default-tt"
-                                                            placement="auto"
-                                                        >
-                                                            <div
-                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 cursor max-w-100 ${lastDeployedClassName}`}
-                                                                onClick={openCommitInfoModal}
-                                                            >
-                                                                <DockerIcon className="icon-dim-14 mw-14" />
-                                                                {isLastDeployedExpanded ? (
-                                                                    <div className="mono dc__ellipsis-left direction-left">
-                                                                        {_env.lastDeployedImage}
-                                                                    </div>
-                                                                ) : (
-                                                                    <>
-                                                                        <div>…</div>
-                                                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                                                            {_env.lastDeployedImage.split(':').at(-1)}
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                        </Tippy>
-                                                    </div>
+                                                    <ImageChipCell
+                                                        handleClick={openCommitInfoModal}
+                                                        imagePath={_env.lastDeployedImage}
+                                                        isExpanded={isLastDeployedExpanded}
+                                                        registryType={RegistryType.DOCKER}
+                                                    />
                                                 ) : (
                                                     <span className="fs-13 cn-6 flex left dc__gap-6">
                                                         <span className="dc__app-summary__icon icon-dim-16 not-deployed not-deployed--node" />
@@ -282,7 +281,14 @@ export const EnvironmentList = ({
                     />
                 </div>
             )}
-            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
+            {commitInfoModalConfig && (
+                <ArtifactInfoModal
+                    ciArtifactId={commitInfoModalConfig.ciArtifactId}
+                    envId={commitInfoModalConfig.envId}
+                    handleClose={closeCommitInfoModal}
+                    renderCIListHeader={renderCIListHeader}
+                />
+            )}
         </div>
     )
 }

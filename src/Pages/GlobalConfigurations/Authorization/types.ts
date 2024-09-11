@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ReactNode } from 'react'
 import {
     UserStatusDto,
@@ -6,9 +22,11 @@ import {
     OptionType,
     UserStatus,
     UserRoleGroup,
+    UserGroupType,
+    UserGroupDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
-import { ActionTypes, EntityTypes, PermissionType } from './constants'
+import { ActionTypes, EntityTypes, PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -110,10 +128,14 @@ export interface UserDto {
         status?: UserStatusDto
         timeoutWindowExpression?: string
     }[]
+    userGroups: UserGroupDTO[]
 }
 
 export interface User
-    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
+    extends Omit<
+        UserDto,
+        'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters' | 'userGroups'
+    > {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -125,12 +147,19 @@ export interface User
     userStatus: UserStatus
     userRoleGroups: UserRoleGroup[]
     roleFilters: APIRoleFilter[]
+    userGroups: UserGroupType[]
 }
 
-export type UserCreateOrUpdatePayload = Pick<
+export type UserCreateOrUpdateParamsType = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
->
+> & {
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
+}
+
+export interface UserCreateOrUpdatePayloadType extends Omit<UserDto, 'userGroups'> {
+    userGroups: Pick<UserGroupDTO, 'identifier'>[]
+}
 
 // Others
 export interface UserRole {
@@ -140,8 +169,14 @@ export interface UserRole {
     roles: string[]
     /**
      * If true, the user has super admin role
+     * @note If false, this key won't be present
      */
-    superAdmin: boolean
+    superAdmin?: boolean
+    /**
+     * Role of the user
+     * @note This key is present only when superAdmin is false
+     */
+    role?: UserRoleType
 }
 
 export type UserBulkDeletePayload =
@@ -239,7 +274,7 @@ export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>,
 export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     entity: EntityTypes
     cluster: OptionType
-    namespace: OptionType
+    namespace: OptionType[]
     group: OptionType
     action: OptionType
     kind: OptionType
@@ -247,10 +282,10 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups'> {
     id: number
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     userIdentifier: string
-    userGroups: User['userRoleGroups']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter

@@ -1,4 +1,20 @@
-import React, { useEffect, useRef } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useRef } from 'react'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { IssuesListingModalType } from './appDetails.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -23,20 +39,16 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
         }
     }, [outsideClickHandler])
 
-    const renderErrorRows = () => {
-        return errorsList?.map((errorItem) => {
-            return (
-                <div className="issues-listing-modal__body__row">
-                    <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
-                    <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
-                </div>
-            )
-        })
-    }
+    const renderErrorRows = () =>
+        errorsList?.map((errorItem) => (
+            <div className="issues-listing-modal__body__row">
+                <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
+                <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
+            </div>
+        ))
 
-    const getErrorCountText = () => {
-        return errorsList.length > 1 ? `${errorsList.length} Errors` : `${errorsList.length} Error`
-    }
+    const getErrorCountText = () =>
+        errorsList.length > 1 ? `${errorsList.length} Errors` : `${errorsList.length} Error`
 
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>

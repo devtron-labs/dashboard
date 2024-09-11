@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
-import { InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
 import SearchBar from './DescriptorSearchBar'
 import { validator } from './utils'
 import { DescriptorProps } from './types'
@@ -7,7 +23,7 @@ import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
+import { HEADER_TEXT } from '@Config/constants'
 
 export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,15 +43,15 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                 }}`}
             >
                 <div className="flex dc__gap-8 w-100 dc__content-space">
-                    <div className="flex dc__gap-8">
-                        <p className="cn-9 fs-16 fw-6 m-0">{DEFAULT_TITLE}</p>
-                        <InfoIconTippy
-                            heading={DEFAULT_TITLE}
-                            infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
-                            additionalContent={additonalTippyContent?.()}
-                            iconClassName="icon-dim-20"
-                        />
-                    </div>
+                    <FeatureTitleWithInfo
+                        title={HEADER_TEXT.SCOPED_VARIABLES.title}
+                        renderDescriptionContent={() =>
+                            additonalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
+                        }
+                        additionalContent={additonalTippyContent?.()}
+                        docLink={HEADER_TEXT.SCOPED_VARIABLES.docLink}
+                        showInfoIconTippy
+                    />
 
                     <div className="flex dc__gap-12">
                         {onSearch && <SearchBar onSearch={onSearch} placeholder="Search variables" Icon={ICSearch} />}

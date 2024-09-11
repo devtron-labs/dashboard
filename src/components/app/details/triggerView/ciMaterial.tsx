@@ -1,5 +1,32 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { Prompt } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import {
+    showError,
+    ServerErrors,
+    Checkbox,
+    noop,
+    CIMaterialSidebarType,
+    ButtonWithLoader,
+    ModuleNameMap,
+    SourceTypeMap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -9,7 +36,7 @@ import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-medi
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
@@ -18,7 +45,7 @@ import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
-export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
+class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
     constructor(props) {
@@ -37,6 +64,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
+            runtimeParamsErrorState: false,
         }
     }
 
@@ -58,8 +86,18 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         } catch (error) {}
     }
 
+    handleRuntimeParamError = (errorState: boolean) => {
+        this.setState({
+            runtimeParamsErrorState: errorState,
+        })
+    }
 
     handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (this.state.runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
         this.setState({
             currentSidebarTab: e.target.value as CIMaterialSidebarType,
         })
@@ -143,6 +181,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleStartBuildAction = (e) => {
+        if (this.state.runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before starting the build')
+            return
+        }
+
         e.stopPropagation()
         this.context.onClickTriggerCINode()
     }
@@ -247,16 +290,18 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
-                        ciBlockState={this.props.ciBlockState}
                         isJobCI={this.props.isJobCI}
                         currentSidebarTab={this.state.currentSidebarTab}
                         handleSidebarTabChange={this.handleSidebarTabChange}
                         runtimeParams={this.props.runtimeParams}
-                        handleRuntimeParametersChange={this.props.handleRuntimeParametersChange}
+                        handleRuntimeParamChange={this.props.handleRuntimeParamChange}
+                        handleRuntimeParamError={this.handleRuntimeParamError}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
+
+                    <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )
         }
@@ -353,7 +398,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     title={this.props.title}
                     isChangeBranchClicked={this.props.isChangeBranchClicked}
                     onClickNextButton={this.onClickNextButton}
-                    onShowCIModal={this.props.onShowCIModal}
                     handleRegexInputValue={this.handleRegexInputValue}
                     regexValue={this.state.regexValue}
                     onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
@@ -361,9 +405,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 />
             )
         }
-        if (this.props.showCIModal) {
-            return this.renderCIModal()
-        }
-        return <></>
+        return this.renderCIModal()
     }
 }
+
+export default CIMaterial

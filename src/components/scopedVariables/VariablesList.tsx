@@ -1,15 +1,29 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { GenericEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericFilterEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableType, VariablesListItemProps } from './types'
 import {
     TABLE_LIST_HEADINGS,
-    NO_VARIABLES_MESSAGE,
     NO_DESCRIPTION_MESSAGE,
     SENSITIVE_VARIABLE_DESCRIPTION,
     IN_SENSITIVE_VARIABLE_DESCRIPTION,
 } from './constants'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as ICVisibilityOn } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ICVisibilityOff } from '../../assets/icons/ic-visibility-off.svg'
 
@@ -37,13 +51,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     )
 
     if (!variablesList?.length) {
-        return (
-            <GenericEmptyState
-                image={NoResults}
-                title={NO_VARIABLES_MESSAGE.TITLE}
-                subTitle={NO_VARIABLES_MESSAGE.SUBTITLE}
-            />
-        )
+        return <GenericFilterEmptyState />
     }
 
     return (

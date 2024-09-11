@@ -1,7 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
+import { Prompt, useHistory } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -18,7 +35,6 @@ import {
     useAsync,
     genericCDMaterialsService,
     CDMaterialServiceEnum,
-    Reload,
     useSearchString,
     handleUTCTime,
     ServerErrors,
@@ -45,6 +61,21 @@ import {
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentWithConfigType,
+    usePrompt,
+    getIsRequestAborted,
+    GitCommitInfoGeneric,
+    ErrorScreenManager,
+    useDownload,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
+    SearchBar,
+    CDMaterialSidebarType,
+    RuntimeParamsListItemType,
+    CDMaterialResponseType,
+    CD_MATERIAL_SIDEBAR_TABS,
+    getIsManualApprovalConfigured,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -65,21 +96,18 @@ import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
-import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { getCTAClass, importComponentFromFELibrary } from '../../../common'
-import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
+import noArtifact from '../../../../assets/img/no-artifact@2x.png'
+import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
+import { CDButtonLabelMap, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
     getRecentDeploymentConfig,
     getSpecificDeploymentConfig,
     triggerCDNode,
 } from '../../service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     DEPLOYMENT_CONFIGURATION_NAV_MAP,
     LAST_SAVED_CONFIG_OPTION,
@@ -93,7 +121,7 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
-import { useHistory } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -102,7 +130,7 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -111,6 +139,12 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
+const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
+const getIsImageApproverFromUserApprovalMetaData: (
+    email: string,
+    userApprovalMetadata: UserApprovalMetadataType,
+) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -125,7 +159,6 @@ const CDMaterial = ({
     isVirtualEnvironment,
     parentEnvironmentName,
     isLoading,
-    triggerDeploy,
     // Handle the case of external pipeline, it might be undefined or zero in that case
     ciPipelineId,
     updateCurrentAppMaterial,
@@ -137,13 +170,25 @@ const CDMaterial = ({
     deploymentAppType,
     selectedImageFromBulk,
     isRedirectedFromAppDetails,
+    selectedAppName,
+    bulkRuntimeParams,
+    handleBulkRuntimeParamChange,
+    handleBulkRuntimeParamError,
+    bulkSidebarTab,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
-    // FIXME: the queryparams returned by useSearchString seems faulty
+    // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
     const { searchParams } = useSearchString()
+    const { handleDownload } = useDownload()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
+    // NOTE: Won't be available in app group will use data from props for that
+    // DO Not consume directly, use appName variable instead
+    const { currentAppName } = useAppContext()
+
+    const appName = selectedAppName || currentAppName
+    const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
 
@@ -153,6 +198,9 @@ const CDMaterial = ({
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
+    const abortDeployRef = useRef(null)
+
+    const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -164,7 +212,7 @@ const CDMaterial = ({
                             ? CDMaterialServiceEnum.ROLLBACK
                             : CDMaterialServiceEnum.CD_MATERIALS,
                         pipelineId,
-                        // Dont think need to set stageType to approval in case of approval node
+                        // Don't think need to set stageType to approval in case of approval node
                         stageType ?? DeploymentNodeType.CD,
                         abortControllerRef.current.signal,
                         // It is meant to fetch the first 20 materials
@@ -188,9 +236,10 @@ const CDMaterial = ({
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
+        !!pipelineId,
     )
 
-    const materialsResult = responseList?.[0]
+    const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
@@ -200,6 +249,10 @@ const CDMaterial = ({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
+    // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
+    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -207,9 +260,12 @@ const CDMaterial = ({
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
     const userApprovalConfig = materialsResult?.userApprovalConfig
-    const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
+    const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
+
+    usePrompt({ shouldPrompt: deploymentLoading })
+
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -298,6 +354,18 @@ const CDMaterial = ({
 
     /* ------------ UseEffects  ------------*/
     useEffect(() => {
+        abortDeployRef.current = new AbortController()
+        return () => {
+            abortDeployRef.current.abort()
+        }
+    }, [])
+
+    useEffect(() => {
+        if (materialsError) {
+            showError(materialsError)
+            return
+        }
+
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
@@ -323,6 +391,7 @@ const CDMaterial = ({
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
+                    setRuntimeParamsList(materialsResult.runtimeParams || [])
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
@@ -349,6 +418,7 @@ const CDMaterial = ({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
+                setRuntimeParamsList(materialsResult.runtimeParams || [])
 
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
@@ -557,6 +627,16 @@ const CDMaterial = ({
         }))
     }
 
+    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (
+        updatedRuntimeParams: RuntimeParamsListItemType[],
+    ) => {
+        setRuntimeParamsList(updatedRuntimeParams)
+    }
+
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState(errorState)
+    }
+
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
         if (state.searchText) {
@@ -579,9 +659,8 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType) =>
-        userApprovalMetadata?.approvedUsersData &&
-        userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === requestedUserId)
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
+        getIsImageApproverFromUserApprovalMetaData(email, userApprovalMetadata)
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
@@ -669,14 +748,13 @@ const CDMaterial = ({
         })
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            if (event.target.value !== searchImageTag) {
-                setSearchValue(event.target.value)
-            }
-        } else if (theKeyCode === 'Backspace' && state.searchText.length === 1) {
-            clearSearch(event)
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setState({
+            ...state,
+            searchText: _searchText,
+        })
+        if (_searchText !== searchImageTag) {
+            setSearchValue(_searchText)
         }
     }
 
@@ -686,6 +764,15 @@ const CDMaterial = ({
             ...prevState,
             showConfiguredFilters: true,
         }))
+    }
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
+        setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
     const handleFilterTabsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -852,14 +939,26 @@ const CDMaterial = ({
     }
 
     const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
+        if (!getDownloadManifestUrl) {
+            return
+        }
         const downloadManifestDownload = {
             appId,
             envId,
             appName: getHelmPackageName(helmPackageName, cdWorkflowType),
             cdWorkflowType,
         }
-        if (getDeployManifestDownload) {
-            getDeployManifestDownload(downloadManifestDownload)
+        const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
+        handleDownload({
+            downloadUrl,
+            fileName: downloadManifestDownload.appName,
+            downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+        })
+    }
+
+    const showErrorIfNotAborted = (errors: ServerErrors) => {
+        if (!getIsRequestAborted(errors)) {
+            showError(errors)
         }
     }
 
@@ -871,11 +970,25 @@ const CDMaterial = ({
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => {
+        if (runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before deploying')
+            return
+        }
+
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         setDeploymentLoading(true)
 
         if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
+            triggerCDNode({
+                pipelineId,
+                ciArtifactId,
+                appId: _appId.toString(),
+                stageType: nodeType,
+                deploymentWithConfig,
+                wfrId,
+                abortSignal: abortDeployRef.current.signal,
+                runtimeParams: runtimeParamsList,
+            })
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&
@@ -896,7 +1009,7 @@ const CDMaterial = ({
                     // TODO: Ask why this was only there in TriggerView
                     isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
                         ? handleTriggerErrorMessageForHelmManifestPush(errors, pipelineId, envId)
-                        : showError(errors)
+                        : showErrorIfNotAborted(errors)
                     setDeploymentLoading(false)
                 })
         } else {
@@ -913,12 +1026,6 @@ const CDMaterial = ({
         handleConfirmationClose(e)
         // Blocking the deploy action if already deploying or config is not available
         if (isLoading || isDeployButtonDisabled()) {
-            return
-        }
-
-        if (isFromBulkCD) {
-            // It does'nt need any params btw
-            triggerDeploy(stageType, appId, Number(getCDArtifactId()))
             return
         }
 
@@ -1101,7 +1208,7 @@ const CDMaterial = ({
         ) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No eligible image found"
                     subTitle={renderFilterEmptyStateSubtitle()}
                     isButtonAvailable={!noMoreImages}
@@ -1113,7 +1220,7 @@ const CDMaterial = ({
         if (searchImageTag) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No matching image available"
                     subTitle="We couldn't find any matching image"
                     isButtonAvailable
@@ -1137,7 +1244,7 @@ const CDMaterial = ({
 
         return (
             <GenericEmptyState
-                image={noartifact}
+                image={noArtifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     materialType == MATERIAL_TYPE.rollbackMaterialList
@@ -1212,8 +1319,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                            {/* TODO: Move into fe-common */}
+                        <div className="bcn-0 br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1441,32 +1547,50 @@ const CDMaterial = ({
         })
 
     const renderSearch = (): JSX.Element => (
-        <div className="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300 h-32 w-250">
-            <SearchIcon className="icon-dim-16" />
-
-            <input
-                data-testid="ci-trigger-search-by-commit-hash"
-                type="text"
-                placeholder="Search by image tag"
-                value={state.searchText}
-                className="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
-                onChange={handleInputChange}
-                onKeyDown={handleFilterKeyPress}
-                autoFocus
-            />
-
-            {state.searchApplied && (
-                <button
-                    className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
-                    type="button"
-                    onClick={clearSearch}
-                    aria-label="Clear search input"
-                >
-                    <Clear className="icon-dim-16 icon-n4 dc__vertical-align-middle" />
-                </button>
-            )}
-        </div>
+                <SearchBar
+                    initialSearchText={state.searchText}
+                    containerClassName="w-250"
+                    handleEnter={handleFilterKeyPress}
+                    inputProps={{
+                        placeholder: 'Search by image tag',
+                        autoFocus: true,
+                    }}
+                    dataTestId="ci-trigger-search-by-commit-hash"
+                />
     )
+
+    const renderMaterialListBodyWrapper = (children: JSX.Element) => (
+        <div className="flexbox-col py-16 px-20 dc__overflow-scroll">{children}</div>
+    )
+
+    const renderRuntimeParamsSidebar = (areTabsDisabled: boolean = false) => {
+        const showSidebar = isPreOrPostCD && !isFromBulkCD
+        if (!showSidebar) {
+            return null
+        }
+
+        return (
+            <div className="flexbox-col bcn-0">
+                {RuntimeParamTabs && (
+                    <div className={`px-16 py-12 flex ${areTabsDisabled ? 'dc__disabled' : ''}`}>
+                        <RuntimeParamTabs
+                            tabs={CD_MATERIAL_SIDEBAR_TABS}
+                            initialTab={currentSidebarTab}
+                            onChange={areTabsDisabled ? noop : handleSidebarTabChange}
+                        />
+                    </div>
+                )}
+
+                <div className="flexbox dc__align-items-center px-16 py-8">
+                    <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
+                </div>
+
+                <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
+                    <span className="cn-9 fs-13 fw-6 lh-16">{appName}</span>
+                </div>
+            </div>
+        )
+    }
 
     const renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList, eligibleImagesCount } =
@@ -1477,44 +1601,71 @@ const CDMaterial = ({
             FilterActionBar && !state.searchApplied && !!resourceFilters?.length && !state.showConfiguredFilters
 
         return (
-            <>
-                {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
-                <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                    {showActionBar ? (
-                        <FilterActionBar
-                            tabs={getFilterActionBarTabs(eligibleImagesCount, consumedImage.length)}
-                            onChange={handleFilterTabsChange}
-                            handleEnableFiltersView={handleEnableFiltersView}
-                            initialTab={state.filterView}
-                        />
+            <div
+                className={`flex-grow-1 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
+            >
+                {renderRuntimeParamsSidebar()}
+
+                <ConditionalWrap condition={isPreOrPostCD && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
+                    {(bulkSidebarTab
+                        ? bulkSidebarTab === CDMaterialSidebarType.IMAGE
+                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParameters ? (
+                        <>
+                            {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
+                            <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                                {showActionBar ? (
+                                    <FilterActionBar
+                                        tabs={getFilterActionBarTabs(eligibleImagesCount, consumedImage.length)}
+                                        onChange={handleFilterTabsChange}
+                                        handleEnableFiltersView={handleEnableFiltersView}
+                                        initialTab={state.filterView}
+                                    />
+                                ) : (
+                                    <span className="flex dc__align-start">{titleText}</span>
+                                )}
+
+                                <span className="flexbox dc__align-items-center h-32 dc__gap-16">
+                                    {state.showSearch ? (
+                                        renderSearch()
+                                    ) : (
+                                        <SearchIcon
+                                            onClick={handleSearchClick}
+                                            className="icon-dim-16 icon-color-n6 cursor"
+                                        />
+                                    )}
+                                    <RefreshIcon onClick={handleRefresh} className="icon-dim-16 scn-6 cursor" />
+                                </span>
+                            </div>
+
+                            {materialList.length <= 0
+                                ? renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
+                                : renderMaterial(materialList, false, isApprovalConfigured)}
+
+                            {!noMoreImages && !!materialList?.length && (
+                                <button
+                                    className="show-older-images-cta cta ghosted flex h-32"
+                                    onClick={loadOlderImages}
+                                    type="button"
+                                >
+                                    {state.loadingMore ? (
+                                        <Progressing styles={{ height: '32px' }} />
+                                    ) : (
+                                        'Fetch more images'
+                                    )}
+                                </button>
+                            )}
+                        </>
                     ) : (
-                        <span className="flex dc__align-start">{titleText}</span>
+                        <RuntimeParameters
+                            rootClassName=""
+                            parameters={bulkRuntimeParams || runtimeParamsList}
+                            handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
+                            onError={handleBulkRuntimeParamError || handleRuntimeParamError}
+                            headingClassName="pb-14 flexbox dc__gap-4"
+                        />
                     )}
-
-                    <span className="flexbox dc__align-items-center h-32 dc__gap-16">
-                        {state.showSearch ? (
-                            renderSearch()
-                        ) : (
-                            <SearchIcon onClick={handleSearchClick} className="icon-dim-16 icon-color-n6 cursor" />
-                        )}
-                        <RefreshIcon onClick={handleRefresh} className="icon-dim-16 scn-6 cursor" />
-                    </span>
-                </div>
-
-                {materialList.length <= 0
-                    ? renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
-                    : renderMaterial(materialList, false, isApprovalConfigured)}
-
-                {!noMoreImages && !!materialList?.length && (
-                    <button
-                        className="show-older-images-cta cta ghosted flex h-32"
-                        onClick={loadOlderImages}
-                        type="button"
-                    >
-                        {state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Fetch more images'}
-                    </button>
-                )}
-            </>
+                </ConditionalWrap>
+            </div>
         )
     }
 
@@ -1692,9 +1843,10 @@ const CDMaterial = ({
                 deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
             ) {
                 setShowDeploymentWindowConfirmation(true)
-            } else {
-                deployTrigger(e)
+                return
             }
+
+            deployTrigger(e)
         }
     }
 
@@ -1724,33 +1876,23 @@ const CDMaterial = ({
                     !showConfigDiffView &&
                     stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
-                            <div className="flex">
-                                <ReactSelect
+                            <div className="flex px-16">
+                                <span className="fs-13 fw-4 cn-9">Deploy:&nbsp;</span>
+                                <SelectPicker
+                                    inputId="deploy-config-select"
+                                    name="deploy-config-select"
+                                    variant={SelectPickerVariantType.BORDER_LESS}
                                     options={getDeployConfigOptions(
                                         state.isRollbackTrigger,
                                         state.recentDeploymentConfig !== null,
                                     )}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                        ValueContainer: customValueContainer,
-                                    }}
                                     isDisabled={state.checkingDiff}
                                     isSearchable={false}
-                                    formatOptionLabel={formatOptionLabel}
                                     classNamePrefix="deploy-config-select"
                                     placeholder="Select Config"
-                                    menuPlacement="top"
                                     value={state.selectedConfigToDeploy}
-                                    styles={getCommonConfigSelectStyles({
-                                        valueContainer: (base, state) => ({
-                                            ...base,
-                                            minWidth: '135px',
-                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                        }),
-                                    })}
                                     onChange={handleConfigSelection}
+                                    menuSize={ComponentSizeType.medium}
                                 />
                             </div>
                             <span className="dc__border-left h-100" />
@@ -1787,6 +1929,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
+                        disabled={deploymentLoading || isSaveLoading}
                         className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
@@ -1797,7 +1940,7 @@ const CDMaterial = ({
                             <>
                                 {getDeployButtonIcon()}
                                 {buttonLabel}
-                                {isVirtualEnvironment && 'to virtual env'}
+                                {isVirtualEnvironment && ' to virtual env'}
                                 {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
                                     <InfoOutline className="icon-dim-16 ml-5" />
                                 )}
@@ -1831,7 +1974,7 @@ const CDMaterial = ({
 
     const renderTriggerBody = (isApprovalConfigured: boolean) => (
         <div
-            className={`trigger-modal__body ${showConfigDiffView && canReviewConfig() ? 'p-0' : ''}`}
+            className="trigger-modal__body p-0"
             style={{
                 height: getTriggerBodyHeight(isApprovalConfigured),
             }}
@@ -1922,6 +2065,7 @@ const CDMaterial = ({
                     envName={envName}
                 />
             )}
+            <Prompt when={deploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </>
     )
 
@@ -1964,23 +2108,23 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <div className="flexbox-col dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
-                    <div className="flexbox dc__align-items-center dc__content-space pt-20 pb-16 w-100">
-                        <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
-                    </div>
+                <div className={`flexbox-col h-100 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : ''}`}>
+                    {renderRuntimeParamsSidebar(true)}
 
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                    <div className="flexbox-col dc__overflow-scroll dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
+                        <div className="flexbox dc__align-items-center dc__content-space pt-20 pb-16 w-100">
+                            <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
+                        </div>
+
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                    </div>
                 </div>
             </>
         )
     }
 
     if (materialsError) {
-        showError(materialsError)
-
         return (
             <>
                 {!isFromBulkCD && (
@@ -1992,7 +2136,7 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <Reload reload={reloadMaterialsPropagation} />
+                <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
             </>
         )
     }

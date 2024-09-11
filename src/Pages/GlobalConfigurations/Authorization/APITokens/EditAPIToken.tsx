@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react'
@@ -53,7 +69,7 @@ const EditAPIToken = ({
     isLoading: boolean
     setEditData: (editData: EditDataType) => void
 }) => {
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
         usePermissionConfiguration()
 
     const history = useHistory()
@@ -65,25 +81,21 @@ const EditAPIToken = ({
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const renderActionButton = () => {
-        return (
-            <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
-                Regenerate token
-            </span>
-        )
-    }
+    const renderActionButton = () => (
+        <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
+            Regenerate token
+        </span>
+    )
 
-    const renderRegenerateInfoBar = () => {
-        return (
-            <InfoColourBar
-                message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-                classname="info_bar"
-                Icon={InfoIcon}
-                iconClass="icon-dim-20"
-                renderActionButton={renderActionButton}
-            />
-        )
-    }
+    const renderRegenerateInfoBar = () => (
+        <InfoColourBar
+            message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
+            classname="info_bar"
+            Icon={InfoIcon}
+            iconClass="icon-dim-20"
+            renderActionButton={renderActionButton}
+        />
+    )
 
     const redirectToTokenList = () => {
         history.push(`${match.path.split('edit')[0]}list`)
@@ -115,12 +127,13 @@ const EditAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: editData.userId,
                     userIdentifier: editData.userIdentifier,
-                    userGroups,
+                    userRoleGroups,
                     serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
                     permissionType,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

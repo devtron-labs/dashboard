@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
@@ -7,7 +23,7 @@ import { getChartsByKeyword } from '../../../charts/charts.service'
 import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-purple.svg'
 import { URLS } from '../../../../config'
 import { getCommonSelectStyle, noMatchingOptions } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'

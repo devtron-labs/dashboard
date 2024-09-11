@@ -1,6 +1,29 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
-import { Progressing, showError, SortingOrder, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    showError,
+    SortingOrder,
+    YAMLStringify,
+    MarkDown,
+    CodeEditor,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -13,15 +36,13 @@ import {
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
+import { MODES } from '../../../config'
 import {
     CompareWithDropdown,
     CompareWithApprovalPendingAndDraft,
     getCodeEditorHeight,
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 
@@ -42,8 +63,10 @@ const DeploymentTemplateEditorView = ({
     groupedData,
     hideLockedKeys,
     lockedConfigKeysWithLockType,
+    editedDocument,
     hideLockKeysToggled,
     removedPatches,
+    uneditedDocument,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -52,7 +75,7 @@ const DeploymentTemplateEditorView = ({
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.environmentId === +envId
     const baseDeploymentAbortController = useRef(null)
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
@@ -77,16 +100,38 @@ const DeploymentTemplateEditorView = ({
         return response.result.data
     }
 
+    const triggerEditorLoadingState = () => {
+        // NOTE: this is to trigger a loading state in CodeEditor
+        // React-Monaco-Editor internally does not put defaultValue prop
+        // inside any of its useEffects thus, the diffs don't update when
+        // defaultValue i.e lhs changes. To trigger an update we need to trigger
+        // the loader of CodeEditor
+        setFetchingValues(true)
+        setTimeout(() => setFetchingValues(false), 1000)
+    }
+
+    useEffect(() => {
+        triggerEditorLoadingState()
+    }, [hideLockedKeys])
+
     const resolveVariables = async (value: string) => {
         const request = {
             appId: +appId,
             chartRefId: state.selectedChartRefId,
             values: value,
             valuesAndManifestFlag: 1,
+            ...(envId && { envId: +envId }),
         }
         const response = await getDeploymentManisfest(request)
-
-        return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
+        try {
+            // In complex objects we are receiving JSON object instead of YAML object in case value is YAML.
+            return {
+                resolvedData: YAMLStringify(YAML.parse(response.result.resolvedData)),
+                variableSnapshot: response.result.variableSnapshot,
+            }
+        } catch (error) {
+            return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
+        }
     }
 
     useEffect(() => {
@@ -160,12 +205,11 @@ const DeploymentTemplateEditorView = ({
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
-            state.selectedCompareOption.id !== -1 &&
+            state.selectedCompareOption.environmentId !== -1 &&
             (isValues
                 ? !state.fetchedValues[state.selectedCompareOption.id]
                 : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache
             !state.chartConfigLoading &&
-            !fetchingValues &&
             !convertVariables
         ) {
             setFetchingValues(true)
@@ -283,6 +327,9 @@ const DeploymentTemplateEditorView = ({
 
     useEffect(() => {
         editorOnChange(rhs)
+        if (state.selectedTabIndex === 2) {
+            triggerEditorLoadingState()
+        }
     }, [state.selectedTabIndex])
 
     useEffect(() => {
@@ -337,6 +384,7 @@ const DeploymentTemplateEditorView = ({
                 hideLockKeysToggled,
                 unableToParseYaml: state.unableToParseYaml,
                 readOnly,
+                uneditedDocument,
             })
             lhs = updatedLHS
             rhs = updatedRHS
@@ -386,6 +434,7 @@ const DeploymentTemplateEditorView = ({
                             isValues={isValues}
                             groupedData={groupedData}
                             setConvertVariables={setConvertVariables}
+                            triggerEditorLoadingState={triggerEditorLoadingState}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -462,12 +511,9 @@ const DeploymentTemplateEditorView = ({
                 validatorSchema={state.schema}
                 loading={
                     state.chartConfigLoading ||
-                    value === undefined ||
-                    value === null ||
                     fetchingValues ||
                     draftLoading ||
                     resolveLoading ||
-                    !rhs ||
                     (state.openComparison && !lhs)
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
@@ -505,11 +551,19 @@ const DeploymentTemplateEditorView = ({
         return renderCodeEditor()
     }
 
-    return state.yamlMode ||
-        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ? (
         renderCodeEditorView()
     ) : (
-        <DeploymentTemplateGUIView fetchingValues={fetchingValues} value={value} readOnly={readOnly} />
+        <DeploymentTemplateGUIView
+            fetchingValues={fetchingValues}
+            uneditedDocument={uneditedDocument}
+            editedDocument={editedDocument}
+            value={rhs}
+            readOnly={readOnly}
+            hideLockedKeys={hideLockedKeys}
+            editorOnChange={editorOnChange}
+            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+        />
     )
 }
 

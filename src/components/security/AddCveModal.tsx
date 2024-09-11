@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { showError, Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getCVEPolicies } from './security.service'
@@ -35,8 +51,6 @@ export interface AddCveModalState {
 }
 
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
-    _inputRef
-
     constructor(props) {
         super(props)
         this.state = {
@@ -49,12 +63,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         this.handleCveChange = this.handleCveChange.bind(this)
         this.handlePolicyChange = this.handlePolicyChange.bind(this)
         this.searchCVE = this.searchCVE.bind(this)
-    }
-
-    componentDidMount() {
-        if (this._inputRef) {
-            this._inputRef.focus()
-        }
     }
 
     handleCveChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -183,7 +191,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                 <CustomInput
                                     name="cve"
                                     label="CVE ID"
-                                    ref={(node) => (this._inputRef = node)}
                                     autoFocus
                                     tabIndex={1}
                                     placeholder="Enter CVE ID"

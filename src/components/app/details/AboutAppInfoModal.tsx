@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
@@ -51,27 +67,13 @@ export default function AboutAppInfoModal({
 
     const renderProjectSelect = (): JSX.Element => {
         return (
-            <ReactSelect
+            <SelectPicker
+                inputId="overview-project-menu-list"
+                name="overview-project-menu-list"
                 classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
-                styles={getCommonSelectStyle({
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        marginBottom: '6px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                })}
             />
         )
     }

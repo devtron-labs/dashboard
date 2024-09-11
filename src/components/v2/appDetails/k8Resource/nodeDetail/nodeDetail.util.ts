@@ -1,22 +1,38 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Moment } from 'moment'
+import { decode, DeploymentAppTypes, K8sResourcePayloadAppType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
-    K8sResourcePayloadAppType,
     LogState,
-    NodeType,
     Options,
     OptionsBase,
     PodContainerOptions,
     PodMetaData,
     SelectedResourceType,
+    NodeType,
+    K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
-import { decode } from '../../../../../util/Util'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -462,12 +478,15 @@ export const getTrimmedManifestData = (
     return returnAsString ? JSON.stringify(manifestData) : manifestData
 }
 
-export const getK8sResourcePayloadAppType = (appType: string) => {
+export const getK8sResourcePayloadAppType = (appType: string): K8sResourcePayloadAppType => {
     if (appType === AppType.DEVTRON_APP) {
         return K8sResourcePayloadAppType.DEVTRON_APP
     }
     if (appType === AppType.EXTERNAL_ARGO_APP) {
         return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+    }
+    if (appType === AppType.EXTERNAL_FLUX_APP) {
+        return K8sResourcePayloadAppType.EXTERNAL_FLUX_APP
     }
     return K8sResourcePayloadAppType.HELM_APP
 }
@@ -481,4 +500,14 @@ export const getDecodedEncodedSecretManifestData = (
         [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
     }
     return returnAsString ? JSON.stringify(encodedData) : manifestData
+}
+
+export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sResourcePayloadDeploymentType => {
+    if (deploymentAppType === DeploymentAppTypes.HELM) {
+        return K8sResourcePayloadDeploymentType.HELM_INSTALLED
+    }
+    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+        return K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+    }
+    return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED
 }

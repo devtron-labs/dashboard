@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .dynamic-tabs-section {
     z-index: 11;
     .dynamic-tabs-container {
@@ -98,59 +114,40 @@
         }
     }
 
-    .dynamic-tab__border:not(:last-of-type) {
+    .dynamic-tab__border:not(:first-of-type) {
         height: 16px;
         border-left: 1px solid var(--N200);
     }
 
     .dynamic-tabs-container,
     .fixed-tabs-container {
+        display: flex;
+        align-items: center;
+        height: 36px;
 
-        .dynamic-tabs-wrapper,
-        .fixed-tabs-wrapper {
-            list-style: none;
-            display: flex;
-            margin: 0px;
-            padding: 0px;
+        .dynamic-tab-selected {
+            border-bottom: 2px solid var(--N0);
+            border-left: 1px solid var(--N200);
+            border-right: 1px solid var(--N200);
+            background-color: var(--N0);
 
-            .dynamic-tab {
-                max-width: max-content;
-                width: 100%;
-                min-width: 91px;
+            + .dynamic-tab__border {
+                display: none;
+            }
+        }
+
+        .dynamic-tab__resource {
+            user-select: none;
+            text-align: center;
+            color: var(--N900);
+            padding: 8px 12px;
+
+            &:hover {
+                color: var(--B500) !important;
             }
 
-            .dynamic-tab,
-            .fixed-tab {
-                cursor: pointer;
-
-                &.dynamic-tab__item-selected {
-                    +.dynamic-tab__border {
-                        display: none;
-                    }
-                }
-
-                .dynamic-tab-selected {
-                    border-top: 1px solid var(--N200);
-                    border-bottom: 1px solid var(--N0);
-                    border-left: 1px solid var(--N200);
-                    border-right: 1px solid var(--N200);
-                    border-top-right-radius: 8px;
-                    border-top-left-radius: 8px;
-
-                    .dynamic-tab__resource {
-                        user-select: none;
-                        text-align: center;
-                        color: var(--N700);
-
-                        &:hover {
-                            color: var(--B500) !important;
-                        }
-
-                        .dynamic-tab__deleted {
-                            text-decoration: line-through;
-                        }
-                    }
-                }
+            .dynamic-tab__deleted {
+                text-decoration: line-through;
             }
         }
     }

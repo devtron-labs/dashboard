@@ -1,20 +1,40 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
-import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'
 import './TriggerViewConfigDiff.scss'
 import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../TriggerView.utils'
-import ReactSelect, { components } from 'react-select'
-import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
-import { getCommonConfigSelectStyles } from '../config'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle, ConditionalWrap,useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Toggle,
+    ConditionalWrap,
+    useSearchString,
+    YAMLStringify,
+    CodeEditor,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -25,14 +45,12 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
-    canReviewConfig
+    canReviewConfig,
 }: TriggerViewConfigDiffProps) {
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const [activeSideNavOption, setActiveSideNavOption] = useState(
-        searchParams.config,
-    )
+    const [activeSideNavOption, setActiveSideNavOption] = useState(searchParams.config)
     const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
     const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
     const [editorValues, setEditorValues] = useState<{
@@ -158,7 +176,7 @@ export default function TriggerViewConfigDiff({
         set the current(lhs) and base(rhs) config value in code editor for the selected nav option, runs every on nav option selection
     */
 
-    const setParamsValue = ( configVal: string) => {
+    const setParamsValue = (configVal: string) => {
         const newParams = {
             ...searchParams,
             config: configVal,
@@ -400,23 +418,10 @@ export default function TriggerViewConfigDiff({
             >
                 <div className="flex left column w-100">
                     <span className="dc__ellipsis-right">{option.label}</span>
-                    <small className="cn-6">{option.infoText}</small>
+                    <small className="cn-6">{option.description}</small>
                     <div className="dc__border-bottom" />
                 </div>
             </ConditionalWrap>
-        )
-    }
-
-    const customValueContainer = (props) => {
-        return (
-            <components.ValueContainer {...props}>
-                <div className="fs-13 fw-4 cn-9">
-                    Deploy:&nbsp; <span className="cb-5 fw-6">{props.selectProps.value?.label}</span>
-                </div>
-                {React.cloneElement(props.children[1], {
-                    style: { position: 'absolute' },
-                })}
-            </components.ValueContainer>
         )
     }
 
@@ -439,48 +444,33 @@ export default function TriggerViewConfigDiff({
                         Last Deployed Configuration
                     </div>
                 )}
-                <div className="flex left">
-                    <ReactSelect
-                        options={getDeployConfigOptions(isRollbackTriggerSelected, isRecentConfigAvailable)}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                            ValueContainer: customValueContainer,
-                        }}
-                        isOptionDisabled={isOptionDisabled}
-                        isSearchable={false}
-                        formatOptionLabel={formatOptionLabel}
-                        classNamePrefix="deploy-config-select"
-                        placeholder="Select Config"
-                        menuPlacement="bottom"
-                        value={selectedConfigToDeploy}
-                        styles={getCommonConfigSelectStyles({
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                minWidth: '135px',
-                                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                            }),
-                            control: (base) => ({
-                                ...base,
-                                backgroundColor: 'white',
-                                border: 'none',
-                                boxShadow: 'none',
-                                minHeight: '32px',
-                                cursor: 'pointer',
-                                borderRadius: '0px',
-                                padding: '7px 16px',
-                            }),
-                        })}
-                        onChange={handleConfigSelection}
-                    />
+                <div className="flex left dc__gap-12 px-16">
+                    <span className="fs-13 fw-4 cn-9">Deploy:</span>
+                    <div>
+                        <SelectPicker
+                            inputId="deploy-config-select"
+                            name="deploy-config-select"
+                            options={getDeployConfigOptions(isRollbackTriggerSelected, isRecentConfigAvailable)}
+                            isOptionDisabled={isOptionDisabled}
+                            isSearchable={false}
+                            classNamePrefix="deploy-config-select"
+                            placeholder="Select Config"
+                            value={selectedConfigToDeploy}
+                            onChange={handleConfigSelection}
+                            variant={SelectPickerVariantType.BORDER_LESS}
+                            menuSize={ComponentSizeType.medium}
+                        />
+                    </div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="trigger-view-config-diff__container dc__overflow-hidden">
+        <div
+            className="trigger-view-config-diff__container dc__overflow-hidden"
+            key={`${activeSideNavOption}-${selectedConfigToDeploy?.value}`}
+        >
             {renderConfigDiffViewHeader()}
             <div className="trigger-view-config-diff__wrapper">
                 {renderAvailableDiffColumn()}
@@ -490,7 +480,13 @@ export default function TriggerViewConfigDiff({
                         <div className="code-editor-header-value left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
                             <span>{editorValues.displayName}</span>
                             {isVariableAvailable && (
-                                <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                                <Tippy
+                                    content={tippyMsg}
+                                    placement="bottom-start"
+                                    animation="shift-away"
+                                    className="default-tt"
+                                    arrow={false}
+                                >
                                     <li className="flex left dc_width-max-content cursor">
                                         <div className="w-40 h-20">
                                             <Toggle

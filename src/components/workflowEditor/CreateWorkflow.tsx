@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -8,8 +24,6 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState> {
-    _inputName: HTMLInputElement
-
     constructor(props) {
         super(props)
         this.state = {
@@ -22,9 +36,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     componentDidMount() {
         if (this.props.match.params.workflowId) {
             this.getWorkflow()
-        }
-        if (this._inputName) {
-            this._inputName.focus()
         }
     }
 
@@ -44,9 +55,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-        if (this._inputName) {
-            this._inputName.focus()
-        }
     }
 
     handleWorkflowName = (event): void => {
@@ -100,12 +108,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             >
                 <label className="form__row">
                     <CustomInput
-                        ref={(node) => {
-                            if (node) {
-                                node.focus()
-                            }
-                            this._inputName = node
-                        }}
                         name="workflow-name"
                         label="Workflow Name"
                         value={this.state.name}

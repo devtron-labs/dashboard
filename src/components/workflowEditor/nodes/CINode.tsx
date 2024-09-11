@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { WorkflowNodeType, SelectedNode, CommonNodeAttr } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -10,7 +26,7 @@ import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
-export interface CINodeProps extends RouteComponentProps<{}>{
+export interface CINodeProps extends RouteComponentProps<{}> {
     x: number
     y: number
     width: number
@@ -116,7 +132,12 @@ export class CINode extends Component<CINodeProps> {
             <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content={getLinkedCITippyContent(this.props.linkedCount)}
+                        >
                             <button
                                 type="button"
                                 className={`link-count cursor dc__hover-border-n300 flex dc__gap-4 ${

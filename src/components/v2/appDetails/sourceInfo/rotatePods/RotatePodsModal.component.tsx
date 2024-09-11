@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import {
     showError,
@@ -30,7 +46,6 @@ import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arr
 import { importComponentFromFELibrary } from '../../../../common'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
 
 export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeploymentBlocked }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -234,12 +249,11 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         e.preventDefault()
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
-        if(!rotatingInProgress && isWorkloadPresent && isAnySelected){
+        if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
             if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
                 // Show deployment window confirmation modal if deployment is blocked
                 setShowDeploymentWindowConfirmationModal(true)
-            }
-            else handlePodsRotation()
+            } else handlePodsRotation()
         }
     }
 

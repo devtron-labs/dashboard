@@ -1,4 +1,20 @@
-import React, { useState, useEffect } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -11,30 +27,42 @@ import {
     stopPropagation,
     useAsync,
     CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
+    FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
+import {
+    getCertificateAndKeyDependencyError,
+    getIsTLSDataPresent,
+    getTLSConnectionPayloadValues,
+    TLSConnectionDTO,
+    TLSConnectionFormActionType,
+    TLSConnectionFormProps,
+    useForm,
+    handleOnBlur,
+    handleOnFocus,
+    parsePassword,
+    renderMaterialIcon,
+    TLSConnectionForm,
+} from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
-import { DEFAULT_SECRET_PLACEHOLDER, DOCUMENTATION } from '../../config'
+import { HEADER_TEXT } from '../../config'
 import { DropdownIndicator } from './gitProvider.util'
 import { Option } from '../v2/common/ReactSelect.utils'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
+import { TLSInputType } from './types'
 
 export default function GitProvider({ ...props }) {
     const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
@@ -113,6 +141,18 @@ export default function GitProvider({ ...props }) {
         return <ErrorScreenManager code={error?.code} />
     }
 
+    const defaultTLSData: TLSConnectionDTO = {
+        enableTLSVerification: false,
+        tlsConfig: {
+            caData: '',
+            tlsCertData: '',
+            tlsKeyData: '',
+        },
+        isCADataPresent: false,
+        isTLSCertDataPresent: false,
+        isTLSKeyDataPresent: false,
+    }
+
     const allProviders = [
         {
             id: null,
@@ -124,24 +164,20 @@ export default function GitProvider({ ...props }) {
             userName: '',
             password: '',
             sshPrivateKey: '',
+            ...structuredClone(defaultTLSData),
         },
     ].concat(providerList)
 
     return (
         <section className="global-configuration__component flex-1" data-testid="git-provider-wrapper">
-            <h2 className="form__title">Git accounts</h2>
-            <div className="form__subtitle">
-                Manage your organization’s git accounts. &nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    Learn more about git accounts
-                </a>
-            </div>
-            {allProviders.map((provider, index) => {
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.GIT_ACCOUNTS.title}
+                renderDescriptionContent={() => HEADER_TEXT.GIT_ACCOUNTS.description}
+                docLink={HEADER_TEXT.GIT_ACCOUNTS.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+            />
+            {allProviders.map((provider) => {
                 return (
                     <>
                         <CollapsedList
@@ -162,6 +198,11 @@ export default function GitProvider({ ...props }) {
                             getProviderList={getProviderList}
                             reload={getInitData}
                             sshPrivateKey={provider.sshPrivateKey}
+                            enableTLSVerification={provider.enableTLSVerification}
+                            tlsConfig={provider.tlsConfig}
+                            isCADataPresent={provider.isCADataPresent}
+                            isTLSCertDataPresent={provider.isTLSCertDataPresent}
+                            isTLSKeyDataPresent={provider.isTLSKeyDataPresent}
                         />
                         {showGitProviderConfigModal && (
                             <VisibleModal className="app-status__material-modal">
@@ -197,6 +238,11 @@ const CollapsedList = ({
     showGitProviderConfigModal,
     setGitProviderConfigModal,
     sshPrivateKey,
+    enableTLSVerification,
+    tlsConfig,
+    isCADataPresent,
+    isTLSCertDataPresent,
+    isTLSKeyDataPresent,
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -204,6 +250,11 @@ const CollapsedList = ({
     const [loading, setLoading] = useState(false)
     const selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
+
+    const handleReload = async () => {
+        toggleCollapse(true)
+        await reload()
+    }
 
     useEffectAfterMount(() => {
         async function update() {
@@ -214,6 +265,11 @@ const CollapsedList = ({
                 authMode,
                 active: enabled,
                 gitHostId: +gitHostId,
+                enableTLSVerification,
+                isCADataPresent,
+                isTLSCertDataPresent,
+                isTLSKeyDataPresent,
+                tlsConfig,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey } : {}),
@@ -221,7 +277,7 @@ const CollapsedList = ({
             try {
                 setLoading(true)
                 await updateGitProviderConfig(payload, id)
-                await reload()
+                await handleReload()
                 toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
             } catch (err) {
                 showError(err)
@@ -255,16 +311,7 @@ const CollapsedList = ({
                 <List.Logo>
                     {id && (
                         <div className="">
-                            <span className="mr-8">
-                                {url.includes('gitlab') ? <GitLab /> : null}
-                                {url.includes('github') ? <GitHub /> : null}
-                                {url.includes('bitbucket') ? <BitBucket /> : null}
-                                {url.includes('gitlab') ||
-                                url.includes('github') ||
-                                url.includes('bitbucket') ? null : (
-                                    <Git />
-                                )}
-                            </span>
+                            <span className="mr-8">{renderMaterialIcon(url)}</span>
                         </div>
                     )}
                     {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
@@ -315,7 +362,7 @@ const CollapsedList = ({
                         hostListOption,
                         getHostList,
                         getProviderList,
-                        reload,
+                        reload: handleReload,
                         providerList,
                         toggleCollapse,
                         showGitProviderConfigModal,
@@ -323,6 +370,11 @@ const CollapsedList = ({
                         gitHost,
                         setGithost,
                         sshPrivateKey,
+                        enableTLSVerification,
+                        tlsConfig,
+                        isCADataPresent,
+                        isTLSCertDataPresent,
+                        isTLSKeyDataPresent,
                     }}
                 />
             )}
@@ -352,6 +404,12 @@ const GitForm = ({
     gitHost,
     setGithost,
     sshPrivateKey = '',
+    enableTLSVerification,
+    // Could be null since coming from api
+    tlsConfig,
+    isCADataPresent,
+    isTLSCertDataPresent,
+    isTLSKeyDataPresent,
     ...props
 }) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
@@ -379,14 +437,36 @@ const GitForm = ({
 
     const [loading, setLoading] = useState(false)
     const [customState, setCustomState] = useState({
-        password: { value: !password && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
+        password: {
+            value: !password && id && authMode === 'USERNAME_PASSWORD' ? DEFAULT_SECRET_PLACEHOLDER : password,
+            error: '',
+        },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
         sshInput: { value: !sshPrivateKey && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
     })
+
+    // Need to merge all the input states to a single state
+    const [tlsInput, setTLSInput] = useState<TLSInputType>({
+        enableTLSVerification: enableTLSVerification ?? false,
+        isCADataPresent: isCADataPresent ?? false,
+        isTLSCertDataPresent: isTLSCertDataPresent ?? false,
+        isTLSKeyDataPresent: isTLSKeyDataPresent ?? false,
+        isCADataClearedAfterInitialConfig: false,
+        isTLSCertDataClearedAfterInitialConfig: false,
+        isTLSKeyDataClearedAfterInitialConfig: false,
+        tlsConfig: {
+            caData: { value: tlsConfig?.caData || '', error: '' },
+            tlsCertData: { value: tlsConfig?.tlsCertData || '', error: '' },
+            tlsKeyData: { value: tlsConfig?.tlsKeyData || '', error: '' },
+        },
+    })
+
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+
+    const isTLSInitiallyConfigured = id && enableTLSVerification
 
     function customHandleChange(e) {
         const _name = e.target.name
@@ -406,6 +486,30 @@ const GitForm = ({
     }
 
     async function onSave() {
+        const { isTLSKeyError, isTLSCertError, message } = getCertificateAndKeyDependencyError(
+            tlsInput.isTLSCertDataPresent,
+            tlsInput.isTLSKeyDataPresent,
+        )
+        const isAuthModePassword = state.auth.value === 'USERNAME_PASSWORD'
+
+        if (message && isAuthModePassword) {
+            setTLSInput({
+                ...tlsInput,
+                tlsConfig: {
+                    ...tlsInput.tlsConfig,
+                    tlsCertData: {
+                        value: tlsInput.tlsConfig.tlsCertData.value,
+                        error: isTLSCertError ? message : '',
+                    },
+                    tlsKeyData: {
+                        value: tlsInput.tlsConfig.tlsKeyData.value,
+                        error: isTLSKeyError ? message : '',
+                    },
+                },
+            })
+            return
+        }
+
         const payload = {
             id: id || 0,
             name: state.name.value,
@@ -417,6 +521,17 @@ const GitForm = ({
                 ? {
                       username: customState.username.value,
                       password: parsePassword(customState.password.value),
+                      ...getTLSConnectionPayloadValues({
+                          enableTLSVerification: tlsInput.enableTLSVerification,
+                          isCADataPresent: tlsInput.isCADataPresent,
+                          isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
+                          isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
+                          tlsConfig: {
+                              caData: tlsInput.tlsConfig.caData.value,
+                              tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
+                              tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
+                          },
+                      }),
                   }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
@@ -442,11 +557,13 @@ const GitForm = ({
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
-            if ((!id && !customState.password.value) || !customState.username.value) {
+            const isPasswordEmpty = (!id || authMode !== 'USERNAME_PASSWORD') && !customState.password.value
+
+            if (isPasswordEmpty || !customState.username.value) {
                 setCustomState((state) => ({
                     ...state,
-                    password: { value: state.password.value, error: !id ? 'This is a required field' : '' },
-                    username: { value: state.username.value, error: 'Required' },
+                    password: { value: state.password.value, error: isPasswordEmpty ? 'This is a required field' : '' },
+                    username: { value: state.username.value, error: !customState.username.value ? 'Required' : '' },
                 }))
                 return
             }
@@ -533,7 +650,130 @@ const GitForm = ({
         return true
     }
 
-    const payload = {
+    const handleTLSConfigChange: TLSConnectionFormProps['handleChange'] = ({ action, payload }) => {
+        switch (action) {
+            case TLSConnectionFormActionType.TOGGLE_ENABLE_TLS_VERIFICATION:
+                setTLSInput({
+                    ...tlsInput,
+                    enableTLSVerification: !tlsInput.enableTLSVerification,
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_CA_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isCADataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isCADataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isCADataClearedAfterInitialConfig,
+                    }),
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        caData: {
+                            value: payload,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_CERT_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSCertDataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isTLSCertDataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isTLSCertDataClearedAfterInitialConfig,
+                    }),
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsCertData: {
+                            value: payload,
+                            error: '',
+                        },
+                        tlsKeyData: {
+                            ...tlsInput.tlsConfig.tlsKeyData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_KEY_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSKeyDataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isTLSKeyDataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isTLSKeyDataClearedAfterInitialConfig,
+                    }),
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsKeyData: {
+                            value: payload,
+                            error: '',
+                        },
+                        tlsCertData: {
+                            ...tlsInput.tlsConfig.tlsCertData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_CA_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isCADataClearedAfterInitialConfig: true,
+                    isCADataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        caData: {
+                            value: '',
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_CERT_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSCertDataClearedAfterInitialConfig: true,
+                    isTLSCertDataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsCertData: {
+                            value: '',
+                            error: '',
+                        },
+                        tlsKeyData: {
+                            ...tlsInput.tlsConfig.tlsKeyData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_KEY_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSKeyDataClearedAfterInitialConfig: true,
+                    isTLSKeyDataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsKeyData: {
+                            value: '',
+                            error: '',
+                        },
+                        tlsCertData: {
+                            ...tlsInput.tlsConfig.tlsCertData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+        }
+    }
+
+    const deletePayload = {
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
@@ -641,7 +881,7 @@ const GitForm = ({
             {state.auth.value === AuthenticationType.ANONYMOUS && (
                 <InfoColourBar
                     message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
-                    classname="info_bar cn-9 mb-40 lh-20"
+                    classname="info_bar cn-9 mb-16 lh-20"
                     Icon={Info}
                     iconClass="icon-dim-20"
                 />
@@ -694,6 +934,22 @@ const GitForm = ({
                     {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                 </div>
             )}
+
+            {state.auth.value === 'USERNAME_PASSWORD' && (
+                <TLSConnectionForm
+                    enableTLSVerification={tlsInput.enableTLSVerification}
+                    handleChange={handleTLSConfigChange}
+                    caData={tlsInput.tlsConfig.caData}
+                    tlsCertData={tlsInput.tlsConfig.tlsCertData}
+                    tlsKeyData={tlsInput.tlsConfig.tlsKeyData}
+                    isCADataPresent={tlsInput.isCADataPresent}
+                    isTLSCertDataPresent={tlsInput.isTLSCertDataPresent}
+                    isTLSKeyDataPresent={tlsInput.isTLSKeyDataPresent}
+                    isTLSInitiallyConfigured={isTLSInitiallyConfigured}
+                    rootClassName="mb-16"
+                />
+            )}
+
             <div className="form__row form__buttons">
                 {id && (
                     <button
@@ -721,7 +977,7 @@ const GitForm = ({
                 <DeleteComponent
                     setDeleting={setDeleting}
                     deleteComponent={deleteGitProvider}
-                    payload={payload}
+                    payload={deletePayload}
                     title={state.name.value}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.GitProvider}

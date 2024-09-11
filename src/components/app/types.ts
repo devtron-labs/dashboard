@@ -1,9 +1,36 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    DeploymentAppTypes,
+    TagType,
+    Teams,
+    PodMetadatum,
+    DeploymentNodeType,
+    RuntimeParamsListItemType,
+    RuntimeParamsTriggerPayloadType,
+    ReleaseMode,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+import { APP_TYPE } from '@Config/constants'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -36,7 +63,7 @@ export interface AddNewAppState {
     view: string
     code: number
     disableForm: boolean
-    projects: { id: number; name: string }[]
+    projects: OptionType[]
     appNameErrors: boolean
     showErrors: boolean
     form: {
@@ -62,7 +89,7 @@ export interface CDModalProps {
     triggerType?: string
     parentEnvironmentName: string
     ciPipelineId?: number
-    isRedirectedFromAppDetails?: boolean,
+    isRedirectedFromAppDetails?: boolean
 }
 
 export interface AppDetails extends CDModalProps {
@@ -98,6 +125,8 @@ export interface AppDetails extends CDModalProps {
     clusterId?: number
     deploymentAppDeleteRequest: boolean
     imageTag?: string
+    isPipelineTriggered?: boolean
+    releaseMode: ReleaseMode
 }
 
 export interface LabelTag {
@@ -158,13 +187,6 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
-}
-
-export interface PodMetadatum {
-    name: string
-    uid: string
-    containers: string[]
-    isNew: boolean
 }
 
 interface Node {
@@ -438,6 +460,9 @@ type NodesMap = {
     [key in NodeType]?: Map<string, any>
 }
 
+/**
+ * @deprecated- Use from fe-common
+ */
 export interface AggregatedNodes {
     nodes: NodesMap
     aggregation: Aggregation
@@ -487,7 +512,7 @@ export interface AppOverviewProps {
      *
      * @default 'app'
      */
-    appType: 'job' | 'app' | 'helm-chart'
+    appType: APP_TYPE.JOB | APP_TYPE.DEVTRON_APPS | APP_TYPE.HELM_CHART
 }
 
 export interface OverviewConfig {
@@ -570,16 +595,12 @@ export interface SourceInfoType {
 export interface AppDetailsCDButtonType
     extends Pick<
             AppDetails,
-            | 'appId'
-            | 'environmentId'
-            | 'isVirtualEnvironment'
-            | 'deploymentAppType'
-            | 'environmentName'
+            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
-            isRedirectedFromAppDetails?: boolean,
-            cdModal: CDModalProps
-        }
+    isRedirectedFromAppDetails?: boolean
+    cdModal: CDModalProps
+}
 
 export interface EnvironmentListMinType {
     active?: boolean
@@ -600,6 +621,7 @@ export interface PayloadParsedFromURL {
     appNameSearch?: string
     appStatuses?
     environments?
+    templateType?: string[]
     hOffset?: number
     namespaces?
     offset?: number
@@ -609,18 +631,14 @@ export interface PayloadParsedFromURL {
     teams?
 }
 
-export interface ExternalArgoListType {
-    serverMode?: string
+export interface GenericAppListProps {
     payloadParsedFromUrl: PayloadParsedFromURL
     sortApplicationList
     clearAllFilters
-    fetchingExternalApps
-    setFetchingExternalAppsState
-    updateDataSyncing
     setShowPulsatingDotState
     masterFilters
-    syncListData
-    isArgoInstalled: boolean
+    appType: string
+    isSSE?: boolean
 }
 export interface EditDescRequest {
     id: number
@@ -630,4 +648,26 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
+}
+
+export interface TriggerCDNodeServiceProps {
+    pipelineId: any
+    ciArtifactId: any
+    appId: string
+    stageType: DeploymentNodeType
+    deploymentWithConfig?: string
+    wfrId?: number
+    abortSignal?: AbortSignal
+    /**
+     * Would be available only case of PRE/POST CD
+     */
+    runtimeParams?: RuntimeParamsListItemType[]
+}
+
+export interface TriggerCDPipelinePayloadType {
+    pipelineId: number
+    appId: number
+    ciArtifactId: number
+    cdWorkflowType: string
+    runtimeParamsPayload: RuntimeParamsTriggerPayloadType
 }

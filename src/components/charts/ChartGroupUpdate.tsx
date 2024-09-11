@@ -1,21 +1,35 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
-import { updateChartGroupEntries, getChartGroups, getChartProviderList } from './charts.service'
+import { updateChartGroupEntries, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
-import { ChartSelector } from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
-import DetectBottom from '../common/DetectBottom'
 import { sortOptionsByLabel } from '../common'
 
 export default function ChartGroupUpdate({}) {
@@ -230,12 +244,12 @@ export default function ChartGroupUpdate({}) {
     const renderChartGroupEditActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex right">
-                <button className="cta h-32 flex cancel mr-16" onClick={handleSave}>
+                <button className="cta h-32 flex cancel cta__no-svg-override mr-16" onClick={handleSave}>
                     {loading ? (
                         <Progressing />
                     ) : (
                         <div className="flex left " data-testid="save-group-button-navbar" style={{ width: '100%' }}>
-                            <SaveIcon className="mr-5" />
+                            <SaveIcon className="mr-5 scn-6" />
                             Save
                         </div>
                     )}
@@ -270,11 +284,9 @@ export default function ChartGroupUpdate({}) {
                             <ChartHeaderFilters
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
-                                setAppStoreName={setAppStoreName}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
@@ -355,7 +367,7 @@ export default function ChartGroupUpdate({}) {
 
 const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) => {
     return (
-        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+        <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}

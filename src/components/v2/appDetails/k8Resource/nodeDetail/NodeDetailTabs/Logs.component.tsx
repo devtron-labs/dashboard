@@ -1,7 +1,32 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import Tippy from '@tippyjs/react'
-import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    Host,
+    Progressing,
+    useDownload,
+    useMainContext,
+    useKeyDown,
+    SearchBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -18,11 +43,9 @@ import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
-import { useKeyDown } from '../../../../../common'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
-import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
@@ -51,7 +74,6 @@ const LogsComponent = ({
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
-    isExternalApp,
 }: LogsComponentProps) => {
     const [logsShownOption, setLogsShownOption] = useState({
         prev: getPodLogsOptions()[5],
@@ -73,6 +95,7 @@ const LogsComponent = ({
         namespace: string
     }>()
     const key = useKeyDown()
+    const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
     const [tempSearch, setTempSearch] = useState<string>('')
     const [highlightString, setHighlightString] = useState('')
@@ -90,8 +113,7 @@ const LogsComponent = ({
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
-    const [downloadInProgress, setDownloadInProgress] = useState(false)
-    const {isSuperAdmin} = useMainContext()
+    const { isSuperAdmin } = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -228,7 +250,7 @@ const LogsComponent = ({
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     downloadLogs(
-                        setDownloadInProgress,
+                        handleDownload,
                         appDetails,
                         nodeName,
                         _co.name,
@@ -253,7 +275,7 @@ const LogsComponent = ({
 
             for (const _pwc of podsWithContainers) {
                 downloadLogs(
-                    setDownloadInProgress,
+                    handleDownload,
                     appDetails,
                     _pwc[0],
                     _pwc[1],
@@ -348,15 +370,13 @@ const LogsComponent = ({
         })
     }
 
-    const handleLogsSearch = (e) => {
-        e.preventDefault()
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            const str = replaceLastOddBackslash(e.target.value)
-            handleSearchTextChange(str)
-            const { length, [length - 1]: highlightString } = str.split(' ')
-            setHighlightString(highlightString)
-            handleCurrentSearchTerm(str)
-        }
+    const handleLogsSearch = (_searchText: string): void => {
+        setTempSearch(_searchText)
+        const str = replaceLastOddBackslash(_searchText)
+        handleSearchTextChange(str)
+        const { length, [length - 1]: highlightString } = str.split(' ')
+        setHighlightString(highlightString)
+        handleCurrentSearchTerm(str)
     }
 
     const handleLogOptionChange = (selected) => {
@@ -457,14 +477,25 @@ const LogsComponent = ({
         ]
     }
 
+    const renderSearchText = (): JSX.Element => (
+        <SearchBar
+            initialSearchText={tempSearch}
+            containerClassName='w-100 bcn-0'
+            handleEnter={handleLogsSearch}
+            inputProps={{
+                placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
+            }}
+            dataTestId="Search-by-app-name"
+            noBackgroundAndBorder
+        />
+    )
+
     return isDeleted ? (
-        <div>
-            <MessageUI
-                msg="This resource no longer exists"
-                size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-            />
-        </div>
+        <MessageUI
+            msg="This resource no longer exists"
+            size={32}
+            minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+        />
     ) : (
         <>
             <div className="node-container-fluid bcn-0">
@@ -675,58 +706,34 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
-
-                        {!isExternalApp &&
-                            (downloadInProgress ? (
-                                <Progressing
-                                    size={16}
-                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                                />
-                            ) : (
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                    <span>
-                                        <Download
-                                            className={`icon-dim-16 mr-8 cursor ${
-                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                                (prevContainer && showNoPrevContainer != '')
-                                                    ? 'cursor-not-allowed dc__opacity-0_5'
-                                                    : ''
-                                            }`}
-                                            onClick={handleDownloadLogs}
-                                        />
-                                    </span>
-                                </Tippy>
-                            ))}
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
+                        {isDownloading ? (
+                            <Progressing
+                                size={16}
+                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                            />
+                        ) : (
+                            <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
+                                <span>
+                                    <Download
+                                        className={`icon-dim-16 mr-8 cursor ${
+                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                            (prevContainer && showNoPrevContainer != '')
+                                                ? 'cursor-not-allowed dc__opacity-0_5'
+                                                : ''
+                                        }`}
+                                        onClick={handleDownloadLogs}
+                                    />
+                                </span>
+                            </Tippy>
+                        )}
                     </div>
                     <div className="dc__border-right " />
                     <form
-                        className="w-30 flex flex-justify left bcn-1 pl-10 flex-align-center "
+                        className="w-30 flex flex-justify left bcn-1 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
-                        <Search className="icon-dim-16 mr-4" />
-                        <input
-                            value={tempSearch}
-                            className="bw-0 w-100"
-                            style={{ background: 'transparent', outline: 'none' }}
-                            onKeyUp={handleLogsSearch}
-                            onChange={(e) => setTempSearch(e.target.value as string)}
-                            type="search"
-                            name="log_search_input"
-                            placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
-                        />
-                        {logState.grepTokens && (
-                            <CloseImage
-                                className="icon-dim-20 pointer"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleSearchTextChange('')
-                                    setHighlightString('')
-                                    setTempSearch('')
-                                    handleCurrentSearchTerm('')
-                                }}
-                            />
-                        )}
+                      {renderSearchText()}
                         <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"
@@ -757,9 +764,10 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            minHeight: isResourceBrowserView ? '200px' : '600px',
+                            height:
+                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
-                        className="flex column log-viewer-container"
+                        className="flex flex-grow-1 column log-viewer-container"
                     >
                         <div
                             className={`pod-readyState pod-readyState--top bcr-7 w-100 pl-20 ${
@@ -830,7 +838,7 @@ const LogsComponent = ({
                 )}
 
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
-                <div className="no-pod no-pod--container ">
+                <div className="no-pod no-pod--container flex-grow-1">
                     <MessageUI
                         icon={MsgUIType.MULTI_CONTAINER}
                         msg={`${

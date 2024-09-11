@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
-import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { EnvironmentOverrideComponentProps } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface DeploymentObject {
     id: number | null
@@ -70,7 +85,7 @@ export interface ConfigMapRequest {
     secret_data: any
 }
 
-export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps {
+export interface DeploymentConfigProps extends Omit<EnvironmentOverrideComponentProps, 'envConfig' | 'fetchEnvConfig' | 'onErrorRedirectURL'> {
     respondOnSuccess?: (redirection: boolean) => void
     isUnSet: boolean
     isCiPipeline: boolean
@@ -109,6 +124,7 @@ export interface DeploymentConfigFormCTAProps {
     loading: boolean
     showAppMetricsToggle: boolean
     isAppMetricsEnabled: boolean
+    handleSaveChanges: React.MouseEventHandler<HTMLButtonElement>
     isEnvOverride?: boolean
     isCiPipeline?: boolean
     disableCheckbox?: boolean
@@ -119,11 +135,9 @@ export interface DeploymentConfigFormCTAProps {
     isValues?: boolean
     convertVariables?: boolean
     handleLockedDiffDrawer: (value: boolean) => void
-    isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
-    setLockedOverride: (value: Object) => void
 }
 
 export interface CompareWithDropdownProps {
@@ -137,6 +151,7 @@ export interface CompareWithDropdownProps {
     isValues: boolean
     groupedData: any
     setConvertVariables: (convertVariables: boolean) => void
+    triggerEditorLoadingState: () => void
 }
 
 export interface CompareWithApprovalPendingAndDraftProps {
@@ -195,18 +210,18 @@ export interface DeploymentTemplateOptionsTabProps {
     selectedChartRefId: number
     disableVersionSelect?: boolean
     yamlMode: boolean
-    isBasicViewLocked: boolean
     codeEditorValue: string
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     changeEditorMode?: () => void
 }
 
+// TODO: the following types can be combined with this into a single type
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
-    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
+    uneditedDocument: string
+    editedDocument: string
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -214,7 +229,7 @@ export interface DeploymentTemplateEditorViewProps {
     environmentName?: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string, fromBasic?: boolean) => void
+    editorOnChange?: (str: string) => void
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
@@ -226,6 +241,8 @@ export interface DeploymentTemplateEditorViewProps {
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockKeysToggled: React.MutableRefObject<boolean>
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
+    uneditedDocument: DeploymentTemplateReadOnlyEditorViewProps['uneditedDocument']
+    editedDocument: DeploymentTemplateReadOnlyEditorViewProps['editedDocument']
 }
 
 export interface DeploymentConfigContextType {
@@ -281,25 +298,9 @@ export interface SecretFormProps {
     isJobView?: boolean
 }
 
-export interface BasicFieldDataType {
-    isUpdated: boolean
-    dataType: string
-    value: any
-    isMandatory: boolean
-    isInvalid: boolean
-}
-
 interface ErrorObj {
     isValid: boolean
     message: string | null
-}
-
-export interface BasicFieldErrorObj {
-    isValid: boolean
-    port: ErrorObj
-    cpu: ErrorObj
-    memory: ErrorObj
-    envVariables: ErrorObj[]
 }
 
 export interface ChartSelectorModalType {
@@ -337,6 +338,8 @@ export interface DeploymentConfigStateType {
     selectedChart: DeploymentChartVersionType
     template: string
     schema: any
+    guiSchema: string
+    wasGuiOrHideLockedKeysEdited: boolean
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -351,11 +354,6 @@ export interface DeploymentConfigStateType {
     fetchedValues: Record<number | string, string>
     fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
-    isBasicLocked: boolean
-    isBasicLockedInBase: boolean
-    currentEditorView: string
-    basicFieldValues: Record<string, any>
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     data: any
     duplicate: any
     dialog: boolean
@@ -412,11 +410,6 @@ export enum DeploymentConfigStateActionTypes {
     fetchedValues = 'fetchedValues',
     fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
-    isBasicLocked = 'isBasicLocked',
-    isBasicLockedInBase = 'isBasicLockedInBase',
-    currentEditorView = 'currentEditorView',
-    basicFieldValues = 'basicFieldValues',
-    basicFieldValuesErrorObj = 'basicFieldValuesErrorObj',
     duplicate = 'duplicate',
     appMetrics = 'appMetrics',
     data = 'data',
@@ -445,6 +438,8 @@ export enum DeploymentConfigStateActionTypes {
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
+    guiSchema = 'guiSchema',
+    wasGuiOrHideLockedKeysEdited = 'wasGuiOrHideLockedKeysEdited',
 }
 
 export interface DeploymentConfigStateAction {
@@ -468,4 +463,22 @@ export interface SaveConfirmationDialogProps {
     onSave: () => void
     showAsModal: boolean
     closeLockedDiffDrawerWithChildModal: () => void
+}
+
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<
+        DeploymentTemplateEditorViewProps,
+        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys'
+    > {
+    fetchingValues?: boolean
+    value: string
+    readOnly: boolean
+    uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']
+    editedDocument?: DeploymentTemplateEditorViewProps['editedDocument']
+}
+
+export interface Schema {
+    type: string
+    items: Schema
+    properties: Schema
 }

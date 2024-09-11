@@ -1,8 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
-import { AppStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, statusColor } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { statusColor } from '../../config'
 import { handleUTCTime } from '../../../common'
 import { ExpandedRowProps } from './types'
 import { ReactComponent as Expand } from '../../../../assets/icons/ic-dropdown-filled.svg'
@@ -67,7 +82,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                         <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
                         <span className="fw-6">{this.props.app.name}</span>
                     </div>
-                    <button type="button" className="button-edit button-edit--white" onClick={this.handleEditApp}>
+                    <button type="button" className="button-edit" onClick={this.handleEditApp}>
                         <Settings className="button-edit__icon" />
                     </button>
                 </div>

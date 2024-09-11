@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import {
     CDMaterialResponseType,
@@ -18,20 +34,35 @@ import {
     CommonNodeAttr,
     WorkflowType,
     getDefaultConfig,
-    KeyValueListType,
-    HandleKeyValueChangeType,
-    KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    handleUTCTime,
+    createGitCommitUrl,
+    CIMaterialType,
+    ApiQueuingWithBatch,
+    usePrompt,
+    SourceTypeMap,
+    RuntimeParamsListItemType,
+    preventBodyScroll,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
+import {
+    BUILD_STATUS,
+    DEFAULT_GIT_BRANCH_VALUE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    NO_COMMIT_SELECTED,
+    URLS,
+    ViewType,
+} from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
-import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import {
+    CIMaterialProps,
+    CIMaterialRouterProps,
+    CIPipelineNodeType,
+    MATERIAL_TYPE,
+} from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -41,16 +72,14 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import {
-    createGitCommitUrl,
-    importComponentFromFELibrary,
-    ISTTimeModal,
-    preventBodyScroll,
-    sortObjectArrayAlphabetically,
-} from '../../../common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import {
+    CI_MATERIAL_EMPTY_STATE_MESSAGING,
+    TIME_STAMP_ORDER,
+    TRIGGER_VIEW_PARAMS,
+} from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
@@ -88,16 +117,20 @@ import {
     processWorkflowStatuses,
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
+import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const processDeploymentWindowStateAppGroup = importComponentFromFELibrary('processDeploymentWindowStateAppGroup', null, 'function')
+const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'processDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -106,6 +139,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch<CIMaterialRouterProps>()
+    const { url } = useRouteMatch()
+
+    const httpProtocol = useRef('')
+    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
+    const handledLocation = useRef(false)
+    const abortControllerRef = useRef(new AbortController())
+    const abortCIBuildRef = useRef(new AbortController())
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isCILoading, setCILoading] = useState(false)
@@ -114,8 +154,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
-    const [showCIModal, setShowCIModal] = useState(false)
-    const [showCDModal, setShowCDModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
@@ -140,13 +178,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const httpProtocol = useRef('')
-    // Mapping pipelineId to runtime params
-    const [runtimeParams, setRuntimeParams] = useState<Record<string, KeyValueListType[]>>({})
+    // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
+    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimeParamsListItemType[]>>({})
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, boolean>>({})
+    const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
 
-    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
-    const handledLocation = useRef(false)
-    const abortControllerRef = useRef(new AbortController())
+    const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
+    usePrompt({ shouldPrompt: enableRoutePrompt })
 
     useEffect(() => {
         if (ApprovalMaterialModal) {
@@ -236,6 +274,19 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         search: '',
                     })
                 }
+            } else if (location.pathname.includes('build')) {
+                const lastIndexBeforeId = location.pathname.lastIndexOf('/')
+                const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
+                const ciNode = filteredWorkflows
+                    .flatMap((workflow) => workflow.nodes)
+                    .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
+                const pipelineName = ciNode?.title
+
+                if (!isNaN(+ciNodeId) && !!pipelineName) {
+                    onClickCIMaterial(ciNodeId, pipelineName, false)
+                } else {
+                    toast.error('Invalid Node')
+                }
             }
         }
     }, [filteredWorkflows])
@@ -266,10 +317,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
-            if(processDeploymentWindowStateAppGroup && _workflows.length){
-              await processDeploymentWindowStateAppGroup(_workflows)
+            if (processDeploymentWindowStateAppGroup && _workflows.length) {
+                await processDeploymentWindowStateAppGroup(_workflows)
             }
-            if (showCIModal) {
+            if (selectedCINode?.id) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
                         if (+n.id === selectedCINode.id) {
@@ -488,7 +539,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 : '',
                             commit: _result.Commit || '',
                             author: _result.Author || '',
-                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
                             message: _result.Message || '',
                             changes: _result.Changes || [],
                             showChanges: true,
@@ -650,7 +701,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
             setFilteredWorkflows(_workflows)
             if (!showBulkCIModal) {
-                setShowCIModal(!showRegexModal)
                 setShowMaterialRegexModal(showRegexModal)
             }
             getWorkflowStatusData(_workflows)
@@ -756,7 +806,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setSelectedCINode({ id: +ciNodeId, name: ciPipelineName, type: WorkflowNodeType.CI })
             setMaterialType(MATERIAL_TYPE.inputMaterialList)
             if (!showBulkCIModal) {
-                setShowCIModal(!showRegexModal)
                 setShowMaterialRegexModal(showRegexModal)
             }
             setWorkflowID(_workflowId)
@@ -783,7 +832,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
         setCILoading(true)
-        setShowCIModal(true)
+        history.push(`${url}${URLS.BUILD}/${ciNodeId}`)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current.abort()
@@ -841,8 +890,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             .catch((errors: ServerErrors) => {
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    setShowCIModal(false)
                 }
+                closeCIModal()
             })
             .finally(() => {
                 setCILoading(false)
@@ -885,19 +934,23 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
-        setShowCDModal(!isApprovalNode)
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(location.search)
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
-        }
-        else {
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+        } else {
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
+            // If the current state is pending, then we should change the state to pending
+            const approvalState =
+                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                    ? TRIGGER_VIEW_PARAMS.PENDING
+                    : TRIGGER_VIEW_PARAMS.APPROVAL
+
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-
         }
         history.push({
             search: newParams.toString(),
@@ -907,7 +960,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const onClickRollbackMaterial = (cdNodeId: number) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
 
-        setShowCDModal(true)
         let _selectedNode
 
         const _workflows = [...filteredWorkflows].map((workflow) => {
@@ -933,7 +985,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        setShowCDModal(true)
         preventBodyScroll(true)
         getWorkflowStatusData(_workflows)
 
@@ -1003,32 +1054,23 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(
-            runtimeParams?.[selectedCINode?.id] ?? [],
-        )
-
-        if (!runtimeParamsValidationResponse.isValid) {
-            setCDLoading(false)
-            toast.error(runtimeParamsValidationResponse.message)
-            return
-        }
+        // For this block validation is handled in CIMaterial
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(runtimeParams?.[selectedCINode?.id] ?? [])
 
         const payload = {
             pipelineId: +selectedCINode.id,
             ciPipelineMaterials,
             invalidateCache,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams && !node.isJobCI
-                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
-                : {}),
+            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
-        triggerCINode(payload)
+        triggerCINode(payload, abortCIBuildRef.current.signal)
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
-                    setShowCIModal(false)
                     setCDLoading(false)
+                    closeCIModal()
                     setErrorCode(response.code)
                     setInvalidateCache(false)
                     preventBodyScroll(false)
@@ -1036,7 +1078,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                }
 
                 setCDLoading(false)
 
@@ -1199,16 +1243,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const closeCIModal = (): void => {
         abortControllerRef.current.abort()
         preventBodyScroll(false)
-        setShowCIModal(false)
         setShowMaterialRegexModal(false)
         setRuntimeParams({})
+        setRuntimeParamsErrorState({})
+        history.push(url)
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         abortControllerRef.current.abort()
         setCDLoading(false)
-        setShowCDModal(false)
         history.push({
             search: '',
         })
@@ -1230,10 +1274,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             stopPropagation(e)
         }
         setShowWebhookModal(false)
-    }
-
-    const onShowCIModal = () => {
-        setShowCIModal(true)
     }
 
     const onClickWebhookTimeStamp = () => {
@@ -1258,7 +1298,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickShowBranchRegexModal = (isChangedBranch = false) => {
-        setShowCIModal(false)
         setShowMaterialRegexModal(true)
         setChangeBranchClicked(isChangedBranch)
     }
@@ -1267,7 +1306,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
+
         setRuntimeParams({})
+        setRuntimeParamsErrorState({})
 
         history.push({
             search: '',
@@ -1287,6 +1328,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
+
+        setRuntimeParams({})
+        setRuntimeParamsErrorState({})
     }
 
     const onShowBulkCIModal = () => {
@@ -1346,10 +1390,26 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
+    const validateBulkRuntimeParams = (): boolean => {
+        const isRuntimeParamErrorPresent = Object.keys(runtimeParamsErrorState).some(
+            (key) => runtimeParamsErrorState[key],
+        )
+
+        if (isRuntimeParamErrorPresent) {
+            setCDLoading(false)
+            setCILoading(false)
+            toast.error('Please resolve all the runtime parameter errors before triggering the pipeline')
+            return false
+        }
+
+        return true
+    }
+
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
-        if (isCDLoading) {
+        if (isCDLoading || !validateBulkRuntimeParams()) {
             return
         }
+
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setCDLoading(true)
         const _appIdMap = new Map<string, string>()
@@ -1381,6 +1441,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _CDTriggerPromiseFunctionList = []
         nodeList.forEach((node, index) => {
             let ciArtifact = null
+            const currentAppId = _appIdMap.get(node.id)
+
             node[materialType].forEach((artifact) => {
                 if (artifact.isSelected == true) {
                     ciArtifact = artifact
@@ -1388,7 +1450,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
             if (ciArtifact) {
                 _CDTriggerPromiseFunctionList.push(() =>
-                    triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
+                    triggerCDNode({
+                        pipelineId: node.id,
+                        ciArtifactId: ciArtifact.id,
+                        appId: currentAppId,
+                        stageType: bulkTriggerType,
+                        runtimeParams: runtimeParams[currentAppId] || [],
+                    }),
                 )
             } else {
                 triggeredAppList.splice(index, 1)
@@ -1428,6 +1496,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         type: WorkflowNodeType,
         skippedResources: ResponseRowType[] = [],
     ): void => {
+        setIsBulkTriggerLoading(true)
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
             ApiQueuingWithBatch(promiseFunctionList, httpProtocol.current).then((responses: any[]) => {
@@ -1463,7 +1532,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
+                        } else if (errorReason.code === 403 || errorReason.code === 422) {
+                            // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
@@ -1497,16 +1567,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 updateResponseListData(_responseList)
                 setCDLoading(false)
                 setCILoading(false)
+                setIsBulkTriggerLoading(false)
                 preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
             setCDLoading(false)
             setCILoading(false)
+            setIsBulkTriggerLoading(false)
+
             if (!skippedResources.length) {
-                setShowBulkCDModal(false)
-                setShowBulkCIModal(false)
-                setResponseList([])
+                hideBulkCIModal()
+                hideBulkCDModal()
             } else {
                 updateResponseListData(_responseList)
             }
@@ -1526,7 +1598,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isCILoading) {
+        if (isCILoading || !validateBulkRuntimeParams()) {
             return
         }
 
@@ -1558,26 +1630,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
         const _CITriggerPromiseFunctionList = []
-        // Traversing each nodeListItem to verify if runtimeParams are valid, if not returning error message
-        const runtimeParamsNodesValidation = nodeList.reduce(
-            (acc, node) => {
-                const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(runtimeParams?.[node.id] ?? [])
-
-                if (!runtimeParamsValidationResponse.isValid) {
-                    acc.isValid = false
-                    acc.message = runtimeParamsValidationResponse.message
-                }
-                return acc
-            },
-            { isValid: true, message: '' },
-        )
-
-        if (!runtimeParamsNodesValidation.isValid) {
-            setCDLoading(false)
-            setCILoading(false)
-            toast.error(runtimeParamsNodesValidation.message)
-            return
-        }
 
         nodeList.forEach((node) => {
             const gitMaterials = new Map<number, string[]>()
@@ -1611,16 +1663,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })
             }
 
-            const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(runtimeParams?.[node.id] ?? [])
+            const runtimeParamsPayload = getRuntimeParamsPayload?.(runtimeParams?.[node.id] ?? [])
 
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-                ...(getRuntimeParams && !node.isJobCI
-                    ? { runtimeParams: runtimeParamsValidationResponse?.validParams }
-                    : {}),
+                ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
             }
             _CITriggerPromiseFunctionList.push(() => triggerCINode(payload))
         })
@@ -1762,33 +1812,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     /**
-     * For CI Material only since don't have selectedApp here
+     * Acting only for single build trigger
      */
-    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        let _runtimeParams = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
-
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
-                break
-
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
-
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
-
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action type: ${action}`)
-        }
-
+    const handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
         if (selectedCINode?.id) {
-            setRuntimeParams({ [selectedCINode.id]: _runtimeParams })
+            setRuntimeParams({ [selectedCINode.id]: updatedRuntimeParams })
         }
     }
 
@@ -1862,97 +1890,88 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const renderCIMaterial = (): JSX.Element | null => {
-        if (showCIModal || showMaterialRegexModal) {
-            let nd: CommonNodeAttr
-            let _appID
-            if (selectedCINode?.id) {
-                const configuredMaterialList = new Map<number, Set<number>>()
-                for (const _wf of filteredWorkflows) {
-                    nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
-                    if (nd) {
-                        if (!nd[materialType]) {
-                            nd[materialType] = []
-                        }
+    const resetAbortController = () => {
+        abortCIBuildRef.current = new AbortController()
+    }
 
-                        const gitMaterials = new Map<number, string[]>()
-                        for (const _inputMaterial of nd.inputMaterialList) {
-                            gitMaterials[_inputMaterial.gitMaterialId] = [
-                                _inputMaterial.gitMaterialName.toLowerCase(),
-                                _inputMaterial.value,
-                            ]
-                        }
-                        configuredMaterialList[_wf.name] = new Set<number>()
-                        _appID = _wf.appId
-                        handleSourceNotConfigured(
-                            configuredMaterialList,
-                            _wf,
-                            nd[materialType],
-                            !gitMaterials[_wf.ciConfiguredGitMaterialId],
-                        )
-                        break
+    const renderCIMaterial = (): JSX.Element | null => {
+        let nd: CommonNodeAttr
+        let _appID
+        if (selectedCINode?.id) {
+            const configuredMaterialList = new Map<number, Set<number>>()
+            for (const _wf of filteredWorkflows) {
+                nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
+                if (nd) {
+                    if (!nd[materialType]) {
+                        nd[materialType] = []
                     }
+
+                    const gitMaterials = new Map<number, string[]>()
+                    for (const _inputMaterial of nd.inputMaterialList) {
+                        gitMaterials[_inputMaterial.gitMaterialId] = [
+                            _inputMaterial.gitMaterialName.toLowerCase(),
+                            _inputMaterial.value,
+                        ]
+                    }
+                    configuredMaterialList[_wf.name] = new Set<number>()
+                    _appID = _wf.appId
+                    handleSourceNotConfigured(
+                        configuredMaterialList,
+                        _wf,
+                        nd[materialType],
+                        !gitMaterials[_wf.ciConfiguredGitMaterialId],
+                    )
+                    break
                 }
             }
-            const material = nd?.[materialType] || []
+        }
+        const material = nd?.[materialType] || []
+        if (selectedCINode?.id) {
             return (
-                <VisibleModal className="" close={closeCIModal}>
-                    <div className="modal-body--ci-material h-100" onClick={stopPropagation}>
-                        {isCILoading ? (
-                            <>
-                                <div className="trigger-modal__header flex right">
-                                    <button type="button" className="dc__transparent" onClick={closeCIModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
-                                <div style={{ height: 'calc(100% - 55px)' }}>
-                                    <Progressing pageLoader size={32} />
-                                </div>
-                            </>
-                        ) : (
-                            <CIMaterial
-                                workflowId={workflowID}
-                                history={history}
-                                location={location}
-                                match={match}
-                                material={material}
-                                pipelineName={selectedCINode?.name}
-                                isLoading={isCDLoading}
-                                title={selectedCINode?.name}
-                                pipelineId={selectedCINode?.id}
-                                showWebhookModal={showWebhookModal}
-                                hideWebhookModal={hideWebhookModal}
-                                toggleWebhookModal={toggleWebhookModal}
-                                webhookPayloads={webhookPayloads}
-                                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                                onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                                webhhookTimeStampOrder={webhookTimeStampOrder}
-                                showMaterialRegexModal={showMaterialRegexModal}
-                                onCloseBranchRegexModal={onCloseBranchRegexModal}
-                                filteredCIPipelines={filteredCIPipelines.get(_appID)}
-                                onClickShowBranchRegexModal={onClickShowBranchRegexModal}
-                                showCIModal={showCIModal}
-                                onShowCIModal={onShowCIModal}
-                                isChangeBranchClicked={isChangeBranchClicked}
-                                getWorkflows={getWorkflowsData}
-                                loader={isCILoading}
-                                setLoader={setCILoading}
-                                isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                                isCacheAvailable={nd?.storageConfigured}
-                                fromAppGrouping
-                                appId={_appID?.toString()}
-                                isCITriggerBlocked={nd?.isCITriggerBlocked}
-                                ciBlockState={nd?.ciBlockState}
-                                isJobCI={!!nd?.isJobCI}
-                                runtimeParams={runtimeParams[nd?.id] ?? []}
-                                handleRuntimeParametersChange={handleRuntimeParametersChange}
-                            />
-                        )}
-                    </div>
-                </VisibleModal>
+                <Switch>
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
+                        <CIMaterialModal
+                            workflowId={workflowID}
+                            history={history}
+                            location={location}
+                            match={match}
+                            material={material}
+                            pipelineName={selectedCINode?.name}
+                            isLoading={isCDLoading}
+                            title={selectedCINode?.name}
+                            pipelineId={selectedCINode?.id}
+                            showWebhookModal={showWebhookModal}
+                            hideWebhookModal={hideWebhookModal}
+                            toggleWebhookModal={toggleWebhookModal}
+                            webhookPayloads={webhookPayloads}
+                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            onClickWebhookTimeStamp={onClickWebhookTimeStamp}
+                            webhhookTimeStampOrder={webhookTimeStampOrder}
+                            showMaterialRegexModal={showMaterialRegexModal}
+                            onCloseBranchRegexModal={onCloseBranchRegexModal}
+                            filteredCIPipelines={filteredCIPipelines.get(_appID)}
+                            onClickShowBranchRegexModal={onClickShowBranchRegexModal}
+                            isChangeBranchClicked={isChangeBranchClicked}
+                            getWorkflows={getWorkflowsData}
+                            loader={isCILoading}
+                            setLoader={setCILoading}
+                            isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                            isCacheAvailable={nd?.storageConfigured}
+                            fromAppGrouping
+                            appId={_appID?.toString()}
+                            isCITriggerBlocked={nd?.isCITriggerBlocked}
+                            ciBlockState={nd?.ciBlockState}
+                            isJobCI={!!nd?.isJobCI}
+                            runtimeParams={runtimeParams[nd?.id] ?? []}
+                            handleRuntimeParamChange={handleRuntimeParamChange}
+                            closeCIModal={closeCIModal}
+                            abortController={abortCIBuildRef.current}
+                            resetAbortController={resetAbortController}
+                        />
+                    </Route>
+                </Switch>
             )
         }
-
         return null
     }
 
@@ -1980,6 +1999,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 isVirtualEnv={isVirtualEnv}
                 uniqueReleaseTags={uniqueReleaseTags}
                 httpProtocol={httpProtocol.current}
+                runtimeParams={runtimeParams}
+                setRuntimeParams={setRuntimeParams}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                setRuntimeParamsErrorState={setRuntimeParamsErrorState}
             />
         )
     }
@@ -2006,6 +2029,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCILoading}
                 runtimeParams={runtimeParams}
                 setRuntimeParams={setRuntimeParams}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                setRuntimeParamsErrorState={setRuntimeParamsErrorState}
                 setPageViewType={setPageViewType}
                 httpProtocol={httpProtocol.current}
             />
@@ -2029,9 +2054,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
-        if (showCDModal) {
+        if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
+            let selectedAppName: string
+
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
                     node = _wf.nodes.find((el) => {
@@ -2039,6 +2066,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     })
                     if (node) {
                         _appID = _wf.appId
+                        selectedAppName = _wf.name
                         break
                     }
                 }
@@ -2080,6 +2108,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 isLoading={isCILoading}
                                 ciPipelineId={node?.connectingCiPipelineId}
                                 deploymentAppType={node?.deploymentAppType}
+                                selectedAppName={selectedAppName}
                             />
                         )}
                     </div>
@@ -2116,7 +2145,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}
@@ -2282,6 +2310,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             </>
         )
     }
+
     return (
         <div
             className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
@@ -2298,6 +2327,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     Select all apps
                 </Checkbox>
             </div>
+
+            <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache,

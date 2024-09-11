@@ -1,4 +1,20 @@
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -7,8 +23,11 @@ import {
     Drawer,
     sortCallback,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
+    FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
@@ -30,17 +49,8 @@ import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environm
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
-import {
-    DOCUMENTATION,
-    SERVER_MODE,
-    ViewType,
-    URLS,
-    CONFIGURATION_TYPES,
-    AppCreationType,
-    DEFAULT_SECRET_PLACEHOLDER,
-} from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
@@ -93,12 +103,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) {
             clearInterval(this.timerRef)
         }
-        Promise.all([
-            getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
-                ? { result: undefined }
-                : getEnvironmentList(),
-        ])
+        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? { result: undefined } : getEnvironmentList()])
             .then(([clusterRes, envResponse]) => {
                 const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
@@ -233,16 +238,20 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             return <Reload className="dc__align-reload-center" />
         }
 
-        const moduleBasedTitle = `Clusters${
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments'
-        }`
+        const moduleBasedTitle = `Clusters${window._env_.K8S_CLIENT ? '' : ' and Environments'}`
         return (
             <section className="global-configuration__component flex-1">
                 <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
-                    <h2 className="form__title">{moduleBasedTitle}</h2>
+                    <FeatureTitleWithInfo
+                        title={moduleBasedTitle}
+                        renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
+                        docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        showInfoIconTippy
+                        additionalContainerClasses="mb-20"
+                    />
                     <button
                         type="button"
-                        className="flex cta h-32 lh-n fcb-5"
+                        className="flex cta h-32 lh-n fcb-5 mb-20"
                         onClick={() =>
                             this.setState({
                                 showAddCluster: true,
@@ -256,17 +265,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         Add cluster
                     </button>
                 </div>
-                <p className="form__subtitle">
-                    Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                        rel="noopener noreferer noreferrer"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
-                </p>
                 {this.state.clusters.map(
                     (cluster) =>
                         cluster.id && (
@@ -542,7 +540,7 @@ const Cluster = ({
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
             payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } 
+        }
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -718,10 +716,7 @@ const Cluster = ({
                         }}
                     />
                 )}
-                {serverMode !== SERVER_MODE.EA_ONLY &&
-                !window._env_.K8S_CLIENT &&
-                Array.isArray(newEnvs) &&
-                newEnvs.length > 1 ? (
+                {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div />

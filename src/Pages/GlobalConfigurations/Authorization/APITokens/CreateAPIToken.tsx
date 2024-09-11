@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/tabindex-no-positive */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
@@ -35,17 +51,15 @@ import { importComponentFromFELibrary } from '../../../../components/common'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
-export const renderQuestionwithTippy = () => {
-    return (
-        <InfoIconTippy
-            heading={API_COMPONENTS.TITLE}
-            infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
-            documentationLinkText="View Documentation"
-            iconClassName="icon-dim-20 fcn-9 ml-4"
-        />
-    )
-}
+export const renderQuestionwithTippy = () => (
+    <InfoIconTippy
+        heading={API_COMPONENTS.TITLE}
+        infoText={API_COMPONENTS.QUESTION_ICON_INFO}
+        documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
+        documentationLinkText="View Documentation"
+        iconClassName="icon-dim-20 fcn-9 ml-4"
+    />
+)
 
 const CreateAPIToken = ({
     setShowGenerateModal,
@@ -79,20 +93,21 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
         usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
     // Reset selected expiration date to 30 days on unmount
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             setSelectedExpirationDate({
                 label: '30 days',
                 value: 30,
             })
-        }
-    }, [])
+        },
+        [],
+    )
 
     const onChangeHandler = (event): void => {
         setFormData({
@@ -182,12 +197,13 @@ const CreateAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.userId,
                     userIdentifier: result.userIdentifier,
-                    userGroups,
+                    userRoleGroups,
                     serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
                     permissionType,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

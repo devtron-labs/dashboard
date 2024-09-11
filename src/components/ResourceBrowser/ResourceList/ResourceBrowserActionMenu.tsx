@@ -1,27 +1,44 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import { PopupMenu, Nodes, useMainContext, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
 import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
+import { RESOURCE_ACTION_MENU } from '../Constants'
+import { ResourceBrowserActionMenuType } from '../Types'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { RESOURCE_ACTION_MENU } from '../Constants'
-import { ResourceBrowserActionMenuType } from '../Types'
+import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
 const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
-export default function ResourceBrowserActionMenu({
+const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     clusterId,
     resourceData,
     selectedResource,
     getResourceListData,
     handleResourceClick,
     removeTabByIdentifier,
-}: ResourceBrowserActionMenuType) {
+}) => {
     const { installedModuleMap } = useMainContext()
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -31,22 +48,22 @@ export default function ResourceBrowserActionMenu({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const handleShowVulnerabilityModal = (event: React.MouseEvent<HTMLButtonElement>) => {
-        /* TODO: stop propagation otherwise it conflicts with useOutsideClick of SecurityModal */
-        setTimeout(() => {
-            setShowVulnerabilityModal(true)
-        }, 100)
+    const handleShowVulnerabilityModal = () => {
+        setShowVulnerabilityModal(true)
     }
 
     const handleCloseVulnerabilityModal = () => {
         setShowVulnerabilityModal(false)
     }
 
-    const showResourceScanModal = getShowResourceScanModal(selectedResource?.gvk?.Kind as any, installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY])
+    const showResourceScanModal = getShowResourceScanModal(
+        selectedResource?.gvk?.Kind as NodeType,
+        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+    )
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
@@ -140,3 +157,5 @@ export default function ResourceBrowserActionMenu({
         </>
     )
 }
+
+export default ResourceBrowserActionMenu

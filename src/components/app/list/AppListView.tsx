@@ -1,9 +1,32 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
-import { AppStatus, Progressing, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    ErrorScreenManager,
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+    handleUTCTime,
+    AppListConstants,
+    DATE_TIME_FORMATS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'
-import { Pagination, handleUTCTime } from '../../common'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { Empty } from './emptyView/Empty'
 import { AppListViewProps, OrderBy, SortBy } from './types'
@@ -15,7 +38,7 @@ import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-o
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import ContentCard from '../../common/ContentCard/ContentCard'
-import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
+import { DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import {
@@ -25,6 +48,7 @@ import {
     appListLoading,
 } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
+import moment from 'moment'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -240,7 +264,9 @@ export class AppListView extends Component<AppListViewProps> {
                                                     className="default-tt"
                                                     arrow={true}
                                                     placement="top"
-                                                    content={app.defaultEnv.lastDeployedTime}
+                                                    content={moment(app.defaultEnv.lastDeployedTime).format(
+                                                        DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
+                                                    )}
                                                 >
                                                     <p
                                                         className="dc__truncate-text  m-0"
@@ -285,6 +311,7 @@ export class AppListView extends Component<AppListViewProps> {
         if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={this.props.size}
                     pageSize={this.props.pageSize}
                     offset={this.props.offset}
