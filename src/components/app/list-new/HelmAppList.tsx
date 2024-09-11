@@ -154,8 +154,8 @@ const HelmAppList = ({
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
                 _getExternalHelmApps()
-                updateDataSyncing(false)
             }
+            updateDataSyncing(false)
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv)
                 .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
