@@ -281,7 +281,6 @@ src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
 src/components/common/Select/Select.tsx
-src/components/common/ToastBody.tsx
 src/components/common/ValidateForm/ValidateForm.tsx
 src/components/common/eaEmptyState/EAEmptyState.tsx
 src/components/common/edge/rectangularEdge.tsx
