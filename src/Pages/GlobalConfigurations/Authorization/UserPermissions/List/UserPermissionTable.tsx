@@ -78,6 +78,16 @@ const UserPermissionTable = ({
                     sortOrder={sortOrder}
                     disabled={isActionsDisabled}
                 />
+                {showStatus && (
+                    <SortableTableHeaderCell
+                        title="User groups"
+                        triggerSorting={null}
+                        isSorted={null}
+                        sortOrder={null}
+                        disabled={null}
+                        isSortable={false}
+                    />
+                )}
                 <SortableTableHeaderCell
                     title="Last Login"
                     triggerSorting={sortByLastLogin}
@@ -98,6 +108,7 @@ const UserPermissionTable = ({
                     >
                         <span className="child child-shimmer-loading" />
                         <span className="child child-shimmer-loading" />
+                        {showStatus && <span className="child child-shimmer-loading" />}
                         <span className="child child-shimmer-loading" />
                         {showStatus && <span className="child child-shimmer-loading" />}
                     </div>

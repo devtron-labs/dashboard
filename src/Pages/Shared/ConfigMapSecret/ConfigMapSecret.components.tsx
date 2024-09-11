@@ -112,7 +112,7 @@ export const useKeyValueYaml = (keyValueArray, setKeyValueArray, keyPattern, key
                     .join(', ')}`
             }
             setError(updatedError)
-        } catch (err) {
+        } catch {
             setError('Could not parse to valid YAML')
         }
     }

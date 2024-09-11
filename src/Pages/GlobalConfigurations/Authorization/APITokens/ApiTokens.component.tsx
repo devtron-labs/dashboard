@@ -96,89 +96,81 @@ const ApiTokens = () => {
         userIdentifier: 'API-TOKEN:test',
     })
 
-    const renderSearchToken = () => {
-        return (
-            <SearchBar
-                initialSearchText={searchText}
-                containerClassName="dc__mxw-250 flex-grow-1"
-                handleEnter={handleFilterKeyPress}
-                inputProps={{
-                    placeholder: 'Search Token',
-                }}
-                dataTestId="search-token-input"
-            />
-        )
-    }
+    const renderSearchToken = () => (
+        <SearchBar
+            initialSearchText={searchText}
+            containerClassName="dc__mxw-250 flex-grow-1"
+            handleEnter={handleFilterKeyPress}
+            inputProps={{
+                placeholder: 'Search Token',
+            }}
+            dataTestId="search-token-input"
+        />
+    )
 
     const handleActionButton = () => {
         setShowGenerateModal(false)
         setShowRegenerateTokenModal(false)
     }
 
-    const renderAPITokenRoutes = (): JSX.Element => {
-        return (
-            <div data-testid="api-token-page" className="api-token-container flexbox-col flex-grow-1">
-                <Switch>
-                    <Route path={`${path}/list`}>
-                        <APITokenList
-                            tokenList={filteredTokenList}
-                            renderSearchToken={renderSearchToken}
-                            reload={getData}
-                        />
-                    </Route>
-                    <Route path={`${path}/create`}>
-                        <CreateAPIToken
-                            setShowGenerateModal={setShowGenerateModal}
-                            showGenerateModal={showGenerateModal}
-                            handleGenerateTokenActionButton={handleActionButton}
-                            setSelectedExpirationDate={setSelectedExpirationDate}
-                            selectedExpirationDate={selectedExpirationDate}
-                            tokenResponse={tokenResponse}
-                            setTokenResponse={setTokenResponse}
-                            reload={getData}
-                        />
-                    </Route>
-                    <Route path={`${path}/edit/:id`}>
-                        <EditAPIToken
-                            handleRegenerateActionButton={handleActionButton}
-                            setShowRegeneratedModal={setShowRegenerateTokenModal}
-                            showRegeneratedModal={showRegenerateTokenModal}
-                            setSelectedExpirationDate={setSelectedExpirationDate}
-                            selectedExpirationDate={selectedExpirationDate}
-                            tokenList={tokenList}
-                            reload={getData}
-                        />
-                    </Route>
-                    <Redirect to={`${path}/list`} />
-                </Switch>
-            </div>
-        )
-    }
+    const renderAPITokenRoutes = (): JSX.Element => (
+        <div data-testid="api-token-page" className="api-token-container flexbox-col flex-grow-1">
+            <Switch>
+                <Route path={`${path}/list`}>
+                    <APITokenList
+                        tokenList={filteredTokenList}
+                        renderSearchToken={renderSearchToken}
+                        reload={getData}
+                    />
+                </Route>
+                <Route path={`${path}/create`}>
+                    <CreateAPIToken
+                        setShowGenerateModal={setShowGenerateModal}
+                        showGenerateModal={showGenerateModal}
+                        handleGenerateTokenActionButton={handleActionButton}
+                        setSelectedExpirationDate={setSelectedExpirationDate}
+                        selectedExpirationDate={selectedExpirationDate}
+                        tokenResponse={tokenResponse}
+                        setTokenResponse={setTokenResponse}
+                        reload={getData}
+                    />
+                </Route>
+                <Route path={`${path}/edit/:id`}>
+                    <EditAPIToken
+                        handleRegenerateActionButton={handleActionButton}
+                        setShowRegeneratedModal={setShowRegenerateTokenModal}
+                        showRegeneratedModal={showRegenerateTokenModal}
+                        setSelectedExpirationDate={setSelectedExpirationDate}
+                        selectedExpirationDate={selectedExpirationDate}
+                        tokenList={tokenList}
+                        reload={getData}
+                    />
+                </Route>
+                <Redirect to={`${path}/list`} />
+            </Switch>
+        </div>
+    )
 
     const redirectToCreate = () => {
         history.push(`${path}/create`)
     }
 
-    const renderGenerateButton = () => {
-        return (
-            <button className="flex cta h-32" onClick={redirectToCreate} type="button">
-                Generate new token
-            </button>
-        )
-    }
+    const renderGenerateButton = () => (
+        <button className="flex cta h-32" onClick={redirectToCreate} type="button">
+            Generate new token
+        </button>
+    )
 
-    const renderEmptyState = (): JSX.Element => {
-        return (
-            <GenericEmptyState
-                image={emptyGeneratToken}
-                title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
-                subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
-                isButtonAvailable
-                renderButton={renderGenerateButton}
-                classname="flex-grow-1"
-            />
-        )
-    }
+    const renderEmptyState = (): JSX.Element => (
+        <GenericEmptyState
+            image={emptyGeneratToken}
+            title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
+            subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
+            isButtonAvailable
+            renderButton={renderGenerateButton}
+            classname="flex-grow-1"
+        />
+    )
 
     if (loader) {
         return <Progressing data-testid="api-token-page-loading" pageLoader />

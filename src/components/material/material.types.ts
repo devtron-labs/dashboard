@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 
 export interface MaterialListProps extends RouteComponentProps<{ appId: string }> {
     respondOnSuccess: () => void
@@ -48,7 +48,7 @@ export interface MaterialListState {
 
 export interface CreateMaterialState {
     material: {
-        gitProvider: { id: number; name: string, url?: string }
+        gitProvider: { id: number; name: string; url?: string }
         url: string
         checkoutPath: string
         active: boolean

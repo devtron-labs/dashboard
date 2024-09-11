@@ -28,7 +28,7 @@ describe('getScopedVariables', () => {
     })
 
     it('should call get with correct params if only appId is sent', async () => {
-        (get as jest.Mock).mockResolvedValueOnce({})
+        ;(get as jest.Mock).mockResolvedValueOnce({})
         const appId = 'appId'
         const query = `?appId=${appId}&scope={"appId":${appId}}`
         await getScopedVariables(appId, null, null)
@@ -36,7 +36,7 @@ describe('getScopedVariables', () => {
     })
 
     it('should call get with correct params if all the entries are sent', async () => {
-        (get as jest.Mock).mockResolvedValueOnce({})
+        ;(get as jest.Mock).mockResolvedValueOnce({})
         const appId = 'appId'
         const envId = 'envId'
         const clusterId = 'clusterId'

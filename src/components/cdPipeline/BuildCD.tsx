@@ -25,9 +25,11 @@ import {
     TippyTheme,
     YAMLStringify,
     CodeEditor,
+    UserApprovalConfigType,
     Environment,
     ReleaseMode,
     SelectPicker,
+    CDFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -64,10 +66,19 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ICCheck } from '../../assets/icons/ic-check.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
+import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
+const validateUserApprovalConfig: (userApprovalConfig: UserApprovalConfigType) => PipelineFormDataErrorType['userApprovalConfig'] =
+    importComponentFromFELibrary(
+        'validateUserApprovalConfig',
+        () => ({
+            isValid: true,
+        }),
+        'function',
+    )
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
@@ -584,10 +595,15 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const onChangeRequiredApprovals = (requiredCount: string): void => {
-        const _form = { ...formData }
-        _form.requiredApprovals = requiredCount
+    const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
+        const _form = structuredClone(formData)
+        const _formDataErrorObj = structuredClone(formDataErrorObj)
+
+        _form.userApprovalConfig = updatedUserApprovalConfig
+        _formDataErrorObj.userApprovalConfig = validateUserApprovalConfig(updatedUserApprovalConfig)
+
         setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderDeploymentAppType = () => {
@@ -781,10 +797,10 @@ export default function BuildCD({
                 {isAdvanced &&
                     getBuildCDManualApproval &&
                     getBuildCDManualApproval(
-                        formData.requiredApprovals,
-                        formData.userApprovalConfig?.requiredCount,
-                        onChangeRequiredApprovals,
-                    )}
+                        formData.userApprovalConfig,
+                        formDataErrorObj.userApprovalConfig,
+                        handleUpdateUserApprovalConfig
+                )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

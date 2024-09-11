@@ -65,11 +65,7 @@ const AppStatusDetailModal = ({
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
-    if (
-        Array.isArray(conditions) &&
-        conditions.length > 0 &&
-        conditions[0].message
-    ) {
+    if (Array.isArray(conditions) && conditions.length > 0 && conditions[0].message) {
         message = conditions[0].message
     } else if (Rollout?.health?.message) {
         message = Rollout.health.message

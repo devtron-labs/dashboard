@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
@@ -84,11 +84,7 @@ const EventsComponent = ({
     const renderContent = () => {
         if (isDeleted) {
             return (
-                    <MessageUI
-                        msg={MESSAGING_UI.NO_RESOURCE}
-                        size={32}
-                        minHeight={isResourceBrowserView ? '200px' : ''}
-                    />
+                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} minHeight={isResourceBrowserView ? '200px' : ''} />
             )
         }
 
