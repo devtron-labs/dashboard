@@ -110,12 +110,14 @@ export const GlobalEnvironment = ({
                 error: null,
             })
 
-            // Find the specific namespace and update namespaceLabels state
-            const clusterNamespace = getClusterNamespaceByName(result, _namespace)
-            setNamespaceLabels({
-                labels: setNamespaceLabelsAfterFetch ? getNamespaceLabels(clusterNamespace) : namespaceLabels.labels,
-                resourceVersion: clusterNamespace?.resourceVersion ?? null,
-            })
+            if (setNamespaceLabelsAfterFetch) {
+                // Find the specific namespace and update namespaceLabels state
+                const clusterNamespace = getClusterNamespaceByName(result, _namespace)
+                setNamespaceLabels({
+                    labels: getNamespaceLabels(clusterNamespace),
+                    resourceVersion: clusterNamespace?.resourceVersion ?? null,
+                })
+            }
 
             return result
         } catch (err) {
@@ -173,8 +175,8 @@ export const GlobalEnvironment = ({
                     toast.error(<ToastBody title="Namespace manifest changed" subtitle={err.errors[0].userMessage} />)
                     const clusterNamespace = getClusterNamespaceByName(clusterNamespacesData, formData.namespace)
                     setNamespaceLabels({
-                        ...namespaceLabels,
                         labels: getNamespaceLabels(clusterNamespace),
+                        resourceVersion: clusterNamespace.resourceVersion,
                     })
                 } else {
                     showError(err)
