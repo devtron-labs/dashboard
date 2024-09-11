@@ -1,0 +1,19 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install --network-timeout 600000
+
+COPY . .
+
+RUN yarn build-storybook
+
+FROM nginx:stable
+
+COPY --from=builder /app/storybook-static/ /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+
+CMD ["/bin/bash", "-c", "nginx -g \"daemon off;\""]
+EXPOSE 80
