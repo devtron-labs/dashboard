@@ -1,12 +1,12 @@
-import { Validation } from '@Components/common/hooks/useForm'
+import { UseFormValidation } from '@Components/common/hooks/useForm'
 
-import { EnvironmentFormProps } from './types'
+import { GlobalEnvironmentFormProps } from './types'
 
-export const environmentFormValidationSchema = ({
+export const globalEnvironmentFormValidationSchema = ({
     isNamespaceMandatory,
 }: {
     isNamespaceMandatory: boolean
-}): Partial<Record<keyof EnvironmentFormProps, Validation>> => ({
+}): Partial<Record<keyof GlobalEnvironmentFormProps, UseFormValidation>> => ({
     environmentName: {
         required: true,
         pattern: [

@@ -1,3 +1,5 @@
+import { FormEvent } from 'react'
+
 type ValidationRequired =
     | boolean
     | {
@@ -25,7 +27,7 @@ type ValidationCustom =
           message: string
       }[]
 
-export interface Validation {
+export interface UseFormValidation {
     required?: ValidationRequired
     pattern?: ValidationPattern
     custom?: ValidationCustom
@@ -33,4 +35,6 @@ export interface Validation {
 
 export type ErrorRecord<T> = Partial<Record<keyof T, string | string[]>>
 
-export type Validations<T extends {}> = Partial<Record<keyof T, Validation>>
+export type UseFormValidations<T extends {}> = Partial<Record<keyof T, UseFormValidation>>
+
+export type UseFormSubmitHandler<T extends {}> = (data: T, e?: FormEvent<HTMLFormElement>) => void

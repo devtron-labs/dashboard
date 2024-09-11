@@ -53,7 +53,7 @@ import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCre
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
-import { Environment } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/Environment'
+import { GlobalEnvironment } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/GlobalEnvironment'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -845,7 +845,7 @@ const Cluster = ({
             </article>
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <Environment
+                    <GlobalEnvironment
                         reload={reload}
                         cluster_name={cluster_name}
                         {...environment}

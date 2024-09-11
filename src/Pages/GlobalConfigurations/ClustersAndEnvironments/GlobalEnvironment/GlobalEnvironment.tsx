@@ -30,20 +30,20 @@ import {
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { useForm } from '@Components/common/hooks/useForm'
+import { UseFormSubmitHandler, useForm } from '@Components/common/hooks/useForm'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
 import { EnvironmentLabels } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentLabels'
 import { getClusterNamespaces } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/clustersAndEnvironments.service'
 
-import { EnvironmentFormProps, EnvironmentProps } from './types'
-import { getClusterNamespaceByName, getEnvironmentPayload, getNamespaceLabels } from './utils'
-import { environmentFormValidationSchema } from './schema'
+import { GlobalEnvironmentFormProps, GlobalEnvironmentProps } from './types'
+import { getClusterNamespaceByName, getGlobalEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
+import { globalEnvironmentFormValidationSchema } from './schema'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const renderVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
 
-export const Environment = ({
+export const GlobalEnvironment = ({
     environmentName,
     namespace,
     id,
@@ -54,17 +54,27 @@ export const Environment = ({
     reload,
     hideClusterDrawer,
     isVirtual,
-}: EnvironmentProps) => {
+}: GlobalEnvironmentProps) => {
     // STATES
     const [loading, setLoading] = useState(false)
-    const [namespaceLabelsConflictErr, setNamespaceLabelsConflictErr] = useState(null)
-    const [fetchClusterNamespaces, setFetchClusterNamespaces] = useState(false)
-    const [namespaceLabels, setNamespaceLabels] = useState<TagType[]>(null)
     const [confirmation, toggleConfirmation] = useState<boolean>(false)
+    // State is set when namespace labels have been externally modified which causes conflicts.
+    const [namespaceLabelsConflictErr, setNamespaceLabelsConflictErr] = useState(null)
+    // State used for `shouldRun` param of `useAsync` hook for fetching cluster namespaces.
+    const [fetchClusterNamespaces, setFetchClusterNamespaces] = useState(false)
+    // State for storing namespace labels fetched from cluster.
+    const [namespaceLabels, setNamespaceLabels] = useState<TagType[]>(null)
 
     // REFS
-    const updateEnvironmentAfterLabelsVerify = useRef(false)
+    // Ref to store the namespace resource version (used by BE to check if namespace labels have been modified externally).
     const resourceVersion = useRef<string>(null)
+    /**
+     * Tracks whether the environment update button has been clicked.
+     *
+     * This ref is used to determine if the user has initiated an environment update,
+     * which may influence subsequent logic or state updates in the component.
+     */
+    const isEnvironmentUpdateButtonClicked = useRef(false)
 
     // ASYNC CALLS
     const [clusterNamespacesLoader, clusterNamespaces, clusterNamespacesErr, reloadClusterNamespaces] = useAsync(
@@ -75,28 +85,26 @@ export const Environment = ({
     )
 
     // FORM METHODS
-    const { data, errors, handleChange, handleSubmit, trigger } = useForm<EnvironmentFormProps>({
+    const { data, errors, handleChange, handleSubmit, trigger } = useForm<GlobalEnvironmentFormProps>({
         initialValues: {
             environmentName,
             namespace,
             isProduction: !!isProduction,
             description,
         },
-        validations: environmentFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
+        validations: globalEnvironmentFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
 
-    const onValidation = async (_data: EnvironmentFormProps) => {
-        const payload = getEnvironmentPayload(
-            {
-                data: _data,
-                clusterId,
-                id,
-                namespaceLabels,
-                prometheusEndpoint,
-                resourceVersion: resourceVersion.current,
-            },
+    const onValidation: UseFormSubmitHandler<GlobalEnvironmentFormProps> = async (formData) => {
+        const payload = getGlobalEnvironmentUpdatePayload({
+            data: formData,
+            clusterId,
+            id,
+            namespaceLabels,
+            prometheusEndpoint,
+            resourceVersion: resourceVersion.current,
             isVirtual,
-        )
+        })
 
         let api
         if (isVirtual) {
@@ -122,14 +130,14 @@ export const Environment = ({
         }
     }
 
-    const withLabelValidation = () => {
+    const withLabelEditValidation = () => {
         setNamespaceLabelsConflictErr(null)
         setFetchClusterNamespaces(true)
-        updateEnvironmentAfterLabelsVerify.current = true
+        isEnvironmentUpdateButtonClicked.current = true
     }
 
     useEffect(() => {
-        if (!updateEnvironmentAfterLabelsVerify.current) {
+        if (!isEnvironmentUpdateButtonClicked.current) {
             if (!clusterNamespacesLoader && clusterNamespaces) {
                 setFetchClusterNamespaces(false)
                 const clusterNamespace = getClusterNamespaceByName(clusterNamespaces.result, data.namespace)
@@ -139,16 +147,14 @@ export const Environment = ({
                 setNamespaceLabels(null)
             }
         } else if (
-            updateEnvironmentAfterLabelsVerify.current &&
+            isEnvironmentUpdateButtonClicked.current &&
             !clusterNamespacesLoader &&
             !clusterNamespacesErr &&
             clusterNamespaces
         ) {
-            updateEnvironmentAfterLabelsVerify.current = false
+            isEnvironmentUpdateButtonClicked.current = false
             setFetchClusterNamespaces(false)
             onValidation(data)
-                .then(() => {})
-                .catch(() => {})
         }
 
         if (!clusterNamespacesLoader && clusterNamespacesErr) {
@@ -189,7 +195,7 @@ export const Environment = ({
             </div>
             <form
                 className="flex-grow-1 flexbox-col"
-                onSubmit={handleSubmit(namespaceLabels ? withLabelValidation : onValidation)}
+                onSubmit={handleSubmit(namespaceLabels ? withLabelEditValidation : onValidation)}
             >
                 <div className="dc__overflow-scroll p-20 flex-grow-1">
                     <div className="mb-16">
@@ -301,17 +307,15 @@ export const Environment = ({
                 <DeleteComponent
                     setDeleting={noop}
                     deleteComponent={deleteEnvironment}
-                    payload={getEnvironmentPayload(
-                        {
-                            data,
-                            clusterId,
-                            id,
-                            namespaceLabels,
-                            prometheusEndpoint,
-                            resourceVersion: resourceVersion.current,
-                        },
+                    payload={getGlobalEnvironmentUpdatePayload({
+                        data,
+                        clusterId,
+                        id,
+                        namespaceLabels,
+                        prometheusEndpoint,
+                        resourceVersion: resourceVersion.current,
                         isVirtual,
-                    )}
+                    })}
                     title={data.environmentName}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.Environment}

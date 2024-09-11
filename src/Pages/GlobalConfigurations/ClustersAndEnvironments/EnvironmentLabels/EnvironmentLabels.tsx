@@ -45,14 +45,14 @@ export const EnvironmentLabels = ({
         <>
             <ICTag className="icon-dim-24 scb-5" />
             <EnvironmentLabelText
-                heading="Add labels to namespace"
+                heading="Add/Edit labels to namespace"
                 description="Labels will be attached to the provided namespace in the Kubernetes cluster"
             />
             <Button
                 variant={ButtonVariantType.borderLess}
                 size={ComponentSizeType.small}
                 dataTestId="environment-labels-button"
-                text="Add labels"
+                text="Add/Edit labels"
                 onClick={addLabel}
             />
         </>

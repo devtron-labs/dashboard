@@ -1,23 +1,15 @@
-/* eslint-disable camelcase */
-import { TagType } from '@devtron-labs/devtron-fe-common-lib'
-import { EnvironmentFormProps, EnvironmentProps } from './types'
 import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
+import { GetGlobalEnvironmentUpdatePayloadType } from './types'
 
-export const getEnvironmentPayload = (
-    {
-        id,
-        data,
-        prometheusEndpoint,
-        clusterId,
-        namespaceLabels,
-        resourceVersion,
-    }: { data: EnvironmentFormProps; namespaceLabels: TagType[] } & Pick<
-        EnvironmentProps,
-        'clusterId' | 'id' | 'prometheusEndpoint'
-    > &
-        Pick<ClusterNamespacesDTO, 'resourceVersion'>,
+export const getGlobalEnvironmentUpdatePayload = ({
+    id,
+    data,
+    prometheusEndpoint,
+    clusterId,
+    namespaceLabels,
+    resourceVersion,
     isVirtual = false,
-) =>
+}: GetGlobalEnvironmentUpdatePayloadType) =>
     isVirtual
         ? {
               id,
