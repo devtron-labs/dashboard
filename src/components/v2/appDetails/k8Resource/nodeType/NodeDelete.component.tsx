@@ -165,7 +165,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                 </PopupMenu.Body>
             </PopupMenu>
 
-            {!!manifestPayload && isFELibAvailable() && (
+            {!!manifestPayload && !!isFELibAvailable && (
                 <SecurityModal
                     resourceScanPayload={{
                         ...nodeDetails,

@@ -29,6 +29,7 @@ import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-m
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     clusterId,
@@ -140,7 +141,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 />
             )}
 
-            {showVulnerabilityModal && (
+            {showVulnerabilityModal && !!isFELibAvailable && (
                 <SecurityModal
                     resourceScanPayload={{
                         name: String(resourceData.name),

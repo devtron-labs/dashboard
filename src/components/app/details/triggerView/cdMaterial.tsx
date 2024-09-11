@@ -192,7 +192,7 @@ const CDMaterial = ({
     const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
-    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
+    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))

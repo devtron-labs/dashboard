@@ -675,16 +675,18 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobCI }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
+
+    const computedAppId = appId ?? appIdFromParent
 
     const [scanResultLoading, scanResultResponse, scanResultError] = useAsync(
-        () => getSecurityScan({ artifactId, ...(isJobCI && { appId: appId ?? appIdFromParent }) }),
+        () => getSecurityScan({ artifactId, ...(isJobCI && { appId: computedAppId }) }),
         [artifactId],
         isSecurityScanV2Enabled,
     )
 
     const [executionDetailsLoading, executionDetailsResponse, executionDetailsError] = useAsync(
-        () => getLastExecutionByAppArtifactId(artifactId, isJobCI ? appId ?? appIdFromParent : null),
+        () => getLastExecutionByAppArtifactId(artifactId, isJobCI ? computedAppId : null),
         [artifactId],
         !isSecurityScanV2Enabled,
     )
@@ -694,7 +696,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
             return
         }
         push(
-            `${URLS.APP}/${appId ?? appIdFromParent}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
+            `${URLS.APP}/${computedAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
                 URLS.APP_CI_CONFIG
             }/${ciPipelineId}/build`,
         )
@@ -723,7 +725,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
         (scanResultResponse && !scanResultResponse.result.scanned)
     ) {
-        if (!executionDetailsResponse.result.scanEnabled) {
+        if (!executionDetailsResponse?.result.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
         }
         return <ImageNotScannedView />
@@ -763,10 +765,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
                     scanToolId={executionDetailsResponse.result?.scanToolId}
                     rootClassName="w-500"
                     {...(isSecurityScanV2Enabled
-                        ? { appDetailsPayload: { appId: appId ?? appIdFromParent, artifactId } }
+                        ? { appDetailsPayload: { appId: computedAppId, artifactId } }
                         : {
                               executionDetailsPayload: {
-                                  appId: appId ?? appIdFromParent,
+                                  appId: computedAppId,
                                   artifactId,
                               },
                           })}

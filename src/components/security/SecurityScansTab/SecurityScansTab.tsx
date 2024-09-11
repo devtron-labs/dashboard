@@ -65,7 +65,7 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const payload: ScanListPayloadType = {
         offset,
@@ -165,6 +165,18 @@ export const SecurityScansTab = () => {
             <div className="flexbox-col flex-grow-1 dc__content-center">
                 <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
             </div>
+        )
+    }
+
+    const isScanListEmpty = !scanListLoading && !securityScansResult?.result.securityScans.length
+
+    if (isScanListEmpty && !areFiltersActive) {
+        return (
+            <GenericEmptyState
+                image={AppNotDeployed}
+                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                classname="flex-grow-1"
+            />
         )
     }
 
@@ -360,7 +372,7 @@ export const SecurityScansTab = () => {
     }
 
     const renderScanListContainer = () => {
-        if (!scanListLoading && !securityScansResult?.result.securityScans.length && areFiltersActive) {
+        if (isScanListEmpty && areFiltersActive) {
             return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
         }
 
@@ -370,16 +382,6 @@ export const SecurityScansTab = () => {
                 {renderScanList()}
                 {renderScanDetailsModal()}
             </>
-        )
-    }
-
-    if (!scanListLoading && !securityScansResult?.result.securityScans.length && !areFiltersActive) {
-        return (
-            <GenericEmptyState
-                image={AppNotDeployed}
-                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                classname="flex-grow-1"
-            />
         )
     }
 
