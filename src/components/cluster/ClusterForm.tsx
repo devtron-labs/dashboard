@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     CHECKBOX_VALUE,
-    ToastBody,
     Checkbox,
     RadioGroupItem,
     RadioGroup,
@@ -34,6 +33,8 @@ import {
     GenericFilterEmptyState,
     CodeEditor,
     DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -519,12 +520,10 @@ export default function ClusterForm({
         try {
             setLoadingState(true)
             await api(payload)
-            toast.success(
-                <ToastBody
-                    data-testid="validate-toast-for-kubeconfig"
-                    title={`Successfully ${id ? 'updated' : 'saved'}`}
-                />,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Successfully ${id ? 'updated' : 'saved'}`,
+            })
             toggleShowAddCluster()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()

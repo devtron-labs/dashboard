@@ -24,11 +24,13 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     showError,
-    ToastBody,
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
     CodeEditor,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -337,15 +339,10 @@ const ManifestComponent = ({
                 .catch((err) => {
                     setLoading(false)
                     if (err.code === 403) {
-                        toast.info(
-                            <ToastBody
-                                title="Access denied"
-                                subtitle="You don't have access to perform this action."
-                            />,
-                            {
-                                className: 'devtron-toast unauthorized',
-                            },
-                        )
+                        ToastManager.showToast({
+                            variant: ToastVariantType.notAuthorized,
+                            description: TOAST_ACCESS_DENIED.SUBTITLE,
+                        })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
                         const error = err['errors'] && err['errors'][0]
                         if (error && error.code && error.userMessage) {

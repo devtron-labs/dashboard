@@ -21,10 +21,11 @@ import {
     Progressing,
     stopPropagation,
     OptionType,
-    ToastBody,
     DeleteDialog,
     ErrorScreenManager,
     ResourceKindType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
@@ -162,17 +163,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }
 
-    const handleToast = (action: string) => {
-        return toast.info(
-            <ToastBody
-                title={`Cannot ${action} filter`}
-                subtitle={`You can ${action} a filter with only those environments for which you have admin/manager permission.`}
-            />,
-            {
-                className: 'devtron-toast unauthorized',
-            },
-        )
-    }
+    const handleToast = (action: string) =>
+        ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            title: `Cannot ${action} filter`,
+            description: `You can ${action} a filter with only those environments for which you have admin/manager permission.`,
+        })
 
     async function getPermissionCheck(payload, _edit?: boolean, _delete?: boolean): Promise<void> {
         try {
@@ -393,7 +389,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} resourceKind={ResourceKindType.devtronApplication} filteredEnvIds={_filteredEnvIds} />
+                            <AppConfig
+                                appName={appName}
+                                resourceKind={ResourceKindType.devtronApplication}
+                                filteredEnvIds={_filteredEnvIds}
+                            />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

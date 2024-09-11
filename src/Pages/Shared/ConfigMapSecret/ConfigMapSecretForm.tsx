@@ -27,13 +27,14 @@ import {
     CHECKBOX_VALUE,
     stopPropagation,
     InfoColourBar,
-    ToastBody,
     RadioGroup,
     RadioGroupItem,
     ServerErrors,
     CustomInput,
     usePrompt,
     ButtonWithLoader,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -243,7 +244,11 @@ export const ConfigMapSecretForm = React.memo(
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isFormValid = true
             if (componentType === CMSecretComponentType.Secret && state.unAuthorized) {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    title: 'View-only access',
+                    description: "You won't be able to make any changes",
+                })
                 return { isValid: false, arr: [] }
             }
             if (!state.configName.value) {

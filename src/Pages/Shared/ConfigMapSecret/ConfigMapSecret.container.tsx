@@ -11,12 +11,13 @@ import {
     noop,
     Progressing,
     showError,
-    ToastBody,
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
     ConfigResourceType,
     DraftState,
     getAppEnvDeploymentConfig,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import EmptyStateImg from '@Images/cm-cs-empty-state.png'
@@ -281,7 +282,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     (draftDataRes?.status === 'rejected' &&
                         draftDataRes?.reason?.code === ERROR_STATUS_CODE.PERMISSION_DENIED)
                 ) {
-                    toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.warn,
+                        title: 'View-only access',
+                        description: "You won't be able to make any changes",
+                    })
                 }
 
                 if (cmSecretDataRes.status === 'rejected' || draftDataRes.status === 'rejected') {
@@ -300,7 +305,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 }
             })
             .catch((err) => {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    title: 'View-only access',
+                    description: "You won't be able to make any changes",
+                })
                 setDraftData(null)
                 showError(err)
                 setIsCMSecretLoading(false)

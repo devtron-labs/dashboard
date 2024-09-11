@@ -25,16 +25,18 @@ import {
     DevtronProgressing,
     APPROVAL_MODAL_TYPE,
     useUserEmail,
-    URLS as CommonURLS
+    URLS as CommonURLS,
+    ToastManager,
+    ToastVariantType
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
     useOnline,
-    ToastBody,
-    ToastBody3 as UpdateToast,
     ErrorBoundary,
     importComponentFromFELibrary,
     getApprovalModalTypeFromURL,
+    reloadLocation,
 } from './components/common'
 import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
@@ -67,27 +69,29 @@ export default function App() {
         ? 'custom-theme-override'
         : ''
 
-    function onlineToast(toastBody: JSX.Element, options) {
-        if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
-            toast.update(onlineToastRef.current, { render: toastBody, ...options })
-        } else {
-            onlineToastRef.current = toast[options.type](toastBody, options)
+    function onlineToast(...showToastParams: Parameters<typeof ToastManager.showToast>) {
+        if (onlineToastRef.current && ToastManager.isToastActive(onlineToastRef.current)) {
+            ToastManager.dismissToast(onlineToastRef.current)
         }
+        onlineToastRef.current = ToastManager.showToast(...showToastParams)
     }
 
     useEffect(() => {
         if (didMountRef.current) {
             if (!isOnline) {
-                const toastBody = (
-                    <ToastBody
-                        title="You are offline!"
-                        subtitle="You are not seeing real-time data and any changes you make will not be saved."
-                    />
-                )
-                onlineToast(toastBody, { type: toast.TYPE.ERROR, autoClose: false, closeButton: false })
+                onlineToast({
+                    variant: ToastVariantType.error,
+                    title: 'You are offline!',
+                    description: 'You are not seeing real-time data and any changes you make will not be saved.',
+                }, {
+                    autoClose: false
+                })
             } else {
-                const toastBody = <ToastBody title="Connected!" subtitle="You're back online." />
-                onlineToast(toastBody, { type: toast.TYPE.SUCCESS, autoClose: 3000, closeButton: true })
+                 onlineToast({
+                     variant: ToastVariantType.success,
+                     title: 'Connected!',
+                     description: "You're back online.",
+                 })
             }
         } else {
             didMountRef.current = true
@@ -229,18 +233,23 @@ export default function App() {
     }, [location])
 
     function onUpdate() {
-        const updateToastBody = (
-            <UpdateToast
-                onClick={update}
-                text="You are viewing an outdated version of Devtron UI."
-                buttonText="Reload"
-            />
-        )
-        if (toast.isActive(updateToastRef.current)) {
-            toast.update(updateToastRef.current, { render: updateToastBody })
-        } else {
-            updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
         }
+
+        updateToastRef.current = ToastManager.showToast({
+            variant: ToastVariantType.info,
+            title: 'Update available',
+            description: 'You are viewing an outdated version of Devtron UI.',
+            buttonProps: {
+                text: 'Reload',
+                dataTestId: 'reload-btn',
+                onClick: update,
+            },
+            icon: <ICSparkles />,
+        }, {
+            autoClose: false,
+        })
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
         }
@@ -256,18 +265,26 @@ export default function App() {
         if (!bgUpdated) {
             return
         }
-        const bgUpdatedToastBody = (
-            <UpdateToast
-                onClick={() => window.location.reload()}
-                text="This page has been updated. Please save any unsaved changes and refresh."
-                buttonText="Reload"
-            />
-        )
-        if (toast.isActive(updateToastRef.current)) {
-            toast.update(updateToastRef.current, { render: bgUpdatedToastBody })
-        } else {
-            updateToastRef.current = toast.info(bgUpdatedToastBody, { autoClose: false, closeButton: false })
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
         }
+
+        updateToastRef.current = ToastManager.showToast(
+            {
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-btn',
+                    onClick: reloadLocation,
+                },
+                icon: <ICSparkles />,
+            },
+            {
+                autoClose: false,
+            },
+        )
     }, [bgUpdated])
 
     return (

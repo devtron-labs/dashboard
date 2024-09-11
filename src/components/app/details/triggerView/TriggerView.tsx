@@ -23,8 +23,6 @@ import {
     stopPropagation,
     VisibleModal,
     DeploymentNodeType,
-    ToastBodyWithButton,
-    ToastBody,
     CommonNodeAttr,
     WorkflowType,
     getIsRequestAborted,
@@ -32,6 +30,9 @@ import {
     createGitCommitUrl,
     CIMaterialType,
     Environment,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -917,26 +918,24 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code === 403) {
-                    toast.info(
-                        <ToastBody title="Access denied" subtitle="You don't have access to perform this action." />,
-                        {
-                            className: 'devtron-toast unauthorized',
-                        },
-                    )
+                    ToastManager.showToast({
+                        variant: ToastVariantType.notAuthorized,
+                        description: TOAST_ACCESS_DENIED.SUBTITLE
+                    })
                 } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
                     errors.errors.map((err) => toast.error(err.internalMessage))
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                            const errorToastBody = (
-                                <ToastBodyWithButton
-                                    onClick={this.redirectToCIPipeline}
-                                    subtitle={error.userMessage}
-                                    title="Nothing to execute"
-                                    buttonText="EDIT PIPELINE"
-                                />
-                            )
-                            toast.error(errorToastBody)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                title: 'Nothing to execute',
+                                description: 'error.userMessage',
+                                buttonProps: {
+                                    text: 'Edit Pipeline',
+                                    dataTestId: 'edit-pipeline-btn'
+                                },
+                            })
                         } else {
                             showError(errors)
                         }

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
-    ToastBody,
     ErrorScreenNotAuthorized,
     Checkbox,
     CHECKBOX_VALUE,
@@ -28,6 +27,8 @@ import {
     CustomInput,
     FeatureTitleWithInfo,
     DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -365,13 +366,11 @@ const ChartForm = ({
 
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success(
-                    <ToastBody
-                        data-testid="update-toast-for-chart-repo"
-                        title="Chart repo saved"
-                        subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
-                    />,
-                )
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    title: 'Chart repo saved',
+                    description: 'It may take upto 5 mins for the charts to be listed in the chart store.',
+                })
                 await reload()
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)

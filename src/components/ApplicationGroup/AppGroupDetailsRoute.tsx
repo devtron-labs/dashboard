@@ -33,11 +33,12 @@ import {
     DeleteDialog,
     showError,
     GenericEmptyState,
-    ToastBody,
     useAsync,
     PageHeader,
     TabGroup,
     TabProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -216,15 +217,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     const handleToast = (action: string) => {
-        return toast.info(
-            <ToastBody
-                title={`Cannot ${action} filter`}
-                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
-            />,
-            {
-                className: 'devtron-toast unauthorized',
-            },
-        )
+        return ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            title: `Cannot ${action} filter`,
+            description: `You can ${action} a filter with only those applications for which you have admin/manager permission.`,
+        })
     }
 
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {

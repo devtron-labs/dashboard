@@ -39,7 +39,6 @@ import {
     handleUTCTime,
     ServerErrors,
     DeploymentAppTypes,
-    ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
     ImageCard,
@@ -76,6 +75,8 @@ import {
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
     useUserEmail,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -912,15 +913,17 @@ const CDMaterial = ({
             serverError.code !== 408
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                const toastBody = (
-                    <ToastBodyWithButton
-                        onClick={() => redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
-                        title=""
-                        subtitle={userMessage ?? internalMessage}
-                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
-                    />
-                )
-                toast.error(toastBody, { autoClose: false })
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: userMessage ?? internalMessage,
+                    buttonProps: {
+                        text: TOAST_BUTTON_TEXT_VIEW_DETAILS,
+                        dataTestId: 'cd-material-view-details-btns',
+                        onClick: () => redirectToDeploymentStepsPage(cdPipelineId, environmentId),
+                    },
+                }, {
+                    autoClose: false
+                })
             })
         } else {
             showError(serverError)
