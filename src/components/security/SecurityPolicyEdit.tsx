@@ -448,20 +448,13 @@ export class SecurityPolicyEdit extends Component<
                                         {cve.policyOrigin}
                                     </td>
                                     <td className="security-policy__data-cell">
-                                        <ReactSelect
+                                        <SelectPicker
+                                            inputId={`select-cve-${cve.name}`}
+                                            classNamePrefix={`select-cve-${cve.name}`}
                                             menuPosition="fixed"
-                                            closeMenuOnScroll
                                             value={selectedValue}
                                             onChange={(selected) => {
                                                 this.updateCVE((selected as any).value, cve, envId)
-                                            }}
-                                            components={{
-                                                DropdownIndicator,
-                                            }}
-                                            styles={{
-                                                ...styles,
-                                                ...portalStyles,
-                                                option: getCustomOptionSelectionStyle(),
                                             }}
                                             isSearchable={false}
                                             options={this.actions}
