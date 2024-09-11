@@ -29,6 +29,7 @@ import {
     FilterSelectPicker,
     SelectPickerOptionType,
     FilterChips,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { JobListViewType } from '../Constants'
@@ -52,6 +53,7 @@ const JobsList = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
+    const { isSuperAdmin } = useMainContext()
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [filtersLoading, setFiltersLoading] = useState<boolean>(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>(0)
@@ -152,14 +154,20 @@ const JobsList = () => {
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
     }
 
-    const selectedProjects: SelectPickerOptionType[] = project.map((projectId) => ({ label: '', value: projectId }))
+    const selectedProjects: SelectPickerOptionType[] = project.map((projectId) => ({
+        label: getLabelFromValue(JobListUrlFilters.project, projectId),
+        value: projectId,
+    }))
 
     const selectedStatuses: SelectPickerOptionType[] = status.map((jobStatus) => ({
-        label: jobStatus,
+        label: getJobStatusLabelFromValue(jobStatus),
         value: jobStatus,
     }))
 
-    const selectedEnvironments: SelectPickerOptionType[] = environment.map((envId) => ({ label: '', value: envId }))
+    const selectedEnvironments: SelectPickerOptionType[] = environment.map((envId) => ({
+        label: getLabelFromValue(JobListUrlFilters.environment, envId),
+        value: envId,
+    }))
 
     const renderCreateJobRouter = () => (
         <Switch>
@@ -263,7 +271,7 @@ const JobsList = () => {
                         clearFilters={clearFilters}
                         handleSorting={handleSorting}
                         jobListCount={jobCount}
-                        isSuperAdmin
+                        isSuperAdmin={isSuperAdmin}
                         setJobCount={setJobCount}
                         openJobCreateModel={openJobCreateModel}
                         renderMasterFilters={renderMasterFilters}
