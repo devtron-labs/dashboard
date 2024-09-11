@@ -218,7 +218,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         >
             <Switch>
                 <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId`} exact>
-                    {/* // TODO: refactor this part? Why spin two loaders? */}
                     <div className="chart-detail-container">
                         <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                         {loading ? (

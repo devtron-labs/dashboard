@@ -249,7 +249,8 @@
             overflow: scroll;
 
             & .rjsf-form-template__container {
-                width: 800px;
+                max-width: 800px;
+                min-width: 400px;
             }
         }
 
