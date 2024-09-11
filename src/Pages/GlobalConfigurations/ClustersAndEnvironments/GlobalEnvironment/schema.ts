@@ -1,4 +1,4 @@
-import { UseFormValidation } from '@Components/common/hooks/useForm'
+import { UseFormValidation } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GlobalEnvironmentFormProps } from './types'
 

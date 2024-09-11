@@ -27,12 +27,13 @@ import {
     showError,
     TagType,
     ToastBody,
+    UseFormSubmitHandler,
+    useForm,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { UseFormSubmitHandler, useForm } from '@Components/common/hooks/useForm'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
 import { EnvironmentLabels } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentLabels'
@@ -131,7 +132,7 @@ export const GlobalEnvironment = ({
     }
 
     // FORM METHODS
-    const { data, errors, handleChange, handleSubmit, trigger } = useForm<GlobalEnvironmentFormProps>({
+    const { data, errors, register, handleSubmit, trigger } = useForm<GlobalEnvironmentFormProps>({
         initialValues: {
             environmentName,
             namespace,
@@ -237,7 +238,7 @@ export const GlobalEnvironment = ({
                             placeholder={id ? 'sample-env-name' : 'Eg. production'}
                             value={data.environmentName}
                             error={errors.environmentName}
-                            onChange={handleChange('environmentName')}
+                            {...register('environmentName')}
                             label="Environment Name"
                         />
                     </div>
@@ -250,7 +251,7 @@ export const GlobalEnvironment = ({
                             placeholder={id ? 'sample-namespace' : 'Eg. prod'}
                             value={data.namespace}
                             error={errors.namespace}
-                            onChange={handleChange('namespace')}
+                            {...register('namespace')}
                             label="Namespace"
                         />
                     </div>
@@ -264,7 +265,7 @@ export const GlobalEnvironment = ({
                                     name="isProduction"
                                     checked={data.isProduction}
                                     value="true"
-                                    onChange={handleChange('isProduction', (value) => value === 'true')}
+                                    {...register('isProduction', (value) => value === 'true')}
                                 />
                                 <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
                             </label>
@@ -276,7 +277,7 @@ export const GlobalEnvironment = ({
                                     name="isProduction"
                                     checked={!data.isProduction}
                                     value="false"
-                                    onChange={handleChange('isProduction', (value) => value === 'true')}
+                                    {...register('isProduction', (value) => value === 'true')}
                                 />
                                 <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
                             </label>
@@ -288,7 +289,7 @@ export const GlobalEnvironment = ({
                             placeholder="Add a description for this environment"
                             value={data.description}
                             error={errors.description}
-                            onChange={handleChange('description')}
+                            {...register('description')}
                             label="Description (Maximum 40 characters allowed)"
                         />
                     </div>
