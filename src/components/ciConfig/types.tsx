@@ -165,7 +165,7 @@ export interface VersionsOptionType extends OptionType {
 }
 
 export interface LanguageOptionType extends OptionType {
-    icon: string
+    startIcon // TODO Need to check the type
 }
 
 export interface BuildersAndFrameworksType {

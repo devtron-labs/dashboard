@@ -30,7 +30,6 @@ import {
     TabGroup,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'

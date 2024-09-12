@@ -1827,6 +1827,8 @@ const DockerForm = ({
     // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
+    console.log('mode', Object.values(EA_MODE_REGISTRY_TYPE_MAP))
+    console.log('reg', Object.values(REGISTRY_TYPE_MAP))
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
             <div className="pl-20 pr-20 pt-20 pb-20">

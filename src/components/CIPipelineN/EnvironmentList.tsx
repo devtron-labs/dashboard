@@ -16,7 +16,7 @@
 
 import React from 'react'
 import ReactSelect, { components } from 'react-select'
-import { Environment } from '@devtron-labs/devtron-fe-common-lib'
+import { Environment, OptionType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
 import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
@@ -33,12 +33,16 @@ export const EnvironmentList = ({
     selectedEnv: Environment
     setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>>
 }) => {
-    const selectEnvironment = (selection: Environment) => {
-        const _selectedEnv = environments.find((env) => env.id == selection.id)
+    const selectEnvironment = (selection: OptionType) => {
+        const _selectedEnv = environments.find((env) => env.id == selection.value)
         setSelectedEnv(_selectedEnv)
     }
 
-    const envList = createClusterEnvGroup(environments, 'clusterName')
+    const getEnvListOptions = () => {
+        const envList = createClusterEnvGroup(environments, 'clusterName')
+        console.log('envList', envList)
+        return envList
+    }
 
     const environmentListControl = (props): JSX.Element => {
         return (
@@ -68,25 +72,24 @@ export const EnvironmentList = ({
                 <div className="flex p-8 dc__align-start dc__border-right">Execute job in</div>
             )}
             <div className={`${!isBuildStage ? 'w-200 dc__align-items-center' : ''}`}>
-                <ReactSelect
-                    menuPlacement="auto"
-                    closeMenuOnScroll
+                <SelectPicker
+                    inputId="job-pipeline-environment-dropdown"
+                    name="job-pipeline-environment-dropdown"
                     classNamePrefix="job-pipeline-environment-dropdown"
                     placeholder="Select Environment"
-                    options={envList}
-                    value={selectedEnv}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    isMulti={false}
+                    options={getEnvListOptions()}
+                    value={selectedEnv ? { value: selectedEnv.id.toString(), label: selectedEnv.name, description: selectedEnv.description } : null}
+                    // getOptionLabel={(option) => `${option.name}`}
+                    // getOptionValue={(option) => `${option.id}`}
                     onChange={selectEnvironment}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        GroupHeading: groupHeading,
-                        Control: environmentListControl,
-                        Option: envOption,
-                    }}
-                    styles={isBuildStage ? buildStageStyles : triggerStageStyles}
+                    // components={{
+                    //     IndicatorSeparator: null,
+                    //     DropdownIndicator,
+                    //     GroupHeading: groupHeading,
+                    //     Control: environmentListControl,
+                    //     Option: envOption,
+                    // }}
+                    // styles={isBuildStage ? buildStageStyles : triggerStageStyles}
                 />
             </div>
         </div>
