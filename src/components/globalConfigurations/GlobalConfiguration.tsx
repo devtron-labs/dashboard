@@ -330,12 +330,11 @@ const NavItem = ({ serverMode }) => {
                     to={`${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
-                    className={`${
-                        route.name === 'API tokens' &&
+                    className={`${route.name === 'API tokens' &&
                         location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                            ? 'active-route'
-                            : ''
-                    }`}
+                        ? 'active-route'
+                        : ''
+                        }`}
                     onClick={(e) => {
                         if (!preventOnClickOp) {
                             handleGroupCollapsedState(e, route)
@@ -420,9 +419,8 @@ const NavItem = ({ serverMode }) => {
                                         key={`nav_item_${index}`}
                                         to={route.href}
                                         data-testid="user-authorization-link"
-                                        className={`cursor ${
-                                            collapsedState[route.name] ? '' : 'fw-6'
-                                        } flex dc__content-space`}
+                                        className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'
+                                            } flex dc__content-space`}
                                         onClick={(e) => {
                                             handleGroupCollapsedState(e, route)
                                         }}
@@ -573,7 +571,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
     }
 
     return (
-        <Switch location={location}>
+        <Switch>
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
@@ -587,7 +585,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 }}
             />
             {!window._env_.K8S_CLIENT && [
-                serverMode !== SERVER_MODE.EA_ONLY && (
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
                     <Route
                         key={URLS.GLOBAL_CONFIG_HOST_URL}
                         path={URLS.GLOBAL_CONFIG_HOST_URL}
@@ -602,7 +600,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                             )
                         }}
                     />
-                ),
+                )] : [],
                 <Route
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
@@ -617,7 +615,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                serverMode !== SERVER_MODE.EA_ONLY && (
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
                     <Route
                         key={URLS.GLOBAL_CONFIG_GIT}
                         path={URLS.GLOBAL_CONFIG_GIT}
@@ -625,7 +623,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                             return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                         }}
                     />
-                ),
+                )] : [],
                 <Route
                     key={URLS.GLOBAL_CONFIG_DOCKER}
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
@@ -647,14 +645,14 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                serverMode !== SERVER_MODE.EA_ONLY && (
+                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
                     <Route
                         key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
                         path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
                     >
                         <DeploymentChartsRouter />
                     </Route>
-                ),
+                )] : [],
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
@@ -675,10 +673,10 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 </Route>,
                 ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [
-                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                              <BuildInfra isSuperAdmin={isSuperAdmin} />
-                          </Route>,
-                      ]
+                        <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                            <BuildInfra isSuperAdmin={isSuperAdmin} />
+                        </Route>,
+                    ]
                     : []),
             ]}
             {window._env_.ENABLE_SCOPED_VARIABLES && (
@@ -694,47 +692,43 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {serverMode !== SERVER_MODE.EA_ONLY && (
-                <>
-                    {DeploymentWindow && (
-                        <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                            <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                        </Route>
-                    )}
-                    ,
-                    {ImagePromotion && (
-                        <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
-                            <ImagePromotion isSuperAdmin={isSuperAdmin} />
-                        </Route>
-                    )}
-                    ,
-                    {PluginsPolicy && (
-                        <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
-                            <PluginsPolicy />
-                        </Route>
-                    )}
-                    {PullImageDigest && (
-                        <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                            <PullImageDigest isSuperAdmin={isSuperAdmin} />
-                        </Route>
-                    )}
-                    {TagListContainer && (
-                        <Route path={URLS.GLOBAL_CONFIG_TAGS}>
-                            <TagListContainer />
-                        </Route>
-                    )}
-                    {FilterConditions && (
-                        <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
-                            <FilterConditions isSuperAdmin={isSuperAdmin} />
-                        </Route>
-                    )}
-                    {LockDeploymentConfiguration && (
-                        <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
-                            <LockDeploymentConfiguration />
-                        </Route>
-                    )}
-                </>
-            )}
+            {serverMode !== SERVER_MODE.EA_ONLY && [
+                DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                ImagePromotion && (
+                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                PluginsPolicy && (
+                    <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
+                        <PluginsPolicy />
+                    </Route>
+                ),
+                PullImageDigest && (
+                    <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
+                        <PullImageDigest isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                TagListContainer && (
+                    <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                        <TagListContainer />
+                    </Route>
+                ),
+                FilterConditions && (
+                    <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
+                        <FilterConditions isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                LockDeploymentConfiguration && (
+                    <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
+                        <LockDeploymentConfiguration />
+                    </Route>
+                )
+            ]}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
@@ -825,7 +819,7 @@ export const ProtectedInput = ({
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur = (e) => {},
+    onBlur = (e) => { },
     isRequiredField = false,
 }: ProtectedInputType) => {
     const [shown, toggleShown] = useState(false)
@@ -888,7 +882,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => {} : onClick || defaultOnClick}
+            onClick={disabled ? () => { } : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0z" />
@@ -905,7 +899,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => {} : onClick || defaultOnClick}
+            onClick={disabled ? () => { } : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0z" />

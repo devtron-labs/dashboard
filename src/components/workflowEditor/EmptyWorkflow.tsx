@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
-import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { useState } from 'react'
+import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { createWorkflow } from './service'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -52,7 +51,10 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
         const promise = createWorkflow(request)
         promise
             .then((response) => {
-                toast.success(message)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: message,
+                })
                 setState((prevState) => ({ ...prevState, name: response.result.name, showError: false }))
                 props.onClose()
                 props.getWorkflows()

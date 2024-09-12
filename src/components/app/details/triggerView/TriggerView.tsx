@@ -23,8 +23,6 @@ import {
     stopPropagation,
     VisibleModal,
     DeploymentNodeType,
-    ToastBodyWithButton,
-    ToastBody,
     CommonNodeAttr,
     WorkflowType,
     getIsRequestAborted,
@@ -32,8 +30,10 @@ import {
     createGitCommitUrl,
     CIMaterialType,
     Environment,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
 import {
@@ -242,7 +242,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             if (!isNaN(nodeId)) {
                                 this.onClickRollbackMaterial(nodeId)
                             } else {
-                                toast.error('Invalid node id')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node id',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
@@ -257,14 +260,20 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 nodeType !== DeploymentNodeType.PRECD &&
                                 nodeType !== DeploymentNodeType.POSTCD
                             ) {
-                                toast.error('Invalid node type')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node type',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
                             } else if (!isNaN(nodeId)) {
                                 this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
                             } else {
-                                toast.error('Invalid node id')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node id',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
@@ -282,7 +291,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (!isNaN(+ciNodeId) && !!pipelineName) {
                             this.onClickCIMaterial(ciNodeId, pipelineName, false)
                         } else {
-                            toast.error('Invalid Node')
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Invalid Node',
+                            })
                         }
                     }
                     this.timerRef && clearInterval(this.timerRef)
@@ -867,12 +879,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
         if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            toast.error(
-                CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
                     '$GIT_MATERIAL_ID',
                     `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
                 ),
-            )
+            })
             this.setState({ isLoading: false })
             return
         }
@@ -897,7 +910,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         triggerCINode(payload, this.abortCIBuild.signal)
             .then((response: any) => {
                 if (response.result) {
-                    toast.success('Pipeline Triggered')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Triggered',
+                    })
                     this.setState(
                         {
                             code: response.code,
@@ -917,26 +933,29 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code === 403) {
-                    toast.info(
-                        <ToastBody title="Access denied" subtitle="You don't have access to perform this action." />,
-                        {
-                            className: 'devtron-toast unauthorized',
-                        },
-                    )
+                    ToastManager.showToast({
+                        variant: ToastVariantType.notAuthorized,
+                        description: TOAST_ACCESS_DENIED.SUBTITLE,
+                    })
                 } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
-                    errors.errors.map((err) => toast.error(err.internalMessage))
+                    errors.errors.map((err) =>
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: err.internalMessage,
+                        }),
+                    )
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                            const errorToastBody = (
-                                <ToastBodyWithButton
-                                    onClick={this.redirectToCIPipeline}
-                                    subtitle={error.userMessage}
-                                    title="Nothing to execute"
-                                    buttonText="EDIT PIPELINE"
-                                />
-                            )
-                            toast.error(errorToastBody)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                title: 'Nothing to execute',
+                                description: 'error.userMessage',
+                                buttonProps: {
+                                    text: 'Edit Pipeline',
+                                    dataTestId: 'edit-pipeline-btn',
+                                },
+                            })
                         } else {
                             showError(errors)
                         }

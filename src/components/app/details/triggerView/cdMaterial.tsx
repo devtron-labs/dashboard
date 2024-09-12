@@ -17,7 +17,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { components } from 'react-select'
 import ReactGA from 'react-ga4'
-import { toast } from 'react-toastify'
 import { Prompt, useHistory } from 'react-router-dom'
 import {
     CDMaterialType,
@@ -39,7 +38,6 @@ import {
     handleUTCTime,
     ServerErrors,
     DeploymentAppTypes,
-    ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
     ImageCard,
@@ -76,6 +74,8 @@ import {
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
     useUserEmail,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -277,7 +277,10 @@ const CDMaterial = ({
             }
         } catch (error) {
             setState((prevState) => ({ ...prevState, isSecurityModuleInstalled: false }))
-            toast.error('Issue while fetching security module status')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Issue while fetching security module status',
+            })
         }
     }
 
@@ -770,7 +773,10 @@ const CDMaterial = ({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before switching tabs')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before switching tabs',
+            })
             return
         }
 
@@ -914,15 +920,17 @@ const CDMaterial = ({
             serverError.code !== 408
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                const toastBody = (
-                    <ToastBodyWithButton
-                        onClick={() => redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
-                        title=""
-                        subtitle={userMessage ?? internalMessage}
-                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
-                    />
-                )
-                toast.error(toastBody, { autoClose: false })
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: userMessage ?? internalMessage,
+                    buttonProps: {
+                        text: TOAST_BUTTON_TEXT_VIEW_DETAILS,
+                        dataTestId: 'cd-material-view-details-btns',
+                        onClick: () => redirectToDeploymentStepsPage(cdPipelineId, environmentId),
+                    },
+                }, {
+                    autoClose: false
+                })
             })
         } else {
             showError(serverError)
@@ -973,7 +981,10 @@ const CDMaterial = ({
         wfrId?: number,
     ) => {
         if (runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before deploying')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before deploying',
+            })
             return
         }
 
@@ -1002,7 +1013,10 @@ const CDMaterial = ({
                                 ? 'Rollback Initiated'
                                 : 'Deployment Initiated'
 
-                        toast.success(msg)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: msg,
+                        })
                         setDeploymentLoading(false)
                         closeCDModal(e)
                     }
@@ -1018,7 +1032,10 @@ const CDMaterial = ({
             let message = _appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
             message += ciArtifactId ? '' : 'Artifact id missing '
-            toast.error(message)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: message,
+            })
             setDeploymentLoading(false)
         }
     }
@@ -1106,12 +1123,21 @@ const CDMaterial = ({
                                     : `${eligibleImages} new eligible images found.`
 
                             if (state.filterView === FilterConditionViews.ELIGIBLE) {
-                                toast.info(`${baseSuccessMessage} ${infoMessage}`)
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.info,
+                                    description: `${baseSuccessMessage} ${infoMessage}`,
+                                })
                             } else {
-                                toast.success(`${baseSuccessMessage} ${infoMessage}`)
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.success,
+                                    description: `${baseSuccessMessage} ${infoMessage}`,
+                                })
                             }
                         } else {
-                            toast.success(baseSuccessMessage)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.success,
+                                description: baseSuccessMessage,
+                            })
                         }
                     }
                 })

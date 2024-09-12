@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { GitOpsAuthModeType, InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { FunctionComponent, useEffect, useState } from 'react'
+import { GitOpsAuthModeType, InfoColourBar, Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
@@ -112,7 +111,10 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
         gitOpsConfigDevtron(payload)
             .then(() => {
                 respondOnSuccess(true)
-                toast.success('Successfully saved.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully saved',
+                })
             })
             .catch((err) => {
                 // Comes when in global config, we have changed the status of directory management

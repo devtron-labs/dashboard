@@ -15,8 +15,15 @@
  */
 
 import { useRef, useState } from 'react'
-import { CustomInput, noop, showError, VisibleModal, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import {
+    CustomInput,
+    noop,
+    showError,
+    VisibleModal,
+    ButtonWithLoader,
+    ToastVariantType,
+    ToastManager,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
@@ -102,7 +109,10 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
         uploadChart(chartData)
             .then(() => {
                 if (actionType === 'Save') {
-                    toast.success('Chart saved')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Chart saved',
+                    })
                     closeUploadPopup(true)
                 } else {
                     closeUploadPopup(false)

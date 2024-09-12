@@ -113,17 +113,11 @@ export const ClusterValueContainer = (props) => {
     } else {
         count = `${length} environment${length !== 1 ? 's' : ''}`
     }
+
     return (
         <components.ValueContainer {...props}>
-            {length > 0 ? (
-                <>
-                    {!props.selectProps.menuIsOpen && count}
-                    {React.cloneElement(props.children[1])}
-                </>
-            ) : (
-                // eslint-disable-next-line react/jsx-no-useless-fragment
-                <>{props.children}</>
-            )}
+            {!props.selectProps.menuIsOpen && (length > 0 ? count : props.selectProps.placeholder)}
+            {React.cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }
