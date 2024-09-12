@@ -1,0 +1,36 @@
+name: Increment tag for patch
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed  # Trigger only when a PR is closed (merged or not)
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create new tag
+        env:
+          TOKEN: ${{ secrets.TAG_CREATION_TOKEN_PUBLIC }}
+        run: |
+          echo $TOKEN | gh auth login --with-token
+          latest_tag=$(git tag --sort=refname | tail -n 1)
+          echo "Latest tag: $latest_tag"
+          # Extract major and minor versions
+          version=$(echo $latest_tag | cut -d. -f1-2)
+          # Extract patch version and increment it
+          patch=$(echo $latest_tag | cut -d. -f3)
+          new_tag="$version.$((patch+1))"
+          echo "New tag will be: $new_tag"
+          git config --global user.email "devops@devtron.ai"
+          git config --global user.name "systemsdt"
+          git tag $new_tag
+          git push origin $new_tag
