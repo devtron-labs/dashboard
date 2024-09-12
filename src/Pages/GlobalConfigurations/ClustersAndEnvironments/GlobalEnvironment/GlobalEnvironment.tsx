@@ -15,7 +15,6 @@
  */
 
 import { useState } from 'react'
-import { toast } from 'react-toastify'
 
 import {
     Button,
@@ -26,9 +25,10 @@ import {
     noop,
     showError,
     TagType,
-    ToastBody,
     UseFormSubmitHandler,
     useForm,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -167,12 +167,19 @@ export const GlobalEnvironment = ({
             try {
                 setCrudLoading(true)
                 await api(payload, id)
-                toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: `Successfully ${id ? 'updated' : 'saved'}`,
+                })
                 reload()
                 hideClusterDrawer()
             } catch (err) {
                 if (err.code === 409) {
-                    toast.error(<ToastBody title="Namespace manifest changed" subtitle={err.errors[0].userMessage} />)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        title: 'Namespace manifest changed',
+                        description: err.errors[0].userMessage,
+                    })
                     const clusterNamespace = getClusterNamespaceByName(clusterNamespacesData, formData.namespace)
                     setNamespaceLabels({
                         labels: getNamespaceLabels(clusterNamespace),

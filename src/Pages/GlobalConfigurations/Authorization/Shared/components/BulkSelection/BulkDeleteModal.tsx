@@ -20,9 +20,10 @@ import {
     CustomInput,
     Progressing,
     showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-medium-delete.svg'
 import { deletePermissionGroupInBulk, deleteUserInBulk } from '../../../authorization.service'
 import { UserBulkDeletePayload, PermissionGroupBulkDeletePayload } from '../../../types'
@@ -102,7 +103,10 @@ const BulkDeleteModal = ({
                       }
                 await deletePermissionGroupInBulk(payload)
             }
-            toast.success(successToastText)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: successToastText,
+            })
             setIsDeleteLoading(false)
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,

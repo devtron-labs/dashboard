@@ -26,8 +26,9 @@ import {
     useMainContext,
     useKeyDown,
     SearchBar,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
 import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play-filled.svg'
@@ -161,7 +162,10 @@ const LogsComponent = ({
         const pipes = parsePipes(searchText)
         const tokens = pipes.map((p) => getGrepTokens(p))
         if (tokens.some((t) => !t)) {
-            toast.warn('Expression is invalid.')
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                description: 'Expression is invalid.',
+            })
             return
         }
         setLogState({

@@ -18,7 +18,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
-    toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
     ClipboardButton,
@@ -32,13 +31,14 @@ import {
     TabGroup,
     ComponentSizeType,
     TabProps,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import { ToastBodyWithButton } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -636,12 +636,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 push(_url)
                 return
             }
-            toast.error(
-                <div>
-                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
+                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
+            })
         })
     }
 
@@ -852,7 +851,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         setNodeDetail(null)
         const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
         getData(_patchData)
-        toast.dismiss(toastId.current)
+        ToastManager.dismissToast(toastId.current)
     }
 
     const saveYAML = (): void => {
@@ -870,7 +869,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
-                        toast.success('Node updated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Node updated',
+                        })
                         setIsReviewStates(false)
                         setIsEdit(false)
                         setIsShowWarning(false)
@@ -883,19 +885,21 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                         modifiedYAMLError = error.errors.find((errorData) => Number(errorData.code) === 409)
                     }
                     if (modifiedYAMLError) {
-                        const updateToastBody = (
-                            <ToastBodyWithButton
-                                onClick={reloadDataAndHideToast}
-                                title="Cannot apply changes as node yaml has changed"
-                                subtitle="Please apply your changes to the latest version and try again."
-                                buttonText="Show latest YAML"
-                            />
+                        ToastManager.showToast(
+                            {
+                                variant: ToastVariantType.info,
+                                title: 'Cannot apply changes as node yaml has changed',
+                                description: 'Please apply your changes to the latest version and try again.',
+                                buttonProps: {
+                                    text: 'Show latest YAML',
+                                    dataTestId: 'show-latest-yaml',
+                                    onClick: reloadDataAndHideToast,
+                                },
+                            },
+                            {
+                                autoClose: false,
+                            },
                         )
-                        if (toast.isActive(toastId.current)) {
-                            toast.update(toastId.current, { render: updateToastBody })
-                        } else {
-                            toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
-                        }
                     } else {
                         showError(error)
                     }
@@ -993,7 +997,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
 
     const isAuthorized = (): boolean => {
         if (!isSuperAdmin) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
             return false
         }
         return true

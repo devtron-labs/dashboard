@@ -23,9 +23,10 @@ import {
     TippyTheme,
     stopPropagation,
     InfoColourBar,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -128,7 +129,10 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 taints: taintList,
             }
             await updateTaints(payload)
-            toast.success(EDIT_TAINTS_MODAL_MESSAGING.Actions.saving)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: EDIT_TAINTS_MODAL_MESSAGING.Actions.saving,
+            })
             closePopup(true)
         } catch (err) {
             showError(err)

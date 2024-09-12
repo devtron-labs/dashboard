@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { Component } from 'react'
-import { toast } from 'react-toastify'
 
 export class CommandErrorBoundary extends Component<{ toggleCommandBar }, any> {
     constructor(props) {
@@ -28,7 +28,10 @@ export class CommandErrorBoundary extends Component<{ toggleCommandBar }, any> {
     }
 
     componentDidCatch(error, errorInfo) {
-        toast.error('Some Error Occurred')
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: 'Some Error Occurred',
+        })
         console.error('Error')
         this.props.toggleCommandBar(false)
     }

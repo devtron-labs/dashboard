@@ -27,10 +27,11 @@ import {
     ResizableTextarea,
     useMainContext,
     ButtonWithLoader,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
-import { toast } from 'react-toastify'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './apiToken.type'
@@ -139,7 +140,10 @@ const EditAPIToken = ({
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
                 if (userPermissionResponse) {
-                    toast.success('Changes saved')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Changes saved',
+                    })
                     reload()
                     redirectToTokenList()
                 }

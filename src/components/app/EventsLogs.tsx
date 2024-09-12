@@ -23,8 +23,9 @@ import {
     useSearchString,
     useAsync,
     YAMLStringify,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -441,7 +442,10 @@ export const LogsView: React.FC<LogsView> = ({
         const pipes = parsePipes(logSearchString)
         const tokens = pipes.map((p) => getGrepTokens(p))
         if (tokens.some((t) => !t)) {
-            toast.warn('Expression is invalid.')
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                description: 'Expression is invalid.',
+            })
             return
         }
         setGrepTokens(tokens)

@@ -23,8 +23,9 @@ import {
     not,
     showError,
     renderErrorHeaderMessage,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from './index.store'
@@ -110,7 +111,10 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
         deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
             .then((response: ResponseType) => {
                 if (response.code === 200) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
                 }
             })
             .catch((error: ServerErrors) => {

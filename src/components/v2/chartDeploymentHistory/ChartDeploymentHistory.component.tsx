@@ -27,10 +27,11 @@ import {
     DeploymentDetailSteps,
     CodeEditor,
     TabGroup,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
@@ -659,12 +660,18 @@ const ChartDeploymentHistory = ({
             setShowRollbackConfirmation(false)
 
             if (result?.success) {
-                toast.success('Deployment initiated')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deployment initiated',
+                })
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else if (errors) {
                 showError(errors)
             } else {
-                toast.error('Some error occurred')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some error occurred',
+                })
             }
         } catch (err) {
             showError(err)
