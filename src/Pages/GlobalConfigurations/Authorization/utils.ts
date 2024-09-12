@@ -19,11 +19,12 @@ import {
     BulkSelectionEvents,
     noop,
     OptionType,
+    ToastManager,
+    ToastVariantType,
     UserStatus,
     UserStatusDto,
     ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
     Moment12HourFormat,
@@ -393,7 +394,10 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     }, [])
 
     if (!isComplete) {
-        toast.error(REQUIRED_FIELDS_MISSING)
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: REQUIRED_FIELDS_MISSING,
+        })
         setDirectPermission(tempPermissions)
     }
 

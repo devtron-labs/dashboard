@@ -19,7 +19,6 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
-    multiSelectStyles,
     Progressing,
     ReleaseTag,
     ImageComment,
@@ -36,12 +35,14 @@ import {
     DEPLOYMENT_WINDOW_TYPE,
     MODAL_TYPE,
     ApiQueuingWithBatch,
+    SelectPicker,
     CDMaterialSidebarType,
     CD_MATERIAL_SIDEBAR_TABS,
     RuntimeParamsListItemType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -148,7 +149,10 @@ export default function BulkCDTrigger({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
+            })
             return
         }
 
@@ -343,7 +347,10 @@ export default function BulkCDTrigger({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
+            })
             return
         }
 
@@ -631,21 +638,24 @@ export default function BulkCDTrigger({
                                 />
                             </div>
                         )}
-                        <span className="px-16">Select image by release tag</span>
                         {currentSidebarTab === CDMaterialSidebarType.IMAGE && (
-                            <div style={{ zIndex: 1 }} className="tag-selection-dropdown pt-6 pb-12 px-16">
-                                <ReactSelect
-                                    isSearchable
-                                    options={options}
-                                    value={selectedTagName}
-                                    styles={multiSelectStyles}
-                                    components={imageTaggingControls}
-                                    onChange={handleTagChange}
-                                    isDisabled={false}
-                                    classNamePrefix="build-config__select-repository-containing-code"
-                                    autoFocus
-                                />
-                            </div>
+                            <>
+                                <span className="px-16">Select image by release tag</span>
+                                <div className="tag-selection-dropdown px-16 pt-6 pb-12 dc__zi-1">
+                                    <SelectPicker
+                                        name="build-config__select-repository-containing-code"
+                                        inputId="build-config__select-repository-containing-code"
+                                        isSearchable
+                                        options={options}
+                                        value={selectedTagName}
+                                        icon={<Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />}
+                                        onChange={handleTagChange}
+                                        isDisabled={false}
+                                        classNamePrefix="build-config__select-repository-containing-code"
+                                        autoFocus
+                                    />
+                                </div>
+                            </>
                         )}
                         <div
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"

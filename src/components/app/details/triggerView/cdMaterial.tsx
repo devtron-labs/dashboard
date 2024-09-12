@@ -15,9 +15,8 @@
  */
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import ReactGA from 'react-ga4'
-import { toast } from 'react-toastify'
 import { Prompt, useHistory } from 'react-router-dom'
 import {
     CDMaterialType,
@@ -39,7 +38,6 @@ import {
     handleUTCTime,
     ServerErrors,
     DeploymentAppTypes,
-    ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
     ImageCard,
@@ -66,6 +64,9 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
     SearchBar,
     CDMaterialSidebarType,
     RuntimeParamsListItemType,
@@ -73,6 +74,8 @@ import {
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
     useUserEmail,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -95,9 +98,9 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
-import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact@2x.png'
 import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
-import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
+import { CDButtonLabelMap, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
     getRecentDeploymentConfig,
@@ -105,7 +108,6 @@ import {
     triggerCDNode,
 } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     DEPLOYMENT_CONFIGURATION_NAV_MAP,
     LAST_SAVED_CONFIG_OPTION,
@@ -273,7 +275,10 @@ const CDMaterial = ({
             }
         } catch (error) {
             setState((prevState) => ({ ...prevState, isSecurityModuleInstalled: false }))
-            toast.error('Issue while fetching security module status')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Issue while fetching security module status',
+            })
         }
     }
 
@@ -766,7 +771,10 @@ const CDMaterial = ({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before switching tabs')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before switching tabs',
+            })
             return
         }
 
@@ -910,15 +918,17 @@ const CDMaterial = ({
             serverError.code !== 408
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                const toastBody = (
-                    <ToastBodyWithButton
-                        onClick={() => redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
-                        title=""
-                        subtitle={userMessage ?? internalMessage}
-                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
-                    />
-                )
-                toast.error(toastBody, { autoClose: false })
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: userMessage ?? internalMessage,
+                    buttonProps: {
+                        text: TOAST_BUTTON_TEXT_VIEW_DETAILS,
+                        dataTestId: 'cd-material-view-details-btns',
+                        onClick: () => redirectToDeploymentStepsPage(cdPipelineId, environmentId),
+                    },
+                }, {
+                    autoClose: false
+                })
             })
         } else {
             showError(serverError)
@@ -969,7 +979,10 @@ const CDMaterial = ({
         wfrId?: number,
     ) => {
         if (runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before deploying')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before deploying',
+            })
             return
         }
 
@@ -998,7 +1011,10 @@ const CDMaterial = ({
                                 ? 'Rollback Initiated'
                                 : 'Deployment Initiated'
 
-                        toast.success(msg)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: msg,
+                        })
                         setDeploymentLoading(false)
                         closeCDModal(e)
                     }
@@ -1014,7 +1030,10 @@ const CDMaterial = ({
             let message = _appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
             message += ciArtifactId ? '' : 'Artifact id missing '
-            toast.error(message)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: message,
+            })
             setDeploymentLoading(false)
         }
     }
@@ -1102,12 +1121,21 @@ const CDMaterial = ({
                                     : `${eligibleImages} new eligible images found.`
 
                             if (state.filterView === FilterConditionViews.ELIGIBLE) {
-                                toast.info(`${baseSuccessMessage} ${infoMessage}`)
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.info,
+                                    description: `${baseSuccessMessage} ${infoMessage}`,
+                                })
                             } else {
-                                toast.success(`${baseSuccessMessage} ${infoMessage}`)
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.success,
+                                    description: `${baseSuccessMessage} ${infoMessage}`,
+                                })
                             }
                         } else {
-                            toast.success(baseSuccessMessage)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.success,
+                                description: baseSuccessMessage,
+                            })
                         }
                     }
                 })
@@ -1206,7 +1234,7 @@ const CDMaterial = ({
         ) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No eligible image found"
                     subTitle={renderFilterEmptyStateSubtitle()}
                     isButtonAvailable={!noMoreImages}
@@ -1218,7 +1246,7 @@ const CDMaterial = ({
         if (searchImageTag) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No matching image available"
                     subTitle="We couldn't find any matching image"
                     isButtonAvailable
@@ -1242,7 +1270,7 @@ const CDMaterial = ({
 
         return (
             <GenericEmptyState
-                image={noartifact}
+                image={noArtifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     materialType == MATERIAL_TYPE.rollbackMaterialList
@@ -1874,33 +1902,23 @@ const CDMaterial = ({
                     !showConfigDiffView &&
                     stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
-                            <div className="flex">
-                                <ReactSelect
+                            <div className="flex px-16">
+                                <span className="fs-13 fw-4 cn-9">Deploy:&nbsp;</span>
+                                <SelectPicker
+                                    inputId="deploy-config-select"
+                                    name="deploy-config-select"
+                                    variant={SelectPickerVariantType.BORDER_LESS}
                                     options={getDeployConfigOptions(
                                         state.isRollbackTrigger,
                                         state.recentDeploymentConfig !== null,
                                     )}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                        ValueContainer: customValueContainer,
-                                    }}
                                     isDisabled={state.checkingDiff}
                                     isSearchable={false}
-                                    formatOptionLabel={formatOptionLabel}
                                     classNamePrefix="deploy-config-select"
                                     placeholder="Select Config"
-                                    menuPlacement="top"
                                     value={state.selectedConfigToDeploy}
-                                    styles={getCommonConfigSelectStyles({
-                                        valueContainer: (base, state) => ({
-                                            ...base,
-                                            minWidth: '135px',
-                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                        }),
-                                    })}
                                     onChange={handleConfigSelection}
+                                    menuSize={ComponentSizeType.medium}
                                 />
                             </div>
                             <span className="dc__border-left h-100" />

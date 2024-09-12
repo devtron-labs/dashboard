@@ -22,9 +22,10 @@ import {
     DeleteDialog,
     getRandomColor,
     showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
 
@@ -57,7 +58,10 @@ const PermissionGroupRow = ({
         setIsModalLoading(true)
         try {
             await deletePermissionGroup(id)
-            toast.success('Group deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Group deleted',
+            })
             refetchPermissionGroupList()
             setIsDeleteModalOpen(false)
 

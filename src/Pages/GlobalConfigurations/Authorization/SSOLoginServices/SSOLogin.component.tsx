@@ -37,8 +37,9 @@ import {
     CodeEditor,
     FeatureTitleWithInfo,
     InfoColourBar,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
@@ -322,12 +323,18 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 this.state.shouldAutoAssignPermissions &&
                 !configJSON.tenant
             ) {
-                toast.error('"tenant" is required in configuration for auto-assigning permissions to users')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: '"tenant" is required in configuration for auto-assigning permissions to users',
+                })
                 return { isValid: false }
             }
         } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Yaml',
+            })
             this.setState({ saveLoading: false })
             return { isValid: false }
         }
@@ -369,7 +376,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
         // Updating the ref, in case the user updates the AD in same session
         this.savedShouldAutoAssignPermissionRef.current = shouldAutoAssignPermissions
-        toast.success('Saved Successful')
+        ToastManager.showToast({
+            variant: ToastVariantType.success,
+            description: 'Saved Successful',
+        })
     }
 
     saveNewSSO(): void {
@@ -403,13 +413,19 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         e.preventDefault()
 
         if (!this.state.ssoConfig.url) {
-            toast.error('Some required field are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required field are missing',
+            })
             return
         }
 
         if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
-                toast.error('Invalid YAML')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Invalid YAML',
+                })
                 return
             }
             if (
@@ -417,7 +433,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 !this.state.ssoConfig.config.name ||
                 !this.state.ssoConfig.config.config
             ) {
-                toast.error('Configuration must have id, name and config value')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Configuration must have id, name and config value',
+                })
                 return
             }
         }
@@ -597,7 +616,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid YAML',
+            })
             return
         }
         if (newConfig) {

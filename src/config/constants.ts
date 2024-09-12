@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -955,3 +955,5 @@ export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
     DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }
+
+export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] = 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'

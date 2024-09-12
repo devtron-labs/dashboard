@@ -18,7 +18,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
-    toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
     ClipboardButton,
@@ -29,13 +28,17 @@ import {
     SortableTableHeaderCell,
     SortingOrder,
     Tooltip,
+    TabGroup,
+    ComponentSizeType,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import { ToastBodyWithButton } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -105,7 +108,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
-    const { push } = useHistory()
+    const { push, replace } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -160,6 +163,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
             } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
                 setSelectedTabIndex(2)
             }
+        } else {
+            replace({
+                pathname: location.pathname,
+                search: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+            })
         }
     }, [location.search])
 
@@ -181,44 +189,54 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
             } else if (_tabIndex === 2) {
                 _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
             }
-            push({
-                pathname: location.pathname,
-                search: _searchParam,
-            })
             updateTabUrl(`${location.pathname}${_searchParam}`)
         }
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const cursorValue = 'cursor'
+        const tabs: TabProps[] = [
+            {
+                id: NODE_DETAILS_TABS.summary,
+                label: NODE_DETAILS_TABS.summary,
+                tabType: 'navLink',
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                    ['data-tab-index']: 0,
+                },
+            },
+            {
+                id: NODE_DETAILS_TABS.yaml,
+                label: NODE_DETAILS_TABS.yaml,
+                tabType: 'navLink',
+                icon: Edit,
+                iconType: 'stroke',
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
+                    ['data-tab-index']: 1,
+                },
+            },
+            {
+                id: NODE_DETAILS_TABS.nodeConditions,
+                label: NODE_DETAILS_TABS.nodeConditions,
+                tabType: 'navLink',
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) =>
+                        search === `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
+                    ['data-tab-index']: 2,
+                },
+            },
+        ]
+
         return (
-            <div className="pl-20 flex dc__border-bottom">
-                <div className="flex left w-100">
-                    <ul role="tablist" className="tab-list pt-6">
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
-                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 0 ? ' fw-6 active' : ' fw-4'}`}>
-                                {NODE_DETAILS_TABS.summary}
-                            </div>
-                            {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
-                        </li>
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
-                            <div
-                                className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex === 1 ? ' fw-6 active' : ' fw-4'}`}
-                            >
-                                <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
-                                {NODE_DETAILS_TABS.yaml}
-                            </div>
-                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
-                        </li>
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
-                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 2 ? ' fw-6 active' : ' fw-4'}`}>
-                                {NODE_DETAILS_TABS.nodeConditions}
-                            </div>
-                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
-                        </li>
-                    </ul>
-                    {nodeControls()}
-                </div>
+            <div className="pl-20 dc__border-bottom flex dc__gap-16">
+                <TabGroup tabs={tabs} alignActiveBorderWithContainer size={ComponentSizeType.medium} />
+                {nodeControls()}
             </div>
         )
     }
@@ -336,43 +354,47 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
     }
 
     const renderLabelAnnotationTaint = (): JSX.Element => {
+        const tabs: TabProps[] = [
+            {
+                id: 'labels-tab',
+                label: `Labels (${nodeDetail.labels.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 0,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(0)
+                    },
+                },
+            },
+            {
+                id: 'annotation-tab',
+                label: `Annotation (${nodeDetail.annotations.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 1,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(1)
+                    },
+                },
+            },
+            {
+                id: 'taints-tab',
+                label: `Taints (${nodeDetail.taints?.length || 0})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 2,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(2)
+                    },
+                },
+            },
+        ]
+
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(0)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Labels ({nodeDetail.labels.length})
-                        </div>
-                        {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(1)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Annotation ({nodeDetail.annotations.length})
-                        </div>
-                        {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(2)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Taints ({nodeDetail.taints?.length || 0})
-                        </div>
-                        {selectedSubTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
-                </ul>
+                <div className="dc__border-bottom px-20">
+                    <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+                </div>
                 <div className=" pr-20 pl-20 pt-12 pb-12">
                     {selectedSubTabIndex == 0 && renderLabelTab()}
                     {selectedSubTabIndex == 1 && renderAnnotationTab()}
@@ -614,12 +636,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 push(_url)
                 return
             }
-            toast.error(
-                <div>
-                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
+                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
+            })
         })
     }
 
@@ -830,7 +851,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         setNodeDetail(null)
         const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
         getData(_patchData)
-        toast.dismiss(toastId.current)
+        ToastManager.dismissToast(toastId.current)
     }
 
     const saveYAML = (): void => {
@@ -848,7 +869,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
-                        toast.success('Node updated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Node updated',
+                        })
                         setIsReviewStates(false)
                         setIsEdit(false)
                         setIsShowWarning(false)
@@ -861,19 +885,21 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                         modifiedYAMLError = error.errors.find((errorData) => Number(errorData.code) === 409)
                     }
                     if (modifiedYAMLError) {
-                        const updateToastBody = (
-                            <ToastBodyWithButton
-                                onClick={reloadDataAndHideToast}
-                                title="Cannot apply changes as node yaml has changed"
-                                subtitle="Please apply your changes to the latest version and try again."
-                                buttonText="Show latest YAML"
-                            />
+                        ToastManager.showToast(
+                            {
+                                variant: ToastVariantType.info,
+                                title: 'Cannot apply changes as node yaml has changed',
+                                description: 'Please apply your changes to the latest version and try again.',
+                                buttonProps: {
+                                    text: 'Show latest YAML',
+                                    dataTestId: 'show-latest-yaml',
+                                    onClick: reloadDataAndHideToast,
+                                },
+                            },
+                            {
+                                autoClose: false,
+                            },
                         )
-                        if (toast.isActive(toastId.current)) {
-                            toast.update(toastId.current, { render: updateToastBody })
-                        } else {
-                            toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
-                        }
                     } else {
                         showError(error)
                     }
@@ -971,7 +997,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
 
     const isAuthorized = (): boolean => {
         if (!isSuperAdmin) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
             return false
         }
         return true

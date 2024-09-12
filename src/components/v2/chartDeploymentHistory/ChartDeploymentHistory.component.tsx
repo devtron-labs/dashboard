@@ -26,10 +26,12 @@ import {
     YAMLStringify,
     DeploymentDetailSteps,
     CodeEditor,
+    TabGroup,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
@@ -373,24 +375,21 @@ const ChartDeploymentHistory = ({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                {deploymentTabs().map((tab, index) => {
-                    return (
-                        <li
-                            onClick={() => onClickDeploymentTabs(tab)}
-                            key={`deployment-tab-${index}`}
-                            className="tab-list__tab"
-                        >
-                            <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
-                                data-testid={`nav-bar-option-${index}`}
-                            >
-                                {tab}
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
+            <div className="dc__border-bottom px-20">
+                <TabGroup
+                    tabs={deploymentTabs().map((tab, index) => ({
+                        id: `deployment-tab-${index}`,
+                        label: tab,
+                        tabType: 'button',
+                        active: selectedDeploymentTabName === tab,
+                        props: {
+                            onClick: () => onClickDeploymentTabs(tab),
+                            'data-testid': `nav-bar-option-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
+            </div>
         )
     }
 
@@ -661,12 +660,18 @@ const ChartDeploymentHistory = ({
             setShowRollbackConfirmation(false)
 
             if (result?.success) {
-                toast.success('Deployment initiated')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deployment initiated',
+                })
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else if (errors) {
                 showError(errors)
             } else {
-                toast.error('Some error occurred')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some error occurred',
+                })
             }
         } catch (err) {
             showError(err)
