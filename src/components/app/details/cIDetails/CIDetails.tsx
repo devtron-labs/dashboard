@@ -761,7 +761,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         <div className="p-16">
             <SecuritySummaryCard
                 severityCount={severityCount}
-                scanToolId={executionDetailsResponse.result?.scanToolId}
+                scanToolId={executionDetailsResponse?.result.scanToolId ?? SCAN_TOOL_ID_TRIVY}
                 rootClassName="w-500"
                 {...(isSecurityScanV2Enabled
                     ? { appDetailsPayload: { appId: computedAppId, artifactId } }

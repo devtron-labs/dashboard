@@ -28,7 +28,7 @@ import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-in
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 
-const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
