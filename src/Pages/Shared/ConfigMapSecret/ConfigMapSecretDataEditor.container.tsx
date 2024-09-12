@@ -16,7 +16,6 @@
 
 import React, { useEffect } from 'react'
 import { Prompt } from 'react-router-dom'
-import { toast } from 'react-toastify'
 
 import {
     InfoColourBar,
@@ -27,6 +26,8 @@ import {
     CodeEditor,
     usePrompt,
     deepEqual,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
@@ -176,7 +177,10 @@ const ConfigMapSecretDataEditor = ({
 
     const changeEditorMode = () => {
         if (state.isValidateFormError) {
-            toast.error('Please resolve the errors before switching editor mode.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve the errors before switching editor mode.',
+            })
         } else if (state.yamlMode) {
             if (!state.secretMode) {
                 dispatch({
@@ -459,6 +463,7 @@ const ConfigMapSecretDataEditor = ({
                 }
             }}
             headerComponent={renderSecretShowHide(false)}
+            validateEmptyKeys
         />
     )
 

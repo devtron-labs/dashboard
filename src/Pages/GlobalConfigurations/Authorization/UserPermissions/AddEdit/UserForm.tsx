@@ -27,9 +27,10 @@ import {
     UserStatus,
     useMainContext,
     UserGroupType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
-import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
@@ -112,7 +113,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const validateForm = (): boolean => {
         if (emailState.emails.length === 0) {
             setEmailState((prevEmailState) => ({ ...prevEmailState, emailError: 'Emails are mandatory.' }))
-            toast.error(REQUIRED_FIELDS_MISSING)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: REQUIRED_FIELDS_MISSING,
+            })
             return false
         }
 
@@ -124,7 +128,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 ...prevEmailState,
                 emailError: 'One or more emails could not be verified to be correct.',
             }))
-            toast.error('One or more emails could not be verified to be correct.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'One or more emails could not be verified to be correct.',
+            })
             return false
         }
         return true
@@ -156,17 +163,26 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 timeToLive,
             })
             if (isAddMode) {
-                toast.success('User(s) added')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'User(s) added',
+                })
             } else {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                toast.success('User updated')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'User updated',
+                })
             }
             _redirectToUserPermissionList()
         } catch (err) {
             // In case the permissions are partially updated for some reason, we receive 417
             if (err instanceof ServerErrors && err.code === API_STATUS_CODES.EXPECTATION_FAILED) {
                 const message = err.errors[0].userMessage
-                toast.warn(message)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: message,
+                })
             } else {
                 showError(err)
             }
@@ -203,7 +219,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setSubmitting(true)
         try {
             await deleteUser(_userData.id)
-            toast.success('User deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'User deleted',
+            })
             setDeleteConfirmationModal(false)
             _redirectToUserPermissionList()
         } catch (err) {

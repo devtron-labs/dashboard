@@ -34,18 +34,37 @@ import {
     Material,
     KeyValueListType,
     CIMaterialSidebarType,
-    HandleKeyValueChangeType,
-    RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
+    RuntimeParamsListItemType,
+    KeyValueTableProps,
+    CDMaterialSidebarType,
     Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps {
+export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+
+type CDMaterialBulkRuntimeParams =
+    | {
+          isFromBulkCD: true
+          bulkRuntimeParams: RuntimeParamsListItemType[]
+          handleBulkRuntimeParamChange: HandleRuntimeParamChange
+          handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
+          bulkSidebarTab: CDMaterialSidebarType
+      }
+    | {
+          isFromBulkCD?: false
+          bulkRuntimeParams?: never
+          handleBulkRuntimeParamChange?: never
+          handleBulkRuntimeParamError?: never
+          bulkSidebarTab?: never
+      }
+
+export type CDMaterialProps = {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -59,13 +78,6 @@ export interface CDMaterialProps {
         tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
-    ) => void
-    triggerDeploy?: (
-        stageType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        wfrId?: number,
     ) => void
     selectImage?: (
         index: number,
@@ -115,12 +127,17 @@ export interface CDMaterialProps {
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
     isRedirectedFromAppDetails?: boolean
-}
+    /**
+     * App name coming from app group view
+     * To be consumed through variable called appName
+     */
+    selectedAppName?: string
+} & CDMaterialBulkRuntimeParams
 
 export interface ConfigToDeployOptionType {
     label: string
     value: DeploymentWithConfigType
-    infoText: string
+    description?: string
 }
 
 export enum FilterConditionViews {
@@ -208,7 +225,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
-    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    handleRuntimeParamChange: HandleRuntimeParamChange
     runtimeParams: KeyValueListType[]
 }
 
@@ -223,6 +240,7 @@ export interface CIMaterialState {
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
+    runtimeParamsErrorState: boolean
 }
 
 export interface DownStreams {
@@ -404,7 +422,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    runtimeParams?: KeyValueListType[]
+    runtimeParams?: RuntimeParamsListItemType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -670,10 +688,9 @@ export interface TriggerViewDeploymentConfigType {
     secret: DeploymentHistoryDetail[]
 }
 
-export interface TriggerViewConfigDiffProps {
+export interface TriggerViewConfigDiffProps extends Pick<CDMaterialState, 'selectedConfigToDeploy'> {
     currentConfiguration: TriggerViewDeploymentConfigType
     baseTemplateConfiguration: TriggerViewDeploymentConfigType
-    selectedConfigToDeploy
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
@@ -733,12 +750,6 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
 export interface RenderCTAType {
     mat: CDMaterialType
     disableSelection: boolean
-}
-
-export interface RuntimeParamsValidatorReturnType {
-    isValid: boolean
-    message?: string
-    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }
 
 export interface CIMaterialModalProps extends CIMaterialProps {

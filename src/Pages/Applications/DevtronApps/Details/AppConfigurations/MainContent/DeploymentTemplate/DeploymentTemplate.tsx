@@ -21,10 +21,11 @@ import {
     ModuleStatus,
     useAsync,
     ModuleNameMap,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getChartReferences } from '@Services/service'
 import {
@@ -39,7 +40,6 @@ import {
 import DeploymentConfigToolbar from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { SuccessToastBody } from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import {
     DeploymentTemplateChartStateType,
     DeploymentTemplateEditorDataStateType,
@@ -221,7 +221,10 @@ const DeploymentTemplate = ({
             }
             return YAMLStringify(updatedEditorObject, { simpleKeys: true })
         } catch {
-            toast.error('Something went wrong while parsing locked keys')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Something went wrong while parsing locked keys',
+            })
         }
 
         return currentEditorTemplateData.editorTemplate
@@ -329,7 +332,10 @@ const DeploymentTemplate = ({
             })
             setHideLockedKeys(false)
         } catch {
-            toast.error('Something went wrong while parsing locked keys')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Something went wrong while parsing locked keys',
+            })
         }
     }
 
@@ -351,7 +357,10 @@ const DeploymentTemplate = ({
                 getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables(editorTemplateData)),
             ])
             if (!currentEditorTemplate.areVariablesPresent) {
-                toast.error(NO_SCOPED_VARIABLES_MESSAGE)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: NO_SCOPED_VARIABLES_MESSAGE,
+                })
                 handleRemoveResolvedVariables()
                 return
             }
@@ -809,7 +818,11 @@ const DeploymentTemplate = ({
 
             await handleReload()
             respondOnSuccess(!isCiPipeline)
-            toast.success(<SuccessToastBody chartConfig={currentEditorTemplateData.chartConfig} />)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                title: currentEditorTemplateData.chartConfig.id ? 'Updated' : 'Saved',
+                description: 'Changes will be reflected after next deployment.',
+            })
         } catch (error) {
             // TODO: Check concurrency error due to this
             // TODO: Check when adding protected config

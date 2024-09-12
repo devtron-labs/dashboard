@@ -33,10 +33,19 @@ import {
     ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
-import { getAPIOptionsWithTriggerTimeout } from '../common'
-import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
+import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
+import { getAPIOptionsWithTriggerTimeout, importComponentFromFELibrary } from '../common'
+import {
+    AppDetails,
+    ArtifactsCiJob,
+    EditAppRequest,
+    AppMetaInfo,
+    TriggerCDNodeServiceProps,
+    TriggerCDPipelinePayloadType,
+} from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
+
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 const stageMap = {
     PRECD: 'PRE',
@@ -259,20 +268,26 @@ export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     return post(URL, request, options)
 }
 
-export const triggerCDNode = (
-    pipelineId: any,
-    ciArtifactId: any,
-    appId: string,
-    stageType: DeploymentNodeType,
-    deploymentWithConfig?: string,
-    wfrId?: number,
-    abortSignal?: AbortSignal,
-) => {
-    const request = {
+export const triggerCDNode = ({
+    pipelineId,
+    ciArtifactId,
+    appId,
+    stageType,
+    deploymentWithConfig,
+    wfrId,
+    abortSignal,
+    runtimeParams = [],
+}: TriggerCDNodeServiceProps) => {
+    const areRuntimeParamsConfigured =
+        getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
+    const runtimeParamsPayload = areRuntimeParamsConfigured ? getRuntimeParamsPayload(runtimeParams) : null
+
+    const request: TriggerCDPipelinePayloadType = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
+        ...(areRuntimeParamsConfigured && runtimeParamsPayload),
     }
 
     if (deploymentWithConfig) {

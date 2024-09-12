@@ -16,9 +16,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { DeploymentTemplateProvider, Progressing, YAMLStringify, DeploymentConfigStateActionTypes, ConfigKeysWithLockType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentTemplateProvider, Progressing, YAMLStringify, DeploymentConfigStateActionTypes, ConfigKeysWithLockType, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { compare as jsonpatchCompare, Operation } from 'fast-json-patch'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-filled.svg'
@@ -222,7 +221,10 @@ export default function DeploymentTemplateOverrideForm({
 
     const checkForSaveAsDraft = () => {
         if (!obj && state.yamlMode) {
-            toast.error(error)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: error,
+            })
         } else if (isConfigProtectionEnabled) {
             toggleSaveChangesModal()
         }
@@ -292,17 +294,14 @@ export default function DeploymentTemplateOverrideForm({
                     payload: YAMLStringify(deploymentTemplateResp.result.envOverrideValues),
                 })
             }
-            toast.success(
-                <div className="toast">
-                    <div className="toast__title">
-                        {state.data.environmentConfig && state.data.environmentConfig.id > 0
-                            ? 'Updated override'
-                            : 'Overridden'}
-                    </div>
-                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                </div>,
-                { autoClose: null },
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                title:
+                    state.data.environmentConfig && state.data.environmentConfig.id > 0
+                        ? 'Updated override'
+                        : 'Overridden',
+                description: 'Changes will be reflected after next deployment.',
+            })
             // Resetting the fetchedValues and fetchedValuesManifest caches to avoid showing the old data
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
