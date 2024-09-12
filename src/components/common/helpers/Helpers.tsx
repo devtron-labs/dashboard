@@ -44,7 +44,6 @@ import {
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
@@ -1043,16 +1042,6 @@ export const parsePassword = (password: string): string => {
 
 export const reloadLocation = () => {
     window.location.reload()
-}
-
-export const reloadToastBody = () => {
-    return (
-        <UpdateToast
-            onClick={reloadLocation}
-            text="You are viewing an outdated version of Devtron UI."
-            buttonText="Reload"
-        />
-    )
 }
 
 /**

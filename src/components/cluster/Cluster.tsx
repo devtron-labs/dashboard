@@ -26,9 +26,10 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
     DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
@@ -496,7 +497,10 @@ const Cluster = ({
             const payload = {}
             const { result } = await retryClusterInstall(clusterId, payload)
             if (result) {
-                toast.success('Successfully triggered')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully triggered',
+                })
             }
             reload()
         } catch (error) {
@@ -544,7 +548,10 @@ const Cluster = ({
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password')
+                 ToastManager.showToast({
+                     variant: ToastVariantType.error,
+                     description: 'Please add both username and password',
+                 })
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''

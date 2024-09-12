@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Fragment, useEffect, useState } from 'react'
+import { showError, Progressing, Drawer, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -391,7 +390,10 @@ export default function AddExternalLink({
             )
 
             if (invalidData) {
-                toast.error('Some required fields are missing or have invalid input.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some required fields are missing or have invalid input.',
+                })
                 return
             }
 
@@ -412,7 +414,10 @@ export default function AddExternalLink({
                 const { result } = await updateExternalLink(payload, isAppConfigView ? appId : '')
 
                 if (result?.success) {
-                    toast.success('Updated successfully!')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Updated successfully!',
+                    })
                 }
             } else {
                 const payload = validatedLinksData.map((link) => ({
@@ -429,7 +434,10 @@ export default function AddExternalLink({
                 const { result } = await saveExternalLinks(payload.reverse(), isAppConfigView ? appId : '')
 
                 if (result?.success) {
-                    toast.success('Saved successfully!')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Saved successfully!',
+                    })
                 }
             }
 

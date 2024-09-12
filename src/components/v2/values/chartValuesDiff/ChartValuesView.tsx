@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useReducer, useRef } from 'react'
+import { useState, useEffect, useReducer, useRef } from 'react'
 import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
@@ -36,6 +35,8 @@ import {
     getIsRequestAborted,
     deepEqual,
     useDownload,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -682,7 +683,11 @@ const ChartValuesView = ({
             .then((response: ResponseType) => {
                 // preset value deleted successfully
                 if (isCreateValueView) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
+
                     if (typeof init === 'function') {
                         init()
                     }
@@ -696,7 +701,11 @@ const ChartValuesView = ({
                     response.result.deleteResponse?.deleteInitiated ||
                     (isExternalApp && !commonState.installedAppInfo)
                 ) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
+
                     init && init()
                     history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
                     return
@@ -837,7 +846,10 @@ const ChartValuesView = ({
                     invalidValueNameMessage: validatedName.message,
                 },
             })
-            toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: MULTI_REQUIRED_FIELDS_MSG,
+            })
             return false
         }
         if (!isValidData(validatedName)) {
@@ -850,7 +862,10 @@ const ChartValuesView = ({
                     invalidProject: !commonState.selectedProject,
                 },
             })
-            toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: MULTI_REQUIRED_FIELDS_MSG,
+            })
             return false
         }
         if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
@@ -865,7 +880,10 @@ const ChartValuesView = ({
                     type: ChartValuesViewActionTypes.formValidationError,
                     payload: formErrors,
                 })
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
                 return false
             }
             dispatch({
@@ -877,12 +895,18 @@ const ChartValuesView = ({
         // validate data
         try {
             if (!commonState.modifiedValuesYaml) {
-                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: `${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`,
+                })
                 return false
             }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`,
+            })
             return false
         }
 
@@ -1025,13 +1049,19 @@ const ChartValuesView = ({
             })
 
             if (isCreateValueView) {
-                toast.success(toastMessage)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: toastMessage,
+                })
                 history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
             } else if (isDeployChartView && res?.result) {
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
-                toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: CHART_VALUE_TOAST_MSGS.DeploymentInitiated,
+                })
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
                 appDetails?.isVirtualEnvironment &&
@@ -1041,16 +1071,25 @@ const ChartValuesView = ({
                         res.result.appName,
                         res.result?.helmPackageName,
                     )
-                toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
+                })
                 IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
-                toast.error(SOME_ERROR_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: SOME_ERROR_MSG,
+                })
             }
         } catch (err) {
             if (err['code'] === 409) {
                 handleDrawerState(true)
-                toast.error('Some global configurations for GitOps has changed')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some global configurations for GitOps has changed',
+                })
                 setStaleData(true)
                 dispatch({
                     type: ChartValuesViewActionTypes.setGitRepoURL,
@@ -1104,7 +1143,10 @@ const ChartValuesView = ({
                             invalidValueNameMessage: validatedName.message,
                         },
                     })
-                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MANIFEST_TAB_VALIDATION_ERROR,
+                    })
                     return
                 }
                 if (!isValidData(validatedName)) {
@@ -1119,7 +1161,10 @@ const ChartValuesView = ({
                             invalidProject: !commonState.selectedProject,
                         },
                     })
-                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MANIFEST_TAB_VALIDATION_ERROR,
+                    })
                     return
                 }
             }

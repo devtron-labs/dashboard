@@ -23,9 +23,10 @@ import {
     YAMLStringify,
     MarkDown,
     CodeEditor,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -344,7 +345,11 @@ const DeploymentTemplateEditorView = ({
                     Object.keys(rhs.variableSnapshot || {}).length === 0
                 ) {
                     setConvertVariables(false)
-                    toast.error(NO_SCOPED_VARIABLES_MESSAGE)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: NO_SCOPED_VARIABLES_MESSAGE,
+                    })
+
                 }
                 setResolvedValuesLHS(lhs.resolvedData)
                 setResolvedValuesRHS(rhs.resolvedData)

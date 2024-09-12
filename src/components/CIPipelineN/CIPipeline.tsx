@@ -43,8 +43,9 @@ import {
     ModuleStatus,
     Environment,
     PipelineFormType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
     FloatingVariablesSuggestions,
@@ -555,7 +556,10 @@ export default function CIPipeline({
         )
             .then((response) => {
                 if (response) {
-                    toast.success('Pipeline Deleted')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Deleted',
+                    })
                     setPageState(ViewType.FORM)
                     handleClose()
                     deleteWorkflow(appId, Number(workflowId))
@@ -633,7 +637,10 @@ export default function CIPipeline({
     const savePipeline = () => {
         const isUnique = checkUniqueness(formData)
         if (!isUnique) {
-            toast.error('All task names must be unique')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'All task names must be unique',
+            })
             return
         }
         setApiInProgress(true)
@@ -644,7 +651,10 @@ export default function CIPipeline({
             isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
-            toast.error('Scanning is mandatory, please enable scanning')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Scanning is mandatory, please enable scanning',
+            })
             return
         }
 
@@ -656,7 +666,10 @@ export default function CIPipeline({
             setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
             }
             return
         }
@@ -710,7 +723,10 @@ export default function CIPipeline({
         )
             .then((response) => {
                 if (response) {
-                    toast.success(msg)
+                     ToastManager.showToast({
+                         variant: ToastVariantType.success,
+                         description: msg,
+                     })
                     setApiInProgress(false)
                     handleClose()
                     getWorkflows()
