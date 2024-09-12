@@ -16,6 +16,7 @@
 
 import { get, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
@@ -110,6 +111,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
                     text: 'Reload',
                     dataTestId: 'reload-button',
                     onClick: reloadLocation,
+                    startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,
                 progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
