@@ -23,10 +23,11 @@ import {
     useBreadcrumb,
     useEffectAfterMount,
     PageHeader,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { toast } from 'react-toastify'
 import { List } from '../../common'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
@@ -138,7 +139,10 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                 setChartVersions(result)
                 selectVersion(result[0]?.id)
             } else {
-                toast.error('Some error occurred. Please try reloading the page')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some error occurred. Please try reloading the page',
+                })
             }
         } catch (err) {
             showError(err)

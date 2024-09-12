@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
 
 import {
     abortPreviousRequests,
@@ -11,12 +10,13 @@ import {
     noop,
     Progressing,
     showError,
-    ToastBody,
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
     ConfigResourceType,
     DraftState,
     getAppEnvDeploymentConfig,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import EmptyStateImg from '@Images/cm-cs-empty-state.png'
@@ -246,7 +246,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             }
                             setCmSecretData(_configMapSecret)
                         } else {
-                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: `The ${componentName} '${name}' has been deleted`,
+                            })
                             setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }
@@ -265,7 +268,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                                 },
                             })
                         } else if (draftDataRes.value.result.draftState === DraftState.Discarded) {
-                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: `The ${componentName} '${name}' has been deleted`,
+                            })
                             setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }
@@ -281,7 +287,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     (draftDataRes?.status === 'rejected' &&
                         draftDataRes?.reason?.code === ERROR_STATUS_CODE.PERMISSION_DENIED)
                 ) {
-                    toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.warn,
+                        title: 'View-only access',
+                        description: "You won't be able to make any changes",
+                    })
                 }
 
                 if (cmSecretDataRes.status === 'rejected' || draftDataRes.status === 'rejected') {
@@ -300,7 +310,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 }
             })
             .catch((err) => {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    title: 'View-only access',
+                    description: "You won't be able to make any changes",
+                })
                 setDraftData(null)
                 showError(err)
                 setIsCMSecretLoading(false)

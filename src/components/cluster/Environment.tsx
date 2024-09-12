@@ -15,8 +15,7 @@
  */
 
 import { useState } from 'react'
-import { CustomInput, DeleteComponent, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { CustomInput, DeleteComponent, Progressing, showError, stopPropagation, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -125,7 +124,10 @@ export default function Environment({
         try {
             setLoading(true)
             await api(payload, id)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Successfully ${id ? 'updated' : 'saved'}`,
+            })
             reload()
             hideClusterDrawer()
         } catch (err) {

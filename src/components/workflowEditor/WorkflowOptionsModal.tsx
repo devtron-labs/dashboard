@@ -15,13 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import {
     VisibleModal,
     showError,
     stopPropagation,
     WorkflowNodeType,
     PipelineType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import selectWorkflowSource from '../../assets/img/select-image-source.png'
 import changeCI from '../../assets/img/change-source.png'
@@ -73,7 +74,10 @@ const WorkflowOptionsModal = ({
             const currentWorkflow = workflows.find((workflow) => +workflow.id === changeCIPayload?.appWorkflowId)
             if (!currentWorkflow) {
                 handleFlowCompletion()
-                toast.error(TOAST_MESSAGES.WORKFLOW_NOT_AVAILABLE)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: TOAST_MESSAGES.WORKFLOW_NOT_AVAILABLE,
+                })
                 return
             }
 
@@ -119,7 +123,10 @@ const WorkflowOptionsModal = ({
                 saveCDPipeline(getSwitchToWebhookPayload(changeCIPayload))
                     .then((response) => {
                         if (response.result) {
-                            toast.success(TOAST_MESSAGES.SUCCESS_CHANGE_TO_WEBHOOK)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.success,
+                                description: TOAST_MESSAGES.SUCCESS_CHANGE_TO_WEBHOOK,
+                            })
                             getWorkflows()
                             handleFlowCompletion()
                         }

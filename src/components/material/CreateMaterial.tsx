@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { toast } from 'react-toastify'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Component } from 'react'
+import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { createMaterial } from './material.service'
 import { MaterialView } from './MaterialView'
 import { CreateMaterialState } from './material.types'
@@ -223,7 +222,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 createMaterial(payload)
                     .then((response) => {
                         this.props.refreshMaterials()
-                        toast.success('Material Saved Successfully')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Material Saved Successfully',
+                        })
                     })
                     .catch((error) => {
                         showError(error)
