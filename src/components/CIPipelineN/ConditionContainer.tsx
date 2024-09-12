@@ -341,6 +341,7 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                             isSearchable={false}
                                         />
                                     </div>
+                                    <div/>
 
                                     <div className="fs-13 mr-10">
                                         <CustomInput
