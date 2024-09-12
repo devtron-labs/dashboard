@@ -66,10 +66,8 @@ export function deleteInstalledChart(
         } else if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
             URL += `?force=true`
         }
-    } else {
-        if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
+    } else if (!isGitops && deleteAction === DELETE_ACTION.FORCE_DELETE) {
             URL += `?force=true`
-        }
     }
     return trash(URL)
 }
