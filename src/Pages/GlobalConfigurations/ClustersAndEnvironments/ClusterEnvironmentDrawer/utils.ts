@@ -50,7 +50,7 @@ export const getNamespaceLabels = (clusterNamespace: ClusterNamespacesDTO) =>
         isPropagateDisabled: true,
     })) ?? [
         {
-            id: Date.now() * Math.random(),
+            id: 0,
             key: '',
             value: '',
             propagate: true,
