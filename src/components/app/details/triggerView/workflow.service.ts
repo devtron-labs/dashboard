@@ -21,6 +21,7 @@ import {
     PipelineType,
     DownstreamNodesEnvironmentsType,
     WorkflowType,
+    getIsManualApprovalConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -49,7 +50,14 @@ export const getTriggerWorkflows = (
     isJobView: boolean,
     filteredEnvIds?: string,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
+    return getInitialWorkflows(
+        appId,
+        WorkflowTrigger,
+        WorkflowTrigger.workflow,
+        useAppWfViewAPI,
+        isJobView,
+        filteredEnvIds,
+    )
 }
 
 export const getCreateWorkflows = (
@@ -98,7 +106,7 @@ const getInitialWorkflows = (
             }
             const cdPipelineData = response[0].result?.cdConfig as CdPipelineResult
 
-            if (Object.keys(response[1]?.result || {}).length>0 && cdPipelineData) {
+            if (Object.keys(response[1]?.result || {}).length > 0 && cdPipelineData) {
                 cdPipelineData.pipelines?.forEach((pipeline) => {
                     pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(response[1], pipeline.environmentId)
                 })
@@ -134,9 +142,12 @@ const getInitialWorkflows = (
         getExternalCIList(id),
         getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
-        if (Object.keys(deploymentWindowState?.result || {}).length>0 && cdConfig) {
+        if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
-                pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(deploymentWindowState, pipeline.environmentId)
+                pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(
+                    deploymentWindowState,
+                    pipeline.environmentId,
+                )
             })
         }
         return processWorkflow(
@@ -262,7 +273,7 @@ export function processWorkflow(
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
-                        if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
+                        if (getIsManualApprovalConfigured(cdPipeline.userApprovalConfig)) {
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
                                 [cdPipeline.id]: cdPipeline.userApprovalConfig,

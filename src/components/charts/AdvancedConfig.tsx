@@ -15,8 +15,15 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, VisibleModal, useAsync, CustomInput, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    useAsync,
+    CustomInput,
+    CodeEditor,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'

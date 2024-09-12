@@ -34,12 +34,17 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
+    sanitizeUserApprovalConfig,
+    UserApprovalConfigType,
+    UserApprovalConfigPayloadType,
     Environment,
     PipelineFormType,
     ReleaseMode,
+    TabGroup,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
@@ -66,7 +71,6 @@ import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
 import { getGlobalVariable } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import './cdPipeline.scss'
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
@@ -102,6 +106,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType = importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
 const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
@@ -174,8 +179,8 @@ export default function CDPipeline({
             triggerType: TriggerType.Auto,
             steps: [],
         },
-        requiredApprovals: '',
-        userApprovalConfig: null,
+        // Utilizing the null checks to get default value
+        userApprovalConfig: sanitizeUserApprovalConfig(null),
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
@@ -233,6 +238,9 @@ export default function CDPipeline({
             steps: [],
             isValid: true,
         },
+        userApprovalConfig: {
+            isValid: true
+        }
     })
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
@@ -246,6 +254,20 @@ export default function CDPipeline({
     const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(
         structuredClone(DEFAULT_PLUGIN_DATA_STORE),
     )
+    const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
+    const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
+
+    const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
+        hideScopedVariableWidgetValue: boolean,
+    ) => {
+        setHideScopedVariableWidget(hideScopedVariableWidgetValue)
+    }
+
+    const handleDisableParentModalCloseUpdate: PipelineContext['handleDisableParentModalCloseUpdate'] = (
+        disableParentModalCloseValue: boolean,
+    ) => {
+        setDisableParentModalClose(disableParentModalCloseValue)
+    }
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
         const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
@@ -528,7 +550,7 @@ export default function CDPipeline({
         form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
-        form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
+        form.userApprovalConfig = sanitizeUserApprovalConfig(pipelineConfigFromRes.userApprovalConfig)
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         form.customTag = pipelineConfigFromRes.customTag
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
@@ -558,7 +580,6 @@ export default function CDPipeline({
                 }
             }
         }
-        form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -625,13 +646,6 @@ export default function CDPipeline({
             }),
         }
 
-        const _userApprovalConfig =
-            formData.requiredApprovals?.length > 0
-                ? {
-                      requiredCount: +formData.requiredApprovals,
-                  }
-                : null
-
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -647,7 +661,9 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            userApprovalConfig: _userApprovalConfig,
+            ...(getUserApprovalConfigPayload ? {
+                userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig)
+            }: {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -771,7 +787,12 @@ export default function CDPipeline({
         setFormData(_form)
     }
 
-    const validateStage = (stageName: string, _formData: PipelineFormType, formDataErrorObject?): void => {
+    const validateStage = (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?,
+        _clonedPluginDataStore?: typeof pluginDataStore,
+    ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),
@@ -794,6 +815,7 @@ export default function CDPipeline({
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid &&
                 _formDataErrorObj.envNameError.isValid &&
+                _formDataErrorObj.userApprovalConfig?.isValid &&
                 isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
@@ -875,6 +897,14 @@ export default function CDPipeline({
             if (formData.name === '') {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
             }
+            return
+        }
+
+        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } = formDataErrorObj.userApprovalConfig ?? {}
+
+        if (!isUserApprovalConfigValid) {
+            setLoadingData(false)
+            toast.error(userApprovalConfigErrorMessage)
             return
         }
 
@@ -1016,31 +1046,23 @@ export default function CDPipeline({
         }
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
         const showAlert = !formDataErrorObj[stageName].isValid
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                    activeClassName="active"
-                    to={`${toLink}?${urlParams}`}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {CDDeploymentTabText[stageName]}
-                    {showAlert && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${CDDeploymentTabText[stageName]}-tab`,
+            label: CDDeploymentTabText[stageName],
+            tabType: 'navLink',
+            showError: showAlert,
+            props: {
+                to: `${toLink}?${urlParams}`,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+        }
     }
 
     const renderSecondaryButton = () => {
@@ -1074,6 +1096,9 @@ export default function CDPipeline({
     }
 
     const closePipelineModal = () => {
+        if (disableParentModalClose) {
+            return
+        }
         close()
     }
 
@@ -1119,6 +1144,8 @@ export default function CDPipeline({
             handlePluginDataStoreUpdate,
             availableTags,
             handleUpdateAvailableTags,
+            handleHideScopedVariableWidgetUpdate,
+            handleDisableParentModalCloseUpdate,
         }
     }, [
         formData,
@@ -1149,11 +1176,17 @@ export default function CDPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={[
+                                getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                getNavLink(`build`, BuildStageVariable.Build),
+                                getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
@@ -1230,7 +1263,7 @@ export default function CDPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pr-20 py-12 pl-20">
+                <div className="flex flex-align-center flex-justify bcn-0 px-20 py-12">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -1318,7 +1351,11 @@ export default function CDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (
+            !window._env_.ENABLE_SCOPED_VARIABLES ||
+            activeStageName === BuildStageVariable.Build ||
+            hideScopedVariableWidget
+        ) {
             return <></>
         }
 

@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { Progressing, Drawer, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { useDebouncedEffect } from '../../../common'
 import './TestRunDetails.scss'

@@ -26,14 +26,12 @@ export const _multiSelectStyles = {
         ...base,
         marginTop: 'auto',
     }),
-    menuList: (base) => {
-        return {
-            ...base,
-            position: 'relative',
-            paddingBottom: '0px',
-            maxHeight: '180px',
-        }
-    },
+    menuList: (base) => ({
+        ...base,
+        position: 'relative',
+        paddingBottom: '0px',
+        maxHeight: '180px',
+    }),
 }
 
 export const JobCreationType = {

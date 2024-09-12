@@ -37,7 +37,7 @@ export function useColumnFilterContext() {
     return context
 }
 
-export default function NodeListSearchFliter({
+export default function NodeListSearchFilter({
     defaultVersion,
     nodeK8sVersions,
     selectedVersion,

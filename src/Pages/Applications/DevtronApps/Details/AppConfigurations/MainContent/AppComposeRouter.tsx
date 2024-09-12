@@ -95,251 +95,247 @@ const AppComposeRouter = () => {
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
-    const renderJobViewRoutes = (): JSX.Element => {
+    const renderJobViewRoutes = (): JSX.Element => (
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
-        return (
-            <Switch>
-                <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                    <>
-                        <MaterialList
-                            respondOnSuccess={respondOnSuccess}
-                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                            setRepo={setRepoState}
-                            isJobView={isJobView}
-                        />
-                        <NextButton
-                            currentStageName={STAGE_NAME.GIT_MATERIAL}
-                            navItems={navItems}
-                            isDisabled={!isUnlocked.workflowEditor}
-                            isCiPipeline={isCiPipeline}
-                        />
-                    </>
-                </Route>
-                {isUnlocked.workflowEditor && [
-                    <Route
-                        key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
-                        path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                    >
-                        <WorkflowEdit
-                            configStatus={1}
-                            isCDPipeline={isCDPipeline}
-                            respondOnSuccess={respondOnSuccess}
-                            getWorkflows={getWorkflows}
-                            isJobView={isJobView}
-                            envList={environments}
-                            reloadEnvironments={reloadEnvironments}
-                        />
-                    </Route>,
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
+        <Switch>
+            <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
+                <>
+                    <MaterialList
+                        respondOnSuccess={respondOnSuccess}
+                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                        setRepo={setRepoState}
+                        isJobView={isJobView}
+                    />
+                    <NextButton
+                        currentStageName={STAGE_NAME.GIT_MATERIAL}
+                        navItems={navItems}
+                        isDisabled={!isUnlocked.workflowEditor}
+                        isCiPipeline={isCiPipeline}
+                    />
+                </>
+            </Route>
+            {isUnlocked.workflowEditor && [
+                <Route
+                    key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
+                    path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                >
+                    <WorkflowEdit
+                        configStatus={1}
+                        isCDPipeline={isCDPipeline}
+                        respondOnSuccess={respondOnSuccess}
+                        getWorkflows={getWorkflows}
+                        isJobView={isJobView}
+                        envList={environments}
+                        reloadEnvironments={reloadEnvironments}
+                    />
+                </Route>,
+                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <ConfigMapSecretWrapper
+                        isJob
+                        isProtected={false}
+                        reloadEnvironments={reloadEnvironments}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        onErrorRedirectURL={lastUnlockedStage}
+                        appName={currentAppName}
+                        envName=""
+                    />
+                </Route>,
+                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <ConfigMapSecretWrapper
+                        isJob
+                        isProtected={false}
+                        componentType={CMSecretComponentType.Secret}
+                        reloadEnvironments={reloadEnvironments}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        onErrorRedirectURL={lastUnlockedStage}
+                        appName={currentAppName}
+                        envName=""
+                    />
+                </Route>,
+                <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
+                    {({ match }) => (
+                        <EnvironmentOverride
+                            key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
                             isJob
-                            isProtected={false}
-                            reloadEnvironments={reloadEnvironments}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={lastUnlockedStage}
-                            appName={currentAppName}
-                            envName=""
-                        />
-                    </Route>,
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
-                            isJob
-                            isProtected={false}
-                            componentType={CMSecretComponentType.Secret}
-                            reloadEnvironments={reloadEnvironments}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={lastUnlockedStage}
-                            appName={currentAppName}
-                            envName=""
-                        />
-                    </Route>,
-                    <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
-                        {({ match }) => (
-                            <EnvironmentOverride
-                                key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
-                                isJob
-                                environments={environments}
-                                reloadEnvironments={reloadEnvironments}
-                                envConfig={envConfig}
-                                fetchEnvConfig={fetchEnvConfig}
-                                onErrorRedirectURL={lastUnlockedStage}
-                                appName={currentAppName}
-                            />
-                        )}
-                    </Route>,
-                ]}
-            </Switch>
-        )
-    }
-
-    const renderAppViewRoutes = (): JSX.Element => {
-        return (
-            <Switch>
-                <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                    <>
-                        <MaterialList
-                            respondOnSuccess={respondOnSuccess}
-                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                            setRepo={setRepoState}
-                        />
-                        <NextButton
-                            currentStageName={STAGE_NAME.GIT_MATERIAL}
-                            navItems={navItems}
-                            isDisabled={!isUnlocked.dockerBuildConfig}
-                            isCiPipeline={isCiPipeline}
-                        />
-                    </>
-                </Route>
-                {isUnlocked.dockerBuildConfig && (
-                    <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
-                        <CIConfig
-                            respondOnSuccess={respondOnSuccess}
-                            isCDPipeline={isCDPipeline}
-                            isCiPipeline={isCiPipeline}
-                        />
-                    </Route>
-                )}
-                {isUnlocked.deploymentTemplate && (
-                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                        <DeploymentConfig
-                            respondOnSuccess={respondOnSuccess}
-                            isUnSet={!isUnlocked.workflowEditor}
-                            isCiPipeline={isCiPipeline}
                             environments={environments}
-                            isProtected={isBaseConfigProtected}
-                            reloadEnvironments={reloadEnvironments}
-                        />
-                    </Route>
-                )}
-                {canShowExternalLinks && (
-                    <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
-                        <ExternalLinks isAppConfigView userRole={userRole} />
-                    </Route>
-                )}
-                {isGitOpsConfigurationRequired && (
-                    <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
-                        <UserGitRepoConfiguration
-                            respondOnSuccess={respondOnSuccess}
-                            appId={+appId}
-                            reloadAppConfig={reloadAppConfig}
-                        />
-                    </Route>
-                )}
-                {isUnlocked.workflowEditor && ConfigProtectionView && (
-                    <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
-                        <ConfigProtectionView
-                            appId={Number(appId)}
-                            envList={environments}
-                            reloadEnvironments={reloadEnvironments}
-                            configProtectionData={configProtectionData}
-                            isBaseConfigProtected={isBaseConfigProtected}
-                        />
-                    </Route>
-                )}
-                {isUnlocked.workflowEditor && [
-                    <Route
-                        key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
-                        path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                    >
-                        <WorkflowEdit
-                            configStatus={1}
-                            isCDPipeline={isCDPipeline}
-                            respondOnSuccess={respondOnSuccess}
-                            getWorkflows={getWorkflows}
-                            filteredEnvIds={filteredEnvIds}
-                            reloadEnvironments={reloadEnvironments}
-                            reloadAppConfig={reloadAppConfig}
-                        />
-                    </Route>,
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
-                            isProtected={isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            envName=""
                         />
-                    </Route>,
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
-                            isProtected={isBaseConfigProtected}
-                            componentType={CMSecretComponentType.Secret}
+                    )}
+                </Route>,
+            ]}
+        </Switch>
+    )
+
+    const renderAppViewRoutes = (): JSX.Element => (
+        <Switch>
+            <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
+                <>
+                    <MaterialList
+                        respondOnSuccess={respondOnSuccess}
+                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                        setRepo={setRepoState}
+                    />
+                    <NextButton
+                        currentStageName={STAGE_NAME.GIT_MATERIAL}
+                        navItems={navItems}
+                        isDisabled={!isUnlocked.dockerBuildConfig}
+                        isCiPipeline={isCiPipeline}
+                    />
+                </>
+            </Route>
+            {isUnlocked.dockerBuildConfig && (
+                <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
+                    <CIConfig
+                        respondOnSuccess={respondOnSuccess}
+                        isCDPipeline={isCDPipeline}
+                        isCiPipeline={isCiPipeline}
+                    />
+                </Route>
+            )}
+            {isUnlocked.deploymentTemplate && (
+                <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                    <DeploymentConfig
+                        respondOnSuccess={respondOnSuccess}
+                        isUnSet={!isUnlocked.workflowEditor}
+                        isCiPipeline={isCiPipeline}
+                        environments={environments}
+                        isProtected={isBaseConfigProtected}
+                        reloadEnvironments={reloadEnvironments}
+                    />
+                </Route>
+            )}
+            {canShowExternalLinks && (
+                <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
+                    <ExternalLinks isAppConfigView userRole={userRole} />
+                </Route>
+            )}
+            {isGitOpsConfigurationRequired && (
+                <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
+                    <UserGitRepoConfiguration
+                        respondOnSuccess={respondOnSuccess}
+                        appId={+appId}
+                        reloadAppConfig={reloadAppConfig}
+                    />
+                </Route>
+            )}
+            {isUnlocked.workflowEditor && ConfigProtectionView && (
+                <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
+                    <ConfigProtectionView
+                        appId={Number(appId)}
+                        envList={environments}
+                        reloadEnvironments={reloadEnvironments}
+                        configProtectionData={configProtectionData}
+                        isBaseConfigProtected={isBaseConfigProtected}
+                    />
+                </Route>
+            )}
+            {isUnlocked.workflowEditor && [
+                <Route
+                    key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
+                    path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                >
+                    <WorkflowEdit
+                        configStatus={1}
+                        isCDPipeline={isCDPipeline}
+                        respondOnSuccess={respondOnSuccess}
+                        getWorkflows={getWorkflows}
+                        filteredEnvIds={filteredEnvIds}
+                        reloadEnvironments={reloadEnvironments}
+                        reloadAppConfig={reloadAppConfig}
+                    />
+                </Route>,
+                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <ConfigMapSecretWrapper
+                        isProtected={isBaseConfigProtected}
+                        reloadEnvironments={reloadEnvironments}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        onErrorRedirectURL={lastUnlockedStage}
+                        appName={currentAppName}
+                        envName=""
+                    />
+                </Route>,
+                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <ConfigMapSecretWrapper
+                        isProtected={isBaseConfigProtected}
+                        componentType={CMSecretComponentType.Secret}
+                        reloadEnvironments={reloadEnvironments}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        onErrorRedirectURL={lastUnlockedStage}
+                        appName={currentAppName}
+                        envName=""
+                    />
+                </Route>,
+                <Route
+                    key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
+                    path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                >
+                    {({ match }) => (
+                        <EnvironmentOverride
+                            key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
+                            environments={environments}
                             reloadEnvironments={reloadEnvironments}
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            envName=""
                         />
-                    </Route>,
-                    <Route
-                        key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                    >
-                        {({ match }) => (
-                            <EnvironmentOverride
-                                key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
-                                environments={environments}
-                                reloadEnvironments={reloadEnvironments}
-                                envConfig={envConfig}
-                                fetchEnvConfig={fetchEnvConfig}
-                                onErrorRedirectURL={lastUnlockedStage}
-                                appName={currentAppName}
-                            />
-                        )}
-                    </Route>,
-                    ...(CompareWithButton
-                        ? [
-                              <Route
-                                  key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                                  path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-                              >
-                                  {({ match }) => {
-                                      const basePath = generatePath(path, match.params)
-                                      const envOverridePath = match.params.envId
-                                          ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                                          : ''
-                                      const resourceTypePath = `/${match.params.resourceType}`
-                                      const resourceNamePath = match.params.resourceName
-                                          ? `/${match.params.resourceName}`
-                                          : ''
+                    )}
+                </Route>,
+                ...(CompareWithButton
+                    ? [
+                          <Route
+                              key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                              path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                          >
+                              {({ match }) => {
+                                  const basePath = generatePath(path, match.params)
+                                  const envOverridePath = match.params.envId
+                                      ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                                      : ''
+                                  const resourceTypePath = `/${match.params.resourceType}`
+                                  const resourceNamePath = match.params.resourceName
+                                      ? `/${match.params.resourceName}`
+                                      : ''
 
-                                      const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+                                  const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
 
-                                      return (
-                                          <DeploymentConfigCompare
-                                              type="app"
-                                              appName={currentAppName}
-                                              environments={environments.map(
-                                                  ({ environmentId, environmentName, isProtected }) => ({
-                                                      id: environmentId,
-                                                      isProtected,
-                                                      name: environmentName,
-                                                  }),
-                                              )}
-                                              isBaseConfigProtected={isBaseConfigProtected}
-                                              goBackURL={goBackURL}
-                                              getNavItemHref={(resourceType, resourceName) =>
-                                                  `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                              }
-                                          />
-                                      )
-                                  }}
-                              </Route>,
-                          ]
-                        : []),
-                ]}
-                {/* Redirect route is there when current path url has something after /edit */}
-                {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
-            </Switch>
-        )
-    }
+                                  return (
+                                      <DeploymentConfigCompare
+                                          type="app"
+                                          appName={currentAppName}
+                                          environments={environments.map(
+                                              ({ environmentId, environmentName, isProtected }) => ({
+                                                  id: environmentId,
+                                                  isProtected,
+                                                  name: environmentName,
+                                              }),
+                                          )}
+                                          isBaseConfigProtected={isBaseConfigProtected}
+                                          goBackURL={goBackURL}
+                                          getNavItemHref={(resourceType, resourceName) =>
+                                              `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                          }
+                                      />
+                                  )
+                              }}
+                          </Route>,
+                      ]
+                    : []),
+            ]}
+            {/* Redirect route is there when current path url has something after /edit */}
+            {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
+        </Switch>
+    )
     return (
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>

@@ -33,9 +33,8 @@ import {
     ArtifactInfoModal,
     ReleaseMode,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -775,7 +774,14 @@ export const Details: React.FC<DetailsType> = ({
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} appType={appDetails.appType} close={() => setUrlInfo(false)} />}
+            {urlInfo && (
+                <TriggerUrlModal
+                    appId={params.appId}
+                    envId={params.envId}
+                    appType={appDetails.appType}
+                    close={() => setUrlInfo(false)}
+                />
+            )}
             {commitInfo && (
                 <ArtifactInfoModal
                     envId={appDetails?.environmentId}
@@ -898,6 +904,11 @@ export const EnvSelector = ({
 
             return acc
         }, []) || []
+
+        // Pushing the virtual environment group to the end of the list
+        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+            groupList.reverse()
+        }
 
     return (
         <>

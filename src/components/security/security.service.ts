@@ -77,7 +77,6 @@ export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: A
     return post(URL, payload, {signal: abortSignal}).then((response) => {
         const securityScans = response.result.scanList || []
         return {
-            responseCode: response.code,
             result: {
                 offset: response.result.offset,
                 totalCount: response.result.total,

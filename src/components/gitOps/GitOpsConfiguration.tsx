@@ -68,10 +68,10 @@ import {
     PROVIDER_DOC_LINK_MAP,
 } from './constants'
 import { getGitOpsLabelText } from './utils'
-import UpdateConfirmationDialog from './UpdateConfirmationDialog'
-import { GitProviderTab } from '../common/GitTabs/GitProviderTab'
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { GitProviderType } from '@Components/common/GitTabs/types'
+import { GitProviderTab } from '@Components/common/GitTabs/GitProviderTab'
+import UpdateConfirmationDialog from './UpdateConfirmationDialog'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')
