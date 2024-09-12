@@ -1,4 +1,10 @@
-import { Button, ButtonVariantType, ComponentSizeType, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ERROR_STATUS_CODE,
+    Progressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
 import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
@@ -7,17 +13,9 @@ import { EnvironmentLabelTags } from './EnvironmentLabelTags'
 import { EnvironmentLabelText } from './EnvironmentLabelText'
 import { EnvironmentLabelsProps } from './types'
 
-export const EnvironmentLabels = ({
-    isLoading,
-    isError,
-    error,
-    addLabel,
-    reload,
-    tags,
-    setTags,
-}: EnvironmentLabelsProps) => {
+export const EnvironmentLabels = ({ isLoading, error, addLabel, reload, tags, setTags }: EnvironmentLabelsProps) => {
     // CONSTANTS
-    const showTags = !(isLoading || isError || error) && !!tags
+    const showTags = !(isLoading || error) && !!tags
 
     // RENDERERS
     const renderLoadingState = () => (
@@ -30,7 +28,14 @@ export const EnvironmentLabels = ({
     const renderErrorState = () => (
         <>
             <ICError className="icon-dim-24" />
-            <EnvironmentLabelText heading="Cluster not reachable" description={error} />
+            <EnvironmentLabelText
+                heading={
+                    error.code === ERROR_STATUS_CODE.SERVICE_TEMPORARY_UNAVAILABLE
+                        ? 'Cluster not reachable'
+                        : error.code.toString()
+                }
+                description={error.errors[0].userMessage}
+            />
             <Button
                 variant={ButtonVariantType.borderLess}
                 size={ComponentSizeType.small}
@@ -64,7 +69,7 @@ export const EnvironmentLabels = ({
         <div className="flex bcn-50 py-24 px-16">
             <div className="flex column dc__gap-12 dc__mxw-300 mx-auto">
                 {isLoading && renderLoadingState()}
-                {!isLoading && (isError ? renderErrorState() : renderEmptyState())}
+                {!isLoading && (error ? renderErrorState() : renderEmptyState())}
             </div>
         </div>
     )

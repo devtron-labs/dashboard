@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react'
 
-import { TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface EnvironmentLabelTextProps {
     heading: string
@@ -11,8 +11,7 @@ export interface EnvironmentLabelsProps {
     tags: TagType[]
     setTags: (tags: TagType[]) => void
     isLoading?: boolean
-    isError?: boolean
-    error?: string
+    error?: ServerErrors
     addLabel?: (e: MouseEvent<HTMLButtonElement>) => void
     reload?: (e: MouseEvent<HTMLButtonElement>) => void
 }

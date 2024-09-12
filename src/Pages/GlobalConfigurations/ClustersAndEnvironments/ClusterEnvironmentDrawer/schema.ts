@@ -1,12 +1,12 @@
-import { UseFormValidation } from '@devtron-labs/devtron-fe-common-lib'
+import { UseFormValidations } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GlobalEnvironmentFormProps } from './types'
+import { ClusterEnvironmentDrawerFormProps } from './types'
 
-export const globalEnvironmentFormValidationSchema = ({
+export const clusterEnvironmentDrawerFormValidationSchema = ({
     isNamespaceMandatory,
 }: {
     isNamespaceMandatory: boolean
-}): Partial<Record<keyof GlobalEnvironmentFormProps, UseFormValidation>> => ({
+}): UseFormValidations<ClusterEnvironmentDrawerFormProps> => ({
     environmentName: {
         required: true,
         pattern: [

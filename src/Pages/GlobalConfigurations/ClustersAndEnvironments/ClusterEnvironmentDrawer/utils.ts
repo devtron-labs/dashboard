@@ -1,7 +1,7 @@
 import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
-import { GetGlobalEnvironmentUpdatePayloadType } from './types'
+import { GetClusterEnvironmentUpdatePayloadType } from './types'
 
-export const getGlobalEnvironmentUpdatePayload = ({
+export const getClusterEnvironmentUpdatePayload = ({
     id,
     data,
     prometheusEndpoint,
@@ -9,7 +9,7 @@ export const getGlobalEnvironmentUpdatePayload = ({
     namespaceLabels,
     resourceVersion,
     isVirtual = false,
-}: GetGlobalEnvironmentUpdatePayloadType) =>
+}: GetClusterEnvironmentUpdatePayloadType) =>
     isVirtual
         ? {
               id,

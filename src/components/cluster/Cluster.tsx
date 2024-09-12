@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, Component, useRef, useEffect } from 'react'
+import { useState, useMemo, Component, useRef } from 'react'
 import {
     showError,
     Progressing,
@@ -54,7 +54,7 @@ import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCre
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
-import { GlobalEnvironment } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/GlobalEnvironment'
+import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -547,10 +547,10 @@ const Cluster = ({
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                 ToastManager.showToast({
-                     variant: ToastVariantType.error,
-                     description: 'Please add both username and password',
-                 })
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please add both username and password',
+                })
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''
@@ -851,15 +851,13 @@ const Cluster = ({
                 )}
             </article>
             {showWindow && (
-                <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <GlobalEnvironment
-                        reload={reload}
-                        cluster_name={cluster_name}
-                        {...environment}
-                        hideClusterDrawer={hideClusterDrawer}
-                        isVirtual={isVirtualCluster}
-                    />
-                </Drawer>
+                <ClusterEnvironmentDrawer
+                    reload={reload}
+                    cluster_name={cluster_name}
+                    {...environment}
+                    hideClusterDrawer={hideClusterDrawer}
+                    isVirtual={isVirtualCluster}
+                />
             )}
         </>
     )
