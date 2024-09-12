@@ -82,7 +82,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     _responseKeys.forEach((_key) => {
                         _headers.push({ key: _key, value: response.result.header[_key] })
                     })
-                    const _responsePayload = response.result?.payload ?? '';
+                    const _responsePayload = response.result?.payload ?? ''
                     state.form = {
                         ...response.result,
                         header: _headers,

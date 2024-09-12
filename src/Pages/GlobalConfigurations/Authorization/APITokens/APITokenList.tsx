@@ -55,9 +55,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
         handleDeleteButton(list)
     }
 
-    const noMatchingResults = () => {
-        return <GenericFilterEmptyState />
-    }
+    const noMatchingResults = () => <GenericFilterEmptyState />
 
     return (
         <div className="bcn-0">

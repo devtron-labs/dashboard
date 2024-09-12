@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
@@ -67,27 +67,13 @@ export default function AboutAppInfoModal({
 
     const renderProjectSelect = (): JSX.Element => {
         return (
-            <ReactSelect
+            <SelectPicker
+                inputId="overview-project-menu-list"
+                name="overview-project-menu-list"
                 classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
-                styles={getCommonSelectStyle({
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        marginBottom: '6px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                })}
             />
         )
     }

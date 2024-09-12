@@ -20,14 +20,20 @@ import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
 import { MODES } from '../../../../../config'
 import './TriggerViewConfigDiff.scss'
 import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../TriggerView.utils'
-import ReactSelect, { components } from 'react-select'
-import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
-import { getCommonConfigSelectStyles } from '../config'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle, ConditionalWrap, useSearchString, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Toggle,
+    ConditionalWrap,
+    useSearchString,
+    YAMLStringify,
+    CodeEditor,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 
 export default function TriggerViewConfigDiff({
@@ -412,23 +418,10 @@ export default function TriggerViewConfigDiff({
             >
                 <div className="flex left column w-100">
                     <span className="dc__ellipsis-right">{option.label}</span>
-                    <small className="cn-6">{option.infoText}</small>
+                    <small className="cn-6">{option.description}</small>
                     <div className="dc__border-bottom" />
                 </div>
             </ConditionalWrap>
-        )
-    }
-
-    const customValueContainer = (props) => {
-        return (
-            <components.ValueContainer {...props}>
-                <div className="fs-13 fw-4 cn-9">
-                    Deploy:&nbsp; <span className="cb-5 fw-6">{props.selectProps.value?.label}</span>
-                </div>
-                {React.cloneElement(props.children[1], {
-                    style: { position: 'absolute' },
-                })}
-            </components.ValueContainer>
         )
     }
 
@@ -451,41 +444,23 @@ export default function TriggerViewConfigDiff({
                         Last Deployed Configuration
                     </div>
                 )}
-                <div className="flex left">
-                    <ReactSelect
-                        options={getDeployConfigOptions(isRollbackTriggerSelected, isRecentConfigAvailable)}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                            ValueContainer: customValueContainer,
-                        }}
-                        isOptionDisabled={isOptionDisabled}
-                        isSearchable={false}
-                        formatOptionLabel={formatOptionLabel}
-                        classNamePrefix="deploy-config-select"
-                        placeholder="Select Config"
-                        menuPlacement="bottom"
-                        value={selectedConfigToDeploy}
-                        styles={getCommonConfigSelectStyles({
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                minWidth: '135px',
-                                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                            }),
-                            control: (base) => ({
-                                ...base,
-                                backgroundColor: 'white',
-                                border: 'none',
-                                boxShadow: 'none',
-                                minHeight: '32px',
-                                cursor: 'pointer',
-                                borderRadius: '0px',
-                                padding: '7px 16px',
-                            }),
-                        })}
-                        onChange={handleConfigSelection}
-                    />
+                <div className="flex left dc__gap-12 px-16">
+                    <span className="fs-13 fw-4 cn-9">Deploy:</span>
+                    <div>
+                        <SelectPicker
+                            inputId="deploy-config-select"
+                            name="deploy-config-select"
+                            options={getDeployConfigOptions(isRollbackTriggerSelected, isRecentConfigAvailable)}
+                            isOptionDisabled={isOptionDisabled}
+                            isSearchable={false}
+                            classNamePrefix="deploy-config-select"
+                            placeholder="Select Config"
+                            value={selectedConfigToDeploy}
+                            onChange={handleConfigSelection}
+                            variant={SelectPickerVariantType.BORDER_LESS}
+                            menuSize={ComponentSizeType.medium}
+                        />
+                    </div>
                 </div>
             </div>
         )

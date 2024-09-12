@@ -193,9 +193,8 @@ export const Routes = {
     APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
-    PLUGIN_LIST: 'plugin/global/list',
-    PLUGIN_DETAIL: 'plugin/global',
     GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
+    PLUGIN_GLOBAL_CREATE: 'plugin/global/create',
     DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
@@ -364,6 +363,7 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/deployment`,
     DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/upgrade`,
+    EXECUTE_CUSTOM_SCRIPT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins#execute-custom-script`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/external-links`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/secrets#external-secrets`,
     // Global Configurations
@@ -386,7 +386,6 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/sso-login`,
     GLOBAL_CONFIG_SCOPED_VARIABLES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/scoped-variables`,
     GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/user-access`,
-
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/job-and-cronjob`,
@@ -424,7 +423,7 @@ export const HEADER_TEXT = {
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
-        description: "Manage your organization’s git accounts.",
+        description: 'Manage your organization’s git accounts.',
         docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
     },
     NOTIFICATIONS: {
@@ -954,5 +953,5 @@ export const SwitchItemValues = {
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
-    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }

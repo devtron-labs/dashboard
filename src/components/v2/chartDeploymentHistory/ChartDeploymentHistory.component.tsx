@@ -26,12 +26,12 @@ import {
     YAMLStringify,
     DeploymentDetailSteps,
     CodeEditor,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
-import { useHistory, useRouteMatch } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
@@ -55,7 +55,10 @@ import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
-import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderDeploymentApprovalInfo,
+} from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -371,24 +374,21 @@ const ChartDeploymentHistory = ({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                {deploymentTabs().map((tab, index) => {
-                    return (
-                        <li
-                            onClick={() => onClickDeploymentTabs(tab)}
-                            key={`deployment-tab-${index}`}
-                            className="tab-list__tab"
-                        >
-                            <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
-                                data-testid={`nav-bar-option-${index}`}
-                            >
-                                {tab}
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
+            <div className="dc__border-bottom px-20">
+                <TabGroup
+                    tabs={deploymentTabs().map((tab, index) => ({
+                        id: `deployment-tab-${index}`,
+                        label: tab,
+                        tabType: 'button',
+                        active: selectedDeploymentTabName === tab,
+                        props: {
+                            onClick: () => onClickDeploymentTabs(tab),
+                            'data-testid': `nav-bar-option-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
+            </div>
         )
     }
 

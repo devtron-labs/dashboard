@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { DeploymentStrategy, Environment, SavedDeploymentStrategy, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentStrategy,
+    Environment,
+    SavedDeploymentStrategy,
+    UserApprovalConfigType,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -64,9 +70,7 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 

@@ -15,7 +15,13 @@
  */
 
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { OptionType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    AppDetails as CommonAppDetails,
+    Node as CommonNode,
+    iNode as CommoniNode,
+    ApiResourceGroupType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
@@ -376,7 +382,6 @@ export interface LogsComponentProps extends NodeDetailPropsType {
     targetContainerOption?: OptionType[]
     ephemeralFormAdvanced?: EphemeralFormAdvancedType
     imageListOption?: OptionType[]
-    isExternalApp?: boolean
 }
 
 export interface TerminalComponentProps {

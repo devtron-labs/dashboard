@@ -24,6 +24,9 @@ import {
     showError,
     noop,
     ResponseType,
+    TabGroup,
+    ComponentSizeType,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
@@ -406,11 +409,12 @@ const ClusterTerminal = ({
     }
 
     // Disconnect terminal on unmount of the component
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             closeTerminalModal()
-        }
-    }, [])
+        },
+        [],
+    )
 
     const preFetchData = (podState = '', status = '') => {
         const _terminal = terminalRef.current
@@ -655,24 +659,22 @@ const ClusterTerminal = ({
         })
     }
 
-    const imageTippyInfo = () => {
-        return (
-            <div className="p-12 fs-13">
-                {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
-                <a href={NETSHOOT_LINK} target="_blank" rel="noreferrer">
-                    {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
-                </a>
-                ,&nbsp;
-                <a href={BUSYBOX_LINK} target="_blank" rel="noreferrer">
-                    {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
-                </a>
-                {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
-                <br />
-                <br />
-                {CLUSTER_TERMINAL_MESSAGING.PUBLIC_IMAGE}
-            </div>
-        )
-    }
+    const imageTippyInfo = () => (
+        <div className="p-12 fs-13">
+            {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
+            <a href={NETSHOOT_LINK} target="_blank" rel="noreferrer">
+                {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
+            </a>
+            ,&nbsp;
+            <a href={BUSYBOX_LINK} target="_blank" rel="noreferrer">
+                {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
+            </a>
+            {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
+            <br />
+            <br />
+            {CLUSTER_TERMINAL_MESSAGING.PUBLIC_IMAGE}
+        </div>
+    )
 
     const imageOptionComponent = (props) => {
         const tippyText = clusterImageDescription(clusterImageList, props.data.value)
@@ -688,77 +690,81 @@ const ClusterTerminal = ({
         )
     }
 
-    const groupHeading = (props) => {
-        return <GroupHeading {...props} hideClusterName />
-    }
+    const groupHeading = (props) => <GroupHeading {...props} hideClusterName />
 
-    const terminalTabWrapper = (terminalView: () => JSX.Element) => {
-        return (
-            <div
-                className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
+    const terminalTabWrapper = (terminalView: () => JSX.Element) => (
+        <div
+            className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
 node-details-full-screen
                 `}
-            >
-                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
-                    {connectTerminal && terminalView}
-                </div>
-                {selectedTabIndex === 1 && (
-                    <div className="h-100 dc__overflow-scroll">
-                        <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
-                    </div>
-                )}
-                {selectedTabIndex === 2 && (
-                    <div className="h-100">
-                        <ClusterManifest
-                            terminalAccessId={terminalAccessIdRef.current}
-                            manifestMode={manifestButtonState}
-                            setManifestMode={setManifestButtonState}
-                            setManifestData={setManifestData}
-                            errorMessage={manifestErrors}
-                            setManifestAvailable={setManifestAvailable}
-                            selectTerminalTab={selectTerminalTab}
-                            hideManagedFields={hideManagedFields}
-                        />
-                    </div>
-                )}
+        >
+            <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
+                {connectTerminal && terminalView}
             </div>
-        )
-    }
+            {selectedTabIndex === 1 && (
+                <div className="h-100 dc__overflow-scroll">
+                    <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
+                </div>
+            )}
+            {selectedTabIndex === 2 && (
+                <div className="h-100">
+                    <ClusterManifest
+                        terminalAccessId={terminalAccessIdRef.current}
+                        manifestMode={manifestButtonState}
+                        setManifestMode={setManifestButtonState}
+                        setManifestData={setManifestData}
+                        errorMessage={manifestErrors}
+                        setManifestAvailable={setManifestAvailable}
+                        selectTerminalTab={selectTerminalTab}
+                        hideManagedFields={hideManagedFields}
+                    />
+                </div>
+            )}
+        </div>
+    )
 
     const renderTabs = () => {
+        const tabs: TabProps[] = [
+            {
+                id: `${SELECT_TITLE.TERMINAL}-tab`,
+                label: SELECT_TITLE.TERMINAL,
+                tabType: 'button',
+                active: selectedTabIndex === 0,
+                props: {
+                    onClick: selectTerminalTab,
+                    'data-testid': 'cluster-terminal-button',
+                },
+            },
+            ...((connectTerminal && terminalAccessIdRef.current
+                ? [
+                      {
+                          id: `${SELECT_TITLE.POD_EVENTS}-tab`,
+                          label: SELECT_TITLE.POD_EVENTS,
+                          tabType: 'button',
+                          active: selectedTabIndex === 1,
+                          props: {
+                              onClick: selectEventsTab,
+                              'data-testid': 'pod-events-button',
+                          },
+                      },
+                      {
+                          id: `${SELECT_TITLE.POD_MANIFEST}-tab`,
+                          label: SELECT_TITLE.POD_MANIFEST,
+                          tabType: 'button',
+                          active: selectedTabIndex === 2,
+                          props: {
+                              onClick: selectManifestTab,
+                              'data-testid': 'pod-manifests-button',
+                          },
+                      },
+                  ]
+                : []) satisfies TabProps[]),
+        ]
+
         return (
-            <ul role="tablist" className="tab-list">
-                <li
-                    className="tab-list__tab pointer fs-12"
-                    data-testid="cluster-terminal-button"
-                    onClick={selectTerminalTab}
-                >
-                    <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 0 ? 'active' : ''}`}>
-                        {SELECT_TITLE.TERMINAL}
-                    </div>
-                    {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
-                </li>
-                {connectTerminal && terminalAccessIdRef.current && (
-                    <>
-                        <li className="tab-list__tab fs-12" data-testid="pod-events-button" onClick={selectEventsTab}>
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 1 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_EVENTS}
-                            </div>
-                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
-                        </li>
-                        <li
-                            className="tab-list__tab fs-12"
-                            data-testid="pod-manifests-button"
-                            onClick={selectManifestTab}
-                        >
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 2 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_MANIFEST}
-                            </div>
-                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
-                        </li>
-                    </>
-                )}
-            </ul>
+            <div className="mr-16">
+                <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
+            </div>
         )
     }
 

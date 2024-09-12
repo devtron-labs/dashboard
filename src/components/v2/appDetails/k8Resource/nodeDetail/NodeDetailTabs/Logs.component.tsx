@@ -16,7 +16,7 @@
 
 import Tippy from '@tippyjs/react'
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -25,6 +25,7 @@ import {
     useDownload,
     useMainContext,
     useKeyDown,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
@@ -45,7 +46,6 @@ import LogViewerComponent from './LogViewer.component'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
-import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
@@ -74,7 +74,6 @@ const LogsComponent = ({
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
-    isExternalApp,
 }: LogsComponentProps) => {
     const [logsShownOption, setLogsShownOption] = useState({
         prev: getPodLogsOptions()[5],
@@ -371,15 +370,13 @@ const LogsComponent = ({
         })
     }
 
-    const handleLogsSearch = (e) => {
-        e.preventDefault()
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            const str = replaceLastOddBackslash(e.target.value)
-            handleSearchTextChange(str)
-            const { length, [length - 1]: highlightString } = str.split(' ')
-            setHighlightString(highlightString)
-            handleCurrentSearchTerm(str)
-        }
+    const handleLogsSearch = (_searchText: string): void => {
+        setTempSearch(_searchText)
+        const str = replaceLastOddBackslash(_searchText)
+        handleSearchTextChange(str)
+        const { length, [length - 1]: highlightString } = str.split(' ')
+        setHighlightString(highlightString)
+        handleCurrentSearchTerm(str)
     }
 
     const handleLogOptionChange = (selected) => {
@@ -479,6 +476,19 @@ const LogsComponent = ({
             },
         ]
     }
+
+    const renderSearchText = (): JSX.Element => (
+        <SearchBar
+            initialSearchText={tempSearch}
+            containerClassName='w-100 bcn-0'
+            handleEnter={handleLogsSearch}
+            inputProps={{
+                placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
+            }}
+            dataTestId="Search-by-app-name"
+            noBackgroundAndBorder
+        />
+    )
 
     return isDeleted ? (
         <MessageUI
@@ -720,32 +730,10 @@ const LogsComponent = ({
                     </div>
                     <div className="dc__border-right " />
                     <form
-                        className="w-30 flex flex-justify left bcn-1 pl-10 flex-align-center "
+                        className="w-30 flex flex-justify left bcn-1 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
-                        <Search className="icon-dim-16 mr-4" />
-                        <input
-                            value={tempSearch}
-                            className="bw-0 w-100"
-                            style={{ background: 'transparent', outline: 'none' }}
-                            onKeyUp={handleLogsSearch}
-                            onChange={(e) => setTempSearch(e.target.value as string)}
-                            type="search"
-                            name="log_search_input"
-                            placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
-                        />
-                        {logState.grepTokens && (
-                            <CloseImage
-                                className="icon-dim-20 pointer"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleSearchTextChange('')
-                                    setHighlightString('')
-                                    setTempSearch('')
-                                    handleCurrentSearchTerm('')
-                                }}
-                            />
-                        )}
+                      {renderSearchText()}
                         <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"

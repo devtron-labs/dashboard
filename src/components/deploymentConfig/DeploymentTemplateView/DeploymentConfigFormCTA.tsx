@@ -60,7 +60,7 @@ export default function DeploymentConfigFormCTA({
     const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
     const { isSuperAdmin } = useMainContext()
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
-    const _disabled = disableButton || loading
+    const _disabled = disableButton || loading || convertVariables
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const { email } = useUserEmail()

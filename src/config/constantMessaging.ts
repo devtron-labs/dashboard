@@ -182,9 +182,7 @@ export const APP_GROUP_CD_DETAILS = {
     },
     noDeployment: {
         title: 'No deployments',
-        getSubtitle: (appName) => {
-            return `No deployment history available for the ${appName || ''} application.`
-        },
+        getSubtitle: (appName) => `No deployment history available for the ${appName || ''} application.`,
     },
 }
 

@@ -15,8 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
@@ -154,8 +153,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         placement="top"
                         content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
-                        <button type="button" className="link-count cursor dc__hover-border-n300 flex dc__gap-4" onClick={this.handleLinkedCIWorkflowChipClick}>
-                            <IcLink  className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                        <button
+                            type="button"
+                            className="link-count cursor dc__hover-border-n300 flex dc__gap-4"
+                            onClick={this.handleLinkedCIWorkflowChipClick}
+                        >
+                            <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                             <span>{this.props.linkedCount}</span>
                         </button>
                     </Tippy>

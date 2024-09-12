@@ -375,19 +375,17 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
     }
 
     // RENDERERS
-    const renderDeleteModal = (): JSX.Element => {
-        return (
-            <ConfigMapSecretDeleteModal
-                appId={+appId}
-                envId={envId ? +envId : null}
-                componentType={componentType}
-                id={selectedCMSecret?.id}
-                configMapSecretData={cmSecretData?.configData}
-                updateCMSecret={updateCMSecret}
-                closeDeleteModal={closeDeleteModal}
-            />
-        )
-    }
+    const renderDeleteModal = (): JSX.Element => (
+        <ConfigMapSecretDeleteModal
+            appId={+appId}
+            envId={envId ? +envId : null}
+            componentType={componentType}
+            id={selectedCMSecret?.id}
+            configMapSecretData={cmSecretData?.configData}
+            updateCMSecret={updateCMSecret}
+            closeDeleteModal={closeDeleteModal}
+        />
+    )
 
     const renderProtectedDeleteModal = () => {
         if (DeleteModal) {

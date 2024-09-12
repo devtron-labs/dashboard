@@ -18,7 +18,6 @@ import { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     showError,
-    Progressing,
     useAsync,
     useMainContext,
     YAMLStringify,
@@ -43,7 +42,6 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export default function DeploymentTemplateOverride({
-    parentState,
     setParentState,
     environments,
     environmentName,
@@ -278,7 +276,7 @@ export default function DeploymentTemplateOverride({
                 +appId,
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                state.selectedChart.name
+                state.selectedChart.name,
             )
 
             const _duplicateFromResp =
@@ -374,10 +372,6 @@ export default function DeploymentTemplateOverride({
 
     const toggleDraftComments = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
-    }
-
-    if (state.loading || parentState === ComponentStates.loading) {
-        return <Progressing size={48} fullHeight />
     }
 
     return (

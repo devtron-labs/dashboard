@@ -27,7 +27,7 @@ import {
     FeatureTitleWithInfo,
     DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
