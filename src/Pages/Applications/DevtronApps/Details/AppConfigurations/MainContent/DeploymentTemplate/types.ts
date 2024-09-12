@@ -81,7 +81,7 @@ export interface DeploymentTemplateCTAProps
         Pick<DeploymentTemplateProps, 'isCiPipeline'> {
     isLoading: boolean
     isDisabled: boolean
-    isAppMetricsConfigured: boolean
+    showApplicationMetrics: boolean
     isAppMetricsEnabled: boolean
     selectedChart: DeploymentChartVersionType
     isInheriting: boolean

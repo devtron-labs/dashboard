@@ -62,8 +62,9 @@ const getLockConfigEligibleAndIneligibleChanges: (props: {
     eligibleChanges: Record<string, any>
     ineligibleChanges: Record<string, any>
 } = importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
+const ProtectedDeploymentTemplateCTA = importComponentFromFELibrary('ProtectedDeploymentTemplateCTA', null, 'function')
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
-// const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
+const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 
@@ -73,11 +74,14 @@ const DeploymentTemplate = ({
     respondOnSuccess,
     isUnSet,
     isCiPipeline,
+    // FIXME: Why unused?
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     environments,
     isProtected,
     reloadEnvironments,
     environmentName,
 }: DeploymentTemplateProps) => {
+    // TODO: fetchEnvConfig(-1)
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
     const { isSuperAdmin } = useMainContext()
@@ -141,6 +145,7 @@ const DeploymentTemplate = ({
     /**
      * State to show locked changes modal in case user is non super admin and is changing locked keys
      * Would be showing an info bar in locked modal
+     * TODO: Maybe can combine state with showLockedTemplateDiffModal
      */
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
@@ -377,6 +382,10 @@ const DeploymentTemplate = ({
         setShowDraftComments((prev) => !prev)
     }
 
+    const handleToggleShowSaveChangesModal = () => {
+        setShowSaveChangesModal((prev) => !prev)
+    }
+
     const handleResolveScopedVariables = async () => {
         setResolveScopedVariables(true)
         await handleLoadScopedVariables()
@@ -407,6 +416,7 @@ const DeploymentTemplate = ({
     }
 
     const handleToggleReadmeMode = () => {
+        // TODO: Need to add wasGuiOrHideLockedKeysEdited here as well
         updateSearchParams({
             showReadMe: !showReadMe,
         })
@@ -521,13 +531,7 @@ const DeploymentTemplate = ({
         return templateDataWithSelectedChartDetails
     }
 
-    // Should it be method or should duplicate?
-    const handleInitializePublishedDataWithCurrentEditorData = async (
-        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
-        lockedConfigKeys: string[],
-    ) => {
-        const publishedData = await handleInitializePublishedData(chartRefsData, lockedConfigKeys)
-
+    const handleInitializeCurrentEditorWithPublishedData = (publishedData: DeploymentTemplateConfigState) => {
         const clonedTemplateData = structuredClone(publishedData)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
 
@@ -537,6 +541,15 @@ const DeploymentTemplate = ({
             unableToParseYaml: false,
             removedPatches: [],
         })
+    }
+
+    // Should it be method or should duplicate?
+    const handleInitializePublishedDataWithCurrentEditorData = async (
+        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+        lockedConfigKeys: string[],
+    ) => {
+        const publishedData = await handleInitializePublishedData(chartRefsData, lockedConfigKeys)
+        handleInitializeCurrentEditorWithPublishedData(publishedData)
     }
 
     // Should remove edit draft mode in case of error?
@@ -562,7 +575,7 @@ const DeploymentTemplate = ({
         }
 
         if (draftPromiseResponse.status === 'rejected') {
-            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData, lockedConfigKeys)
+            handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
             return
         }
 
@@ -630,7 +643,11 @@ const DeploymentTemplate = ({
             }
 
             updateSearchParams({ selectedTab: DeploymentTemplateTabsType.PUBLISHED })
+            return
         }
+
+        // TODO: Can move above this if
+        handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
     }
 
     // TODO: Should move all these api calls to provider itself
@@ -644,7 +661,8 @@ const DeploymentTemplate = ({
         setInitialLoadError(null)
 
         try {
-            reloadEnvironments()
+            // TODO: Ask if needed
+            // reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
                 getChartList(),
                 getJsonPath ? getJsonPath(appId, envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID) : Promise.resolve(null),
@@ -699,12 +717,13 @@ const DeploymentTemplate = ({
         setWasGuiOrHideLockedKeysEdited(false)
         setShowLockedDiffForApproval(false)
         setShowLockedTemplateDiffModal(false)
-        // TODO: Check if async
+        setIsLoadingInitialData(true)
+        // TODO: Check if async, and on change of isProtected maybe should re-call this
         await reloadEnvironments()
         await handleInitialDataLoad()
     }
 
-    const prepareDataToSave = (addReadMeAndSchema: boolean = false) => {
+    const prepareDataToSave = (skipReadmeAndSchema: boolean = false) => {
         const editorTemplate = getCurrentTemplateWithLockedKeys()
         const editorTemplateObject = YAML.parse(editorTemplate)
 
@@ -720,7 +739,7 @@ const DeploymentTemplate = ({
             isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
             saveEligibleChanges: showLockedTemplateDiffModal,
 
-            ...(addReadMeAndSchema
+            ...(!skipReadmeAndSchema
                 ? {
                       id: currentEditorTemplateData.chartConfig.id,
                       readme: currentEditorTemplateData.readme,
@@ -759,8 +778,9 @@ const DeploymentTemplate = ({
                 : saveDeploymentTemplate
 
             // TODO: Can send signal
-            const response = await apiService(prepareDataToSave(), null)
+            const response = await apiService(prepareDataToSave(true), null)
             if (response?.result?.isLockConfigError) {
+                // TODO: Can think of concurrency, maybe would have to re-compute all the values
                 setShowLockedTemplateDiffModal(true)
                 return
             }
@@ -812,6 +832,32 @@ const DeploymentTemplate = ({
         }
 
         await handleSaveTemplate()
+    }
+
+    /**
+     * If true, it is valid, else would show locked diff modal
+     */
+    const handleValidateApprovalState = (): boolean => {
+        const shouldValidateLockChanges = lockedConfigKeysWithLockType.config.length > 0 && !isSuperAdmin
+        if (shouldValidateLockChanges) {
+            // We are going to test the draftData not the current edited data and for this the computation has already been done
+            // TODO: Can think of some concurrent behaviors
+            const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
+                documents: {
+                    unedited: publishedTemplateData.originalTemplate,
+                    edited: draftTemplateData.originalTemplate,
+                },
+                lockedConfigKeysWithLockType,
+            })
+
+            if (Object.keys(ineligibleChanges || {}).length) {
+                setShowLockedDiffForApproval(true)
+                setShowLockedTemplateDiffModal(true)
+                return false
+            }
+        }
+
+        return true
     }
 
     const handleTabSelection = (index: DeploymentTemplateTabsType) => {
@@ -926,6 +972,11 @@ const DeploymentTemplate = ({
         setShowLockedTemplateDiffModal(false)
     }
 
+    const handleCloseSaveChangesModal = () => {
+        setShowSaveChangesModal(false)
+        handleCloseLockedDiffModal()
+    }
+
     const handleAppMetricsToggle = () => {
         setCurrentEditorTemplateData((prevTemplateData) => ({
             ...prevTemplateData,
@@ -1032,38 +1083,72 @@ const DeploymentTemplate = ({
     }
 
     const renderCTA = () => {
+        const selectedChart =
+            isPublishedValuesView && !showReadMe
+                ? publishedTemplateData?.selectedChart
+                : currentEditorTemplateData?.selectedChart
+
+        if (!selectedChart) {
+            return null
+        }
+
+        // Have remove check of gui mode for app metrics TODO: ask product
+        const showApplicationMetrics =
+            !!chartDetails?.charts?.length &&
+            !!selectedChart &&
+            window._env_.APPLICATION_METRICS_ENABLED &&
+            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+
+        const isAppMetricsEnabled =
+            isPublishedValuesView && !showReadMe
+                ? !!publishedTemplateData?.isAppMetricsEnabled
+                : !!currentEditorTemplateData?.isAppMetricsEnabled
+
+        const isLoading = isLoadingInitialData || isResolvingVariables || isSaving
+
+        const isDisabled =
+            resolveScopedVariables ||
+            currentEditorTemplateData.unableToParseYaml ||
+            isLoadingInitialData ||
+            isResolvingVariables ||
+            isSaving
+
+        if (isProtected) {
+            return (
+                <ProtectedDeploymentTemplateCTA
+                    selectedTab={selectedTab}
+                    showReadMe={showReadMe}
+                    isAppMetricsEnabled={isAppMetricsEnabled}
+                    showApplicationMetrics={showApplicationMetrics}
+                    toggleAppMetrics={handleAppMetricsToggle}
+                    isLoading={isLoading}
+                    selectedChart={selectedChart}
+                    isDisabled={isDisabled}
+                    latestDraft={draftTemplateData?.latestDraft}
+                    isCiPipeline={isCiPipeline}
+                    handleTriggerSaveDraft={handleTriggerSave}
+                    validateApprovalState={handleValidateApprovalState}
+                    handleReload={handleReload}
+                />
+            )
+        }
+
         if (!currentEditorTemplateData) {
             return null
         }
 
-        if (isProtected) {
-            return <div>Protected shh!!!</div>
-        }
-
         return (
             <DeploymentTemplateCTA
-                isLoading={isLoadingInitialData || isResolvingVariables || isSaving}
+                isLoading={isLoading}
                 // TODO: Confirm with product about scoped variable disable action
                 // FIXME: Create variable for complete loading
-                isDisabled={
-                    resolveScopedVariables ||
-                    currentEditorTemplateData.unableToParseYaml ||
-                    isLoadingInitialData ||
-                    isResolvingVariables ||
-                    isSaving
-                }
-                isAppMetricsEnabled={currentEditorTemplateData.isAppMetricsEnabled}
-                isAppMetricsConfigured={
-                    !!chartDetails.charts.length &&
-                    currentEditorTemplateData.selectedChart &&
-                    window._env_?.APPLICATION_METRICS_ENABLED &&
-                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                    editMode === ConfigurationType.YAML
-                }
+                // TODO: Add for env override as well
+                isDisabled={isDisabled}
+                isAppMetricsEnabled={isAppMetricsEnabled}
+                showApplicationMetrics={showApplicationMetrics}
                 toggleAppMetrics={handleAppMetricsToggle}
                 showReadMe={showReadMe}
-                // Since CTA is for edit mode, so we can directly use currentEditorTemplateData
-                selectedChart={currentEditorTemplateData.selectedChart}
+                selectedChart={selectedChart}
                 selectedTab={selectedTab}
                 // FIXME: On environment override
                 isInheriting={false}
@@ -1104,7 +1189,7 @@ const DeploymentTemplate = ({
     )
 
     return (
-        <div className="h-100 flexbox-col">
+        <div className="h-100 flexbox">
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
                 {ConfigToolbar ? (
                     <ConfigToolbar
@@ -1155,6 +1240,7 @@ const DeploymentTemplate = ({
                         closeModal={handleCloseLockedDiffModal}
                         showLockedDiffForApproval={showLockedDiffForApproval}
                         onSave={handleSaveTemplate}
+                        isSaving={isSaving}
                         lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                         // TODO: Should not do this on runtime.
                         documents={getLockedDiffModalDocuments()}
@@ -1164,22 +1250,23 @@ const DeploymentTemplate = ({
                     />
                 )}
 
-                {/* TODO: In case of protect */}
-                {/* {SaveChangesModal && showSaveChangesModal && (
+                {SaveChangesModal && showSaveChangesModal && (
                     <SaveChangesModal
                         appId={Number(appId)}
                         envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
                         resourceType={3}
-                        resourceName="BaseDeploymentTemplate"
+                        resourceName={
+                            environmentName ? `${environmentName}-DeploymentTemplateOverride` : 'BaseDeploymentTemplate'
+                        }
                         prepareDataToSave={prepareDataToSave}
-                        toggleModal={toggleSaveChangesModal}
-                        latestDraft={state.latestDraft}
-                        reload={reload}
-                        closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
-                        showAsModal={!state.showLockedTemplateDiff}
-                        saveEligibleChangesCb={saveEligibleChangesCb}
+                        toggleModal={handleToggleShowSaveChangesModal}
+                        latestDraft={draftTemplateData?.latestDraft}
+                        reload={handleReload}
+                        closeLockedDiffDrawerWithChildModal={handleCloseSaveChangesModal}
+                        showAsModal={!showLockedTemplateDiffModal}
+                        saveEligibleChangesCb={showLockedTemplateDiffModal}
                     />
-                )} */}
+                )}
             </div>
 
             {DraftComments && showDraftComments && (

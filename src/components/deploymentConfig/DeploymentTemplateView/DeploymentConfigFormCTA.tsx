@@ -29,7 +29,6 @@ import {
 import Tippy from '@tippyjs/react'
 import { DeploymentConfigFormCTAProps } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
-import { DOCUMENTATION } from '../../../config'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -221,15 +220,7 @@ export default function DeploymentConfigFormCTA({
                                         </span>
                                     </Tippy>
                                 ) : (
-                                    <a
-                                        data-testid="app-metrics-learnmore-link"
-                                        href={DOCUMENTATION.APP_METRICS}
-                                        target="_blank"
-                                        className="fw-4 cb-5 dc__underline-onhover"
-                                        rel="noreferrer"
-                                    >
-                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
-                                    </a>
+                                    'Learn more'
                                 )}
                             </div>
                             {!compareTab && !state.showReadme && (
