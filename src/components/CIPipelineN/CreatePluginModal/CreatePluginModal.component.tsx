@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { toast } from 'react-toastify'
 import {
     BuildStageVariable,
     ButtonWithLoader,
@@ -26,6 +25,8 @@ import {
     validateSemanticVersioning,
     PluginDataStoreType,
     abortPreviousRequests,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
@@ -275,7 +276,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 availableTags,
             })
 
-            toast.success(pluginForm.id ? 'Plugin version created successfully' : 'Plugin created successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: pluginForm.id ? 'Plugin version created successfully' : 'Plugin created successfully',
+            })
 
             return {
                 pluginVersionId,
@@ -342,7 +346,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         })
 
         if (Object.values(pluginFormError).some((error) => !!error)) {
-            toast.error('Please fix the errors before saving the plugin')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please fix the errors before saving the plugin',
+            })
             return
         }
 
@@ -354,7 +361,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 pluginIdentifier: validateName(pluginForm.pluginIdentifier).message,
                 pluginVersion: validateSemanticVersioning(pluginForm.pluginVersion).message,
             })
-            toast.error('Please fill the required fields')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please fill the required fields',
+            })
             return
         }
 
@@ -386,7 +396,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 handleReplacePluginAfterCreation(pluginVersionId, clonedPluginDataStore)
             }
         } catch {
-            toast.error('Unable to retrieve data for newly created plugin')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Unable to retrieve data for newly created plugin',
+            })
         }
 
         setIsSubmitLoading(false)

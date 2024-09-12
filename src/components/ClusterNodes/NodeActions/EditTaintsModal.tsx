@@ -24,9 +24,10 @@ import {
     stopPropagation,
     InfoColourBar,
     SelectPicker,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -36,8 +37,6 @@ import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
 import { OptionType } from '../../app/types'
-import { Option, DropdownIndicator } from '../../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../../CIPipelineN/ciPipeline.utils'
 import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
@@ -129,7 +128,10 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 taints: taintList,
             }
             await updateTaints(payload)
-            toast.success(EDIT_TAINTS_MODAL_MESSAGING.Actions.saving)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: EDIT_TAINTS_MODAL_MESSAGING.Actions.saving,
+            })
             closePopup(true)
         } catch (err) {
             showError(err)

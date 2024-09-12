@@ -17,7 +17,6 @@
 import { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -30,6 +29,8 @@ import {
     noop,
     StyledRadioGroup as RadioGroup,
     EditableTextArea,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -224,7 +225,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
 
             try {
                 await editApp(payload)
-                toast.success('Successfully saved')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully saved',
+                })
                 await getAppMetaInfoRes()
             } catch (err) {
                 showError(err)

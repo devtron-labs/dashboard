@@ -329,7 +329,7 @@ const AppPermissions = () => {
 
         return [
             ...defaultValueArr,
-            ...(selectedCluster.environments?.map((env) => ({
+            ...(selectedCluster?.environments?.map((env) => ({
                 label: env.environmentName,
                 value: env.environmentIdentifier,
                 namespace: env.namespace,

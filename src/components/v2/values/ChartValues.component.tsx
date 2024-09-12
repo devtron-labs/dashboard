@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
-import { DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import { DetailsProgressing, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartVersionDetailsV2 } from '../../charts/charts.service'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
@@ -39,7 +38,12 @@ const ValuesComponent = ({ appId, init }: ValueComponentTypes) => {
                 })
                 .catch((err) => {
                     if (Array.isArray(err.errors)) {
-                        err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
+                        err.errors.map(({ userMessage }) =>
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: userMessage,
+                            }),
+                        )
                     }
                 })
         }

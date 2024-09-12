@@ -24,8 +24,9 @@ import {
     ServerErrors,
     ForceDeleteDialog,
     renderErrorHeaderMessage,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
@@ -109,7 +110,10 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
         deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
             .then((response: ResponseType) => {
                 if (response.code === 200) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
                 }
             })
             .catch((error: ServerErrors) => {

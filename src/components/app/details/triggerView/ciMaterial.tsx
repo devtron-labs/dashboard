@@ -16,7 +16,6 @@
 
 import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     showError,
     ServerErrors,
@@ -26,6 +25,8 @@ import {
     ButtonWithLoader,
     ModuleNameMap,
     SourceTypeMap,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -94,7 +95,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (this.state.runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before switching tabs')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before switching tabs',
+            })
             return
         }
 
@@ -182,7 +186,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     handleStartBuildAction = (e) => {
         if (this.state.runtimeParamsErrorState) {
-            toast.error('Please resolve all the errors before starting the build')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before starting the build',
+            })
             return
         }
 

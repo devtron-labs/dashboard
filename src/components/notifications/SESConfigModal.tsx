@@ -22,8 +22,9 @@ import {
     Drawer,
     CustomInput,
     CHECKBOX_VALUE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 import { validateEmail } from '../common'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
@@ -211,7 +212,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.isLoading = false
             state.form.isError = true
             this.setState(state)
-            toast.error('Some required fields are missing or Invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
             return
         }
         const state = { ...this.state }
@@ -224,7 +228,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                 const state = { ...this.state }
                 state.form.isLoading = false
                 this.setState(state)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
                 if (this.props.selectSESFromChild) {
                     this.props.selectSESFromChild(response?.result[0])

@@ -27,10 +27,11 @@ import {
     SelectPicker,
     ComponentSizeType,
     SelectOption,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import {
@@ -471,7 +472,10 @@ const EphemeralContainerDrawer = ({
             params,
         })
             .then((response: any) => {
-                toast.success('Launched Container Successfully ')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Launched Container Successfully',
+                })
                 setShowEphemeralContainerDrawer(false)
                 setEphemeralForm({
                     ...ephemeralForm,

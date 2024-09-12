@@ -29,10 +29,11 @@ import {
     SelectPicker,
     TabGroup,
     ComponentSizeType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -796,7 +797,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             _modifiedPayload = JSON.parse(modifiedSampleString)
         } catch (error) {
-            toast.error('Invalid JSON')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid JSON',
+            })
             return
         }
         setWebhookExecutionLoader(true)
@@ -889,7 +893,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const copySharableURL = (): void => {
         copyToClipboard(window.location.href, () => {
-            toast.success('URL copied successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'URL copied successfully',
+            })
         })
     }
 

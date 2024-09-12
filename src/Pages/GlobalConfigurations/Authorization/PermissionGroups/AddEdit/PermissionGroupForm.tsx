@@ -22,8 +22,9 @@ import {
     ResizableTextarea,
     CustomInput,
     useMainContext,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { deepEqual } from '../../../../../components/common'
 
@@ -114,10 +115,16 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         try {
             await createOrUpdatePermissionGroup(payload)
             if (isAddMode) {
-                toast.success('Group created')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Group created',
+                })
             } else {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                toast.success('Group updated')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Group updated',
+                })
             }
             _redirectToPermissionGroupList()
         } catch (err) {
@@ -131,7 +138,10 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setSubmitting(true)
         try {
             await deletePermissionGroup(_permissionGroup.id)
-            toast.success('Group deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Group deleted',
+            })
             setDeleteConfirmationModal(false)
             _redirectToPermissionGroupList()
         } catch (err) {
