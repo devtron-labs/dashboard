@@ -1556,10 +1556,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.2.32":
-  version "0.2.32"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.2.32.tgz#c99483786133649e8acdec32923522ff0af8dfad"
-  integrity sha512-J4KGv58dRZ5WhFr/xEiAqTJL7cfLwL1ULvXFx7okMIJiwIRMDTStn36VIcEUdQ8cyaDjE1LmYt9R0Rxwz+04SQ==
+"@devtron-labs/devtron-fe-common-lib@0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.3.3.tgz#fbaf01881022accaaf58805388a194746953e558"
+  integrity sha512-m6E/YFHeihRTUqthdItR2LF9C5aFUf+oGlfMpi3yJj+a7CarCPPqzy9nYL5S+/r7ybzCkC4Flxybp+W+9eHmMw==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -8110,13 +8110,6 @@ react-test-render@^1.1.2:
     immutable "3.7.x"
     lodash "^4.17.15"
     react-shallow-testutils "2.0.x"
-
-react-toastify@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.npmjs.org/react-toastify/-/react-toastify-8.2.0.tgz"
-  integrity sha512-Pg2Ju7NngAamarFvLwqrFomJ57u/Ay6i6zfLurt/qPynWkAkOthu6vxfqYpJCyNhHRhR4hu7+bySSeWWJu6PAg==
-  dependencies:
-    clsx "^1.1.1"
 
 react-transition-group@^4.3.0, react-transition-group@^4.4.5:
   version "4.4.5"

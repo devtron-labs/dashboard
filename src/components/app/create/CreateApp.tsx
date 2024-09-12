@@ -33,8 +33,9 @@ import {
     ButtonWithLoader,
     SelectPicker,
     OptionType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import AsyncSelect from 'react-select/async'
 import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
@@ -182,7 +183,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }, true)
         if (!isFormValid || invalidLabels) {
             if (invalidLabels) {
-                toast.error('Some required fields in tags are missing or invalid')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some required fields in tags are missing or invalid',
+                })
             }
             return
         }
@@ -222,11 +226,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             createAppLoader: false,
                         },
                         () => {
-                            toast.success(
-                                `Your ${
+                            ToastManager.showToast({
+                                variant: ToastVariantType.success,
+                                description: `Your ${
                                     this.props.isJobView ? 'job' : 'application'
                                 } is created. Go ahead and set it up.`,
-                            )
+                            })
                             this.redirectToArtifacts(this.state.form.appId)
                         },
                     )
@@ -235,7 +240,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             .catch((errors: ServerErrors) => {
                 if (Array.isArray(errors.errors)) {
                     errors.errors.forEach((element) => {
-                        toast.error(element.userMessage)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: element.userMessage,
+                        })
                     })
                     this.setState({ code: errors.code })
                 } else {

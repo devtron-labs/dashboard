@@ -26,8 +26,9 @@ import {
     GenericEmptyState,
     PageHeader,
     SearchBar,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
@@ -109,8 +110,11 @@ export default function SavedValuesList() {
 
     const deleteChartValue = () => {
         deleteChartValues(selectedValue.id)
-            .then((response) => {
-                toast.success('Deleted successfully')
+            .then(() => {
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted successfully',
+                })
                 getData()
             })
             .catch((error) => {

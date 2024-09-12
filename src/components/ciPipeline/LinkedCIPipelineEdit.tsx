@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     ServerErrors,
     VisibleModal,
@@ -23,8 +23,9 @@ import {
     multiSelectStyles,
     CustomInput,
     ButtonWithLoader,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import AsyncSelect from 'react-select/async'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
@@ -149,7 +150,10 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         saveLinkedCIPipeline(parentCIPipeline, params, this.props.changeCIPayload)
             .then((response) => {
                 if (response) {
-                    toast.success('Saved Successfully ')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Saved Successfully',
+                    })
                     this.setState({ loadingData: false, showError: false })
                     this.props.close()
                     this.props.getWorkflows()
