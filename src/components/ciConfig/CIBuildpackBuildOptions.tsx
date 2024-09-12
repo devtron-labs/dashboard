@@ -72,29 +72,6 @@ export const renderOptionIcon = (option: string) => {
     )
 }
 
-export const getGitRepositoryOptions = (sourceMaterials) => {
-    return sourceMaterials.map((material) => {
-        return {
-            value: material.checkoutPath,
-            label: material.name,
-            startIcon: getGitProviderIcon(material.url),
-        }
-    })
-}
-
-export const getSelectedMaterialValue = (selectedMaterial) => {
-    if (selectedMaterial.name) {
-        return {
-            label: selectedMaterial.name,
-            value: selectedMaterial.checkoutPath,
-            startIcon: getGitProviderIcon(selectedMaterial.url),
-        }
-    }
-    return null
-}
-
-
-
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (

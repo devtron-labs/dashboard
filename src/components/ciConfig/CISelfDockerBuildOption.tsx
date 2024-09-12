@@ -18,9 +18,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
-import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import { getGitRepositoryOptions, getSelectedMaterialValue, renderOptionIcon } from './CIBuildpackBuildOptions'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 import { CISelfDockerBuildOptionProps } from './types'
+import { _multiSelectStyles } from './CIConfig.utils'
 
 const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
     readOnly,
@@ -61,17 +63,31 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
     return (
         <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
             <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                <SelectPicker
-                    inputId="select-repository-containing-dockerfile"
-                    name="select-repository-containing-dockerfile"
-                    label="Select repository containing Dockerfile"
+                <label className="form__label">Select repository containing Dockerfile</label>
+
+                <ReactSelect
+                    className="m-0"
                     classNamePrefix="build-config__select-repository-containing-dockerfile"
+                    isMulti={false}
                     isClearable={false}
-                    options={getGitRepositoryOptions(sourceMaterials)}
-                    value={getSelectedMaterialValue(selectedMaterial)}
+                    options={sourceMaterials}
+                    getOptionLabel={(option) => `${option.name}`}
+                    getOptionValue={(option) => `${option.checkoutPath}`}
+                    value={selectedMaterial}
+                    styles={{
+                        ..._multiSelectStyles,
+                        menu: (base) => ({
+                            ...base,
+                            marginTop: '0',
+                            paddingBottom: '4px',
+                        }),
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option: repositoryOption,
+                        Control: repositoryControls,
+                    }}
                     onChange={handleFileLocationChange}
-                    size={ComponentSizeType.large}
-                    isSearchable={false}
                 />
 
                 {repositoryError && <label className="form__error">{repositoryError}</label>}
