@@ -62,4 +62,5 @@ export interface SecurityTabType {
     status: string
     appIdFromParent?: string
     isJobCI: boolean
+    isJobView: boolean
 }

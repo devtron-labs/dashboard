@@ -331,7 +331,6 @@ export const Details = ({
     scrollToTop,
     scrollToBottom,
 }: BuildDetails) => {
-    const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
@@ -535,7 +534,6 @@ const HistoryLogs = ({
     fullScreenView,
 }: HistoryLogsType) => {
     const { path } = useRouteMatch()
-    const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
 
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
@@ -641,6 +639,7 @@ const HistoryLogs = ({
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
                             isJobCI={isJobCI}
+                            isJobView={isJobView}
                         />
                     </Route>
                 }
@@ -672,7 +671,7 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobCI }: SecurityTabType) => {
+const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobCI, isJobView }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
@@ -680,13 +679,13 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
     const computedAppId = appId ?? appIdFromParent
 
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
-        () => getSecurityScan({ artifactId, ...(isJobCI && { appId: computedAppId }) }),
+        () => getSecurityScan({ artifactId, ...((isJobCI || isJobView) && { appId: computedAppId }) }),
         [artifactId, computedAppId],
         isSecurityScanV2Enabled,
     )
 
     const [executionDetailsLoading, executionDetailsResponse, executionDetailsError, reloadExecutionDetails] = useAsync(
-        () => getLastExecutionByAppArtifactId(artifactId, isJobCI ? computedAppId : null),
+        () => getLastExecutionByAppArtifactId(artifactId, isJobCI || isJobView ? computedAppId : null),
         [artifactId, computedAppId],
         !isSecurityScanV2Enabled,
     )
@@ -719,7 +718,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         return <Progressing pageLoader />
     }
     if (scanResultError || executionDetailsError) {
-        return <Reload reload={isSecurityScanV2Enabled ? reloadScanResult : reloadScanResult} />
+        return <Reload reload={isSecurityScanV2Enabled ? reloadScanResult : reloadExecutionDetails} />
     }
     if (
         (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
