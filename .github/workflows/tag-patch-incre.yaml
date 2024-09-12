@@ -1,4 +1,4 @@
-name: Increment tag for patch
+name: Increment tag for patch or minor
 
 on:
   pull_request:
@@ -24,12 +24,28 @@ jobs:
           echo $TOKEN | gh auth login --with-token
           latest_tag=$(git tag --sort=refname | tail -n 1)
           echo "Latest tag: $latest_tag"
+
           # Extract major and minor versions
           version=$(echo $latest_tag | cut -d. -f1-2)
-          # Extract patch version and increment it
+          # Extract patch version
           patch=$(echo $latest_tag | cut -d. -f3)
-          new_tag="$version.$((patch+1))"
-          echo "New tag will be: $new_tag"
+          # Extract minor version
+          minor=$(echo $latest_tag | cut -d. -f2)
+          major=$(echo $latest_tag | cut -d. -f1)
+
+          # Check if the incoming branch starts with 'release-candidate-'
+          incoming_branch="${{ github.head_ref }}"
+          if [[ "$incoming_branch" == release-candidate-* ]]; then
+            # Increment minor version and reset patch
+            new_minor=$((minor+1))
+            new_tag="$major.$new_minor.0"
+            echo "New tag will be (minor increment): $new_tag"
+          else
+            # Increment patch version
+            new_tag="$version.$((patch+1))"
+            echo "New tag will be (patch increment): $new_tag"
+          fi
+
           git config --global user.email "devops@devtron.ai"
           git config --global user.name "systemsdt"
           git tag $new_tag
