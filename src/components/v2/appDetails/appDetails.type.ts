@@ -393,8 +393,8 @@ export interface TerminalComponentProps {
     setSelectedContainer: (containerName: Map<string, string>) => void
     containers: Options[]
     setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
-    selectedContainerName: OptionType
-    setSelectedContainerName: React.Dispatch<React.SetStateAction<OptionType>>
+    selectedContainerName: string
+    setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
     switchSelectedContainer: (string) => void
     showTerminal: boolean
 }

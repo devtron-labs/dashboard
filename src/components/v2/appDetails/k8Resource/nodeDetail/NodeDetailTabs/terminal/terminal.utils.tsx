@@ -16,7 +16,8 @@
 
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
-import { InfoIconTippy, SelectPicker, SelectPickerVariantType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
@@ -85,16 +86,18 @@ const reactSelect = (selectData: ReactSelectType) => {
         <>
             {selectData.showDivider && <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />}
             <div className="cn-6 mr-10">{selectData.title}</div>
-            <SelectPicker
-                inputId="cluster-terminal-debug-mode"
-                name="cluster-terminal-debug-mode"
-                placeholder={selectData.placeholder}
-                classNamePrefix={selectData.classNamePrefix}
-                options={selectData.options}
-                value={selectData.value}
-                onChange={selectData.onChange}
-                variant={SelectPickerVariantType.BORDER_LESS}
-            />
+            <div style={{ minWidth: '145px' }}>
+                <ReactSelect
+                    placeholder={selectData.placeholder}
+                    classNamePrefix={selectData.classNamePrefix}
+                    options={selectData.options}
+                    defaultValue={selectData.defaultValue}
+                    value={selectData.value}
+                    onChange={selectData.onChange}
+                    styles={selectData.styles}
+                    components={selectData.components}
+                />
+            </div>
         </>
     )
 }
@@ -157,7 +160,7 @@ const closeExpandView = (viewData: CloseExpandView) => {
                     className="default-tt"
                     arrow={false}
                     placement="top"
-                    content={viewData.isFullScreen ? 'Restore height' : 'Maximize height'}
+                    content={viewData.isFullScreen ? 'Restore height' : 'Maximise height'}
                 >
                     <div>
                         {viewData.isFullScreen ? (
@@ -357,7 +360,7 @@ export default function terminalStripTypeData(elementData) {
             return closeExpandView(elementData)
         case TerminalWrapperType.REACT_SELECT:
             return reactSelect(elementData)
-        case TerminalWrapperType.CONNECTION_SWITCH:
+        case TerminalWrapperType.CONNCTION_SWITCH:
             return connectionSwitch(elementData)
         case TerminalWrapperType.CLEAR_BUTTON:
             return clearTerminal(elementData)

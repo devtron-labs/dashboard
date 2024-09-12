@@ -68,7 +68,7 @@ export default function CICreateDockerfileOption({
                     _languages.push({
                         label: _framework.Language,
                         value: _framework.Language,
-                        startIcon: _framework.LanguageIcon,
+                        icon: _framework.LanguageIcon,
                     })
 
                     if (!initIcon && currentCIBuildConfig.dockerBuildConfig.language === _framework.Language) {
@@ -83,7 +83,7 @@ export default function CICreateDockerfileOption({
                 ? {
                       label: currentCIBuildConfig.dockerBuildConfig.language,
                       value: currentCIBuildConfig.dockerBuildConfig.language,
-                      startIcon: initIcon,
+                      icon: initIcon,
                   }
                 : _languages[0]
             setSelectedLanguage(_selectedLanguage)

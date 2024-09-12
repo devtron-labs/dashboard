@@ -52,6 +52,7 @@ import {
     CLUSTER_TERMINAL_MESSAGING,
     ErrorMessageType,
     IMAGE_LIST,
+    nodeSelect,
     POD_LINKS,
     PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
@@ -874,6 +875,7 @@ node-details-full-screen
                 defaultValue: selectedNodeName,
                 value: selectedNodeName,
                 onChange: onChangeNodes,
+                styles: nodeSelect,
                 components: {
                     IndicatorSeparator: null,
                     GroupHeading: groupHeading,
@@ -890,6 +892,7 @@ node-details-full-screen
                 defaultValue: selectedNamespace,
                 value: selectedNamespace,
                 onChange: onChangeNamespace,
+                styles: clusterSelectStyle,
                 components: {
                     IndicatorSeparator: null,
                     Option,
@@ -928,7 +931,7 @@ node-details-full-screen
                 customComponent: renderTabs,
             },
             {
-                type: TerminalWrapperType.CONNECTION_SWITCH,
+                type: TerminalWrapperType.CONNCTION_SWITCH,
                 hideTerminalStripComponent: hideShell,
                 classNamePrefix: 'cluster-terminal-select-shell',
                 stopTerminalConnection,

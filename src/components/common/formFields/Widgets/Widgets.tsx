@@ -20,7 +20,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../../v2/common/ReactSelect.utils'
-import { Checkbox, CustomInput, ConditionalWrap, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CustomInput, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import {
     CheckboxWithTippyProps,
     ShortcutKeyBadgeProps,
@@ -315,16 +315,6 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
                 styles={getCommonSelectStyle(props.styleOverrides)}
             />
         </StyledField>
-
-            // {/* <SelectPicker
-            //     inputId={props.title?.replace(/\s/g, '_') || 'select_widget'}
-            //     placeholder={props.placeholder}
-            //     classNamePrefix={props.classNamePrefix}
-            //     value={props.value}
-            //     options={props.options}
-            //     isSearchable={props.options.length > 5}
-            //     onChange={props.onChange && props.onChange}
-            // /> */}
     )
 }
 

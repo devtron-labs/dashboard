@@ -32,6 +32,7 @@ import {
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'

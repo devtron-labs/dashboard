@@ -290,36 +290,3 @@ export interface FetchPolicyQueryParams {
     level: ResourceLevel
     id?: number
 }
-
-export interface SecurityPolicyEditState {
-    showWhitelistModal: boolean
-    view: string
-    cveError: boolean
-}
-export interface AddCveModalProps extends Pick<SecurityPolicyEditState, 'cveError'> {
-    close: () => void
-    saveCVE: (cve: string, policy: VulnerabilityAction) => void
-    setCVEError: () => void
-}
-
-export interface AddCveModalState {
-    view: string
-    cve: string
-    policy: VulnerabilityAction
-    clusters: {
-        name: string
-        policy: VulnerabilityAction
-        isCollapsed: boolean
-        environments: [
-            {
-                name: string
-                isCollapsed: boolean
-                policy: VulnerabilityAction
-                applications: {
-                    name: string
-                    policy: VulnerabilityAction
-                }[]
-            },
-        ]
-    }[]
-}

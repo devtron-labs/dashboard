@@ -87,7 +87,7 @@ export enum TerminalWrapperType {
     TITLE_NAME = 'titleName',
     CLOSE_EXPAND_VIEW = 'closeExpandView',
     REACT_SELECT = 'reactSelect',
-    CONNECTION_SWITCH = 'connectionSwitch',
+    CONNCTION_SWITCH = 'connectionSwitch',
     CLEAR_BUTTON = 'clearButton',
     MANIFEST_EDIT_BUTTONS = 'manifestEditButtons',
     DEBUG_MODE_TOGGLE_BUTTON = 'debugModeToggleButton',

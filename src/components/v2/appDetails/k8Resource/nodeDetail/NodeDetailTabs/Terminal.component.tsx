@@ -27,6 +27,7 @@ import {
     getK8sResourcePayloadAppType,
     getContainerSelectStyles,
     getGroupedContainerOptions,
+    getShellSelectStyles,
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
@@ -71,6 +72,7 @@ const TerminalComponent = ({
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.DISCONNECTED)
+    const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
@@ -186,7 +188,7 @@ const TerminalComponent = ({
         }
         url += `/${isResourceBrowserView ? selectedResource.namespace : selectedNamespace}/${nodeName}/${
             selectedTerminalType.value
-        }/${selectedContainerName.value}`
+        }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
@@ -232,7 +234,7 @@ const TerminalComponent = ({
     }, [showTerminal])
 
     useEffect(() => {
-        setSelectedContainerName({ label: _selectedContainer, value: _selectedContainer })
+        setSelectedContainerName(_selectedContainer)
     }, [containers])
     useEffect(() => {
         clearTimeout(clusterTimeOut)
@@ -243,10 +245,10 @@ const TerminalComponent = ({
             clusterTimeOut = setTimeout(() => {
                 setSocketConnection(SocketConnectionType.CONNECTING)
             }, 300)
-        } else if (selectedContainerName.value) {
+        } else if (selectedContainerName) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.node, params.namespace])
+    }, [selectedTerminalType, selectedContainerName, params.podName, params.node, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
@@ -263,7 +265,7 @@ const TerminalComponent = ({
     }
 
     const handleContainerChange = (selected: OptionType) => {
-        setSelectedContainerName(selected)
+        setSelectedContainerName(selected.value)
         setSelectedContainer(selectedContainer.set(selectedContainerValue, selected.value))
     }
 
@@ -271,7 +273,7 @@ const TerminalComponent = ({
         setSelectedTerminalType(selected)
     }
 
-    if (isDeleted || !selectedContainerName.value.length) {
+    if (isDeleted || !selectedContainerName.length) {
         return (
             showTerminal && (
                 <MessageUI
@@ -303,8 +305,13 @@ const TerminalComponent = ({
                 title: 'Container',
                 placeholder: 'Select container',
                 options: getGroupedContainerOptions(containers, true),
-                value: selectedContainerName,
+                value: defaultContainerOption,
                 onChange: handleContainerChange,
+                styles: getContainerSelectStyles(),
+                components: {
+                    IndicatorSeparator: null,
+                    Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
+                },
             },
             {
                 type: TerminalWrapperType.REACT_SELECT,
@@ -312,15 +319,20 @@ const TerminalComponent = ({
                 classNamePrefix: 'terminal-select-shell',
                 placeholder: 'Select Shell',
                 options: shellTypes,
-                value: selectedTerminalType,
+                defaultValue: shellTypes[0],
                 onChange: handleShellChange,
+                styles: getShellSelectStyles(),
+                components: {
+                    IndicatorSeparator: null,
+                    Option,
+                },
             },
             {
                 type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
                 hideTerminalStripComponent: false,
                 isResourceBrowserView: !!isResourceBrowserView,
                 isClusterTerminalView: false,
-                containerName: selectedContainerName.value,
+                containerName: selectedContainerName,
                 appDetails,
             },
         ],

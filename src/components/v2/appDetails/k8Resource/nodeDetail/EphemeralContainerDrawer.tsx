@@ -23,16 +23,15 @@ import {
     YAMLStringify,
     InfoIconTippy,
     CodeEditor,
-    TabGroup,
-    SelectPicker,
-    ComponentSizeType,
     SelectOption,
     ToastManager,
     ToastVariantType,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import Tippy from '@tippyjs/react'
+import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import {
     EphemeralContainerDrawerType,
@@ -50,14 +49,14 @@ import {
 import sampleConfig from './sampleConfig.json'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { menuComponentForImage } from '../../../common/ReactSelect.utils'
+import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
-import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
+import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
 import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION } from '../../../../../config'
-import CreatableSelect from 'react-select/creatable'
+import ReactSelect from 'react-select'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -334,15 +333,19 @@ const EphemeralContainerDrawer = ({
                             <span className="text-underline-dashed">Target Container Name</span>
                         </Tippy>
                     </div>
-                    <SelectPicker
-                        inputId="target-container-name"
-                        name="target-container-name"
+                    <ReactSelect
                         value={selectedTargetContainer || targetContainerOption?.[0]}
                         options={targetContainerOption}
+                        className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
-                        size={ComponentSizeType.large}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        styles={selectStyles}
                     />
                 </div>
             </div>

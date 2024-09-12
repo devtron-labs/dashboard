@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -235,7 +235,7 @@ export default function CIBuildpackBuildOptions({
             _supportedLanguagesList.push({
                 label: _languageBuilder.Language,
                 value: _languageBuilder.Language,
-                startIcon: _languageBuilder.LanguageIcon,
+                icon: _languageBuilder.LanguageIcon,
             })
 
             if (!initOption) {
@@ -282,7 +282,7 @@ export default function CIBuildpackBuildOptions({
                 _language = {
                     label: ciBuildConfig.buildPackConfig.language,
                     value: ciBuildConfig.buildPackConfig.language,
-                    startIcon: _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]?.LanguageIcon,
+                    icon: _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]?.LanguageIcon,
                 }
                 _version = {
                     label: ciBuildConfig.buildPackConfig.languageVersion,
@@ -322,7 +322,7 @@ export default function CIBuildpackBuildOptions({
                 _language = {
                     label: initOption.language,
                     value: initOption.language,
-                    startIcon: initOption.icon,
+                    icon: initOption.icon,
                 }
                 _version = {
                     label: initOption.version,
@@ -560,9 +560,9 @@ export default function CIBuildpackBuildOptions({
                             <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
 
                             <div className="flex left">
-                                {buildersAndFrameworks.selectedLanguage?.startIcon && (
+                                {buildersAndFrameworks.selectedLanguage?.icon && (
                                     <img
-                                        src={buildersAndFrameworks.selectedLanguage.startIcon}
+                                        src={buildersAndFrameworks.selectedLanguage.icon}
                                         alt={buildersAndFrameworks.selectedLanguage.label}
                                         className="icon-dim-20 mr-8"
                                     />
@@ -599,14 +599,36 @@ export default function CIBuildpackBuildOptions({
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-
-                    <SelectPicker
-                        label="Select repository containing code"
-                        inputId="build-pack-repository-select"
+                    <label className="form__label">Select repository containing code</label>
+                    <ReactSelect
                         classNamePrefix="build-config__select-repository-containing-code"
+                        className="m-0"
+                        tabIndex={3}
                         isSearchable={false}
                         options={sourceConfig.material}
+                        getOptionLabel={(option) => `${option.name}`}
+                        getOptionValue={(option) => `${option.checkoutPath}`}
                         value={selectedMaterial}
+                        styles={getCommonSelectStyle({
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
+                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                cursor: 'pointer',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                marginTop: '0',
+                                minWidth: '226px',
+                            }),
+                        })}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: repositoryOption,
+                            Control: repositoryControls,
+                        }}
                         onChange={handleFileLocationChange}
                     />
 
@@ -652,18 +674,6 @@ export default function CIBuildpackBuildOptions({
                             }}
                             onChange={handleLanguageSelection}
                         />
-
-                         {/* // TODO: Will be deleting this code after testing */}
-                        {/* <SelectPicker
-                            inputId="select-create-dockerfile-language-dropdown"
-                            name="select-create-dockerfile-language-dropdown"
-                            label={CI_BUILDPACK_OPTION_TEXTS.Language}
-                            classNamePrefix="select-create-dockerfile-language-dropdown"
-                            options={supportedLanguagesList}
-                            value={buildersAndFrameworks.selectedLanguage}
-                            isSearchable={false}
-                            onChange={handleLanguageSelection}
-                        /> */}
                     </div>
 
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
@@ -687,18 +697,6 @@ export default function CIBuildpackBuildOptions({
                             }}
                             onChange={handleVersionSelection}
                         />
-
-                        {/* // TODO: Will be deleting this code after testing */}
-                        {/* <SelectPicker
-                            inputId="build-pack-version-dropdown"
-                            name="build-pack-version-dropdown"
-                            label={CI_BUILDPACK_OPTION_TEXTS.Version}
-                            classNamePrefix="build-pack-version-dropdown"
-                            options={builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions}
-                            value={buildersAndFrameworks.selectedVersion}
-                            isSearchable={false}
-                            onChange={handleVersionSelection}
-                            /> */}
                     </div>
                 </div>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
