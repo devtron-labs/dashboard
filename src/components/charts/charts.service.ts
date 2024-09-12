@@ -57,11 +57,19 @@ export function deleteInstalledChart(
     isGitops?: boolean,
     deleteAction?: DELETE_ACTION,
 ) {
-    let URL: string = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
-    if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
-        URL += `&force=true`
-    } else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
-        URL += `&cascade=false`
+    let URL: string = `app-store/deployment/application/delete/${installedAppId}`
+    if (isGitops) {
+        if (deleteAction === DELETE_ACTION.DELETE) {
+            URL += `?partialDelete=true`
+        }  else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
+            URL += `?partialDelete=true&cascade=false`
+        } else if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
+            URL += `?force=true`
+        }
+    } else {
+        if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
+            URL += `?force=true`
+        }
     }
     return trash(URL)
 }

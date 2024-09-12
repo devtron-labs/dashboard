@@ -176,7 +176,8 @@ export const DeploymentRow = ({
                 fetchDeployments()
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                !response.result.deleteResponse?.clusterReachable
+                !response.result.deleteResponse?.clusterReachable &&
+                deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 toggleConfirmation(false)
@@ -208,6 +209,7 @@ export const DeploymentRow = ({
     const handleForceDelete = () => {
         handleDelete(DELETE_ACTION.FORCE_DELETE)
     }
+
     const handleCascadeDelete = () => {
         handleDelete(DELETE_ACTION.DELETE)
     }

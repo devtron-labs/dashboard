@@ -1031,8 +1031,7 @@ export default function CDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                // 422 is for deployment window
-                if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
+                if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
