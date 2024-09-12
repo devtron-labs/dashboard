@@ -57,6 +57,9 @@ export const DeploymentConfigCompare = ({
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
 
+    // GLOBAL CONSTANTS
+    const isManifestView = resourceType === EnvResourceType.Manifest
+
     // SEARCH PARAMS & SORTING
     const {
         compareWith,
@@ -84,10 +87,9 @@ export const DeploymentConfigCompare = ({
             compareWith,
             compareWithConfigType,
         })
-    }, [])
+    }, [isManifestView])
 
     // CONSTANTS
-    const isManifestView = resourceType === EnvResourceType.Manifest
     const { compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId } = useMemo(
         () =>
             getAppAndEnvIds({
