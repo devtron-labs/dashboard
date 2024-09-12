@@ -1,1 +1,1 @@
-export * from './CompareTemplate'
+export { default as DeploymentTemplate } from './DeploymentTemplate'

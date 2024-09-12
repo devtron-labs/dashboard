@@ -54,19 +54,16 @@ export interface DeploymentTemplateEditorDataStateType
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'selectedTab'>,
+    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys'>,
         Pick<DeploymentTemplateProps, 'isUnSet'>,
         Pick<
             DeploymentTemplateGUIViewProps,
             'wasGuiOrHideLockedKeysEdited' | 'handleChangeToYAMLMode' | 'handleEnableWasGuiOrHideLockedKeysEdited'
-        > {
+        >,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'> {
     editorOnChange: (value: string) => void
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     readOnly: boolean
-    /**
-     * Used for fetching guiSchema, etc, can also send primitive values
-     */
-    currentEditorTemplateData: DeploymentTemplateEditorDataStateType
     editedDocument: string
     uneditedDocument: string
 }

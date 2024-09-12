@@ -1,11 +1,6 @@
-import {
-    CodeEditor,
-    ConfigurationType,
-    DeploymentTemplateTabsType,
-    MODES,
-    noop,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { CodeEditor, ConfigurationType, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '@Components/deploymentConfig/constants'
 import { DeploymentTemplateFormProps } from './types'
 
 const DeploymentTemplateForm = ({
@@ -13,8 +8,9 @@ const DeploymentTemplateForm = ({
     hideLockedKeys,
     lockedConfigKeysWithLockType,
     readOnly,
-    selectedTab,
-    currentEditorTemplateData,
+    selectedChart,
+    guiSchema,
+    schema,
     isUnSet,
     wasGuiOrHideLockedKeysEdited,
     handleEnableWasGuiOrHideLockedKeysEdited,
@@ -23,11 +19,6 @@ const DeploymentTemplateForm = ({
     editedDocument,
     uneditedDocument,
 }: DeploymentTemplateFormProps) => {
-    if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-        // TODO: Implement compare view
-        return null
-    }
-
     if (editMode === ConfigurationType.GUI) {
         return (
             <DeploymentTemplateGUIView
@@ -40,8 +31,8 @@ const DeploymentTemplateForm = ({
                 editorOnChange={editorOnChange}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 isUnSet={isUnSet}
-                selectedChart={currentEditorTemplateData.selectedChart}
-                guiSchema={currentEditorTemplateData.guiSchema}
+                selectedChart={selectedChart}
+                guiSchema={guiSchema}
                 wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
                 handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
@@ -54,16 +45,16 @@ const DeploymentTemplateForm = ({
         <CodeEditor
             defaultValue={uneditedDocument}
             value={editedDocument}
-            chartVersion={currentEditorTemplateData.selectedChart?.version.replace(/\./g, '-')}
+            chartVersion={selectedChart?.version.replace(/\./g, '-')}
             onChange={readOnly ? noop : editorOnChange}
             mode={MODES.YAML}
-            validatorSchema={currentEditorTemplateData.schema}
-            // TODO: Can look into this
-            diffView={false}
+            validatorSchema={schema}
             readOnly={readOnly}
             noParsing
             height="100%"
-        />
+        >
+            {isUnSet && <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />}
+        </CodeEditor>
     )
 }
 

@@ -168,6 +168,11 @@ const DeploymentTemplate = ({
         isProtected &&
         draftTemplateData?.latestDraft
     )
+    // const isApprovalView =
+    //     selectedTab === DeploymentTemplateTabsType.COMPARE &&
+    //     !showReadMe &&
+    //     !!draftTemplateData?.latestDraft &&
+    //     draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
 
     const isDraftMode: boolean = isProtected && !!draftTemplateData?.latestDraft
 
@@ -457,13 +462,29 @@ const DeploymentTemplate = ({
         })
     }
 
+    // TODO: Need to add case for readme in all these
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => {
-        // Checking if we have draft present, so that means we are on published page
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.selectedChart
         }
 
         return currentEditorTemplateData?.selectedChart
+    }
+
+    const getCurrentTemplateGUISchema = (): string => {
+        if (isPublishedValuesView && publishedTemplateData) {
+            return publishedTemplateData.guiSchema
+        }
+
+        return currentEditorTemplateData?.guiSchema
+    }
+
+    const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] => {
+        if (isPublishedValuesView && publishedTemplateData) {
+            return publishedTemplateData.schema
+        }
+
+        return currentEditorTemplateData?.schema
     }
 
     /**
@@ -863,7 +884,7 @@ const DeploymentTemplate = ({
     const handleTabSelection = (index: DeploymentTemplateTabsType) => {
         handleRemoveResolvedVariables()
 
-        // TODO: Should be handled when we switch mode to yaml or uncheck hide locked keys
+        // TODO: Should be handled when we switch to compare mode
         // try {
         //     if (wasGuiOrHideLockedKeysEdited) {
         //         applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
@@ -1062,15 +1083,19 @@ const DeploymentTemplate = ({
             return <div>README</div>
         }
 
+        if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
+            return null
+        }
+
         return (
             <DeploymentTemplateForm
                 editMode={editMode}
                 hideLockedKeys={hideLockedKeys}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                // TODO: Add compare and approval variable here as well
                 readOnly={isPublishedValuesView || resolveScopedVariables}
-                selectedTab={selectedTab}
-                currentEditorTemplateData={currentEditorTemplateData}
+                selectedChart={getCurrentTemplateSelectedChart()}
+                guiSchema={getCurrentTemplateGUISchema()}
+                schema={getCurrentEditorSchema()}
                 isUnSet={isUnSet}
                 wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
                 handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
