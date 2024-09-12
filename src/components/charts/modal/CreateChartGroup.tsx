@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { showError, Progressing, DialogForm, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { Component } from 'react'
+import { showError, Progressing, DialogForm, CustomInput, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { REGEX_ERROR_MESSAGES, REQ_FIELD } from '../constants'
 
 interface ChartGroupCreateState {
@@ -95,7 +93,10 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             (chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId,
         )
         if (isNameUsed) {
-            toast.error(`A chart group with name ${this.state.name.value} already exists!`)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `A chart group with name ${this.state.name.value} already exists!`,
+            })
             return false
         }
         return true
@@ -128,13 +129,19 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         api(requestBody)
             .then((response) => {
                 if (this.props.chartGroupId) {
-                    toast.success('Successfully updated.')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Successfully updated.',
+                    })
                     this.props.closeChartGroupModal({
                         name: this.state.name.value,
                         description: this.state.description,
                     })
                 } else {
-                    toast.success('Successfully created.')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Successfully created.',
+                    })
                     const url = getChartGroupEditURL(response.result.id)
                     this.props.history.push(url)
                 }

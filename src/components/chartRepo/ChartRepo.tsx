@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
-    ToastBody,
     ErrorScreenNotAuthorized,
     Checkbox,
     CHECKBOX_VALUE,
@@ -28,8 +27,9 @@ import {
     CustomInput,
     FeatureTitleWithInfo,
     DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import { useForm } from '../common'
@@ -326,7 +326,10 @@ const ChartForm = ({
         setValidationStatus(VALIDATION_STATUS.LOADER)
         const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
 
@@ -336,11 +339,17 @@ const ChartForm = ({
                 const validateResp = response?.result
                 if (!validateResp.actualErrMsg.length) {
                     setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                    toast.success('Configuration validated')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Configuration validated',
+                    })
                 } else if (validateResp.actualErrMsg.length > 0) {
                     setValidationStatus(VALIDATION_STATUS.FAILURE)
                     setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
-                    toast.error('Configuration validation failed')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Configuration validation failed',
+                    })
                 }
             })
             .catch((error) => {
@@ -354,7 +363,10 @@ const ChartForm = ({
         setValidationStatus(VALIDATION_STATUS.LOADER)
         const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
@@ -365,19 +377,20 @@ const ChartForm = ({
 
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success(
-                    <ToastBody
-                        data-testid="update-toast-for-chart-repo"
-                        title="Chart repo saved"
-                        subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
-                    />,
-                )
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    title: 'Chart repo saved',
+                    description: 'It may take upto 5 mins for the charts to be listed in the chart store.',
+                })
                 await reload()
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
                 setLoading(false)
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
-                toast.error('Configuration validation failed')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Configuration validation failed',
+                })
             }
         } catch (err) {
             showError(err)

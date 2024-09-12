@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { get, showError, stopPropagation, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
@@ -120,7 +119,10 @@ const TerminalComponent = ({
                     })
                     switchSelectedContainer(containers?.[0]?.name || '')
                     setContainers(_containers)
-                    toast.success('Deleted successfully')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Deleted successfully',
+                    })
                 })
                 .catch((error) => {
                     showError(error)

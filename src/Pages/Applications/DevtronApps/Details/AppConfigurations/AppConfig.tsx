@@ -16,7 +16,6 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useLocation, useRouteMatch, useHistory, Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     showError,
     Progressing,
@@ -25,6 +24,8 @@ import {
     ConfirmationDialog,
     useAsync,
     ResourceKindType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -345,10 +346,16 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             .then((response) => {
                 if (response.code === 200) {
                     if (isJob) {
-                        toast.success('Job Deleted!')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Job Deleted!',
+                        })
                         history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
                     } else {
-                        toast.success('Application Deleted!')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Application Deleted!',
+                        })
                         history.push(`${URLS.APP}/${URLS.APP_LIST}`)
                     }
                 }
