@@ -4,7 +4,6 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.2.21",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -57,7 +56,7 @@
         "yaml": "^2.4.1"
     },
     "scripts": {
-        "prepare": "husky install",
+        "prepare": "husky install && git submodules update --init",
         "lint": "tsc --noEmit && eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",

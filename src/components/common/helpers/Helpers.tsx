@@ -803,8 +803,8 @@ export const importComponentFromFELibrary = (componentName: string, defaultCompo
     try {
         let component = defaultComponent || null
         if (!module) {
-            const path = '../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js'
-            const modules = import.meta.glob(`../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js`, {
+            const path = '../../../../packages/devtron-fe-lib/src/index.ts'
+            const modules = import.meta.glob(`../../../../packages/devtron-fe-lib/src/index.ts`, {
                 eager: true,
             })
             module = modules[path]

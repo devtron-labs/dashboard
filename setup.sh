@@ -57,9 +57,9 @@ else
   cat "package.$selected_workspace_type.json" > package.json
 fi
 
-if [ ! -d '../devtron-fe-lib' ]; then
+if [ ! -d './packages/devtron-fe-lib' ]; then
   exit 0
 fi
 
-cd '../devtron-fe-lib'
+cd './packages/devtron-fe-lib'
 ./setup.sh "$selected_env_type"
