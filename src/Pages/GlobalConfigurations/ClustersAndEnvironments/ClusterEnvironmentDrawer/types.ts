@@ -1,7 +1,5 @@
 import { TagType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
-
 export interface ClusterEnvironmentDrawerProps {
     environmentName: string
     namespace: string
@@ -30,3 +28,14 @@ export type GetClusterEnvironmentUpdatePayloadType = Pick<
         data: ClusterEnvironmentDrawerFormProps
         namespaceLabels?: TagType[]
     }
+
+export interface ClusterNamespacesLabel {
+    key: string
+    value: string
+}
+
+export interface ClusterNamespacesDTO {
+    name: string
+    labels: ClusterNamespacesLabel[]
+    resourceVersion: string
+}

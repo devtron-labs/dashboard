@@ -1,5 +1,4 @@
-import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
-import { GetClusterEnvironmentUpdatePayloadType } from './types'
+import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './types'
 
 export const getClusterEnvironmentUpdatePayload = ({
     id,
@@ -33,14 +32,14 @@ export const getClusterEnvironmentUpdatePayload = ({
                   ? {
                         namespaceResourceVersion: resourceVersion,
                         namespaceLabels: namespaceLabels
-                            .filter(({ key, value }) => !!key && !!value)
+                            .filter(({ key, value }) => !!key.trim() && !!value.trim())
                             .map(({ key, value }) => ({ key, value })),
                     }
                   : {}),
           }
 
 export const getClusterNamespaceByName = (namespacesList: ClusterNamespacesDTO[], name: string) =>
-    namespacesList.filter(({ name: _name }) => _name === name)[0]
+    namespacesList.find(({ name: _name }) => _name === name)
 
 export const getNamespaceLabels = (clusterNamespace: ClusterNamespacesDTO) =>
     clusterNamespace?.labels.map(({ key, value }, index) => ({

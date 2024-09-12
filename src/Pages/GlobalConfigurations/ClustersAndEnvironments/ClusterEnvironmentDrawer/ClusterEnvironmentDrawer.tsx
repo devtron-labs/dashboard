@@ -38,16 +38,16 @@ import { ReactComponent as DeleteEnvironment } from '@Icons/ic-delete-interactiv
 import { importComponentFromFELibrary } from '@Components/common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
-import { EnvironmentLabels } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentLabels'
-import { getClusterNamespaces } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/clustersAndEnvironments.service'
 
-import { ClusterNamespacesDTO } from '../clustersAndEnvironments.types'
-import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps } from './types'
+import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
-const renderVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
+const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
+const EnvironmentLabels = importComponentFromFELibrary('EnvironmentLabels', null, 'function')
+
+const getVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
 
 export const ClusterEnvironmentDrawer = ({
     environmentName,
@@ -93,13 +93,11 @@ export const ClusterEnvironmentDrawer = ({
      */
     const fetchClusterNamespaces = async (_namespace: string, setNamespaceLabelsAfterFetch = true) => {
         // Update clusterNamespaces state to reflect fetching state and reset data and error
-        setClusterNamespaces((prev) => ({
-            ...prev,
+        setClusterNamespaces({
             isFetching: setNamespaceLabelsAfterFetch,
             data: null,
             error: null,
-            resourceVersion: null,
-        }))
+        })
 
         try {
             // Fetch namespaces from the cluster
@@ -124,12 +122,11 @@ export const ClusterEnvironmentDrawer = ({
             return result
         } catch (error) {
             // Handle error and update state with error message
-            setClusterNamespaces((prev) => ({
-                ...prev,
+            setClusterNamespaces({
                 isFetching: false,
                 data: null,
                 error,
-            }))
+            })
 
             return null
         }
@@ -161,7 +158,7 @@ export const ClusterEnvironmentDrawer = ({
 
             let api
             if (isVirtual) {
-                api = renderVirtualClusterSaveUpdate(id)
+                api = getVirtualClusterSaveUpdate(id)
             } else {
                 api = id ? updateEnvironment : saveEnvironment
             }
@@ -176,6 +173,7 @@ export const ClusterEnvironmentDrawer = ({
                 reload()
                 hideClusterDrawer()
             } catch (err) {
+                setCrudLoading(false)
                 if (err.code === 409) {
                     ToastManager.showToast({
                         variant: ToastVariantType.error,
@@ -190,16 +188,18 @@ export const ClusterEnvironmentDrawer = ({
                 } else {
                     showError(err)
                 }
-            } finally {
-                setCrudLoading(false)
             }
         }
 
     const withLabelEditValidation: UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> = async () => {
         setCrudLoading(true)
-        const response = await fetchClusterNamespaces(data.namespace, false)
-        if (response) {
-            onValidation(response)(data)
+        try {
+            const response = await fetchClusterNamespaces(data.namespace, false)
+            if (response) {
+                onValidation(response)(data)
+            }
+        } catch {
+            setCrudLoading(false)
         }
     }
 
@@ -238,7 +238,7 @@ export const ClusterEnvironmentDrawer = ({
                 </div>
                 <form
                     className="flex-grow-1 flexbox-col"
-                    onSubmit={handleSubmit(namespaceLabels ? withLabelEditValidation : onValidation())}
+                    onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 >
                     <div className="dc__overflow-scroll p-20 flex-grow-1">
                         <div className="mb-16">
@@ -252,6 +252,7 @@ export const ClusterEnvironmentDrawer = ({
                                 error={errors.environmentName}
                                 {...register('environmentName')}
                                 label="Environment Name"
+                                autoFocus={!id}
                             />
                         </div>
                         <div className="mb-16">
@@ -303,9 +304,10 @@ export const ClusterEnvironmentDrawer = ({
                                 error={errors.description}
                                 {...register('description')}
                                 label="Description (Maximum 40 characters allowed)"
+                                autoFocus={!!id}
                             />
                         </div>
-                        {!isVirtual && (
+                        {EnvironmentLabels && !isVirtual && (
                             <div className="dc__border-top-n1 pt-16">
                                 <EnvironmentLabels
                                     tags={namespaceLabels.labels}
