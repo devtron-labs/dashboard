@@ -183,3 +183,13 @@ export interface AppListFiltersProps
     reloadNamespaceList: () => void
     namespaceListResponse: EnvironmentListHelmResponse
 }
+
+export interface useFilterOptionsProps
+    extends Pick<
+        AppListFiltersProps,
+        | 'appListFiltersResponse'
+        | 'namespaceListResponse'
+        | 'getFormattedFilterValue'
+        | 'isExternalArgo'
+        | 'isExternalFlux'
+    > {}

@@ -2,29 +2,18 @@ import {
     AppListConstants,
     ComponentSizeType,
     FilterSelectPicker,
-    getUserRole,
-    GroupedOptionsType,
-    OptionType,
     SearchBar,
     SelectPickerOptionType,
     SERVER_MODE,
-    stringComparatorBySortOrder,
-    Teams,
     Tooltip,
-    useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
-import { useMemo } from 'react'
-import { Cluster } from '@Services/service.types'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
-import {
-    APP_STATUS_FILTER_OPTIONS,
-    APPS_WITH_NO_PROJECT_OPTION,
-    SELECT_CLUSTER_TIPPY,
-    TEMPLATE_TYPE_FILTER_OPTIONS,
-} from './Constants'
+import { APP_STATUS_FILTER_OPTIONS, SELECT_CLUSTER_TIPPY, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
 import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
 import { getDevtronAppListDataToExport } from './AppListService'
+import { useFilterOptions } from './list.utils'
 
 const AppListFilters = ({
     filterConfig,
@@ -44,103 +33,19 @@ const AppListFilters = ({
     appType,
     namespaceListResponse,
 }: AppListFiltersProps) => {
+    const { isSuperAdmin } = useMainContext()
+
     const { appStatus, cluster, environment, namespace, project, templateType, searchKey } = filterConfig
 
     const clusterIdsCsv = cluster.join()
 
-    const [, userRoleResponse] = useAsync(getUserRole, [])
-
-    const getProjectOptions = (projectList: Teams[]): OptionType[] => {
-        if (!projectList) {
-            return []
-        }
-        return (
-            projectList.map((team) => ({
-                label: team.name,
-                value: String(team.id),
-            })) ?? []
-        )
-    }
-
-    const projectOptions: GroupedOptionsType[] = useMemo(
-        () => [
-            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
-            {
-                label: 'Projects',
-                options: appListFiltersResponse
-                    ? (appListFiltersResponse.isFullMode
-                          ? getProjectOptions(appListFiltersResponse.appListFilters.result.teams)
-                          : getProjectOptions(appListFiltersResponse.projectList.result)
-                      ).sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
-                    : [],
-            },
-        ],
-        [appListFiltersResponse],
-    )
-
-    const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
-        () =>
-            appListFiltersResponse?.appListFilters.result.environments.reduce((prev, curr) => {
-                if (!prev.find((clusterItem) => clusterItem.label === curr.cluster_id)) {
-                    prev.push({ label: curr.cluster_id, options: [] })
-                }
-                prev.find((clusterItem) => clusterItem.label === curr.cluster_id).options.push({
-                    label: curr.environment_name,
-                    value: String(curr.id),
-                })
-
-                return prev
-            }, []) ?? [],
-        [appListFiltersResponse],
-    )
-
-    const environmentOptions: GroupedOptionsType[] = useMemo(
-        () =>
-            clusterGroupedEnvOptions?.map((clusterItem) => ({
-                label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
-                options: clusterItem.options,
-            })) ?? [],
-        [clusterGroupedEnvOptions],
-    )
-
-    const handleVirtualClusterFiltering = (clusterList: Cluster[]): Cluster[] => {
-        if (!clusterList) return []
-        if (isExternalArgo || isExternalFlux) {
-            return clusterList.filter((clusterItem) => !clusterItem.isVirtualCluster)
-        }
-        return clusterList
-    }
-
-    const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
-        handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
-            label: clusterItem.cluster_name,
-            value: String(clusterItem.id),
-        }))
-
-    const clusterOptions: SelectPickerOptionType[] = useMemo(
-        () =>
-            appListFiltersResponse?.isFullMode
-                ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
-                : getClusterOptions(appListFiltersResponse?.clusterList.result),
-        [appListFiltersResponse],
-    )
-
-    const namespaceOptions: GroupedOptionsType[] = useMemo(
-        () =>
-            namespaceListResponse?.result
-                ?.map((clusterItem) => ({
-                    label: clusterItem.clusterName,
-                    options: clusterItem.environments
-                        .filter((env) => !!env.namespace)
-                        .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace))
-                        .map((env) => ({
-                            label: env.namespace,
-                            value: `${clusterItem.clusterId}_${env.namespace}`,
-                        })),
-                }))
-                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
-        [namespaceListResponse],
-    )
+    const { projectOptions, clusterOptions, environmentOptions, namespaceOptions } = useFilterOptions({
+        appListFiltersResponse,
+        namespaceListResponse,
+        getFormattedFilterValue,
+        isExternalArgo,
+        isExternalFlux,
+    })
 
     const selectedAppStatus = appStatus.map((status) => ({ label: status, value: status })) || []
 
@@ -180,9 +85,7 @@ const AppListFilters = ({
             : structuredClone(APP_STATUS_FILTER_OPTIONS)
 
     const showExportCsvButton =
-        userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
-        appType === AppListConstants.AppType.DEVTRON_APPS &&
-        serverMode !== SERVER_MODE.EA_ONLY
+        isSuperAdmin && appType === AppListConstants.AppType.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY
 
     const handleUpdateFilters = (filterKey: AppListUrlFilters) => (selectedOptions: SelectPickerOptionType[]) => {
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
