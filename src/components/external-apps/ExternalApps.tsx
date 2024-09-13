@@ -27,7 +27,7 @@ export default function ExternalApps() {
     const params = useParams<{ appId: string; appName: string }>()
     const { path } = useRouteMatch()
     return (
-        <div className='flexbox-col h-100'>
+        <div className="flexbox-col h-100">
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
