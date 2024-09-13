@@ -95,18 +95,31 @@ export interface JobListPayload
     sortBy: JobsListSortableKeys
 }
 
+export interface JobsMasterFilters {
+    status: SelectPickerOptionType[]
+    projects: SelectPickerOptionType[]
+    environments: SelectPickerOptionType[]
+}
+
+export interface JobListFilterConfig
+    extends JobListUrlFiltersType,
+        Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
+    searchKey: string
+    pageSize: number
+}
+
 export interface JobListProps
     extends Pick<
         UseUrlFiltersReturnType<JobsListSortableKeys>,
-        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
+        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
     > {
-    payloadParsedFromUrl: JobListPayload
+    masterFilters: JobsMasterFilters
+    filterConfig: JobListFilterConfig
+    filtersLoading: boolean
     jobListCount: number
-    isSuperAdmin: boolean
     openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
-    renderMasterFilters: () => JSX.Element
-    renderAppliedFilters: () => JSX.Element
+    getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => React.ReactNode
 }
 
 export interface JobListViewProps
@@ -120,7 +133,6 @@ export interface JobListViewProps
     closeExpandedRow: (id: number | null) => void
     handleEditJob: (jobId: number) => void
     jobListCount: number
-    isSuperAdmin: boolean
     openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void
 }
@@ -163,12 +175,6 @@ export enum JobListUrlFilters {
 
 export interface JobListUrlFiltersType extends Record<JobListUrlFilters, string[]> {}
 
-export interface JobsMasterFilters {
-    status: SelectPickerOptionType[]
-    projects: SelectPickerOptionType[]
-    environments: SelectPickerOptionType[]
-}
-
 export enum JobListStatus {
     STARTING = 'Starting',
     RUNNING = 'Running',
@@ -183,4 +189,18 @@ export enum JobListStatusDTO {
     SUCCEEDED = 'Succeeded',
     CANCELLED = 'CANCELLED',
     FAILED = 'Failed',
+}
+
+export interface JobListFilterProps
+    extends Pick<
+        JobListProps,
+        | 'filtersLoading'
+        | 'jobListCount'
+        | 'masterFilters'
+        | 'handleSearch'
+        | 'filterConfig'
+        | 'updateSearchParams'
+        | 'getLabelFromValue'
+    > {
+    payload: JobListPayload
 }

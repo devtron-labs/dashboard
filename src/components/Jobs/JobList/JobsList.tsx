@@ -23,24 +23,17 @@ import {
     ServerErrors,
     DevtronProgressing,
     HeaderWithCreateButton,
-    SearchBar,
     useUrlFilters,
-    FilterSelectPicker,
-    SelectPickerOptionType,
-    FilterChips,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
-import { getAppListDataToExport, getJobsInitFilters } from '../Service'
-import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
-import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
 import {
-    JobListPayload,
+    JobListFilterConfig,
     JobListUrlFilters,
     JobListUrlFiltersType,
     JobsListSortableKeys,
@@ -51,7 +44,6 @@ const JobsList = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
-    const { isSuperAdmin } = useMainContext()
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [filtersLoading, setFiltersLoading] = useState<boolean>(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>(0)
@@ -79,14 +71,14 @@ const JobsList = () => {
         sortOrder,
     } = urlFilters
 
-    const payload: JobListPayload = useMemo(
+    const filterConfig: JobListFilterConfig = useMemo(
         () => ({
-            appNameSearch: searchKey,
-            appStatuses: status,
-            environments: environment.map((envId) => +envId),
-            teams: project.map((projectId) => +projectId),
+            searchKey,
+            status,
+            environment,
+            project,
             offset,
-            size: pageSize,
+            pageSize,
             sortBy,
             sortOrder,
         }),
@@ -142,25 +134,6 @@ const JobsList = () => {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
     }
 
-    const handleUpdateFilters = (filterKey: JobListUrlFilters) => (selectedOptions: SelectPickerOptionType[]) => {
-        updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
-    }
-
-    const selectedProjects: SelectPickerOptionType[] = project.map((projectId) => ({
-        label: getLabelFromValue(JobListUrlFilters.project, projectId),
-        value: projectId,
-    }))
-
-    const selectedStatuses: SelectPickerOptionType[] = status.map((jobStatus) => ({
-        label: getJobStatusLabelFromValue(jobStatus),
-        value: jobStatus,
-    }))
-
-    const selectedEnvironments: SelectPickerOptionType[] = environment.map((envId) => ({
-        label: getLabelFromValue(JobListUrlFilters.environment, envId),
-        value: envId,
-    }))
-
     const renderCreateJobRouter = () => (
         <Switch>
             <Route
@@ -176,71 +149,6 @@ const JobsList = () => {
                 )}
             />
         </Switch>
-    )
-
-    const getJobsDataToExport = async () => getAppListDataToExport(payload, searchKey, jobCount)
-
-    const renderMasterFilters = () => (
-        <div className="search-filter-section">
-            <SearchBar
-                initialSearchText={searchKey}
-                containerClassName="dc__mxw-250 flex-grow-1"
-                handleEnter={handleSearch}
-                inputProps={{
-                    placeholder: 'Search by job name',
-                    autoFocus: true,
-                }}
-                dataTestId="Search-by-job-name"
-            />
-            <div className="flexbox dc__gap-8 dc__align-items-center dc__zi-4">
-                <FilterSelectPicker
-                    inputId="job-status-filter"
-                    placeholder="Status"
-                    options={masterFilters.status}
-                    isLoading={filtersLoading}
-                    isDisabled={filtersLoading}
-                    appliedFilterOptions={selectedStatuses}
-                    handleApplyFilter={handleUpdateFilters(JobListUrlFilters.status)}
-                />
-                <div className="dc__border-right h-16" />
-                <FilterSelectPicker
-                    inputId="job-projects-filter"
-                    placeholder="Projects"
-                    options={masterFilters.projects}
-                    isLoading={filtersLoading}
-                    isDisabled={filtersLoading}
-                    appliedFilterOptions={selectedProjects}
-                    handleApplyFilter={handleUpdateFilters(JobListUrlFilters.project)}
-                />
-                <div className="dc__border-right h-16" />
-                <FilterSelectPicker
-                    inputId="job-environments-filter"
-                    placeholder="Environments"
-                    options={masterFilters.environments}
-                    isLoading={filtersLoading}
-                    isDisabled={filtersLoading}
-                    appliedFilterOptions={selectedEnvironments}
-                    handleApplyFilter={handleUpdateFilters(JobListUrlFilters.environment)}
-                    shouldMenuAlignRight={!isSuperAdmin}
-                />
-                {isSuperAdmin && (
-                    <>
-                        <div className="dc__border-right h-16" />
-                        <ExportToCsv apiPromise={getJobsDataToExport} fileName={FILE_NAMES.Jobs} disabled={!jobCount} />
-                    </>
-                )}
-            </div>
-        </div>
-    )
-
-    const renderAppliedFilters = () => (
-        <FilterChips<JobListUrlFiltersType>
-            filterConfig={{ status, environment, project }}
-            clearFilters={clearFilters}
-            onRemoveFilter={updateSearchParams}
-            className="px-20"
-            getFormattedValue={getLabelFromValue}
-        />
     )
 
     if (dataStateType === JobListViewType.ERROR) {
@@ -259,15 +167,17 @@ const JobsList = () => {
                     <HeaderWithCreateButton headerName="Jobs" />
                     {renderCreateJobRouter()}
                     <JobListContainer
-                        payloadParsedFromUrl={payload}
+                        masterFilters={masterFilters}
+                        filterConfig={filterConfig}
                         clearFilters={clearFilters}
                         handleSorting={handleSorting}
                         jobListCount={jobCount}
-                        isSuperAdmin={isSuperAdmin}
+                        filtersLoading={filtersLoading}
                         setJobCount={setJobCount}
                         openJobCreateModel={openJobCreateModel}
-                        renderMasterFilters={renderMasterFilters}
-                        renderAppliedFilters={renderAppliedFilters}
+                        handleSearch={handleSearch}
+                        updateSearchParams={updateSearchParams}
+                        getLabelFromValue={getLabelFromValue}
                         changePage={changePage}
                         changePageSize={changePageSize}
                     />

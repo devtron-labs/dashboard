@@ -5,7 +5,7 @@
 .eslintrc.js
 vite.config.mts
 
-# The following files have eslint errors/warningssrc/App.tsx
+# The following files have eslint errors/warnings
 src/App.tsx
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
 src/components/AppSelector/AppSelector.tsx
@@ -82,7 +82,6 @@ src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
-src/components/Jobs/JobList/JobListContainer.tsx
 src/components/Jobs/JobList/JobListView.tsx
 src/components/Jobs/Jobs.tsx
 src/components/Jobs/JobsEmptyState.tsx
