@@ -22,7 +22,7 @@ jobs:
           TOKEN: ${{ secrets.TAG_CREATION_TOKEN_PUBLIC }}
         run: |
           echo $TOKEN | gh auth login --with-token
-          latest_tag=$(git tag --sort=refname | tail -n 1)
+          latest_tag=$(git tag | sort -V | tail -n 1)
           echo "Latest tag: $latest_tag"
 
           # Extract major and minor versions
