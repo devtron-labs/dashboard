@@ -30,6 +30,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
+import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
@@ -56,7 +57,6 @@ import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
 import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION } from '../../../../../config'
-import ReactSelect from 'react-select'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
