@@ -23,8 +23,9 @@ import {
     CustomInput,
     ClipboardButton,
     CodeEditor,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ViewType } from '../../config/constants'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
@@ -182,7 +183,10 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                 state.form.isLoading = false
                 state.form.isError = false
                 this.setState(state)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
             })
             .catch((error) => {

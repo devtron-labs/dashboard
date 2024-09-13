@@ -16,7 +16,6 @@
 
 import React, { Component } from 'react'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     getCookie,
     ServerErrors,
@@ -26,6 +25,8 @@ import {
     CustomInput,
     withUserEmail,
     URLS as CommonURL,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
@@ -70,7 +71,11 @@ class Login extends Component<LoginProps, LoginFormState> {
         // login page with Please login again toast appearing.
 
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
-            toast.error('Please login again')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please login again',
+            })
+
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface ? URLS.APP : CommonURL.NETWORK_STATUS_INTERFACE

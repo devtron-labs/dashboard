@@ -17,13 +17,13 @@
 import { useState, useEffect } from 'react'
 import {
     Progressing,
-    toastAccessDenied,
     useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { useAppContext } from '../../common'
@@ -100,9 +100,16 @@ export default function EnvironmentsListView({
         if (e.currentTarget.dataset.noapp === 'true') {
             e.preventDefault()
             if (isSuperAdmin) {
-                toast.info(NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN)
+                ToastManager.showToast({
+                    variant: ToastVariantType.info,
+                    description: NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN,
+                })
             } else {
-                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
+                ToastManager.showToast({
+                    variant: ToastVariantType.notAuthorized,
+                    title: EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT,
+                    description: NO_ACCESS_TOAST_MESSAGE.NON_ADMIN,
+                })
             }
         }
     }

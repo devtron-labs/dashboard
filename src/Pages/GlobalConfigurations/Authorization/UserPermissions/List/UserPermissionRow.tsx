@@ -24,10 +24,11 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     BulkSelectionEvents,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import moment from 'moment'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Lock } from '../../../../../assets/icons/ic-locked.svg'
@@ -75,7 +76,10 @@ const UserPermissionRow = ({
         setIsModalLoading(true)
         try {
             await deleteUser(id)
-            toast.success('User deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'User deleted',
+            })
             refetchUserPermissionList()
             setIsDeleteModalOpen(false)
 

@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { ResponseType, SERVER_MODE, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    EnvironmentListHelmResponse,
+    ResponseType,
+    SERVER_MODE,
+    SortingOrder,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Cluster } from '@Services/service.types'
+import { getCommonAppFilters } from '@Services/service'
 import { DevtronAppListProps } from '../list/types'
 
 export enum FluxCDTemplateType {
@@ -154,3 +161,35 @@ export interface GenericAppListProps
     appType: string
     clusterList: Cluster[]
 }
+
+export interface AppListFiltersProps
+    extends Pick<DevtronAppListProps, 'filterConfig' | 'isArgoInstalled'>,
+        Pick<
+            UseUrlFiltersReturnType<AppListSortableKeys, AppListUrlFiltersType>,
+            'updateSearchParams' | 'handleSearch'
+        > {
+    appListFiltersLoading: boolean
+    appCount: number
+    isExternalArgo: boolean
+    isExternalFlux: boolean
+    appListFiltersResponse: Awaited<ReturnType<typeof getCommonAppFilters>>
+    appListFiltersError: any
+    reloadAppListFilters: () => void
+    showPulsatingDot: boolean
+    serverMode: SERVER_MODE
+    appType: string
+    getFormattedFilterValue: (filterKey: AppListUrlFilters, filterValue: string) => string
+    namespaceListError: any
+    reloadNamespaceList: () => void
+    namespaceListResponse: EnvironmentListHelmResponse
+}
+
+export interface useFilterOptionsProps
+    extends Pick<
+        AppListFiltersProps,
+        | 'appListFiltersResponse'
+        | 'namespaceListResponse'
+        | 'getFormattedFilterValue'
+        | 'isExternalArgo'
+        | 'isExternalFlux'
+    > {}

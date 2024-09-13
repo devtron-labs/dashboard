@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
@@ -110,7 +109,10 @@ export default function ChartGroupUpdate({}) {
             await updateChartGroupEntries(requestBody)
             await reloadState()
             updateChartGroupEntriesFromResponse()
-            toast.success('Successfully saved.')
+             ToastManager.showToast({
+                 variant: ToastVariantType.success,
+                 description: 'Successfully saved',
+             })
         } catch (err) {
             showError(err)
         } finally {

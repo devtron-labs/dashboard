@@ -27,9 +27,10 @@ import {
     CHECKBOX_VALUE,
     getIsRequestAborted,
     CiPipelineSourceConfig,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps, Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -394,11 +395,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     saveNotification(): void {
         const selectedPipelines = this.state.pipelineList.filter((p) => p.checkbox.isChecked)
         if (!selectedPipelines.length) {
-            toast.error('Select atleast one pipeline')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Select atleast one pipeline',
+            })
             return
         }
         if (!this.state.selectedChannels.length) {
-            toast.error('Select atleast one recipient')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Select atleast one recipient',
+            })
             return
         }
 
@@ -407,7 +414,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             const element = this.state.selectedChannels[index]
             if (element.data.dest === 'ses' || element.data.dest === 'smtp' || element.data.dest === '') {
                 if (!this.state.emailAgentConfigId) {
-                    toast.error(`Select ${this.state.selectedEmailAgent} Account`)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: `Select ${this.state.selectedEmailAgent} Account`,
+                    })
                     return
                 }
                 selectedChannels.push({
@@ -425,7 +435,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         saveNotification(selectedPipelines, selectedChannels, this.state.emailAgentConfigId)
             .then((response) => {
                 this.props.history.push(`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
             })
             .catch((error) => {
                 showError(error)

@@ -130,15 +130,20 @@ export default defineConfig(({ mode }) => {
             NodeGlobalsPolyfillPlugin({
                 process: true,
             }),
-            VitePWA({
-                srcDir: 'src',
-                filename: 'service-worker.ts',
-                strategies: 'injectManifest',
-                injectManifest: {
-                    maximumFileSizeToCacheInBytes: 8000000,
-                },
-            }),
-            jsToBottomNoModule(),
+            // VitePWA and jsToBottomNoModule is not to be added for storybook
+            ...(process.env.IS_STORYBOOK
+                ? []
+                : [
+                      VitePWA({
+                          srcDir: 'src',
+                          filename: 'service-worker.ts',
+                          strategies: 'injectManifest',
+                          injectManifest: {
+                              maximumFileSizeToCacheInBytes: 8000000,
+                          },
+                      }),
+                      jsToBottomNoModule(),
+                  ]),
         ],
         // test: {
         //     globals: true,
