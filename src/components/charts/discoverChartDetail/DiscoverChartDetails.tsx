@@ -134,7 +134,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         try {
             const { result } = await getChartVersionsMin(chartId)
             if (result?.length) {
-                const sorted = [...result].sort((a, b) => versionComparatorBySortOrder(a, b, 'version', SortingOrder.DESC))
+                const sorted = [...result].sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
                 setChartVersions(sorted)
                 selectVersion(sorted[0].id)
             } else {
@@ -252,7 +252,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         {!chartInformation.chartName ||
                         !selectedVersion ||
                         chartValuesList.length <= 0 ||
-                        availableVersions.length <= 0 || loading ? (
+                        availableVersions.length <= 0 ||
+                        loading ? (
                             <Progressing pageLoader />
                         ) : (
                             <ChartValuesView

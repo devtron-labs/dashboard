@@ -113,7 +113,7 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
+import { getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
@@ -260,7 +260,7 @@ const ChartValuesView = ({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
-                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                commonState.installedConfig.valuesSchemaJson,
                 dispatch,
             )
 
@@ -315,11 +315,7 @@ const ChartValuesView = ({
                         setChartValuesList([_chartValues])
 
                         const _valuesYaml = YAMLStringify(JSON.parse(_releaseInfo.mergedValues))
-                        getAndUpdateSchemaValue(
-                            _valuesYaml,
-                            convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
-                            dispatch,
-                        )
+                        getAndUpdateSchemaValue(_valuesYaml, _releaseInfo.valuesSchemaJson, dispatch)
                         dispatch({
                             type: ChartValuesViewActionTypes.multipleOptions,
                             payload: {
@@ -358,7 +354,7 @@ const ChartValuesView = ({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.valuesOverrideYaml,
-                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                commonState.installedConfig.valuesSchemaJson,
                 dispatch,
             )
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
@@ -593,11 +589,7 @@ const ChartValuesView = ({
             }
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
-            getAndUpdateSchemaValue(
-                result?.valuesOverrideYaml,
-                convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
-                dispatch,
-            )
+            getAndUpdateSchemaValue(result?.valuesOverrideYaml, _releaseInfo.valuesSchemaJson, dispatch)
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -1500,13 +1492,8 @@ const ChartValuesView = ({
     const renderChartValuesEditor = () => {
         return (
             <div className="chart-values-view__editor">
-                {(commonState.activeTab === 'manifest' && commonState.valuesEditorError) ? (
-                    // TODO: using an icon here which doesn't look imo; also missing messaging
-                    <GenericEmptyState
-                        SvgImage={ErrorExclamation}
-                        title=''
-                        subTitle={commonState.valuesEditorError}
-                    />
+                {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
+                    <GenericEmptyState title="" subTitle={commonState.valuesEditorError} />
                 ) : (
                     <ChartValuesEditor
                         loading={

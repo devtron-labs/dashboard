@@ -17,7 +17,7 @@
 import YAML from 'yaml'
 import { Operation } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
-import { convertJSONPointerToJSONPath } from '@devtron-labs/devtron-fe-common-lib'
+import { convertJSONPointerToJSONPath, getDefaultValueFromType } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import {
@@ -26,45 +26,43 @@ import {
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { groupStyle } from '../../common/ReactSelect.utils'
 
-export const getCompareValuesSelectStyles = () => {
-    return {
-        control: (base) => ({
-            ...base,
-            backgroundColor: 'var(--N100)',
-            border: 'none',
-            boxShadow: 'none',
-            minHeight: '32px',
-        }),
-        option: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        }),
-        menu: (base) => ({
-            ...base,
-            marginTop: '2px',
-            minWidth: '240px',
-        }),
-        menuList: (base) => ({
-            ...base,
-            position: 'relative',
-            paddingBottom: 0,
-            paddingTop: 0,
-            maxHeight: '250px',
-        }),
-        dropdownIndicator: (base, state) => ({
-            ...base,
-            padding: 0,
-            color: 'var(--N400)',
-            transition: 'all .2s ease',
-            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-        }),
-        noOptionsMessage: (base) => ({
-            ...base,
-            color: 'var(--N600)',
-        }),
-    }
-}
+export const getCompareValuesSelectStyles = () => ({
+    control: (base) => ({
+        ...base,
+        backgroundColor: 'var(--N100)',
+        border: 'none',
+        boxShadow: 'none',
+        minHeight: '32px',
+    }),
+    option: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+    }),
+    menu: (base) => ({
+        ...base,
+        marginTop: '2px',
+        minWidth: '240px',
+    }),
+    menuList: (base) => ({
+        ...base,
+        position: 'relative',
+        paddingBottom: 0,
+        paddingTop: 0,
+        maxHeight: '250px',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        padding: 0,
+        color: 'var(--N400)',
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    }),
+    noOptionsMessage: (base) => ({
+        ...base,
+        color: 'var(--N600)',
+    }),
+})
 
 const generateManifestGenerationKey = (
     isCreateValueView: boolean,
@@ -180,11 +178,6 @@ export const getAndUpdateSchemaValue = (
     })
 }
 
-export const convertSchemaJsonToMap = (valuesSchemaJson: string): string => {
-    // TODO: maybe we can validate schema here? Unit testing?
-    return valuesSchemaJson
-}
-
 export const envGroupStyle = {
     ...groupStyle(),
     control: (base) => ({
@@ -200,20 +193,6 @@ export const envGroupStyle = {
         transition: 'all .2s ease',
         transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
     }),
-}
-
-// TODO: maybe there exists an util for this in common-lib?
-const getEmptyValues = (value: any) => {
-    switch (typeof value) {
-        case 'number':
-            return 0
-        case 'string':
-            return ''
-        case 'object':
-            return Array.isArray(value) ? [] : {}
-        default:
-            return null
-    }
 }
 
 export const updateYamlDocument = (
@@ -235,19 +214,17 @@ export const updateYamlDocument = (
                 resultType: 'value',
                 wrap: false,
             })
-            // TODO: remove in production? maybe use continue statement here
             if (!value) {
                 throw Error('failed to resolve value of remove operation path!')
             }
             if (typeof value === 'object') {
                 valuesYamlDocument.deleteIn(path)
             } else {
-                valuesYamlDocument.setIn(path, getEmptyValues(value))
+                valuesYamlDocument.setIn(path, getDefaultValueFromType(value))
             }
         } else if (operation.op === 'replace') {
             valuesYamlDocument.setIn(path, operation.value)
         } else {
-            // TODO: remove in production code. Maybe handle other types of ops
             throw Error('unmatched json patch operation found!')
         }
     })
