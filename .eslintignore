@@ -292,7 +292,7 @@ src/components/common/helpers/Helpers.tsx
 src/components/common/helpers/compareVersion.ts
 src/components/common/helpers/isSubset.ts
 src/components/common/helpers/time.ts
-src/components/common/helpers/util.ts
+src/components/common/helpers/utils.tsx
 src/components/common/helpers/workflowURL.ts
 src/components/common/hooks/FileReader.ts
 src/components/common/hooks/__tests__/FileReader.test.tsx

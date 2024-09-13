@@ -107,7 +107,7 @@ export const ConfigureWebhook = ({
                     <span className="cn-9 fw-6">(NOTE: Only regex is supported for values)</span>
                 </p>
                 <p className="mb-16 fs-13">
-                    Devtron uses regexp library,{' '}
+                    Devtron uses regexp library,&nbsp;
                     <a
                         className="dc__link"
                         data-testid="regex-cheat-sheet-link"
@@ -117,7 +117,7 @@ export const ConfigureWebhook = ({
                     >
                         view regexp cheatsheet
                     </a>
-                    . You can test your regex{' '}
+                    . You can test your regex&nbsp;
                     <a
                         className="dc__link"
                         href="https://regex101.com/r/lHHuaE/1"
