@@ -428,7 +428,11 @@ const NodeComponent = ({
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
-                                            <Tooltip content={node.health.message.toLowerCase()}>
+                                            <Tooltip
+                                                interactive
+                                                content={node.health.message.toLowerCase()}
+                                                className="dc__mxw-250--imp"
+                                            >
                                                 <span className="dc__truncate">
                                                     {node.health.message.toLowerCase()}
                                                 </span>

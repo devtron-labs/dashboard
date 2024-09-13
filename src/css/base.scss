@@ -2328,6 +2328,10 @@ button.anchor {
 
 .dc__mxw-250 {
     max-width: 250px;
+
+    &--imp {
+        max-width: 250px !important;
+    }
 }
 
 .dc__mxw-280 {
