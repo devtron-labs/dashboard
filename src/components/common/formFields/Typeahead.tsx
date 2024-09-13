@@ -16,7 +16,7 @@
 
 import React, { Component, createContext } from 'react'
 import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg'
-import { isArrayEqual } from '../helpers/util'
+import { isArrayEqual } from '../helpers/utils'
 // id must exist
 const TypeaheadContext = createContext({
     name: '',

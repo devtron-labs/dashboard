@@ -17,12 +17,12 @@
 // Disabling due to react select issue
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles } from './CIConfig.utils'
 import { CISelfDockerBuildOptionProps } from './types'
+import { _multiSelectStyles } from './CIConfig.utils'
 
 const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
     readOnly,
@@ -105,19 +105,18 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
                         placement="top"
                         content={selectedMaterial?.checkoutPath}
                     >
-                        <span className="h-38 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                        <span className="h-36 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                             {selectedMaterial?.checkoutPath}
                         </span>
                     </Tippy>
 
                     <CustomInput
-                        rootClassName="file-name"
+                        rootClassName="file-name h-36"
                         data-testid="dockerfile-path-text-box"
                         placeholder="Dockerfile"
                         name="dockerfile"
                         value={dockerFileValue}
                         onChange={handleOnChangeConfig}
-                        autoComplete="off"
                         autoFocus={!configOverrideView}
                         error={dockerfileError}
                     />

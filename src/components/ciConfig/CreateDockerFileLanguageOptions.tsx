@@ -75,7 +75,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     readOnly,
 }) => {
     const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value)
-
     if (readOnly) {
         return (
             <div className="flex">
@@ -115,7 +114,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     return (
         <div className="flex">
             <Title />
-
             <ReactSelect
                 isSearchable={false}
                 options={materialOptions}
@@ -134,7 +132,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
             <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
-
             <ReactSelect
                 classNamePrefix="select-create-dockerfile-language-dropdown"
                 options={languages}
@@ -149,7 +146,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 }}
                 onChange={handleLanguageSelection}
             />
-
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
@@ -170,7 +166,6 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                     />
                 </>
             )}
-
             <ResetEditorChanges resetChanges={resetChanges} editorData={editorData} editorValue={editorValue} />
         </div>
     )

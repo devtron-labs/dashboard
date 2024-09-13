@@ -15,25 +15,21 @@
  */
 
 import React, { useState } from 'react'
-import ReactSelect, { components } from 'react-select'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { SourceTypeMap, URLS } from '../../config'
 import git from '../../assets/icons/git/git.svg'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { DropdownIndicator } from '../charts/charts.util'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { CustomInput, InfoColourBar, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoColourBar, ConditionalWrap, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
     const [isProviderChanged, setProviderChanged] = useState(false)
     const isMultiGit = props.materials.length > 1
     const location = useLocation()
-    const islinkedCI = location.pathname.includes('linked-ci')
+    const isLinkedCI = location.pathname.includes('linked-ci')
     let _materials = props.materials
     const _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
@@ -42,68 +38,52 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
         _materials.push(_webhookTypeMaterial)
     }
 
-    const MenuList = (_props) => {
+    const renderInfoBarForMultiGitWebhook = () => {
         return (
-            <components.MenuList {..._props}>
-                {_props.children}
-                {props.includeWebhookEvents && isMultiGit && (
-                    <div className="flex top bcv-1 p-8 br-4 ml-8 mt-8 mb-4 mr-8">
-                        <Info className="icon-dim-20 fcv-5" />
-                        <div className="ml-8">
-                            If you need webhook based CI for apps with multiple code sources,
-                            <a
-                                className="dc__link ml-4"
-                                href="https://github.com/devtron-labs/devtron/issues"
-                                target="_blank"
-                                rel="noreferrer noopener"
-                            >
-                                Create a github issue
-                            </a>
-                        </div>
-                    </div>
-                )}
-                {props.includeWebhookEvents && !isMultiGit && !_materials[0].gitHostId && (
-                    <div className="bcv-1 p-8 br-4 ml-8 pt-8 mr-8 mb-4 ">
-                        <span className="flex left">
-                            <Info className="icon-dim-20 mr-8 fcv-5" />
-                            Select git host for this git account to view all supported options.
-                        </span>
-                        <Link className="dc__link" to={URLS.GLOBAL_CONFIG_GIT} target="_blank">
-                            Select git host
-                        </Link>
-                    </div>
-                )}
-                {props.includeWebhookEvents && !isMultiGit && _materials[0].gitHostId > 0 && (
-                    <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 mt-8 ">
-                        <span className="flex left">
-                            <Info className="icon-dim-20 mr-8 fcv-5" />
-                            If you want to trigger CI using any other mechanism,
-                        </span>
-                        <a
-                            className="dc__link ml-4"
-                            href="https://github.com/devtron-labs/devtron/issues"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
-                            Create a github issue
-                        </a>
-                    </div>
-                )}
-            </components.MenuList>
+            <InfoColourBar
+                message="If you need webhook based CI for apps with multiple code sources,"
+                classname="info_bar question-bar ml-8 mb-8 mr-8"
+                Icon={Info}
+                redirectLink="https://github.com/devtron-labs/devtron/issues"
+                linkText="Create a github issue"
+            />
         )
     }
 
-    const Option = (_props) => {
-        const { selectProps, selectOption, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({
-            backgroundColor: data.isSelected ? 'var(--B100)' : _props.isFocused ? 'var(--N100)' : 'white',
-            color: data.isSelected ? 'var(--B500)' : 'var(--N900)',
-        })
-
+    const renderInfoBarForSingleGitWebhookAndNoHostUrl = () => {
         return (
-            <div className="flex left">
-                <components.Option {..._props}>{_props.children}</components.Option>
-            </div>
+            <InfoColourBar
+                message="Select git host for this git account to view all supported options."
+                classname="info_bar question-bar ml-8 mb-8 mr-8"
+                Icon={Info}
+                redirectLink={URLS.GLOBAL_CONFIG_GIT}
+                linkText="Select git host"
+                internalLink
+            />
+        )
+    }
+
+    const renderInfoBarForSingleGitWebhook = () => {
+        return (
+            <InfoColourBar
+                message="If you want to trigger CI using any other mechanism,"
+                classname="info_bar question-bar ml-8 mb-8 mr-8"
+                Icon={Info}
+                redirectLink="https://github.com/devtron-labs/devtron/issues"
+                linkText="Create a github issue"
+            />
+        )
+    }
+
+    const renderSourceMaterialDropdownFooter = (): JSX.Element => {
+        const _isMultiGit = props.includeWebhookEvents && isMultiGit
+        const _isSingleGit = props.includeWebhookEvents && !isMultiGit
+        return (
+            <>
+                {_isMultiGit && renderInfoBarForMultiGitWebhook()}
+                {_isSingleGit && !_materials[0].gitHostId && renderInfoBarForSingleGitWebhookAndNoHostUrl()}
+                {_isSingleGit && _materials[0].gitHostId > 0 && renderInfoBarForSingleGitWebhook()}
+            </>
         )
     }
 
@@ -169,44 +149,28 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                     )}
                                 >
                                     <div className="w-50 mr-8 ">
-                                        <label className="form__label mb-6 dc__required-field">Source Type</label>
-                                        <ReactSelect
-                                            className="workflow-ci__source"
+                                        <SelectPicker
+                                            inputId="sourceType"
+                                            label="Source Type"
+                                            required
                                             placeholder="Source Type"
                                             classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
                                             isSearchable={false}
-                                            menuPosition="fixed"
                                             options={
                                                 !isMultiGit
                                                     ? props.ciPipelineSourceTypeOptions
                                                     : props.ciPipelineSourceTypeOptions.slice(0, 2)
                                             }
-                                            isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
+                                            isDisabled={isLinkedCI || (isMultiGit && _selectedWebhookEvent)}
                                             value={selectedMaterial}
                                             closeMenuOnSelect
                                             onChange={(selected) =>
                                                 props?.selectSourceType(selected, mat.gitMaterialId)
                                             }
+                                            renderMenuListFooter={renderSourceMaterialDropdownFooter}
                                             isClearable={false}
-                                            isMulti={false}
-                                            components={{
-                                                DropdownIndicator,
-                                                Option,
-                                                IndicatorSeparator: null,
-                                                ClearIndicator: null,
-                                                MenuList,
-                                            }}
-                                            styles={{
-                                                ...reactSelectStyles,
-                                                menu: (base, state) => ({
-                                                    ...base,
-                                                    top: 'auto',
-                                                }),
-                                                menuList: (base, state) => ({
-                                                    ...base,
-                                                    zIndex: '99',
-                                                }),
-                                            }}
+                                            size={ComponentSizeType.large}
+                                            getOptionValue={(option) => `${option.value}-${option.label}`}
                                         />
 
                                         <div className="h-24" />
@@ -217,7 +181,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                     <div className="w-50 ml-8 left">
                                         <CustomInput
                                             label="Branch Name"
-                                            rootClassName="h-40"
                                             name="branchName"
                                             placeholder="Eg. main"
                                             type="text"
@@ -241,7 +204,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             autoFocus
                                         />
                                         {/* Note: In case Error is not shown added height */}
-                                        {(errorObj?.isValid || islinkedCI) && <div className="h-24" />}
+                                        {(errorObj?.isValid || isLinkedCI) && <div className="h-24" />}
                                     </div>
                                 )}
 

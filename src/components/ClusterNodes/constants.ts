@@ -188,17 +188,17 @@ export const TAINT_OPTIONS: {
     {
         label: EFFECT_TYPE.NoSchedule,
         value: EFFECT_TYPE.NoSchedule,
-        description: 'Prevents all pods from being scheduled to the node.',
+        description: 'Blocks new pod scheduling on this node',
     },
     {
         label: EFFECT_TYPE.PreferNoSchedule,
         value: EFFECT_TYPE.PreferNoSchedule,
-        description: 'Prevents all pods from being scheduled to the node if possible.',
+        description: 'Avoids scheduling new pods on this node when possible',
     },
     {
         label: EFFECT_TYPE.NoExecute,
         value: EFFECT_TYPE.NoExecute,
-        description: 'Prevents all pods from being scheduled to the node and evict all existing pods on the node.',
+        description: 'Blocks new pods and removes existing ones from this node',
     },
 ]
 export const CLUSTER_NODE_ACTIONS_LABELS = {

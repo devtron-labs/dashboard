@@ -226,8 +226,8 @@ export const InputPluginSelection = ({
                         (variableData?.variableType && variableData.variableType !== 'NEW')
                             ? 'pl-28'
                             : ''
-                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
-                    minHeight={30}
+                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable dc__lh-inherit`}
+                    minHeight={32}
                     maxHeight={80}
                     value={selectedValue}
                     onChange={handleInputChange}
