@@ -417,7 +417,6 @@ src/components/v2/appDetails/appDetails.store.ts
 src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
-src/components/v2/appDetails/k8Resource/K8Resource.component.tsx
 src/components/v2/appDetails/k8Resource/NodeTreeTabList.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
@@ -440,7 +439,6 @@ src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.ts
 src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
-src/components/v2/appDetails/k8Resource/nodeType/PodHeader.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodTabSection.tsx
 src/components/v2/appDetails/k8Resource/nodeType/__tests__/NodeTree.component.test.ts
 src/components/v2/appDetails/k8Resource/nodeType/nodeType.util.ts

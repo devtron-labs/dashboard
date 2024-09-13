@@ -1441,6 +1441,17 @@ button.anchor {
     }
 }
 
+.gui-yaml-switch.status-filter-button {
+    &.radio-group {
+        .radio__item-label {
+            padding: 2px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    }
+}
+
 .manual-approvals-switch {
     &.radio-group {
         input[type='checkbox']:checked + .radio__item-label {
@@ -2959,16 +2970,16 @@ textarea,
     min-width: 84px;
 }
 
-.mw-116 {
-    min-width: 116px;
-}
-
 .mw-140 {
     min-width: 140px;
 }
 
-.mw-232 {
-    min-width: 232px;
+.mw-152 {
+    min-width: 152px;
+}
+
+.mw-264 {
+    min-width: 264px;
 }
 
 .mw-400 {
