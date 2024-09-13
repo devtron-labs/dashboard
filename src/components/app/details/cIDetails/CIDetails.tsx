@@ -41,11 +41,13 @@ import {
     ModuleNameMap,
     EMPTY_STATE_STATUS,
     SecuritySummaryCard,
-    getSecurityScan,
     SeverityCount,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     SCAN_TOOL_ID_TRIVY,
+    ErrorScreenManager,
+    getTotalSeverityCount,
+    getSeverityCountFromSummary,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -57,7 +59,6 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -67,6 +68,7 @@ import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vul
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
+import { useGetCISecurityDetails } from './CISecurity.utils'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -678,17 +680,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
 
     const computedAppId = appId ?? appIdFromParent
 
-    const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
-        () => getSecurityScan({ artifactId, ...((isJobCI || isJobView) && { appId: computedAppId }) }),
-        [artifactId, computedAppId],
+    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails } = useGetCISecurityDetails({
+        appId: computedAppId,
+        artifactId,
+        isJobCard: isJobCI || isJobView,
         isSecurityScanV2Enabled,
-    )
-
-    const [executionDetailsLoading, executionDetailsResponse, executionDetailsError, reloadExecutionDetails] = useAsync(
-        () => getLastExecutionByAppArtifactId(artifactId, isJobCI || isJobView ? computedAppId : null),
-        [artifactId, computedAppId],
-        !isSecurityScanV2Enabled,
-    )
+    })
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
@@ -714,11 +711,11 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         )
     }
 
-    if (scanResultLoading || executionDetailsLoading) {
+    if (scanDetailsLoading) {
         return <Progressing pageLoader />
     }
-    if (scanResultError || executionDetailsError) {
-        return <Reload reload={isSecurityScanV2Enabled ? reloadScanResult : reloadExecutionDetails} />
+    if (scanDetailsError) {
+        return <ErrorScreenManager code={scanDetailsError.code} reload={reloadScanDetails} />
     }
     if (
         (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
@@ -730,23 +727,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
         return <ImageNotScannedView />
     }
 
-    const imageScanSeverities = scanResultResponse?.result.imageScan.vulnerability.summary.severities // For scan-result Api
+    const scanResultSeverities = scanResultResponse?.result.imageScan.vulnerability?.summary.severities // For scan-result Api
     const severityCount: SeverityCount = isSecurityScanV2Enabled
-        ? {
-              critical: imageScanSeverities.CRITICAL || 0,
-              high: imageScanSeverities.HIGH || 0,
-              medium: imageScanSeverities.MEDIUM || 0,
-              low: imageScanSeverities.LOW || 0,
-              unknown: imageScanSeverities.UNKNOWN || 0,
-          }
+        ? getSeverityCountFromSummary(scanResultSeverities)
         : executionDetailsResponse?.result.severityCount ?? { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
 
-    const totalSeverities =
-        (severityCount.critical || 0) +
-        (severityCount.high || 0) +
-        (severityCount.medium || 0) +
-        (severityCount.low || 0) +
-        (severityCount.unknown || 0)
+    const totalSeverities = getTotalSeverityCount(severityCount)
 
     if (artifactId && !totalSeverities) {
         return (

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FetchIdDataStatus, History, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
+import { FetchIdDataStatus, getSecurityScan, History, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
+import { getLastExecutionByAppArtifactId } from '@Services/service'
 
 export interface CIPipeline {
     name: string
@@ -63,4 +64,19 @@ export interface SecurityTabType {
     appIdFromParent?: string
     isJobCI: boolean
     isJobView: boolean
+}
+
+export interface UseGetCISecurityDetailsProps {
+    appId: string
+    artifactId: number
+    isJobCard: boolean
+    isSecurityScanV2Enabled: boolean
+}
+
+export interface UseGetCISecurityDetailsReturnType {
+    scanDetailsLoading: boolean
+    scanResultResponse: Awaited<ReturnType<typeof getSecurityScan>>
+    executionDetailsResponse: Awaited<ReturnType<typeof getLastExecutionByAppArtifactId>>
+    scanDetailsError: any
+    reloadScanDetails: () => void
 }
