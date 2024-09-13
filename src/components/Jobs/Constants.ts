@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JobsMasterFilters } from './Types'
+import { JobListStatus, JobListStatusDTO, JobsMasterFilters } from './Types'
 
 export const JobListViewType = {
     LOADING: 'LOADING',
@@ -45,3 +45,11 @@ export const INITIAL_EMPTY_MASTER_FILTERS: JobsMasterFilters = {
     projects: [],
     environments: [],
 }
+
+export const JOB_STATUS_OPTIONS = [
+    { label: JobListStatus.SUCCEEDED, value: JobListStatusDTO.SUCCEEDED },
+    { label: JobListStatus.STARTING, value: JobListStatusDTO.STARTING },
+    { label: JobListStatus.RUNNING, value: JobListStatusDTO.RUNNING },
+    { label: JobListStatus.CANCELLED, value: JobListStatusDTO.CANCELLED },
+    { label: JobListStatus.FAILED, value: JobListStatusDTO.FAILED },
+]

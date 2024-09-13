@@ -21,7 +21,6 @@ import {
     showError,
     stopPropagation,
     ServerErrors,
-    useAsync,
     DevtronProgressing,
     HeaderWithCreateButton,
     SearchBar,
@@ -37,7 +36,6 @@ import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
 import { getAppListDataToExport, getJobsInitFilters } from '../Service'
-import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import '../../app/list/list.scss'
@@ -59,8 +57,6 @@ const JobsList = () => {
     const [errorResponseCode, setErrorResponseCode] = useState<number>(0)
     const [masterFilters, setMasterFilters] = useState<JobsMasterFilters>(INITIAL_EMPTY_MASTER_FILTERS)
     const [jobCount, setJobCount] = useState<number>(0)
-    const [, userRoleResponse] = useAsync(getUserRole, [])
-    const showExportCsvButton = userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1
 
     const urlFilters = useUrlFilters<JobsListSortableKeys, JobListUrlFiltersType>({
         initialSortKey: JobsListSortableKeys.APP_NAME,
@@ -196,7 +192,7 @@ const JobsList = () => {
                 }}
                 dataTestId="Search-by-job-name"
             />
-            <div className="flexbox dc__gap-8 dc__align-items-center dc__zi-20">
+            <div className="flexbox dc__gap-8 dc__align-items-center dc__zi-4">
                 <FilterSelectPicker
                     inputId="job-status-filter"
                     placeholder="Status"
@@ -225,9 +221,9 @@ const JobsList = () => {
                     isDisabled={filtersLoading}
                     appliedFilterOptions={selectedEnvironments}
                     handleApplyFilter={handleUpdateFilters(JobListUrlFilters.environment)}
-                    shouldMenuAlignRight={!showExportCsvButton}
+                    shouldMenuAlignRight={!isSuperAdmin}
                 />
-                {showExportCsvButton && (
+                {isSuperAdmin && (
                     <>
                         <div className="dc__border-right h-16" />
                         <ExportToCsv apiPromise={getJobsDataToExport} fileName={FILE_NAMES.Jobs} disabled={!jobCount} />

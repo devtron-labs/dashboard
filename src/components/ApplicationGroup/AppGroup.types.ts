@@ -260,6 +260,12 @@ export interface AppGroupFilterConfig
     cluster: string[]
 }
 
+export interface GetEnvAppListParamsType extends Pick<AppGroupFilterConfig, 'offset'> {
+    size: number
+    envName: string
+    clusterIds: string
+}
+
 export interface EnvironmentsListViewType
     extends Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'> {
     isSuperAdmin: boolean

@@ -43,6 +43,7 @@ import {
     EnvDeploymentStatusType,
     EnvGroupListResponse,
     EnvGroupResponse,
+    GetEnvAppListParamsType,
     WorkflowsResponseType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
@@ -191,16 +192,20 @@ export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigA
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getEnvAppList = (filterConfig?: Partial<AppGroupFilterConfig>, signal?: AbortSignal): Promise<EnvAppType> => {
+export const getEnvAppList = (
+    filterConfig?: Partial<AppGroupFilterConfig>,
+    signal?: AbortSignal,
+): Promise<EnvAppType> => {
     const options = signal ? { signal } : null
-    const {searchKey, cluster, offset, pageSize} = filterConfig
-
-    const url = getUrlWithSearchParams(Routes.ENVIRONMENT_APPS, {
+    const { searchKey = '', cluster = [], offset = 0, pageSize = 20 } = filterConfig
+    const params: GetEnvAppListParamsType = {
         envName: searchKey,
         clusterIds: cluster?.join(),
         offset,
         size: pageSize,
-    })
+    }
+
+    const url = getUrlWithSearchParams(Routes.ENVIRONMENT_APPS, params)
     return get(url, options)
 }
 

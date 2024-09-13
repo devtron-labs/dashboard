@@ -16,7 +16,15 @@
 
 import moment from 'moment'
 import { AppListViewType } from '../app/config'
-import { JobCIPipeline, JobListState, JobListStateAction, JobListStateActionTypes, JobListStatus, JobListStatusDTO, JobListUrlFilters } from './Types'
+import {
+    JobCIPipeline,
+    JobListState,
+    JobListStateAction,
+    JobListStateActionTypes,
+    JobListStatus,
+    JobListStatusDTO,
+    JobListUrlFilters,
+} from './Types'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import { JobPipeline } from '../app/types'
@@ -188,10 +196,8 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
 })
 
 export const getJobStatusLabelFromValue = (status: string): string => {
-    switch (status) {
-        case JobListStatusDTO.CANCELLED:
-            return JobListStatus.CANCELLED
-        default:
-            return status
+    if (status === JobListStatusDTO.CANCELLED) {
+        return JobListStatus.CANCELLED
     }
+    return status
 }

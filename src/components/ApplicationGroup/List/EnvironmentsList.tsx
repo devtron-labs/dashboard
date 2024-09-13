@@ -52,7 +52,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         return { searchKey, cluster, offset, pageSize }
     }, [searchKey, JSON.stringify(cluster), offset, pageSize])
 
-    const [clusterListLoading, clusterListRes] = useAsync(() => getClusterListMinWithoutAuth())
+    const [clusterListLoading, clusterListRes] = useAsync(getClusterListMinWithoutAuth)
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(() => {
         return clusterListRes?.result.map((clusterItem) => ({
@@ -66,12 +66,10 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     }
 
     const getFormattedValue = (filterKey: AppGroupUrlFilters , filterValue: string) => {
-        switch (filterKey) {
-            case AppGroupUrlFilters.cluster:
-                return clusterOptions.find((clusterItem) => clusterItem.value === filterValue)?.label
-            default:
-                return filterValue
+        if (filterKey === AppGroupUrlFilters.cluster) {
+            return clusterOptions.find((clusterItem) => clusterItem.value === filterValue)?.label
         }
+        return filterValue
     }
 
     const selectedClusters: SelectPickerOptionType[] = cluster.map((clusterItem) => ({

@@ -15,12 +15,12 @@
  */
 
 import moment from 'moment'
-import { get, post, APIOptions, ZERO_TIME_STRING, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, APIOptions, ZERO_TIME_STRING, Teams, getEnvironmentListMinPublic } from '@devtron-labs/devtron-fe-common-lib'
 import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
-import { JobCIPipeline, JobList, JobListStatus, JobListStatusDTO, JobsMasterFilters } from './Types'
-import { getEnvironmentListMinPublic } from '../../services/service'
+import { JobCIPipeline, JobList, JobsMasterFilters } from './Types'
+import { JOB_STATUS_OPTIONS } from './Constants'
 
 export const getJobs = (request, options?: APIOptions) => {
     return post(Routes.JOB_LIST, request, options) as Promise<JobList>
@@ -48,13 +48,7 @@ export const getJobsInitFilters = (): Promise<JobsMasterFilters> => {
             ).sort((a, b) => {
                 return sortOptionsByLabel(a, b)
             }),
-            status: [
-                {label: JobListStatus.SUCCEEDED, value: JobListStatusDTO.SUCCEEDED},
-                {label: JobListStatus.STARTING, value: JobListStatusDTO.STARTING},
-                {label: JobListStatus.RUNNING, value: JobListStatusDTO.RUNNING},
-                {label: JobListStatus.CANCELLED, value: JobListStatusDTO.CANCELLED},
-                {label: JobListStatus.FAILED, value: JobListStatusDTO.FAILED},
-            ],
+            status: structuredClone(JOB_STATUS_OPTIONS),
             environments: (environmentsRes.result
                 ? environmentsRes.result.map((team) => {
                       return {

@@ -67,19 +67,19 @@ export default function EnvironmentsListView({
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
     const [envCount, setEnvCount] = useState<number>()
     const { cluster } = filterConfig
-    const [loading, appList] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
+    const [appListLoading, appListResponse] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
     const emptyStateData = cluster.join()
         ? { title: 'No app groups found', subTitle: "We couldn't find any matching app groups." }
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        if (appList?.result?.envList) {
-            setFilteredEnvList(appList.result.envList)
-            setEnvCount(appList.result.envCount)
+        if (appListResponse?.result?.envList) {
+            setFilteredEnvList(appListResponse.result.envList)
+            setEnvCount(appListResponse.result.envCount)
         } else {
             setFilteredEnvList([])
         }
-    }, [appList?.result])
+    }, [appListResponse?.result])
 
     const renderPagination = () => {
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
@@ -115,7 +115,7 @@ export default function EnvironmentsListView({
     }
 
     const renderEmptyLoader = () => {
-        if (loading) {
+        if (appListLoading) {
             return <Progressing pageLoader />
         }
         return (
@@ -138,7 +138,7 @@ export default function EnvironmentsListView({
         )
     }
 
-    return filteredEnvList.length === 0 || loading ? (
+    return filteredEnvList.length === 0 || appListLoading ? (
         <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
             {renderEmptyLoader()}
         </div>
