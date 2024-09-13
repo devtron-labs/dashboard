@@ -67,15 +67,13 @@ export const StyledProgressBar = ({
     )
 }
 
-export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => {
-    return (
-        <div
-            className={`shortcut-key-badge dc__position-abs flex fs-12 lh-20 icon-dim-20 bcn-0 cn-7 fw-6 dc__border br-2 ${
-                rootClassName ?? ''
-            }`}
-            onClick={onClick}
-        >
-            {shortcutKey}
-        </div>
-    )
-}
+export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => (
+    <div
+        className={`shortcut-key-badge dc__position-abs flex fs-12 lh-20 icon-dim-20 bcn-0 cn-7 fw-6 dc__border br-2 ${
+            rootClassName ?? ''
+        }`}
+        onClick={onClick}
+    >
+        {shortcutKey}
+    </div>
+)

@@ -20,13 +20,12 @@ import ReactSelect, { components } from 'react-select'
 import {
     ConfirmationDialog,
     Progressing,
-    SortingOrder,
     VisibleModal2,
     DropdownIndicator,
     ToastManager,
     ToastVariantType,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { versionComparator } from '../../common'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
@@ -69,7 +68,10 @@ export const ChartTypeVersionOptions = ({
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
               .sort((a, b) =>
-                  versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+                  versionComparatorBySortOrder(
+                      a[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                      b[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                  ),
               )
         : []
 

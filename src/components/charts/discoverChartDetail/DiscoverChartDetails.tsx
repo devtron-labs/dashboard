@@ -24,7 +24,6 @@ import {
     useEffectAfterMount,
     PageHeader,
     versionComparatorBySortOrder,
-    SortingOrder,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'

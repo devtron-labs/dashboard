@@ -15,12 +15,12 @@
  */
 
 import React, { useState } from 'react'
-import { sortObjectArrayAlphabetically, versionComparator } from '../common'
+import { sortObjectArrayAlphabetically } from '../common'
 import {
     PopupMenu,
     stopPropagation,
     StyledRadioGroup as RadioGroup,
-    SortingOrder,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
@@ -65,7 +65,7 @@ export default function ChartSelectorDropdown({
             selectChart(selectedChart)
         } else {
             const sortedFilteredCharts = filteredCharts.sort((a, b) =>
-                versionComparator(a, b, 'version', SortingOrder.DESC),
+                versionComparatorBySortOrder(a.version, b.version),
             )
             selectChart(sortedFilteredCharts[0])
         }
