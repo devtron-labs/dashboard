@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     showError,
@@ -22,9 +22,10 @@ import {
     ConfirmationDialog,
     Checkbox,
     CHECKBOX_VALUE,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
@@ -115,7 +116,10 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                 },
             }
             await drainNodeCapacity(payload)
-            toast.success(DRAIN_NODE_MODAL_MESSAGING.Actions.draining)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: DRAIN_NODE_MODAL_MESSAGING.Actions.draining,
+            })
             closePopup(true)
         } catch (err) {
             showError(err)

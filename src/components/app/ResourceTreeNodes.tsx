@@ -15,9 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, PopupMenu, not, useSearchString, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, not, useSearchString, copyToClipboard, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation, NavLink } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
@@ -661,7 +660,11 @@ const URL: React.FC<{ url: string }> = ({ url }) => {
                 {url}
                 <Clipboard
                     className="icon-dim-16 ml-8 pointer"
-                    onClick={(e) => copyToClipboard(url, () => toast.success('Copied to clipboard'))}
+                    onClick={(e) => copyToClipboard(url, () => ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Copied to clipboard'
+                        }))
+                    }
                 />
             </div>
         </td>
@@ -1008,7 +1011,10 @@ const PodPopup: React.FC<{
         }
         try {
             await deleteResource(apiParams)
-            toast.success('Deletion initiated successfully.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deletion initiated successfully.',
+            })
         } catch (err) {
             showError(err)
         }

@@ -24,10 +24,11 @@ import {
     CHECKBOX_VALUE,
     useSearchString,
     MODAL_TYPE,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
-import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
@@ -122,7 +123,10 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
             await deleteResource(nodeDetails, appDetails, params.envId, forceDelete)
             setShowDeleteConfirmation(false)
             setForceDelete(false)
-            toast.success('Deletion initiated successfully.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deletion initiated successfully.',
+            })
             const _tabs = AppDetailsStore.getAppDetailsTabs()
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
 

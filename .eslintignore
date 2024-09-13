@@ -277,7 +277,6 @@ src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
 src/components/common/Select/Select.tsx
-src/components/common/ToastBody.tsx
 src/components/common/ValidateForm/ValidateForm.tsx
 src/components/common/eaEmptyState/EAEmptyState.tsx
 src/components/common/edge/rectangularEdge.tsx
@@ -293,7 +292,7 @@ src/components/common/helpers/Helpers.tsx
 src/components/common/helpers/compareVersion.ts
 src/components/common/helpers/isSubset.ts
 src/components/common/helpers/time.ts
-src/components/common/helpers/util.ts
+src/components/common/helpers/utils.tsx
 src/components/common/helpers/workflowURL.ts
 src/components/common/hooks/FileReader.ts
 src/components/common/hooks/__tests__/FileReader.test.tsx
@@ -458,7 +457,7 @@ src/components/v2/common/ReactSelectCustomization.tsx
 src/components/v2/common/message.ui.tsx
 src/components/v2/devtronStackManager/AboutDevtronView.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
-src/components/v2/devtronStackManager/DevtronStackManager.service.ts
+src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
 src/components/v2/devtronStackManager/SuccessModalComponent.tsx

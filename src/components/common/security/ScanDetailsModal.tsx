@@ -218,7 +218,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                 >
                     {this.renderHeader()}
                     {this.renderAppEnvInfo()}
-                    <div className="trigger-modal__body trigger-modal__body--security-scan">
+                    <div className="flexbox-col dc__overflow-auto p-0 bcn-0 trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (
                             <Progressing pageLoader />
                         ) : this.state.view === ViewType.ERROR ? (
@@ -226,10 +226,10 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         ) : this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0 ? (
                             <NoVulnerabilityViewWithTool scanToolId={this.state.scanToolId} />
                         ) : (
-                            <div className="trigger-modal__body trigger-modal__body--security-scan">
+                            <>
                                 {this.renderScannedObjectInfo()}
                                 {this.renderTable()}
-                            </div>
+                            </>
                         )}
                     </div>
                 </div>

@@ -32,9 +32,10 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
     ReleaseMode,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -548,7 +549,10 @@ export const Details: React.FC<DetailsType> = ({
             )
             await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
-            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated',
+            })
         } catch (err) {
             showError(err)
         } finally {

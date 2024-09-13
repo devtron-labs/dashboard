@@ -9,7 +9,7 @@ RUN yarn install --network-timeout 600000
 COPY src/ src
 COPY nginx.conf .
 COPY tsconfig.json .
-COPY vite.config.ts .
+COPY vite.config.mts .
 COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html
