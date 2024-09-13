@@ -294,17 +294,16 @@ export interface AppEnvDeploymentConfigQueryParamsType {
     compareWithManifestChartRefId?: number
 }
 
-export type GetConfigDiffDataProps = Pick<DeploymentConfigCompareProps, 'appName' | 'envName' | 'type'> & {
-    configType: AppEnvDeploymentConfigType
-    compareName: string
-    identifierId: number
-    pipelineId: number
-}
+export type GetConfigDiffDataProps = Required<
+    Pick<DeploymentConfigCompareProps, 'appName' | 'envName' | 'type'> & {
+        configType: AppEnvDeploymentConfigType
+        compareName: string
+        identifierId: number
+        pipelineId: number
+    }
+>
 
-export type GetDeploymentTemplateDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'appName' | 'envName'> & {
-    configType: AppEnvDeploymentConfigType
-    compareName: string
-}
+export type GetDeploymentTemplateDataProps = Omit<GetConfigDiffDataProps, 'identifierId' | 'pipelineId'>
 
 export type GetManifestDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'environments'> & {
     appId: string
