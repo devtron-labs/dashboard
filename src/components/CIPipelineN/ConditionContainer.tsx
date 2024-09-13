@@ -292,8 +292,8 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                 ?.conditionDetails?.[index]
                         return conditionDetail.conditionType === conditionType ? (
                             <Fragment key={`condition__${index}`}>
-                                <div className="condition-container">
-                                    <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase mr-10">
+                                <div className="condition-container dc__gap-8">
+                                    <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase">
                                         {conditionDetail.conditionType} If
                                     </div>
                                     <div className="flex left">
@@ -324,26 +324,22 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                             variant={SelectPickerVariantType.BORDER_LESS}
                                         />
                                     </div>
-                                    <div className="fw-4 mr-10">
-                                        <SelectPicker
-                                            inputId="condition-operator"
-                                            classNamePrefix="condition-operator"
-                                            value={
-                                                conditionDetail.conditionOperator
-                                                    ? {
-                                                          label: conditionDetail.conditionOperator,
-                                                          value: conditionDetail.conditionOperator,
-                                                      }
-                                                    : selectedOperator
-                                            }
-                                            onChange={handleConditionOperatorChange(index)}
-                                            options={operatorOptions}
-                                            isSearchable={false}
-                                        />
-                                    </div>
-                                    <div/>
-
-                                    <div className="fs-13 mr-10">
+                                    <SelectPicker
+                                        inputId="condition-operator"
+                                        classNamePrefix="condition-operator"
+                                        value={
+                                            conditionDetail.conditionOperator
+                                                ? {
+                                                      label: conditionDetail.conditionOperator,
+                                                      value: conditionDetail.conditionOperator,
+                                                  }
+                                                : selectedOperator
+                                        }
+                                        onChange={handleConditionOperatorChange(index)}
+                                        options={operatorOptions}
+                                        isSearchable={false}
+                                    />
+                                    <div className="fs-13">
                                         <CustomInput
                                             name="conditionalValue"
                                             rootClassName="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
