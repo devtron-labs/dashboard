@@ -120,19 +120,20 @@ export const updateGeneratedManifest = async (
     })
 
     if (isUnlinkedCLIApp) {
-        await getDeploymentManifestDetails(appId, deploymentVersion, isExternalApp).then(
-            (response: ChartDeploymentManifestDetailResponse) => {
-                dispatch({
-                    type: ChartValuesViewActionTypes.multipleOptions,
-                    payload: {
-                        generatedManifest: response.result.manifest,
-                        valuesYamlUpdated: false,
-                        valuesEditorError: '',
-                        generatingManifest: false,
-                    },
-                })
-            },
+        const response: ChartDeploymentManifestDetailResponse = await getDeploymentManifestDetails(
+            appId,
+            deploymentVersion,
+            isExternalApp,
         )
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                generatedManifest: response.result.manifest,
+                valuesYamlUpdated: false,
+                valuesEditorError: '',
+                generatingManifest: false,
+            },
+        })
 
         return
     }
@@ -168,7 +169,6 @@ export const getAndUpdateSchemaValue = (
     dispatch: (action: ChartValuesViewAction) => void,
 ): void => {
     const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml || '')
-    // TODO: can add unit testing here?
     dispatch({
         type: ChartValuesViewActionTypes.multipleOptions,
         payload: {
