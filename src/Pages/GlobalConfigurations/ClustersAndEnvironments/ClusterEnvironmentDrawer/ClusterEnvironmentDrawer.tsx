@@ -246,13 +246,13 @@ export const ClusterEnvironmentDrawer = ({
                                 dataTestid="environment-name"
                                 labelClassName="dc__required-field"
                                 disabled={!!environmentName}
-                                name="environmentName"
                                 placeholder={id ? 'sample-env-name' : 'Eg. production'}
                                 value={data.environmentName}
                                 error={errors.environmentName}
                                 {...register('environmentName')}
                                 label="Environment Name"
                                 autoFocus={!id}
+                                noTrim
                             />
                         </div>
                         <div className="mb-16">
@@ -260,12 +260,12 @@ export const ClusterEnvironmentDrawer = ({
                                 dataTestid="enter-namespace"
                                 labelClassName={isVirtual ? '' : 'dc__required-field'}
                                 disabled={!!namespace}
-                                name="namespace"
                                 placeholder={id ? 'sample-namespace' : 'Eg. prod'}
                                 value={data.namespace}
                                 error={errors.namespace}
                                 {...register('namespace')}
                                 label="Namespace"
+                                noTrim
                             />
                         </div>
                         {!isVirtual && (
@@ -275,7 +275,6 @@ export const ClusterEnvironmentDrawer = ({
                                         id="env-production-checkbox"
                                         data-testid="production"
                                         type="radio"
-                                        name="isProduction"
                                         checked={data.isProduction}
                                         value="true"
                                         {...register('isProduction', (value) => value === 'true')}
@@ -287,7 +286,6 @@ export const ClusterEnvironmentDrawer = ({
                                         id="env-non-production-checkbox"
                                         data-testid="nonProduction"
                                         type="radio"
-                                        name="isProduction"
                                         checked={!data.isProduction}
                                         value="false"
                                         {...register('isProduction', (value) => value === 'true')}
@@ -298,13 +296,13 @@ export const ClusterEnvironmentDrawer = ({
                         )}
                         <div className="mb-16">
                             <CustomInput
-                                name="description"
                                 placeholder="Add a description for this environment"
                                 value={data.description}
                                 error={errors.description}
                                 {...register('description')}
                                 label="Description (Maximum 40 characters allowed)"
                                 autoFocus={!!id}
+                                noTrim
                             />
                         </div>
                         {EnvironmentLabels && !isVirtual && (
@@ -353,7 +351,6 @@ export const ClusterEnvironmentDrawer = ({
                 </form>
                 {showDeleteConfirmation && (
                     <DeleteComponent
-                        setDeleting={noop}
                         deleteComponent={deleteEnvironment}
                         payload={getClusterEnvironmentUpdatePayload({
                             data,
