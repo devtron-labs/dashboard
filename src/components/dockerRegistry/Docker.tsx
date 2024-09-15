@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FocusEventHandler, KeyboardEventHandler, useEffect, useState } from 'react'
+import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -44,11 +44,12 @@ import {
     MultiValueChipContainer,
     OptionType,
     DeleteComponent,
+    SelectPicker,
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
@@ -86,6 +87,7 @@ import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
+    EAModeRegistryType,
     RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
@@ -1827,8 +1829,9 @@ const DockerForm = ({
             )
         }
     }
+
     // For EA Mode GCR is not available as it is not OCI compliant
-    const EA_MODE_REGISTRY_TYPE_MAP = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
+    const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
@@ -1838,15 +1841,12 @@ const DockerForm = ({
                         selectedDockerRegistryType.value === RegistryType.GCR ? 'mb-16' : ''
                     }`}
                 >
-                    <div className="flex left column top">
-                        <label htmlFor="" className="form__label w-100 cb-7 dc__required-field">
-                            Registry provider
-                        </label>
-                        <ReactSelect
+                    <div>
+                        <SelectPicker
+                            inputId="container-registry-type"
+                            label="Registry provider"
+                            required
                             classNamePrefix="select-container-registry-type"
-                            className="m-0 w-100"
-                            tabIndex={1}
-                            isMulti={false}
                             isClearable={false}
                             options={
                                 isHyperionMode
@@ -1856,12 +1856,6 @@ const DockerForm = ({
                             getOptionLabel={(option) => `${option.label}`}
                             getOptionValue={(option) => `${option.value}`}
                             value={selectedDockerRegistryType}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: registryOptions,
-                                Control: registryControls,
-                            }}
                             onChange={handleRegistryTypeChange}
                             isDisabled={!!id}
                         />
