@@ -673,7 +673,7 @@ export const ValueNameInput = ({
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                handleOnBlur={() => handleValueNameOnBlur()}
+                onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
                 isRequiredField
@@ -699,7 +699,7 @@ export const AppNameInput = ({
                 placeholder="Eg. app-name"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                handleOnBlur={handleAppNameOnBlur}
+                onBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}

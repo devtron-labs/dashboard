@@ -127,7 +127,7 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
                     rootClassName="h-32"
                     value={inputValue}
                     onChange={onValueChange}
-                    handleOnBlur={onInputBlur}
+                    onBlur={onInputBlur}
                     autoComplete="off"
                     required={props.isRequired}
                     {...(props.type === 'numberInput'

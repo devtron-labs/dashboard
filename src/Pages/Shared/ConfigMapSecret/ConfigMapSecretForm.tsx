@@ -935,7 +935,7 @@ export const ConfigMapSecretForm = React.memo(
                     value={state.configName.value}
                     autoFocus
                     onChange={onConfigNameChange}
-                    handleOnBlur={trimConfigMapName}
+                    onBlur={trimConfigMapName}
                     placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
                     isRequiredField
                     disabled={!!configMapSecretData?.name}

@@ -285,7 +285,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="configname"
                                 value={this.state.form.configName}
                                 onChange={this.handleConfigNameChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'configName')}
+                                onBlur={(event) => this.handleBlur(event, 'configName')}
                                 placeholder="Configuration name"
                                 autoFocus
                                 tabIndex={1}
@@ -301,7 +301,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="app-name"
                                 value={this.state.form.accessKey}
                                 onChange={this.handleAccessKeyIDChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'accessKey')}
+                                onBlur={(event) => this.handleBlur(event, 'accessKey')}
                                 placeholder="Access Key ID"
                                 tabIndex={2}
                                 isRequiredField
@@ -316,7 +316,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="app-name"
                                 value={this.state.form.secretKey}
                                 onChange={this.handleSecretAccessKeyChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'secretKey')}
+                                onBlur={(event) => this.handleBlur(event, 'secretKey')}
                                 placeholder="Secret Access Key"
                                 tabIndex={3}
                                 isRequiredField
@@ -368,7 +368,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 type="email"
                                 name="app-name"
                                 value={this.state.form.fromEmail}
-                                handleOnBlur={(event) => this.handleBlur(event, 'fromEmail')}
+                                onBlur={(event) => this.handleBlur(event, 'fromEmail')}
                                 placeholder="Email"
                                 tabIndex={5}
                                 onChange={this.handleEmailChange}
