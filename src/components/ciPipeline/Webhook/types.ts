@@ -29,6 +29,7 @@ export interface TabDetailsType {
 export interface TokenListOptionsType extends TokenListType {
     label: string
     value: string
+    description: string
 }
 
 export interface TokenPermissionType {

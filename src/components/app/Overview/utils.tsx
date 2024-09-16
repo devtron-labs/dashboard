@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { AppOverviewProps } from '../types'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
-import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
@@ -65,16 +60,4 @@ export const getAppConfig = (appType: AppOverviewProps['appType']) => {
                 defaultDescription: APP_DESCRIPTION,
             }
     }
-}
-
-export const getGitProviderIcon = (gitUrl: string) => {
-    let IconComponent = Git
-    if (gitUrl.includes('gitlab')) {
-        IconComponent = GitLab
-    } else if (gitUrl.includes('github')) {
-        IconComponent = GitHub
-    } else if (gitUrl.includes('bitbucket')) {
-        IconComponent = BitBucket
-    }
-    return <IconComponent className="icon-dim-20 mw-20" />
 }
