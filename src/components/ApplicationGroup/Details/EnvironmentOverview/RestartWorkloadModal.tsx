@@ -175,12 +175,11 @@ export const RestartWorkloadModal = ({
         )
         if (selectedAppIds.length > 0) {
             await getPodsToRotate(selectedAppIds)
+        } else {
+            const newParams = { ...searchParams }
+            delete newParams.modal
+            history.push({ search: new URLSearchParams(newParams).toString() })
         }
-
-        const newParams = { ...searchParams }
-        delete newParams.modal
-        history.push({ search: new URLSearchParams(newParams).toString() })
-        return null
     }
 
     useEffect(() => {
