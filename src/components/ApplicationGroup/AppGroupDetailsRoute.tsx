@@ -434,7 +434,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page">
+        <div className="env-details-page h-100vh flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}

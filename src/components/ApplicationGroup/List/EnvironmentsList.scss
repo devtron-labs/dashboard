@@ -169,7 +169,6 @@
 }
 
 .env-details-page {
-    height: calc(100vh - 77px);
 
     .tab-list__tab-link {
         padding: 0 0 8px 0;
@@ -191,11 +190,13 @@
     .tab-list {
         .tab-list__tab {
             .tab-hover {
+
                 &:hover,
                 &.active {
                     color: var(--B500);
                 }
             }
+
             .apps-tab__active-tab {
                 height: 2px;
                 background-color: var(--B500);
@@ -209,16 +210,20 @@
         .check-icon {
             display: block;
         }
+
         .delete-icon {
             display: none;
+
             use {
                 fill: var(--R500);
             }
         }
+
         &:hover {
             .check-icon {
                 display: none;
             }
+
             .delete-icon {
                 display: block;
             }
