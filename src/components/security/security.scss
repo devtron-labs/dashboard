@@ -368,8 +368,7 @@
     }
 
     .trigger-modal__body--security-scan {
-        background-color: var(--N000);
-        padding: 0;
+        height: calc(100vh - 87px);
     }
 
     .vulnerability-exp__form {

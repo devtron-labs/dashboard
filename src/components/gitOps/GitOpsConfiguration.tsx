@@ -15,7 +15,6 @@
  */
 
 import React, { Component, Fragment, SyntheticEvent } from 'react'
-import { toast } from 'react-toastify'
 import { withRouter } from 'react-router-dom'
 import {
     showError,
@@ -30,6 +29,8 @@ import {
     handleDisableSubmitOnEnter,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -638,7 +639,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     saveGitOps = () => {
         if (this.isInvalid()) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
 
@@ -677,7 +681,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 const errorMap = resp.stageErrorMap
                 if (errorMap == null || Object.keys(errorMap).length == 0) {
                     this.props.handleChecklistUpdate('gitOps')
-                    toast.success('Configuration saved successfully')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Configuration saved successfully',
+                    })
                     this.setState({
                         validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.SUCCESS : '',
                         saveLoading: false,
@@ -699,8 +706,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     })
                     {
                         this.state.selectedRepoType === repoType.DEFAULT
-                            ? toast.error('Configuration failed')
-                            : toast.success('Configuration saved successfully')
+                            ? ToastManager.showToast({
+                                  variant: ToastVariantType.error,
+                                  description: 'Configuration failed',
+                              })
+                            : ToastManager.showToast({
+                                  variant: ToastVariantType.success,
+                                  description: 'Configuration saved successfully',
+                              })
                     }
                 }
             })
@@ -712,7 +725,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     validateGitOps(tab) {
         if (this.isInvalid()) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
+
             return
         }
 
@@ -745,7 +762,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.error('Configuration validation failed')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: 'Configuration validation failed',
+                        })
                     } else {
                         this.setState({
                             validationStatus: VALIDATION_STATUS.SUCCESS,
@@ -755,7 +775,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.success('Configuration validated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Configuration validated',
+                        })
                     }
                 })
                 .catch((error) => {

@@ -26,9 +26,10 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
     DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
@@ -103,12 +104,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) {
             clearInterval(this.timerRef)
         }
-        Promise.all([
-            getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
-                ? { result: undefined }
-                : getEnvironmentList(),
-        ])
+        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? { result: undefined } : getEnvironmentList()])
             .then(([clusterRes, envResponse]) => {
                 const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
@@ -243,9 +239,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             return <Reload className="dc__align-reload-center" />
         }
 
-        const moduleBasedTitle = `Clusters${
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments'
-        }`
+        const moduleBasedTitle = `Clusters${window._env_.K8S_CLIENT ? '' : ' and Environments'}`
         return (
             <section className="global-configuration__component flex-1">
                 <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
@@ -503,7 +497,10 @@ const Cluster = ({
             const payload = {}
             const { result } = await retryClusterInstall(clusterId, payload)
             if (result) {
-                toast.success('Successfully triggered')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully triggered',
+                })
             }
             reload()
         } catch (error) {
@@ -551,7 +548,10 @@ const Cluster = ({
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password')
+                 ToastManager.showToast({
+                     variant: ToastVariantType.error,
+                     description: 'Please add both username and password',
+                 })
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''
@@ -723,10 +723,7 @@ const Cluster = ({
                         }}
                     />
                 )}
-                {serverMode !== SERVER_MODE.EA_ONLY &&
-                !window._env_.K8S_CLIENT &&
-                Array.isArray(newEnvs) &&
-                newEnvs.length > 1 ? (
+                {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div />

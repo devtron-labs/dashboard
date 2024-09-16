@@ -15,12 +15,9 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
+import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
 
@@ -91,13 +88,19 @@ export default function AboutAppInfoModal({
 
         try {
             await editApp(payload)
-            toast.success(`Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`)
+             ToastManager.showToast({
+                 variant: ToastVariantType.success,
+                 description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
+             })
 
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
         } catch (err) {
             if (err['code'] === 403 && appMetaInfo.projectName !== selectedProject.label) {
-                toast.error(`You don't have the required access to the target project ${selectedProject.label}`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: `You don't have the required access to the target project ${selectedProject.label}`,
+                })
             } else {
                 showError(err)
             }

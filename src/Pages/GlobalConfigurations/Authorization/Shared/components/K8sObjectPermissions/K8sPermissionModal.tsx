@@ -15,8 +15,13 @@
  */
 
 import { useState } from 'react'
-import { toast } from 'react-toastify'
-import { Drawer, OptionType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Drawer,
+    OptionType,
+    stopPropagation,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
@@ -134,7 +139,10 @@ const K8sPermissionModal = ({
             })
             close()
         } else {
-            toast.error('Some required inputs are not selected')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required inputs are not selected',
+            })
         }
     }
 

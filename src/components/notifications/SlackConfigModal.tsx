@@ -21,8 +21,9 @@ import {
     getTeamListMin as getProjectListMin,
     Drawer,
     CustomInput,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { Select } from '../common'
@@ -172,7 +173,10 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                 state.form.isLoading = false
                 state.form.isError = false
                 this.setState(state)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
             })
             .catch((error) => {

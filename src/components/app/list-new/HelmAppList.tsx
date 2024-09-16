@@ -135,8 +135,8 @@ export default function HelmAppList({
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
                 _getExternalHelmApps()
-                updateDataSyncing(false)
             }
+            updateDataSyncing(false)
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv, appStatus)
                 .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {

@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     DeleteDialog,
-    toastAccessDenied,
     PopupMenu,
     Checkbox,
     Reload,
@@ -28,8 +27,10 @@ import {
     CiPipelineSourceConfig,
     EMPTY_STATE_STATUS,
     Pagination,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
@@ -387,7 +388,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             .then((response) => {
                 this.setState({ showDeleteDialog: false })
                 this.getAllNotifications()
-                toast.success('Deleted Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted Successfully',
+                })
+
             })
             .catch((error) => {
                 showError(error)
@@ -416,7 +421,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     CreateNewNotification = () => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
         } else {
             this.props.history.push(URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW)
         }
@@ -448,7 +456,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     validateAccess = (updateState): void => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
         } else {
             this.setState(updateState)
         }
@@ -460,7 +471,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     applyModifyEvents = (event) => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+           ToastManager.showToast({
+               variant: ToastVariantType.notAuthorized,
+               description: TOAST_ACCESS_DENIED.SUBTITLE,
+           })
         } else {
             this.updateNotificationEvents(event)
         }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import { ModuleNameMap, Routes } from '../../../config'
+import { get, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
+import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
     LogPodNameResponse,
@@ -28,7 +28,7 @@ import {
     ReleaseNotesResponse,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
-import { reloadToastBody } from '../../common'
+import { reloadLocation } from '../../common'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 let serverInfo: ServerInfoResponse
@@ -102,7 +102,18 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
     if (result && result.status === ModuleStatus.INSTALLED) {
         if (moduleName === ModuleNameMap.CICD && !isReloadToastShown) {
             // To show a reload tost if CICD installation complete
-            toast.info(reloadToastBody(), { autoClose: false, closeButton: false })
+            ToastManager.showToast({
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'You are viewing an outdated version of Devtron UI.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-button',
+                    onClick: reloadLocation,
+                },
+                icon: <ICSparkles />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+            })
             isReloadToastShown = true
         }
         _savedModuleStatusMap[moduleName] = { ...result, moduleResourcesStatus: null }
@@ -114,19 +125,15 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
     return Promise.resolve({ status: '', code: 200, result })
 }
 
-export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {
-    return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
-}
+export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> =>
+    post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,
-): Promise<ModuleActionResponse> => {
-    return post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
-}
+): Promise<ModuleActionResponse> => post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
 
-const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean => {
-    return !!(_serverInfo?.result && _serverInfo.result.releaseName && _serverInfo.result.installationType)
-}
+const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean =>
+    !!(_serverInfo?.result && _serverInfo.result.releaseName && _serverInfo.result.installationType)
 
 const getSavedServerInfo = (): ServerInfoResponse => {
     if (!isValidServerInfo(serverInfo)) {
@@ -155,20 +162,15 @@ export const getServerInfo = async (withoutStatus: boolean, isFormHeader: boolea
     return Promise.resolve(response)
 }
 
-export const executeServerAction = (serverActionRequest: ModuleActionRequest): Promise<ModuleActionResponse> => {
-    return post(Routes.SERVER_INFO_API, serverActionRequest)
-}
+export const executeServerAction = (serverActionRequest: ModuleActionRequest): Promise<ModuleActionResponse> =>
+    post(Routes.SERVER_INFO_API, serverActionRequest)
 
-export const getAllModules = (): Promise<AllModuleInfoResponse> => {
-    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
+export const getAllModules = (): Promise<AllModuleInfoResponse> =>
+    fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
         res.json(),
     )
-}
 
-export const getReleasesNotes = (): Promise<ReleaseNotesResponse> => {
-    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
-}
+export const getReleasesNotes = (): Promise<ReleaseNotesResponse> =>
+    fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
 
-export const getLogPodName = (): Promise<LogPodNameResponse> => {
-    return get(Routes.LOG_PODNAME_API)
-}
+export const getLogPodName = (): Promise<LogPodNameResponse> => get(Routes.LOG_PODNAME_API)

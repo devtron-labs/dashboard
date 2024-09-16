@@ -30,8 +30,9 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
     DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import {
@@ -278,7 +279,10 @@ const CollapsedList = ({
                 setLoading(true)
                 await updateGitProviderConfig(payload, id)
                 await handleReload()
-                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: `Git account ${enabled ? 'enabled' : 'disabled'}.`,
+                })
             } catch (err) {
                 showError(err)
             } finally {
@@ -547,7 +551,10 @@ const GitForm = ({
             setLoading(true)
             await api(payload, id)
             reload()
-            toast.success('Successfully saved.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
         } catch (err) {
             showError(err)
         } finally {

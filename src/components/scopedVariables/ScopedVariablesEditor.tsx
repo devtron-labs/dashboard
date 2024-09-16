@@ -15,9 +15,8 @@
  */
 
 import { useState } from 'react'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
@@ -49,11 +48,17 @@ export default function ScopedVariablesEditor({
         try {
             variablesObj = parseYAMLStringToObj(data)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
-                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: UPLOAD_FAILED_STANDARD_MESSAGE,
+                })
                 return null
             }
         } catch (e) {
-            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: UPLOAD_FAILED_STANDARD_MESSAGE,
+            })
             return null
         }
         return variablesObj
@@ -68,17 +73,26 @@ export default function ScopedVariablesEditor({
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
             if (+res?.code === 200) {
-                toast.success(SAVE_SUCCESS_TOAST_MESSAGE)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: SAVE_SUCCESS_TOAST_MESSAGE,
+                })
                 setScopedVariables(null)
                 reloadScopedVariables()
             } else {
-                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: UPLOAD_FAILED_STANDARD_MESSAGE,
+                })
             }
         } catch (e) {
             if (e instanceof ServerErrors && Array.isArray(e.errors)) {
                 setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
-            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: UPLOAD_FAILED_STANDARD_MESSAGE,
+            })
             setIsSaving(false)
         }
     }
@@ -100,11 +114,17 @@ export default function ScopedVariablesEditor({
                     setSavedScopedVariables(null)
                 }
             } else {
-                toast.error(GET_SCOPED_VARIABLES_ERROR)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: GET_SCOPED_VARIABLES_ERROR,
+                })
                 setShowSaveView(false)
             }
         } catch (e) {
-            toast.error(GET_SCOPED_VARIABLES_ERROR)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: GET_SCOPED_VARIABLES_ERROR,
+            })
             setShowSaveView(false)
         } finally {
             setLoadingSavedScopedVariables(false)
