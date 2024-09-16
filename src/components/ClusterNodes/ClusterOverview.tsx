@@ -460,7 +460,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
-                        isSuperAdmin={isSuperAdmin}
+                        isSuperAdmin={window._env_.K8S_CLIENT || isSuperAdmin}
                         descriptionId={descriptionData.descriptionId}
                         initialDescriptionText={descriptionData.descriptionText}
                         initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
