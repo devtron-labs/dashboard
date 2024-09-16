@@ -27,7 +27,7 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
-import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { useMainContext, LogResizeButton, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function TerminalView({
     terminalRef,
@@ -46,6 +46,7 @@ export default function TerminalView({
     const termDivRef = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
+    const [fullScreenView, setFullScreenView] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const fitAddon = useRef(null)
     const { isSuperAdmin } = useMainContext()
@@ -234,6 +235,29 @@ export default function TerminalView({
         }
     }, [firstMessageReceived, isTerminalTab])
 
+    const handleFullscreen = (goFullscreen: boolean) => {
+        if (goFullscreen) {
+            document
+                .getElementById('terminal-id')
+                .requestFullscreen()
+                .then(() => {
+                    setFullScreenView(true)
+                })
+                .catch((err) => {
+                    showError(err)
+                })
+        } else {
+            document
+                .exitFullscreen()
+                .catch((err) => {
+                    showError(err)
+                })
+                .finally(() => {
+                    setFullScreenView(false)
+                })
+        }
+    }
+
     useEffect(() => {
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -272,9 +296,10 @@ export default function TerminalView({
                 ref={termDivRef}
                 id="terminal-id"
                 data-testid="terminal-editor-container"
-                className="mt-8 mb-4 terminal-component ml-20"
+                className={`mt-8 mb-4 terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
             >
                 <CopyToast showCopyToast={popupText} />
+                <LogResizeButton disableKeybindings={true} onlyOnLogs={false} fullScreenView={fullScreenView} setFullScreenView={handleFullscreen} />
             </div>
         </div>
     )
