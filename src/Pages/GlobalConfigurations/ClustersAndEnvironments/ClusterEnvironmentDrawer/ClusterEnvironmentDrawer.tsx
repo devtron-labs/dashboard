@@ -211,15 +211,15 @@ export const ClusterEnvironmentDrawer = ({
 
     const setTags = (tags: TagType[]) => setNamespaceLabels((prev) => ({ ...prev, labels: tags }))
 
+    const refetchNamespaceLabels = async () => {
+        await fetchClusterNamespaces(data.namespace)
+    }
+
     const addLabel = async () => {
         const nameSpaceErr = trigger('namespace')
         if (!nameSpaceErr) {
-            await fetchClusterNamespaces(data.namespace)
+            await refetchNamespaceLabels()
         }
-    }
-
-    const refetchNamespaceLabels = async () => {
-        await fetchClusterNamespaces(data.namespace)
     }
 
     return (

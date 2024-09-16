@@ -1,23 +1,19 @@
 import { TagType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ClusterEnvironmentDrawerProps {
-    environmentName: string
-    namespace: string
-    id: string
-    clusterId: number
-    prometheusEndpoint: string
-    isProduction: boolean
-    description: string
-    reload: () => void
-    hideClusterDrawer: () => void
-    isVirtual: boolean
-}
-
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
     namespace: string
     isProduction: boolean
     description: string
+}
+
+export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
+    id: string
+    clusterId: number
+    prometheusEndpoint: string
+    reload: () => void
+    hideClusterDrawer: () => void
+    isVirtual: boolean
 }
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<
