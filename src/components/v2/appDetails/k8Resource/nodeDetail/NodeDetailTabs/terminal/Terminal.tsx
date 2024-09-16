@@ -235,29 +235,6 @@ export default function TerminalView({
         }
     }, [firstMessageReceived, isTerminalTab])
 
-    const handleFullscreen = (goFullscreen: boolean) => {
-        if (goFullscreen) {
-            document
-                .getElementById('terminal-id')
-                .requestFullscreen()
-                .then(() => {
-                    setFullScreenView(true)
-                })
-                .catch((err) => {
-                    showError(err)
-                })
-        } else {
-            document
-                .exitFullscreen()
-                .catch((err) => {
-                    showError(err)
-                })
-                .finally(() => {
-                    setFullScreenView(false)
-                })
-        }
-    }
-
     useEffect(() => {
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -299,7 +276,7 @@ export default function TerminalView({
                 className={`mt-8 mb-4 terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
             >
                 <CopyToast showCopyToast={popupText} />
-                <LogResizeButton disableKeybindings={true} onlyOnLogs={false} fullScreenView={fullScreenView} setFullScreenView={handleFullscreen} />
+                <LogResizeButton disableKeybindings={true} onlyOnLogs={false} fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>
     )

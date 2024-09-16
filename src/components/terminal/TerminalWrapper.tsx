@@ -356,5 +356,6 @@ const TerminalContent = (props) => {
         100,
         [props.height, props.width],
     )
+    // TODO: maybe need to add support for fullscreen here aswell? 
     return <div id="terminal" style={{ width: props.width, height: props.height - 110 }} />
 }
