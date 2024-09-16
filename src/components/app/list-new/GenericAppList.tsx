@@ -141,6 +141,7 @@ const GenericAppList = ({
     }, [appsList])
 
     const handleArgoAppListing = () => {
+        if (!clusterIdsCsv) return
         setDataStateType(AppListViewType.LOADING)
         getArgoInstalledExternalApps(clusterIdsCsv)
             .then((appsListResponse) => {
@@ -173,11 +174,7 @@ const GenericAppList = ({
 
     // reset data
     function init() {
-        if (isSSE && !payloadParsedFromUrl?.namespaces?.length) {
-            setDataStateType(AppListViewType.LIST)
-        } else {
-            setDataStateType(AppListViewType.LOADING)
-        }
+        setDataStateType(AppListViewType.LIST)
         setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? null)
         setAppsList([])
         setFilteredAppsList([])
