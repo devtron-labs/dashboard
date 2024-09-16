@@ -346,6 +346,16 @@ const TerminalComponent = ({
                 sessionId,
             },
         },
+        metadata: isResourceBrowserView ? {
+            cluster: '',
+            namespace: selectedNamespace ?? '',
+            pod: params.podName ?? '',
+        } : {
+            // TODO: check if the nullish checks are required
+            app: appDetails.appName ?? '',
+            environment: appDetails.environmentName ?? '',
+            pod: params.podName ?? ''
+        }
     }
 
     return (

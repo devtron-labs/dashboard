@@ -36,6 +36,7 @@ export default function TerminalView({
     setSocketConnection,
     isTerminalTab = true,
     renderConnectionStrip,
+    metadata,
     registerLinkMatcher,
     terminalMessageData,
     clearTerminal,
@@ -235,6 +236,11 @@ export default function TerminalView({
         }
     }, [firstMessageReceived, isTerminalTab])
 
+    const handleToggleFullscreen = () => {
+        setFullScreenView((prev) => !prev)
+        terminalRef.current?.focus()
+    }
+
     useEffect(() => {
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -246,6 +252,35 @@ export default function TerminalView({
 
         setSocketConnection(SocketConnectionType.CONNECTING)
 
+        const log = {
+            cmdKey: false, // NOTE: can be either MetaKey or Cmd (in mac) or Ctrl (in linux/windows)
+            shiftKey: false,
+            KeyF: false,
+        }
+        const handleFullscreenShortcutPress = (event: KeyboardEvent) => {
+            if (event.type === 'keydown') {
+                if (event.ctrlKey || event.metaKey) {
+                    log.cmdKey = true
+                }
+                if (event.code === 'KeyF') {
+                    log.KeyF = true
+                }
+                if (event.shiftKey) {
+                    log.shiftKey = true
+                }
+                if (Object.values(log).every((val) => !!val)) {
+                    handleToggleFullscreen()
+                }
+            }
+            if (event.type === 'keyup') {
+                Object.keys(log).forEach((key) => {
+                    log[key] = false
+                })
+            }
+        }
+        document.getElementById('terminal-id').addEventListener('keydown', handleFullscreenShortcutPress)
+        document.getElementById('terminal-id').addEventListener('keyup', handleFullscreenShortcutPress)
+
         return () => {
             socket.current?.close()
             terminalRef.current?.dispose()
@@ -253,6 +288,8 @@ export default function TerminalView({
             terminalRef.current = undefined
             terminalRef.current = undefined
             fitAddon.current = null
+            document.getElementById('terminal-id').removeEventListener('keydown', handleFullscreenShortcutPress)
+            document.getElementById('terminal-id').removeEventListener('keyup', handleFullscreenShortcutPress)
         }
     }, [])
 
@@ -269,6 +306,18 @@ export default function TerminalView({
             data-testid={dataTestId}
         >
             {renderConnectionStrip()}
+            {fullScreenView && (
+                <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                    {Object.entries(metadata).map(([key, value], index, arr) => (
+                        <>
+                            <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
+                                {key}:&nbsp;{value}
+                            </span>
+                            {index < arr.length - 1 && <div className="dc__divider h12" />}
+                        </>
+                    ))}
+                </div>
+            )}
             <div
                 ref={termDivRef}
                 id="terminal-id"
@@ -276,7 +325,13 @@ export default function TerminalView({
                 className={`mt-8 mb-4 terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
             >
                 <CopyToast showCopyToast={popupText} />
-                <LogResizeButton disableKeybindings={true} onlyOnLogs={false} fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
+                <LogResizeButton
+                    shortcutCombo="Cmd/Ctrl + Shift + f"
+                    disableKeybindings={true}
+                    onlyOnLogs={false}
+                    fullScreenView={fullScreenView}
+                    setFullScreenView={handleToggleFullscreen}
+                />
             </div>
         </div>
     )

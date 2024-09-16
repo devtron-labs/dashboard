@@ -1008,6 +1008,11 @@ node-details-full-screen
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
         },
+        metadata: {
+            // TODO: check if the optional check is required?
+            node: selectedNodeName?.label ?? '',
+            namespace: selectedNamespace?.label ?? '',
+        },
     }
 
     return (

@@ -46,18 +46,33 @@
     flex: 1;
     position: relative;
 
+    &__metadata {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 21;
+        border-bottom: 1px solid #2C3354;
+        background: var(--terminal-bg);
+
+        & > span {
+            opacity: 0.8;
+        }
+    }
+
     .terminal-component {
         overflow: hidden;
         flex: 1;
 
         &--fullscreen {
             position: fixed;
-            top: 0;
+            top: 28px;
             left: 0;
             height: 100vh;
             width: 100vw;
             z-index: 20;
             margin: 0;
+            background-color: var(--terminal-bg);
+            padding: 12px;
         }
 
         & .zoom {
