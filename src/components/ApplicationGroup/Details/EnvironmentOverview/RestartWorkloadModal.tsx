@@ -166,6 +166,9 @@ export const RestartWorkloadModal = ({
             })
             .catch((err) => {
                 setErrorStatusCode(err.code)
+                const newParams = { ...searchParams }
+                delete newParams.modal
+                history.push({ search: new URLSearchParams(newParams).toString() })
             })
             .finally(() => {
                 setRestartLoader(false)
