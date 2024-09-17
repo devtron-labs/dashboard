@@ -22,7 +22,6 @@ import {
     ErrorScreenNotAuthorized,
     InfoColourBar,
     VisibleModal,
-    multiSelectStyles,
     useEffectAfterMount,
     stopPropagation,
     useAsync,
@@ -32,9 +31,11 @@ import {
     DeleteComponent,
     ToastVariantType,
     ToastManager,
+    SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
@@ -635,6 +636,20 @@ const GitForm = ({
         )
     }
 
+    const renderGitHostBottom = () => {
+        return (
+            <div
+                className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top "
+                onClick={(selected) => {
+                    setGitProviderConfigModal(true)
+                    toggleCollapse(false)
+                }}
+            >
+                <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " /> Add Git Host
+            </div>
+        )
+    }
+
     const TippyMessage = {
         authMessage: 'Authentication type cannot be switched from HTTPS to SSH or vice versa.',
     }
@@ -806,42 +821,24 @@ const GitForm = ({
                     isRequiredField
                 />
             </div>
-            <div className="form__row form__row--two-third">
+            <div className="form__row--two-third mb-16">
                 <div>
-                    <div>
-                        <label className="form__label dc__required-field">Git host</label>
-                        <ReactSelect
-                            name="host"
-                            value={gitHost.value}
-                            className="react-select--height-44 fs-13 bcn-0 mb-12"
-                            classNamePrefix="select-git-account-host"
-                            placeholder="Select git host"
-                            isMulti={false}
-                            isSearchable
-                            isClearable={false}
-                            options={hostListOption}
-                            styles={{
-                                ...multiSelectStyles,
-                                menuList: (base) => {
-                                    return {
-                                        ...base,
-                                        position: 'relative',
-                                        paddingBottom: '0px',
-                                        maxHeight: '176px',
-                                    }
-                                },
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                MenuList,
-                                Option,
-                            }}
-                            onChange={(e) => handleGithostChange(e)}
-                            isDisabled={gitHostId}
-                        />
-                    </div>
-
+                    <SelectPicker
+                        label="Git host"
+                        required
+                        inputId="git-account-host-select"
+                        name="host"
+                        value={gitHost.value}
+                        classNamePrefix="select-git-account-host"
+                        placeholder="Select git host"
+                        isSearchable
+                        isClearable={false}
+                        options={hostListOption}
+                        renderMenuListFooter={renderGitHostBottom}
+                        onChange={(e) => handleGithostChange(e)}
+                        isDisabled={gitHostId}
+                        size={ComponentSizeType.large}
+                    />
                     <div className="cr-5 fs-11">{gitHost.error}</div>
                 </div>
                 <CustomInput
