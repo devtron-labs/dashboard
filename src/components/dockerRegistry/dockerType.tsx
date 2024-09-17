@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CustomCredential {
@@ -79,3 +79,21 @@ export const CustomStateKeys = {
 }
 
 export const RemoteConnectionTypeRegistry = 'registry'
+
+export interface RegistryType {
+    label: string
+    defaultValue: string
+    placeholder: string
+}
+export interface EAModeRegistryType {
+    label: string
+    value: string
+    defaultRegistryURL: string
+    desiredFormat: string
+    gettingStartedLink: string
+    id: RegistryType
+    password: RegistryType
+    placeholderText: string
+    registryURL: RegistryType
+    startIcon: ReactElement
+}

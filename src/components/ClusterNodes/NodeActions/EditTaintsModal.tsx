@@ -23,6 +23,7 @@ import {
     TippyTheme,
     stopPropagation,
     InfoColourBar,
+    SelectPicker,
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -36,8 +37,6 @@ import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
 import { OptionType } from '../../app/types'
-import { Option, DropdownIndicator } from '../../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../../CIPipelineN/ciPipeline.utils'
 import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
@@ -238,35 +237,16 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                 </div>
 
                                 <div className="w-70 mr-8">
-                                    <ReactSelect
+                                    <SelectPicker
+                                        inputId='select-taint-effect'
                                         options={TAINT_OPTIONS}
-                                        onChange={(selectedValue) => {
+                                        onChange={(selectedValue: OptionType) => {
                                             onEffectChange(selectedValue, index)
                                         }}
                                         data-index={index}
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            DropdownIndicator,
-                                            Option: (props) => (
-                                                <Option
-                                                    {...props}
-                                                    tippyClass="default-tt w-200"
-                                                    showTippy
-                                                    placement="left"
-                                                    tippyContent={props.data['description']}
-                                                />
-                                            ),
-                                        }}
                                         value={{
                                             label: taintDetails.effect,
                                             value: taintDetails.effect,
-                                        }}
-                                        styles={{
-                                            ...containerImageSelectStyles,
-                                            singleValue: (base, state) => ({
-                                                ...base,
-                                                padding: '5px 0',
-                                            }),
                                         }}
                                     />
                                 </div>
