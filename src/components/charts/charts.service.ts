@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash, sortCallback, ResponseType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
 import { getAPIOptionsWithTriggerTimeout, handleUTCTime } from '../common'
-import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
+import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload, DeleteInstalledChartParamsType } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
 
 interface RootObject {
@@ -57,19 +57,22 @@ export function deleteInstalledChart(
     isGitops?: boolean,
     deleteAction?: DELETE_ACTION,
 ) {
-    let URL: string = `app-store/deployment/application/delete/${installedAppId}`
-    if (isGitops) {
-        if (deleteAction === DELETE_ACTION.DELETE) {
-            URL += `?partialDelete=true`
-        }  else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
-            URL += `?partialDelete=true&cascade=false`
-        } else if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
-            URL += `?force=true`
+    const baseUrl: string = `app-store/deployment/application/delete/${installedAppId}`
+    let params: DeleteInstalledChartParamsType = {}
+    const url = getUrlWithSearchParams(baseUrl, params)
+    if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
+        params = {
+            forceDelete: true
         }
-    } else if (!isGitops && deleteAction === DELETE_ACTION.FORCE_DELETE) {
-            URL += `?force=true`
+    } else if (isGitops) {
+        deleteAction === DELETE_ACTION.NONCASCADE_DELETE ? params = {
+            partialDelete: true,
+            cascade: false
+        } : params = {
+            partialDelete: true
+        }
     }
-    return trash(URL)
+    return trash(url)
 }
 
 export function getChartValuesTemplateList(chartId: number | string): Promise<SavedValueListResponse> {
