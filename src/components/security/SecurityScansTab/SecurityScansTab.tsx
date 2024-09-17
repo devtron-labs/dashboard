@@ -20,6 +20,7 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     SecurityModal,
+    getExecutionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
@@ -39,7 +40,7 @@ import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import { SecurityScanType } from '../security.types'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 export const SecurityScansTab = () => {
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
@@ -65,7 +66,16 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
+    const [executionDetailsLoading, executionDetailsResponse, executionsDetailsError] = useAsync(
+        () =>
+            getExecutionDetails({
+                appId: scanDetails.uniqueId.appId,
+                envId: scanDetails.uniqueId.envId,
+                imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
+            }),
+        [scanDetails],
+        !!scanDetails.uniqueId.appId,
+    )
 
     const payload: ScanListPayloadType = {
         offset,
@@ -351,20 +361,12 @@ export const SecurityScansTab = () => {
             return (
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}
-                    {...(isSecurityScanV2Enabled
-                        ? {
-                              appDetailsPayload: {
-                                  appId: scanDetails.uniqueId.appId,
-                                  envId: scanDetails.uniqueId.envId,
-                              },
-                          }
-                        : {
-                              executionDetailsPayload: {
-                                  appId: scanDetails.uniqueId.appId,
-                                  envId: scanDetails.uniqueId.envId,
-                                  imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
-                              },
-                          })}
+                    Sidebar={SecurityModalSidebar}
+                    isSecurityScanV2Enabled={false}
+                    isHelmApp={false}
+                    isLoading={executionDetailsLoading}
+                    error={executionsDetailsError}
+                    responseData={executionDetailsResponse?.result}
                 />
             )
         }

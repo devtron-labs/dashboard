@@ -308,31 +308,6 @@ export function getLastExecutionByAppArtifactId(
     })
 }
 
-export function getLastExecutionMinByAppAndEnv(
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionMinResponseType> {
-    const URL = `security/scan/executionDetail/min?appId=${appId}&envId=${envId}`
-    return get(URL).then((response) => {
-        return {
-            code: response.code,
-            status: response.status,
-            result: {
-                lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
-                imageScanDeployInfoId: response.result.imageScanDeployInfoId,
-                severityCount: {
-                    critical: response.result.severityCount.critical,
-                    high: response.result.severityCount.high,
-                    medium: response.result.severityCount.medium,
-                    low: response.result.severityCount.low,
-                    unknown: response.result.severityCount.unknown,
-                },
-                scanned: response.result.scanned,
-            },
-        }
-    })
-}
-
 export function getChartRepoList(): Promise<ResponseType> {
     const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}`
     return get(URL)

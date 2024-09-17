@@ -48,6 +48,7 @@ import {
     ErrorScreenManager,
     getTotalSeverityCount,
     getSeverityCountFromSummary,
+    parseExecutionDetailResponse,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -71,6 +72,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { useGetCISecurityDetails } from './CISecurity.utils'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
 
@@ -640,8 +642,6 @@ const HistoryLogs = ({
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
-                            isJobCI={isJobCI}
-                            isJobView={isJobView}
                         />
                     </Route>
                 }
@@ -673,19 +673,19 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobCI, isJobView }: SecurityTabType) => {
+const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const computedAppId = appId ?? appIdFromParent
 
-    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails } = useGetCISecurityDetails({
-        appId: computedAppId,
-        artifactId,
-        isJobCard: isJobCI || isJobView,
-        isSecurityScanV2Enabled,
-    })
+    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails } =
+        useGetCISecurityDetails({
+            appId: computedAppId,
+            artifactId,
+            isSecurityScanV2Enabled,
+        })
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
@@ -748,14 +748,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent, isJobC
                 severityCount={severityCount}
                 scanToolId={executionDetailsResponse?.result.scanToolId ?? SCAN_TOOL_ID_TRIVY}
                 rootClassName="w-500"
-                {...(isSecurityScanV2Enabled
-                    ? { appDetailsPayload: { appId: computedAppId, artifactId } }
-                    : {
-                          executionDetailsPayload: {
-                              appId: computedAppId,
-                              artifactId,
-                          },
-                      })}
+                SecurityModalSidebar={SecurityModalSidebar}
+                isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                responseData={isSecurityScanV2Enabled ? scanResultResponse?.result : parseExecutionDetailResponse(executionDetailsResponse?.result)}
             />
         </div>
     )
