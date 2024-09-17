@@ -26,7 +26,7 @@ import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
-import { getLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
+import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
@@ -75,17 +75,15 @@ const NodeComponent = ({
                     _podLevelExternalLinks.push({
                         label: link.name,
                         value: link.url,
-                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         description: link.description,
-                        startIcon: getLinkIcon(link.url, appDetails),
+                        startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                     })
                 } else if (link.url.includes('{containerName}')) {
                     _containerLevelExternalLinks.push({
                         label: link.name,
                         value: link.url,
-                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         description: link.description,
-                        startIcon: getLinkIcon(link.url, appDetails),
+                        startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                     })
                 }
             })
