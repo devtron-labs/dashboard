@@ -16,34 +16,9 @@
 
 .env-overview-container {
     display: grid;
-    grid-template-columns: 300px minmax(auto, 1068px);
+    grid-template-columns: 300px 1fr;
     gap: 32px;
-    height: calc(100vh - 78px);
     background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
-
-    .app-deployments-info-wrapper {
-        border-radius: 4px;
-        background-color: var(--N0);
-        border: 1px solid var(--N200);
-
-        .app-deployments-info-header,
-        .app-deployments-info-row {
-            grid-template-columns: minmax(170px, 28%) 15% 15% 11% 1fr;
-            column-gap: 16px;
-            grid-auto-rows: 36px;
-            transition: grid-template-columns 0.2s ease-in-out;
-
-            &.last-deployed-expanded {
-                grid-template-columns: minmax(170px, 28%) 15% 28% 11% 1fr;
-            }
-
-            .app-deployment-info-row-leftsection {
-                grid-template-columns: 10% 10% 80%;
-                column-gap: 16px;
-                min-width: 170px;
-            }
-        }
-    }
 
     .response-list-container {
         max-height: calc(100vh - 120px);
@@ -67,11 +42,6 @@
     background-color: var(--N0);
     border: 1px solid #ccc;
     border-radius: 3px;
-}
-
-.sticky-column {
-    left: 0px;
-    z-index: 3;
 }
 
 .bulk-restart-workload-wrapper {

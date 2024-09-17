@@ -473,7 +473,7 @@ type HibernateModalType = MODAL_TYPE.HIBERNATE | MODAL_TYPE.UNHIBERNATE
 
 export interface HibernateModalProps {
     setOpenedHibernateModalType: React.Dispatch<React.SetStateAction<HibernateModalType>>
-    selectedAppDetailsList: AppInfoListType[]
+    selectedAppDetailsList: AppInfoListType | AppInfoListType[]
     appDetailsList: AppGroupListType['apps']
     envName: string
     envId: string
@@ -502,7 +502,7 @@ export interface ManageAppsResponse {
 }
 
 export interface RestartWorkloadModalProps {
-    selectedAppDetailsList: AppInfoListType[]
+    selectedAppDetailsList: AppInfoListType | AppInfoListType[]
     envName: string
     envId: string
     restartLoader: boolean
