@@ -60,6 +60,7 @@ export function getOptions(appId: number, envId: number): Promise<ResponseType<T
     return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
 }
 
+// FIXME: This function is not used anywhere, even though through code we are calling this
 export function getDefaultDeploymentTemplate(appId, chartId) {
     return get(`${Routes.DEPLOYMENT_TEMPLATE}/default/${appId}/${chartId}`)
 }

@@ -68,6 +68,12 @@ export function formatTimestamp(jsonTimestamp) {
     return timestamp.format('ddd, MMM YYYY, hh:mm A')
 }
 
+/**
+ * @deprecated
+ * @param option 
+ * @param charts 
+ * @returns 
+ */
 export function textDecider(option, charts) {
     let text
 
@@ -98,6 +104,13 @@ export function textDecider(option, charts) {
     return text
 }
 
+/**
+ * @deprecated
+ * @param isValues
+ * @param isEnv 
+ * @param type 
+ * @returns 
+ */
 export const getPosition = (isValues: boolean, isEnv: boolean, type: number) => {
     if (isValues && isEnv) {
         if (type === 3) {

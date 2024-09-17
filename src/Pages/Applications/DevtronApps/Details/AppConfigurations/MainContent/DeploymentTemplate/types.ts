@@ -1,4 +1,5 @@
 import { SyntheticEvent } from 'react'
+import { GroupBase } from 'react-select'
 import {
     ConfigKeysWithLockType,
     DeploymentTemplateQueryParamsType,
@@ -6,6 +7,9 @@ import {
     DeploymentChartVersionType,
     ChartMetadataType,
     DeploymentTemplateConfigState,
+    TemplateListType,
+    SelectPickerOptionType,
+    TemplateListDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Operation } from 'fast-json-patch'
 import { DeploymentTemplateGUIViewProps } from '@Components/deploymentConfig/types'
@@ -84,4 +88,26 @@ export interface DeploymentTemplateCTAProps
     isInheriting: boolean
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
+}
+
+export interface CompareWithValuesDataStoreItemType {
+    id: number
+    originalTemplate: string
+    resolvedTemplate: string
+    originalTemplateWithoutLockedKeys: string
+    resolvedTemplateWithoutLockedKeys: string
+}
+
+export type CompareWithOptionGroupKindType =
+    | TemplateListType.DefaultVersions
+    | TemplateListType.DeployedOnSelfEnvironment
+    | TemplateListType.PublishedOnEnvironments
+
+export interface CompareWithTemplateGroupedSelectPickerOptionType extends GroupBase<SelectPickerOptionType> {}
+
+export interface TemplateListItemType extends TemplateListDTO {
+    /**
+     * This ID is generated at UI, not from the server. DO NOT USE THIS FOR COMMUNICATION WITH SERVER
+     */
+    id: number
 }

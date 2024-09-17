@@ -23,6 +23,9 @@ import {
     ModuleNameMap,
     ToastManager,
     ToastVariantType,
+    SelectPickerOptionType,
+    TemplateListType,
+    ValuesAndManifestFlagDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -30,6 +33,7 @@ import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Com
 import { getChartReferences } from '@Services/service'
 import {
     getDeploymentTemplate,
+    getOptions,
     saveDeploymentTemplate,
     updateDeploymentTemplate,
 } from '@Components/deploymentConfig/service'
@@ -41,16 +45,28 @@ import DeploymentConfigToolbar from '@Components/deploymentConfig/DeploymentTemp
 import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import {
+    CompareWithTemplateGroupedSelectPickerOptionType,
+    CompareWithValuesDataStoreItemType,
     DeploymentTemplateChartStateType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
     ResolvedEditorTemplateType,
+    TemplateListItemType,
 } from './types'
-import { BASE_DEPLOYMENT_TEMPLATE_ENV_ID, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
+import {
+    BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
+    COMPARE_WITH_BASE_TEMPLATE_OPTION,
+    COMPARE_WITH_OPTIONS_ORDER,
+    PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
+} from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
+import { CompareTemplateView } from './CompareTemplateView'
+import { getCompareWithOptionsLabel } from './CompareTemplateView/utils'
+import { getCompareWithTemplateOptionsLabel } from './utils'
 
+// TODO: Verify null checks for all
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function')
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
@@ -152,6 +168,17 @@ const DeploymentTemplate = ({
     const [showLockedTemplateDiffModal, setShowLockedTemplateDiffModal] = useState<boolean>(false)
     const [showSaveChangesModal, setShowSaveChangesModal] = useState<boolean>(false)
 
+    // Compare view states
+    const [templateListMap, setTemplateListMap] = useState<Record<number, TemplateListItemType>>({})
+    const [isComparisonViewLoading, setIsComparisonViewLoading] = useState<boolean>(false)
+    const [compareWithSelectedOption, setCompareWithSelectedOption] = useState<SelectPickerOptionType>(
+        COMPARE_WITH_BASE_TEMPLATE_OPTION,
+    )
+    // Question: Should it contain data for -1?
+    const [compareWithValuesDataStore, setCompareWithValuesDataStore] = useState<
+        Record<number, CompareWithValuesDataStoreItemType>
+    >({})
+
     // Question: Have remove appId dependency is it fine?
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
 
@@ -168,13 +195,92 @@ const DeploymentTemplate = ({
         isProtected &&
         draftTemplateData?.latestDraft
     )
-    // const isApprovalView =
-    //     selectedTab === DeploymentTemplateTabsType.COMPARE &&
-    //     !showReadMe &&
-    //     !!draftTemplateData?.latestDraft &&
-    //     draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
+    const isApprovalView =
+        selectedTab === DeploymentTemplateTabsType.COMPARE &&
+        !showReadMe &&
+        !!draftTemplateData?.latestDraft &&
+        draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
 
     const isDraftMode: boolean = isProtected && !!draftTemplateData?.latestDraft
+
+    // TODO: memoize
+    const compareWithTemplateSelectPickerOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = (() => {
+        const initialOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = [
+            {
+                label: getCompareWithOptionsLabel(environmentName),
+                options: [COMPARE_WITH_BASE_TEMPLATE_OPTION],
+            },
+        ]
+
+        const templateListKeys = Object.keys(templateListMap)
+
+        if (!templateListKeys.length) {
+            return initialOptions
+        }
+
+        const chartVersionMappedToChartId: Record<number, string> = chartDetails.charts.reduce(
+            (acc, chart) => {
+                acc[chart.id] = chart.version
+                return acc
+            },
+            {} as Record<number, string>,
+        )
+
+        const templateMappedToType: Record<TemplateListType, TemplateListItemType[]> = templateListKeys.reduce(
+            (acc, templateId) => {
+                const template = templateListMap[+templateId]
+
+                if (
+                    template.type === TemplateListType.DefaultVersions &&
+                    currentEditorTemplateData?.selectedChart.name !== template.chartType
+                ) {
+                    return acc
+                }
+
+                if (!acc[template.type]) {
+                    acc[template.type] = []
+                }
+
+                acc[template.type].push(template)
+                return acc
+            },
+            {} as Record<TemplateListType, TemplateListItemType[]>,
+        )
+
+        if (envId) {
+            COMPARE_WITH_OPTIONS_ORDER.OVERRIDDEN.forEach((templateType) => {
+                initialOptions.push({
+                    label: getCompareWithOptionsLabel(environmentName, templateType),
+                    // TODO: Can be util
+                    options:
+                        templateMappedToType[templateType]?.map((template) => ({
+                            label: getCompareWithTemplateOptionsLabel(
+                                template,
+                                chartVersionMappedToChartId[template.chartRefId],
+                            ),
+                            value: template.id,
+                        })) ?? [],
+                })
+            })
+        } else {
+            COMPARE_WITH_OPTIONS_ORDER.BASE_TEMPLATE.forEach((templateType) => {
+                initialOptions.push({
+                    label: getCompareWithOptionsLabel(environmentName, templateType),
+                    // TODO: Can be util
+                    options:
+                        templateMappedToType[templateType]?.map((template) => ({
+                            label: getCompareWithTemplateOptionsLabel(
+                                template,
+                                chartVersionMappedToChartId[template.chartRefId],
+                            ),
+                            value: template.id,
+                        })) ?? [],
+                })
+            })
+        }
+
+        return initialOptions.filter((option) => option.options.length)
+    })()
 
     const getChartList = async () => {
         const chartRefResp = await getChartReferences(+appId)
@@ -251,6 +357,12 @@ const DeploymentTemplate = ({
 
     // TODO: Check all YAMLStringify for locked keys
     // FIXME: Maybe can remove param as well
+    /**
+     * @description - Based on views gives out payload for fetching resolved variables
+     * - In case of published view, we need original resolved template of published template for GUI mode
+     * - In case of edit view,  we need original resolved template of initial original state of current editor for GUI mode
+     * - In case of compare mode, we need to get resolved template of base deployment template FIXME: Can limit this call as well and store this in state
+     */
     const getPayloadForOriginalTemplateVariables = (
         editorTemplateData: typeof currentEditorTemplateData,
     ): GetResolvedDeploymentTemplateProps => {
@@ -260,19 +372,28 @@ const DeploymentTemplate = ({
                 chartRefId: publishedTemplateData.selectedChartRefId,
                 // NOTE: Sending whole yaml as also doing calculation for locked keys while fetching scoped variables
                 values: publishedTemplateData.editorTemplate,
+                valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                 ...(envId && { envId: +envId }),
             }
         }
 
+        // FIXME: should not reside here
         if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-            // TODO: Fill later
-            // NOTE: might have to bring as param instead of state since onChange need to be handled
+            // TODO: Fill later for override case since there the base deployment template is different
+            return {
+                appId: +appId,
+                chartRefId: publishedTemplateData.selectedChartRefId,
+                values: publishedTemplateData.editorTemplate,
+                valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+                ...(envId && { envId: +envId }),
+            }
         }
 
         return {
             appId: +appId,
             chartRefId: editorTemplateData.selectedChartRefId,
             values: YAMLStringify(editorTemplateData.originalTemplate),
+            valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
             ...(envId && { envId: +envId }),
         }
     }
@@ -351,12 +472,14 @@ const DeploymentTemplate = ({
                     appId: +appId,
                     chartRefId: editorTemplateData.selectedChartRefId,
                     values: getCurrentEditorPayloadForScopedVariables(editorTemplateData),
+                    valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
                 }),
-                // TODO: In case of compare view, envId is different we get that from chart maybe? Confirm once.
                 getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables(editorTemplateData)),
             ])
-            if (!currentEditorTemplate.areVariablesPresent) {
+
+            // FIXME: Simplify this
+            if (!currentEditorTemplate.areVariablesPresent || selectedTab !== DeploymentTemplateTabsType.COMPARE) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: NO_SCOPED_VARIABLES_MESSAGE,
@@ -537,8 +660,6 @@ const DeploymentTemplate = ({
             lockedConfigKeys,
         )
         return { ...response, editorTemplateWithoutLockedKeys }
-
-        // TODO: Handle protected state
     }
 
     const handleInitializePublishedData = async (
@@ -680,6 +801,25 @@ const DeploymentTemplate = ({
         handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
     }
 
+    const handleLoadCompareWithTemplateChartDataList = async (): Promise<void> => {
+        try {
+            const { result } = await getOptions(+appId, +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
+            const parsedMap = result.reduce(
+                (acc, templateItem, index) => {
+                    acc[index] = {
+                        ...templateItem,
+                        id: index,
+                    }
+                    return acc
+                },
+                {} as typeof templateListMap,
+            )
+            setTemplateListMap(parsedMap)
+        } catch {
+            setTemplateListMap({})
+        }
+    }
+
     // TODO: Should move all these api calls to provider itself
     const handleInitialDataLoad = async () => {
         // TODO: Can be collected together
@@ -693,10 +833,13 @@ const DeploymentTemplate = ({
         try {
             // TODO: Ask if needed
             // reloadEnvironments()
+            // FIXME: Add id to template list dto which would be index and parse that as record of id to template list dto
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
                 getChartList(),
                 getJsonPath ? getJsonPath(appId, envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID) : Promise.resolve(null),
+                handleLoadCompareWithTemplateChartDataList(),
             ])
+
             if (chartRefsDataResponse.status === 'rejected') {
                 throw chartRefsDataResponse.reason
             }
@@ -764,7 +907,7 @@ const DeploymentTemplate = ({
 
             appId: +appId,
             chartRefId: currentEditorTemplateData.selectedChart.id,
-            // TODO: Ask backend team for this
+            // TODO: Ask backend team why they need this
             defaultAppOverride: currentEditorTemplateData.originalTemplate,
             isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
             saveEligibleChanges: showLockedTemplateDiffModal,
@@ -897,13 +1040,6 @@ const DeploymentTemplate = ({
     const handleTabSelection = (index: DeploymentTemplateTabsType) => {
         handleRemoveResolvedVariables()
 
-        // TODO: Should be handled when we switch to compare mode
-        // try {
-        //     if (wasGuiOrHideLockedKeysEdited) {
-        //         applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
-        //     }
-        // } catch {}
-
         switch (index) {
             // 1 is published in case of protected config else current values in case of normal
             case 1:
@@ -918,6 +1054,8 @@ const DeploymentTemplate = ({
                 break
             // 2 is compare values view
             case 2:
+                // TODO: Test this case of re-apply sorting
+                handleChangeToYAMLMode()
                 updateSearchParams({
                     selectedTab: DeploymentTemplateTabsType.COMPARE,
                 })
@@ -1078,6 +1216,86 @@ const DeploymentTemplate = ({
         }
     }
 
+    const handleCompareWithOptionChange = async (option: SelectPickerOptionType) => {
+        // FIXME: Can remove this should not be an issue
+        handleRemoveResolvedVariables()
+
+        if (compareWithValuesDataStore[+option.value] || option.value === BASE_DEPLOYMENT_TEMPLATE_ENV_ID) {
+            setCompareWithSelectedOption(option)
+            return
+        }
+
+        try {
+            // TODO: Add disabled states
+            setIsComparisonViewLoading(true)
+
+            const templateData = templateListMap[+option.value]
+            // if (templateData.type === TemplateListType.DefaultVersions) {
+            //     // FIXME: On prod different call is there for some reason
+            //     await getDefaultDeploymentTemplate(+appId, templateData.chartRefId)
+            // } else {
+            const { resolvedData, data } = await getResolvedDeploymentTemplate({
+                appId: +appId,
+                chartRefId: +templateData.chartRefId || null,
+                envId: +templateData.environmentId || null,
+                type: templateData.type,
+                deploymentTemplateHistoryId: +templateData.deploymentTemplateHistoryId || null,
+                pipelineId: +templateData.pipelineId || null,
+                valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+            })
+
+            const currentCompareWithValuesDataStore = structuredClone(compareWithValuesDataStore)
+            currentCompareWithValuesDataStore[+option.value] = {
+                id: +option.value,
+                originalTemplate: data,
+                resolvedTemplate: resolvedData,
+                originalTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(data).editorTemplate,
+                resolvedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(resolvedData).editorTemplate,
+            }
+            setCompareWithValuesDataStore(currentCompareWithValuesDataStore)
+            // }
+            setCompareWithSelectedOption(option)
+        } catch (error) {
+            showError(error)
+        } finally {
+            setIsComparisonViewLoading(false)
+        }
+    }
+
+    const getCompareWithEditorTemplate = (): string => {
+        if (compareWithSelectedOption.value === COMPARE_WITH_BASE_TEMPLATE_OPTION.value) {
+            if (resolveScopedVariables) {
+                return hideLockedKeys
+                    ? resolvedOriginalTemplate.templateWithoutLockedKeys
+                    : resolvedOriginalTemplate.originalTemplate
+            }
+
+            // FIXME:
+            if (envId) {
+                return ''
+            }
+
+            return hideLockedKeys
+                ? publishedTemplateData.editorTemplateWithoutLockedKeys
+                : publishedTemplateData.editorTemplate
+        }
+
+        const selectedTemplateData = compareWithValuesDataStore[+compareWithSelectedOption.value]
+        if (!selectedTemplateData) {
+            return ''
+        }
+
+        if (resolveScopedVariables) {
+            return hideLockedKeys
+                ? selectedTemplateData.resolvedTemplateWithoutLockedKeys
+                : selectedTemplateData.resolvedTemplate
+        }
+
+        return hideLockedKeys
+            ? selectedTemplateData.originalTemplateWithoutLockedKeys
+            : selectedTemplateData.originalTemplate
+    }
+
     const renderEditorComponent = () => {
         if (isLoadingInitialData || isResolvingVariables) {
             return (
@@ -1097,7 +1315,21 @@ const DeploymentTemplate = ({
         }
 
         if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-            return null
+            return (
+                <CompareTemplateView
+                    schema={getCurrentEditorSchema()}
+                    isLoading={isLoadingInitialData || isResolvingVariables || isSaving || isComparisonViewLoading}
+                    currentEditorTemplate={getCurrentEditorValue()}
+                    currentEditorSelectedChart={getCurrentTemplateSelectedChart()}
+                    editorOnChange={handleEditorChange}
+                    compareWithEditorTemplate={getCompareWithEditorTemplate()}
+                    compareWithOptions={compareWithTemplateSelectPickerOptions}
+                    // TODO: Handle default selection of environment name in case of !!envId
+                    selectedCompareWithOption={compareWithSelectedOption}
+                    handleCompareWithOptionChange={handleCompareWithOptionChange}
+                    readOnly={isApprovalView || resolveScopedVariables}
+                />
+            )
         }
 
         return (
@@ -1151,7 +1383,7 @@ const DeploymentTemplate = ({
             isResolvingVariables ||
             isSaving
 
-        if (isProtected) {
+        if (isProtected && ProtectedDeploymentTemplateCTA) {
             return (
                 <ProtectedDeploymentTemplateCTA
                     selectedTab={selectedTab}

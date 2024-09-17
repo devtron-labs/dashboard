@@ -43,35 +43,37 @@ const DeploymentTemplateCTA = ({
         <footer className="flexbox dc__content-space py-16 px-20 bcn-0 dc__border-top">
             {selectedTab === DeploymentTemplateTabsType.COMPARE && !showReadMe && <div className="w-50" />}
 
-            <DTApplicationMetricsFormField
-                showApplicationMetrics={showApplicationMetrics}
-                isLoading={isLoading}
-                selectedChart={selectedChart}
-                isDisabled={isDisabled}
-                toggleAppMetrics={toggleAppMetrics}
-                isAppMetricsEnabled={isAppMetricsEnabled}
-                showReadMe={showReadMe}
-                selectedTab={selectedTab}
-            />
+            <div className="flexbox dc__content-space flex-grow-1">
+                <DTApplicationMetricsFormField
+                    showApplicationMetrics={showApplicationMetrics}
+                    isLoading={isLoading}
+                    selectedChart={selectedChart}
+                    isDisabled={isDisabled}
+                    toggleAppMetrics={toggleAppMetrics}
+                    isAppMetricsEnabled={isAppMetricsEnabled}
+                    showReadMe={showReadMe}
+                    selectedTab={selectedTab}
+                />
 
-            <Tooltip
-                alwaysShowTippyOnHover={isInheriting}
-                content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
-            >
-                <button
-                    type="button"
-                    className={`cta flex h-32 ${isDisabled ? 'dc__disabled' : ''}`}
-                    disabled={isDisabled}
-                    onClick={handleSave}
-                    data-testid={
-                        !envId && !isCiPipeline
-                            ? 'base-deployment-template-save-and-next-button'
-                            : 'base-deployment-template-save-changes-button'
-                    }
+                <Tooltip
+                    alwaysShowTippyOnHover={isInheriting}
+                    content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
                 >
-                    {isLoading ? <Progressing /> : renderCTAContent()}
-                </button>
-            </Tooltip>
+                    <button
+                        type="button"
+                        className={`cta flex h-32 ${isDisabled ? 'dc__disabled' : ''}`}
+                        disabled={isDisabled}
+                        onClick={handleSave}
+                        data-testid={
+                            !envId && !isCiPipeline
+                                ? 'base-deployment-template-save-and-next-button'
+                                : 'base-deployment-template-save-changes-button'
+                        }
+                    >
+                        {isLoading ? <Progressing /> : renderCTAContent()}
+                    </button>
+                </Tooltip>
+            </div>
         </footer>
     )
 }

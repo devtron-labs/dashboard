@@ -140,6 +140,9 @@ const formatOptionLabel = (option): JSX.Element => (
     </div>
 )
 
+/**
+ * @deprecated
+ */
 export const CompareWithDropdown = ({
     envId,
     isEnvOverride,
@@ -201,9 +204,6 @@ export const CompareWithDropdown = ({
 
         // place all options under corresponding groups
         groupedData.forEach((group) => {
-            if (!isValues && group[0].type === 1) {
-                return
-            }
             if (isValues && group[0].type === 4) {
                 return
             }
@@ -340,6 +340,9 @@ export const renderEditorHeading = (
     </div>
 )
 
+/**
+ * @deprecated
+ */
 export const CompareWithApprovalPendingAndDraft = ({
     isEnvOverride,
     overridden,
