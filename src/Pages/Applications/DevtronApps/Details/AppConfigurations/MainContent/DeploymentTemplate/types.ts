@@ -58,7 +58,7 @@ export interface DeploymentTemplateEditorDataStateType
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys'>,
+    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'showReadMe'>,
         Pick<DeploymentTemplateProps, 'isUnSet'>,
         Pick<
             DeploymentTemplateGUIViewProps,
@@ -70,6 +70,7 @@ export interface DeploymentTemplateFormProps
     readOnly: boolean
     editedDocument: string
     uneditedDocument: string
+    readMe: string
 }
 
 export interface ResolvedEditorTemplateType {

@@ -54,10 +54,10 @@ export default function DeploymentConfigToolbar({
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
             {!noReadme && showReadme ? (
-                <div className="flex left pb-8">
-                    <CloseIcon className="icon-dim-16 mr-4 cursor" onClick={handleReadMeClick} />
+                <button type="button" className="dc__transparent flex left pb-8" onClick={handleReadMeClick}>
+                    <CloseIcon className="icon-dim-16 mr-4 cursor" />
                     Readme
-                </div>
+                </button>
             ) : (
                 <div className="flexbox dc__gap-16 dc__align-items-center">
                     <button className={getTabClassName(1)} data-index={1} data-testid="values-tab" onClick={changeTab}>

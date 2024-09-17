@@ -575,13 +575,6 @@ const DeploymentTemplate = ({
         }
     }
 
-    const handleToggleReadmeMode = () => {
-        // TODO: Need to add wasGuiOrHideLockedKeysEdited here as well
-        updateSearchParams({
-            showReadMe: !showReadMe,
-        })
-    }
-
     const handleToggleResolveScopedVariables = () => {
         if (resolveScopedVariables) {
             handleRemoveResolvedVariables()
@@ -614,6 +607,15 @@ const DeploymentTemplate = ({
 
         updateSearchParams({
             editMode: ConfigurationType.YAML,
+        })
+    }
+
+    const handleToggleReadmeMode = () => {
+        handleChangeToYAMLMode()
+        handleRemoveResolvedVariables()
+
+        updateSearchParams({
+            showReadMe: !showReadMe,
         })
     }
 
@@ -1349,11 +1351,7 @@ const DeploymentTemplate = ({
             return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
         }
 
-        if (showReadMe) {
-            return <div>README</div>
-        }
-
-        if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
+        if (selectedTab === DeploymentTemplateTabsType.COMPARE && !showReadMe) {
             return (
                 <CompareTemplateView
                     schema={getCurrentEditorSchema()}
@@ -1391,6 +1389,8 @@ const DeploymentTemplate = ({
                 editorOnChange={handleEditorChange}
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
+                showReadMe={showReadMe}
+                readMe={currentEditorTemplateData?.readme}
             />
         )
     }
