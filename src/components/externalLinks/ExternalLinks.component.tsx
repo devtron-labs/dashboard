@@ -43,6 +43,8 @@ import {
     GenericEmptyState,
     ConditionalWrap,
     GenericFilterEmptyState,
+    SelectPicker,
+    SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -61,6 +63,21 @@ export const ExternalLinksLearnMore = (): JSX.Element => {
     return (
         <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
             Learn more
+        </a>
+    )
+}
+
+export const getLinkIcon = (link: string, details) => {
+    console.log(link, 'link')
+    return (
+        <a
+            key={link}
+            href={getParsedURL(true, link, details)}
+            target="_blank"
+            className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
+            rel="noreferrer"
+        >
+            <img className="icon-dim-20 mr-12" src={link} alt={link} onError={onImageLoadError} />
         </a>
     )
 }
@@ -150,12 +167,16 @@ export const AppLevelExternalLinks = ({
         if (externalLinks.length > 0 && monitoringTools.length > 0) {
             const filteredLinks = externalLinks.filter(filterAppLevelExternalLinks)
             setAppLevelExternalLinks(
-                filteredLinks.map((link) => ({
-                    label: link.name,
-                    value: link.url,
-                    icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                    description: link.description,
-                })),
+                filteredLinks.map((link) => {
+                    console.log('monitor icon', getMonitoringToolIcon(monitoringTools, link.monitoringToolId))
+                    return {
+                        label: link.name,
+                        value: link.url,
+                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                        startIcon: getLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId), details),
+                        description: link.description,
+                    }
+                }),
             )
         } else {
             setAppLevelExternalLinks([])
@@ -278,7 +299,8 @@ export const NodeLevelExternalLinks = ({
 
     return (
         nodeLevelExternalLinks.length > 0 && (
-            <div className={`node-level__external-links flex column${addExtraSpace ? ' mr-4' : ''}`}>
+            <>
+                {console.log('nodeLevelExternalLinks', nodeLevelExternalLinks)}
                 <ReactSelect
                     placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
                     name={`${podName}-external-links`}
@@ -293,7 +315,20 @@ export const NodeLevelExternalLinks = ({
                     }}
                     styles={NodeLevelSelectStyles}
                 />
-            </div>
+                <div className={`node-level__external-links flex column${addExtraSpace ? ' mr-4' : ''}`}>
+                    <SelectPicker
+                        inputId={`${podName}-external-links`}
+                        name={`${podName}-external-links`}
+                        placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
+                        options={nodeLevelExternalLinks}
+                        isSearchable={false}
+                        shouldMenuAlignRight
+                        variant={SelectPickerVariantType.BORDER_LESS}
+                        menuIsOpen
+                        onChange={(event) => {getParsedURL(false, nodeLevelExternalLinks[0].icon  , details, podName, containerName)}}
+                    />
+                </div>
+            </>
         )
     )
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
@@ -23,10 +23,11 @@ import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/con
 
 export interface OptionTypeWithIcon {
     label: string
-    value: any
-    icon: string
+    value: string
+    startIcon?: ReactElement
     category?: number
     description?: string
+    icon?: string
 }
 
 export interface IdentifierOptionType {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -246,7 +246,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 (link: ExternalLink) =>
                     link.name.toLowerCase().includes(_searchTerm) ||
                     monitoringTools
-                        .find((tool) => tool.value === link.monitoringToolId)
+                        .find((tool) => tool.value === link.monitoringToolId.toString())
                         ?.label.toLowerCase()
                         .includes(_searchTerm),
             )

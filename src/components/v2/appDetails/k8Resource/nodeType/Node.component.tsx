@@ -26,13 +26,14 @@ import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
-import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
+import { getLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { start } from 'repl'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -76,6 +77,7 @@ const NodeComponent = ({
                         value: link.url,
                         icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         description: link.description,
+                        startIcon: getLinkIcon(link.url, appDetails),
                     })
                 } else if (link.url.includes('{containerName}')) {
                     _containerLevelExternalLinks.push({
@@ -83,6 +85,7 @@ const NodeComponent = ({
                         value: link.url,
                         icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         description: link.description,
+                        startIcon: getLinkIcon(link.url, appDetails),
                     })
                 }
             })

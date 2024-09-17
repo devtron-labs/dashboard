@@ -60,7 +60,7 @@ export default function AddExternalLink({
 
     useEffect(() => {
         if (selectedLink) {
-            const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId)
+            const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId.toString())
             setLinksData([
                 {
                     tool: {

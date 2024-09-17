@@ -504,7 +504,7 @@ export const Details: React.FC<DetailsType> = ({
                     monitoringTools:
                         externalLinksRes.result?.Tools?.map((tool) => ({
                             label: tool.name,
-                            value: tool.id,
+                            value: tool.id.toString(),
                             icon: tool.icon,
                         })).sort(sortOptionsByValue) || [],
                 })
