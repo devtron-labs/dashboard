@@ -1450,6 +1450,17 @@ button.anchor {
             gap: 6px;
         }
     }
+
+    &.with-menu-button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+
+        .radio:last-child>.radio__item-label {
+            border-right: none;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+    }
 }
 
 .manual-approvals-switch {

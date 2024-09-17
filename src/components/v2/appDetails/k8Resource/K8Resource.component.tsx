@@ -54,7 +54,10 @@ export const K8ResourceComponent = ({
                     className={`resource-node-wrapper flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
                     data-testid="resource-node-wrapper"
                 >
-                    <div className="k8-resources-node-tree p-8 dc__border-right" data-testid="k8-resources-node-tree">
+                    <div
+                        className="k8-resources-node-tree p-8 dc__border-right--n1"
+                        data-testid="k8-resources-node-tree"
+                    >
                         <div className="flexbox mb-8 px-12">
                             <StatusFilterButtonComponent nodes={nodes} />
                         </div>
