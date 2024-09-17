@@ -35,6 +35,7 @@ import {
     VulnerabilityAction,
     ResourceLevel,
     VulnerabilityPolicy,
+    SecurityPolicyEditState,
 } from './security.types'
 import { AddCveModal } from './AddCveModal'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
@@ -42,11 +43,10 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
 import { ViewType } from '../../config'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 
 export class SecurityPolicyEdit extends Component<
     FetchPolicyQueryParams,
-    GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean; view: string }
+    GetVulnerabilityPolicyResponse & SecurityPolicyEditState
 > {
     private vulnerabilityMetaData: VulnerabilityUIMetaData[] = [
         {
@@ -103,6 +103,7 @@ export class SecurityPolicyEdit extends Component<
                 level: this.props.level,
                 policies: [],
             },
+            isCveError: false,
         }
         this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
@@ -125,8 +126,12 @@ export class SecurityPolicyEdit extends Component<
                 })
             })
             .catch((error) => {
-                showError(error)
-                this.setState({ view: ViewType.ERROR })
+                if (error.code === 404) {
+                    this.setState({ isCveError: true })
+                } else {
+                    showError(error)
+                    this.setState({ view: ViewType.ERROR })
+                }
             })
     }
 
@@ -442,34 +447,19 @@ export class SecurityPolicyEdit extends Component<
                                         {cve.policyOrigin}
                                     </td>
                                     <td className="security-policy__data-cell">
-                                        <ReactSelect
+                                        <SelectPicker
+                                            inputId={`select-cve-${cve.name}`}
+                                            classNamePrefix={`select-cve-${cve.name}`}
                                             menuPosition="fixed"
-                                            closeMenuOnScroll
                                             value={selectedValue}
                                             onChange={(selected) => {
                                                 this.updateCVE((selected as any).value, cve, envId)
-                                            }}
-                                            components={{
-                                                DropdownIndicator,
-                                            }}
-                                            styles={{
-                                                ...styles,
-                                                ...portalStyles,
-                                                option: getCustomOptionSelectionStyle(),
                                             }}
                                             isSearchable={false}
                                             options={this.actions}
                                         />
                                     </td>
                                     <td className="security-policy__header-cell">
-                                        {/* {!cve.policy.inherited && this.props.level === cve.policyOrigin ? <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="top"
-                                        content="Delete Override">
-                                        <Close className="icon-dim-20 dc__align-right cursor" onClick={(event) => { this.deleteCve(cve.id) }} />
-                                    </Tippy> :
-                                     */}
                                         <Delete
                                             className={`icon-dim-20 dc__align-right ${
                                                 this.props.level === cve.policyOrigin ? 'cursor scn-4' : 'scn-2'
@@ -558,12 +548,17 @@ export class SecurityPolicyEdit extends Component<
         }
 
         const isCollapsible = this.props.level === 'application'
+        const setCVEErrorToTrue = () => {
+            this.setState({ isCveError: true })
+        }
+
         return (
             <>
                 {this.renderHeader()}
                 {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
                     const showCardContent = isCollapsible ? !v.isCollapsed : true
                     const envNameIndex = v?.name?.search('/')
+
                     return (
                         <div key={v.name} className="security-policy__card mb-20 flexbox-col dc__gap-12">
                             {isCollapsible && (
@@ -592,7 +587,12 @@ export class SecurityPolicyEdit extends Component<
                     )
                 })}
                 {this.state.showWhitelistModal ? (
-                    <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
+                    <AddCveModal
+                        saveCVE={this.saveCVE}
+                        close={this.toggleAddCveModal}
+                        isCveError={this.state.isCveError}
+                        setCVEErrorToTrue={setCVEErrorToTrue}
+                    />
                 ) : null}
             </>
         )
