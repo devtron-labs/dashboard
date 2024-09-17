@@ -16,7 +16,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import {
     Progressing,
     DeleteDialog,
@@ -28,16 +27,9 @@ import {
     Drawer,
     TippyTheme,
     GitOpsAuthModeType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedText,
-    getCommonSelectStyle,
-    GroupHeading,
-    Option,
-} from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
@@ -72,7 +64,6 @@ import {
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 
@@ -90,9 +81,6 @@ export const ChartEnvironmentSelector = ({
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-    const singleOption = (props) => {
-        return <EnvFormatOptions {...props} environmentfieldName="label" />
-    }
 
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
@@ -109,10 +97,6 @@ export const ChartEnvironmentSelector = ({
                 </div>
             )
         }
-    }
-
-    const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'label')
     }
 
     return !isDeployChartView ? (
@@ -137,23 +121,16 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">
-                Deploy to environment
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    SingleValue: singleOption,
-                    GroupHeading,
-                }}
+            <SelectPicker
+                label="Deploy to environment"
+                required
+                inputId="environment-select"
+                name="environment"
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
-                formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
             {renderVirtualEnvironmentInfoText()}
@@ -471,19 +448,14 @@ export const ChartProjectSelector = ({
 }: ChartProjectSelectorType): JSX.Element => {
     return (
         <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">
-                Project
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
+            <SelectPicker
+                inputId="project-select"
+                required
+                name="project"
+                label="Select Project"
                 placeholder="Select Project"
                 classNamePrefix="select-chart-project"
                 value={selectedProject}
-                styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
                 options={projects}
             />
