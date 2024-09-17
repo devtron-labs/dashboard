@@ -39,7 +39,7 @@ import {
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { GroupHeading, menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
+import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
@@ -52,7 +52,6 @@ import {
     CLUSTER_TERMINAL_MESSAGING,
     ErrorMessageType,
     IMAGE_LIST,
-    nodeSelect,
     POD_LINKS,
     PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
@@ -690,8 +689,6 @@ const ClusterTerminal = ({
         )
     }
 
-    const groupHeading = (props) => <GroupHeading {...props} hideClusterName />
-
     const terminalTabWrapper = (terminalView: () => JSX.Element) => (
         <div
             className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
@@ -875,12 +872,6 @@ node-details-full-screen
                 defaultValue: selectedNodeName,
                 value: selectedNodeName,
                 onChange: onChangeNodes,
-                styles: nodeSelect,
-                components: {
-                    IndicatorSeparator: null,
-                    GroupHeading: groupHeading,
-                    Option,
-                },
             },
             {
                 type: TerminalWrapperType.CREATABLE_SELECT,
