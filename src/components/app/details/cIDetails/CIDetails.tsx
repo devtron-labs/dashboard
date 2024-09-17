@@ -680,9 +680,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
 
     const computedAppId = appId ?? appIdFromParent
 
-    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails } =
+    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails, severityCount, totalCount } =
         useGetCISecurityDetails({
-            appId: computedAppId,
+            appId: +computedAppId,
             artifactId,
             isSecurityScanV2Enabled,
         })
@@ -727,14 +727,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         return <ImageNotScannedView />
     }
 
-    const scanResultSeverities = scanResultResponse?.result.imageScan.vulnerability?.summary.severities // For scan-result Api
-    const severityCount: SeverityCount = isSecurityScanV2Enabled
-        ? getSeverityCountFromSummary(scanResultSeverities)
-        : executionDetailsResponse?.result.severityCount ?? { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
-
-    const totalSeverities = getTotalSeverityCount(severityCount)
-
-    if (artifactId && !totalSeverities) {
+    if (artifactId && !totalCount) {
         return (
             <NoVulnerabilityViewWithTool
                 scanToolId={isSecurityScanV2Enabled ? SCAN_TOOL_ID_TRIVY : executionDetailsResponse.result?.scanToolId} // Since v2 scan is via trivy only

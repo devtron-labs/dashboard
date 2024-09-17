@@ -2,7 +2,10 @@ import {
     ApiResponseResultType,
     AppDetailsPayload,
     getExecutionDetails,
+    getSeverityCountFromSummary,
+    getTotalSeverityCount,
     ResponseType,
+    SeverityCount,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -22,25 +25,36 @@ export const useGetAppSecurityDetails = ({
     appId,
     envId,
     installedAppId,
+    imageScanDeployInfoId,
     isSecurityScanV2Enabled,
 }: UseGetAppSecurityDetailsProps): UseGetAppSecurityDetailsReturnType => {
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
         () => getSecurityScan({ appId, envId, installedAppId }),
         [appId, envId, installedAppId],
-        getSecurityScan && isSecurityScanV2Enabled,
+        getSecurityScan && isSecurityScanV2Enabled && (!!appId || !!installedAppId),
     )
 
     const [executionDetailsLoading, executionDetailsResponse, executionDetailsError, reloadExecutionDetails] = useAsync(
-        () => getExecutionDetails({ appId, envId }),
-        [appId, envId],
-        !isSecurityScanV2Enabled,
+        () => getExecutionDetails({ appId, envId, imageScanDeployInfoId }),
+        [appId, envId, imageScanDeployInfoId],
+        !isSecurityScanV2Enabled && !!appId,
     )
+
+    const scanDetailsResponse = isSecurityScanV2Enabled ? scanResultResponse : executionDetailsResponse
+
+    const severities = isSecurityScanV2Enabled
+        ? scanResultResponse?.result.imageScan.vulnerability?.summary.severities
+        : executionDetailsResponse?.result.imageScan.vulnerability?.summary.severities
+    const severityCount: SeverityCount = getSeverityCountFromSummary(severities)
+
+    const totalCount = getTotalSeverityCount(severityCount)
 
     return {
         scanDetailsLoading: scanResultLoading || executionDetailsLoading,
-        scanResultResponse,
-        executionDetailsResponse,
+        scanDetailsResponse,
         scanDetailsError: scanResultError || executionDetailsError,
         reloadScanDetails: isSecurityScanV2Enabled ? reloadScanResult : reloadExecutionDetails,
+        severityCount,
+        totalCount,
     }
 }

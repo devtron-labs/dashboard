@@ -1581,7 +1581,6 @@ const CDMaterial = ({
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
-                                isScanV2Enabled={isScanV2Enabled}
                                 SecurityModalSidebar={SecurityModalSidebar}
                                 getSecurityScan={getSecurityScan}
                             />

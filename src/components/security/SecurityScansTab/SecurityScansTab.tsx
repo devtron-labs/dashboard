@@ -20,10 +20,10 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     SecurityModal,
-    getExecutionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
+import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import {
@@ -66,16 +66,14 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const [executionDetailsLoading, executionDetailsResponse, executionsDetailsError] = useAsync(
-        () =>
-            getExecutionDetails({
-                appId: scanDetails.uniqueId.appId,
-                envId: scanDetails.uniqueId.envId,
-                imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
-            }),
-        [scanDetails],
-        !!scanDetails.uniqueId.appId,
-    )
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && SecurityModalSidebar
+
+    const { scanDetailsLoading, scanDetailsResponse, scanDetailsError } = useGetAppSecurityDetails({
+        appId: scanDetails.uniqueId.appId,
+        envId: scanDetails.uniqueId.envId,
+        imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
+        isSecurityScanV2Enabled,
+    })
 
     const payload: ScanListPayloadType = {
         offset,
@@ -362,11 +360,11 @@ export const SecurityScansTab = () => {
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}
                     Sidebar={SecurityModalSidebar}
-                    isSecurityScanV2Enabled={false}
+                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
                     isHelmApp={false}
-                    isLoading={executionDetailsLoading}
-                    error={executionsDetailsError}
-                    responseData={executionDetailsResponse?.result}
+                    isLoading={scanDetailsLoading}
+                    error={scanDetailsError}
+                    responseData={scanDetailsResponse?.result}
                 />
             )
         }
