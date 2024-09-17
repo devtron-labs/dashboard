@@ -4799,12 +4799,6 @@ textarea::placeholder {
             border: none;
         }
     }
-
-    .dc__transition {
-        &--transform {
-            transition: transform 0.3s;
-        }
-    }
 }
 
 .dc__even-child {
