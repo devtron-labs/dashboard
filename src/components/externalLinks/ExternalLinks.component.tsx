@@ -67,21 +67,6 @@ export const ExternalLinksLearnMore = (): JSX.Element => {
     )
 }
 
-export const getLinkIcon = (link: string, details) => {
-    console.log(link, 'link')
-    return (
-        <a
-            key={link}
-            href={getParsedURL(true, link, details)}
-            target="_blank"
-            className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
-            rel="noreferrer"
-        >
-            <img className="icon-dim-20 mr-12" src={link} alt={link} onError={onImageLoadError} />
-        </a>
-    )
-}
-
 export const NoExternalLinksView = ({
     handleAddLinkClick,
     isAppConfigView,
@@ -168,12 +153,11 @@ export const AppLevelExternalLinks = ({
             const filteredLinks = externalLinks.filter(filterAppLevelExternalLinks)
             setAppLevelExternalLinks(
                 filteredLinks.map((link) => {
-                    console.log('monitor icon', getMonitoringToolIcon(monitoringTools, link.monitoringToolId))
                     return {
                         label: link.name,
                         value: link.url,
                         icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                        startIcon: getLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId), details),
+                        startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                         description: link.description,
                     }
                 }),
