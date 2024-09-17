@@ -1,4 +1,5 @@
 import {
+    CompareFromApprovalOptionsValuesType,
     DeploymentChartVersionType,
     DeploymentTemplateConfigState,
     SelectPickerOptionType,
@@ -18,4 +19,8 @@ export interface CompareTemplateViewProps extends Pick<DeploymentTemplateConfigS
     compareWithOptions: CompareWithTemplateGroupedSelectPickerOptionType[]
     handleCompareWithOptionChange: (option: SelectPickerOptionType) => void
     selectedCompareWithOption: SelectPickerOptionType
+    isApprovalView: boolean
+    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
+    handleCompareFromOptionSelection: (option: SelectPickerOptionType) => void
+    draftChartVersion: string
 }

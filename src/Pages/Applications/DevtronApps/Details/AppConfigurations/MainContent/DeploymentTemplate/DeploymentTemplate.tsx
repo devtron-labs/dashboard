@@ -26,6 +26,7 @@ import {
     SelectPickerOptionType,
     TemplateListType,
     ValuesAndManifestFlagDTO,
+    CompareFromApprovalOptionsValuesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -168,19 +169,26 @@ const DeploymentTemplate = ({
     const [showLockedTemplateDiffModal, setShowLockedTemplateDiffModal] = useState<boolean>(false)
     const [showSaveChangesModal, setShowSaveChangesModal] = useState<boolean>(false)
 
+    // FIXME: Need clean up as well on reload
     // Compare view states
     const [templateListMap, setTemplateListMap] = useState<Record<number, TemplateListItemType>>({})
     const [isComparisonViewLoading, setIsComparisonViewLoading] = useState<boolean>(false)
     const [compareWithSelectedOption, setCompareWithSelectedOption] = useState<SelectPickerOptionType>(
         COMPARE_WITH_BASE_TEMPLATE_OPTION,
     )
+    const [resolvedBaseDeploymentTemplate, setResolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
+        originalTemplate: '',
+        templateWithoutLockedKeys: '',
+    })
     // Question: Should it contain data for -1?
     const [compareWithValuesDataStore, setCompareWithValuesDataStore] = useState<
         Record<number, CompareWithValuesDataStoreItemType>
     >({})
+    const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
+        useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
 
-    // Question: Have remove appId dependency is it fine?
-    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
+    // Question: Can remove appId dependency?
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
 
     const { selectedTab, updateSearchParams, showReadMe, editMode } = useUrlFilters<
         never,
@@ -282,6 +290,15 @@ const DeploymentTemplate = ({
         return initialOptions.filter((option) => option.options.length)
     })()
 
+    const handleRemoveResolvedVariables = () => {
+        setIsResolvingVariables(false)
+        setResolveScopedVariables(false)
+    }
+
+    const handleCompareFromOptionSelection = (option: SelectPickerOptionType) => {
+        setCompareFromSelectedOptionValue(option.value as CompareFromApprovalOptionsValuesType)
+    }
+
     const getChartList = async () => {
         const chartRefResp = await getChartReferences(+appId)
 
@@ -296,11 +313,6 @@ const DeploymentTemplate = ({
         }
 
         return chartRefsData
-    }
-
-    const handleRemoveResolvedVariables = () => {
-        setIsResolvingVariables(false)
-        setResolveScopedVariables(false)
     }
 
     const handleEnableWasGuiOrHideLockedKeysEdited = () => {
@@ -361,7 +373,6 @@ const DeploymentTemplate = ({
      * @description - Based on views gives out payload for fetching resolved variables
      * - In case of published view, we need original resolved template of published template for GUI mode
      * - In case of edit view,  we need original resolved template of initial original state of current editor for GUI mode
-     * - In case of compare mode, we need to get resolved template of base deployment template FIXME: Can limit this call as well and store this in state
      */
     const getPayloadForOriginalTemplateVariables = (
         editorTemplateData: typeof currentEditorTemplateData,
@@ -377,20 +388,9 @@ const DeploymentTemplate = ({
             }
         }
 
-        // FIXME: should not reside here
-        if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-            // TODO: Fill later for override case since there the base deployment template is different
-            return {
-                appId: +appId,
-                chartRefId: publishedTemplateData.selectedChartRefId,
-                values: publishedTemplateData.editorTemplate,
-                valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
-                ...(envId && { envId: +envId }),
-            }
-        }
-
         return {
             appId: +appId,
+            // FIXME: in case of draft mode selectedChartRefId can be different
             chartRefId: editorTemplateData.selectedChartRefId,
             values: YAMLStringify(editorTemplateData.originalTemplate),
             valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
@@ -466,8 +466,12 @@ const DeploymentTemplate = ({
         // TODO: can think about adding abort controller
         try {
             setIsResolvingVariables(true)
+            const shouldFetchResolvedBaseDeploymentTemplate =
+                selectedTab === DeploymentTemplateTabsType.COMPARE &&
+                compareWithSelectedOption.value === BASE_DEPLOYMENT_TEMPLATE_ENV_ID &&
+                !resolvedBaseDeploymentTemplate.originalTemplate
 
-            const [currentEditorTemplate, defaultTemplate] = await Promise.all([
+            const [currentEditorTemplate, defaultTemplate, baseTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
                     appId: +appId,
                     chartRefId: editorTemplateData.selectedChartRefId,
@@ -476,7 +480,28 @@ const DeploymentTemplate = ({
                     ...(envId && { envId: +envId }),
                 }),
                 getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables(editorTemplateData)),
+                // FIXME: Handle override
+                shouldFetchResolvedBaseDeploymentTemplate
+                    ? getResolvedDeploymentTemplate({
+                          appId: +appId,
+                          chartRefId: publishedTemplateData?.selectedChartRefId,
+                          values: publishedTemplateData?.editorTemplate,
+                          valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+                      })
+                    : null,
             ])
+
+            if (shouldFetchResolvedBaseDeploymentTemplate && baseTemplate) {
+                const { editorTemplate: resolvedBaseTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+                    baseTemplate.resolvedData,
+                    // No need to send locked keys here since on load we do not resolve scoped variables
+                )
+
+                setResolvedBaseDeploymentTemplate({
+                    originalTemplate: baseTemplate.resolvedData,
+                    templateWithoutLockedKeys: resolvedBaseTemplateWithoutLockedKeys,
+                })
+            }
 
             // FIXME: Simplify this
             if (!currentEditorTemplate.areVariablesPresent || selectedTab !== DeploymentTemplateTabsType.COMPARE) {
@@ -529,9 +554,7 @@ const DeploymentTemplate = ({
     }
 
     const handleEditorChange = (value: string) => {
-        // TODO: Complete this
-        const isCompareAndApprovalState = false
-        if (resolveScopedVariables || isCompareAndApprovalState) {
+        if (resolveScopedVariables || isApprovalView) {
             return
         }
 
@@ -600,6 +623,8 @@ const DeploymentTemplate = ({
             return publishedTemplateData.selectedChart
         }
 
+        // Not added the case of approval pending view in compare since thats not an editor state
+
         return currentEditorTemplateData?.selectedChart
     }
 
@@ -614,6 +639,13 @@ const DeploymentTemplate = ({
     const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] => {
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.schema
+        }
+
+        if (
+            isApprovalView &&
+            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
+        ) {
+            return draftTemplateData.schema
         }
 
         return currentEditorTemplateData?.schema
@@ -826,7 +858,6 @@ const DeploymentTemplate = ({
         setPublishedTemplateData(null)
         setCurrentEditorTemplateData(null)
         setDraftTemplateData(null)
-
         setIsLoadingInitialData(true)
         setInitialLoadError(null)
 
@@ -1039,6 +1070,7 @@ const DeploymentTemplate = ({
 
     const handleTabSelection = (index: DeploymentTemplateTabsType) => {
         handleRemoveResolvedVariables()
+        // FIXME: Do not let user change tab in case of parsing error
 
         switch (index) {
             // 1 is published in case of protected config else current values in case of normal
@@ -1158,23 +1190,32 @@ const DeploymentTemplate = ({
 
     const getCurrentEditorValue = (): string => {
         if (resolveScopedVariables) {
-            if (hideLockedKeys) {
-                return resolvedEditorTemplate.templateWithoutLockedKeys
+            if (
+                isApprovalView &&
+                compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
+            ) {
+                return hideLockedKeys
+                    ? resolvedOriginalTemplate.templateWithoutLockedKeys
+                    : resolvedOriginalTemplate.originalTemplate
             }
 
-            return resolvedEditorTemplate.originalTemplate
+            // Since editor is disabled for scoped variables we do'nt need to worry about keys changing in editor
+            return hideLockedKeys
+                ? resolvedEditorTemplate.templateWithoutLockedKeys
+                : resolvedEditorTemplate.originalTemplate
         }
 
         if (isPublishedValuesView) {
-            if (hideLockedKeys) {
-                return publishedTemplateData.editorTemplateWithoutLockedKeys
-            }
-
-            return publishedTemplateData.editorTemplate
+            return hideLockedKeys
+                ? publishedTemplateData.editorTemplateWithoutLockedKeys
+                : publishedTemplateData.editorTemplate
         }
 
-        if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-            // TODO: Have to consider both draft and approval
+        if (
+            isApprovalView &&
+            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
+        ) {
+            return hideLockedKeys ? draftTemplateData.editorTemplateWithoutLockedKeys : draftTemplateData.editorTemplate
         }
 
         if (currentEditorTemplateData) {
@@ -1196,9 +1237,7 @@ const DeploymentTemplate = ({
             return YAMLStringify(publishedTemplateData.originalTemplate)
         }
 
-        if (selectedTab === DeploymentTemplateTabsType.COMPARE) {
-            // TODO: Have to consider both draft and approval
-        }
+        // No need to handle compare mode since not using this there
 
         if (currentEditorTemplateData) {
             return YAMLStringify(currentEditorTemplateData.originalTemplate)
@@ -1266,8 +1305,8 @@ const DeploymentTemplate = ({
         if (compareWithSelectedOption.value === COMPARE_WITH_BASE_TEMPLATE_OPTION.value) {
             if (resolveScopedVariables) {
                 return hideLockedKeys
-                    ? resolvedOriginalTemplate.templateWithoutLockedKeys
-                    : resolvedOriginalTemplate.originalTemplate
+                    ? resolvedBaseDeploymentTemplate.templateWithoutLockedKeys
+                    : resolvedBaseDeploymentTemplate.originalTemplate
             }
 
             // FIXME:
@@ -1328,6 +1367,10 @@ const DeploymentTemplate = ({
                     selectedCompareWithOption={compareWithSelectedOption}
                     handleCompareWithOptionChange={handleCompareWithOptionChange}
                     readOnly={isApprovalView || resolveScopedVariables}
+                    isApprovalView={isApprovalView}
+                    compareFromSelectedOptionValue={compareFromSelectedOptionValue}
+                    handleCompareFromOptionSelection={handleCompareFromOptionSelection}
+                    draftChartVersion={draftTemplateData?.selectedChart?.version}
                 />
             )
         }

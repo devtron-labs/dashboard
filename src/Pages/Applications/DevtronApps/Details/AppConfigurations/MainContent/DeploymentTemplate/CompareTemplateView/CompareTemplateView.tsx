@@ -1,6 +1,9 @@
 import { CodeEditor, MODES, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { CompareTemplateViewProps } from './types'
+
+const CompareFromApprovalSelector = importComponentFromFELibrary('CompareFromApprovalSelector', null, 'function')
 
 const CompareTemplateView = ({
     schema,
@@ -13,6 +16,10 @@ const CompareTemplateView = ({
     compareWithOptions,
     handleCompareWithOptionChange,
     selectedCompareWithOption,
+    isApprovalView,
+    compareFromSelectedOptionValue,
+    handleCompareFromOptionSelection,
+    draftChartVersion,
 }: CompareTemplateViewProps) => {
     const renderActiveEditorHeader = () => (
         <div className="flexbox dc__content-space w-100 dc__gap-8 dc__align-items-center">
@@ -63,7 +70,16 @@ const CompareTemplateView = ({
 
                             <div className="flexbox px-16 py-6 w-100">
                                 {/* TODO: First handling normal compare */}
-                                {renderActiveEditorHeader()}
+                                {isApprovalView && CompareFromApprovalSelector ? (
+                                    <CompareFromApprovalSelector
+                                        selectedOptionValue={compareFromSelectedOptionValue}
+                                        handleCompareFromOptionSelection={handleCompareFromOptionSelection}
+                                        draftChartVersion={draftChartVersion || ''}
+                                        currentEditorChartVersion={currentEditorSelectedChart?.version || ''}
+                                    />
+                                ) : (
+                                    renderActiveEditorHeader()
+                                )}
                             </div>
                         </div>
 

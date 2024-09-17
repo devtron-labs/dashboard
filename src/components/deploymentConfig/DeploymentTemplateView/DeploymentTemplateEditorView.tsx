@@ -26,8 +26,6 @@ import {
     useDeploymentTemplateContext,
     DeploymentConfigStateActionTypes,
     DeploymentChartOptionType,
-    ToastVariantType,
-    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import {
