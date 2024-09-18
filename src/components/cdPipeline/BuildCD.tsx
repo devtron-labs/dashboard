@@ -409,6 +409,7 @@ export default function BuildCD({
                     isDisabled={!!cdPipelineId}
                     classNamePrefix="cd-pipeline-environment-dropdown"
                     placeholder="Select Environment"
+                    autoFocus
                     options={
                         releaseMode === ReleaseMode.MIGRATE_HELM
                             ? getEnvListOptions().filter((env) => !env.isVirtualEnvironment)

@@ -347,7 +347,7 @@ export interface CIPipelineSidebarType {
             postBuildStage: Map<string, VariableType>[]
         }>
     >
-    environments?: any[]
+    environments?: Environment[]
     selectedEnv?: Environment
     setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
 }
