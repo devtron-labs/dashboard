@@ -26,6 +26,8 @@ import {
     SortableTableHeaderCell,
     noop,
     Tooltip,
+    TabGroup,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
@@ -337,7 +339,9 @@ const NodeComponent = ({
                             )}
                         </div>
                     )}
-                    <div className={`node-row resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8': 'pl-18'} ${nodeRowClassModifier}`}>
+                    <div
+                        className={`node-row resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier}`}
+                    >
                         <div
                             className="flex left dc__gap-8"
                             onClick={() => {
@@ -519,21 +523,32 @@ const NodeComponent = ({
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header dc__border-bottom-n1 pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 dc__capitalize">
-                                <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
-                                <span>({selectedNodes.length})</span>
-                            </div>
-                            {selectedHealthyNodeCount > 0 && (
-                                <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
-                            )}
+                        <div className="px-16 dc__border-bottom-n1">
+                            <TabGroup
+                                tabs={[
+                                    {
+                                        id: 'node-detail',
+                                        label: selectedNodes?.[0]?.kind || '',
+                                        tabType: 'block',
+                                        badge: selectedNodes.length,
+                                        description: selectedHealthyNodeCount
+                                            ? `${selectedHealthyNodeCount} healthy`
+                                            : `${selectedNodes.length} resource(s)`,
+                                    },
+                                ]}
+                                size={ComponentSizeType.xl}
+                                alignActiveBorderWithContainer
+                            />
                         </div>
                     )}
 
                     <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
                         {tableHeader.map((cell, index) => {
                             return (
-                                <div key={`gpt_${index}`} className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : 'pl-10'}`}>
+                                <div
+                                    key={`gpt_${index}`}
+                                    className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
+                                >
                                     <SortableTableHeaderCell
                                         disabled={false}
                                         isSortable={false}
