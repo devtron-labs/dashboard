@@ -321,7 +321,7 @@ const ResourceList = () => {
             ? [
                   <AdminTerminal
                       key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
-                      isSuperAdmin={isSuperAdmin}
+                      isSuperAdmin={window._env_.K8S_CLIENT || isSuperAdmin}
                       updateTerminalTabUrl={updateTerminalTabUrl}
                   />,
               ]

@@ -90,18 +90,22 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
                     <div className="cursor dc__visible-hover--child ml-8">
                         <div className="flexbox dc__align-items-center dc__gap-4">
-                            {!!clusterData.nodeCount && !clusterListLoader && isSuperAdmin && (
-                                <Tooltip alwaysShowTippyOnHover content="View terminal">
-                                    <div className="flex">
-                                        <TerminalIcon
-                                            data-testid={`cluster-terminal-${clusterData.name}`}
-                                            className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
-                                            onClick={getOpenTerminalHandler(clusterData)}
-                                        />
-                                    </div>
-                                </Tooltip>
+                            {!!clusterData.nodeCount &&
+                                !clusterListLoader &&
+                                (isSuperAdmin || window._env_.K8S_CLIENT) && (
+                                    <Tooltip alwaysShowTippyOnHover content="View terminal">
+                                        <div className="flex">
+                                            <TerminalIcon
+                                                data-testid={`cluster-terminal-${clusterData.name}`}
+                                                className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
+                                                onClick={getOpenTerminalHandler(clusterData)}
+                                            />
+                                        </div>
+                                    </Tooltip>
+                                )}
+                            {!window._env_.K8S_CLIENT && KubeConfigButton && (
+                                <KubeConfigButton clusterName={clusterData.name} />
                             )}
-                            {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
                         </div>
                     </div>
                 </div>
