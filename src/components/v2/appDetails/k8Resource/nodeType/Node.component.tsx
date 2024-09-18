@@ -33,7 +33,6 @@ import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
-import { start } from 'repl'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
