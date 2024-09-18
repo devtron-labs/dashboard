@@ -407,7 +407,10 @@ export const Details: React.FC<DetailsType> = ({
             .then((response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
+                if (
+                    !response.result.isPipelineTriggered &&
+                    response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT
+                ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
@@ -609,7 +612,7 @@ export const Details: React.FC<DetailsType> = ({
     const environmentName = environmentsMap[+envId]
 
     const renderAppDetails = (): JSX.Element => {
-        if (isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
+        if (!appDetails.resourceTree && isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={environmentName} />
         }
         return (
@@ -905,10 +908,10 @@ export const EnvSelector = ({
             return acc
         }, []) || []
 
-        // Pushing the virtual environment group to the end of the list
-        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
-            groupList.reverse()
-        }
+    // Pushing the virtual environment group to the end of the list
+    if (groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+        groupList.reverse()
+    }
 
     return (
         <>

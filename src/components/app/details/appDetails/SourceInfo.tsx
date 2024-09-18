@@ -24,6 +24,7 @@ import {
     getIsManualApprovalConfigured,
     ReleaseMode,
     showError,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
@@ -43,6 +44,8 @@ import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
+import { ConfigApplyStatusCard } from './ConfigApplyStatusCard'
+import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -172,18 +175,17 @@ export const SourceInfo = ({
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
                 />
                 {appDetails?.deploymentAppType && (
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
+                    <Tooltip
                         placement="top"
+                        alwaysShowTippyOnHover={!appDetails.isVirtualEnvironment}
                         content={`Deployed using ${
                             isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        <div className="flex">
+                        <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </div>
-                    </Tippy>
+                    </Tooltip>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
@@ -207,10 +209,7 @@ export const SourceInfo = ({
                                     </button>
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -228,10 +227,7 @@ export const SourceInfo = ({
                                     </ConditionalWrap>
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -289,7 +285,7 @@ export const SourceInfo = ({
                 : !isdeploymentAppDeleting &&
                   environment && (
                       <div className="flex left w-100">
-                          {!isVirtualEnvironment && (
+                          {status && (
                               <AppStatusCard
                                   appDetails={appDetails}
                                   status={status}
@@ -298,7 +294,6 @@ export const SourceInfo = ({
                                   message={message}
                               />
                           )}
-                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                           {!helmMigratedAppNotTriggered && (
                               <>
                                   {!loadingResourceTree && (
@@ -309,6 +304,17 @@ export const SourceInfo = ({
                                           setDetailed={setDetailed}
                                       />
                                   )}
+                                  {isVirtualEnvironment && appDetails?.resourceTree && (
+                                      <HelmAppConfigApplyStatusCard
+                                          cardLoading={cardLoading}
+                                          releaseStatus={appDetails.resourceTree.releaseStatus}
+                                      />
+                                  )}
+                              </>
+                          )}
+                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          {!helmMigratedAppNotTriggered && (
+                              <>
                                   <DeploymentStatusCard
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}

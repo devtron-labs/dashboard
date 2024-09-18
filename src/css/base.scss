@@ -4063,6 +4063,14 @@ textarea,
     overflow-x: scroll;
 }
 
+.dc__overflow-initial {
+    overflow: initial;
+
+    &--imp {
+        overflow: initial !important;
+    }
+}
+
 .dc__no-svg-fill {
     path {
         fill: none !important;
