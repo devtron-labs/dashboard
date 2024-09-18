@@ -202,15 +202,6 @@ const AppComposeRouter = () => {
             )}
             {isUnlocked.deploymentTemplate && (
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                    {/* TODO: Based on flag can toggle */}
-                    {/* <DeploymentConfig
-                        respondOnSuccess={respondOnSuccess}
-                        isUnSet={!isUnlocked.workflowEditor}
-                        isCiPipeline={isCiPipeline}
-                        environments={environments}
-                        isProtected={isBaseConfigProtected}
-                        reloadEnvironments={reloadEnvironments}
-                    /> */}
                     <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}

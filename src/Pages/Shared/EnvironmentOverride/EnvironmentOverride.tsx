@@ -30,9 +30,9 @@ import {
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
-import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { DeploymentTemplate } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'
@@ -148,15 +148,12 @@ const EnvironmentOverride = ({
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                        <DeploymentTemplateOverride
+                        <DeploymentTemplate
                             key={`deployment-${params.appId}-${params.envId}`}
-                            parentState={viewState}
-                            setParentState={setViewState}
                             environments={environments}
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
-                            fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>

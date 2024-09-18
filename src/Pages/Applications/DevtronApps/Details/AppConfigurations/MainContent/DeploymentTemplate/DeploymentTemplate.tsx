@@ -27,6 +27,8 @@ import {
     TemplateListType,
     ValuesAndManifestFlagDTO,
     CompareFromApprovalOptionsValuesType,
+    noop,
+    SelectedChartDetailsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -45,12 +47,14 @@ import {
 import DeploymentConfigToolbar from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { getDeploymentTemplate as getEnvOverrideDeploymentTemplate } from '@Pages/Shared/EnvironmentOverride/service'
 import {
     CompareWithTemplateGroupedSelectPickerOptionType,
     CompareWithValuesDataStoreItemType,
     DeploymentTemplateChartStateType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
+    HandleFetchDeploymentTemplateReturnType,
     ResolvedEditorTemplateType,
     TemplateListItemType,
 } from './types'
@@ -66,6 +70,8 @@ import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import { CompareTemplateView } from './CompareTemplateView'
 import { getCompareWithOptionsLabel } from './CompareTemplateView/utils'
 import { getCompareWithTemplateOptionsLabel } from './utils'
+import { useAppConfigurationContext } from '../../AppConfiguration.provider'
+import './DeploymentTemplate.scss'
 
 // TODO: Verify null checks for all
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -87,10 +93,9 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 
 // FIXME: What if selectedTab is 3 and person re-freshes the page and it was approved? and cases like that
 const DeploymentTemplate = ({
-    // TODO: Might have to make optional
-    respondOnSuccess,
-    isUnSet,
-    isCiPipeline,
+    respondOnSuccess = noop,
+    isUnSet = false,
+    isCiPipeline = false,
     // FIXME: Why unused?
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     environments,
@@ -98,10 +103,10 @@ const DeploymentTemplate = ({
     reloadEnvironments,
     environmentName,
 }: DeploymentTemplateProps) => {
-    // TODO: fetchEnvConfig(-1)
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
     const { isSuperAdmin } = useMainContext()
+    const { fetchEnvConfig } = useAppConfigurationContext()
 
     const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true)
     const [initialLoadError, setInitialLoadError] = useState<ServerErrors>(null)
@@ -169,23 +174,30 @@ const DeploymentTemplate = ({
     const [showLockedTemplateDiffModal, setShowLockedTemplateDiffModal] = useState<boolean>(false)
     const [showSaveChangesModal, setShowSaveChangesModal] = useState<boolean>(false)
 
-    // FIXME: Need clean up as well on reload
+    // FIXME: Need clean up as well on reload for states below
     // Compare view states
     const [templateListMap, setTemplateListMap] = useState<Record<number, TemplateListItemType>>({})
     const [isComparisonViewLoading, setIsComparisonViewLoading] = useState<boolean>(false)
     const [compareWithSelectedOption, setCompareWithSelectedOption] = useState<SelectPickerOptionType>(
         COMPARE_WITH_BASE_TEMPLATE_OPTION,
     )
-    const [resolvedBaseDeploymentTemplate, setResolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
-        originalTemplate: '',
-        templateWithoutLockedKeys: '',
-    })
     // Question: Should it contain data for -1?
     const [compareWithValuesDataStore, setCompareWithValuesDataStore] = useState<
         Record<number, CompareWithValuesDataStoreItemType>
     >({})
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
         useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
+
+    // FIXME: Remove later when done with compare mode
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [baseDeploymentTemplate, setBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
+        originalTemplate: '',
+        templateWithoutLockedKeys: '',
+    })
+    const [resolvedBaseDeploymentTemplate, setResolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
+        originalTemplate: '',
+        templateWithoutLockedKeys: '',
+    })
 
     // Question: Can remove appId dependency?
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
@@ -300,10 +312,13 @@ const DeploymentTemplate = ({
     }
 
     const getChartList = async () => {
-        const chartRefResp = await getChartReferences(+appId)
+        const chartRefResp = await getChartReferences(+appId, +envId)
 
-        const { chartRefs, latestAppChartRef, latestChartRef, chartMetadata } = chartRefResp.result
-        const selectedChartId: number = latestAppChartRef || latestChartRef
+        const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
+        // Adding another layer of security
+        const envChartRef = envId ? latestEnvChartRef : null
+
+        const selectedChartId: number = envChartRef || latestAppChartRef || latestChartRef
         const chart = chartRefs.find((chartRef) => chartRef.id === selectedChartId)
         const chartRefsData = {
             charts: chartRefs,
@@ -619,7 +634,6 @@ const DeploymentTemplate = ({
         })
     }
 
-    // TODO: Need to add case for readme in all these
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => {
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.selectedChart
@@ -660,56 +674,131 @@ const DeploymentTemplate = ({
         chartId: number,
         chartName: string,
         lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
-    ): Promise<Omit<DeploymentTemplateConfigState, 'selectedChartRefId' | 'selectedChart'>> => {
+    ): Promise<HandleFetchDeploymentTemplateReturnType> => {
         // TODO: send abortController here
+        if (!envId) {
+            const {
+                result: {
+                    globalConfig: {
+                        defaultAppOverride,
+                        id,
+                        refChartTemplate,
+                        refChartTemplateVersion,
+                        isAppMetricsEnabled,
+                        chartRefId,
+                        readme,
+                        schema,
+                    },
+                    guiSchema,
+                },
+            } = await getDeploymentTemplate(+appId, chartId, null, chartName)
+
+            const stringifiedTemplate = YAMLStringify(defaultAppOverride)
+            const response: Omit<
+                DeploymentTemplateConfigState,
+                keyof SelectedChartDetailsType | 'editorTemplateWithoutLockedKeys'
+            > = {
+                originalTemplate: defaultAppOverride,
+                schema,
+                readme,
+                guiSchema,
+                isAppMetricsEnabled,
+                // FIXME: IF i remove chartConfig TS is not throwing error need to check
+                chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+                editorTemplate: stringifiedTemplate,
+            }
+
+            const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+                stringifiedTemplate,
+                lockedConfigKeys,
+            )
+            return {
+                globalTemplate: stringifiedTemplate,
+                templateConfig: { ...response, editorTemplateWithoutLockedKeys },
+            }
+        }
+
         const {
             result: {
-                globalConfig: {
-                    defaultAppOverride,
-                    id,
-                    refChartTemplate,
-                    refChartTemplateVersion,
-                    isAppMetricsEnabled,
-                    chartRefId,
-                    readme,
-                    schema,
-                },
+                // This is the base deployment template
+                globalConfig,
+                // TODO: Check if null check is needed here for environmentConfig
+                environmentConfig: { id, status, manualReviewed, active, namespace, envOverrideValues },
                 guiSchema,
+                IsOverride,
+                schema,
+                readme,
+                appMetrics,
             },
-        } = await getDeploymentTemplate(+appId, chartId, null, chartName)
+        } = await getEnvOverrideDeploymentTemplate(+appId, +envId, chartId, chartName)
 
-        const stringifiedTemplate = YAMLStringify(defaultAppOverride)
-        const response = {
-            originalTemplate: defaultAppOverride,
+        const originalTemplate = IsOverride ? envOverrideValues || globalConfig : globalConfig
+        const stringifiedTemplate = YAMLStringify(originalTemplate)
+
+        const response: Omit<
+            DeploymentTemplateConfigState,
+            keyof SelectedChartDetailsType | 'editorTemplateWithoutLockedKeys'
+        > = {
+            originalTemplate,
             schema,
             readme,
             guiSchema,
-            isAppMetricsEnabled,
-            chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+            isAppMetricsEnabled: appMetrics,
             editorTemplate: stringifiedTemplate,
+            isOverridden: !!IsOverride,
+            // FIXME: IF i remove environmentConfig TS is not throwing error need to check
+            environmentConfig: {
+                id,
+                status,
+                manualReviewed,
+                active,
+                namespace,
+            },
         }
 
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
             stringifiedTemplate,
             lockedConfigKeys,
         )
-        return { ...response, editorTemplateWithoutLockedKeys }
+
+        return {
+            globalTemplate: YAMLStringify(globalConfig),
+            templateConfig: {
+                ...response,
+                editorTemplateWithoutLockedKeys,
+            },
+        }
     }
 
     const handleInitializePublishedData = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedConfigKeys: string[],
-    ): Promise<DeploymentTemplateConfigState> => {
-        const publishedTemplateDetails = await handleFetchDeploymentTemplate(
+    ): Promise<DeploymentTemplateConfigState & SelectedChartDetailsType> => {
+        const { globalTemplate, templateConfig } = await handleFetchDeploymentTemplate(
             +chartRefsData.selectedChartRefId,
             chartRefsData.selectedChart.name,
             lockedConfigKeys,
         )
 
-        const templateDataWithSelectedChartDetails: DeploymentTemplateConfigState = {
-            ...publishedTemplateDetails,
+        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+            globalTemplate,
+            lockedConfigKeys,
+        )
+
+        setBaseDeploymentTemplate({
+            originalTemplate: globalTemplate,
+            templateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
+        })
+
+        const chartInfo: SelectedChartDetailsType = {
             selectedChart: chartRefsData.selectedChart,
             selectedChartRefId: chartRefsData.selectedChartRefId,
+        }
+
+        // FIXME: There is a complex typing issue here need to resolve it later
+        const templateDataWithSelectedChartDetails: any = {
+            ...templateConfig,
+            ...chartInfo,
         }
 
         setPublishedTemplateData(templateDataWithSelectedChartDetails)
@@ -729,7 +818,7 @@ const DeploymentTemplate = ({
     }
 
     // Should it be method or should duplicate?
-    const handleInitializePublishedDataWithCurrentEditorData = async (
+    const handleInitializePublishedDataAndCurrentEditorData = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedConfigKeys: string[],
     ) => {
@@ -737,45 +826,14 @@ const DeploymentTemplate = ({
         handleInitializeCurrentEditorWithPublishedData(publishedData)
     }
 
-    // Should remove edit draft mode in case of error?
-    const handleLoadProtectedDeploymentTemplate = async (
+    // TODO: Needs to confirm type with BE
+    const handleInitializeDraftData = (
+        latestDraft: any,
+        guiSchema: string,
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedConfigKeys: string[],
-    ) => {
-        // In case of error of draftResponse
-        const [draftPromiseResponse, publishedDataPromiseResponse] = await Promise.allSettled([
-            getDraftByResourceName(
-                +appId,
-                +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
-                3,
-                environmentName
-                    ? `${environmentName}-DeploymentTemplateOverride`
-                    : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
-            ),
-            handleInitializePublishedData(chartRefsData, lockedConfigKeys),
-        ])
-
-        if (publishedDataPromiseResponse.status === 'rejected') {
-            throw publishedDataPromiseResponse.reason
-        }
-
-        if (draftPromiseResponse.status === 'rejected') {
-            handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
-            return
-        }
-
-        const draftResponse = draftPromiseResponse.value
-        // NOTE: In case of support for version based guiSchema this won't work
-        // Since we do not have guiSchema for draft, we are using published guiSchema
-        const { guiSchema } = publishedDataPromiseResponse.value
-        // TODO: Add redirection in case of guiSchema === '{}'
-
-        if (
-            draftResponse?.result &&
-            (draftResponse.result.draftState === DraftState.Init ||
-                draftResponse.result.draftState === DraftState.AwaitApproval)
-        ) {
-            const latestDraft = draftResponse.result
+    ): typeof draftTemplateData => {
+        if (!envId) {
             const {
                 valuesOverride,
                 id,
@@ -809,6 +867,93 @@ const DeploymentTemplate = ({
             }
 
             setDraftTemplateData(response)
+            return response
+        }
+
+        const {
+            envOverrideValues,
+            id,
+            isDraftOverriden,
+            isAppMetricsEnabled,
+            chartRefId,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+            readme,
+            schema,
+        } = JSON.parse(latestDraft.data)
+        const stringifiedTemplate = YAMLStringify(envOverrideValues)
+        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+            stringifiedTemplate,
+            lockedConfigKeys,
+        )
+        const response: typeof draftTemplateData = {
+            originalTemplate: envOverrideValues,
+            schema,
+            readme,
+            guiSchema,
+            isAppMetricsEnabled,
+            editorTemplate: stringifiedTemplate,
+            latestDraft,
+            selectedChartRefId: chartRefId,
+            // FIXME: Check null checks for chartRefsData, it can be null
+            selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
+            editorTemplateWithoutLockedKeys,
+            isOverridden: isDraftOverriden,
+            environmentConfig: {
+                id,
+                status,
+                manualReviewed,
+                active,
+                namespace,
+            },
+        }
+
+        setDraftTemplateData(response)
+        return response
+    }
+
+    // Should remove edit draft mode in case of error and show normal edit values view with zero drafts where user can save as draft?
+    const handleLoadProtectedDeploymentTemplate = async (
+        chartRefsData: Awaited<ReturnType<typeof getChartList>>,
+        lockedConfigKeys: string[],
+    ) => {
+        // In case of error of draftResponse
+        const [draftPromiseResponse, publishedDataPromiseResponse] = await Promise.allSettled([
+            getDraftByResourceName(
+                +appId,
+                +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
+                3,
+                environmentName
+                    ? // TODO: Maybe should be constant
+                      `${environmentName}-DeploymentTemplateOverride`
+                    : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
+            ),
+            handleInitializePublishedData(chartRefsData, lockedConfigKeys),
+        ])
+
+        if (publishedDataPromiseResponse.status === 'rejected') {
+            throw publishedDataPromiseResponse.reason
+        }
+
+        if (draftPromiseResponse.status === 'rejected') {
+            handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
+            return
+        }
+
+        const draftResponse = draftPromiseResponse.value
+        // NOTE: In case of support for version based guiSchema this won't work
+        // Since we do not have guiSchema for draft, we are using published guiSchema
+        const { guiSchema } = publishedDataPromiseResponse.value
+
+        if (
+            draftResponse?.result &&
+            (draftResponse.result.draftState === DraftState.Init ||
+                draftResponse.result.draftState === DraftState.AwaitApproval)
+        ) {
+            const latestDraft = draftResponse.result
+            const response = handleInitializeDraftData(latestDraft, guiSchema, chartRefsData, lockedConfigKeys)
 
             const clonedTemplateData = structuredClone(response)
             delete clonedTemplateData.editorTemplateWithoutLockedKeys
@@ -820,7 +965,6 @@ const DeploymentTemplate = ({
                 removedPatches: [],
             })
 
-            // TODO: Handle initial tab selection
             const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
             if (isApprovalPending) {
                 updateSearchParams({ selectedTab: DeploymentTemplateTabsType.COMPARE })
@@ -831,7 +975,7 @@ const DeploymentTemplate = ({
             return
         }
 
-        // TODO: Can move above this if
+        // TODO: Can we move above this if
         handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
     }
 
@@ -896,14 +1040,10 @@ const DeploymentTemplate = ({
             })
 
             if (isProtected && typeof getDraftByResourceName === 'function') {
-                // TODO: Ask earlier in case of error we remove draft but i guess should show error screen
                 await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig.config)
-                // TODO: Tab selection
-                // TODO: Here also do'nt forget to get hideLockedKeys
-                return
             }
 
-            await handleInitializePublishedDataWithCurrentEditorData(chartRefsData, lockedKeysConfig.config)
+            await handleInitializePublishedDataAndCurrentEditorData(chartRefsData, lockedKeysConfig.config)
         } catch (error) {
             showError(error)
             setInitialLoadError(error)
@@ -924,11 +1064,13 @@ const DeploymentTemplate = ({
         setShowLockedDiffForApproval(false)
         setShowLockedTemplateDiffModal(false)
         setIsLoadingInitialData(true)
+        fetchEnvConfig(+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
         // TODO: Check if async, and on change of isProtected maybe should re-call this
         await reloadEnvironments()
         await handleInitialDataLoad()
     }
 
+    // TODO: Return type
     const prepareDataToSave = (skipReadmeAndSchema: boolean = false) => {
         const editorTemplate = getCurrentTemplateWithLockedKeys()
         const editorTemplateObject = YAML.parse(editorTemplate)
@@ -1149,7 +1291,7 @@ const DeploymentTemplate = ({
             setInitialLoadError(null)
             // No need to send locked config here since won't call this method on load
             // TODO: Can be a util for whole process itself
-            const templateData = await handleFetchDeploymentTemplate(+id, name)
+            const { templateConfig: templateData } = await handleFetchDeploymentTemplate(+id, name)
             // TODO: Sync with product for which values to retains!!!
             // FIXME: From tech POV, it should be simple,
             // Since we want to retain edited values so, not changing editorTemplate
@@ -1502,7 +1644,7 @@ const DeploymentTemplate = ({
     )
 
     return (
-        <div className="h-100 flexbox">
+        <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
                 {ConfigToolbar ? (
                     <ConfigToolbar

@@ -57,7 +57,7 @@ const DeploymentTemplateForm = ({
                 </div>
             )}
 
-            <div className="flexbox-col dc__overflow-scroll dc__width-transition flex-grow-1">
+            <div className="flexbox-col dc__overflow-scroll flex-grow-1">
                 <CodeEditor
                     value={editedDocument}
                     chartVersion={selectedChart?.version.replace(/\./g, '-')}

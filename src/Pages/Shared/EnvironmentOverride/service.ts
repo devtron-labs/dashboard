@@ -17,9 +17,15 @@
 import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import { addGUISchemaIfAbsent } from '../../../components/deploymentConfig/utils'
+import { EnvironmentOverrideDeploymentTemplateDTO } from './types'
 
 // TODO: Duplicate
-export async function getDeploymentTemplate(appId, envId, chartId, chartName: string): Promise<ResponseType> {
+export async function getDeploymentTemplate(
+    appId,
+    envId,
+    chartId,
+    chartName: string,
+): Promise<ResponseType<EnvironmentOverrideDeploymentTemplateDTO>> {
     const data = await get(`app/env/${appId}/${envId}/${chartId}`)
     return addGUISchemaIfAbsent(data, chartName)
 }
@@ -44,7 +50,6 @@ export function toggleAppMetrics(appId, envId, payload) {
     return post(`app/env/metrics/${appId}/${envId}`, payload)
 }
 
-// FIXME: Same api route with different service name
 export function chartRefAutocomplete(appId, envId, signal?) {
     return get(`${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`, { signal })
 }

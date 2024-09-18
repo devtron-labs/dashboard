@@ -43,6 +43,9 @@ import '../deploymentConfig.scss'
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
+/**
+ * @deprecated
+ */
 export default function DeploymentTemplateOverride({
     setParentState,
     environments,

@@ -10,21 +10,22 @@ import {
     TemplateListType,
     SelectPickerOptionType,
     TemplateListDTO,
+    SelectedChartDetailsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Operation } from 'fast-json-patch'
 import { DeploymentTemplateGUIViewProps } from '@Components/deploymentConfig/types'
 
 export interface DeploymentTemplateProps {
-    respondOnSuccess: (redirection: boolean) => void
+    respondOnSuccess?: (redirection: boolean) => void
     /**
      * Given in case we have'nt saved any deployment template
      * If true, would show chart type selector.
      */
-    isUnSet: boolean
+    isUnSet?: boolean
     /**
      * Something related to git-ops
      */
-    isCiPipeline: boolean
+    isCiPipeline?: boolean
     environments: AppEnvironment[]
     isProtected: boolean
     reloadEnvironments: () => void
@@ -111,4 +112,9 @@ export interface TemplateListItemType extends TemplateListDTO {
      * This ID is generated at UI, not from the server. DO NOT USE THIS FOR COMMUNICATION WITH SERVER
      */
     id: number
+}
+
+export interface HandleFetchDeploymentTemplateReturnType {
+    globalTemplate: string
+    templateConfig: Omit<DeploymentTemplateConfigState, keyof SelectedChartDetailsType>
 }
