@@ -101,7 +101,7 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const isSuperAdmin = !!userRole?.result.superAdmin
+    const isSuperAdmin = window._env_.K8S_CLIENT || !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
@@ -321,7 +321,7 @@ const ResourceList = () => {
             ? [
                   <AdminTerminal
                       key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
-                      isSuperAdmin={window._env_.K8S_CLIENT || isSuperAdmin}
+                      isSuperAdmin={isSuperAdmin}
                       updateTerminalTabUrl={updateTerminalTabUrl}
                   />,
               ]
