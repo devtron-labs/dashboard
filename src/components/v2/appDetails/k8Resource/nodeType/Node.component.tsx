@@ -339,7 +339,7 @@ const NodeComponent = ({
                                         <span className="pl-12 pr-12" />
                                     )}
                                     <div>
-                                        <div className="resource__title-name flex left dc__align-start">
+                                        <div className="resource__title-name flex left">
                                             <span data-testid="resource-node-name" className="fs-13">
                                                 {node.name}
                                             </span>
@@ -359,42 +359,51 @@ const NodeComponent = ({
                                                         <ClipboardButton content={node.name} />
                                                     </div>
                                                 </button>
-                                                <div
-                                                    data-testid={`app-node-${index}-resource-tab-wrapper`}
-                                                    className={`flex left ${getWidthClassnameForTabs()} ${
-                                                        node.kind === NodeType.Containers ? '' : 'node__tabs'
-                                                    } en-2 bw-1 br-4 dc__w-fit-content`}
-                                                >
-                                                    {getNodeDetailTabs(node.kind as NodeType).map((kind, index) => {
-                                                        return (
-                                                            <div
-                                                                key={`tab__${index}`}
-                                                                data-name={kind}
-                                                                data-testid={`${kind.toLowerCase()}-tab`}
-                                                                onClick={onClickNodeDetailsTab}
-                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
-                                                                    node.kind === NodeType.Containers
-                                                                        ? ''
-                                                                        : 'resource-action-tabs__active'
-                                                                }  ${
-                                                                    index ===
-                                                                    getNodeDetailTabs(node.kind as NodeType)?.length - 1
-                                                                        ? ''
-                                                                        : 'dc__border-right'
-                                                                } pl-6 pr-6`}
-                                                            >
-                                                                {kind.toLowerCase()}
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </div>
-                                                {node.kind !== NodeType.Containers && (
+                                                {!appDetails.isVirtualEnvironment && (
                                                     <>
-                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                        <div
+                                                            data-testid={`app-node-${index}-resource-tab-wrapper`}
+                                                            className={`flex left ${getWidthClassnameForTabs()} ${
+                                                                node.kind === NodeType.Containers ? '' : 'node__tabs'
+                                                            } en-2 bw-1 br-4 dc__w-fit-content`}
+                                                        >
+                                                            {getNodeDetailTabs(node.kind as NodeType).map(
+                                                                (kind, index) => {
+                                                                    return (
+                                                                        <div
+                                                                            key={`tab__${index}`}
+                                                                            data-name={kind}
+                                                                            data-testid={`${kind.toLowerCase()}-tab`}
+                                                                            onClick={onClickNodeDetailsTab}
+                                                                            className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                                node.kind === NodeType.Containers
+                                                                                    ? ''
+                                                                                    : 'resource-action-tabs__active'
+                                                                            }  ${
+                                                                                index ===
+                                                                                getNodeDetailTabs(node.kind as NodeType)
+                                                                                    ?.length -
+                                                                                    1
+                                                                                    ? ''
+                                                                                    : 'dc__border-right'
+                                                                            } pl-6 pr-6`}
+                                                                        >
+                                                                            {kind.toLowerCase()}
+                                                                        </div>
+                                                                    )
+                                                                },
+                                                            )}
+                                                        </div>
+                                                        {node.kind !== NodeType.Containers && (
                                                             <>
                                                                 <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                {node.kind.toLowerCase() ==
+                                                                    NodeType.Pod.toLowerCase() && (
+                                                                    <>
+                                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                    </>
+                                                                )}
                                                             </>
                                                         )}
                                                     </>
@@ -480,7 +489,8 @@ const NodeComponent = ({
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers &&
+                        {!appDetails.isVirtualEnvironment &&
+                            node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
                             node?.kind !== 'EndpointSlice' && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">

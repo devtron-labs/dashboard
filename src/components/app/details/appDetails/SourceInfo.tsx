@@ -43,9 +43,24 @@ import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
+import { ConfigApplyStatusCard } from './ConfigApplyStatusCard'
+import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
+
+const renderWithTippy = (isArgoCdApp: boolean) => (children: JSX.Element) => (
+    <Tippy
+        className="default-tt"
+        arrow={false}
+        placement="top"
+        content={`Deployed using ${
+            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
+        }`}
+    >
+        {children}
+    </Tippy>
+)
 
 export const SourceInfo = ({
     appDetails,
@@ -172,18 +187,11 @@ export const SourceInfo = ({
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
                 />
                 {appDetails?.deploymentAppType && (
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={`Deployed using ${
-                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-                        }`}
-                    >
+                    <ConditionalWrap wrap={renderWithTippy(isArgoCdApp)} condition={!appDetails.isVirtualEnvironment}>
                         <div className="flex">
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </div>
-                    </Tippy>
+                    </ConditionalWrap>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
@@ -207,10 +215,7 @@ export const SourceInfo = ({
                                     </button>
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -228,10 +233,7 @@ export const SourceInfo = ({
                                     </ConditionalWrap>
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap
-                                        condition={isApprovalConfigured}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -289,16 +291,13 @@ export const SourceInfo = ({
                 : !isdeploymentAppDeleting &&
                   environment && (
                       <div className="flex left w-100">
-                          {!isVirtualEnvironment && (
-                              <AppStatusCard
-                                  appDetails={appDetails}
-                                  status={status}
-                                  cardLoading={cardLoading}
-                                  setDetailed={setDetailed}
-                                  message={message}
-                              />
-                          )}
-                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          <AppStatusCard
+                              appDetails={appDetails}
+                              status={status}
+                              cardLoading={cardLoading}
+                              setDetailed={setDetailed}
+                              message={message}
+                          />
                           {!helmMigratedAppNotTriggered && (
                               <>
                                   {!loadingResourceTree && (
@@ -309,6 +308,17 @@ export const SourceInfo = ({
                                           setDetailed={setDetailed}
                                       />
                                   )}
+                                  {isVirtualEnvironment && appDetails?.resourceTree && (
+                                      <HelmAppConfigApplyStatusCard
+                                          cardLoading={cardLoading}
+                                          releaseStatus={appDetails.resourceTree.releaseStatus}
+                                      />
+                                  )}
+                              </>
+                          )}
+                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          {!helmMigratedAppNotTriggered && (
+                              <>
                                   <DeploymentStatusCard
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}
