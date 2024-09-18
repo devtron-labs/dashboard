@@ -291,13 +291,15 @@ export const SourceInfo = ({
                 : !isdeploymentAppDeleting &&
                   environment && (
                       <div className="flex left w-100">
-                          <AppStatusCard
-                              appDetails={appDetails}
-                              status={status}
-                              cardLoading={cardLoading}
-                              setDetailed={setDetailed}
-                              message={message}
-                          />
+                          {status && (
+                              <AppStatusCard
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
+                          )}
                           {!helmMigratedAppNotTriggered && (
                               <>
                                   {!loadingResourceTree && (
