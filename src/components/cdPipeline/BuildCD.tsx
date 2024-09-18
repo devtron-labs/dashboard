@@ -32,23 +32,16 @@ import {
     CDFormType,
     ToastVariantType,
     ToastManager,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import yamlJsParser from 'yaml'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedTextDescription,
-    GroupHeading,
-    groupStyle,
-} from '../v2/common/ReactSelect.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
@@ -64,7 +57,6 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
 import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ICCheck } from '../../assets/icons/ic-check.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
@@ -379,11 +371,12 @@ export default function BuildCD({
     const renderEnvSelector = () => {
         const envId = formData.environmentId
         const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
-
-        const groupHeading = (props) => {
-            return <GroupHeading {...props} />
+        if (selectedEnv) {
+            selectedEnv.label = selectedEnv.name
+            selectedEnv.value = selectedEnv.id.toString()
         }
+
+        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const renderVirtualEnvironmentInfo = () => {
             if (isVirtualEnvironment && VirtualEnvSelectionInfoText) {
@@ -391,44 +384,39 @@ export default function BuildCD({
             }
         }
 
-        const singleOption = (props) => {
-            return <EnvFormatOptions {...props} environmentfieldName="name" />
-        }
+        const getEnvListOptions = () => {
+            return envList.map((_elm) => {
+                return {
+                    ..._elm,
+                    label: `Cluster: ${_elm.label}`,
 
-        const handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
-            return formatHighlightedTextDescription(opt, inputValue, 'name')
+                    options: _elm.options.map((_option) => ({
+                        ..._option,
+                        label: _option.name,
+                        value: _option.id.toString(),
+                    })),
+                }
+            })
         }
 
         return (
             <>
-                <div className="form__label dc__required-field">Environment</div>
-                <ReactSelect
+                <SelectPicker
+                    label="Environment"
+                    required
+                    inputId="environment"
                     menuPosition={isAdvanced ? null : 'fixed'}
-                    closeMenuOnScroll
                     isDisabled={!!cdPipelineId}
                     classNamePrefix="cd-pipeline-environment-dropdown"
                     placeholder="Select Environment"
                     options={
                         releaseMode === ReleaseMode.MIGRATE_HELM
-                            ? envList.filter((env) => !env.isVirtualEnvironment)
-                            : envList
+                            ? getEnvListOptions().filter((env) => !env.isVirtualEnvironment)
+                            : getEnvListOptions()
                     }
                     value={selectedEnv}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    isMulti={false}
-                    onChange={(selected: any) => selectEnvironment(selected)}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        SingleValue: singleOption,
-                        GroupHeading: groupHeading,
-                    }}
-                    styles={{
-                        ...groupStyle(),
-                        control: (base) => ({ ...base, border: '1px solid #d6dbdf', minHeight: 36, height: 36 }),
-                    }}
-                    formatOptionLabel={handleFormatHighlightedText}
+                    onChange={(selected: Environment) => selectEnvironment(selected)}
+                    size={ComponentSizeType.large}
                 />
                 {isEnvUsedState && (
                     <span className="form__error">
