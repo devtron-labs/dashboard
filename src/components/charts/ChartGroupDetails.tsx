@@ -25,8 +25,9 @@ import {
     useAsync,
     PageHeader,
     DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
@@ -110,7 +111,10 @@ export default function ChartGroupDetails() {
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
         try {
             await deleteInstalledChart(installedAppId)
-            toast.success('Successfully Deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully Deleted',
+            })
             reloadChartGroupDetails()
         } catch (err) {
             showError(err)
@@ -252,7 +256,10 @@ export default function ChartGroupDetails() {
                                 getChartVersionsAndValues={getChartVersionsAndValues}
                                 configureChart={(index) => {
                                     if (!state.charts[index].isEnabled) {
-                                        toast.warn('Please enable chart to configure.')
+                                        ToastManager.showToast({
+                                            variant: ToastVariantType.warn,
+                                            description: 'Please enable chart to configure.',
+                                        })
                                         return
                                     }
                                     push(`${url}/deploy`, {

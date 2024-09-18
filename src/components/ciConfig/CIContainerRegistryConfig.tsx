@@ -69,7 +69,7 @@ export default function CIContainerRegistryConfig({
                 message: (
                     <>
                         <span className="fw-6">Overrides:</span>&nbsp;
-                        <span className="mr-4">This configuration is overriden for build pipeline of</span>
+                        <span className="mr-4">This configuration is overridden for build pipeline of</span>
                     </>
                 ),
                 linkText: (
@@ -87,7 +87,7 @@ export default function CIContainerRegistryConfig({
                 <>
                     <span className="fw-6">Overrides:</span>&nbsp;
                     <span className="mr-8">
-                        Container registry & docker file location for build pipelines can be overriden.
+                        Container registry & docker file location for build pipelines can be overridden.
                     </span>
                     {isCDPipeline && (
                         <Link to={`/${Routes.APP}/${appId}/${Routes.WORKFLOW_EDITOR}`} onClick={onClickRedirectLink}>

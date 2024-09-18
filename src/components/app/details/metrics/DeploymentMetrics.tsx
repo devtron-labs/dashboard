@@ -15,11 +15,10 @@
  */
 
 import React, { Component } from 'react'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import moment from 'moment'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { getDeploymentMetrics } from './deploymentMetrics.service'
@@ -258,15 +257,12 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return (
             <div className="deployment-metrics__inputs bcn-0">
                 <div className="w-180" data-testid="select-environment">
-                    <ReactSelect
-                        defaultValue={this.state.selectedEnvironment}
+                    <SelectPicker
+                        inputId="deployment-metrics-select-environment"
+                        name="deployment-metrics-select-environment"
+                        classNamePrefix="deployment-metrics-select-environment"
                         value={this.state.selectedEnvironment}
                         placeholder="Select Environment"
-                        components={{
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        styles={{ ...styles }}
                         onChange={(selected) => {
                             this.handleEnvironmentChange(selected)
                         }}

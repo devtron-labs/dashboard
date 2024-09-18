@@ -58,7 +58,7 @@ export const ProtectedConfigMapSecretDetails = ({
         if (selectedTab === CMSecretProtectedTab.Draft) {
             return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                 ? baseData
-                : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
+                : { ...JSON.parse(draftData.data).configData?.[0], unAuthorized: draftData?.dataEncrypted }
         }
         if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
             return null

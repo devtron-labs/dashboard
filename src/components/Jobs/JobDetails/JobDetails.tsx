@@ -18,7 +18,6 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import ReactGA from 'react-ga4'
 import {
     generatePath,
-    NavLink,
     Redirect,
     Route,
     Switch,
@@ -28,7 +27,16 @@ import {
     useRouteMatch,
 } from 'react-router-dom'
 import { APP_TYPE, URLS } from '../../../config'
-import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadCrumb,
+    Progressing,
+    showError,
+    useBreadcrumb,
+    PageHeader,
+    ResourceKindType,
+    TabProps,
+    TabGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
@@ -75,7 +83,11 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appType={APP_TYPE.JOB} appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appType={APP_TYPE.JOB}
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView />
@@ -150,59 +162,55 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
     )
 
     const renderAppDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        data-testid="overview-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
-                        data-action="Overview Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Overview
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="trigger-job-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_TRIGGER}`}
-                        className="tab-list__tab-link"
-                        data-action="Trigger Job Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Trigger job
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="run-history-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Run History Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Run history
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab tab-list__config-tab">
-                    <NavLink
-                        data-testid="job-config-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link flex"
-                        data-action="Job Configurations Clicked"
-                        onClick={handleEventClick}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 mr-4" />
-                        Configurations
-                    </NavLink>
-                </li>
-            </ul>
-        )
+        const tabs: TabProps[] = [
+            {
+                id: 'overview-tab',
+                label: 'Overview',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'overview-link',
+                    ['data-action']: 'Overview Clicked',
+                },
+            },
+            {
+                id: 'trigger-job-tab',
+                label: 'Trigger Job',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'trigger-job-link',
+                    ['data-action']: 'Trigger Job Clicked',
+                },
+            },
+            {
+                id: 'run-history-tab',
+                label: 'Run History',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'run-history-link',
+                    ['data-action']: 'Run History Clicked',
+                },
+            },
+            {
+                id: 'job-config-tab',
+                label: 'Configurations',
+                tabType: 'navLink',
+                icon: Settings,
+                props: {
+                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    onClick: handleEventClick,
+                    ['data-testid']: 'job-config-link',
+                    ['data-action']: 'Job Configurations Clicked',
+                },
+            },
+        ]
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
     const renderBreadcrumbs = () => {

@@ -23,8 +23,9 @@ import {
     InfoColourBar,
     CustomInput,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -108,7 +109,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     onSave = (e: React.SyntheticEvent): void => {
         e.preventDefault()
         if (!this.state.form.value.length) {
-            toast.error('Some required fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing',
+            })
             return
         }
         if (!this.state.form.id) {
@@ -124,7 +128,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
         updateHostURLConfiguration(payload)
             .then((response) => {
-                toast.success('Saved Successful')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.setState({
                     saveLoading: false,
                     form: response.result,

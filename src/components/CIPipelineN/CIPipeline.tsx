@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation, NavLink } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import {
     ServerErrors,
     showError,
@@ -34,6 +34,8 @@ import {
     getPluginsDetail,
     ErrorScreenManager,
     getUpdatedPluginStore,
+    TabProps,
+    TabGroup,
     ModuleNameMap,
     SourceTypeMap,
     DEFAULT_ENV,
@@ -41,8 +43,9 @@ import {
     ModuleStatus,
     Environment,
     PipelineFormType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
     FloatingVariablesSuggestions,
@@ -553,7 +556,10 @@ export default function CIPipeline({
         )
             .then((response) => {
                 if (response) {
-                    toast.success('Pipeline Deleted')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Deleted',
+                    })
                     setPageState(ViewType.FORM)
                     handleClose()
                     deleteWorkflow(appId, Number(workflowId))
@@ -631,7 +637,10 @@ export default function CIPipeline({
     const savePipeline = () => {
         const isUnique = checkUniqueness(formData)
         if (!isUnique) {
-            toast.error('All task names must be unique')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'All task names must be unique',
+            })
             return
         }
         setApiInProgress(true)
@@ -642,7 +651,10 @@ export default function CIPipeline({
             isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
-            toast.error('Scanning is mandatory, please enable scanning')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Scanning is mandatory, please enable scanning',
+            })
             return
         }
 
@@ -654,7 +666,10 @@ export default function CIPipeline({
             setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
             }
             return
         }
@@ -708,7 +723,10 @@ export default function CIPipeline({
         )
             .then((response) => {
                 if (response) {
-                    toast.success(msg)
+                     ToastManager.showToast({
+                         variant: ToastVariantType.success,
+                         description: msg,
+                     })
                     setApiInProgress(false)
                     handleClose()
                     getWorkflows()
@@ -743,35 +761,28 @@ export default function CIPipeline({
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
-        const showAlert = !formDataErrorObj[stageName].isValid
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
+        const showError = !formDataErrorObj[stageName].isValid
         const showWarning =
             mandatoryPluginData &&
             ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
                 (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-0 pb-8 flexbox"
-                    activeClassName="active"
-                    to={toLink}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
-                    {(showAlert || showWarning) && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-2 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}-tab`,
+            label: isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName],
+            tabType: 'navLink',
+            props: {
+                to: toLink,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+            showError,
+            showWarning,
+        }
     }
 
     const contextValue = useMemo(() => {
@@ -823,20 +834,24 @@ export default function CIPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isJobCard ? (
-                            <>
-                                {getNavLink(`build`, BuildStageVariable.Build)}
-                                {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                            </>
-                        ) : (
-                            <>
-                                {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                                {getNavLink(`build`, BuildStageVariable.Build)}
-                                {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                            </>
-                        )}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={
+                                isJobCard
+                                    ? [
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                      ]
+                                    : [
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                                      ]
+                            }
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>

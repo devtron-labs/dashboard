@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { showError, DeleteDialog, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { useState } from 'react'
+import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NodeActionModalPropType } from '../types'
 import { deleteNodeCapacity } from '../clusterNodes.service'
@@ -41,7 +40,10 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
                 kind,
             }
             await deleteNodeCapacity(payload)
-            toast.success(DELETE_NODE_MODAL_MESSAGING.initiated)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: DELETE_NODE_MODAL_MESSAGING.initiated,
+            })
             closePopup(true)
         } catch (err) {
             showError(err)

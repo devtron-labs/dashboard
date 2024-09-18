@@ -121,6 +121,7 @@ export default function CIDockerFileConfig({
     useEffect(() => {
         if (configOverrideView && isBuildpackType && buildEnvArgs && updateDockerConfigOverride) {
             updateDockerConfigOverride(DockerConfigOverrideKeys.buildPackConfig, {
+                // FIXME: The current CI build config is not updated on change hence some of the previous values might persist
                 ...currentCIBuildConfig,
                 buildPackConfig: {
                     ...currentCIBuildConfig.buildPackConfig,

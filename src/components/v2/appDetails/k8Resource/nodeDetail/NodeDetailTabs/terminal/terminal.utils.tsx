@@ -198,7 +198,7 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             <Tippy
                 className="default-tt cursor"
                 arrow={false}
@@ -238,7 +238,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Debug mode"
@@ -317,7 +317,7 @@ const manifestEditButtons = ({
 
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
                 <span

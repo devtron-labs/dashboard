@@ -260,7 +260,7 @@ export default class Navigation extends Component<
             }
         } catch (error) {
             if (retryOnError >= 0) {
-                this.getSecurityModuleStatus(retryOnError--)
+                this.getSecurityModuleStatus(--retryOnError)
             }
         }
     }

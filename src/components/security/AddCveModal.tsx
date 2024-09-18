@@ -51,8 +51,6 @@ export interface AddCveModalState {
 }
 
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
-    _inputRef
-
     constructor(props) {
         super(props)
         this.state = {
@@ -65,12 +63,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         this.handleCveChange = this.handleCveChange.bind(this)
         this.handlePolicyChange = this.handlePolicyChange.bind(this)
         this.searchCVE = this.searchCVE.bind(this)
-    }
-
-    componentDidMount() {
-        if (this._inputRef) {
-            this._inputRef.focus()
-        }
     }
 
     handleCveChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -199,7 +191,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                 <CustomInput
                                     name="cve"
                                     label="CVE ID"
-                                    ref={(node) => (this._inputRef = node)}
                                     autoFocus
                                     tabIndex={1}
                                     placeholder="Enter CVE ID"

@@ -741,7 +741,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             }`}
                                             className="dc__link ml-4 cursor"
                                             onClick={this.props.handleLearnHowClick}
-                                            rel="noopener noreferer"
+                                            rel="noopener noreferrer"
                                             target="_blank"
                                         >
                                             {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}

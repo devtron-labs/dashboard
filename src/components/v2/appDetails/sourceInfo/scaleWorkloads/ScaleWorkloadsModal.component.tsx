@@ -22,6 +22,7 @@ import {
     DetailsProgressing,
     Checkbox,
     DeploymentAppTypes,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
@@ -210,31 +211,26 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list pl-20 dc__border-bottom mr-20">
-                {scaleWorkloadTabs.map((tab, index) => {
-                    return (
-                        <li
-                            onClick={() => {
+            <div className="pl-20 dc__border-bottom mr-20">
+                <TabGroup
+                    tabs={scaleWorkloadTabs.map((tab, index) => ({
+                        id: tab,
+                        label: getTabName(tab, index),
+                        tabType: 'button',
+                        active: selectedDeploymentTabIndex == index,
+                        disabled: scalingInProgress || fetchingLatestDetails,
+                        props: {
+                            onClick: () => {
                                 if (!scalingInProgress && !fetchingLatestDetails) {
                                     changeDeploymentTab(index)
                                 }
-                            }}
-                            key={tab}
-                            className="tab-list__tab"
-                            data-testid={`scale-workloads-tab-${index}`}
-                        >
-                            <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
-                                style={{
-                                    cursor: scalingInProgress || fetchingLatestDetails ? 'not-allowed' : 'pointer',
-                                }}
-                            >
-                                {getTabName(tab, index)}
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
+                            },
+                            'data-testid': `scale-workloads-tab-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
+            </div>
         )
     }
 

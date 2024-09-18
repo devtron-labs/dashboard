@@ -532,3 +532,50 @@ $color-suffix: 00;
 .modal__top-fixed {
     height: 50px;
 }
+
+@mixin steps-with-trail($lineHeight, $stepSize, $gutterSize, $paddingLeft) {
+    list-style-type: none;
+    counter-reset: step-counter 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: $gutterSize;
+    --top-overflow: calc(calc(#{$lineHeight} - #{$stepSize}) / 2);
+    margin: 0;
+
+    &>li {
+        counter-increment: step-counter 1;
+        padding-left: $paddingLeft;
+        position: relative;
+        line-height: $lineHeight;
+    }
+
+    &>li::before {
+        position: absolute;
+        left: 0;
+        top: var(--top-overflow);
+        content: counter(step-counter);
+        height: $stepSize;
+        width: $stepSize;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        border: 1px solid var(--N200);
+        color: var(--N900);
+    }
+
+    &>li:not(:last-of-type)::after {
+        --top: calc(#{$stepSize} + calc(calc(#{$lineHeight} - #{$stepSize}) / 2));
+        content: '';
+        position: absolute;
+        left: calc(calc(#{$stepSize}) / 2);
+        top: var(--top);
+        height: calc(100% - var(--top) + #{$gutterSize} + var(--top-overflow));
+        width: 1px;
+        background-color: var(--N200);
+    }
+}
+
+.steps-with-trail--normal {
+    @include steps-with-trail(20px, 24px, 16px, 40px)
+}

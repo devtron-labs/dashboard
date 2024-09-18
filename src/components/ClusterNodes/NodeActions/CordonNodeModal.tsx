@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { showError, Progressing, ConfirmationDialog, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import CordonIcon from '../../../assets/icons/ic-cordon-medium.svg'
 import UncordonIcon from '../../../assets/icons/ic-play-medium.svg'
 import { CordonNodeModalType } from '../types'
@@ -45,9 +44,12 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
                 },
             }
             await cordonNodeCapacity(payload)
-            toast.success(
-                unschedulable ? CORDON_NODE_MODAL_MESSAGING.uncordoning : CORDON_NODE_MODAL_MESSAGING.cordoning,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: unschedulable
+                    ? CORDON_NODE_MODAL_MESSAGING.uncordoning
+                    : CORDON_NODE_MODAL_MESSAGING.cordoning,
+            })
             closePopup(true)
         } catch (err) {
             showError(err)

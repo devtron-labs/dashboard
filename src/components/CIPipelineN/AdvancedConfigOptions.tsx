@@ -111,8 +111,7 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
         key: string,
         value: CIBuildConfigType | OptionType[] | boolean | string,
     ): void => {
-        // Shallow copy all data from formData to _form
-        const _form = { ...formData }
+        const _form = structuredClone(formData)
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
         if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
@@ -145,6 +144,12 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
                     targetPlatform: (value as OptionType[]).map((_selectedTarget) => _selectedTarget.label).join(','),
                 },
             }
+        } else if (key === DockerConfigOverrideKeys.dockerfileRelativePath) {
+            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.dockerfileRelativePath = value as string
+        } else if (key === DockerConfigOverrideKeys.buildContext) {
+            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.buildContext = value as string
+        } else if (key === DockerConfigOverrideKeys.projectPath) {
+            _form.dockerConfigOverride.ciBuildConfig.buildPackConfig.projectPath = value as string
         } else {
             _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
         }

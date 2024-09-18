@@ -17,18 +17,19 @@
 import { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import {
     Checkbox,
     CHECKBOX_VALUE,
     ConditionalWrap,
     DeploymentAppTypes,
     showError,
-    ToastBody,
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
     CodeEditor,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -330,15 +331,10 @@ const ManifestComponent = ({
                     setLoading(false)
                     setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
                     if (err.code === 403) {
-                        toast.info(
-                            <ToastBody
-                                title="Access denied"
-                                subtitle="You don't have access to perform this action."
-                            />,
-                            {
-                                className: 'devtron-toast unauthorized',
-                            },
-                        )
+                        ToastManager.showToast({
+                            variant: ToastVariantType.notAuthorized,
+                            description: TOAST_ACCESS_DENIED.SUBTITLE,
+                        })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
                         const error = err['errors'] && err['errors'][0]
                         if (error && error.code && error.userMessage) {

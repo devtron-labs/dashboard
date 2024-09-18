@@ -15,17 +15,16 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import ReactSelect, { MultiValue } from 'react-select'
+import { MultiValue } from 'react-select'
 import { useLocation, useHistory } from 'react-router-dom'
 import * as queryString from 'query-string'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
+import { SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -37,7 +36,7 @@ export function useColumnFilterContext() {
     return context
 }
 
-export default function NodeListSearchFliter({
+export default function NodeListSearchFilter({
     defaultVersion,
     nodeK8sVersions,
     selectedVersion,
@@ -199,7 +198,7 @@ export default function NodeListSearchFliter({
         }
 
         return (
-            <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
+            <div className="dc__position-rel bc-n50">
                 <div
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start"
                     onClick={() => setOpenFilterPopup(true)}
@@ -267,7 +266,10 @@ export default function NodeListSearchFliter({
     return (
         <div className="search-wrapper">
             {renderTextFilter()}
-            <ReactSelect
+            <SelectPicker
+                inputId="k8s-version-select"
+                name="k8s-version-select"
+                classNamePrefix="k8s-version-select"
                 options={[
                     defaultVersion,
                     ...(nodeK8sVersions?.map((version) => ({
@@ -276,27 +278,7 @@ export default function NodeListSearchFliter({
                     })) || []),
                 ]}
                 onChange={applyFilter}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
                 value={selectedVersion}
-                styles={{
-                    ...containerImageSelectStyles,
-                    singleValue: (base, state) => ({
-                        ...base,
-                        padding: '5px 0',
-                    }),
-                    menu: (base, state) => ({
-                        ...base,
-                        zIndex: 6,
-                    }),
-                    valueContainer: (base, state) => ({
-                        ...containerImageSelectStyles.valueContainer(base, state),
-                        display: 'grid',
-                    }),
-                }}
             />
             <div className="dc__border-left h-20 mt-6" />
             <ColumnFilterContext.Provider

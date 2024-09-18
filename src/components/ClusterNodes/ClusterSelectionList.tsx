@@ -18,6 +18,7 @@ import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
 import { GenericEmptyState, SearchBar, useUrlFilters, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
+import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
@@ -31,6 +32,8 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
 import './clusterNodes.scss'
+
+const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
@@ -74,22 +77,33 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return (
             <div
                 key={`cluster-${clusterData.id}`}
-                className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
-                    clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
-                } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
+                className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
+                 ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
                 <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
                     <Link
-                        className="dc__ellipsis-right dc__no-decor"
+                        className="dc__ellipsis-right dc__no-decor lh-24"
                         to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
                     >
                         {clusterData.name}
                     </Link>
-                    <TerminalIcon
-                        data-testid={`cluster-terminal-${clusterData.name}`}
-                        className="cursor icon-dim-16 dc__visible-hover--child ml-8"
-                        onClick={getOpenTerminalHandler(clusterData)}
-                    />
+                    {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
+                    <div className="cursor dc__visible-hover--child ml-8">
+                        <div className="flexbox dc__align-items-center dc__gap-4">
+                            {!!clusterData.nodeCount && !clusterListLoader && isSuperAdmin && (
+                                <Tooltip alwaysShowTippyOnHover content="View terminal">
+                                    <div className="flex">
+                                        <TerminalIcon
+                                            data-testid={`cluster-terminal-${clusterData.name}`}
+                                            className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
+                                            onClick={getOpenTerminalHandler(clusterData)}
+                                        />
+                                    </div>
+                                </Tooltip>
+                            )}
+                            {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
+                        </div>
+                    </div>
                 </div>
                 <Tooltip
                     alwaysShowTippyOnHover={!!clusterData.errorInNodeListing}

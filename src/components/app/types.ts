@@ -15,8 +15,18 @@
  */
 
 import React, { ReactNode } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    DeploymentAppTypes,
+    TagType,
+    Teams,
+    PodMetadatum,
+    DeploymentNodeType,
+    RuntimeParamsListItemType,
+    RuntimeParamsTriggerPayloadType,
+    ReleaseMode,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -53,7 +63,7 @@ export interface AddNewAppState {
     view: string
     code: number
     disableForm: boolean
-    projects: { id: number; name: string }[]
+    projects: OptionType[]
     appNameErrors: boolean
     showErrors: boolean
     form: {
@@ -638,4 +648,26 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
+}
+
+export interface TriggerCDNodeServiceProps {
+    pipelineId: any
+    ciArtifactId: any
+    appId: string
+    stageType: DeploymentNodeType
+    deploymentWithConfig?: string
+    wfrId?: number
+    abortSignal?: AbortSignal
+    /**
+     * Would be available only case of PRE/POST CD
+     */
+    runtimeParams?: RuntimeParamsListItemType[]
+}
+
+export interface TriggerCDPipelinePayloadType {
+    pipelineId: number
+    appId: number
+    ciArtifactId: number
+    cdWorkflowType: string
+    runtimeParamsPayload: RuntimeParamsTriggerPayloadType
 }

@@ -16,8 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
-import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
@@ -201,12 +200,11 @@ const NodeComponent = ({
         if (isAdded) {
             history.push(_url)
         } else {
-            toast.error(
-                <div>
-                    <div>Max 5 tabs allowed</div>
-                    <p>Please close an open tab and try again.</p>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'Max 5 tabs allowed',
+                description: 'Please close an open tab and try again.',
+            })
         }
     }
 

@@ -22,8 +22,9 @@ import {
     Drawer,
     CustomInput,
     CHECKBOX_VALUE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 import { validateEmail } from '../common'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
@@ -67,8 +68,6 @@ export interface SESConfigModalState {
 }
 
 export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModalState> {
-    _configName
-
     awsRegionListParsed = awsRegionList.map((region) => {
         return { label: region.name, value: region.value }
     })
@@ -131,9 +130,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     state.secretKey = response.result.secretKey
                     this.setState(state)
                 })
-                .then(() => {
-                    this._configName?.focus()
-                })
                 .catch((error) => {
                     showError(error)
                 })
@@ -142,11 +138,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.default = this.props.shouldBeDefault
             state.view = ViewType.FORM
             this.setState(state)
-            setTimeout(() => {
-                if (this._configName) {
-                    this._configName.focus()
-                }
-            }, 100)
         }
     }
 
@@ -221,7 +212,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.isLoading = false
             state.form.isError = true
             this.setState(state)
-            toast.error('Some required fields are missing or Invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
             return
         }
         const state = { ...this.state }
@@ -234,7 +228,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                 const state = { ...this.state }
                 state.form.isLoading = false
                 this.setState(state)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
                 if (this.props.selectSESFromChild) {
                     this.props.selectSESFromChild(response?.result[0])
@@ -285,7 +282,6 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             <CustomInput
                                 label="Configuration Name"
                                 data-testid="add-ses-configuration-name"
-                                ref={(node) => (this._configName = node)}
                                 name="configname"
                                 value={this.state.form.configName}
                                 onChange={this.handleConfigNameChange}

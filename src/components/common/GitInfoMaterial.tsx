@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import {
     not,
     stopPropagation,
@@ -23,10 +23,10 @@ import {
     MaterialHistory,
     CIMaterialType,
     SearchBar,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { SourceTypeMap } from '../../config'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
@@ -43,7 +43,7 @@ import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 // TODO: ADD prop type
@@ -75,8 +75,8 @@ export default function GitInfoMaterial({
     // Not required for BulkCI
     handleSidebarTabChange,
     runtimeParams,
-    handleRuntimeParametersChange,
-    ciBlockState = null,
+    handleRuntimeParamChange,
+    handleRuntimeParamError,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -142,9 +142,9 @@ export default function GitInfoMaterial({
 
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                {GitInfoMaterialTabs ? (
+                {RuntimeParamTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
-                        <GitInfoMaterialTabs
+                        <RuntimeParamTabs
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}
@@ -318,7 +318,7 @@ export default function GitInfoMaterial({
             >
                 <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                 {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                    <div className="flex right">
+                    <div className="flex right dc__gap-8">
                         {renderSearch()}
                         {excludeIncludeEnv && renderExcludedCommitsOption()}
                     </div>
@@ -328,7 +328,7 @@ export default function GitInfoMaterial({
     }
 
     const getRuntimeParametersHeading = () => {
-        const headingPrefix = 'Pass parameters'
+        const headingPrefix = 'Runtime parameters'
         const headingSuffix = appName ? `for '${appName}'` : ''
         return `${headingPrefix} ${headingSuffix}`
     }
@@ -379,9 +379,12 @@ export default function GitInfoMaterial({
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
                 <RuntimeParameters
+                    // Have to add key for appId since key value config would not be updated incase of app change
+                    key={`runtime-parameters-${appId}`}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
-                    handleKeyValueChange={handleRuntimeParametersChange}
+                    handleChange={handleRuntimeParamChange}
+                    onError={handleRuntimeParamError}
                 />
             )
         }

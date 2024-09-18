@@ -28,8 +28,9 @@ import {
     AddPipelineType,
     SelectedNode,
     InfoIconTippy,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
@@ -256,14 +257,20 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 if (response.errors) {
                     const { errors } = response
                     const { userMessage } = errors[0]
-                    toast.error(userMessage)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: userMessage,
+                    })
                     return
                 }
 
                 if (response.status.toLowerCase() === 'ok') {
                     this.setState({ showDeleteDialog: false })
                     this.handleDisplayLoader()
-                    toast.success('Workflow Deleted')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Workflow Deleted',
+                    })
                     this.getWorkflows()
                     this.props.getWorkflows()
                 }

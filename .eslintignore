@@ -207,7 +207,6 @@ src/components/charts/list/DeployedChartFilters.tsx
 src/components/charts/list/DiscoverCharts.tsx
 src/components/charts/modal/ChartGroupBasicDeploy.tsx
 src/components/charts/modal/CreateChartGroup.tsx
-src/components/charts/modal/DeployChart.tsx
 src/components/charts/useChartGroup.ts
 src/components/charts/util/ChartGroupCard.tsx
 src/components/charts/util/ChartSelect.tsx
@@ -282,7 +281,6 @@ src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
 src/components/common/Select/Select.tsx
-src/components/common/ToastBody.tsx
 src/components/common/ValidateForm/ValidateForm.tsx
 src/components/common/eaEmptyState/EAEmptyState.tsx
 src/components/common/edge/rectangularEdge.tsx
@@ -298,7 +296,7 @@ src/components/common/helpers/Helpers.tsx
 src/components/common/helpers/compareVersion.ts
 src/components/common/helpers/isSubset.ts
 src/components/common/helpers/time.ts
-src/components/common/helpers/util.ts
+src/components/common/helpers/utils.tsx
 src/components/common/helpers/workflowURL.ts
 src/components/common/hooks/FileReader.ts
 src/components/common/hooks/__tests__/FileReader.test.tsx
@@ -463,7 +461,7 @@ src/components/v2/common/ReactSelectCustomization.tsx
 src/components/v2/common/message.ui.tsx
 src/components/v2/devtronStackManager/AboutDevtronView.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
-src/components/v2/devtronStackManager/DevtronStackManager.service.ts
+src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
 src/components/v2/devtronStackManager/SuccessModalComponent.tsx
@@ -483,7 +481,6 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.reducer.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.utils.ts
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
-src/components/v2/values/common/ReadmeColumn.component.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx
