@@ -312,7 +312,7 @@ const EnvironmentSelectorComponent = ({
                             placement="top"
                             content={`Deployed using ${getDeployedUsing()}`}
                         >
-                            <div className="flex">
+                            <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
                                 <DeploymentTypeIcon
                                     deploymentAppType={appDetails.deploymentAppType}
                                     appType={appDetails.appType}
@@ -412,7 +412,7 @@ const EnvironmentSelectorComponent = ({
                 <TriggerUrlModal
                     installedAppId={params.appId}
                     isExternalApp={isExternalApp}
-                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : '' }
+                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : ''}
                     envId={params.envId}
                     close={closeUrlInfo}
                     appType={appDetails.appType}

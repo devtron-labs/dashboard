@@ -24,6 +24,7 @@ import {
     getIsManualApprovalConfigured,
     ReleaseMode,
     showError,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
@@ -48,19 +49,6 @@ import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/e
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
-
-const renderWithTippy = (isArgoCdApp: boolean) => (children: JSX.Element) => (
-    <Tippy
-        className="default-tt"
-        arrow={false}
-        placement="top"
-        content={`Deployed using ${
-            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-        }`}
-    >
-        {children}
-    </Tippy>
-)
 
 export const SourceInfo = ({
     appDetails,
@@ -187,11 +175,17 @@ export const SourceInfo = ({
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
                 />
                 {appDetails?.deploymentAppType && (
-                    <ConditionalWrap wrap={renderWithTippy(isArgoCdApp)} condition={!appDetails.isVirtualEnvironment}>
-                        <div className="flex">
+                    <Tooltip
+                        placement="top"
+                        alwaysShowTippyOnHover={!appDetails.isVirtualEnvironment}
+                        content={`Deployed using ${
+                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
+                        }`}
+                    >
+                        <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </div>
-                    </ConditionalWrap>
+                    </Tooltip>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
