@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { showError, Progressing, CIBuildType, ClipboardButton, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
 import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
 import { RootBuildContext } from './ciConfigConstant'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
+import { getGitProviderIcon } from '@Components/common'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -69,6 +70,7 @@ export default function CICreateDockerfileOption({
                         label: _framework.Language,
                         value: _framework.Language,
                         icon: _framework.LanguageIcon,
+                        startIcon: getGitProviderIcon(_framework.LanguageIcon)
                     })
 
                     if (!initIcon && currentCIBuildConfig.dockerBuildConfig.language === _framework.Language) {
@@ -84,6 +86,7 @@ export default function CICreateDockerfileOption({
                       label: currentCIBuildConfig.dockerBuildConfig.language,
                       value: currentCIBuildConfig.dockerBuildConfig.language,
                       icon: initIcon,
+                      startIcon: getGitProviderIcon(initIcon)
                   }
                 : _languages[0]
             setSelectedLanguage(_selectedLanguage)

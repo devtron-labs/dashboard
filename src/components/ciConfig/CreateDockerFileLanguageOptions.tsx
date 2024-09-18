@@ -16,10 +16,7 @@
 
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
-import { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { DropdownIndicator, Option, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
-import { _customStyles } from './CIConfig.utils'
+import { SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
@@ -114,36 +111,27 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     return (
         <div className="flex">
             <Title />
-            <ReactSelect
+            <SelectPicker
+                inputId="build-pack-material"
                 isSearchable={false}
                 options={materialOptions}
-                getOptionLabel={(option) => `${option.name}`}
-                getOptionValue={(option) => `${option.checkoutPath}`}
                 value={selectedMaterial}
-                styles={_customStyles}
-                components={{
-                    IndicatorSeparator: null,
-                    Option: repositoryOption,
-                    Control: repositoryControls,
-                }}
                 onChange={handleGitRepoChange}
                 classNamePrefix="build-config__select-repository-containing-code"
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
             <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
-            <ReactSelect
+            {console.log('languages', languages)}
+            {console.log('languages', selectedLanguageFrameworks)}
+            {console.log('materialOption', materialOptions)}
+
+            <SelectPicker
+                inputId="build-pack-language"
                 classNamePrefix="select-create-dockerfile-language-dropdown"
                 options={languages}
                 value={selectedLanguage}
                 isSearchable={false}
-                styles={_customStyles}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option: OptionWithIcon,
-                    ValueContainer: ValueContainerWithIcon,
-                }}
                 onChange={handleLanguageSelection}
             />
             {selectedLanguageFrameworks?.[0]?.value && (
@@ -151,17 +139,12 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
                     <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
 
-                    <ReactSelect
+                    <SelectPicker
+                        inputId="build-pack-framework"
                         options={selectedLanguageFrameworks || []}
                         value={selectedFramework}
                         classNamePrefix="build-config__select-framework"
                         isSearchable={false}
-                        styles={_customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
                         onChange={handleFrameworkSelection}
                     />
                 </>

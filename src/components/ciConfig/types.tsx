@@ -27,6 +27,7 @@ import {
     Material,
     Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
@@ -116,10 +117,32 @@ export interface CIConfigDiffViewProps {
     gitMaterials: any
 }
 
+export interface CurrentMaterialType {
+    gitProviderId: number
+    url: string
+    checkoutPath: string
+    active: boolean
+    fetchSubmodules: boolean
+    includeExcludeFilePath: string
+    isExcludeRepoChecked: boolean
+    name?: string
+    id?: number
+}
+
+export interface SelectedGitMaterialType extends CurrentMaterialType, OptionTypeWithIcon {}
+
+export interface SourceConfigType {
+    appName: string
+    appType: number
+    description: string
+    teamId: number
+    templateId: number
+    material: SelectedGitMaterialType[]
+}
 export interface CIConfigFormProps {
     parentReloading: boolean
     dockerRegistries: any
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     ciConfig: CiPipelineResult
     reload: (skipPageReload?: boolean, redirection?: boolean) => Promise<void>
     appId: string
@@ -160,13 +183,11 @@ export interface BuilderIdOptionType extends OptionType {
     BuilderLangEnvParam: string
 }
 
-export interface VersionsOptionType extends OptionType {
+export interface VersionsOptionType extends OptionTypeWithIcon {
     infoText?: string
 }
 
-export interface LanguageOptionType extends OptionType {
-    icon: string
-}
+export interface LanguageOptionType extends OptionTypeWithIcon {}
 
 export interface BuildersAndFrameworksType {
     builders: LanguageBuilderType[]
@@ -237,7 +258,7 @@ export interface TemplateDataType {
 export interface CIDockerFileConfigProps {
     configOverrideView: boolean
     ciConfig: CiPipelineResult
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     allowOverride: boolean
     selectedCIPipeline: CIPipelineDataType
     currentMaterial: any
@@ -363,19 +384,9 @@ export interface TaskListType {
     isJobView: boolean
 }
 
-export interface SelectedGitMaterialType extends OptionType {
-    gitProviderId: number
-    url: string
-    checkoutPath: string
-    active: boolean
-    fetchSubmodules: boolean
-    includeExcludeFilePath: string
-    isExcludeRepoChecked: boolean
-}
-
 export interface BuildContextProps {
     isDefaultBuildContext: boolean
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     selectedBuildContextGitMaterial: any
     currentMaterial: any
     setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>

@@ -20,52 +20,8 @@ import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
-import { CIBuildArgType, CIConfigDiffType } from './types'
+import { CIBuildArgType, CIConfigDiffType, CurrentMaterialType } from './types'
 import { RootBuildContext } from './ciConfigConstant'
-
-export const _customStyles = {
-    control: (base) => ({
-        ...base,
-        border: 'none',
-        boxShadow: 'none',
-        minHeight: '32px',
-        cursor: 'pointer',
-    }),
-    singleValue: (base) => ({
-        ...base,
-        fontSize: '13px',
-        fontWeight: '600',
-        color: 'var(--N900)',
-    }),
-    option: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: '2px',
-        minWidth: '240px',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: '4px',
-        paddingTop: '4px',
-        maxHeight: '250px',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        padding: 0,
-        color: 'var(--N400)',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
-    noOptionsMessage: (base) => ({
-        ...base,
-        color: 'var(--N600)',
-    }),
-}
 
 export const _multiSelectStyles = {
     ...multiSelectStyles,
@@ -111,26 +67,6 @@ export const tempMultiSelectStyles = {
     }),
 }
 
-export const getBuildContextCheckoutSelectStyles = (checkoutPathOptions) => ({
-    ..._multiSelectStyles,
-    menu: (base) => ({
-        ...base,
-        marginTop: '0',
-        paddingBottom: '4px',
-        width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
-    }),
-    control: (base) => ({
-        ...base,
-        borderTopRightRadius: '0px',
-        borderBottomRightRadius: '0px',
-        borderRight: '0px',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        paddingLeft: '0px',
-    }),
-})
-
 export const TARGET_PLATFORM_LIST: OptionType[] = [
     { label: 'linux/arm64', value: 'linux/arm64' },
     { label: 'linux/amd64', value: 'linux/amd64' },
@@ -173,7 +109,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
 export const getCIConfigFormState = (
     ciConfig: CiPipelineResult,
     selectedCIPipeline: CIPipelineDataType,
-    currentMaterial: any,
+    currentMaterial: CurrentMaterialType,
     currentRegistry: any,
 ) => {
     return {

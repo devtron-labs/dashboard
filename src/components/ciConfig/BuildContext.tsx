@@ -17,10 +17,8 @@
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent, useEffect, useState } from 'react'
-import ReactSelect from 'react-select'
-import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
-import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles, getBuildContextCheckoutSelectStyles } from './CIConfig.utils'
+import { CustomInput, OptionType, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { RootBuildContext } from './ciConfigConstant'
@@ -93,7 +91,9 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
     }
 
     const getSelectedBuildContextGitMaterial = () => selectedBuildContextGitMaterial ?? currentMaterial
-
+    // TODO: remove console after test
+    console.log('option', sourceConfig.material)
+    console.log('value', getSelectedBuildContextGitMaterial())
     const handleBuildContextPathChange = (_selectedBuildContextGitMaterial): void => {
         setSelectedBuildContextGitMaterial(_selectedBuildContextGitMaterial)
         // Don't know how and why we are directly setting state.
@@ -172,30 +172,13 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
             {isCollapsed && (
                 <div className="form-row__docker ml-24">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">Select repo containing build context</label>
-
-                        <ReactSelect
-                            className="m-0"
+                        <SelectPicker
+                            label="Select repo containing build context"
+                            inputId="build-context-repo"
                             classNamePrefix="build-config__select-repository-containing-build-context"
-                            isMulti={false}
                             isClearable={false}
                             options={sourceConfig.material}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.checkoutPath}`}
                             value={getSelectedBuildContextGitMaterial()}
-                            styles={{
-                                ..._multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    paddingBottom: '4px',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: repositoryOption,
-                                Control: repositoryControls,
-                            }}
                             onChange={handleBuildContextPathChange}
                         />
 
@@ -207,22 +190,19 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             Build Context Path (Relative)
                         </label>
 
+                        {console.log('docker option', checkoutPathOptions)}
+                        {console.log(getCheckoutPathValue(useRootBuildContextFlag))}
+
                         <div className="docker-file-container">
-                            <ReactSelect
-                                className="m-0 br-0"
+                            <SelectPicker
+                                inputId="docker-file-container"
                                 classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                isMulti={false}
                                 isClearable={false}
                                 isSearchable={false}
                                 options={checkoutPathOptions}
                                 getOptionLabel={(option) => `${option.label}`}
                                 getOptionValue={(option) => `${option.value}`}
                                 value={getCheckoutPathValue(useRootBuildContextFlag)}
-                                styles={getBuildContextCheckoutSelectStyles(checkoutPathOptions)}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option: checkoutPathOption,
-                                }}
                                 onChange={handleBuildContextCheckoutPathChange}
                             />
 

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { useEffect, useState } from 'react'
+import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, CustomInput, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
-    getCustomOptionSelectionStyle,
     Option,
-    OptionWithIcon,
-    ValueContainerWithIcon,
 } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
@@ -46,12 +43,9 @@ import {
     AUTO_DETECT,
     BUILDER_SELECT_STYLES,
     CI_BUILDPACK_OPTION_TEXTS,
-    LANGUAGE_SELECT_STYLES,
     USE_CUSTOM_BUILDER,
     VERSION_DETECT_OPTION,
-    VERSION_SELECT_STYLES,
 } from './ciConfigConstant'
-import { getGitProviderIcon } from '@Components/common'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {
@@ -69,46 +63,6 @@ export const renderOptionIcon = (option: string) => {
         </>
     ) : (
         <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-    )
-}
-
-export const repositoryOption = (props): JSX.Element => {
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
-    return (
-        <components.Option {...props}>
-            {props.data.url && renderOptionIcon(props.data.url)}
-            {props.label}
-        </components.Option>
-    )
-}
-
-export const releaseTagOption = (props): JSX.Element => {
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
-    return (
-        <components.Option {...props} onClick={stopPropagation}>
-            {props.value}
-        </components.Option>
-    )
-}
-
-export const checkoutPathOption = (props): JSX.Element => {
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
-    return <components.Option {...props}>{props.value}</components.Option>
-}
-export const repositoryControls = (props): JSX.Element => {
-    let value = ''
-    if (props.hasValue) {
-        value = props.getValue()[0].url
-    }
-    const showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
-    return (
-        <components.Control {...props}>
-            {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
-            {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-10" />}
-            {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-10" />}
-            {showGit && <Git className="icon-dim-20 ml-10" />}
-            {props.children}
-        </components.Control>
     )
 }
 
@@ -572,41 +526,35 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
+    const getBuildPackLanguageVersionOption = () => {
+        const buildPackLanguageVersion =
+            builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
+        if (!buildPackLanguageVersion) {
+            return [] // Return an empty array if no versions are found
+        }
+        const _versionOptions = buildPackLanguageVersion.map((_buildPackLanguageVersion: VersionsOptionType) => {
+            return { ..._buildPackLanguageVersion, description: _buildPackLanguageVersion.infoText }
+        })
+
+        return _versionOptions
+    }
+
+
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    <label className="form__label">Select repository containing code</label>
+                    {/* TODO: Remove console after testing  */}
+                    {console.log('git options', sourceConfig.material)}
+                    {console.log('values', selectedMaterial)}
 
-                    <ReactSelect
+                    <SelectPicker
+                        label="Select repository containing code"
+                        inputId="buildpack-select-repository-code"
                         classNamePrefix="build-config__select-repository-containing-code"
-                        className="m-0"
-                        tabIndex={3}
                         isSearchable={false}
                         options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
                         value={selectedMaterial}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                marginTop: '0',
-                                minWidth: '226px',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
                         onChange={handleFileLocationChange}
                     />
 
@@ -635,44 +583,30 @@ export default function CIBuildpackBuildOptions({
             <div className="flex top buildpack-options">
                 <div className="buildpack-language-options">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
-                        <ReactSelect
+                        <SelectPicker
+                            inputId="build-pack-language"
+                            label={CI_BUILDPACK_OPTION_TEXTS.Language}
                             classNamePrefix="build-pack-language-dropdown"
-                            className="m-0"
-                            tabIndex={3}
                             options={supportedLanguagesList}
                             value={buildersAndFrameworks.selectedLanguage}
                             isSearchable={false}
-                            styles={getCommonSelectStyle(LANGUAGE_SELECT_STYLES)}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option: OptionWithIcon,
-                                ValueContainer: ValueContainerWithIcon,
-                            }}
                             onChange={handleLanguageSelection}
                         />
                     </div>
 
+                    {console.log(
+                        'version',
+                        getBuildPackLanguageVersionOption(),
+                    )}
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
-                        <ReactSelect
+                        <SelectPicker
+                            inputId="build-pack-language-version"
                             classNamePrefix="build-pack-version-dropdown"
-                            className="m-0"
-                            tabIndex={3}
                             isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
-                            options={
-                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
-                            }
+                            options={getBuildPackLanguageVersionOption()}
                             value={buildersAndFrameworks.selectedVersion}
-                            formatOptionLabel={formatOptionLabel}
                             isSearchable={false}
-                            styles={getCommonSelectStyle(VERSION_SELECT_STYLES)}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option,
-                            }}
                             onChange={handleVersionSelection}
                         />
                     </div>
