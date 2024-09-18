@@ -107,4 +107,5 @@ export interface EnvironmentListType {
     environments: Environment[]
     selectedEnv: Environment
     setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>>
+    isBorderLess?: boolean
 }

@@ -363,6 +363,16 @@ export interface TaskListType {
     isJobView: boolean
 }
 
+export interface SelectedGitMaterialType extends OptionType {
+    gitProviderId: number
+    url: string
+    checkoutPath: string
+    active: boolean
+    fetchSubmodules: boolean
+    includeExcludeFilePath: string
+    isExcludeRepoChecked: boolean
+}
+
 export interface BuildContextProps {
     isDefaultBuildContext: boolean
     sourceConfig: any

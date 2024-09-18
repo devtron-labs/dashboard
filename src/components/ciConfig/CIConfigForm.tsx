@@ -19,9 +19,9 @@ import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog, ToastVar
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { useForm } from '../common'
+import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, LoadingState } from './types'
+import { CIBuildArgType, CIConfigFormProps, LoadingState, SelectedGitMaterialType } from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
@@ -73,8 +73,17 @@ export default function CIConfigForm({
                     (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
                 )
               : sourceConfig.material[0]
+
+
+    const _selectedMaterial = (): SelectedGitMaterialType => {
+        const _currentMaterial = { ...currentMaterial }
+        _currentMaterial.value = currentMaterial.url
+        _currentMaterial.label = currentMaterial.name
+        _currentMaterial.startIcon = getGitProviderIcon(currentMaterial.url)
+        return _currentMaterial
+    }
     const currentBuildContextGitMaterial = buildCtxGitMaterial || currentMaterial
-    const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
+    const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(_selectedMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)
     const currentRegistry =
