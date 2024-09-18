@@ -18,7 +18,7 @@ import React, { Component } from 'react'
 import { Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getCVEPolicies } from './security.service'
 import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
-import { AddCveModalProps, AddCveModalState, VulnerabilityAction } from './security.types'
+import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg'
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
@@ -102,7 +102,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     </p>
                                     {cluster.isCollapsed ? null : (
                                         <ul className="nested-list">
-                                            {cluster.environments.map((env) => {
+                                            {cluster.environments.map((env: ClusterEnvironment) => {
                                                 return (
                                                     <li key={env.name} className="nested-list__pl">
                                                         <p className="nested-list__item flexbox flex-justify">

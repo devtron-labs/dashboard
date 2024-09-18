@@ -291,26 +291,23 @@ export interface FetchPolicyQueryParams {
     id?: number
 }
 
-export interface AddCveModalState {
+export interface CveNamePolicy {
+    name: string
+    policy: VulnerabilityAction
+}
+export interface ClusterEnvironment extends CveNamePolicy {
+    applications: CveNamePolicy[]
+    isCollapsed: boolean
+}
+
+export interface CveClusters extends CveNamePolicy {
+    environments: ClusterEnvironment[]
+    isCollapsed: boolean
+}
+export interface AddCveModalState extends Pick<CveNamePolicy, 'policy'> {
     view: string
     cve: string
-    policy: VulnerabilityAction
-    clusters: {
-        name: string
-        policy: VulnerabilityAction
-        isCollapsed: boolean
-        environments: [
-            {
-                name: string
-                isCollapsed: boolean
-                policy: VulnerabilityAction
-                applications: {
-                    name: string
-                    policy: VulnerabilityAction
-                }[]
-            },
-        ]
-    }[]
+    clusters: CveClusters[]
 }
 
 export interface SecurityPolicyEditState {

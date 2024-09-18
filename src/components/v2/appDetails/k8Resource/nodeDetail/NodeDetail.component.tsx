@@ -105,7 +105,7 @@ const NodeDetailComponent = ({
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
-    const [selectedContainerName, setSelectedContainerName] = useState(({label: _selectedContainer, value: _selectedContainer}))
+    const [selectedContainerName, setSelectedContainerName] = useState<OptionType>(({label: _selectedContainer, value: _selectedContainer}))
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
     // States uplifted from Manifest Component

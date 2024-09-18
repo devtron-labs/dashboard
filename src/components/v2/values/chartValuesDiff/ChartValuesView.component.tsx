@@ -120,7 +120,7 @@ export const ChartEnvironmentSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4">
+        <div className="w-100">
             <SelectPicker
                 label="Deploy to environment"
                 required
@@ -189,7 +189,7 @@ export const DeploymentAppSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4 pt-16">
+        <div className="w-100">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
@@ -447,12 +447,12 @@ export const ChartProjectSelector = ({
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return (
-        <label className="form__row form__row--w-100 fw-4">
+        <div className="w-100">
             <SelectPicker
                 inputId="project-select"
                 required
                 name="project"
-                label="Select Project"
+                label="Project"
                 placeholder="Select Project"
                 classNamePrefix="select-chart-project"
                 value={selectedProject}
@@ -460,7 +460,7 @@ export const ChartProjectSelector = ({
                 options={projects}
             />
             {invalidProject && renderValidationErrorLabel()}
-        </label>
+        </div>
     )
 }
 
@@ -472,7 +472,7 @@ export const ChartVersionSelector = ({
     chartVersionsData,
 }: ChartVersionSelectorType) => {
     return (
-        <div className="w-100 mb-12">
+        <div className="w-100">
             <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">
                 Chart Version
             </span>
@@ -514,7 +514,7 @@ export const ChartValuesSelector = ({
     hideCreateNewOption,
 }: ChartValuesSelectorType) => {
     return (
-        <div className="w-100 mb-12">
+        <div className="w-100">
             <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
                 Chart Values
             </span>
@@ -637,7 +637,7 @@ export const ValueNameInput = ({
     valueNameDisabled,
 }: ValueNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="value-name"
                 label="Name"
@@ -651,7 +651,7 @@ export const ValueNameInput = ({
                 isRequiredField
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 
@@ -663,7 +663,7 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="app-name"
                 tabIndex={1}
@@ -676,7 +676,7 @@ export const AppNameInput = ({
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 
