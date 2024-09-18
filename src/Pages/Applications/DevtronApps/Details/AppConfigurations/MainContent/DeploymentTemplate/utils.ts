@@ -17,3 +17,15 @@ export const getCompareWithTemplateOptionsLabel = (template: TemplateListDTO, ch
             return ''
     }
 }
+
+export const getDTCodeEditorBackgroundClass = (isOverrideView: boolean, isOverridden: boolean): string => {
+    if (!isOverrideView) {
+        return 'bcn-1'
+    }
+
+    if (isOverridden) {
+        return 'bcy-1'
+    }
+
+    return 'bcb-1'
+}

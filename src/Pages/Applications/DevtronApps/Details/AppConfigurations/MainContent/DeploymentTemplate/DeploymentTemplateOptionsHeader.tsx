@@ -91,7 +91,6 @@ const DeploymentTemplateOptionsHeader = ({
                     <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
-                        // TODO: Derive from url
                         initialTab={editMode}
                         disabled={showRevertToLastSaved}
                         onChange={handleChangeEditMode}

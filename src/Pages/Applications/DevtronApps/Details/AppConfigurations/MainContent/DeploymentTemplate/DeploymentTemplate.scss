@@ -12,6 +12,12 @@
         animation-fill-mode: forwards;
     }
 
+    &__approval-tippy {
+        .tippy-box {
+            top: 55px;
+        }
+    }
+
     @keyframes comments-view-opening {
         0% {
             grid-template-columns: 1fr 0;

@@ -36,6 +36,9 @@ import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
 
+/**
+ * @deprecated
+ */
 export default function DeploymentConfigFormCTA({
     loading,
     showAppMetricsToggle,

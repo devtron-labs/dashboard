@@ -38,7 +38,7 @@ const CompareTemplateView = ({
     )
 
     return (
-        <div className="flexbox-col flex-grow-1 dc__border-top-n1 dc__border-bottom-imp">
+        <div className="flexbox-col flex-grow-1 dc__border-top-n1 dc__border-bottom-imp dc__overflow-scroll">
             <CodeEditor
                 defaultValue={compareWithEditorTemplate}
                 value={currentEditorTemplate}

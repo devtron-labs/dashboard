@@ -1,8 +1,7 @@
 import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '@Components/deploymentConfig/constants'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { DeploymentTemplateFormProps } from './types'
+import DeploymentTemplateEditorHeader from './DeploymentTemplateEditorHeader'
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -21,6 +20,11 @@ const DeploymentTemplateForm = ({
     uneditedDocument,
     showReadMe,
     readMe,
+    isOverridden,
+    environmentName,
+    latestDraft,
+    isPublishedValuesView,
+    handleOverride,
 }: DeploymentTemplateFormProps) => {
     if (editMode === ConfigurationType.GUI) {
         return (
@@ -44,12 +48,12 @@ const DeploymentTemplateForm = ({
         )
     }
 
-    // TODO: Relook into css
+    // TODO: re-look into css
     return (
-        <div className={showReadMe ? 'dc__grid-half dc__overflow-scroll flex-grow-1' : 'flexbox-col flex-grow-1'}>
+        <div className={`dc__overflow-scroll flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
                 <div className="flexbox-col dc__border-right dc__border-bottom dc__overflow-scroll">
-                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">
+                    <div className="bcn-1 px-16 py-6 dc__border-bottom flex left fs-12 fw-6 cn-9 py-6">
                         {`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}
                     </div>
 
@@ -68,30 +72,19 @@ const DeploymentTemplateForm = ({
                     noParsing
                     height="100%"
                 >
-                    {isUnSet && !showReadMe && (
-                        <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
-                    )}
-
-                    {/* TODO: Should be a common component */}
-                    {showReadMe && (
-                        <CodeEditor.Header className=" flex left p-0-imp dc__border-bottom" hideDefaultSplitHeader>
-                            <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100 bcn-1">
-                                <div className="flexbox dc__content-space w-100 dc__gap-8 dc__align-items-center">
-                                    <div className="flexbox dc__gap-8 dc__align-items-center">
-                                        {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
-
-                                        {/* FIXME: In case of draft and override would be different */}
-                                        {selectedChart && (
-                                            <span className="cn-9 fs-12 fw-6 lh-20">
-                                                Base deployment template (v{selectedChart.version})
-                                            </span>
-                                        )}
-                                    </div>
-                                    {/* TODO: Add override */}
-                                </div>
-                            </div>
-                        </CodeEditor.Header>
-                    )}
+                    <DeploymentTemplateEditorHeader
+                        showReadMe={showReadMe}
+                        isCompareView={false}
+                        readOnly={readOnly}
+                        isUnSet={isUnSet}
+                        selectedChartVersion={selectedChart?.version || ''}
+                        isOverridden={isOverridden}
+                        handleOverride={handleOverride}
+                        // Since compare view is not here, we can only pass check for isPublishedValuesView
+                        showOverrideButton={!isPublishedValuesView}
+                        environmentName={environmentName}
+                        latestDraft={latestDraft}
+                    />
                 </CodeEditor>
             </div>
         </div>

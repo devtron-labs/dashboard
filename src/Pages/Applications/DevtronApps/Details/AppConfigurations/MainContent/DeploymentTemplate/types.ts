@@ -30,11 +30,13 @@ export interface DeploymentTemplateProps {
     isProtected: boolean
     reloadEnvironments: () => void
     environmentName?: string
+    clusterId?: string
 }
 
 export interface DeploymentTemplateChartStateType {
     charts: DeploymentChartVersionType[]
     chartsMetadata: Record<string, ChartMetadataType>
+    globalChartRefId: number
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
@@ -57,6 +59,19 @@ export interface DeploymentTemplateEditorDataStateType
     removedPatches: Operation[]
 }
 
+export interface DeploymentTemplateEditorHeaderProps
+    extends Pick<DeploymentTemplateQueryParamsType, 'showReadMe'>,
+        Pick<DeploymentTemplateProps, 'isUnSet'> {
+    selectedChartVersion: string
+    isOverridden: boolean
+    handleOverride: () => void
+    showOverrideButton: boolean
+    environmentName: string
+    isCompareView: boolean
+    latestDraft: any
+    readOnly: boolean
+}
+
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
     extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'showReadMe'>,
@@ -65,13 +80,16 @@ export interface DeploymentTemplateFormProps
             DeploymentTemplateGUIViewProps,
             'wasGuiOrHideLockedKeysEdited' | 'handleChangeToYAMLMode' | 'handleEnableWasGuiOrHideLockedKeysEdited'
         >,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'> {
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
+        Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
     editorOnChange: (value: string) => void
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     readOnly: boolean
     editedDocument: string
     uneditedDocument: string
     readMe: string
+    isPublishedValuesView: boolean
+    handleOverride: () => void
 }
 
 export interface ResolvedEditorTemplateType {
@@ -87,7 +105,7 @@ export interface DeploymentTemplateCTAProps
     showApplicationMetrics: boolean
     isAppMetricsEnabled: boolean
     selectedChart: DeploymentChartVersionType
-    isInheriting: boolean
+    shouldDisableEditingInheritedTemplate: boolean
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
 }
@@ -117,4 +135,12 @@ export interface TemplateListItemType extends TemplateListDTO {
 export interface HandleFetchDeploymentTemplateReturnType {
     globalTemplate: string
     templateConfig: Omit<DeploymentTemplateConfigState, keyof SelectedChartDetailsType>
+}
+
+export interface DeleteOverrideDialogProps {
+    environmentConfigId: number
+    handleReload: () => void
+    handleClose: () => void
+    handleShowDeleteDraftOverrideDialog: () => void
+    reloadEnvironments: () => void
 }

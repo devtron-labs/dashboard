@@ -737,8 +737,6 @@ export default function DeploymentTemplateOverrideForm({
             {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                 <DeploymentTemplateLockedDiff
                     closeModal={closeLockedDiffDrawerWithChildModal}
-                    handleChangeCheckbox={handleChangeCheckbox}
-                    saveEligibleChangesCb={saveEligibleChangesCb}
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
                     documents={{

@@ -491,6 +491,9 @@ export const SaveConfirmationDialog = ({
     )
 }
 
+/**
+ * @deprecated
+ */
 export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     const { state, dispatch, reloadEnvironments } = useDeploymentTemplateContext()
     const [apiInProgress, setApiInProgress] = useState(false)

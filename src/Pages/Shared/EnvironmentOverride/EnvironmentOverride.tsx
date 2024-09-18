@@ -143,6 +143,8 @@ const EnvironmentOverride = ({
         return ''
     }
 
+    const clusterId = environmentsMap.get(+params.envId)?.clusterId?.toString()
+
     return (
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
@@ -154,6 +156,7 @@ const EnvironmentOverride = ({
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            clusterId={clusterId}
                         />
                     </Route>
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
@@ -163,7 +166,7 @@ const EnvironmentOverride = ({
                             parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
-                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            clusterId={clusterId}
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={onErrorRedirectURL}
