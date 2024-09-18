@@ -37,7 +37,7 @@ declare global {
 
 if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
     window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
-    window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
+    window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || '/orchestrator'
     window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
