@@ -20,7 +20,7 @@ import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'
 import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
-import { VulnerabilityExposure } from './VulnerabilityExposure'
+import VulnerabilityExposure from './VulnerabilityExposure'
 
 export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     renderRouter() {

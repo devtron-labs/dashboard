@@ -146,9 +146,7 @@ export function getCVEControlList(payload): Promise<ResponseType> {
             ...response,
             result: {
                 ...response.result,
-                offset: response.result.offset || 0,
-                size: response.result.total,
-                pageSize: response.result.size,
+                total: response.result.total || 0,
                 scanList: response.result.list
                     ? response.result.list.map((cve) => {
                           return {
