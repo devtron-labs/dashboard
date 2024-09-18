@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { ACTION_STATE, getSecurityScan, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { getLastExecutionMinByAppAndEnv } from '@Services/service'
+import {
+    ACTION_STATE,
+    ApiResponseResultType,
+    ResponseType,
+    ServerErrors,
+    SeverityCount,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -260,14 +265,17 @@ export interface LastUpdatedCardType {
 }
 
 export interface UseGetAppSecurityDetailsProps {
-    appId: string
-    envId: string
+    appId: number
+    envId: number
+    installedAppId?: number
+    imageScanDeployInfoId?: number
     isSecurityScanV2Enabled: boolean
 }
 export interface UseGetAppSecurityDetailsReturnType {
     scanDetailsLoading: boolean
-    scanResultResponse: Awaited<ReturnType<typeof getSecurityScan>>
-    executionDetailsResponse: Awaited<ReturnType<typeof getLastExecutionMinByAppAndEnv>>
-    scanDetailsError: any
+    scanDetailsResponse: ResponseType<ApiResponseResultType>
+    scanDetailsError: ServerErrors
     reloadScanDetails: () => void
+    severityCount: SeverityCount
+    totalCount: number
 }

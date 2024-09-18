@@ -76,6 +76,9 @@ import {
     useUserEmail,
     ToastManager,
     ToastVariantType,
+    AppDetailsPayload,
+    ResponseType,
+    ApiResponseResultType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -146,6 +149,16 @@ const getIsImageApproverFromUserApprovalMetaData: (
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const getSecurityScan: ({
+    appId,
+    envId,
+    installedAppId,
+}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getSecurityScan',
+    null,
+    'function',
+)
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -1568,7 +1581,8 @@ const CDMaterial = ({
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
-                                isScanV2Enabled={isScanV2Enabled}
+                                SecurityModalSidebar={SecurityModalSidebar}
+                                getSecurityScan={getSecurityScan}
                             />
                         )}
                 </ImageCard>

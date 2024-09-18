@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FetchIdDataStatus, getSecurityScan, History, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResponseResultType,
+    FetchIdDataStatus,
+    History,
+    ResponseType,
+    useScrollable,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getLastExecutionByAppArtifactId } from '@Services/service'
+import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from '../appDetails/appDetails.type'
 
 export interface CIPipeline {
     name: string
@@ -62,21 +69,18 @@ export interface SecurityTabType {
     artifactId: number
     status: string
     appIdFromParent?: string
-    isJobCI: boolean
-    isJobView: boolean
 }
 
-export interface UseGetCISecurityDetailsProps {
-    appId: string
+export interface UseGetCISecurityDetailsProps
+    extends Pick<UseGetAppSecurityDetailsProps, 'appId' | 'isSecurityScanV2Enabled'> {
     artifactId: number
-    isJobCard: boolean
-    isSecurityScanV2Enabled: boolean
 }
 
-export interface UseGetCISecurityDetailsReturnType {
-    scanDetailsLoading: boolean
-    scanResultResponse: Awaited<ReturnType<typeof getSecurityScan>>
+export interface UseGetCISecurityDetailsReturnType
+    extends Pick<
+        UseGetAppSecurityDetailsReturnType,
+        'scanDetailsLoading' | 'scanDetailsError' | 'reloadScanDetails' | 'severityCount' | 'totalCount'
+    > {
+    scanResultResponse: ResponseType<ApiResponseResultType>
     executionDetailsResponse: Awaited<ReturnType<typeof getLastExecutionByAppArtifactId>>
-    scanDetailsError: any
-    reloadScanDetails: () => void
 }
