@@ -185,6 +185,7 @@ const DeploymentTemplate = ({
     // Compare view states
     const [templateListMap, setTemplateListMap] = useState<Record<number, TemplateListItemType>>({})
     const [isComparisonViewLoading, setIsComparisonViewLoading] = useState<boolean>(false)
+    // TODO: In case of envOverride, this should be set to envId
     const [compareWithSelectedOption, setCompareWithSelectedOption] = useState<SelectPickerOptionType>(
         COMPARE_WITH_BASE_TEMPLATE_OPTION,
     )
@@ -507,12 +508,11 @@ const DeploymentTemplate = ({
                     ...(envId && { envId: +envId }),
                 }),
                 getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables(editorTemplateData)),
-                // FIXME: Handle override
                 shouldFetchResolvedBaseDeploymentTemplate
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
-                          chartRefId: publishedTemplateData?.selectedChartRefId,
-                          values: publishedTemplateData?.editorTemplate,
+                          chartRefId: chartDetails?.globalChartRefId,
+                          values: baseDeploymentTemplate?.originalTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                       })
                     : null,
@@ -531,7 +531,7 @@ const DeploymentTemplate = ({
             }
 
             // FIXME: Simplify this
-            if (!currentEditorTemplate.areVariablesPresent || selectedTab !== DeploymentTemplateTabsType.COMPARE) {
+            if (!currentEditorTemplate.areVariablesPresent && selectedTab !== DeploymentTemplateTabsType.COMPARE) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: NO_SCOPED_VARIABLES_MESSAGE,
@@ -671,12 +671,29 @@ const DeploymentTemplate = ({
 
         if (
             isApprovalView &&
+            draftTemplateData &&
             compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
         ) {
             return draftTemplateData.schema
         }
 
         return currentEditorTemplateData?.schema
+    }
+
+    const getIsCurrentEditorTemplateOverridden = (): boolean => {
+        if (isPublishedValuesView && publishedTemplateData) {
+            return publishedTemplateData.isOverridden
+        }
+
+        if (
+            isApprovalView &&
+            draftTemplateData &&
+            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
+        ) {
+            return draftTemplateData.isOverridden
+        }
+
+        return currentEditorTemplateData?.isOverridden
     }
 
     const getIsCurrentTemplateOverridden = (): boolean => {
@@ -1579,14 +1596,9 @@ const DeploymentTemplate = ({
                     : resolvedBaseDeploymentTemplate.originalTemplate
             }
 
-            // FIXME:
-            if (envId) {
-                return ''
-            }
-
             return hideLockedKeys
-                ? publishedTemplateData.editorTemplateWithoutLockedKeys
-                : publishedTemplateData.editorTemplate
+                ? baseDeploymentTemplate.templateWithoutLockedKeys
+                : baseDeploymentTemplate.originalTemplate
         }
 
         const selectedTemplateData = compareWithValuesDataStore[+compareWithSelectedOption.value]
@@ -1663,7 +1675,6 @@ const DeploymentTemplate = ({
             return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
         }
 
-        // FIXME: In case of approval pending + inheriting, need to show Base deployment template
         if (selectedTab === DeploymentTemplateTabsType.COMPARE && !showReadMe) {
             return (
                 <CompareTemplateView
@@ -1682,6 +1693,11 @@ const DeploymentTemplate = ({
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
+                    isUnSet={isUnSet}
+                    environmentName={environmentName}
+                    isCurrentEditorOverridden={getIsCurrentEditorTemplateOverridden()}
+                    handleOverride={handleOverride}
+                    latestDraft={draftTemplateData?.latestDraft}
                 />
             )
         }

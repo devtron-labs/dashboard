@@ -11,6 +11,7 @@ import {
     SelectPickerOptionType,
     TemplateListDTO,
     SelectedChartDetailsType,
+    CompareFromApprovalOptionsValuesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Operation } from 'fast-json-patch'
 import { DeploymentTemplateGUIViewProps } from '@Components/deploymentConfig/types'
@@ -59,18 +60,45 @@ export interface DeploymentTemplateEditorDataStateType
     removedPatches: Operation[]
 }
 
-export interface DeploymentTemplateEditorHeaderProps
+interface DeploymentTemplateEditorHeaderBaseProps
     extends Pick<DeploymentTemplateQueryParamsType, 'showReadMe'>,
         Pick<DeploymentTemplateProps, 'isUnSet'> {
+    /**
+     * Chart version of editable template
+     */
     selectedChartVersion: string
     isOverridden: boolean
     handleOverride: () => void
     showOverrideButton: boolean
     environmentName: string
-    isCompareView: boolean
     latestDraft: any
     readOnly: boolean
 }
+
+interface DeploymentTemplateEditorHeaderCompareViewProps {
+    isCompareView: true
+    selectedCompareWithOption: SelectPickerOptionType
+    handleCompareWithOptionChange: (selectedOption: SelectPickerOptionType) => void
+    compareWithOptions: CompareWithTemplateGroupedSelectPickerOptionType[]
+    isApprovalView: boolean
+    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
+    handleCompareFromOptionSelection: (selectedOption: SelectPickerOptionType) => void
+    draftChartVersion: string
+}
+
+interface DeploymentTemplateEditorHeaderNonCompareViewProps {
+    isCompareView?: false
+    isApprovalView?: false
+    selectedCompareWithOption?: never
+    handleCompareWithOptionChange?: never
+    compareWithOptions?: never
+    compareFromSelectedOptionValue?: never
+    handleCompareFromOptionSelection?: never
+    draftChartVersion?: never
+}
+
+export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeaderBaseProps &
+    (DeploymentTemplateEditorHeaderCompareViewProps | DeploymentTemplateEditorHeaderNonCompareViewProps)
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps

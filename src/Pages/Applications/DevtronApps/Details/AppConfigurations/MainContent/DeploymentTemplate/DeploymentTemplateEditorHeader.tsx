@@ -1,15 +1,24 @@
 import { useParams } from 'react-router-dom'
-import { BaseURLParams, CodeEditor, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseURLParams,
+    CodeEditor,
+    SelectPicker,
+    SelectPickerVariantType,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '@Components/deploymentConfig/constants'
+import { importComponentFromFELibrary } from '@Components/common'
 import { DeploymentTemplateEditorHeaderProps } from './types'
 import { getDTCodeEditorBackgroundClass } from './utils'
 import OverrideTemplateButton from './OverrideTemplateButton'
 
+const CompareFromApprovalSelector = importComponentFromFELibrary('CompareFromApprovalSelector', null, 'function')
+
 const DeploymentTemplateEditorHeader = ({
     showReadMe,
-    isCompareView,
+    isCompareView = false,
     readOnly,
     isUnSet,
     selectedChartVersion,
@@ -18,6 +27,13 @@ const DeploymentTemplateEditorHeader = ({
     showOverrideButton,
     environmentName,
     latestDraft,
+    handleCompareWithOptionChange,
+    selectedCompareWithOption,
+    compareWithOptions,
+    isApprovalView = false,
+    compareFromSelectedOptionValue,
+    handleCompareFromOptionSelection,
+    draftChartVersion,
 }: DeploymentTemplateEditorHeaderProps) => {
     const { envId } = useParams<BaseURLParams>()
 
@@ -39,63 +55,93 @@ const DeploymentTemplateEditorHeader = ({
         if (showEditorHeader) {
             return (
                 <CodeEditor.Header className=" flex left p-0-imp dc__border-bottom" hideDefaultSplitHeader>
-                    <div
-                        className={`flexbox fs-12 fw-6 cn-9 pl-12 pr-12 flex-grow-1 py-6 ${getDTCodeEditorBackgroundClass(!!envId, isOverridden)}`}
-                    >
-                        <div className="flexbox dc__content-space w-100 dc__gap-8 dc__align-items-center">
-                            <div className="flexbox dc__gap-8 dc__align-items-center">
-                                {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
-
-                                <span className="cn-9 fs-12 fw-6 lh-20">
-                                    {getHeadingPrefix()}
-                                    {selectedChartVersion && ` (v${selectedChartVersion})`}
-                                </span>
-                            </div>
-
-                            {!!envId && readOnly && (
-                                <Tooltip
-                                    alwaysShowTippyOnHover
-                                    arrow={false}
-                                    placement="top"
-                                    content={
-                                        !isOverridden
-                                            ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
-                                            : 'Base configurations are overridden for this file'
-                                    }
+                    <div className="flex column w-100">
+                        <div className="flexbox w-100">
+                            {isCompareView && (
+                                <div
+                                    className="flexbox px-16 py-6 dc__no-shrink dc__border-right bcn-1"
+                                    style={{ width: '48.5%' }}
                                 >
-                                    <div className="flex">
-                                        <ICLocked className="icon-dim-16 fcn-6 dc__no-shrink" />
-                                    </div>
-                                </Tooltip>
-                            )}
-                        </div>
+                                    <span className="cn-9 fs-12 fw-4 lh-20">Compare with:</span>
 
-                        {!!envId && (
-                            <div className="flex right dc__gap-8 dc__no-shrink">
-                                {/* TODO: Add delete override from compare mode */}
-                                <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
-                                    {isOverridden ? 'Overridden' : 'Inheriting from base'}
-                                </span>
-
-                                {showOverrideButton && (
-                                    <OverrideTemplateButton
-                                        isOverridden={isOverridden}
-                                        handleOverride={handleOverride}
+                                    <SelectPicker
+                                        inputId="compare-with-template-selector"
+                                        options={compareWithOptions}
+                                        value={selectedCompareWithOption}
+                                        onChange={handleCompareWithOptionChange}
+                                        variant={SelectPickerVariantType.BORDER_LESS}
                                     />
+
+                                    {/* OG we were supposed to show its overridden status as well but due to some issue not working from past 12 months TODO: Ask about this */}
+                                </div>
+                            )}
+
+                            <div
+                                className={`flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 flex-grow-1 ${getDTCodeEditorBackgroundClass(!!envId, isOverridden)}`}
+                            >
+                                <div className="flexbox w-100 dc__gap-8 dc__align-items-center">
+                                    {isApprovalView && CompareFromApprovalSelector ? (
+                                        <CompareFromApprovalSelector
+                                            selectedOptionValue={compareFromSelectedOptionValue}
+                                            handleCompareFromOptionSelection={handleCompareFromOptionSelection}
+                                            draftChartVersion={draftChartVersion || ''}
+                                            currentEditorChartVersion={selectedChartVersion || ''}
+                                        />
+                                    ) : (
+                                        <div className="flexbox dc__gap-8 dc__align-items-center">
+                                            {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
+
+                                            <span className="cn-9 fs-12 fw-6 lh-20">
+                                                {getHeadingPrefix()}
+                                                {selectedChartVersion && ` (v${selectedChartVersion})`}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {!!envId && readOnly && (
+                                        <Tooltip
+                                            alwaysShowTippyOnHover
+                                            arrow={false}
+                                            placement="top"
+                                            content={
+                                                !isOverridden
+                                                    ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
+                                                    : 'Base configurations are overridden for this file'
+                                            }
+                                        >
+                                            <div className="flex">
+                                                <ICLocked className="icon-dim-16 fcn-6 dc__no-shrink" />
+                                            </div>
+                                        </Tooltip>
+                                    )}
+                                </div>
+
+                                {!!envId && (
+                                    <div className="flex right dc__gap-8 dc__no-shrink">
+                                        <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
+                                            {isOverridden ? 'Overridden' : 'Inheriting from base'}
+                                        </span>
+
+                                        {showOverrideButton && (
+                                            <OverrideTemplateButton
+                                                isOverridden={isOverridden}
+                                                handleOverride={handleOverride}
+                                            />
+                                        )}
+                                    </div>
                                 )}
                             </div>
-                        )}
+                        </div>
                     </div>
                 </CodeEditor.Header>
             )
         }
 
-        return (
-            <>
-                {isUnSet && <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />}
-                {/* Hello Work */}
-            </>
-        )
+        if (isUnSet) {
+            return <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
+        }
+
+        return null
     }
 
     return renderContent()
