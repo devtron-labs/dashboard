@@ -12,6 +12,19 @@ const preview: Preview = {
                 date: /Date$/i,
             },
         },
+        backgrounds: {
+            values: [
+                {
+                    name: 'Light',
+                    value: 'var(--N0)',
+                },
+                {
+                    name: 'Dark',
+                    value: 'var(--N700)',
+                },
+            ],
+            default: 'Light',
+        },
     },
     tags: ['autodocs'],
     decorators: (Story) => (
