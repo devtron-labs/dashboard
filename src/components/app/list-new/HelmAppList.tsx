@@ -124,10 +124,6 @@ const HelmAppList = ({
                     namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ?? false,
             )
         }
-        if (appStatus.length) {
-            const appStatuses = appStatus.map((status) => status)
-            filteredHelmAppList = filteredHelmAppList.filter((app) => appStatuses.includes(app.appStatus))
-        }
         filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
 
         const filteredListTotalSize = filteredHelmAppList.length
@@ -157,12 +153,12 @@ const HelmAppList = ({
             }
             updateDataSyncing(false)
         } else {
-            getDevtronInstalledHelmApps(clusterIdsCsv)
+            getDevtronInstalledHelmApps(clusterIdsCsv, appStatus.join())
                 .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
                     setDevtronInstalledHelmAppsList(devtronInstalledHelmAppsListResponse.result.helmApps ?? [])
                     setShowPulsatingDot(!devtronInstalledHelmAppsListResponse.result.helmApps?.length && !clusterIdsCsv)
                     setDataStateType(AppListViewType.LIST)
-                    if (clusterIdsCsv) {
+                    if (clusterIdsCsv && !appStatus.length) {
                         _getExternalHelmApps()
                     }
                 })
@@ -175,7 +171,7 @@ const HelmAppList = ({
                     updateDataSyncing(false)
                 })
         }
-    }, [clusterIdsCsv, syncListData])
+    }, [clusterIdsCsv, syncListData, `${appStatus}`])
 
     // reset data
     function init() {
