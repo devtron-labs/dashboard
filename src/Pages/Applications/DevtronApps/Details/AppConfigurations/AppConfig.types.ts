@@ -305,6 +305,14 @@ export type GetConfigDiffDataProps = Required<
 
 export type GetDeploymentTemplateDataProps = Omit<GetConfigDiffDataProps, 'identifierId' | 'pipelineId'>
 
+export type GetDeploymentTemplateResolvedDataProps = Pick<
+    GetConfigDiffDataProps,
+    'appName' | 'envName' | 'compareName' | 'type'
+> & {
+    values: string
+    signal: AbortSignal
+}
+
 export type GetManifestDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'environments'> & {
     appId: string
     envId: string

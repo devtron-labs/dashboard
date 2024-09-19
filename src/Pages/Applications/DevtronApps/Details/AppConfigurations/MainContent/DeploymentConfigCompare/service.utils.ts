@@ -8,7 +8,12 @@ import {
 
 import { getDeploymentManisfest } from '@Components/deploymentConfig/service'
 
-import { GetConfigDiffDataProps, GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
+import {
+    GetConfigDiffDataProps,
+    GetDeploymentTemplateDataProps,
+    GetDeploymentTemplateResolvedDataProps,
+    GetManifestDataProps,
+} from '../../AppConfig.types'
 import { getAppAndEnvIds } from './utils'
 
 export const getConfigDiffData = ({
@@ -21,18 +26,48 @@ export const getConfigDiffData = ({
     pipelineId,
 }: GetConfigDiffDataProps) =>
     getAppEnvDeploymentConfig({
-        ...(type === 'app'
-            ? {
-                  appName,
-                  envName: compareName || '',
-              }
-            : {
-                  appName: compareName || '',
-                  envName,
-              }),
-        configType,
-        identifierId,
-        pipelineId,
+        params: {
+            configArea: 'AppConfiguration',
+            ...(type === 'app'
+                ? {
+                      appName,
+                      envName: compareName || '',
+                  }
+                : {
+                      appName: compareName || '',
+                      envName,
+                  }),
+            configType,
+            identifierId,
+            pipelineId,
+        },
+    })
+
+export const getDeploymentTemplateResolvedData = ({
+    type,
+    appName,
+    envName,
+    compareName,
+    values,
+    signal,
+}: GetDeploymentTemplateResolvedDataProps) =>
+    getAppEnvDeploymentConfig({
+        params: {
+            configArea: 'ResolveData',
+            ...(type === 'app'
+                ? {
+                      appName,
+                      envName: compareName || '',
+                  }
+                : {
+                      appName: compareName || '',
+                      envName,
+                  }),
+        },
+        payload: {
+            values,
+        },
+        signal,
     })
 
 export const getDeploymentTemplateData = ({
@@ -51,16 +86,19 @@ export const getDeploymentTemplateData = ({
     return configType !== AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS &&
         configType !== AppEnvDeploymentConfigType.DEFAULT_VERSION
         ? getAppEnvDeploymentConfig({
-              ...(type === 'app'
-                  ? {
-                        appName,
-                        envName: compareName || '',
-                    }
-                  : {
-                        appName: compareName || '',
-                        envName,
-                    }),
-              configType,
+              params: {
+                  configArea: 'AppConfiguration',
+                  ...(type === 'app'
+                      ? {
+                            appName,
+                            envName: compareName || '',
+                        }
+                      : {
+                            appName: compareName || '',
+                            envName,
+                        }),
+                  configType,
+              },
           })
         : nullResponse
 }

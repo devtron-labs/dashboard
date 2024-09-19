@@ -74,8 +74,9 @@ export const ProtectedConfigMapSecretDetails = ({
         () =>
             abortPreviousRequests(
                 () =>
-                    getAppEnvDeploymentConfig(
-                        {
+                    getAppEnvDeploymentConfig({
+                        params: {
+                            configArea: 'AppConfiguration',
                             appName,
                             envName,
                             configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
@@ -83,8 +84,8 @@ export const ProtectedConfigMapSecretDetails = ({
                             resourceName: data.name,
                             resourceType: ConfigResourceType.Secret,
                         },
-                        abortControllerRef.current.signal,
-                    ),
+                        signal: abortControllerRef.current.signal,
+                    }),
                 abortControllerRef,
             ),
         [],

@@ -118,9 +118,9 @@ export const parseCompareWithSearchParams =
         if ((!chartRefId && !compareWithConfigType) || !configType) {
             if (!compareWith) {
                 // If `type` is 'app' (Application), set `compareWith` to the first environment if available,
-                // otherwise leave it empty (base configuration).
+                // otherwise `null` (base configuration).
                 if (type === 'app') {
-                    compareWith = environments.length && !compareTo ? environments[0].name : ''
+                    compareWith = environments.length && !compareTo ? environments[0].name : null
                 } else {
                     // If `type` is 'appGroup' (Application Groups), set `compareWith` to the first application.
                     // If the application to compare (`compareTo`) is the same as the first application,
@@ -304,3 +304,21 @@ export const isConfigTypeNonDraftOrPublished = (type: AppEnvDeploymentConfigType
 
 export const isConfigTypePublished = (type: AppEnvDeploymentConfigType) =>
     type === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT || type === AppEnvDeploymentConfigType.PUBLISHED_ONLY
+
+export const getDeploymentTemplateValues = (data: AppEnvDeploymentConfigDTO) => {
+    try {
+        const parsedDraftData =
+            JSON.parse(data.deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null) || null
+
+        return (
+            JSON.stringify(
+                parsedDraftData?.envOverrideValues ||
+                    parsedDraftData?.valuesOverride ||
+                    parsedDraftData?.defaultAppOverride ||
+                    data.deploymentTemplate?.data,
+            ) ?? null
+        )
+    } catch {
+        return null
+    }
+}
