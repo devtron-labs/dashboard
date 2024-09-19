@@ -68,7 +68,6 @@ export const SourceInfo = ({
     filteredEnvIds,
     deploymentUserActionState,
 }: SourceInfoType) => {
-    const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
@@ -90,24 +89,6 @@ export const SourceInfo = ({
         message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
-    }
-
-    const getScannedStatus = async () => {
-        const { appId, ciArtifactId } = appDetails
-        try {
-            const {
-                result: { scanEnabled, scanned },
-            } = await getLastExecutionByAppArtifactId(ciArtifactId, appId)
-            if (scanEnabled && scanned) {
-                // If scanEnabled and scanned is true, then show the vulnerabilities card
-                setShowVulnerabilitiesCard(true)
-            } else {
-                setShowVulnerabilitiesCard(false)
-            }
-        } catch (error) {
-            setShowVulnerabilitiesCard(false)
-            showError(error)
-        }
     }
 
     useEffect(() => {
@@ -328,13 +309,12 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest &&
-                              !helmMigratedAppNotTriggered &&
-                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                          {!appDetails?.deploymentAppDeleteRequest && !helmMigratedAppNotTriggered && (
                               <SecurityVulnerabilityCard
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
+                                  ciArtifactId={ciArtifactId}
                                   isExternalCI={isExternalCI}
                               />
                           )}
