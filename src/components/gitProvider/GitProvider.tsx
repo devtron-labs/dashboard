@@ -820,7 +820,6 @@ const GitForm = ({
                         onChange={(e) => handleGithostChange(e)}
                         isDisabled={gitHostId}
                         size={ComponentSizeType.large}
-                        menuIsOpen
                     />
                     <div className="cr-5 fs-11">{gitHost.error}</div>
                 </div>

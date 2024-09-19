@@ -23,7 +23,7 @@ import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/con
 
 export interface OptionTypeWithIcon {
     label: string
-    value: string
+    value: number | string
     startIcon?: ReactElement
     category?: number
     description?: string

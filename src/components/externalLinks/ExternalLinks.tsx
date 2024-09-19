@@ -246,7 +246,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 (link: ExternalLink) =>
                     link.name.toLowerCase().includes(_searchTerm) ||
                     monitoringTools
-                        .find((tool) => tool.value === link.monitoringToolId.toString())
+                        .find((tool) => tool.value === link.monitoringToolId)
                         ?.label.toLowerCase()
                         .includes(_searchTerm),
             )

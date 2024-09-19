@@ -206,7 +206,7 @@ export const IdentifierSelectStyles = {
 
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
     return (
-        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId.toString())?.label.toLowerCase()] || WebpageIcon
+        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
     )
 }
 

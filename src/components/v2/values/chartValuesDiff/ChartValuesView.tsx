@@ -1653,7 +1653,7 @@ const ChartValuesView = ({
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
                 <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
-                    <div className="chart-values-view__details flex top column dc__gap-12">
+                    <div className="chart-values-view__details flex top column dc__gap-12 flex-grow-1">
                         {isCreateValueView && (
                             <ValueNameInput
                                 valueName={valueName}
@@ -1675,7 +1675,7 @@ const ChartValuesView = ({
                         )}
 
                         {!isDeployChartView && !isCreateValueView && (
-                            <div className="mb-16">
+                            <div className="w-100">
                                 <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
                                     Project
                                 </div>

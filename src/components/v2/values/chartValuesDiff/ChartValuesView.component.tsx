@@ -100,7 +100,7 @@ export const ChartEnvironmentSelector = ({
     }
 
     return !isDeployChartView ? (
-        <div className="chart-values__environment-container mb-12">
+        <div className="chart-values__environment-container w-100">
             <h2
                 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
                 data-testid="environment-heading"
@@ -148,7 +148,7 @@ export const DeploymentAppSelector = ({
     allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
-        <div className="chart-values__deployment-type">
+        <div className="chart-values__deployment-type w-100">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
                 Deploy app using
             </h2>
