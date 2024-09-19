@@ -140,7 +140,7 @@ export function updatePolicy(payload): Promise<ResponseType> {
 }
 
 export function getCVEControlList(payload: CVEControlListPayload): Promise<ResponseType<CVEControlList>> {
-    const URL = 'security/scan/cve/exposure'
+    const URL = Routes.SECURITY_SCAN_CVE_EXPOSURE
     return post(URL, payload).then((response) => {
         return {
             ...response,
@@ -149,8 +149,8 @@ export function getCVEControlList(payload: CVEControlListPayload): Promise<Respo
                 scanList: response.result?.list
                     ? response.result.list.map((cve) => {
                           return {
-                              appName: cve.appName,
-                              envName: cve.envName,
+                              appName: cve.appName ?? '',
+                              envName: cve.envName ?? '',
                               policy: cve.blocked ? 'block' : 'whitelist',
                           }
                       })
