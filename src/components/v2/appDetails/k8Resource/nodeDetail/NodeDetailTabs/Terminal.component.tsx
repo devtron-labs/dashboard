@@ -315,6 +315,7 @@ const TerminalComponent = ({
                 options: shellTypes,
                 defaultValue: shellTypes[0],
                 onChange: handleShellChange,
+                value: selectedTerminalType,
                 styles: getShellSelectStyles(),
                 components: {
                     IndicatorSeparator: null,
