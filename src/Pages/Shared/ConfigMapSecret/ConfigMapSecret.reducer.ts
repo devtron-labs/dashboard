@@ -65,7 +65,7 @@ const getExternalSubPathValues = (configMapSecretData: CMSecretConfigData) => {
     }
 
     if (!externalSubPathValues.value && configMapSecretData?.esoSubPath) {
-        externalSubPathValues.value = configMapSecretData.esoSubPath ? configMapSecretData.esoSubPath.join(', ') : ''
+        externalSubPathValues.value = configMapSecretData.esoSubPath.join(', ')
     }
 
     return externalSubPathValues

@@ -429,7 +429,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
         if (Array.isArray(json?.dataFrom)) {
             payload.dataFrom = json.dataFrom
         }
-        if (typeof json?.template === 'object' && !Array.isArray(json?.template)) {
+        if (typeof json?.template === 'object' && !Array.isArray(json.template)) {
             payload.template = json.template
         }
         dispatch({

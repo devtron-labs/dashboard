@@ -338,7 +338,7 @@ export const ConfigMapSecretForm = React.memo(
                 let isValidSecretData = false
                 if (isESO) {
                     isValidSecretData = !!state.dataFrom || !!state.template
-                    if (state.esoData && !state.dataFrom && !state.template) {
+                    if (state.esoData && !isValidSecretData) {
                         isValidSecretData = state.esoData?.reduce(
                             (_isValidSecretData, s) => {
                                 isValidSecretData = _isValidSecretData && !!s?.secretKey && !!s.key
@@ -795,7 +795,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const renderSubPathCheckBoxContent = (): JSX.Element => (
             <p data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="flexbox-col m-0">
-                <p className={`m-0 ${state?.template && state.isSubPathChecked ? 'dc__required-field' : ''}`}>
+                <p className={`m-0 ${state.template && state.isSubPathChecked ? 'dc__required-field' : ''}`}>
                     <span>Set SubPath (same as</span>
                     <a
                         href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
