@@ -72,11 +72,11 @@ import { CompareTemplateView } from './CompareTemplateView'
 import { getCompareWithOptionsLabel } from './CompareTemplateView/utils'
 import { getCompareWithTemplateOptionsLabel } from './utils'
 import { useAppConfigurationContext } from '../../AppConfiguration.provider'
-import './DeploymentTemplate.scss'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import OverrideInfoStrip from './OverrideInfoStrip'
+import './DeploymentTemplate.scss'
 
-// TODO: Verify null checks for all
+// TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function')
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
@@ -1141,6 +1141,7 @@ const DeploymentTemplate = ({
             }
 
             if (showLockedTemplateDiffModal) {
+                // FIXME: In case of draft edit should we do this or approval as unedited?
                 const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                     documents: {
                         unedited: currentEditorTemplateData.originalTemplate,
@@ -1328,6 +1329,7 @@ const DeploymentTemplate = ({
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
             // TODO: Can think of some concurrent behaviors
+            // TODO: Can common documents: { unedited, edited } for both
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                 documents: {
                     unedited: publishedTemplateData.originalTemplate,
@@ -1536,6 +1538,13 @@ const DeploymentTemplate = ({
     }
 
     const getLockedDiffModalDocuments = () => {
+        if (isApprovalView) {
+            return {
+                unedited: publishedTemplateData.originalTemplate,
+                edited: YAML.parse(draftTemplateData.editorTemplate),
+            }
+        }
+
         const editorTemplate = getCurrentTemplateWithLockedKeys()
 
         return {
@@ -1698,6 +1707,12 @@ const DeploymentTemplate = ({
                     isCurrentEditorOverridden={getIsCurrentEditorTemplateOverridden()}
                     handleOverride={handleOverride}
                     latestDraft={draftTemplateData?.latestDraft}
+                    isDeleteOverrideDraftState={
+                        draftTemplateData?.latestDraft.action === 3 &&
+                        compareWithSelectedOption &&
+                        compareWithSelectedOption.value !== COMPARE_WITH_BASE_TEMPLATE_OPTION.value &&
+                        templateListMap[+compareWithSelectedOption.value]?.environmentId === +envId
+                    }
                 />
             )
         }

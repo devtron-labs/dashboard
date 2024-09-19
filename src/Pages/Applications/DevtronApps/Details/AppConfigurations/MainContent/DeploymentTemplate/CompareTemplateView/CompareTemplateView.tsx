@@ -22,6 +22,7 @@ const CompareTemplateView = ({
     handleOverride,
     environmentName,
     latestDraft,
+    isDeleteOverrideDraftState,
 }: CompareTemplateViewProps) => (
     <div className="flexbox-col flex-grow-1 dc__border-top-n1 dc__border-bottom-imp dc__overflow-scroll">
         <CodeEditor
@@ -56,19 +57,8 @@ const CompareTemplateView = ({
                 compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                 handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                 draftChartVersion={draftChartVersion || ''}
+                isDeleteOverrideDraftState={isDeleteOverrideDraftState}
             />
-            {/* {isDeleteDraftState && (
-                            <div className="code-editor__header flex left w-100 p-0-imp">
-                                <div className="bcr-1 pt-8 pb-8 pl-16 pr-16">
-                                    <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
-                                    <div className="fs-13 fw-4 cn-9 lh-20">Override base</div>
-                                </div>
-                                <div className="bcg-1 pt-8 pb-8 pl-16 pr-16">
-                                    <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
-                                    <div className="fs-13 fw-4 cn-9 lh-20">Inherit from base</div>
-                                </div>
-                            </div>
-                        )} */}
         </CodeEditor>
     </div>
 )

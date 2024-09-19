@@ -84,6 +84,7 @@ interface DeploymentTemplateEditorHeaderCompareViewProps {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (selectedOption: SelectPickerOptionType) => void
     draftChartVersion: string
+    isDeleteOverrideDraftState: boolean
 }
 
 interface DeploymentTemplateEditorHeaderNonCompareViewProps {
@@ -95,6 +96,7 @@ interface DeploymentTemplateEditorHeaderNonCompareViewProps {
     compareFromSelectedOptionValue?: never
     handleCompareFromOptionSelection?: never
     draftChartVersion?: never
+    isDeleteOverrideDraftState?: never
 }
 
 export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeaderBaseProps &

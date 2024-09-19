@@ -28,4 +28,5 @@ export interface CompareTemplateViewProps
     isCurrentEditorOverridden: boolean
     handleOverride: () => void
     latestDraft: string
+    isDeleteOverrideDraftState: boolean
 }
