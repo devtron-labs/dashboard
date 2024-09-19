@@ -45,6 +45,8 @@
     overflow: hidden;
     flex: 1;
     position: relative;
+    // NOTE: fixing height for consistency
+    --metadata-header-height: 28px;
 
     &__metadata {
         position: fixed;
@@ -53,6 +55,7 @@
         z-index: 21;
         border-bottom: 1px solid #2C3354;
         background: var(--terminal-bg);
+        height: var(--metadata-header-height);
 
         & > span {
             opacity: 0.8;
@@ -65,9 +68,9 @@
 
         &--fullscreen {
             position: fixed;
-            top: 28px;
+            top: var(--metadata-header-height);
             left: 0;
-            height: 100vh;
+            height: calc(100vh - 28px);
             width: 100vw;
             z-index: 20;
             margin: 0;
@@ -76,10 +79,10 @@
         }
 
         & .zoom {
-            position: absolute;
-            top: 12px;
+            position: fixed;
+            bottom: 12px;
             right: 12px;
-            transition: top 0.3s;
+            transition: opacity 0.2s ease-in-out;
             padding: 6px;
             width: 32px;
             height: 32px;
@@ -91,8 +94,23 @@
             opacity: 0.8;
             z-index: 11;
 
+            & > svg {
+                transition: transform 0.2s ease-in-out;
+                transform: scale(1);
+            }
+
             &:hover {
                 opacity: 1;
+
+                & > svg {
+                    transform: scale(1.1);
+                }
+            }
+        }
+
+        &__zoom--bottom-41 {
+            & .zoom {
+                bottom: 41px;
             }
         }
     }

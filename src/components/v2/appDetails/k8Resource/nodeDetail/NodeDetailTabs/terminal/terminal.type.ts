@@ -83,7 +83,7 @@ export interface TerminalWrapperProps {
     isResourceBrowserView?: boolean
 }
 
-export interface TerminalViewType {
+export interface TerminalViewType extends Pick<TerminalWrapperProps, 'isResourceBrowserView'> {
     terminalRef: any
     sessionId: string
     socketConnection: SocketConnectionType
@@ -94,7 +94,6 @@ export interface TerminalViewType {
     terminalMessageData?: any
     clearTerminal: boolean
     dataTestId?: string
-    isResourceBrowserView?: boolean
     metadata: TerminalSelectionListDataType['metadata']
 }
 

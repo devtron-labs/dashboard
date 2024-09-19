@@ -27,7 +27,8 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
-import { useMainContext, LogResizeButton, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { useMainContext, LogResizeButton } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
 
 export default function TerminalView({
     terminalRef,
@@ -307,11 +308,13 @@ export default function TerminalView({
         >
             {renderConnectionStrip()}
             {fullScreenView && (
+                // TODO: solve why react-keybind is not working after this in k8s resource tab component
                 <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                    <ICDevtronLogo className="fcn-0 icon-dim-16" />
                     {Object.entries(metadata).map(([key, value], index, arr) => (
                         <>
                             <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
-                                {key}:&nbsp;{value}
+                                {key}:&nbsp;{value || '-'}
                             </span>
                             {index < arr.length - 1 && <div className="dc__divider h12" />}
                         </>
@@ -322,11 +325,13 @@ export default function TerminalView({
                 ref={termDivRef}
                 id="terminal-id"
                 data-testid="terminal-editor-container"
-                className={`mt-8 mb-4 terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
+                className={`mt-8 mb-4 terminal-component ${
+                    fullScreenView ? 'terminal-component--fullscreen' : ''
+                } ml-20 ${!isResourceBrowserView && !fullScreenView ? 'terminal-component__zoom--bottom-41' : ''}`}
             >
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton
-                    shortcutCombo="Cmd/Ctrl + Shift + f"
+                    shortcutCombo={['⌘', '⇧', 'F']}
                     disableKeybindings={true}
                     onlyOnLogs={false}
                     fullScreenView={fullScreenView}

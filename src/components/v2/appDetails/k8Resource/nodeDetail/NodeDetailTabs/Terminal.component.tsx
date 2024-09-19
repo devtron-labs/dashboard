@@ -346,16 +346,18 @@ const TerminalComponent = ({
                 sessionId,
             },
         },
-        metadata: isResourceBrowserView ? {
-            cluster: '',
-            namespace: selectedNamespace ?? '',
-            pod: params.podName ?? '',
-        } : {
-            // TODO: check if the nullish checks are required
-            app: appDetails.appName ?? '',
-            environment: appDetails.environmentName ?? '',
-            pod: params.podName ?? ''
-        }
+        metadata: isResourceBrowserView
+            ? {
+                  cluster: selectedResource.clusterName ?? '',
+                  namespace: selectedResource.namespace ?? '',
+                  pod: nodeName ?? '',
+              }
+            : {
+                  // TODO: check if the nullish checks are required
+                  app: appDetails.appName ?? '',
+                  environment: appDetails.environmentName ?? '',
+                  pod: nodeName ?? '',
+              },
     }
 
     return (
@@ -365,6 +367,7 @@ const TerminalComponent = ({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
+                isResourceBrowserView={isResourceBrowserView}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
         </div>

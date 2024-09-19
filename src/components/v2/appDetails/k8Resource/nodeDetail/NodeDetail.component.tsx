@@ -49,6 +49,7 @@ const NodeDetailComponent = ({
     removeTabByIdentifier,
     updateTabUrl,
     isExternalApp,
+    clusterName = '',
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const [applicationObjectTabs] = useSharedState(
@@ -90,6 +91,7 @@ const NodeDetailComponent = ({
 
     const selectedResource = {
         clusterId: +params.clusterId,
+        clusterName,
         kind: _selectedResource?.gvk.Kind as string,
         version: _selectedResource?.gvk.Version,
         group: _selectedResource?.gvk.Group,
