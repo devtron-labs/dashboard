@@ -6,7 +6,7 @@ import {
     SelectPickerOptionType,
     SERVER_MODE,
     Tooltip,
-    useMainContext,
+    useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
@@ -33,7 +33,7 @@ const AppListFilters = ({
     appType,
     namespaceListResponse,
 }: AppListFiltersProps) => {
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin } = useSuperAdmin()
 
     const { appStatus, cluster, environment, namespace, project, templateType, searchKey } = filterConfig
 
