@@ -83,5 +83,5 @@ export const DropdownIndicator = (props) => {
 export const parseVulnerabilityExposureSearchParams = (searchParams: URLSearchParams) => ({
     [VulnerabilityExposureFilterKeys.cluster]: searchParams.getAll(VulnerabilityExposureFilterKeys.cluster),
     [VulnerabilityExposureFilterKeys.environment]: searchParams.getAll(VulnerabilityExposureFilterKeys.environment),
-    [VulnerabilityExposureSearchParams.cveName]: searchParams.get(VulnerabilityExposureSearchParams.cveName),
+    [VulnerabilityExposureSearchParams.cveName]: searchParams.get(VulnerabilityExposureSearchParams.cveName) ?? '',
 })

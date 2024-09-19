@@ -211,3 +211,23 @@ export interface VulnerabilityExposureUrlFiltersType
 export interface ExposureListProps {
     urlFilters: UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>
 }
+
+interface VulnerabilityCVE {
+    appName: string
+    envName: string
+    policy: string
+}
+
+export interface CVEControlList {
+    totalCount: number
+    scanList: VulnerabilityCVE[]
+}
+
+export interface CVEControlListPayload {
+    offset: number
+    size: number
+    cveName: string
+    appName: string
+    clusterIds: number[]
+    envIds: number[]
+}
