@@ -420,9 +420,17 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             secretStoreRef: json.secretStoreRef,
             refreshInterval: json.refreshInterval,
             esoData: null,
+            dataFrom: null,
+            template: null,
         }
         if (Array.isArray(json?.esoData)) {
             payload.esoData = json.esoData
+        }
+        if (Array.isArray(json?.dataFrom)) {
+            payload.dataFrom = json.dataFrom
+        }
+        if (typeof json?.template === 'object' && !Array.isArray(json?.template)) {
+            payload.template = json.template
         }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
@@ -489,11 +497,15 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
     }))
     jsonForSecretDataYaml = transformSecretDataJSON(jsonForSecretDataYaml)
     const tempEsoSecretData =
-        (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
+        (configMapSecretData?.esoSecretData?.esoData || []).length === 0 &&
+        !configMapSecretData?.esoSecretData?.template &&
+        !configMapSecretData?.esoSecretData?.dataFrom &&
+        configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData
             : configMapSecretData?.esoSecretData
     const isEsoSecretData: boolean =
-        (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
+        (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) &&
+        (tempEsoSecretData.esoData || tempEsoSecretData.template || tempEsoSecretData.dataFrom)
     return {
         externalType: configMapSecretData?.externalType ?? '',
         roleARN: {
@@ -501,6 +513,8 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
             error: '',
         },
         esoData: tempEsoSecretData?.esoData,
+        template: tempEsoSecretData?.template,
+        dataFrom: tempEsoSecretData?.dataFrom,
         secretData: tempSecretData,
         secretDataYaml: YAMLStringify(jsonForSecretDataYaml),
         codeEditorRadio: CODE_EDITOR_RADIO_STATE.DATA,

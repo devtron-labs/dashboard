@@ -294,7 +294,8 @@ export const ConfigMapSecretForm = React.memo(
                 }
                 if (
                     state.isSubPathChecked &&
-                    ((componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
+                    ((isESO && state.template) ||
+                        (componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
                         (componentType !== CMSecretComponentType.Secret && state.external))
                 ) {
                     if (!state.externalSubpathValues.value) {
@@ -336,13 +337,16 @@ export const ConfigMapSecretForm = React.memo(
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
                 if (isESO) {
-                    isValidSecretData = state.esoData?.reduce(
-                        (_isValidSecretData, s) => {
-                            isValidSecretData = _isValidSecretData && !!s?.secretKey && !!s.key
-                            return isValidSecretData
-                        },
-                        !state.secretStore !== !state.secretStoreRef && !!state.esoData?.length,
-                    )
+                    isValidSecretData = !!state.dataFrom || !!state.template
+                    if (state.esoData && !state.dataFrom && !state.template) {
+                        isValidSecretData = state.esoData?.reduce(
+                            (_isValidSecretData, s) => {
+                                isValidSecretData = _isValidSecretData && !!s?.secretKey && !!s.key
+                                return isValidSecretData
+                            },
+                            !state.secretStore !== !state.secretStoreRef && !!state.esoData?.length,
+                        )
+                    }
                 } else {
                     isValidSecretData = state.secretData.reduce((_isValidSecretData, s) => {
                         isValidSecretData = _isValidSecretData && !!s.fileName && !!s.name
@@ -385,6 +389,7 @@ export const ConfigMapSecretForm = React.memo(
                 mountPath: null,
                 subPath: null,
                 filePermission: null,
+                esoSubPath: null,
             }
             if (
                 (componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
@@ -411,8 +416,14 @@ export const ConfigMapSecretForm = React.memo(
                         esoData: state.esoData,
                         secretStoreRef: state.secretStoreRef,
                         refreshInterval: state.refreshInterval,
+                        // if null don't send these keys which is achieved by `undefined`
+                        dataFrom: state.dataFrom ?? undefined,
+                        template: state.template ?? undefined,
                     }
                     payload.roleARN = state.roleARN.value
+                    if (state.isSubPathChecked && state.externalSubpathValues.value) {
+                        payload.esoSubPath = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
+                    }
                 }
             }
             if (state.selectedType === 'volume') {
@@ -783,18 +794,19 @@ export const ConfigMapSecretForm = React.memo(
         )
 
         const renderSubPathCheckBoxContent = (): JSX.Element => (
-            <span data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="mb-0">
-                Set SubPath (same as
-                <a
-                    href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
-                    className="ml-5 mr-5 anchor"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    subPath
-                </a>
-                for volume mount)
-                <br />
+            <p data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="flexbox-col m-0">
+                <p className={`m-0 ${state?.template && state.isSubPathChecked ? 'dc__required-field' : ''}`}>
+                    <span>Set SubPath (same as</span>
+                    <a
+                        href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
+                        className="ml-5 mr-5 anchor"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        subPath
+                    </a>
+                    <span>for volume mount)</span>
+                </p>
                 {state.isSubPathChecked && (
                     <span className="mb-0 cn-5 fs-11">
                         {state.external
@@ -815,7 +827,7 @@ export const ConfigMapSecretForm = React.memo(
                         </a>
                     </span>
                 )}
-            </span>
+            </p>
         )
 
         const renderSubPath = (): JSX.Element => (
@@ -823,7 +835,7 @@ export const ConfigMapSecretForm = React.memo(
                 <Checkbox
                     isChecked={state.isSubPathChecked}
                     onClick={stopPropagation}
-                    rootClassName="top"
+                    rootClassName={`${state.isSubPathChecked ? 'sub-path-checkbox' : ''}`}
                     disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={toggleSubpath}
@@ -831,6 +843,7 @@ export const ConfigMapSecretForm = React.memo(
                     {renderSubPathCheckBoxContent()}
                 </Checkbox>
                 {(state.externalType === 'KubernetesSecret' ||
+                    isESO ||
                     (componentType !== CMSecretComponentType.Secret && state.external)) &&
                     state.isSubPathChecked && (
                         <div className="mb-16">

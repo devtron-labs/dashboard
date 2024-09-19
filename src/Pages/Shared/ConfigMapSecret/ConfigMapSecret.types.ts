@@ -97,6 +97,8 @@ export interface SecretState {
     externalType: string
     roleARN: ValueWithError
     esoData: any
+    template: any
+    dataFrom: any
     secretData: any
     secretDataYaml: string
     codeEditorRadio: string
@@ -196,6 +198,7 @@ export interface ConfigDatum {
     overridden: boolean
     mountPath?: string
     defaultMountPath?: string
+    esoSubPath?: string[]
 }
 
 export interface CMSecret extends Omit<ConfigMapSecretData, 'configData'> {
