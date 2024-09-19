@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-import { EnvListMinDTO, get, ResponseType, EnvironmentListHelmResult, Teams, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    EnvListMinDTO,
+    get,
+    ResponseType,
+    EnvironmentListHelmResult,
+    Teams,
+    getUrlWithSearchParams,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Cluster } from '@Services/service.types'
 import { Moment12HourFormat, Routes } from '../../../config'
-import { AppListFilterConfig, AppListPayloadType, GenericAppType, GetDevtronHelmAppListParamsType, HelmAppListResponse } from './AppListType'
+import {
+    AppListFilterConfig,
+    AppListPayloadType,
+    GenericAppType,
+    GetDevtronHelmAppListParamsType,
+    HelmAppListResponse,
+} from './AppListType'
 import { getAppList } from '../service'
 import { getDevtronAppListPayload } from '../list/appList.modal'
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses: string): Promise<HelmAppListResponse> => {
+export const getDevtronInstalledHelmApps = (
+    clusterIdsCsv: string,
+    appStatuses: string,
+): Promise<HelmAppListResponse> => {
     const baseUrl = Routes.CHART_INSTALLED
     const params: GetDevtronHelmAppListParamsType = {
         clusterIdsCsv,
