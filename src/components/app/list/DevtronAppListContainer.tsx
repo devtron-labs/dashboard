@@ -223,7 +223,7 @@ const DevtronAppList = ({
     const renderEnvironmentList = (app: App) => {
         const envCount = app.environments.length
         if (envCount) {
-            const isEnvConfigured = app.defaultEnv && app.defaultEnv.name
+            const isEnvConfigured = app?.defaultEnv.name
             return (
                 <div className="app-list__cell app-list__cell--env">
                     <p
@@ -374,7 +374,7 @@ const DevtronAppList = ({
                                         </p>
                                     </div>
                                     <div className="app-list__cell app-list__cell--time">
-                                        {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
+                                        {app.defaultEnv?.lastDeployedTime && (
                                             <Tippy
                                                 className="default-tt"
                                                 arrow

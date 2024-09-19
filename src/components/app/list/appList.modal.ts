@@ -54,9 +54,7 @@ const getEnvironmentsFromClusterNamespace = ({
     selectedClusterIds.forEach((clusterId) => {
         const envIds = clusterVsEnvMap.get(clusterId)
         if (envIds) {
-            envIds.forEach((envId) => {
-                environments.add(envId)
-            })
+            envIds.forEach((envId) => environments.add(envId))
         }
     })
 
