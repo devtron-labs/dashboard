@@ -125,7 +125,7 @@ const HelmAppList = ({
             )
         }
         if (appStatus.length) {
-            const appStatuses = appStatus.map((status) => status.toLowerCase())
+            const appStatuses = appStatus.map((status) => status)
             filteredHelmAppList = filteredHelmAppList.filter((app) => appStatuses.includes(app.appStatus))
         }
         filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
