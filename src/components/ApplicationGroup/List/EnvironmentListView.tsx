@@ -29,7 +29,7 @@ import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.sv
 import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
-import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps } from '../AppGroup.types'
+import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
 
 const EnvironmentLink = ({
     namespace,
@@ -65,7 +65,7 @@ export default function EnvironmentsListView({
     changePageSize,
 }: EnvironmentsListViewType) {
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
-    const [envCount, setEnvCount] = useState<number>()
+    const [envCount, setEnvCount] = useState<number>(0)
     const { cluster } = filterConfig
     const [appListLoading, appListResponse] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
     const emptyStateData = cluster.join()
@@ -73,12 +73,9 @@ export default function EnvironmentsListView({
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        if (appListResponse?.result?.envList) {
-            setFilteredEnvList(appListResponse.result.envList)
-            setEnvCount(appListResponse.result.envCount)
-        } else {
-            setFilteredEnvList([])
-        }
+        const appListResult: EnvApp = appListResponse?.result || {envCount: 0, envList: []}
+        setFilteredEnvList(appListResult.envList)
+        setEnvCount(appListResult.envCount)
     }, [appListResponse?.result])
 
     const renderPagination = () => {

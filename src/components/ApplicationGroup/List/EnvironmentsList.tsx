@@ -52,7 +52,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         return { searchKey, cluster, offset, pageSize }
     }, [searchKey, JSON.stringify(cluster), offset, pageSize])
 
-    const [clusterListLoading, clusterListRes] = useAsync(getClusterListMinWithoutAuth)
+    const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] = useAsync(getClusterListMinWithoutAuth)
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(() => {
         return clusterListRes?.result.map((clusterItem) => ({
@@ -115,6 +115,8 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                         appliedFilterOptions={selectedClusters}
                         isDisabled={clusterListLoading}
                         isLoading={clusterListLoading}
+                        optionListError={clusterListError}
+                        reloadOptionList={reloadClusterList}
                         handleApplyFilter={handleApplyClusterFilter}
                         shouldMenuAlignRight
                     />
