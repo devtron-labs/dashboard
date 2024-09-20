@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useHistory, useLocation, useRouteMatch, NavLink } from 'react-router-dom'
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
 import { useSharedState } from '../../../utils/useSharedState'
@@ -88,55 +88,45 @@ const NodeTreeComponent = ({
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
-                    <div
-                        className={`flex left cursor fw-6 cn-9 fs-14 `}
-                        onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
-                    >
-                        {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
-                            <>
-                                <DropDown
-                                    data-testid={`${treeNode.name.toLowerCase()}-dropdown`}
-                                    className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
-                                    style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
+                    {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
+                        <button
+                            className="dc__transparent flex dc__gap-2 fs-13 lh-20 fw-6 py-6 px-0 w-100 left"
+                            onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
+                        >
+                            <ICExpand
+                                data-testid={`${treeNode.name.toLowerCase()}-dropdown`}
+                                className="fcn-6 rotate icon-dim-20 pointer"
+                                style={{ ['--rotateBy' as string]: !treeNode.isSelected ? '0deg' : '90deg' }}
+                            />
+                            <span data-testid={treeNode.name.toLowerCase()}>{treeNode.name}</span>
+                            {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded && (
+                                <ErrorImage
+                                    className="icon-dim-16 rotate"
+                                    style={{ ['--rotateBy' as string]: '180deg', marginLeft: 'auto' }}
                                 />
-                                <div
-                                    data-testid={treeNode.name.toLowerCase()}
-                                    className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}
-                                >
-                                    {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded && (
-                                        <ErrorImage
-                                            className="icon-dim-16 rotate"
-                                            style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
-                                        />
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                            <NavLink
-                                to={`${k8URL}/${
-                                    parents.includes('pod') ? 'pod/group/' : ''
-                                }${treeNode.name.toLowerCase()}`}
-                                className={`dc__no-decor fs-14 pointer w-100 fw-4 flex left mr-8 pl-8 pr-8 pt-6 pb-6 lh-1-43 ${
-                                    treeNode.isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '
-                                }`}
-                                data-testid={`resource-node-${treeNode.name.toLowerCase()}`}
-                            >
-                                {treeNode.name}
-                                {treeNode.status?.toLowerCase() === 'degraded' && (
-                                    <ErrorImage
-                                        className="icon-dim-16 rotate"
-                                        style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
-                                    />
-                                )}
-                            </NavLink>
-                        )}
-                    </div>
-
+                            )}
+                        </button>
+                    ) : (
+                        <NavLink
+                            to={`${k8URL}/${parents.includes('pod') ? 'pod/group/' : ''}${treeNode.name.toLowerCase()}`}
+                            className={`dc__no-decor br-4 fs-13 lh-20 pointer w-100 fw-4 flex left py-6 px-8 ${
+                                treeNode.isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '
+                            }`}
+                            data-testid={`resource-node-${treeNode.name.toLowerCase()}`}
+                        >
+                            {treeNode.name}
+                            {treeNode.status?.toLowerCase() === 'degraded' && (
+                                <ErrorImage
+                                    className="icon-dim-16 rotate"
+                                    style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
+                                />
+                            )}
+                        </NavLink>
+                    )}
                     {treeNode.childNodes?.length > 0 &&
                         treeNode.isSelected &&
                         !(isDevtronApp && treeNode.name === NodeType.Pod) && (
-                            <div className="pl-24">
+                            <div className="pl-14">
                                 {makeNodeTree(
                                     treeNode.childNodes,
                                     [...parents, treeNode.name.toLowerCase()],
@@ -149,7 +139,7 @@ const NodeTreeComponent = ({
         })
     }
 
-    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</div>
+    return <>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</>
 }
 
 export function generateSelectedNodes(
