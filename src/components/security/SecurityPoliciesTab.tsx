@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'
 import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
-import VulnerabilityExposure from './VulnerabilityExposure'
+import { VulnerabilityExposure } from './AddCVEPolicy'
 
 export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     renderRouter() {
