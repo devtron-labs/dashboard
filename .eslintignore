@@ -92,7 +92,6 @@ src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
 src/components/__mocks__/monaco-editor.js
 src/components/__mocks__/xterm-webfont.js
-src/components/app/EventsLogs.tsx
 src/components/app/LogFilter.test.ts
 src/components/app/LogFilter.ts
 src/components/app/Overview/EnvironmentList.tsx
@@ -102,7 +101,6 @@ src/components/app/Overview/utils.tsx
 src/components/app/ResourceTreeNodes.tsx
 src/components/app/ResponsiveDrawer.tsx
 src/components/app/WebWorker.ts
-src/components/app/__tests__/EventsLogs.test.tsx
 src/components/app/appLabelCommon.tsx
 src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
