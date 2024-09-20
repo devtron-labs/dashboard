@@ -100,6 +100,25 @@ interface DeploymentTemplateEditorHeaderNonCompareViewProps {
 export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeaderBaseProps &
     (DeploymentTemplateEditorHeaderCompareViewProps | DeploymentTemplateEditorHeaderNonCompareViewProps)
 
+// Can derive editMode from url as well, just wanted the typing to be more explicit
+export interface DeploymentTemplateFormProps
+    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'showReadMe'>,
+        Pick<DeploymentTemplateProps, 'isUnSet'>,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
+        Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
+    editorOnChange: (value: string) => void
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    readOnly: boolean
+    editedDocument: string
+    uneditedDocument: string
+    readMe: string
+    isPublishedValuesView: boolean
+    handleOverride: () => void
+    wasGuiOrHideLockedKeysEdited: boolean
+    handleChangeToYAMLMode: () => void
+    handleEnableWasGuiOrHideLockedKeysEdited: () => void
+}
+
 export interface DeploymentTemplateGUIViewProps
     extends Pick<
         DeploymentTemplateFormProps,
@@ -114,26 +133,6 @@ export interface DeploymentTemplateGUIViewProps
     guiSchema: string
     selectedChart: DeploymentChartVersionType
     rootClassName?: string
-}
-
-// Can derive editMode from url as well, just wanted the typing to be more explicit
-export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'showReadMe'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'>,
-        Pick<
-            DeploymentTemplateGUIViewProps,
-            'wasGuiOrHideLockedKeysEdited' | 'handleChangeToYAMLMode' | 'handleEnableWasGuiOrHideLockedKeysEdited'
-        >,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
-        Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
-    editorOnChange: (value: string) => void
-    lockedConfigKeysWithLockType: ConfigKeysWithLockType
-    readOnly: boolean
-    editedDocument: string
-    uneditedDocument: string
-    readMe: string
-    isPublishedValuesView: boolean
-    handleOverride: () => void
 }
 
 export interface ResolvedEditorTemplateType {
