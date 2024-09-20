@@ -742,7 +742,7 @@ const ChartDeploymentHistory = ({
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
+                <div className="ci-details__body dc__overflow-scroll">{renderSelectedDeploymentDetail()}</div>
                 {showRollbackConfirmation && (
                     <RollbackConfirmationDialog
                         deploying={deploying}
