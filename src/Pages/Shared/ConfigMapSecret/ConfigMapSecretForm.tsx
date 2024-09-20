@@ -336,7 +336,7 @@ export const ConfigMapSecretForm = React.memo(
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
                 if (isESO) {
-                    isValidSecretData = !(state.esoData && state.dataFrom)
+                    isValidSecretData = !(state.esoData && state.esoDataFrom) && (state.esoData || state.esoDataFrom)
                     if (state.esoData && isValidSecretData) {
                         isValidSecretData = state.esoData?.reduce(
                             (_isValidSecretData, s) => {
@@ -356,9 +356,10 @@ export const ConfigMapSecretForm = React.memo(
                 if (!isValidSecretData) {
                     secretValidationInfoToast({
                         isESO,
+                        esoData: state.esoData,
                         secretStore: state.secretStore,
                         secretStoreRef: state.secretStoreRef,
-                        dataFrom: state.dataFrom,
+                        esoDataFrom: state.esoDataFrom,
                     })
                     isFormValid = false
                 }
@@ -421,7 +422,7 @@ export const ConfigMapSecretForm = React.memo(
                         secretStoreRef: state.secretStoreRef,
                         refreshInterval: state.refreshInterval,
                         // if null don't send these keys which is achieved by `undefined`
-                        dataFrom: state.dataFrom ?? undefined,
+                        esoDataFrom: state.esoDataFrom ?? undefined,
                         template: state.template ?? undefined,
                     }
                     payload.roleARN = state.roleARN.value

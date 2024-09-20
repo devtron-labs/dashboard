@@ -334,16 +334,19 @@ export const hasProperty = (externalType): boolean => externalType === 'ESO_AWSS
 
 export const secretValidationInfoToast = ({
     isESO,
-    dataFrom,
+    esoData,
+    esoDataFrom,
     secretStore,
     secretStoreRef,
 }: {
     isESO: boolean
-} & Pick<SecretState, 'dataFrom' | 'secretStore' | 'secretStoreRef'>) => {
+} & Pick<SecretState, 'esoData' | 'esoDataFrom' | 'secretStore' | 'secretStoreRef'>) => {
     let errorMessage = ''
     if (isESO) {
-        if (dataFrom) {
+        if (esoDataFrom && esoData) {
             errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE
+        } else if (!esoDataFrom && !esoData) {
+            errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_UNAVAILABLE
         } else if (secretStore && secretStoreRef) {
             errorMessage = SECRET_TOAST_INFO.BOTH_STORE_AVAILABLE
         } else if (secretStore || secretStoreRef) {
@@ -429,14 +432,14 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             secretStoreRef: json.secretStoreRef,
             refreshInterval: json.refreshInterval,
             esoData: null,
-            dataFrom: null,
+            esoDataFrom: null,
             template: null,
         }
         if (Array.isArray(json?.esoData)) {
             payload.esoData = json.esoData
         }
-        if (Array.isArray(json?.dataFrom)) {
-            payload.dataFrom = json.dataFrom
+        if (Array.isArray(json?.esoDataFrom)) {
+            payload.esoDataFrom = json.esoDataFrom
         }
         if (typeof json?.template === 'object' && !Array.isArray(json.template)) {
             payload.template = json.template
@@ -508,13 +511,13 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
     const tempEsoSecretData =
         (configMapSecretData?.esoSecretData?.esoData || []).length === 0 &&
         !configMapSecretData?.esoSecretData?.template &&
-        !configMapSecretData?.esoSecretData?.dataFrom &&
+        !configMapSecretData?.esoSecretData?.esoDataFrom &&
         configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData
             : configMapSecretData?.esoSecretData
     const isEsoSecretData: boolean =
         (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) &&
-        (tempEsoSecretData.esoData || tempEsoSecretData.template || tempEsoSecretData.dataFrom)
+        (tempEsoSecretData.esoData || tempEsoSecretData.template || tempEsoSecretData.esoDataFrom)
     return {
         externalType: configMapSecretData?.externalType ?? '',
         roleARN: {
@@ -523,7 +526,7 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
         },
         esoData: tempEsoSecretData?.esoData,
         template: tempEsoSecretData?.template,
-        dataFrom: tempEsoSecretData?.dataFrom,
+        esoDataFrom: tempEsoSecretData?.esoDataFrom,
         secretData: tempSecretData,
         secretDataYaml: YAMLStringify(jsonForSecretDataYaml),
         codeEditorRadio: CODE_EDITOR_RADIO_STATE.DATA,
