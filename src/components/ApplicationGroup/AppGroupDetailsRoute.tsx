@@ -204,16 +204,19 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppGroupListData(result)
         setDescription(result.description)
         if (result.apps?.length) {
-            setAppListOptions(
-                result.apps
-                    .map((app): OptionType => {
-                        return {
-                            value: `${app.appId}`,
-                            label: app.appName,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
-            )
+            const _appListOptions = result.apps
+                .map((app): OptionType => {
+                    return {
+                        value: `${app.appId}`,
+                        label: app.appName,
+                    }
+                })
+                .sort(sortOptionsByLabel)
+
+            setAppListOptions(_appListOptions)
+            if (selectedGroupFilter.length) {
+                setSelectedAppList(_appListOptions.filter((app) => selectedGroupFilter[0].appIds.includes(+app.value)))
+            }
         }
         setAppListLoading(false)
     }
@@ -434,7 +437,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page">
+        <div className="env-details-page h-100vh flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}

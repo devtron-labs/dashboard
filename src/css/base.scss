@@ -2317,6 +2317,10 @@ button.anchor {
 
 .dc__mxw-250 {
     max-width: 250px;
+
+    &--imp {
+        max-width: 250px !important;
+    }
 }
 
 .dc__mxw-280 {
@@ -2628,29 +2632,20 @@ textarea,
 
 .dc__split-header {
     display: flex;
-    background-color: var(--N100);
-    border-bottom: 1px solid #d6dbdf;
-    height: 40px;
-    color: var(--N700);
+    gap: 1px;
+    background-color: var(--N700);
+    padding-bottom: 1px;
+    padding-right: 30px;
+    color: var(--N000);
     font-size: 12px;
     font-weight: 600;
-    line-height: 40px;
+    line-height: 20px;
     width: 100%;
-
-    .dc__left-pane {
-        width: 49%;
-        border-right: 1px solid #d6dbdf;
-        padding-left: 10px;
-    }
-
-    .dc__right-pane {
-        width: 51%;
-        padding-left: 25px;
-
-        .apply-change {
-            float: right;
-            margin-top: 9px;
-        }
+    
+    &__pane {
+        flex: 1 0 0;
+        background-color: var(--terminal-bg);
+        padding: 4px 12px;
     }
 }
 
@@ -2959,16 +2954,16 @@ textarea,
     min-width: 84px;
 }
 
-.mw-116 {
-    min-width: 116px;
-}
-
 .mw-140 {
     min-width: 140px;
 }
 
-.mw-232 {
-    min-width: 232px;
+.mw-152 {
+    min-width: 152px;
+}
+
+.mw-264 {
+    min-width: 264px;
 }
 
 .mw-400 {
@@ -4904,9 +4899,27 @@ textarea::placeholder {
     grid-template-columns: 50% 50%;
 }
 
+.dc__grid {
+    display: grid;
+}
+
 .cd-material {
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
         grid-template-columns: 234px auto;
     }
+}
+
+.dc__pulsating-dot {
+    width: 10px;
+    height: 10px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: var(--O500);
+    top: -5px;
+    right: -5px;
+    border-radius: 50%;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }

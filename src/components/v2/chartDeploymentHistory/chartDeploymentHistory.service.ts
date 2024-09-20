@@ -43,6 +43,7 @@ export interface ChartDeploymentDetail {
     deployedAt: DeployedAt
     deployedBy: string
     status: string
+    message?: string
 }
 
 export interface RollbackReleaseRequest {

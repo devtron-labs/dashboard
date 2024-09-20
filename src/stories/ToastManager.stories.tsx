@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 import { Button, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
@@ -65,6 +66,7 @@ export const WithButton: Story = {
                 dataTestId: 'button',
                 text: 'Reload',
                 startIcon: <ICArrowClockwise />,
+                onClick: action('Reload clicked'),
             },
         },
     },
@@ -100,6 +102,9 @@ export const CustomIconAndProgressBar: Story = {
             ...Default.args.toastProps,
             icon: <ICSparkles />,
             progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+            buttonProps: {
+                ...WithButton.args.toastProps.buttonProps,
+            },
         },
     },
 }
