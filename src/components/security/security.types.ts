@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Severity, SeverityCount, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, Severity, SeverityCount, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SecurityPolicyClusterState {
     view: string
@@ -208,7 +208,7 @@ export interface VulnerabilityExposureUrlFiltersType
     extends Record<VulnerabilityExposureFilterKeys, string[]>,
         Record<VulnerabilityExposureSearchParams, string> {}
 
-export interface ExposureListProps {
+export interface ExposureListContainerProps {
     urlFilters: UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>
 }
 
@@ -230,4 +230,14 @@ export interface CVEControlListPayload {
     appName: string
     clusterIds: number[]
     envIds: number[]
+}
+
+export interface ExposureListProps
+    extends Pick<
+        UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>,
+        'offset' | 'pageSize' | 'changePage' | 'changePageSize'
+    > {
+    appListResponse: ResponseType<CVEControlList>
+    areFiltersApplied: boolean
+    clearExposureListFilters: () => void
 }
