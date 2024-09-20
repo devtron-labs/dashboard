@@ -91,12 +91,6 @@ export const SourceInfo = ({
         message = Rollout[0].health.message
     }
 
-    useEffect(() => {
-        if (appDetails?.ciArtifactId && appDetails?.appId) {
-            getScannedStatus()
-        }
-    }, [appDetails?.ciArtifactId, appDetails?.appId])
-
     const onClickShowCommitInfo = (e): void => {
         e.stopPropagation()
         showCommitInfo(true)
