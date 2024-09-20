@@ -599,7 +599,7 @@ export const RestartWorkloadModal = ({
                 .catch(() => {})
                 .finally(() => {
                     setShowStatusModal(true)
-                    // setShowResistanceBox(false)
+                    setShowResistanceBox(false)
                     setStatusModalLoading(false)
                 })
         }
