@@ -1,7 +1,7 @@
 import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
-import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
 import { DeploymentTemplateFormProps } from './types'
 import DeploymentTemplateEditorHeader from './DeploymentTemplateEditorHeader'
+import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 
 const DeploymentTemplateForm = ({
     editMode,

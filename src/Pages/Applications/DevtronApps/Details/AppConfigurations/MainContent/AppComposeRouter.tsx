@@ -206,9 +206,9 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
-                        environments={environments}
                         isProtected={isBaseConfigProtected}
                         reloadEnvironments={reloadEnvironments}
+                        fetchEnvConfig={fetchEnvConfig}
                     />
                 </Route>
             )}

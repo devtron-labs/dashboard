@@ -7,9 +7,9 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ChartTypeVersionOptions } from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '@Icons/ic-arrow-anticlockwise.svg'
+import DTChartSelector from './DTChartSelector'
 import { DeploymentTemplateOptionsHeaderProps } from './types'
 
 const DeploymentTemplateOptionsHeader = ({
@@ -75,9 +75,9 @@ const DeploymentTemplateOptionsHeader = ({
     const showRevertToLastSaved = unableToParseYaml && canEditTemplate
 
     return (
-        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16 bcn-0">
+        <div className="flexbox dc__align-items-center dc__content-space pl-16 pr-16 bcn-0">
             <div className="flex">
-                <ChartTypeVersionOptions
+                <DTChartSelector
                     isUnSet={isUnSet}
                     charts={chartDetails.charts}
                     chartsMetadata={chartDetails.chartsMetadata}

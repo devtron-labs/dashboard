@@ -26,6 +26,7 @@ import {
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    TemplateListDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -45,7 +46,7 @@ import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
-import { MinChartRefDTO } from '@Components/deploymentConfig/types'
+import { MinChartRefDTO } from './types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -405,8 +406,8 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
 }
 
 export function getChartReferences(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
-    const URL = !!envId ? `${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}` : `${Routes.CHART_REFERENCES_MIN}/${appId}`
-    return get(URL)
+    const baseURL = `${Routes.CHART_REFERENCES_MIN}/${appId}`
+    return get(`${baseURL}${envId ? `/${envId}` : ''}`)
 }
 
 export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
@@ -504,4 +505,8 @@ export function updatePostHogEvent(payload): Promise<ResponseType> {
 export const validateContainerConfiguration = (request: any): Promise<any> => {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`
     return post(URL, request)
+}
+
+export function getTemplateOptions(appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> {
+    return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
 }

@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState } from 'react'
 import YAML from 'yaml'
 import {
     InfoColourBar,
-    Progressing,
     RJSFForm,
     FormProps,
     GenericEmptyState,
@@ -27,13 +26,26 @@ import {
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentTemplateGUIViewProps } from '../types'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
-import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
-import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
+import EmptyFolderImage from '@Images/Empty-folder.png'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
+import { DeploymentTemplateGUIViewProps } from './types'
+import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { makeObjectFromJsonPathArray } from './utils'
+
+export const getRenderActionButton =
+    ({ handleChangeToYAMLMode }: Pick<DeploymentTemplateGUIViewProps, 'handleChangeToYAMLMode'>) =>
+    () => (
+        <button
+            type="button"
+            className="dc__unset-button-styles"
+            onClick={handleChangeToYAMLMode}
+            data-testid="base-deployment-template-switchtoadvanced-button"
+        >
+            <span className="cb-5 cursor fw-6">Switch to Advanced</span>
+        </button>
+    )
 
 const DeploymentTemplateGUIView = ({
     value,
@@ -43,12 +55,10 @@ const DeploymentTemplateGUIView = ({
     lockedConfigKeysWithLockType,
     uneditedDocument,
     editedDocument,
-
     isUnSet,
     handleEnableWasGuiOrHideLockedKeysEdited,
     wasGuiOrHideLockedKeysEdited,
     handleChangeToYAMLMode,
-    isLoading = false,
     guiSchema,
     selectedChart,
     rootClassName,
@@ -88,14 +98,12 @@ const DeploymentTemplateGUIView = ({
                 guiSchema: parsedGUISchema,
                 uiSchema: joinObjects([
                     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-                    ...lockedConfigKeysWithLockType.config.flatMap((key) => {
+                    ...lockedConfigKeysWithLockType.config.flatMap((key) =>
                         // NOTE: we need to use the original document to evaluate the actual paths
-                        return flatMapOfJSONPaths([key], parsedUneditedDocument)
+                        flatMapOfJSONPaths([key], parsedUneditedDocument)
                             .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
-                            .map((path) => {
-                                return makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))
-                            })
-                    }),
+                            .map((path) => makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))),
+                    ),
                 ]),
             }
         } catch {
@@ -116,11 +124,6 @@ const DeploymentTemplateGUIView = ({
     }
 
     const renderContent = () => {
-        // TODO: Can remove
-        if (isLoading) {
-            return <Progressing pageLoader />
-        }
-
         if (state.error) {
             return (
                 <GenericEmptyState image={EmptyFolderImage} {...state.error}>
@@ -179,7 +182,7 @@ const DeploymentTemplateGUIView = ({
                     classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
                     Icon={Help}
                     iconClass="fcv-5 icon-dim-20"
-                    renderActionButton={getRenderActionButton(handleChangeToYAMLMode)}
+                    renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}
                 />
             )}
         </>

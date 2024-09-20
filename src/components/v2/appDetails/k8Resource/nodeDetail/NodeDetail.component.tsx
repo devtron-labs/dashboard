@@ -36,9 +36,9 @@ import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
+import { EDITOR_VIEW } from '@Config/constants'
 
 const NodeDetailComponent = ({
     loadingResources,

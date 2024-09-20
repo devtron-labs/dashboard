@@ -34,21 +34,8 @@ import {
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
-import { getChartReferences } from '@Services/service'
-import {
-    getDeploymentTemplate,
-    getOptions,
-    saveDeploymentTemplate,
-    updateDeploymentTemplate,
-} from '@Components/deploymentConfig/service'
-import {
-    applyCompareDiffOfTempFormDataOnOriginalData,
-    getDeploymentTemplateQueryParser,
-} from '@Components/deploymentConfig/utils'
-import DeploymentConfigToolbar from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
-import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
+import { getChartReferences, getTemplateOptions } from '@Services/service'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { getDeploymentTemplate as getEnvOverrideDeploymentTemplate } from '@Pages/Shared/EnvironmentOverride/service'
 import {
     CompareWithTemplateGroupedSelectPickerOptionType,
     CompareWithValuesDataStoreItemType,
@@ -63,6 +50,7 @@ import {
     BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
     COMPARE_WITH_BASE_TEMPLATE_OPTION,
     COMPARE_WITH_OPTIONS_ORDER,
+    NO_SCOPED_VARIABLES_MESSAGE,
     PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
 } from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
@@ -70,10 +58,22 @@ import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import { CompareTemplateView } from './CompareTemplateView'
 import { getCompareWithOptionsLabel } from './CompareTemplateView/utils'
-import { getCompareWithTemplateOptionsLabel } from './utils'
-import { useAppConfigurationContext } from '../../AppConfiguration.provider'
+import {
+    applyCompareDiffOfTempFormDataOnOriginalData,
+    getCompareWithTemplateOptionsLabel,
+    getDeploymentTemplateQueryParser,
+} from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import OverrideInfoStrip from './OverrideInfoStrip'
+import DeploymentConfigToolbar from './DeploymentConfigToolbar'
+import {
+    updateBaseDeploymentTemplate,
+    createBaseDeploymentTemplate,
+    updateEnvDeploymentTemplate,
+    createEnvDeploymentTemplate,
+    getEnvOverrideDeploymentTemplate,
+    getBaseDeploymentTemplate,
+} from './service'
 import './DeploymentTemplate.scss'
 
 // TODO: Verify null checks for all imports
@@ -100,18 +100,15 @@ const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isUnSet = false,
     isCiPipeline = false,
-    // FIXME: Why unused?
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    environments,
     isProtected,
     reloadEnvironments,
     environmentName,
     clusterId,
+    fetchEnvConfig,
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
     const { isSuperAdmin } = useMainContext()
-    const { fetchEnvConfig } = useAppConfigurationContext()
 
     const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true)
     const [initialLoadError, setInitialLoadError] = useState<ServerErrors>(null)
@@ -728,7 +725,7 @@ const DeploymentTemplate = ({
                     },
                     guiSchema,
                 },
-            } = await getDeploymentTemplate(+appId, chartId, null, chartName)
+            } = await getBaseDeploymentTemplate(+appId, chartId, null, chartName)
 
             const stringifiedTemplate = YAMLStringify(defaultAppOverride)
             const response: Omit<
@@ -1018,7 +1015,7 @@ const DeploymentTemplate = ({
 
     const handleLoadCompareWithTemplateChartDataList = async (): Promise<void> => {
         try {
-            const { result } = await getOptions(+appId, +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
+            const { result } = await getTemplateOptions(+appId, +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
             const parsedMap = result.reduce(
                 (acc, templateItem, index) => {
                     acc[index] = {
@@ -1168,7 +1165,7 @@ const DeploymentTemplate = ({
             return {
                 environmentId: +envId,
                 envOverrideValues: YAML.parse(baseDeploymentTemplate.originalTemplate),
-                chartRefId: publishedTemplateData.selectedChartRefId,
+                chartRefId: chartDetails.globalChartRefId,
                 IsOverride: false,
                 // FIXME:
                 isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
@@ -1252,13 +1249,26 @@ const DeploymentTemplate = ({
     // FIXME: BTW This is a hack ideally BE should not even take data for this, they should only need action
     const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave(false, true)
 
+    const getSaveAPIService = (): ((
+        payload: ReturnType<typeof prepareDataToSave>,
+        abortSignal?: AbortSignal,
+    ) => Promise<any>) => {
+        if (!envId) {
+            return currentEditorTemplateData.chartConfig.id
+                ? updateBaseDeploymentTemplate
+                : createBaseDeploymentTemplate
+        }
+
+        return currentEditorTemplateData.environmentConfig && currentEditorTemplateData.environmentConfig.id > 0
+            ? updateEnvDeploymentTemplate
+            : (payload, abortSignal) => createEnvDeploymentTemplate(+appId, +envId, payload, abortSignal)
+    }
+
     const handleSaveTemplate = async () => {
         setIsSaving(true)
         try {
             // TODO: Check in case of envOverrides the service names are same but are different entities
-            const apiService = currentEditorTemplateData.chartConfig.id
-                ? updateDeploymentTemplate
-                : saveDeploymentTemplate
+            const apiService = getSaveAPIService()
 
             // TODO: Can send signal
             const response = await apiService(prepareDataToSave(true), null)

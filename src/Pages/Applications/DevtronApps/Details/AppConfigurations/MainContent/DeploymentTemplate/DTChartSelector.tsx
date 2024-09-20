@@ -1,52 +1,46 @@
-/*
- * Copyright (c) 2024. Devtron Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { useState } from 'react'
-import { sortObjectArrayAlphabetically, versionComparator } from '../common'
 import {
     PopupMenu,
+    SortingOrder,
     stopPropagation,
     StyledRadioGroup as RadioGroup,
-    SortingOrder,
     DeploymentChartVersionType,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ChartSelectorModalType } from './types'
-import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
-import { DEPLOYMENT } from '../../config'
+import { sortObjectArrayAlphabetically, versionComparator } from '@Components/common'
+import { DEPLOYMENT } from '@Config/constants'
+import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
+import {
+    CHART_TYPE_TAB_KEYS,
+    CHART_TYPE_TAB,
+    CHART_DOCUMENTATION_LINK,
+    DEPLOYMENT_TEMPLATE_LABELS_KEYS,
+} from './constants'
 
-export default function ChartSelectorDropdown({
+// NOTE: Have migrated directly
+const ChartSelectorDropdown = ({
     charts,
     chartsMetadata,
     selectedChartRefId,
     selectedChart,
     selectChart,
     isUnSet,
-}: ChartSelectorModalType) {
+}: ChartSelectorDropdownProps) => {
     const [popupOpen, togglePopup] = useState(false)
     const [selectedChartTypeTab, setSelectedChartTypeTab] = useState(
-        selectedChart?.['userUploaded'] ? CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS : CHART_TYPE_TAB_KEYS.DEVTRON_CHART,
+        selectedChart?.userUploaded ? CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS : CHART_TYPE_TAB_KEYS.DEVTRON_CHART,
     )
     const uniqueChartsByDevtron = new Map<string, boolean>()
     const uniqueCustomCharts = new Map<string, boolean>()
     let devtronCharts = []
     let customCharts = []
-    for (const chart of charts) {
+
+    charts.forEach((chart) => {
         const chartName = chart.name
-        if (chart['userUploaded']) {
+        if (chart.userUploaded) {
             if (!uniqueCustomCharts.get(chartName)) {
                 uniqueCustomCharts.set(chartName, true)
                 customCharts.push(chart)
@@ -55,15 +49,16 @@ export default function ChartSelectorDropdown({
             uniqueChartsByDevtron.set(chartName, true)
             devtronCharts.push(chart)
         }
-    }
+    })
+
     devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
     customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
 
     const onSelectChartType = (selectedChartName: string): void => {
-        const filteredCharts = charts.filter((chart) => chart.name == selectedChartName)
-        const selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
-        if (selectedChart) {
-            selectChart(selectedChart)
+        const filteredCharts = charts.filter((chart) => chart.name === selectedChartName)
+        const targetChart = filteredCharts.find((chart) => chart.id === selectedChartRefId)
+        if (targetChart) {
+            selectChart(targetChart)
         } else {
             const sortedFilteredCharts = filteredCharts.sort((a, b) =>
                 versionComparator(a, b, 'version', SortingOrder.DESC),
@@ -134,6 +129,7 @@ export default function ChartSelectorDropdown({
                             : customCharts
                         ).map((chart: DeploymentChartVersionType, index: number) => (
                             <div
+                                // eslint-disable-next-line react/no-array-index-key
                                 key={`${selectedChartTypeTab}-${index}`}
                                 className={`p-12 pointer chart-row ${
                                     chart.name === selectedChart?.name ? ' bcb-1' : ''
@@ -149,13 +145,13 @@ export default function ChartSelectorDropdown({
                                     >
                                         {chart.name}
                                     </span>
-                                    {DEPLOYMENT === chart.name && (
+                                    {chart.name === DEPLOYMENT && (
                                         <span className="pl-6 pr-6 bw-1 ev-2 br-4 bcv-1 ml-12">Recommended</span>
                                     )}
                                 </div>
-                                {(chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description) && (
+                                {(chartsMetadata?.[chart.name]?.chartDescription || chart.description) && (
                                     <div className="fs-12 fw-4 cn-7 lh-18 mt-4">
-                                        {chartsMetadata?.[chart.name]?.['chartDescription'] ||
+                                        {chartsMetadata?.[chart.name]?.chartDescription ||
                                             chart.description.substring(0, 250)}
                                         &nbsp;
                                         {CHART_DOCUMENTATION_LINK[chart.name] && (
@@ -179,3 +175,77 @@ export default function ChartSelectorDropdown({
         </PopupMenu>
     )
 }
+
+// Mostly migrated just changed react-select to SelectPicker
+const DTChartSelector = ({
+    isUnSet,
+    disableVersionSelect,
+    charts,
+    chartsMetadata,
+    selectedChart,
+    selectChart,
+    selectedChartRefId,
+}: DTChartSelectorProps) => {
+    const filteredCharts = selectedChart
+        ? charts
+              .filter((cv) => cv.name === selectedChart.name)
+              .sort((a, b) =>
+                  versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+              )
+        : []
+
+    const onSelectChartVersion = (selected: SelectPickerOptionType) => {
+        selectChart(charts.find((chart) => chart.id === selected.value) || selectedChart)
+    }
+
+    const options: SelectPickerOptionType[] = filteredCharts.map((chart) => ({
+        label: chart.version,
+        // Need to confirm once this is truthful
+        value: chart.id,
+    }))
+
+    const selectedOption: SelectPickerOptionType = selectChart
+        ? {
+              label: selectedChart?.version,
+              value: selectedChart?.id,
+          }
+        : null
+
+    return (
+        <div className="flexbox dc__gap-16 pr-16 py-8">
+            <div className="flexbox dc__gap-8 dc__align-items-center">
+                <span className="fs-13 fw-4 cn-9">Chart type:</span>
+                <ChartSelectorDropdown
+                    charts={charts}
+                    chartsMetadata={chartsMetadata}
+                    selectedChartRefId={selectedChartRefId}
+                    selectChart={selectChart}
+                    selectedChart={selectedChart}
+                    isUnSet={isUnSet}
+                />
+            </div>
+            <div className="flexbox dc__gap-8 dc__align-items-center">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label className="fs-13 fw-4 cn-9 m-0" id="dt-chart-version-select">
+                    Chart version:
+                </label>
+                {disableVersionSelect ? (
+                    <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
+                ) : (
+                    <SelectPicker
+                        // TODO: When label is extended
+                        inputId="dt-chart-version-select"
+                        classNamePrefix="select-chart-version"
+                        options={options}
+                        value={selectedOption}
+                        onChange={onSelectChartVersion}
+                        isSearchable={false}
+                        variant={SelectPickerVariantType.BORDER_LESS}
+                    />
+                )}
+            </div>
+        </div>
+    )
+}
+
+export default DTChartSelector

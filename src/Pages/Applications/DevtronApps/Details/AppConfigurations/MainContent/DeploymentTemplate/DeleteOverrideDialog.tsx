@@ -10,9 +10,9 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteDeploymentTemplate } from '@Pages/Shared/EnvironmentOverride/service'
 import warningIcon from '@Images/warning-medium.svg'
 import { DeleteOverrideDialogProps } from './types'
+import { deleteOverrideDeploymentTemplate } from './service'
 
 const DeleteOverrideDialog = ({
     environmentConfigId,
@@ -27,7 +27,7 @@ const DeleteOverrideDialog = ({
     const handleDelete = async () => {
         try {
             setIsDeletingOverride(true)
-            await deleteDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
+            await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Restored to global.',

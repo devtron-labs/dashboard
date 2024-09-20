@@ -17,8 +17,7 @@ import {
     getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getOptions } from '@Components/deploymentConfig/service'
-
+import { getTemplateOptions } from '@Services/service'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
     AppEnvDeploymentConfigQueryParams,
@@ -90,7 +89,10 @@ export const DeploymentConfigCompare = ({
             compareWithEnvId = +envId
         }
 
-        return Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)])
+        return Promise.all([
+            getTemplateOptions(compareToAppId, compareToEnvId),
+            getTemplateOptions(compareWithAppId, compareWithEnvId),
+        ])
     }, [compareTo, compareWith])
 
     // Options for previous deployments and default versions

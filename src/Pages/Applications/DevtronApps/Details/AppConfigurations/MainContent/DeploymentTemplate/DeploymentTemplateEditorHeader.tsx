@@ -8,11 +8,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '@Components/deploymentConfig/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 import { DeploymentTemplateEditorHeaderProps } from './types'
 import { getDTCodeEditorBackgroundClass } from './utils'
 import OverrideTemplateButton from './OverrideTemplateButton'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 
 const CompareFromApprovalSelector = importComponentFromFELibrary('CompareFromApprovalSelector', null, 'function')
 

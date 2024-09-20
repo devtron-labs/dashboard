@@ -66,13 +66,6 @@ export interface CommonEnvironmentOverridesProps {
     isJobView?: boolean
 }
 
-export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
-    environments: AppEnvironment[]
-    environmentName: string
-    isProtected: boolean
-    reloadEnvironments: () => void
-    fetchEnvConfig: (envId: number) => void
-}
 export interface ListComponentType {
     name: string
     type: string

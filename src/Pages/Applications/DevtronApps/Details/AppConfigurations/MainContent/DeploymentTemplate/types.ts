@@ -1,9 +1,9 @@
 import { SyntheticEvent } from 'react'
 import { GroupBase } from 'react-select'
+import { Operation } from 'fast-json-patch'
 import {
     ConfigKeysWithLockType,
     DeploymentTemplateQueryParamsType,
-    AppEnvironment,
     DeploymentChartVersionType,
     ChartMetadataType,
     DeploymentTemplateConfigState,
@@ -13,8 +13,6 @@ import {
     SelectedChartDetailsType,
     CompareFromApprovalOptionsValuesType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Operation } from 'fast-json-patch'
-import { DeploymentTemplateGUIViewProps } from '@Components/deploymentConfig/types'
 
 export interface DeploymentTemplateProps {
     respondOnSuccess?: (redirection: boolean) => void
@@ -27,11 +25,11 @@ export interface DeploymentTemplateProps {
      * Something related to git-ops
      */
     isCiPipeline?: boolean
-    environments: AppEnvironment[]
     isProtected: boolean
     reloadEnvironments: () => void
     environmentName?: string
     clusterId?: string
+    fetchEnvConfig: (environmentId: number) => void
 }
 
 export interface DeploymentTemplateChartStateType {
@@ -101,6 +99,22 @@ interface DeploymentTemplateEditorHeaderNonCompareViewProps {
 
 export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeaderBaseProps &
     (DeploymentTemplateEditorHeaderCompareViewProps | DeploymentTemplateEditorHeaderNonCompareViewProps)
+
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<
+        DeploymentTemplateFormProps,
+        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'uneditedDocument' | 'editedDocument'
+    > {
+    value: string
+    readOnly: boolean
+    isUnSet: boolean
+    handleEnableWasGuiOrHideLockedKeysEdited: () => void
+    wasGuiOrHideLockedKeysEdited: boolean
+    handleChangeToYAMLMode: () => void
+    guiSchema: string
+    selectedChart: DeploymentChartVersionType
+    rootClassName?: string
+}
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
@@ -173,4 +187,102 @@ export interface DeleteOverrideDialogProps {
     handleClose: () => void
     handleShowDeleteDraftOverrideDialog: () => void
     reloadEnvironments: () => void
+}
+
+export interface DTChartSelectorProps
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+        Pick<DeploymentTemplateProps, 'isUnSet'> {
+    disableVersionSelect?: boolean
+    selectedChart: DeploymentChartVersionType
+    selectChart: (selectedChart: DeploymentChartVersionType) => void
+    selectedChartRefId: number
+}
+
+export interface ChartSelectorDropdownProps
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+        Pick<DeploymentTemplateProps, 'isUnSet'> {
+    selectedChartRefId: number
+    selectedChart: DeploymentChartVersionType
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+}
+
+export interface DeploymentConfigToolbarProps {
+    selectedTabIndex: number
+    handleTabSelection: (index: number) => void
+    noReadme?: boolean
+    showReadme: boolean
+    handleReadMeClick: () => void
+    convertVariables?: boolean
+    setConvertVariables?: (convertVariables: boolean) => void
+    unableToParseYaml: boolean
+}
+
+interface EnvironmentConfigDTO {
+    IsOverride: boolean
+    active: boolean
+    chartRefId: number
+    clusterId: number
+    description: string
+    envOverrideValues: Record<string, string>
+    environmentId: number
+    environmentName: string
+    id: number
+    isAppMetricsEnabled: boolean | null
+    isBasicViewLocked: boolean
+    latest: boolean
+    manualReviewed: boolean
+    namespace: string
+    saveEligibleChanges: boolean
+    status: number
+}
+
+export interface EnvironmentOverrideDeploymentTemplateDTO {
+    IsOverride: boolean
+    appMetrics: boolean
+    chartRefId: number
+    environmentConfig: EnvironmentConfigDTO
+    globalChartRefId: number
+    /**
+     * Base deployment template
+     */
+    globalConfig: Record<string, string>
+    guiSchema: string
+    namespace: string
+    readme: string
+    schema: Record<string, string>
+}
+
+interface DeploymentTemplateGlobalConfigDTO {
+    appId: number
+    chartRefId: number
+    // TODO: Look into this, why it is there
+    chartRepositoryId: number
+    // TODO: Look into this, why it is there
+    currentViewEditor: string
+    /**
+     * Base deployment template
+     */
+    defaultAppOverride: Record<string, string>
+    id: number
+    isAppMetricsEnabled: boolean
+    isBasicViewLocked: boolean
+    latest: boolean
+    readme: string
+    refChartTemplate: string
+    refChartTemplateVersion: string
+    /**
+     * Might be irrelevant
+     */
+    saveEligibleChanges: boolean
+    /**
+     * Schema to feed into the Code editor
+     */
+    schema: Record<string, string>
+}
+
+export interface DeploymentTemplateConfigDTO {
+    globalConfig: DeploymentTemplateGlobalConfigDTO
+    guiSchema: string
 }

@@ -152,11 +152,11 @@ const EnvironmentOverride = ({
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplate
                             key={`deployment-${params.appId}-${params.envId}`}
-                            environments={environments}
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
+                            fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>

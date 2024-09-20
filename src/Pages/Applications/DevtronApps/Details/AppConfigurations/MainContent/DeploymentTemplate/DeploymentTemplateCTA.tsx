@@ -5,9 +5,9 @@ import {
     DTApplicationMetricsFormField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '@Components/deploymentConfig/constants'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { DeploymentTemplateCTAProps } from './types'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 
 // For protect we will have a separate component
 const DeploymentTemplateCTA = ({

@@ -15,18 +15,16 @@
  */
 
 import Tippy from '@tippyjs/react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { TabGroup, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.svg'
-import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variable-toggle.svg'
-import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
-import { DeploymentConfigToolbarProps } from '../types'
-import '../deploymentConfig.scss'
+import { ReactComponent as FileCode } from '@Icons/ic-file-code.svg'
+import { ReactComponent as ReadmeIcon } from '@Icons/ic-book-open.svg'
+import { ReactComponent as CloseIcon } from '@Icons/ic-cross.svg'
+import { ReactComponent as ViewVariablesIcon } from '@Icons/ic-view-variable-toggle.svg'
+import { ReactComponent as CompareIcon } from '@Icons/ic-arrows-left-right.svg'
+import { DeploymentConfigToolbarProps } from './types'
 
-// TODO: Can move code into fe-common to remove code duplication
-export default function DeploymentConfigToolbar({
+const DeploymentConfigToolbar = ({
     selectedTabIndex,
     handleTabSelection,
     noReadme,
@@ -35,12 +33,7 @@ export default function DeploymentConfigToolbar({
     convertVariables,
     setConvertVariables,
     unableToParseYaml,
-}: DeploymentConfigToolbarProps) {
-    const getTabClassName = (index: number) =>
-        `flex fs-12 lh-20 pb-8 dc__transparent dc__gap-4 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
-
-    const getTabIconClass = (index: number) => `icon-dim-16 dc__no-shrink ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
-
+}: DeploymentConfigToolbarProps) => {
     const changeTab = (e) => {
         handleTabSelection(Number(e.currentTarget.dataset.index))
     }
@@ -52,7 +45,7 @@ export default function DeploymentConfigToolbar({
     const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
 
     return (
-        <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
+        <div className="flex dc__content-space bcn-0 pl-16 pr-16 dc__border-bottom">
             {!noReadme && showReadme ? (
                 <button type="button" className="dc__transparent flex left pb-8" onClick={handleReadMeClick}>
                     <CloseIcon className="icon-dim-16 mr-4 cursor" />
@@ -60,18 +53,40 @@ export default function DeploymentConfigToolbar({
                 </button>
             ) : (
                 <div className="flexbox dc__gap-16 dc__align-items-center">
-                    <button className={getTabClassName(1)} data-index={1} data-testid="values-tab" onClick={changeTab}>
-                        <FileCode className={getTabIconClass(1)} />
-                        Values
-                    </button>
-
-                    <button type="button" data-testid="compare-values-tab" onClick={changeTab} data-index={2} className={`dc__transparent flexbox dc__gap-4 ${getTabClassName(2)}`}>
-                        <CompareIcon className={getTabIconClass(2)} />
-                        Compare values
-                    </button>
+                    <TabGroup
+                        tabs={[
+                            {
+                                id: 'edit-dt-values',
+                                label: 'Values',
+                                icon: FileCode,
+                                tabType: 'button',
+                                active: selectedTabIndex === 1,
+                                iconType: 'stroke',
+                                props: {
+                                    onClick: changeTab,
+                                    'data-index': 1,
+                                    'data-testid': 'values-tab',
+                                },
+                            },
+                            {
+                                id: 'compare-dt-values',
+                                label: 'Compare values',
+                                icon: CompareIcon,
+                                tabType: 'button',
+                                active: selectedTabIndex === 2,
+                                iconType: 'stroke',
+                                props: {
+                                    onClick: changeTab,
+                                    'data-index': 2,
+                                    'data-testid': 'compare-values-tab',
+                                },
+                            },
+                        ]}
+                        alignActiveBorderWithContainer
+                    />
                 </div>
             )}
-            <div className="flexbox dc__content-space dc__align-items-center pb-8 dc__gap-14">
+            <div className="flexbox dc__content-space dc__align-items-center dc__gap-14">
                 {!noReadme && !showReadme && (
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
                 )}
@@ -98,3 +113,5 @@ export default function DeploymentConfigToolbar({
         </div>
     )
 }
+
+export default DeploymentConfigToolbar

@@ -952,3 +952,9 @@ export enum DEFAULT_CONTAINER_NAME {
 }
 
 export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] = 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
+
+export const EDITOR_VIEW = {
+    UNDEFINED: 'UNDEFINED',
+    BASIC: 'BASIC',
+    ADVANCED: 'ADVANCED',
+}
