@@ -332,10 +332,19 @@ export const hasESO = (externalType): boolean =>
 
 export const hasProperty = (externalType): boolean => externalType === 'ESO_AWSSecretsManager'
 
-export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) => {
+export const secretValidationInfoToast = ({
+    isESO,
+    dataFrom,
+    secretStore,
+    secretStoreRef,
+}: {
+    isESO: boolean
+} & Pick<SecretState, 'dataFrom' | 'secretStore' | 'secretStoreRef'>) => {
     let errorMessage = ''
     if (isESO) {
-        if (secretStore && secretStoreRef) {
+        if (dataFrom) {
+            errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE
+        } else if (secretStore && secretStoreRef) {
             errorMessage = SECRET_TOAST_INFO.BOTH_STORE_AVAILABLE
         } else if (secretStore || secretStoreRef) {
             errorMessage = SECRET_TOAST_INFO.CHECK_KEY_SECRET_KEY

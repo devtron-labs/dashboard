@@ -97,7 +97,7 @@ export interface SecretState {
     externalType: string
     roleARN: ValueWithError
     esoData: any
-    template: Record<string, string>
+    template: Record<string, any>
     dataFrom: Record<string, any>[]
     secretData: any
     secretDataYaml: string
