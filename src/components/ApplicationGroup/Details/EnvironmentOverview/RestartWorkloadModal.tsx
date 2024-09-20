@@ -28,7 +28,6 @@ import {
     usePrompt,
     useSearchString,
     ApiQueuingWithBatch,
-    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
@@ -500,33 +499,32 @@ export const RestartWorkloadModal = ({
     const postRestartPodBatchFunction = (payload) => () =>
         postRestartWorkloadRotatePods(payload)
             .then((response) => {
-                console.log(payload)
-
                 if (response.result) {
                     // showing the status modal in case batch promise resolved
                     updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
                 }
             })
             .catch((serverError) => {
-                showError(serverError)
-                serverError.errors.map(({ userMessage }) => {
-                    const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
-                    const _resources: ResourcesMetaDataMap = _bulkRotatePodsMap[payload.appId].resources
+                if (serverError.code === '409') {
+                    serverError.errors.map(({ userMessage }) => {
+                        const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
+                        const _resources: ResourcesMetaDataMap = _bulkRotatePodsMap[payload.appId].resources
 
-                    // Iterate through the Map and update errorResponse
-                    Object.keys(_resources).forEach((kindName) => {
-                        _resources[kindName].containsError = true
-                        _resources[kindName].errorResponse = userMessage
+                        // Iterate through the Map and update errorResponse
+                        Object.keys(_resources).forEach((kindName) => {
+                            _resources[kindName].containsError = true
+                            _resources[kindName].errorResponse = userMessage
+                        })
+
+                        _bulkRotatePodsMap[payload.appId].failedCount = Object.keys(_resources).length
+                        _bulkRotatePodsMap[payload.appId].errorResponse = userMessage
+                        _bulkRotatePodsMap[payload.appId].resources = _resources
+                        // Updating the state with the modified map
+                        setBulkRotatePodsMap(_bulkRotatePodsMap)
+
+                        return null
                     })
-
-                    _bulkRotatePodsMap[payload.appId].failedCount = Object.keys(_resources).length
-                    _bulkRotatePodsMap[payload.appId].errorResponse = userMessage
-                    _bulkRotatePodsMap[payload.appId].resources = _resources
-                    // Updating the state with the modified map
-                    setBulkRotatePodsMap(_bulkRotatePodsMap)
-
-                    return null
-                })
+                }
             })
 
     const createFunctionCallsFromRestartPodMap = () => {
