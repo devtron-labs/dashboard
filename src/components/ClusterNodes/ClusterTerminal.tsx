@@ -1009,7 +1009,6 @@ node-details-full-screen
             },
         },
         metadata: {
-            // TODO: check if the optional check is required?
             node: selectedNodeName?.label ?? '',
             namespace: selectedNamespace?.label ?? '',
         },

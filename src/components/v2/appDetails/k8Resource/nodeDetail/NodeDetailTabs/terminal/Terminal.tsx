@@ -277,7 +277,6 @@ export default function TerminalView({
         >
             {renderConnectionStrip()}
             {fullScreenView && (
-                // TODO: solve why react-keybind is not working after this in k8s resource tab component
                 <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
                     <ICDevtronLogo className="fcn-0 icon-dim-16" />
                     {Object.entries(metadata).map(([key, value], index, arr) => (

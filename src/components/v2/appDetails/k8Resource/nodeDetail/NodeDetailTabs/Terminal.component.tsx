@@ -353,7 +353,6 @@ const TerminalComponent = ({
                   pod: nodeName ?? '',
               }
             : {
-                  // TODO: check if the nullish checks are required
                   app: appDetails.appName ?? '',
                   environment: appDetails.environmentName ?? '',
                   pod: nodeName ?? '',
