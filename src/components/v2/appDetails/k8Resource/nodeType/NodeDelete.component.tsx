@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -32,7 +32,7 @@ import AppDetailsStore from '../../appDetails.store'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
+import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'

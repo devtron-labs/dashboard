@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
