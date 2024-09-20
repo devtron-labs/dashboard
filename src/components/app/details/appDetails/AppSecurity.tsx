@@ -36,7 +36,8 @@ export const useGetAppSecurityDetails = ({
     )
 
     const [executionDetailsLoading, executionDetailsResponse, executionDetailsError, reloadExecutionDetails] = useAsync(
-        () => getExecutionDetails({ appId, artifactId, imageScanDeployInfoId }),
+        () =>
+            getExecutionDetails(appId && artifactId ? { appId, artifactId } : { appId, envId, imageScanDeployInfoId }),
         [appId, envId, imageScanDeployInfoId],
         !isSecurityScanV2Enabled && !!appId,
     )

@@ -308,7 +308,7 @@ export const SourceInfo = ({
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
-                                  ciArtifactId={ciArtifactId}
+                                  artifactId={ciArtifactId}
                                   isExternalCI={isExternalCI}
                               />
                           )}
