@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
@@ -65,12 +65,15 @@ export default function AboutAppInfoModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <SelectPicker
+                label="Project"
+                required
                 inputId="overview-project-menu-list"
                 name="overview-project-menu-list"
                 classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
+                size={ComponentSizeType.large}
             />
         )
     }
@@ -129,7 +132,6 @@ export default function AboutAppInfoModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                     {renderProjectSelect()}
                     {selectedProject &&
                         appMetaInfo &&

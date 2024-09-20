@@ -15,7 +15,13 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
-import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResponseType,
+    SelectPickerOptionType,
+    ServerError,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AppListPayloadType } from '@Components/app/list-new/AppListType'
 
 export enum JobListStateActionTypes {
     view = 'view',
@@ -81,28 +87,52 @@ export interface ExpandedRowProps {
     close: (e: any) => void
 }
 
-export interface JobListProps {
-    payloadParsedFromUrl?: any
-    clearAllFilters: () => void
-    sortJobList: (key: string) => void
-    jobListCount: number
-    isSuperAdmin: boolean
-    openJobCreateModel: (event) => void
-    setJobCount: React.Dispatch<React.SetStateAction<number>>
-    renderMasterFilters: () => JSX.Element
-    renderAppliedFilters: () => JSX.Element
+export interface JobListPayload
+    extends Pick<
+        AppListPayloadType,
+        'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
+    > {
+    sortBy: JobsListSortableKeys
 }
 
-export interface JobListViewProps extends JobListState, RouteComponentProps<{}> {
+export interface JobsMasterFilters {
+    status: SelectPickerOptionType[]
+    projects: SelectPickerOptionType[]
+    environments: SelectPickerOptionType[]
+}
+
+export interface JobListFilterConfig
+    extends JobListUrlFiltersType,
+        Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
+    searchKey: string
+    pageSize: number
+}
+
+export interface JobListProps
+    extends Pick<
+        UseUrlFiltersReturnType<JobsListSortableKeys>,
+        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
+    > {
+    masterFilters: JobsMasterFilters
+    filterConfig: JobListFilterConfig
+    filtersLoading: boolean
+    jobListCount: number
+    openJobCreateModel: (event) => void
+    setJobCount: React.Dispatch<React.SetStateAction<number>>
+    getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => React.ReactNode
+}
+
+export interface JobListViewProps
+    extends JobListState,
+        RouteComponentProps<{}>,
+        Pick<
+            UseUrlFiltersReturnType<JobsListSortableKeys>,
+            'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
+        > {
     expandRow: (id: number | null) => void
     closeExpandedRow: (id: number | null) => void
-    sort: (key: string) => void
     handleEditJob: (jobId: number) => void
-    clearAll: () => void
-    changePage: (pageNo: number) => void
-    changePageSize: (size: number) => void
     jobListCount: number
-    isSuperAdmin: boolean
     openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void
 }
@@ -132,3 +162,45 @@ export type JobList = ResponseType<{
     }[]
     jobCount: number
 }>
+
+export enum JobsListSortableKeys {
+    APP_NAME = 'appNameSort',
+}
+
+export enum JobListUrlFilters {
+    status = 'status',
+    project = 'project',
+    environment = 'environment',
+}
+
+export interface JobListUrlFiltersType extends Record<JobListUrlFilters, string[]> {}
+
+export enum JobListStatus {
+    STARTING = 'Starting',
+    RUNNING = 'Running',
+    SUCCEEDED = 'Succeeded',
+    CANCELLED = 'Cancelled',
+    FAILED = 'Failed',
+}
+
+export enum JobListStatusDTO {
+    STARTING = 'Starting',
+    RUNNING = 'Running',
+    SUCCEEDED = 'Succeeded',
+    CANCELLED = 'CANCELLED',
+    FAILED = 'Failed',
+}
+
+export interface JobListFilterProps
+    extends Pick<
+        JobListProps,
+        | 'filtersLoading'
+        | 'jobListCount'
+        | 'masterFilters'
+        | 'handleSearch'
+        | 'filterConfig'
+        | 'updateSearchParams'
+        | 'getLabelFromValue'
+    > {
+    payload: JobListPayload
+}
