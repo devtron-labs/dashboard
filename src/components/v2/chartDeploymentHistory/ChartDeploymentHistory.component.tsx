@@ -31,6 +31,7 @@ import {
     ToastVariantType,
     ShowMoreText,
     DEPLOYMENT_STATUS,
+    EMPTY_STATE_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -54,7 +55,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
@@ -62,7 +63,7 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
-import { ReactComponent as Rocket} from '@Icons/misc/deploy.svg'
+import { ReactComponent as Rocket} from '@Icons/ic-nav-rocket.svg'
 import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
@@ -604,7 +605,7 @@ const ChartDeploymentHistory = ({
             const { message } = deployment
             if (deployment.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED && message) {
                 return (
-                    <div className="trigger-details__grid py-4 dc__grid">
+                    <div className="trigger-details__grid-helm py-4 dc__grid">
                         <div className="flex top dc__content-center">
                             <ICLines className="icon-dim-20 dc__no-shrink scn-7" />
                         </div>
@@ -625,7 +626,7 @@ const ChartDeploymentHistory = ({
             <div className="trigger-details pb-20">
                 <div className="flex dc__content-space trigger-details__summary">
                     <div className="flex left py-10 px-20 dc__gap-8">
-                        <Rocket className="scn-6 icon-dim-16" />
+                        <Rocket className="scn-6 icon-dim-20" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
                             Deployed at
                         </div>
@@ -741,7 +742,7 @@ const ChartDeploymentHistory = ({
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body dc__gap-20">{renderSelectedDeploymentDetail()}</div>
+                <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
                 {showRollbackConfirmation && (
                     <RollbackConfirmationDialog
                         deploying={deploying}
