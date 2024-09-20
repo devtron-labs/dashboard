@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
+import { useEffect, useState } from 'react'
+import { showError, Progressing, VisibleModal, InfoColourBar, ToastManager, ToastVariantType, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
 import { NumberOptionType } from '../../../app/types'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
@@ -64,27 +62,17 @@ export default function ProjectUpdateModal({
 
     const renderProjectSelect = (): JSX.Element => {
         return (
-            <ReactSelect
+            <SelectPicker
+                inputId="project"
+                name="project"
+                label="Project"
+                required
+                placeholder="Select project"
                 options={projectOptions}
                 value={selectedProject}
                 classNamePrefix="select-project-list"
                 onChange={handleProjectSelection}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
-                styles={getCommonSelectStyle({
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        marginBottom: '6px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                })}
+                size={ComponentSizeType.large}
             />
         )
     }
@@ -146,9 +134,6 @@ export default function ProjectUpdateModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <div className="fs-12 fw-4 lh-20 mb-2" data-testid="project-heading-onchange">
-                        Project
-                    </div>
                     {renderProjectSelect()}
                     {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
                         <InfoColourBar

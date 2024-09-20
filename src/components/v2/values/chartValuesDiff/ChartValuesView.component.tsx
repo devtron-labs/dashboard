@@ -16,7 +16,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import {
     Progressing,
     DeleteDialog,
@@ -28,16 +27,9 @@ import {
     Drawer,
     TippyTheme,
     GitOpsAuthModeType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedText,
-    getCommonSelectStyle,
-    GroupHeading,
-    Option,
-} from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
@@ -72,7 +64,6 @@ import {
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 
@@ -90,9 +81,6 @@ export const ChartEnvironmentSelector = ({
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-    const singleOption = (props) => {
-        return <EnvFormatOptions {...props} environmentfieldName="label" />
-    }
 
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
@@ -111,12 +99,8 @@ export const ChartEnvironmentSelector = ({
         }
     }
 
-    const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'label')
-    }
-
     return !isDeployChartView ? (
-        <div className="chart-values__environment-container mb-12">
+        <div className="chart-values__environment-container w-100">
             <h2
                 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
                 data-testid="environment-heading"
@@ -136,24 +120,17 @@ export const ChartEnvironmentSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">
-                Deploy to environment
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    SingleValue: singleOption,
-                    GroupHeading,
-                }}
+        <div className="w-100">
+            <SelectPicker
+                label="Deploy to environment"
+                required
+                inputId="environment-select"
+                name="environment"
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
-                formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
             {renderVirtualEnvironmentInfoText()}
@@ -171,7 +148,7 @@ export const DeploymentAppSelector = ({
     allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
-        <div className="chart-values__deployment-type">
+        <div className="chart-values__deployment-type w-100">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
                 Deploy app using
             </h2>
@@ -212,7 +189,7 @@ export const DeploymentAppSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4 pt-16">
+        <div className="w-100">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
@@ -470,25 +447,20 @@ export const ChartProjectSelector = ({
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return (
-        <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">
-                Project
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
+        <div className="w-100">
+            <SelectPicker
+                inputId="project-select"
+                required
+                name="project"
+                label="Project"
                 placeholder="Select Project"
                 classNamePrefix="select-chart-project"
                 value={selectedProject}
-                styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
                 options={projects}
             />
             {invalidProject && renderValidationErrorLabel()}
-        </label>
+        </div>
     )
 }
 
@@ -500,7 +472,7 @@ export const ChartVersionSelector = ({
     chartVersionsData,
 }: ChartVersionSelectorType) => {
     return (
-        <div className="w-100 mb-12">
+        <div className="w-100">
             <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">
                 Chart Version
             </span>
@@ -542,7 +514,7 @@ export const ChartValuesSelector = ({
     hideCreateNewOption,
 }: ChartValuesSelectorType) => {
     return (
-        <div className="w-100 mb-12">
+        <div className="w-100">
             <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
                 Chart Values
             </span>
@@ -665,7 +637,7 @@ export const ValueNameInput = ({
     valueNameDisabled,
 }: ValueNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="value-name"
                 label="Name"
@@ -679,7 +651,7 @@ export const ValueNameInput = ({
                 isRequiredField
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 
@@ -691,7 +663,7 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="app-name"
                 tabIndex={1}
@@ -704,7 +676,7 @@ export const AppNameInput = ({
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 
