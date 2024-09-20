@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
-import { ConditionalWrap, VisibleModal, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    VisibleModal,
+    DetailsProgressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { CSV_HEADERS, ExportToCsvProps, FILE_NAMES } from './constants'
@@ -29,8 +33,8 @@ import './exportToCsv.scss'
 export default function ExportToCsv({
     apiPromise,
     fileName,
-    className,
-    disabled,
+    className = '',
+    disabled = false,
     showOnlyIcon = false,
 }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
@@ -150,17 +154,19 @@ export default function ExportToCsv({
     }
 
     return (
-        <div className={`export-to-csv-button ${showOnlyIcon ? 'w-32 h-32' : ''} ${className}`}>
+        <div
+            className={`export-to-csv-button ${showOnlyIcon ? 'w-32' : ''} h-32 ${className}`}
+        >
             <ConditionalWrap
                 condition={disabled}
                 wrap={(children) => (
-                    <Tippy className="default-tt" arrow placement="top" content="Nothing to export">
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Nothing to export">
                         {children}
                     </Tippy>
                 )}
             >
                 <button
-                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'h-32 w-32 mw-none' : 'w-100 h-36'} ${
+                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'w-32 mw-none' : 'w-100'} h-32 ${
                         disabled ? 'nothing-to-export' : ''
                     }`}
                     onClick={generateDataToExport}
