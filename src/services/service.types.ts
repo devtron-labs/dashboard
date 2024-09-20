@@ -17,8 +17,10 @@
 import {
     DeploymentAppTypes,
     DeploymentStrategy,
+    EnvListMinDTO,
     ResponseType,
     SeverityCount,
+    Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
@@ -150,6 +152,7 @@ export interface Cluster {
     errorInConnecting?: string
     isVirtualCluster?: boolean
 }
+
 export interface LoginCountType extends ResponseType {
     result?: LoginCount
 }
@@ -178,4 +181,10 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface ClusterEnvTeams {
+    clusters: Cluster[]
+    environments: EnvListMinDTO[]
+    teams: Teams[]
 }

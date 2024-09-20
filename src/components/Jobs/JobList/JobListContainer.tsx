@@ -14,41 +14,64 @@
  * limitations under the License.
  */
 
-import React, { Reducer, useEffect, useReducer, useRef } from 'react'
+import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { showError, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import * as queryString from 'query-string'
-import { URLS } from '../../../config'
-import { getInitialJobListState, jobListModal, jobListReducer, populateQueryString } from '../Utils'
-import { JobListProps, JobListState, JobListStateAction, JobListStateActionTypes } from '../Types'
+import { showError, ServerErrors, FilterChips } from '@devtron-labs/devtron-fe-common-lib'
+import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
+import {
+    JobListPayload,
+    JobListProps,
+    JobListState,
+    JobListStateAction,
+    JobListStateActionTypes,
+    JobListUrlFiltersType,
+} from '../Types'
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
 import JobListView from './JobListView'
 import '../../app/list/list.scss'
+import JobListFilters from './JobListFilters'
 
-export default function JobListContainer({
-    payloadParsedFromUrl,
-    clearAllFilters,
-    sortJobList,
+const JobListContainer = ({
+    masterFilters,
+    filterConfig,
+    clearFilters,
+    handleSorting,
+    handleSearch,
     jobListCount,
-    isSuperAdmin,
+    filtersLoading,
     openJobCreateModel,
     setJobCount,
-    renderMasterFilters,
-    renderAppliedFilters,
-}: JobListProps) {
+    updateSearchParams,
+    getLabelFromValue,
+    changePage,
+    changePageSize,
+}: JobListProps) => {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+
+    const { searchKey, sortBy, sortOrder, offset, pageSize, status, environment, project } = filterConfig
+
+    const payload: JobListPayload = useMemo(
+        () => ({
+            appNameSearch: searchKey,
+            appStatuses: status,
+            environments: environment.map((envId) => +envId),
+            teams: project.map((projectId) => +projectId),
+            offset,
+            size: pageSize,
+            sortBy,
+            sortOrder,
+        }),
+        [filterConfig],
+    )
+
     const [state, dispatch] = useReducer<Reducer<JobListState, JobListStateAction>>(
         jobListReducer,
-        getInitialJobListState(payloadParsedFromUrl),
+        getInitialJobListState(payload),
     )
     const abortControllerRef = useRef<AbortController>(new AbortController())
-
-    useEffect(() => {
-        getJobsList(payloadParsedFromUrl)
-    }, [payloadParsedFromUrl])
 
     const getJobsList = async (request): Promise<void> => {
         const isSearchOrFilterApplied =
@@ -109,20 +132,10 @@ export default function JobListContainer({
             })
     }
 
-    const changePage = (pageNo: number): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = state.pageSize * (pageNo - 1)
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
-    const changePageSize = (size: number): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = 0
-        query['pageSize'] = size
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getJobsList(payload)
+    }, [payload])
 
     const expandRow = (id: number): void => {
         dispatch({
@@ -141,9 +154,9 @@ export default function JobListContainer({
     const toggleExpandAllRow = (): void => {
         const _expandedRow = {}
         if (!state.isAllExpanded) {
-            for (const _job of state.jobs) {
-                _expandedRow[_job.id] = _job.ciPipelines.length > 1
-            }
+            state.jobs.forEach((job) => {
+                _expandedRow[job.id] = job.ciPipelines.length > 1
+            })
         }
 
         dispatch({
@@ -160,8 +173,23 @@ export default function JobListContainer({
         <>
             {state.view !== JobListViewType.EMPTY && state.view !== JobListViewType.ERROR && (
                 <>
-                    {renderMasterFilters()}
-                    {renderAppliedFilters()}
+                    <JobListFilters
+                        masterFilters={masterFilters}
+                        filterConfig={filterConfig}
+                        jobListCount={jobListCount}
+                        payload={payload}
+                        filtersLoading={filtersLoading}
+                        handleSearch={handleSearch}
+                        updateSearchParams={updateSearchParams}
+                        getLabelFromValue={getLabelFromValue}
+                    />
+                    <FilterChips<JobListUrlFiltersType>
+                        filterConfig={{ status, environment, project }}
+                        clearFilters={clearFilters}
+                        onRemoveFilter={updateSearchParams}
+                        className="px-20"
+                        getFormattedValue={getLabelFromValue}
+                    />
                 </>
             )}
             <JobListView
@@ -171,12 +199,11 @@ export default function JobListContainer({
                 history={history}
                 expandRow={expandRow}
                 closeExpandedRow={closeExpandedRow}
-                sort={sortJobList}
+                handleSorting={handleSorting}
                 handleEditJob={handleEditJob}
-                clearAll={clearAllFilters}
+                clearFilters={clearFilters}
                 changePage={changePage}
                 changePageSize={changePageSize}
-                isSuperAdmin={isSuperAdmin}
                 jobListCount={jobListCount}
                 openJobCreateModel={openJobCreateModel}
                 toggleExpandAllRow={toggleExpandAllRow}
@@ -184,3 +211,5 @@ export default function JobListContainer({
         </>
     )
 }
+
+export default JobListContainer
