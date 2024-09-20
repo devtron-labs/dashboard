@@ -77,7 +77,6 @@ export const RestartWorkloadModal = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
-    const [statusErrorMessage, setErrorStatusMessage] = useState<string>('')
 
     const { searchParams } = useSearchString()
     const history = useHistory()
@@ -156,7 +155,7 @@ export const RestartWorkloadModal = ({
                                 !!selectedAppIds.includes(+appId) && Object.keys(_resourcesMetaDataMap).length > 0,
                             value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
                             namespace: response.result.namespace,
-                            errorResponse: (statusErrorMessage || 'test1') ?? '',
+                            errorResponse: appInfoObject?.errorResponse ?? '',
                         }
 
                         _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
@@ -215,7 +214,6 @@ export const RestartWorkloadModal = ({
                 _bulkRotatePodsMap[appId].resources[kindName].value = _bulkRotatePodsMap[appId].value
                     ? CHECKBOX_VALUE.CHECKED
                     : null
-                _bulkRotatePodsMap[appId].resources[kindName].errorResponse = `${statusErrorMessage} test2` || 'test2'
             })
         } else if (key === APP_DETAILS_TEXT.KIND_NAME && _bulkRotatePodsMap[appId].resources[_kindName]) {
             // handling resource level value for checkbox
@@ -225,7 +223,6 @@ export const RestartWorkloadModal = ({
                 .isChecked
                 ? CHECKBOX_VALUE.CHECKED
                 : null
-            _bulkRotatePodsMap[appId].errorResponse = `${statusErrorMessage} test3` || 'test3'
             // handling app level value for checkbox
             // eslint-disable-next-line no-nested-ternary
             _bulkRotatePodsMap[appId].value = Object.values(_bulkRotatePodsMap[appId].resources).every(
@@ -256,7 +253,6 @@ export const RestartWorkloadModal = ({
             Object.keys(_bulkRotatePodsMap[appId].resources).forEach((kindName) => {
                 _bulkRotatePodsMap[appId].resources[kindName].isChecked = _selectAllApps.isChecked
                 _bulkRotatePodsMap[appId].resources[kindName].value = _selectAllApps.value
-                _bulkRotatePodsMap[appId].resources[kindName].errorResponse = `${statusErrorMessage} test4` || 'test4'
             })
         })
         setBulkRotatePodsMap(_bulkRotatePodsMap)
@@ -403,14 +399,12 @@ export const RestartWorkloadModal = ({
                         +appId,
                         bulkRotatePodsMap[appId].appName,
                         bulkRotatePodsMap[appId].resources,
-                        bulkRotatePodsMap[appId].errorResponse || statusErrorMessage,
+                        bulkRotatePodsMap[appId].errorResponse,
                     )}
                 </div>
             ))}
         </div>
     )
-
-    console.log(statusErrorMessage)
 
     const renderRestartWorkloadModalList = () => {
         if (showStatusModal) {
@@ -506,6 +500,8 @@ export const RestartWorkloadModal = ({
     const postRestartPodBatchFunction = (payload) => () =>
         postRestartWorkloadRotatePods(payload)
             .then((response) => {
+                console.log(payload)
+
                 if (response.result) {
                     // showing the status modal in case batch promise resolved
                     updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
@@ -513,7 +509,21 @@ export const RestartWorkloadModal = ({
             })
             .catch((serverError) => {
                 showError(serverError)
-                serverError.errors.map(({ userMessage }) => setErrorStatusMessage(userMessage))
+                console.log(2, payload)
+
+                const _resources = Object.keys(bulkRotatePodsMap[+payload.appId].resources).map((_resource) =>
+                    console.log(_resource),
+                )
+
+                console.log(_resources)
+                serverError.errors.map(({ userMessage }) => {
+                    const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
+                    _bulkRotatePodsMap[payload.appId].errorResponse = userMessage
+                    _bulkRotatePodsMap[payload.appId].resources[`${payload.kind}${payload.appName}`].errorResponse =
+                        userMessage
+                    setBulkRotatePodsMap(_bulkRotatePodsMap)
+                    return null
+                })
             })
 
     const createFunctionCallsFromRestartPodMap = () => {
@@ -585,9 +595,7 @@ export const RestartWorkloadModal = ({
             setStatusModalLoading(true)
             ApiQueuingWithBatch(functionCalls, httpProtocol)
                 .then(async () => {})
-                .catch((_err) => {
-                    console.log('api queing', _err)
-                })
+                .catch(() => {})
                 .finally(() => {
                     setShowStatusModal(true)
                     // setShowResistanceBox(false)
