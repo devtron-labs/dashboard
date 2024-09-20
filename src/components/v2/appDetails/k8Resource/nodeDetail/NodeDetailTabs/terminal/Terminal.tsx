@@ -280,12 +280,12 @@ export default function TerminalView({
                 <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
                     <ICDevtronLogo className="fcn-0 icon-dim-16" />
                     {Object.entries(metadata).map(([key, value], index, arr) => (
-                        <>
+                        <React.Fragment key={key}>
                             <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
                                 {key}:&nbsp;{value || '-'}
                             </span>
                             {index < arr.length - 1 && <div className="dc__divider h12" />}
-                        </>
+                        </React.Fragment>
                     ))}
                 </div>
             )}
@@ -300,7 +300,7 @@ export default function TerminalView({
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton
                     shortcutCombo={['Control', 'Shift', 'F']}
-                    onlyOnLogs={false}
+                    showOnlyWhenPathIncludesLogs={false}
                     fullScreenView={fullScreenView}
                     setFullScreenView={handleToggleFullscreen}
                 />

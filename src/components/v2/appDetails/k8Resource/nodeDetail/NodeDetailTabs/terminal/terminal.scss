@@ -52,7 +52,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 21;
+        z-index: calc(var(--modal-index) + 1);
         border-bottom: 1px solid #2C3354;
         background: var(--terminal-bg);
         height: var(--metadata-header-height);
@@ -70,9 +70,9 @@
             position: fixed;
             top: var(--metadata-header-height);
             left: 0;
-            height: calc(100vh - 28px);
+            height: calc(100vh - var(--metadata-header-height));
             width: 100vw;
-            z-index: 20;
+            z-index: var(--modal-index);
             margin: 0;
             background-color: var(--terminal-bg);
             padding: 12px;
@@ -82,30 +82,7 @@
             position: fixed;
             bottom: 12px;
             right: 12px;
-            transition: opacity 0.2s ease-in-out;
-            padding: 6px;
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            box-shadow:
-            0 0 4px 0 rgba(0, 10, 20, 0.5),
-            0 0 4px 0 rgba(0, 10, 20, 0.5);
-            background-color: #2c3354;
-            opacity: 0.8;
             z-index: 11;
-
-            & > svg {
-                transition: transform 0.2s ease-in-out;
-                transform: scale(1);
-            }
-
-            &:hover {
-                opacity: 1;
-
-                & > svg {
-                    transform: scale(1.1);
-                }
-            }
         }
 
         &__zoom--bottom-41 {
