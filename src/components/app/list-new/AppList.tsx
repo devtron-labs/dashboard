@@ -34,6 +34,7 @@ import {
     getNamespaceListMin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCommonAppFilters } from '@Services/service'
+import { Cluster } from '@Services/service.types'
 import { useAppContext } from '../../common'
 import { SERVER_MODE, DOCUMENTATION, URLS } from '../../../config'
 import HelmAppList from './HelmAppList'
@@ -155,19 +156,30 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         !!clusterIdsCsv,
     )
 
+    const getClusterList = (): Cluster[] => {
+        if (appListFiltersResponse) {
+            return appListFiltersResponse.isFullMode
+                ? appListFiltersResponse.appListFilters.result.clusters
+                : appListFiltersResponse.clusterList.result
+        }
+        return []
+    }
+
+    const getProjectList = () => {
+        if (appListFiltersResponse) {
+            return appListFiltersResponse.isFullMode
+                ? appListFiltersResponse.appListFilters.result.teams
+                : appListFiltersResponse.projectList.result
+        }
+        return []
+    }
+
     const getFormattedClusterValue = (filterValue: string) =>
-        (appListFiltersResponse.isFullMode
-            ? appListFiltersResponse.appListFilters.result.clusters
-            : appListFiltersResponse.clusterList.result
-        ).find((clusterItem) => clusterItem.id === +filterValue)?.cluster_name
+        getClusterList().find((clusterItem) => clusterItem.id === +filterValue)?.cluster_name
 
     const getFormattedProjectValue = (filterValue: string) => {
         if (!+filterValue) return 'Apps with no project'
-        return (
-            appListFiltersResponse.isFullMode
-                ? appListFiltersResponse.appListFilters.result.teams
-                : appListFiltersResponse.projectList.result
-        ).find((team) => team.id === +filterValue)?.name
+        return getProjectList().find((team) => team.id === +filterValue)?.name
     }
 
     const getFormattedFilterValue = (filterKey: AppListUrlFilters, filterValue: string): string => {
@@ -200,7 +212,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             const updatedNamespaces = namespace.filter(
                 (currentNamespace) => clusterIdsMap.get(+currentNamespace.split('_')[0]) ?? false,
             )
-            updateSearchParams({ namespace: updatedNamespaces })
+            // To clear template type filter if cluster filter is cleared
+            updateSearchParams({ namespace: updatedNamespaces, templateType: clusterIdsCsv ? templateType : [] })
         }
     }, [`${cluster}`])
 
@@ -475,11 +488,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     <HelmAppList
                         serverMode={serverMode}
                         filterConfig={filterConfig}
-                        clusterList={
-                            appListFiltersResponse?.isFullMode
-                                ? appListFiltersResponse.appListFilters.result.clusters
-                                : appListFiltersResponse.clusterList.result
-                        }
+                        clusterList={getClusterList()}
                         handleSorting={handleSorting}
                         clearAllFilters={clearFilters}
                         fetchingExternalApps={fetchingExternalApps}
@@ -506,11 +515,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     key={params.appType}
                     clearAllFilters={clearFilters}
                     filterConfig={filterConfig}
-                    clusterList={
-                        appListFiltersResponse?.isFullMode
-                            ? appListFiltersResponse.appListFilters.result.clusters
-                            : appListFiltersResponse.clusterList.result
-                    }
+                    clusterList={getClusterList()}
                     clusterIdsCsv={clusterIdsCsv}
                     appType={params.appType}
                     changePage={changePage}

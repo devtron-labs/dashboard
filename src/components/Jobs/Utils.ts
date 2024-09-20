@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import * as queryString from 'query-string'
 import moment from 'moment'
 import { AppListViewType } from '../app/config'
-import { JobCIPipeline, JobListState, JobListStateAction, JobListStateActionTypes } from './Types'
+import {
+    JobCIPipeline,
+    JobListState,
+    JobListStateAction,
+    JobListStateActionTypes,
+    JobListStatus,
+    JobListStatusDTO,
+    JobListUrlFilters,
+} from './Types'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import { JobPipeline } from '../app/types'
@@ -168,105 +175,6 @@ const handleDeploymentInitiatedStatus = (status: string): string => {
     return status
 }
 
-export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams): any => {
-    const params = queryString.parse(searchParams)
-    const search = params.searchKey || ''
-    const appStatus = params.appStatus || ''
-    const teams = params.team || ''
-    const environments = params.environment || ''
-    const teamsArr = teams
-        .toString()
-        .split(',')
-        .filter((team) => team != '')
-        .map((team) => Number(team))
-    const appStatusArr = appStatus
-        .toString()
-        .split(',')
-        .filter((status) => status != '')
-        .map((status) => status)
-    const environmentsArr = environments
-        .toString()
-        .split(',')
-        .filter((environment) => environment != '')
-        .map((environment) => Number(environment))
-
-    // update master filters data (check/uncheck)
-    const filterApplied = {
-        teams: new Set<number>(teamsArr),
-        appStatus: new Set<string>(appStatusArr),
-        environments: new Set<number>(environmentsArr),
-    }
-
-    const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
-
-    // set projects (check/uncheck)
-    _masterFilters.projects = masterFilters.projects.map((project) => {
-        return {
-            key: project.key,
-            label: project.label,
-            isSaved: true,
-            isChecked: filterApplied.teams.has(project.key),
-        }
-    })
-
-    _masterFilters.appStatus = masterFilters.appStatus.map((status) => {
-        return {
-            key: status.key,
-            label: status.label,
-            isSaved: true,
-            isChecked: filterApplied.appStatus.has(status.key),
-        }
-    })
-
-    _masterFilters.environments = masterFilters.environments.map((status) => {
-        return {
-            key: status.key,
-            label: status.label,
-            isSaved: true,
-            isChecked: filterApplied.environments.has(status.key),
-        }
-    })
-    setMasterFilters(_masterFilters)
-    /// /// update master filters data ends (check/uncheck)
-
-    const sortBy = params.orderBy || SortBy.APP_NAME
-    const sortOrder = params.sortOrder || OrderBy.ASC
-    let offset = +params.offset || 0
-    let pageSize: number = +params.pageSize || 20
-    const pageSizes = new Set([20, 40, 50])
-
-    if (!pageSizes.has(pageSize)) {
-        // handle invalid pageSize
-        pageSize = 20
-    }
-    if (offset % pageSize != 0) {
-        // pageSize must be a multiple of offset
-        offset = 0
-    }
-
-    return {
-        teams: teamsArr,
-        appNameSearch: search,
-        appStatuses: appStatusArr,
-        environments: environmentsArr,
-        sortBy,
-        sortOrder,
-        offset,
-        size: +pageSize,
-    }
-}
-
-export const populateQueryString = (searchParams: string): Record<string, any> => {
-    const qs = queryString.parse(searchParams)
-    const keys = Object.keys(qs)
-    const query = {}
-
-    for (const key of keys) {
-        query[key] = qs[key]
-    }
-    return query
-}
-
 export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
     const status = jobPipeline.status === 'notdeployed' ? '' : jobPipeline.status
     if (status === '') {
@@ -279,4 +187,17 @@ export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): strin
         return DEFAULT_ENV
     }
     return jobPipeline.lastTriggeredEnvironmentName
+}
+
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    [JobListUrlFilters.status]: searchParams.getAll(JobListUrlFilters.status),
+    [JobListUrlFilters.project]: searchParams.getAll(JobListUrlFilters.project),
+    [JobListUrlFilters.environment]: searchParams.getAll(JobListUrlFilters.environment),
+})
+
+export const getJobStatusLabelFromValue = (status: string): string => {
+    if (status === JobListStatusDTO.CANCELLED) {
+        return JobListStatus.CANCELLED
+    }
+    return status
 }
