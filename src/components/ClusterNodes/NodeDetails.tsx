@@ -211,7 +211,6 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                 label: NODE_DETAILS_TABS.yaml,
                 tabType: 'navLink',
                 icon: Edit,
-                iconType: 'stroke',
                 props: {
                     to: `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
                     onClick: changeNodeTab,

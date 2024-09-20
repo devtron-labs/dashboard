@@ -2317,6 +2317,10 @@ button.anchor {
 
 .dc__mxw-250 {
     max-width: 250px;
+
+    &--imp {
+        max-width: 250px !important;
+    }
 }
 
 .dc__mxw-280 {
@@ -2959,16 +2963,16 @@ textarea,
     min-width: 84px;
 }
 
-.mw-116 {
-    min-width: 116px;
-}
-
 .mw-140 {
     min-width: 140px;
 }
 
-.mw-232 {
-    min-width: 232px;
+.mw-152 {
+    min-width: 152px;
+}
+
+.mw-264 {
+    min-width: 264px;
 }
 
 .mw-400 {
