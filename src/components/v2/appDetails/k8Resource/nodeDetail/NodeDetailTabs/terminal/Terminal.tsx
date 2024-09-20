@@ -253,35 +253,6 @@ export default function TerminalView({
 
         setSocketConnection(SocketConnectionType.CONNECTING)
 
-        const log = {
-            cmdKey: false, // NOTE: can be either MetaKey or Cmd (in mac) or Ctrl (in linux/windows)
-            shiftKey: false,
-            KeyF: false,
-        }
-        const handleFullscreenShortcutPress = (event: KeyboardEvent) => {
-            if (event.type === 'keydown') {
-                if (event.ctrlKey || event.metaKey) {
-                    log.cmdKey = true
-                }
-                if (event.code === 'KeyF') {
-                    log.KeyF = true
-                }
-                if (event.shiftKey) {
-                    log.shiftKey = true
-                }
-                if (Object.values(log).every((val) => !!val)) {
-                    handleToggleFullscreen()
-                }
-            }
-            if (event.type === 'keyup') {
-                Object.keys(log).forEach((key) => {
-                    log[key] = false
-                })
-            }
-        }
-        document.getElementById('terminal-id').addEventListener('keydown', handleFullscreenShortcutPress)
-        document.getElementById('terminal-id').addEventListener('keyup', handleFullscreenShortcutPress)
-
         return () => {
             socket.current?.close()
             terminalRef.current?.dispose()
@@ -289,8 +260,6 @@ export default function TerminalView({
             terminalRef.current = undefined
             terminalRef.current = undefined
             fitAddon.current = null
-            document.getElementById('terminal-id').removeEventListener('keydown', handleFullscreenShortcutPress)
-            document.getElementById('terminal-id').removeEventListener('keyup', handleFullscreenShortcutPress)
         }
     }, [])
 
@@ -331,8 +300,7 @@ export default function TerminalView({
             >
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton
-                    shortcutCombo={['⌘', '⇧', 'F']}
-                    disableKeybindings={true}
+                    shortcutCombo={['Control', 'Shift', 'F']}
                     onlyOnLogs={false}
                     fullScreenView={fullScreenView}
                     setFullScreenView={handleToggleFullscreen}

@@ -2503,6 +2503,10 @@ button.anchor {
     border-top-right-radius: 3px;
 }
 
+.dc__top-right-radius-4 {
+    border-top-right-radius: 4px;
+}
+
 .dc__bottom-radius-4 {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -2590,10 +2594,6 @@ button.anchor {
 
 .dc__top-left-radius {
     border-top-left-radius: 4px;
-}
-
-.dc__top-right-radius {
-    border-top-right-radius: 4px;
 }
 
 .dc__bottom-left-radius {
@@ -3230,6 +3230,10 @@ textarea,
 // Width in percentage
 .mw-100p {
     min-width: 100%;
+}
+
+.w-20-per {
+    width: 20%;
 }
 
 .w-25 {
@@ -4201,6 +4205,10 @@ textarea::placeholder {
     }
 }
 
+.dc__bg-n0--opacity-0_2:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .dc__hover-n0:hover {
     background-color: var(--N0);
 }
@@ -4752,6 +4760,10 @@ textarea::placeholder {
 
 .dc__lh-0 {
     line-height: 0;
+}
+
+.dc__lh-inherit {
+    line-height: inherit;
 }
 
 .dc__unset-button-styles {

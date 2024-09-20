@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
@@ -33,7 +33,7 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
@@ -50,7 +50,7 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
-import { getAppConfig, getGitProviderIcon, getResourceKindFromAppType } from './utils'
+import { getAppConfig, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'

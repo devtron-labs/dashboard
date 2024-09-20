@@ -47,7 +47,9 @@ export const EnvConfigurationsNav = ({
 
     // STATES
     const [expandedIds, setExpandedIds] =
-        useState<Record<Exclude<EnvResourceType, EnvResourceType.DeploymentTemplate>, boolean>>()
+        useState<
+            Record<Exclude<EnvResourceType, EnvResourceType.DeploymentTemplate | EnvResourceType.Manifest>, boolean>
+        >()
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
