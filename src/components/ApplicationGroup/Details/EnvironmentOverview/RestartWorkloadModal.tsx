@@ -505,7 +505,7 @@ export const RestartWorkloadModal = ({
                 }
             })
             .catch((serverError) => {
-                if (serverError.code === '409') {
+                if (serverError.code === 409) {
                     serverError.errors.map(({ userMessage }) => {
                         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
                         const _resources: ResourcesMetaDataMap = _bulkRotatePodsMap[payload.appId].resources
