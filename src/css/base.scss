@@ -1441,28 +1441,6 @@ button.anchor {
     }
 }
 
-.gui-yaml-switch.status-filter-button {
-    &.radio-group {
-        .radio__item-label {
-            padding: 2px 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-    }
-
-    &.with-menu-button {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-
-        .radio:last-child>.radio__item-label {
-            border-right: none;
-            border-top-right-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-        }
-    }
-}
-
 .manual-approvals-switch {
     &.radio-group {
         input[type='checkbox']:checked + .radio__item-label {
