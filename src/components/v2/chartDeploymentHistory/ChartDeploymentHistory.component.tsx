@@ -30,6 +30,7 @@ import {
     ToastManager,
     ToastVariantType,
     ShowMoreText,
+    DEPLOYMENT_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -38,7 +39,7 @@ import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
+import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'
@@ -601,20 +602,17 @@ const ChartDeploymentHistory = ({
 
         const getViewMessage = () => {
             const { message } = deployment
-            if (deployment.status === DEPLOYMENT_STATUS.FAILED && message) {
+            if (deployment.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED && message) {
                 return (
-                    <div className="display-grid trigger-details__grid py-4">
-                        <div className="flexbox dc__content-center">
+                    <div className="trigger-details__grid py-4 dc__grid">
+                        <div className="flex top dc__content-center">
                             <ICLines className="icon-dim-20 dc__no-shrink scn-7" />
                         </div>
 
-                        <div className="flexbox-col">
-                            <div className="flexbox dc__gap-8">
-                                <div className="flexbox cn-9 fs-13 fw-4 lh-20">
-                                    <span>Message</span>&nbsp;
-                                    <span>{message}</span>
+                        <div className="flex column left">
+                                <div className=" cn-9 fs-13 fw-4 lh-20">
+                                    <span>Message</span>
                                 </div>
-                            </div>
 
                             {/* Need key since using ref inside of this component as useEffect dependency, so there were issues while switching builds */}
                             {message && <ShowMoreText text={message} key={message} textClass="cn-7" />}
@@ -624,9 +622,9 @@ const ChartDeploymentHistory = ({
             }}
 
         return (
-            <div className="trigger-details ml-20 mr-20 pb-20">
+            <div className="trigger-details pb-20">
                 <div className="flex dc__content-space trigger-details__summary">
-                    <div className="flex left pt-10 dc__gap-8">
+                    <div className="flex left py-10 px-20 dc__gap-8">
                         <Rocket className="scn-6 icon-dim-16" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
                             Deployed at
@@ -637,7 +635,6 @@ const ChartDeploymentHistory = ({
                                     Moment12HourFormat,
                                 )}
                             </time>
-                            {getViewMessage()}
                             {deployment?.deployedBy && (
                                 <div className="flex">
                                     <div className="dc__bullet mr-6 ml-6" />
@@ -650,7 +647,9 @@ const ChartDeploymentHistory = ({
                                 <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
                             )}
                         </div>
+
                     </div>
+
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
                         <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
                             <button
@@ -667,6 +666,8 @@ const ChartDeploymentHistory = ({
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
                     )}
                 </div>
+                {getViewMessage()}
+
             </div>
         )
     }
@@ -740,7 +741,7 @@ const ChartDeploymentHistory = ({
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
+                <div className="ci-details__body dc__gap-20">{renderSelectedDeploymentDetail()}</div>
                 {showRollbackConfirmation && (
                     <RollbackConfirmationDialog
                         deploying={deploying}

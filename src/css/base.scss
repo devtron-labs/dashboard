@@ -4904,6 +4904,10 @@ textarea::placeholder {
     grid-template-columns: 50% 50%;
 }
 
+.dc__grid {
+    display: grid;
+}
+
 .cd-material {
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
