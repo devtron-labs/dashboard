@@ -14,125 +14,75 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import {
-    DevtronProgressing,
     useAsync,
-    useMainContext,
     PageHeader,
-    AppListConstants,
     SearchBar,
+    useUrlFilters,
+    SelectPickerOptionType,
+    FilterSelectPicker,
+    FilterChips,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import './EnvironmentsList.scss'
-import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
-import { Cluster } from '../../../services/service.types'
-import { AppGroupAdminType } from '../AppGroup.types'
+import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
+import { parseSearchParams } from '../AppGroup.utils'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
-    const match = useRouteMatch()
-    const { setPageOverflowEnabled } = useMainContext()
-    const location = useLocation()
-    const history = useHistory()
-    const [searchText, setSearchText] = useState('')
-    const [clusterfilter, setClusterFilter] = useState<FilterOption[]>([])
-    const [loading, clusterListRes] = useAsync(() => getClusterListMinWithoutAuth())
 
-    useEffect(() => {
-        if (clusterListRes) {
-            const queryParams = new URLSearchParams(location.search)
-            const clusters = queryParams.get('cluster') || ''
-            const search = queryParams.get('search') || ''
-            const clusterStatus = clusters
-                .toString()
-                .split(',')
-                .filter((status) => status != '')
-                .map((status) => status)
-            const clusterList = new Set<string>(clusterStatus)
-            const clustersfilter: FilterOption[] = []
-            if (clusterListRes?.result && Array.isArray(clusterListRes.result)) {
-                clusterListRes.result.forEach((cluster: Cluster) => {
-                    clustersfilter.push({
-                        key: cluster.id,
-                        label: cluster.cluster_name.toLocaleLowerCase(),
-                        isSaved: true,
-                        isChecked: clusterList.has(cluster.id.toString()),
-                    })
-                })
-                setClusterFilter(clustersfilter)
-                setSearchText(search)
-            }
+    const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({
+        parseSearchParams,
+    })
+
+    const {
+        searchKey,
+        cluster,
+        handleSearch,
+        updateSearchParams,
+        clearFilters,
+        offset,
+        pageSize,
+        changePage,
+        changePageSize,
+    } = urlFilters
+
+    const filterConfig = useMemo(() => {
+        return { searchKey, cluster, offset, pageSize }
+    }, [searchKey, JSON.stringify(cluster), offset, pageSize])
+
+    const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] = useAsync(getClusterListMinWithoutAuth)
+
+    const clusterOptions: SelectPickerOptionType[] = useMemo(() => {
+        return clusterListRes?.result.map((clusterItem) => ({
+            label: clusterItem.cluster_name,
+            value: String(clusterItem.id),
+        })) ?? []
+    }, [clusterListRes])
+
+    const handleApplyClusterFilter = (clusterOptions: SelectPickerOptionType[]) => {
+        updateSearchParams({ cluster: clusterOptions.map((clusterItem) => String(clusterItem.value)) })
+    }
+
+    const getFormattedValue = (filterKey: AppGroupUrlFilters , filterValue: string) => {
+        if (filterKey === AppGroupUrlFilters.cluster) {
+            return clusterOptions.find((clusterItem) => clusterItem.value === filterValue)?.label
         }
-    }, [clusterListRes, location.search])
-
-    const handleSearch = (text: string): void => {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('search', text)
-        queryParams.set('offset', '0')
-        history.push(`${match.path}?${queryParams.toString()}`)
+        return filterValue
     }
 
-    const handleFilterKeyPress = (_searchText: string): void => {
-        setSearchText(_searchText)
-        handleSearch(_searchText)
-    }
-
-    const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
-        const queryParams = new URLSearchParams(location.search)
-        const ids = []
-        list.forEach((option) => {
-            if (option.isChecked) {
-                ids.push(option.key)
-            }
-        })
-        if (!ids.length) {
-            queryParams.delete(type)
-        } else {
-            queryParams.set(type, ids.toString())
-        }
-        queryParams.set('offset', '0')
-        history.push(`${match.path}?${queryParams.toString()}`)
-    }
-
-    const removeFilter = (filter): void => {
-        const queryParams = new URLSearchParams(location.search)
-        const cluster = queryParams.get('cluster')
-        const clusterValues = cluster
-            .toString()
-            .split(',')
-            .map((status) => status)
-
-        const key = clusterValues.filter((value) => value != filter.key)
-        if (key.length) {
-            queryParams.set('cluster', key.toString())
-        } else {
-            queryParams.delete('cluster')
-        }
-        queryParams.set('offset', '0')
-        history.push(`${match.path}?${queryParams.toString()}`)
-    }
-
-    const removeAllFilters = (): void => {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.delete('cluster')
-        queryParams.delete('search')
-        queryParams.set('offset', '0')
-        setSearchText('')
-        history.push(`${match.path}?${queryParams.toString()}`)
-    }
-
-    const onShowHideFilterContent = (show: boolean): void => {
-        setPageOverflowEnabled(!show)
-    }
+    const selectedClusters: SelectPickerOptionType[] = cluster.map((clusterItem) => ({
+        label: getFormattedValue(AppGroupUrlFilters.cluster, clusterItem),
+        value: clusterItem,
+    }))
 
     const renderSearch = (): JSX.Element => {
         return (
             <SearchBar
-                initialSearchText={searchText}
+                initialSearchText={searchKey}
                 containerClassName="w-250"
-                handleEnter={handleFilterKeyPress}
+                handleEnter={handleSearch}
                 inputProps={{
                     placeholder: 'Search environment',
                     autoFocus: true,
@@ -142,44 +92,15 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         )
     }
 
-    function renderAppliedFilters(): JSX.Element {
-        const isApplied = clusterfilter.some((filter) => filter.isChecked)
-        return (
-            isApplied && (
-                <div className="saved-env-filters__wrap dc__position-rel mb-12">
-                    {clusterfilter.map((filter) => {
-                        if (filter.isChecked) {
-                            return (
-                                <div key={filter.key} className="saved-env-filter">
-                                    <span className="fw-6 mr-5">Cluster</span>
-                                    <span className="saved-env-filter-divider" />
-                                    <span className="ml-5">{filter.label}</span>
-                                    <button
-                                        type="button"
-                                        className="saved-env-filter__close-btn"
-                                        onClick={() => removeFilter(filter)}
-                                    >
-                                        <i className="fa fa-times-circle" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            )
-                        }
-                    })}
-                    <button
-                        type="button"
-                        className="saved-env-filters__clear-btn flex fs-13"
-                        onClick={removeAllFilters}
-                    >
-                        Clear All Filters
-                    </button>
-                </div>
-            )
-        )
-    }
-
-    if (loading) {
-        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
-    }
+    const renderAppliedFilters = () => (
+        <FilterChips<AppGroupUrlFiltersType>
+            filterConfig={{ cluster }}
+            clearFilters={clearFilters}
+            className="px-20"
+            onRemoveFilter={updateSearchParams}
+            getFormattedValue={getFormattedValue}
+        />
+    )
 
     return (
         <div>
@@ -187,21 +108,27 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
             <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
                     {renderSearch()}
-                    <Filter
-                        dataTestId="app-group-cluster"
-                        list={clusterfilter}
-                        labelKey="label"
-                        buttonText="Cluster"
-                        searchable
-                        multi
-                        placeholder="Search Cluster"
-                        type={AppListConstants.FilterType.CLUTSER}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
+                    <FilterSelectPicker
+                        placeholder="Clusters"
+                        inputId="app-group-cluster-filter"
+                        options={clusterOptions}
+                        appliedFilterOptions={selectedClusters}
+                        isDisabled={clusterListLoading}
+                        isLoading={clusterListLoading}
+                        optionListError={clusterListError}
+                        reloadOptionList={reloadClusterList}
+                        handleApplyFilter={handleApplyClusterFilter}
+                        shouldMenuAlignRight
                     />
                 </div>
                 {renderAppliedFilters()}
-                <EnvironmentsListView isSuperAdmin={isSuperAdmin} removeAllFilters={removeAllFilters} />
+                <EnvironmentsListView
+                    isSuperAdmin={isSuperAdmin}
+                    filterConfig={filterConfig}
+                    clearFilters={clearFilters}
+                    changePage={changePage}
+                    changePageSize={changePageSize}
+                />
             </div>
         </div>
     )
