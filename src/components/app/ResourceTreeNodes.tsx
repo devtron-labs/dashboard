@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, PopupMenu, not, useSearchString, copyToClipboard, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, not, useSearchString, copyToClipboard, ToastManager, ToastVariantType, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation, NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
@@ -25,8 +25,6 @@ import { deleteResource } from './service'
 import { ReactComponent as DropDown } from '../../assets/icons/ic-dropdown-filled.svg'
 import {
     AggregatedNodes,
-    Nodes,
-    NodeType,
     NodeDetailTabs,
     NodeDetailTabsType,
     AggregationKeys,
@@ -302,10 +300,10 @@ export const NodeGroup: React.FC<{ title: AggregationKeysType; data: Object; agg
     aggregatedNodes,
 }) => {
     const [collapsed, setCollapsed] = useState(true)
-    const { url, path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const params = useParams<{ appId: string; envId: string; kind: NodeType; tab?: NodeDetailTabsType }>()
     const location = useLocation()
-    const { searchParams, queryParams } = useSearchString()
+    const { queryParams } = useSearchString()
     const filterStatus = queryParams.has('status') ? queryParams.get('status') : ''
 
     useEffect(() => {
