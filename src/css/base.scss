@@ -4914,3 +4914,17 @@ textarea::placeholder {
         grid-template-columns: 234px auto;
     }
 }
+
+.dc__pulsating-dot {
+    width: 10px;
+    height: 10px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: var(--O500);
+    top: -5px;
+    right: -5px;
+    border-radius: 50%;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}

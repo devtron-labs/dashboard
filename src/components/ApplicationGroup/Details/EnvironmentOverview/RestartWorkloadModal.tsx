@@ -115,12 +115,9 @@ export const RestartWorkloadModal = ({
         history.push({ search: new URLSearchParams(newParams).toString() })
     }
 
-    const getPodsToRotate = async () => {
+    const getPodsToRotate = async (selectedAppIds: number[]) => {
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
-        const selectedAppIds = (isCurrentSelected ? [selectedAppDetailsList] : selectedAppDetailsList).map(
-            (appDetail) => appDetail.appId,
-        )
 
         return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
@@ -173,12 +170,25 @@ export const RestartWorkloadModal = ({
             })
     }
 
+    const getInitialState = async () => {
+        const selectedAppIds = (isCurrentSelected ? [selectedAppDetailsList] : selectedAppDetailsList).map(
+            (appDetail) => appDetail.appId,
+        )
+        if (selectedAppIds.length > 0) {
+            await getPodsToRotate(selectedAppIds)
+        } else {
+            const newParams = { ...searchParams }
+            delete newParams.modal
+            history.push({ search: new URLSearchParams(newParams).toString() })
+        }
+    }
+
     useEffect(() => {
         if (!location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getPodsToRotate()
+        getInitialState()
     }, [location])
 
     const toggleWorkloadCollapse = (appId: number) => {
