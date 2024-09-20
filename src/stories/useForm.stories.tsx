@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 
 import {
     Button,
@@ -40,8 +41,8 @@ const FormComponent = ({ validationMode }: { validationMode: 'onChange' | 'onBlu
         validationMode,
     })
 
-    const onSubmit: UseFormSubmitHandler<FormData> = (data) => {
-        alert(JSON.stringify(data, null, 2))
+    const onSubmit: UseFormSubmitHandler<FormData> = (formData, e) => {
+        action(JSON.stringify(formData, null, 2))(e)
     }
 
     return (
