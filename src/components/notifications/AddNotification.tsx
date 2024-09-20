@@ -27,6 +27,7 @@ import {
     CHECKBOX_VALUE,
     getIsRequestAborted,
     CiPipelineSourceConfig,
+    SelectAllGroupedResourceIdentifiers,
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -56,13 +57,15 @@ import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { EMAIL_AGENT } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
+import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 
-enum FilterOptions {
+export enum FilterOptions {
     ENVIRONMENT = 'environment',
     APPLICATION = 'application',
     PROJECT = 'project',
+    CLUSTER = 'cluster'
 }
 interface Options {
     environment: {
@@ -76,6 +79,11 @@ interface Options {
         type: string
     }[]
     project: {
+        value: number
+        label: string
+        type: string
+    }[]
+    cluster: {
         value: number
         label: string
         type: string
@@ -145,6 +153,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         { value: 1, label: 'application', type: 'main' },
         { value: 2, label: 'project', type: 'main' },
         { value: 3, label: 'environment', type: 'main' },
+        { value: 4, label: 'cluster', type: 'main' },
     ]
 
     filterOptionsInner = []
@@ -169,7 +178,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             selectedChannels: [],
             pipelineList: [],
             emailAgentConfigId: 0,
-            options: { environment: [], application: [], project: [] },
+            options: { environment: [], application: [], project: [], cluster: [] },
             selectedEmailAgent: EMAIL_AGENT.SES,
             showWebhookConfigModal: false,
         }
@@ -192,7 +201,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     getInitialData() {
-        this.getEnvTeamData()
+        this.getEnvTeamAndClusterData()
         getAddNotificationInitData().then((result) => {
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
@@ -522,21 +531,39 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
-    getEnvTeamData(): void {
-        Promise.all([getEnvironmentListMin(), getTeamListMin()]).then(([environments, teams]) => {
+    getEnvTeamAndClusterData(): void {
+        Promise.all([getEnvironmentListMin(), getTeamListMin(), getClusterListMin()]).then(([environments, teams, clusters]) => {
             const state = { ...this.state }
-            state.options.environment = environments.result.map((elem) => {
+            state.options.environment = [
+                {
+                    environment_name: 'All non-prod environments',
+                    // parseInt can be removed once BE supports identifiers instead
+                    id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureNonProdEnvironments),
+                },
+                {
+                    environment_name: 'All prod environments',
+                    id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureProdEnvironments),
+                },
+                ...(environments?.result ?? []),
+            ].map((elem) => {
                 return {
                     label: `${elem.environment_name.toLowerCase()}`,
                     value: elem.id,
                     type: FilterOptions.ENVIRONMENT,
                 }
             })
-            state.options.project = teams.result.map((elem) => {
+            state.options.project = (teams?.result ?? []).map((elem) => {
                 return {
                     label: `${elem.name.toLowerCase()}`,
                     value: elem.id,
                     type: FilterOptions.PROJECT,
+                }
+            })
+            state.options.cluster = (clusters?.result ?? []).map(({ name, id }) => {
+                return {
+                    label: `${name.toLowerCase()}`,
+                    value: id,
+                    type: FilterOptions.CLUSTER,
                 }
             })
             this.setState(state)
@@ -595,10 +622,16 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     input.length === 0
                         ? this.state.options.project
                         : this.state.options.project.filter((filter) => filter.label.indexOf(input) >= 0)
+            } else if (unsavedFilter.type === FilterOptions.CLUSTER) {
+                options =
+                    input.length === 0
+                        ? this.state.options.cluster
+                        : this.state.options.cluster.filter((filter) => filter.label.indexOf(input) >= 0)
             } else {
                 options = input.length <= 2 ? [] : this.state.options.application
             }
         }
+
         return (
             <div className="dc__position-rel">
                 <div
@@ -642,7 +675,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         />
                     ) : (
                         !this.state.appliedFilters.length && (
-                            <span>Filter by Project, applications and environment, search by name.</span>
+                            <span>Filter by Project, application, cluster and environment, search by name.</span>
                         )
                     )}
                 </div>
