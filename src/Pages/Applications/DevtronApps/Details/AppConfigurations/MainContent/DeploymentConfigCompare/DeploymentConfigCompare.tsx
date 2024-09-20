@@ -285,7 +285,9 @@ export const DeploymentConfigCompare = ({
         const isDeploymentTemplateLoaded = !deploymentTemplateResolvedDataLoader && deploymentTemplateResolvedData
         const isComparisonDataLoaded = !comparisonDataLoader && comparisonData
 
-        const shouldLoadData = convertVariables ? isDeploymentTemplateLoaded : isComparisonDataLoaded
+        const shouldLoadData = convertVariables
+            ? isComparisonDataLoaded && isDeploymentTemplateLoaded
+            : isComparisonDataLoaded
 
         if (shouldLoadData) {
             const [{ result: currentList }, { result: compareList }] = comparisonData
