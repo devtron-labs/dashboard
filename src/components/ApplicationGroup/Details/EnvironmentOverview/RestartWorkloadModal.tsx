@@ -509,19 +509,22 @@ export const RestartWorkloadModal = ({
             })
             .catch((serverError) => {
                 showError(serverError)
-                console.log(2, payload)
-
-                const _resources = Object.keys(bulkRotatePodsMap[+payload.appId].resources).map((_resource) =>
-                    console.log(_resource),
-                )
-
-                console.log(_resources)
                 serverError.errors.map(({ userMessage }) => {
                     const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
+                    const _resources: ResourcesMetaDataMap = _bulkRotatePodsMap[payload.appId].resources
+
+                    // Iterate through the Map and update errorResponse
+                    Object.keys(_resources).forEach((kindName) => {
+                        _resources[kindName].containsError = true
+                        _resources[kindName].errorResponse = userMessage
+                    })
+
+                    _bulkRotatePodsMap[payload.appId].failedCount = Object.keys(_resources).length
                     _bulkRotatePodsMap[payload.appId].errorResponse = userMessage
-                    _bulkRotatePodsMap[payload.appId].resources[`${payload.kind}${payload.appName}`].errorResponse =
-                        userMessage
+                    _bulkRotatePodsMap[payload.appId].resources = _resources
+                    // Updating the state with the modified map
                     setBulkRotatePodsMap(_bulkRotatePodsMap)
+
                     return null
                 })
             })

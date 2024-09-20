@@ -29,6 +29,7 @@ import {
     TabGroup,
     ToastManager,
     ToastVariantType,
+    ShowMoreText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -60,6 +61,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
+import { ReactComponent as Rocket} from '@Icons/misc/deploy.svg'
+import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -594,12 +597,37 @@ const ChartDeploymentHistory = ({
     }
 
     function renderSelectedDeploymentDetailHeader() {
-        const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+        const deployment: ChartDeploymentDetail = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+
+        const getViewMessage = () => {
+            const { message } = deployment
+            if (deployment.status === DEPLOYMENT_STATUS.FAILED && message) {
+                return (
+                    <div className="display-grid trigger-details__grid py-4">
+                        <div className="flexbox dc__content-center">
+                            <ICLines className="icon-dim-20 dc__no-shrink scn-7" />
+                        </div>
+
+                        <div className="flexbox-col">
+                            <div className="flexbox dc__gap-8">
+                                <div className="flexbox cn-9 fs-13 fw-4 lh-20">
+                                    <span>Message</span>&nbsp;
+                                    <span>{message}</span>
+                                </div>
+                            </div>
+
+                            {/* Need key since using ref inside of this component as useEffect dependency, so there were issues while switching builds */}
+                            {message && <ShowMoreText text={message} key={message} textClass="cn-7" />}
+                        </div>
+                    </div>
+                )
+            }}
 
         return (
             <div className="trigger-details ml-20 mr-20 pb-20">
                 <div className="flex dc__content-space trigger-details__summary">
-                    <div className="flex column left pt-10">
+                    <div className="flex left pt-10 dc__gap-8">
+                        <Rocket className="scn-6 icon-dim-16" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
                             Deployed at
                         </div>
@@ -609,6 +637,7 @@ const ChartDeploymentHistory = ({
                                     Moment12HourFormat,
                                 )}
                             </time>
+                            {getViewMessage()}
                             {deployment?.deployedBy && (
                                 <div className="flex">
                                     <div className="dc__bullet mr-6 ml-6" />
