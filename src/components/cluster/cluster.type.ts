@@ -20,7 +20,7 @@ import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 
-export const DEFAULT_CLUSTER_ID = 1
+export const DEFAULT_CLUSTER_ID = window._env_.K8S_CLIENT ? -1 : 1
 
 export const AuthenticationType = {
     BASIC: 'BASIC',

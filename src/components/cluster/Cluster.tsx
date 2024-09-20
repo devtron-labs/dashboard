@@ -48,7 +48,7 @@ import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virt
 import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_CLUSTER_ID } from './cluster.type'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -358,7 +358,7 @@ const Cluster = ({
     const drawerRef = useRef(null)
 
     const isDefaultCluster = (): boolean => {
-        return id == 1
+        return id == DEFAULT_CLUSTER_ID
     }
 
     const { state } = useForm(
@@ -480,7 +480,7 @@ const Cluster = ({
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
+            setConfig({ ...result.config, ...(clusterId != DEFAULT_CLUSTER_ID ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
