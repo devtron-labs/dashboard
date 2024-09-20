@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { ComponentSizeType, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import IndexStore from '../../index.store'
-import { getNodeStatus } from './nodeType.util'
+import { getFilteredPodStatus, getNodeStatus } from './nodeType.util'
 import './nodeType.scss'
 import { iNode } from '../../appDetails.type'
-import PodTabSection from './PodTabSection'
 import { useSharedState } from '../../../utils/useSharedState'
+import { NodePodStatus } from './types'
 
-const PodHeaderComponent = ({ callBack }) => {
+const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => void }) => {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
     const podMetaData = IndexStore.getPodMetaData()
     const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
-    const [newPods, setNewPods] = useState({ running: 0, all: 0 })
-    const [oldPods, setOldPods] = useState({ running: 0, all: 0 })
+    const [newPods, setNewPods] = useState<NodePodStatus>({ running: 0, all: 0 })
+    const [oldPods, setOldPods] = useState<NodePodStatus>({ running: 0, all: 0 })
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
@@ -45,10 +48,10 @@ const PodHeaderComponent = ({ callBack }) => {
                 const podStatusLower = getNodeStatus(pod)?.toLowerCase()
                 if (podMetaData.find((f) => f.name === pod.name)?.isNew) {
                     newPodStats[podStatusLower] = (newPodStats[podStatusLower] || 0) + 1
-                    newPodStats['all'] += 1
+                    newPodStats.all += 1
                 } else {
                     oldPodStats[podStatusLower] = (oldPodStats[podStatusLower] || 0) + 1
-                    oldPodStats['all'] += 1
+                    oldPodStats.all += 1
                 }
             })
         }
@@ -58,10 +61,38 @@ const PodHeaderComponent = ({ callBack }) => {
         setOldPods({ ...oldPodStats })
     }, [filteredNodes, podTab])
 
+    const tabs: TabProps[] = [
+        {
+            id: 'new-pods-tab',
+            label: 'New Pods',
+            tabType: 'button',
+            active: podTab === 'new',
+            props: {
+                onClick: () => selectPodTab('new'),
+                'data-testid': 'all-pods-new',
+            },
+            badge: newPods.all,
+            description: getFilteredPodStatus(newPods)
+                .map((status) => `${newPods[status]} ${status}`)
+                .join(' '),
+        },
+        {
+            id: 'old-pods-tab',
+            label: 'Old Pods',
+            tabType: 'button',
+            active: podTab === 'old',
+            props: {
+                onClick: () => selectPodTab('old'),
+                'data-testid': 'all-pods-old',
+            },
+            badge: oldPods.all,
+            description: getFilteredPodStatus(oldPods).map((status) => `${oldPods[status]} ${status}`),
+        },
+    ]
+
     return (
-        <div className="pod-node-tab__wrapper flex left">
-            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={newPods} isNew />
-            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={oldPods} isNew={false} />
+        <div className="dc__border-bottom px-16">
+            <TabGroup tabs={tabs} size={ComponentSizeType.xl} alignActiveBorderWithContainer />
         </div>
     )
 }
