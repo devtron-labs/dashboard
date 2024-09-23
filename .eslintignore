@@ -5,7 +5,7 @@
 .eslintrc.js
 vite.config.mts
 
-# The following files have eslint errors/warningssrc/App.tsx
+# The following files have eslint errors/warnings
 src/App.tsx
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
 src/components/AppSelector/AppSelector.tsx
@@ -82,9 +82,7 @@ src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
-src/components/Jobs/JobList/JobListContainer.tsx
 src/components/Jobs/JobList/JobListView.tsx
-src/components/Jobs/JobList/JobsList.tsx
 src/components/Jobs/Jobs.tsx
 src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
@@ -94,7 +92,6 @@ src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
 src/components/__mocks__/monaco-editor.js
 src/components/__mocks__/xterm-webfont.js
-src/components/app/EventsLogs.tsx
 src/components/app/LogFilter.test.ts
 src/components/app/LogFilter.ts
 src/components/app/Overview/EnvironmentList.tsx
@@ -104,7 +101,6 @@ src/components/app/Overview/utils.tsx
 src/components/app/ResourceTreeNodes.tsx
 src/components/app/ResponsiveDrawer.tsx
 src/components/app/WebWorker.ts
-src/components/app/__tests__/EventsLogs.test.tsx
 src/components/app/appLabelCommon.tsx
 src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
@@ -159,16 +155,12 @@ src/components/app/details/triggerView/workflow/nodes/triggerCINode.tsx
 src/components/app/details/triggerView/workflow/nodes/triggerPrePostCDNode.tsx
 src/components/app/details/triggerView/workflow/nodes/workflow.utils.tsx
 src/components/app/grepSSEworker.ts
-src/components/app/list-new/AppList.tsx
 src/components/app/list-new/AppListService.ts
 src/components/app/list-new/GenericAppList.tsx
 src/components/app/list-new/HelmAppList.tsx
-src/components/app/list/AppListView.tsx
-src/components/app/list/DevtronAppListContainer.tsx
 src/components/app/list/TriggerUrl.tsx
 src/components/app/list/__tests__/AppListView.test.tsx
 src/components/app/list/appList.modal.ts
-src/components/app/list/appStatus/AppStatus.tsx
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts
@@ -286,7 +278,6 @@ src/components/common/eaEmptyState/EAEmptyState.tsx
 src/components/common/edge/rectangularEdge.tsx
 src/components/common/edge/straightEdge.tsx
 src/components/common/errorBoundary.tsx
-src/components/common/filter/filters.tsx
 src/components/common/formFields/CopyButton.tsx
 src/components/common/formFields/CustomPassword.tsx
 src/components/common/formFields/DevtronSwitch.tsx
@@ -416,7 +407,6 @@ src/components/v2/appDetails/appDetails.store.ts
 src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
-src/components/v2/appDetails/k8Resource/K8Resource.component.tsx
 src/components/v2/appDetails/k8Resource/NodeTreeTabList.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
@@ -439,7 +429,6 @@ src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.ts
 src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
-src/components/v2/appDetails/k8Resource/nodeType/PodHeader.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodTabSection.tsx
 src/components/v2/appDetails/k8Resource/nodeType/__tests__/NodeTree.component.test.ts
 src/components/v2/appDetails/k8Resource/nodeType/nodeType.util.ts

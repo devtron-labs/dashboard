@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.3.6-beta-2",
+        "@devtron-labs/devtron-fe-common-lib": "0.3.10",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -46,7 +46,7 @@
         "rxjs": "^7.5.4",
         "sockjs-client": "1.6.1",
         "tippy.js": "^6.3.7",
-        "vite": "5.4.2",
+        "vite": "5.4.6",
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
         "xterm": "^4.19.0",

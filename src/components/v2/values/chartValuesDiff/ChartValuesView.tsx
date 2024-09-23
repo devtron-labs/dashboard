@@ -1646,7 +1646,7 @@ const ChartValuesView = ({
                         )}
 
                         {!isDeployChartView && !isCreateValueView && (
-                            <div className="mb-16">
+                            <div className="w-100">
                                 <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
                                     Project
                                 </div>

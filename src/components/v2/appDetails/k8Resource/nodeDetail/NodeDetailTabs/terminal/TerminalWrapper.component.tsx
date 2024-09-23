@@ -74,7 +74,7 @@ export default function TerminalWrapper({
 
     return (
         <div className={className} data-testid={dataTestId}>
-            <div className="flex bcn-0 pl-20 h-32 terminal-action-strip">{firstStrip()}</div>
+            <div className="flex bcn-0 pl-20 h-32 terminal-action-strip dc__zi-11">{firstStrip()}</div>
             {selectionListData.secondRow && (
                 <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip">{secondStrip()}</div>
             )}
