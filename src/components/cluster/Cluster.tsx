@@ -480,7 +480,10 @@ const Cluster = ({
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig({ ...result.config, ...(clusterId != DEFAULT_CLUSTER_ID ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
+            setConfig({
+                ...result.config,
+                ...(clusterId != DEFAULT_CLUSTER_ID ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null),
+            })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
