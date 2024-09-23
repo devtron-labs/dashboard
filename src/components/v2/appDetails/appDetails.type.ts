@@ -26,7 +26,6 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { useTabs } from '../../common/DynamicTabs/useTabs'
-import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -394,8 +393,8 @@ export interface TerminalComponentProps {
     setSelectedContainer: (containerName: Map<string, string>) => void
     containers: Options[]
     setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
-    selectedContainerName: string
-    setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
+    selectedContainerName: OptionType
+    setSelectedContainerName: React.Dispatch<React.SetStateAction<OptionType>>
     switchSelectedContainer: (string) => void
     showTerminal: boolean
 }
@@ -471,18 +470,27 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
-        isEditmode: boolean
-        activeTab: (typeof ManifestTabJSON)[number]['name']
     }
     id: string
 }
+
+export enum ManifestCodeEditorMode {
+    READ = 'read',
+    EDIT = 'edit',
+    APPLY_CHANGES = 'applyChanges',
+    CANCEL = 'cancel',
+}
+
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
     getComponentKey: () => string
-    isExternalApp: boolean
+    showManifestCompareView: boolean
+    setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
+    manifestCodeEditorMode: ManifestCodeEditorMode
+    setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
 }
 
 export interface NodeTreeDetailTabProps {

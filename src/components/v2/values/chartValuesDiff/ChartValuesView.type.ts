@@ -273,7 +273,7 @@ export interface ChartValuesViewState {
     repoChartValue: ChartRepoOptions
     fetchingValuesYaml: boolean
     modifiedValuesYaml: string
-    schemaJson: Map<string, any>
+    schemaJson: string
     valuesYamlDocument: YAML.Document.Parsed
     valuesYamlUpdated: boolean
     generatingManifest: boolean
@@ -398,15 +398,12 @@ export interface ValueNameInputType {
     valueNameDisabled: boolean
 }
 
-export interface ChartValuesGUIFormType {
-    schemaJson: Map<string, any>
+export interface ChartValuesGUIFormProps {
+    schemaJson: ChartValuesViewState['schemaJson']
     valuesYamlDocument: YAML.Document.Parsed
     fetchingSchemaJson: boolean
-    openReadMe: boolean
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
-    isDeployChartView: boolean
-    isCreateValueView: boolean
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
