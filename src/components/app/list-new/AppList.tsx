@@ -16,7 +16,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { Switch, Route, useLocation, useHistory, useParams } from 'react-router-dom'
+import { Switch, Route, useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     Progressing,
     stopPropagation,
@@ -36,13 +36,13 @@ import {
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 import { useAppContext } from '../../common'
-import { SERVER_MODE, DOCUMENTATION, URLS } from '../../../config'
+import { SERVER_MODE, DOCUMENTATION } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
-import { FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     getAppStatusFormattedValue,
@@ -64,8 +64,9 @@ import AppListFilters from './AppListFilters'
 let interval
 
 const AppList = ({ isArgoInstalled }: AppListPropType) => {
-    const location = useLocation()
     const history = useHistory()
+    const location = useLocation()
+    const { url } = useRouteMatch()
     const params = useParams<{ appType: string }>()
     const { serverMode } = useMainContext()
     const { setCurrentAppName } = useAppContext()
@@ -396,36 +397,26 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
 
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
-        const _urlPrefix =
-            params.appType === AppListConstants.AppType.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
-        history.push(`${_urlPrefix}${location.search}`)
+        history.push(`${url}${location.search}`)
     }
 
     function renderAppCreateRouter() {
         return (
             <Switch>
-                <Route
-                    path={`${URLS.DEVTRON_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                    render={(props) => (
-                        <AddNewApp
-                            close={closeDevtronAppCreateModal}
-                            match={props.match}
-                            location={props.location}
-                            history={props.history}
-                        />
-                    )}
-                />
-                <Route
-                    path={`${URLS.HELM_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                    render={(props) => (
-                        <AddNewApp
-                            close={closeDevtronAppCreateModal}
-                            match={props.match}
-                            location={props.location}
-                            history={props.history}
-                        />
-                    )}
-                />
+                {APP_LISTING_URLS.map((currentUrl) => (
+                    <Route
+                        path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                        key={currentUrl}
+                        render={(props) => (
+                            <AddNewApp
+                                close={closeDevtronAppCreateModal}
+                                match={props.match}
+                                location={props.location}
+                                history={props.history}
+                            />
+                        )}
+                    />
+                ))}
             </Switch>
         )
     }
