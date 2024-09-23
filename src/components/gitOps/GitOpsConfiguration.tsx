@@ -1331,7 +1331,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                 : 'gitops-github-pat-textbox'
                                     }
                                     isRequiredField
-                                    handleOnBlur={this.handleOnBlur}
+                                    onBlur={this.handleOnBlur}
                                 />
                             </div>
                         </div>

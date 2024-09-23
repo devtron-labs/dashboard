@@ -22,7 +22,6 @@ import {
     ErrorScreenNotAuthorized,
     InfoColourBar,
     VisibleModal,
-    multiSelectStyles,
     useEffectAfterMount,
     stopPropagation,
     useAsync,
@@ -32,9 +31,10 @@ import {
     DeleteComponent,
     ToastVariantType,
     ToastManager,
+    SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
 import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
@@ -53,8 +53,6 @@ import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { HEADER_TEXT } from '../../config'
-import { DropdownIndicator } from './gitProvider.util'
-import { Option } from '../v2/common/ReactSelect.utils'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -618,20 +616,19 @@ const GitForm = ({
         onSave()
     }
 
-    const MenuList = (props) => {
+    const onClickAddGitAccountHandler = (): void => {
+        setGitProviderConfigModal(true)
+        toggleCollapse(false)
+    }
+
+    const renderGitHostBottom = () => {
         return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div
-                    className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top "
-                    onClick={(selected) => {
-                        setGitProviderConfigModal(true)
-                        toggleCollapse(false)
-                    }}
-                >
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " /> Add Git Host
-                </div>
-            </components.MenuList>
+            <button
+                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top dc__transparent fw-6"
+                onClick={onClickAddGitAccountHandler}
+            >
+                <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>
+            </button>
         )
     }
 
@@ -806,42 +803,24 @@ const GitForm = ({
                     isRequiredField
                 />
             </div>
-            <div className="form__row form__row--two-third">
+            <div className="form__row--two-third mb-16">
                 <div>
-                    <div>
-                        <label className="form__label dc__required-field">Git host</label>
-                        <ReactSelect
-                            name="host"
-                            value={gitHost.value}
-                            className="react-select--height-44 fs-13 bcn-0 mb-12"
-                            classNamePrefix="select-git-account-host"
-                            placeholder="Select git host"
-                            isMulti={false}
-                            isSearchable
-                            isClearable={false}
-                            options={hostListOption}
-                            styles={{
-                                ...multiSelectStyles,
-                                menuList: (base) => {
-                                    return {
-                                        ...base,
-                                        position: 'relative',
-                                        paddingBottom: '0px',
-                                        maxHeight: '176px',
-                                    }
-                                },
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                MenuList,
-                                Option,
-                            }}
-                            onChange={(e) => handleGithostChange(e)}
-                            isDisabled={gitHostId}
-                        />
-                    </div>
-
+                    <SelectPicker
+                        label="Git host"
+                        required
+                        inputId="git-account-host-select"
+                        name="host"
+                        value={gitHost.value}
+                        classNamePrefix="select-git-account-host"
+                        placeholder="Select git host"
+                        isSearchable
+                        isClearable={false}
+                        options={hostListOption}
+                        renderMenuListFooter={renderGitHostBottom}
+                        onChange={(e) => handleGithostChange(e)}
+                        isDisabled={gitHostId}
+                        size={ComponentSizeType.large}
+                    />
                     <div className="cr-5 fs-11">{gitHost.error}</div>
                 </div>
                 <CustomInput
@@ -915,7 +894,7 @@ const GitForm = ({
                             error={customState.password.error}
                             label="Password/Auth token"
                             isRequiredField
-                            handleOnBlur={id && handleOnBlur}
+                            onBlur={id && handleOnBlur}
                         />
                         <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                             <Warn className="icon-dim-16 mr-4 " />

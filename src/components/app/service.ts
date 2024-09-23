@@ -31,6 +31,7 @@ import {
     createGitCommitUrl,
     PromiseAllStatusType,
     ApiQueuingWithBatch,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
@@ -54,9 +55,7 @@ const stageMap = {
     APPROVAL: 'APPROVAL',
 }
 
-export const getAppList = (request, options?) => {
-    return post(Routes.APP_LIST, request, options)
-}
+export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
     if (!group) {
