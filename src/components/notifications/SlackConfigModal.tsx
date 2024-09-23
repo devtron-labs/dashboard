@@ -256,7 +256,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 name="app-name"
                                 value={this.state.form.configName}
                                 onChange={this.handleSlackChannelChange}
-                                handleOnBlur={(event) => this.isValid(event, 'configName')}
+                                onBlur={(event) => this.isValid(event, 'configName')}
                                 placeholder="channel name"
                                 autoFocus
                                 tabIndex={1}
@@ -274,7 +274,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 placeholder="Enter Incoming Webhook URL"
                                 tabIndex={2}
                                 onChange={this.handleWebhookUrlChange}
-                                handleOnBlur={(event) => this.isValid(event, 'webhookUrl')}
+                                onBlur={(event) => this.isValid(event, 'webhookUrl')}
                                 isRequiredField
                                 error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
                             />
