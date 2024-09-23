@@ -278,7 +278,7 @@ export default function TerminalView({
             {renderConnectionStrip()}
             {fullScreenView && (
                 <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
-                    <ICDevtronLogo className="fcn-0 icon-dim-16" />
+                    <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
                     {Object.entries(metadata).map(([key, value], index, arr) => (
                         <React.Fragment key={key}>
                             <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">

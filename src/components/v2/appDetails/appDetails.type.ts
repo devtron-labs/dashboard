@@ -445,9 +445,8 @@ export interface SyncErrorType {
     showApplicationDetailedModal?: () => void
 }
 
-export interface SelectedResourceType {
+export interface SelectedResourceType extends Pick<NodeDetailPropsType, 'clusterName'> {
     clusterId: number
-    clusterName: string
     group: string
     version: string
     kind: string

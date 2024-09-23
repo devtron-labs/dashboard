@@ -288,6 +288,7 @@ const ResourceList = () => {
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    clusterName={selectedCluster.label}
                 />
             </div>
         )
