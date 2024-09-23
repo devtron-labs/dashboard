@@ -679,20 +679,20 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     ]
                     : []),
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route
-                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
-                    path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                >
-                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                </Route>
-            )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {serverMode !== SERVER_MODE.EA_ONLY && [
+                window._env_.ENABLE_SCOPED_VARIABLES && (
+                    <Route
+                        key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
+                        path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                    >
+                        <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
                 DeploymentWindow && (
                     <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                         <DeploymentWindow isSuperAdmin={isSuperAdmin} />
