@@ -204,7 +204,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 data-testid="add-smtp-configuration-name"
                                 value={this.state.form.configName}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Configuration name"
                                 autoFocus
                                 tabIndex={1}
@@ -219,7 +219,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="host"
                                 value={this.state.form.host}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Eg. smtp.gmail.com"
                                 tabIndex={2}
                                 isRequiredField
@@ -233,7 +233,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="port"
                                 value={this.state.form.port}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Enter SMTP port"
                                 tabIndex={3}
                                 isRequiredField
@@ -247,7 +247,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="authUser"
                                 value={this.state.form.authUser}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Enter SMTP username"
                                 tabIndex={3}
                                 isRequiredField
@@ -274,7 +274,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="fromEmail"
                                 value={this.state.form.fromEmail}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Email"
                                 tabIndex={5}
                                 isRequiredField

@@ -100,7 +100,7 @@ export const ChartEnvironmentSelector = ({
     }
 
     return !isDeployChartView ? (
-        <div className="chart-values__environment-container mb-12">
+        <div className="chart-values__environment-container w-100">
             <h2
                 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
                 data-testid="environment-heading"
@@ -148,7 +148,7 @@ export const DeploymentAppSelector = ({
     allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
-        <div className="chart-values__deployment-type">
+        <div className="chart-values__deployment-type w-100">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
                 Deploy app using
             </h2>
@@ -569,14 +569,14 @@ export const ChartVersionValuesSelector = ({
 
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
-        <div className="chart-values-view__readme">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">
+        <div className="chart-values-view__readme dc__overflow-scroll dc__border-right">
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1" data-testid="readme-heading">
                 Readme
             </div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
-                <MarkDown markdown={activeReadMe} className="chart-values-view__readme-markdown" />
+                <MarkDown markdown={activeReadMe} />
             )}
         </div>
     )
@@ -645,7 +645,7 @@ export const ValueNameInput = ({
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                handleOnBlur={() => handleValueNameOnBlur()}
+                onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
                 isRequiredField
@@ -671,7 +671,7 @@ export const AppNameInput = ({
                 placeholder="Eg. app-name"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                handleOnBlur={handleAppNameOnBlur}
+                onBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}

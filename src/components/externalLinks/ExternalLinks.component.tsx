@@ -150,17 +150,15 @@ export const AppLevelExternalLinks = ({
 
     useEffect(() => {
         if (externalLinks.length > 0 && monitoringTools.length > 0) {
-            const filteredLinks = externalLinks.filter(filterAppLevelExternalLinks)
+            const filteredLinks: ExternalLink[] = externalLinks.filter(filterAppLevelExternalLinks)
             setAppLevelExternalLinks(
-                filteredLinks.map((link) => {
-                    return {
-                        label: link.name,
-                        value: link.url,
-                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                        startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
-                        description: link.description,
-                    }
-                }),
+                filteredLinks.map((link: ExternalLink) => ({
+                    label: link.name,
+                    value: link.url,
+                    icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                    startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
+                    description: link.description,
+                })),
             )
         } else {
             setAppLevelExternalLinks([])
@@ -187,7 +185,7 @@ export const AppLevelExternalLinks = ({
             >
                 <a
                     key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value, details)}
+                    href={getParsedURL(true, linkOption.value.toString(), details)}
                     target="_blank"
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                     rel="noreferrer"
@@ -249,7 +247,7 @@ export const NodeLevelExternalLinks = ({
     const details = appDetails || helmAppDetails
 
     const onClickExternalLink = (link: OptionTypeWithIcon) => {
-        getHandleOpenURL(getParsedURL(false, link.value, details, podName, containerName))()
+        getHandleOpenURL(getParsedURL(false, link.value.toString(), details, podName, containerName))()
     }
 
     return (

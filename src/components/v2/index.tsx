@@ -163,7 +163,7 @@ const RouterComponent = ({ envType }) => {
                         monitoringTools:
                             externalLinksRes.result?.Tools?.map((tool) => ({
                                 label: tool.name,
-                                value: tool.id.toString(),
+                                value: tool.id,
                                 icon: tool.icon,
                             })).sort(sortOptionsByValue) || [],
                     })

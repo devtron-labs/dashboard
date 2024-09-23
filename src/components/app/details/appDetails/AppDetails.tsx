@@ -408,7 +408,10 @@ export const Details: React.FC<DetailsType> = ({
             .then((response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
+                if (
+                    !response.result.isPipelineTriggered &&
+                    response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT
+                ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
@@ -504,7 +507,7 @@ export const Details: React.FC<DetailsType> = ({
                     monitoringTools:
                         externalLinksRes.result?.Tools?.map((tool) => ({
                             label: tool.name,
-                            value: tool.id.toString(),
+                            value: tool.id,
                             icon: tool.icon,
                         })).sort(sortOptionsByValue) || [],
                 })
@@ -761,7 +764,6 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-
             {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
@@ -909,10 +911,10 @@ export const EnvSelector = ({
             return acc
         }, []) || []
 
-        // Pushing the virtual environment group to the end of the list
-        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
-            groupList.reverse()
-        }
+    // Pushing the virtual environment group to the end of the list
+    if (groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+        groupList.reverse()
+    }
 
     return (
         <>

@@ -16,7 +16,7 @@
 
 import { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import './css/application.scss';
+import './css/application.scss'
 import {
     showError,
     BreadcrumbStore,
@@ -26,9 +26,10 @@ import {
     useUserEmail,
     URLS as CommonURLS,
     ToastManager,
-    ToastVariantType
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
     useOnline,
@@ -78,22 +79,27 @@ export default function App() {
     useEffect(() => {
         if (didMountRef.current) {
             if (!isOnline) {
-                onlineToast({
-                    variant: ToastVariantType.error,
-                    title: 'You are offline!',
-                    description: 'You are not seeing real-time data and any changes you make will not be saved.',
-                }, {
-                    autoClose: false
-                })
+                onlineToast(
+                    {
+                        variant: ToastVariantType.error,
+                        title: 'You are offline!',
+                        description: 'You are not seeing real-time data and any changes you make will not be saved.',
+                    },
+                    {
+                        autoClose: false,
+                    },
+                )
             } else {
-                 onlineToast({
-                     variant: ToastVariantType.success,
-                     title: 'Connected!',
-                     description: "You're back online.",
-                 })
+                onlineToast({
+                    variant: ToastVariantType.success,
+                    title: 'Connected!',
+                    description: "You're back online.",
+                })
             }
         } else {
             didMountRef.current = true
+            // Removing any toast explicitly due to race condition of offline toast for some users
+            ToastManager.dismissToast(onlineToastRef.current)
         }
     }, [isOnline])
 
@@ -245,6 +251,7 @@ export default function App() {
                     text: 'Reload',
                     dataTestId: 'reload-btn',
                     onClick: update,
+                    startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,
                 progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
@@ -281,6 +288,7 @@ export default function App() {
                     text: 'Reload',
                     dataTestId: 'reload-btn',
                     onClick: reloadLocation,
+                    startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,
                 progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
