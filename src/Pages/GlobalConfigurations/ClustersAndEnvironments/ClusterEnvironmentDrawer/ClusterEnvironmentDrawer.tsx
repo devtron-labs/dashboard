@@ -31,6 +31,7 @@ import {
     ToastVariantType,
     ServerErrors,
     Drawer,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -135,10 +136,10 @@ export const ClusterEnvironmentDrawer = ({
     // FORM METHODS
     const { data, errors, register, handleSubmit, trigger } = useForm<ClusterEnvironmentDrawerFormProps>({
         initialValues: {
-            environmentName,
-            namespace,
+            environmentName: environmentName ?? '',
+            namespace: namespace ?? '',
             isProduction: !!isProduction,
-            description,
+            description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
@@ -224,7 +225,7 @@ export const ClusterEnvironmentDrawer = ({
 
     return (
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
-            <div className="h-100 bcn-0 flexbox-col">
+            <div className="h-100 bcn-0 flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bcn-0 py-12 px-20">
                     <h3 className="m-0 fs-16 fw-6 lh-1-43">{id ? 'Edit Environment' : 'Add Environment'}</h3>
                     <button
