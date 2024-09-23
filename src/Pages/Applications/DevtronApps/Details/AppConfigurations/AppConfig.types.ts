@@ -218,9 +218,7 @@ export interface EnvironmentOptionType {
     isProtected?: boolean
 }
 
-export interface EnvironmentNavOptionType
-    extends Omit<SelectPickerOptionType, 'value'>,
-        Pick<EnvironmentOptionType, 'isProtected'> {
+export interface EnvironmentNavOptionType extends SelectPickerOptionType, Pick<EnvironmentOptionType, 'isProtected'> {
     value: number
 }
 export interface EnvConfigurationsNavProps {

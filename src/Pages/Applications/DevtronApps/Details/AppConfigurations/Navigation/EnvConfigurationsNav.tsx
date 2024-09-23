@@ -68,25 +68,27 @@ export const EnvConfigurationsNav = ({
     // CONSTANTS
     const { isLoading, config } = envConfig
     /** Current Environment Data. */
-    const selectedNavEnvironment = environments.find((environment) => environment.id === +params[paramToCheck])
-    const _selectedNavEnvironment = {} as EnvironmentNavOptionType
-    _selectedNavEnvironment.label = selectedNavEnvironment.name
-    _selectedNavEnvironment.value = selectedNavEnvironment.id
-    _selectedNavEnvironment.isProtected = selectedNavEnvironment.isProtected
-    _selectedNavEnvironment.endIcon = selectedNavEnvironment.isProtected && (
-        <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />
-    )
+    const _environmentData = environments.find((environment) => environment.id === +params[paramToCheck])
+    const selectedNavEnvironmentOptions = {
+        ...environments.find((environment) => environment.id === +params[paramToCheck]),
+        label: _environmentData?.name,
+        value: _environmentData?.id,
+        isProtected: _environmentData?.isProtected,
+        endIcon: _environmentData?.isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
+    }
+
+    const selectedEnvironmentWithBaseConfiguration = showBaseConfigurations
+        ? {
+              label: BASE_CONFIGURATIONS.name,
+              value: BASE_CONFIGURATIONS.id,
+              endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
+              isProtected: isBaseConfigProtected,
+          }
+        : null
 
     const environmentData: EnvironmentNavOptionType =
-        _selectedNavEnvironment ||
-        ((showBaseConfigurations
-            ? {
-                  label: BASE_CONFIGURATIONS.name,
-                  value: BASE_CONFIGURATIONS.id,
-                  endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
-                  isProtected: isBaseConfigProtected,
-              }
-            : null) as EnvironmentNavOptionType)
+        selectedNavEnvironmentOptions || selectedEnvironmentWithBaseConfiguration
+
     const resourceType = resourceTypeBasedOnPath(pathname)
     const isCreate = pathname.includes('/create')
 
@@ -231,20 +233,6 @@ export const EnvConfigurationsNav = ({
             isExpanded: expandedIds?.secrets,
         },
     ]
-
-    // // REACT SELECT PROPS
-    // const envOptions = [
-    //     ...(showBaseConfigurations
-    //         ? [
-    //               {
-    //                   name: BASE_CONFIGURATIONS.name,
-    //                   id: BASE_CONFIGURATIONS.id,
-    //                   isProtected: isBaseConfigProtected,
-    //               },
-    //           ]
-    //         : []),
-    //     ...environments,
-    // ]
 
     // REACT SELECT PROPS
     const getSelectOptions = () =>
