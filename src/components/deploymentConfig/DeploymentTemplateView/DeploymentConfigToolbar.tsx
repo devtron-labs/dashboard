@@ -59,7 +59,15 @@ export default function DeploymentConfigToolbar({
         setConvertVariables(!convertVariables)
     }
 
-    const handleCompareManifestClicked = () => {
+    const handleCompareValuesDropdownClicked = () => {
+        ReactGA.event({
+            category: 'Deployment Template',
+            action: 'Compare values clicked'
+        })
+        handleOptionClick(true)
+    }
+
+    const handleCompareManifestDropdownClicked = () => {
         ReactGA.event({
             category: 'Deployment Template',
             action: 'Compare manifest clicked',
@@ -75,13 +83,13 @@ export default function DeploymentConfigToolbar({
             <div className="pt-4 pb-4 pl-0 pr-0">
                 <DropdownItem
                     label="Compare Values"
-                    onClick={() => handleOptionClick(true)}
+                    onClick={handleCompareValuesDropdownClicked}
                     index={1}
                     isValues={isValues}
                 />
                 <DropdownItem
                     label="Compare generated manifest"
-                    onClick={handleCompareManifestClicked}
+                    onClick={handleCompareManifestDropdownClicked}
                     index={2}
                     isValues={isValues}
                 />
