@@ -43,7 +43,7 @@ export const getChangeAppTabURL = (appTabType) => {
     }
 }
 
-export const getAppTabNameFromAppType = (appType) => {
+export const getAppTabNameFromAppType = (appType: string) => {
     switch (appType) {
         case AppListConstants.AppType.HELM_APPS:
             return AppListConstants.AppTabs.HELM_APPS
