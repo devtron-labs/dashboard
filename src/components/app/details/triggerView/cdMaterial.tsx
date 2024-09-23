@@ -16,7 +16,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { Prompt, useHistory } from 'react-router-dom'
+import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -169,6 +169,7 @@ const CDMaterial = ({
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
+    const { path, params } = useRouteMatch()
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
     // Add dep here
@@ -254,7 +255,7 @@ const CDMaterial = ({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.resourceType
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.diffView
 
     const {
         pipelineDeploymentConfigLoading,
@@ -719,22 +720,25 @@ const CDMaterial = ({
         }
     }
 
-    const onClickSetInitialParams = (modeParamValue: string) => {
+    const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
         const newParams = new URLSearchParams({
             ...searchParams,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
-            resourceType: EnvResourceType.DeploymentTemplate,
+            diffView: 'true',
         })
 
-        if (modeParamValue !== 'review-config') {
-            newParams.delete('resourceType')
-            newParams.delete('resourceName')
+        if (modeParamValue === 'list') {
+            newParams.delete('diffView')
             newParams.delete('sortOrder')
             newParams.delete('sortBy')
         }
 
         history.push({
+            pathname:
+                modeParamValue === 'review-config'
+                    ? `${generatePath(path, params)}/${EnvResourceType.DeploymentTemplate}`
+                    : generatePath(path, params),
             search: newParams.toString(),
         })
     }

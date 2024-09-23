@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -16,11 +16,12 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     showError,
+    getDeploymentTemplateValues,
+    DeploymentConfigDiffState,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getOptions } from '@Components/deploymentConfig/service'
 
-import { getDeploymentTemplateValues } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare/utils'
 import {
     PipelineConfigDiffQueryParams,
     PipelineConfigDiffQueryParamsType,
@@ -42,6 +43,7 @@ export const usePipelineDeploymentConfig = ({
     wfrId,
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
+    const { path, params } = useRouteMatch()
     const { search } = useLocation()
 
     // STATES
@@ -51,7 +53,7 @@ export const usePipelineDeploymentConfig = ({
     const deploymentTemplateResolvedDataAbortControllerRef = useRef(new AbortController())
 
     // SEARCH PARAMS & SORTING
-    const { deploy, mode, sortOrder, updateSearchParams, handleSorting } = useUrlFilters<
+    const { deploy, mode, updateSearchParams, handleSorting } = useUrlFilters<
         string,
         PipelineConfigDiffQueryParamsType
     >({
@@ -134,7 +136,7 @@ export const usePipelineDeploymentConfig = ({
                                 envName,
                             },
                             payload: {
-                                values: getDeploymentTemplateValues(compareData),
+                                values: getDeploymentTemplateValues(compareData?.deploymentTemplate),
                             },
                             signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
                         }),
@@ -146,7 +148,7 @@ export const usePipelineDeploymentConfig = ({
                                       envName,
                                   },
                                   payload: {
-                                      values: getDeploymentTemplateValues(recentDeploymentConfig),
+                                      values: getDeploymentTemplateValues(recentDeploymentConfig?.deploymentTemplate),
                                   },
                                   signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
                               })
@@ -190,15 +192,8 @@ export const usePipelineDeploymentConfig = ({
         return canDeployLatest || isConfigPresent()
     }
 
-    const getNavItemHref = (_resourceType: EnvResourceType, _resourceName: string) => {
-        const searchParams = new URLSearchParams(search)
-        searchParams.set('resourceType', _resourceType)
-        if (_resourceName) {
-            searchParams.set('resourceName', _resourceName)
-        }
-
-        return `?${searchParams.toString()}`
-    }
+    const getNavItemHref = (resourceType: EnvResourceType, resourceName: string) =>
+        `${generatePath(path, params)}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
     const pipelineDeploymentConfig = useMemo(() => {
         if (
@@ -227,7 +222,6 @@ export const usePipelineDeploymentConfig = ({
                     isAppAdmin: false,
                 },
                 getNavItemHref,
-                sortOrder,
                 convertVariables,
                 ...(convertVariables
                     ? {
@@ -244,7 +238,6 @@ export const usePipelineDeploymentConfig = ({
         pipelineDeploymentConfigRes,
         deploy,
         mode,
-        sortOrder,
         convertVariables,
         deploymentTemplateResolvedData,
     ])
@@ -314,7 +307,9 @@ export const usePipelineDeploymentConfig = ({
             previousDeploymentsLoader || pipelineDeploymentConfigLoading || deploymentTemplateResolvedDataLoader,
         pipelineDeploymentConfig,
         deploymentConfigSelectorProps,
-        diffFound: pipelineDeploymentConfig?.configList.some(({ hasDiff }) => hasDiff),
+        diffFound: pipelineDeploymentConfig?.configList.some(
+            ({ diffState }) => diffState !== DeploymentConfigDiffState.NO_DIFF,
+        ),
         noLastDeploymentConfig: !isLastDeployedConfigAvailable,
         noSpecificDeploymentConfig: specificDeploymentConfig === null,
         canReviewConfig,
