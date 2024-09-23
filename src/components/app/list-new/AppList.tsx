@@ -42,7 +42,7 @@ import { AppListPropType } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
-import { appListUrls, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     getAppStatusFormattedValue,
@@ -403,7 +403,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     function renderAppCreateRouter() {
         return (
             <Switch>
-                {appListUrls.map((currentUrl) => (
+                {APP_LISTING_URLS.map((currentUrl) => (
                     <Route
                         path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         key={currentUrl}
