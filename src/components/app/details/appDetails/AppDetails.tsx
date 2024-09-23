@@ -886,7 +886,7 @@ export const EnvSelector = ({
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {
-            const key = env.isVirtualEnvironment ? 'Virtual environments' : ''
+            const key = env.isVirtualEnvironment ? 'Isolated environments' : ''
             const found = acc.find((item) => item.label === key)
 
             if (found) {
@@ -912,7 +912,7 @@ export const EnvSelector = ({
         }, []) || []
 
     // Pushing the virtual environment group to the end of the list
-    if (groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+    if (groupList[0]?.label === 'Isolated environments' && groupList.length === 2) {
         groupList.reverse()
     }
 
