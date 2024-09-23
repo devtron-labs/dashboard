@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,8 +23,9 @@ import {
     InfoColourBar,
     CHECKBOX_VALUE,
     MODAL_TYPE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import {
     RotatePodsModalProps,
     RotatePodsRequest,
@@ -205,7 +206,10 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
             const { result } = await RotatePods(requestPayload)
             callAppDetailsAPI()
             if (!result.containsError) {
-                toast.success(POD_ROTATION_INITIATED)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: POD_ROTATION_INITIATED,
+                })
                 onClose()
             } else {
                 setResult(result)

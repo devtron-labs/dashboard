@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
@@ -41,7 +40,10 @@ const ChartListPopUpRow = ({ index, list }: { index: number; list: ChartListType
         try {
             updateSyncSpecificChart(payload).then((response) => {
                 setSpecificChartRefetchLoading(false)
-                toast.success(TOAST_INFO.RE_SYNC)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: TOAST_INFO.RE_SYNC,
+                })
             })
         } catch (error) {
             showError(error)
@@ -69,7 +71,10 @@ const ChartListPopUpRow = ({ index, list }: { index: number; list: ChartListType
                     showError(error)
                 })
         } else {
-            toast.info(getNonEditableChartRepoText(list.name))
+            ToastManager.showToast({
+                variant: ToastVariantType.info,
+                description: getNonEditableChartRepoText(list.name),
+            })
         }
     }
 

@@ -1,9 +1,8 @@
 import { useContext, useState } from 'react'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
-import { RefVariableType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { RefVariableType, ToastManager, ToastVariantType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { CreatePluginModal } from '../CreatePluginModal'
 
 const CreatePluginButton = () => {
@@ -23,7 +22,10 @@ const CreatePluginButton = () => {
 
         const isTaskValid = clonedFormErrorObj[activeStageName].steps[selectedTaskIndex].isValid
         if (!isTaskValid) {
-            toast.error('Please ensure the task is valid before saving it as a plugin.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please ensure the task is valid before saving it as a plugin.',
+            })
             return
         }
         const inputVariables: VariableType[] =
@@ -34,7 +36,10 @@ const CreatePluginButton = () => {
         )
 
         if (isAnyInputVariableFromPreviousStage) {
-            toast.error('Cannot save a task with input variables from previous stages as a plugin.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Cannot save a task with input variables from previous stages as a plugin.',
+            })
             return
         }
 

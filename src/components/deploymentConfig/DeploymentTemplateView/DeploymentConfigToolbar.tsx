@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import ReactGA from 'react-ga4'
 import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
@@ -58,6 +59,22 @@ export default function DeploymentConfigToolbar({
         setConvertVariables(!convertVariables)
     }
 
+    const handleCompareValuesDropdownClicked = () => {
+        ReactGA.event({
+            category: 'Deployment Template',
+            action: 'Compare values clicked'
+        })
+        handleOptionClick(true)
+    }
+
+    const handleCompareManifestDropdownClicked = () => {
+        ReactGA.event({
+            category: 'Deployment Template',
+            action: 'Compare manifest clicked',
+        })
+        handleOptionClick(false)
+    }
+
     const renderDropdownContainer = () => (
         <div
             className="flex-col white-background dc__position-abs bcn-0 w-204 h-72  dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow"
@@ -66,13 +83,13 @@ export default function DeploymentConfigToolbar({
             <div className="pt-4 pb-4 pl-0 pr-0">
                 <DropdownItem
                     label="Compare Values"
-                    onClick={() => handleOptionClick(true)}
+                    onClick={handleCompareValuesDropdownClicked}
                     index={1}
                     isValues={isValues}
                 />
                 <DropdownItem
                     label="Compare generated manifest"
-                    onClick={() => handleOptionClick(false)}
+                    onClick={handleCompareManifestDropdownClicked}
                     index={2}
                     isValues={isValues}
                 />
@@ -81,6 +98,14 @@ export default function DeploymentConfigToolbar({
     )
 
     const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
+
+    const handleCompareValuesButtonClick = (e) => {
+        ReactGA.event({
+            category: 'Deployment Template',
+            action: 'Compare values clicked'
+        })
+        changeTab(e)
+    }
 
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
@@ -100,7 +125,7 @@ export default function DeploymentConfigToolbar({
                             className={`${getTabClassName(2)} dc__position-rel`}
                             data-index={2}
                             data-testid="compare-values-tab"
-                            onClick={changeTab}
+                            onClick={handleCompareValuesButtonClick}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
                             Compare&nbsp;

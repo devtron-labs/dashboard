@@ -28,8 +28,9 @@ import {
     stopPropagation,
     TabGroup,
     TabProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -416,7 +417,10 @@ export default function CreateAppGroup({
     const handleSave = async (e): Promise<void> => {
         e.preventDefault()
         if (showErrorMsg) {
-            toast.error('Please fix the errors')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please fix the errors',
+            })
             return
         }
         if (!appGroupName || appGroupDescription?.length > 50) {
@@ -424,7 +428,10 @@ export default function CreateAppGroup({
             return
         }
         if (selectedAppsCount === 0) {
-            toast.error(`Please select ${filterParentTypeMsg} to create group`)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `Please select ${filterParentTypeMsg} to create group`,
+            })
             return
         }
         setLoading(true)
@@ -457,7 +464,10 @@ export default function CreateAppGroup({
         try {
             const id = filterParentType === FilterParentType.app ? appId : envId
             const { result } = await createEnvGroup(id, payload, !!selectedAppGroup?.value)
-            toast.success('Successfully saved')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
             closePopup(e, result.id)
         } catch (err) {
             showError(err)

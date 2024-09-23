@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     CHECKBOX_VALUE,
-    ToastBody,
     Checkbox,
     RadioGroupItem,
     RadioGroup,
@@ -34,9 +33,10 @@ import {
     GenericFilterEmptyState,
     CodeEditor,
     DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
@@ -498,7 +498,10 @@ export default function ClusterForm({
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please add both username and password',
+                })
                 return
             }
             payload.prometheusAuth['userName'] = state.userName.value || ''
@@ -518,12 +521,10 @@ export default function ClusterForm({
         try {
             setLoadingState(true)
             await api(payload)
-            toast.success(
-                <ToastBody
-                    data-testid="validate-toast-for-kubeconfig"
-                    title={`Successfully ${id ? 'updated' : 'saved'}`}
-                />,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Successfully ${id ? 'updated' : 'saved'}`,
+            })
             toggleShowAddCluster()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()

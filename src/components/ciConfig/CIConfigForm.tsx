@@ -15,8 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -227,7 +226,10 @@ export default function CIConfigForm({
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
-            toast.success('Successfully saved.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
             reload(false, !isCiPipeline)
         } catch (err) {
             showError(err)

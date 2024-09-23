@@ -29,7 +29,6 @@ import {
     getResourceGroupListRaw,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ShortcutProvider } from 'react-keybind'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
@@ -289,6 +288,7 @@ const ResourceList = () => {
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    clusterName={selectedCluster.label}
                 />
             </div>
         )
@@ -374,17 +374,15 @@ const ResourceList = () => {
 
     return (
         <UseRegisterShortcutProvider>
-            <ShortcutProvider>
-                <div className="resource-browser-container h-100 bcn-0">
-                    <PageHeader
-                        isBreadcrumbs
-                        breadCrumbs={renderBreadcrumbs}
-                        headerName=""
-                        renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
-                    />
-                    {renderMainBody()}
-                </div>
-            </ShortcutProvider>
+            <div className="resource-browser-container h-100 bcn-0">
+                <PageHeader
+                    isBreadcrumbs
+                    breadCrumbs={renderBreadcrumbs}
+                    headerName=""
+                    renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
+                />
+                {renderMainBody()}
+            </div>
         </UseRegisterShortcutProvider>
     )
 }

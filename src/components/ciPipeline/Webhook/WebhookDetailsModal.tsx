@@ -26,13 +26,15 @@ import {
     ClipboardButton,
     ButtonWithLoader,
     CodeEditor,
+    SelectPicker,
     TabGroup,
     ComponentSizeType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -51,10 +53,10 @@ import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKE
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
+    getWebhookTokenListOptions,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
-    SELECT_TOKEN_STYLE,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
@@ -201,7 +203,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setErrorInGetData(true)
         }
     }
-
     const generateToken = async (): Promise<void> => {
         if (!tokenName) {
             setTokenNameError(true)
@@ -296,27 +297,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         )
     }
 
-    function formatOptionLabel(option): JSX.Element {
-        return (
-            <div className="flexbox justify-space">
-                <span className="cn-9 fw-4">{option.label}</span>
-                <span className="cn-5 fw-4 font-roboto">Has access</span>
-            </div>
-        )
-    }
-
-    const ValueContainer = (props) => {
-        const value = props.getValue()[0]?.label
-        return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select API token</span>)}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
-        )
-    }
 
     const toggleTokenSection = (): void => {
         setShowTokenSection(true)
@@ -358,7 +338,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         }
     }
 
-    const renderWebhhokTokenLabel = (): JSX.Element => {
+    const renderWebhookTokenLabel = (): JSX.Element => {
         return (
             <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
                 api-token
@@ -390,7 +370,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
             <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
-                {renderWebhhokTokenLabel()}
+                {renderWebhookTokenLabel()}
                 <CustomInput
                     name="api-token"
                     placeholder="Enter API token"
@@ -419,24 +399,24 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     }
 
     const renderSelectTokenSection = (): JSX.Element => {
+
+        const handleSelectedTokenChange = (selectedToken): void => {
+            setSelectedToken(selectedToken)
+        }
+
         return (
             <>
                 <div className="w-400 h-32 mt-16">
-                    <ReactSelect
-                        classNamePrefix="selectToken"
+                    <SelectPicker
+                        inputId="select-token"
+                        name="select-token"
+                        classNamePrefix="select-token"
+                        placeholder="Select API token"
+                        isClearable={false}
+                        options={getWebhookTokenListOptions(tokenList)}
                         value={selectedToken}
-                        tabIndex={1}
-                        onChange={setSelectedToken}
-                        options={tokenList}
+                        onChange={handleSelectedTokenChange}
                         isSearchable={false}
-                        formatOptionLabel={formatOptionLabel}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                            ValueContainer,
-                        }}
-                        styles={SELECT_TOKEN_STYLE}
-                        menuPlacement="auto"
                     />
                 </div>
                 {selectedToken?.value && renderSelectedToken('Selected', selectedToken.token)}
@@ -818,7 +798,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             _modifiedPayload = JSON.parse(modifiedSampleString)
         } catch (error) {
-            toast.error('Invalid JSON')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid JSON',
+            })
             return
         }
         setWebhookExecutionLoader(true)
@@ -911,7 +894,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const copySharableURL = (): void => {
         copyToClipboard(window.location.href, () => {
-            toast.success('URL copied successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'URL copied successfully',
+            })
         })
     }
 

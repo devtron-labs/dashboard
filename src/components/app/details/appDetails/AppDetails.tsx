@@ -32,9 +32,10 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
     ReleaseMode,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -407,7 +408,10 @@ export const Details: React.FC<DetailsType> = ({
             .then((response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
+                if (
+                    !response.result.isPipelineTriggered &&
+                    response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT
+                ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
@@ -548,7 +552,10 @@ export const Details: React.FC<DetailsType> = ({
             )
             await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
-            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated',
+            })
         } catch (err) {
             showError(err)
         } finally {
@@ -757,7 +764,6 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-
             {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
@@ -905,10 +911,10 @@ export const EnvSelector = ({
             return acc
         }, []) || []
 
-        // Pushing the virtual environment group to the end of the list
-        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
-            groupList.reverse()
-        }
+    // Pushing the virtual environment group to the end of the list
+    if (groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+        groupList.reverse()
+    }
 
     return (
         <>

@@ -1,7 +1,13 @@
 import { useState, useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
-import { toast } from 'react-toastify'
-import { Progressing, showError, Host, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    showError,
+    Host,
+    Tooltip,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
 import { Routes } from '@Config/constants'
 import { DownloadChartButtonProps } from '../types'
@@ -29,7 +35,10 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
             a.href = `${Host}/${Routes.DOWNLOAD_CUSTOM_CHART}/${chartRefId}`
             a.download = `${chartName}_${chartVersion}.tgz`
             a.click()
-            toast.success('Chart Downloaded Successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Chart Downloaded Successfully',
+            })
             handleCloseTippy()
         } catch (error) {
             showError(error)
