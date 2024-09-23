@@ -43,6 +43,19 @@ export const getChangeAppTabURL = (appTabType) => {
     }
 }
 
+export const getAppTabNameFromAppType = (appType) => {
+    switch (appType) {
+        case AppListConstants.AppType.HELM_APPS:
+            return AppListConstants.AppTabs.HELM_APPS
+        case AppListConstants.AppType.ARGO_APPS:
+            return AppListConstants.AppTabs.ARGO_APPS
+        case AppListConstants.AppType.FLUX_APPS:
+            return AppListConstants.AppTabs.FLUX_APPS
+        default:
+            return AppListConstants.AppTabs.DEVTRON_APPS
+    }
+}
+
 export const renderIcon = (appType: string): string => {
     if (appType === AppListConstants.AppType.FLUX_APPS) {
         return FluxCDAppIcon

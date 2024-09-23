@@ -8,12 +8,13 @@ import {
     Tooltip,
     useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactGA from 'react-ga4'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 import { APP_STATUS_FILTER_OPTIONS, SELECT_CLUSTER_TIPPY, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
 import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
 import { getDevtronAppListDataToExport } from './AppListService'
-import { useFilterOptions } from './list.utils'
+import { getAppTabNameFromAppType, useFilterOptions } from './list.utils'
 
 const AppListFilters = ({
     filterConfig,
@@ -88,6 +89,7 @@ const AppListFilters = ({
         isSuperAdmin && appType === AppListConstants.AppType.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY
 
     const handleUpdateFilters = (filterKey: AppListUrlFilters) => (selectedOptions: SelectPickerOptionType[]) => {
+        ReactGA.event({ category: getAppTabNameFromAppType(appType), action: filterKey })
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
     }
 
