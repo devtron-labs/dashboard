@@ -371,6 +371,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
+    clusterName?: string
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
@@ -443,7 +444,7 @@ export interface SyncErrorType {
     showApplicationDetailedModal?: () => void
 }
 
-export interface SelectedResourceType {
+export interface SelectedResourceType extends Pick<NodeDetailPropsType, 'clusterName'> {
     clusterId: number
     group: string
     version: string

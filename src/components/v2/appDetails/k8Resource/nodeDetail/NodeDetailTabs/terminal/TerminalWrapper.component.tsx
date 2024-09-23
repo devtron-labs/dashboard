@@ -66,6 +66,7 @@ export default function TerminalWrapper({
                 )}
                 registerLinkMatcher={terminalData.registerLinkMatcher}
                 terminalMessageData={terminalData.terminalMessageData}
+                metadata={selectionListData.metadata}
                 clearTerminal={terminalData.clearTerminal}
                 isResourceBrowserView={isResourceBrowserView}
             />
