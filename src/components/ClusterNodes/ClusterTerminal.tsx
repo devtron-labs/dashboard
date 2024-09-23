@@ -1008,6 +1008,10 @@ node-details-full-screen
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
         },
+        metadata: {
+            node: selectedNodeName?.label ?? '',
+            namespace: selectedNamespace?.label ?? '',
+        },
     }
 
     return (

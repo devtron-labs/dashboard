@@ -4335,6 +4335,10 @@ textarea::placeholder {
     &--n1 {
         background-color: var(--N100);
     }
+
+    &.h12 {
+        min-height: 12px;
+    }
 }
 
 .dc__required-field::after {
