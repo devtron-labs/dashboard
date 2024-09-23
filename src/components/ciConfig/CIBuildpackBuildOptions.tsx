@@ -276,7 +276,7 @@ export default function CIBuildpackBuildOptions({
                 selectedLanguage: _language,
                 selectedVersion: _version,
             })
-            updateBuildEnvArgs(_version.value.toString(), _builder, true)
+            updateBuildEnvArgs(_version.value, _builder, true)
         }
 
         // Always set currentCIBuildConfig on init for changing ciBuildType
@@ -303,15 +303,15 @@ export default function CIBuildpackBuildOptions({
             buildPackConfig: {
                 ...currentCIBuildConfig.buildPackConfig,
                 builderId: _selectedBuilder.value,
-                language: selected.value.toString(),
-                languageVersion: _selectedVersion.value.toString(),
+                language: selected.value,
+                languageVersion: _selectedVersion.value,
                 builderLangEnvParam: _selectedBuilder.BuilderLangEnvParam,
             },
         })
-        updateBuildEnvArgs(_selectedVersion.value.toString(), _selectedBuilder)
+        updateBuildEnvArgs(_selectedVersion.value, _selectedBuilder)
     }
 
-    const buildersAndFrameworksLanguage = buildersAndFrameworks.selectedLanguage?.value.toString()
+    const buildersAndFrameworksLanguage = buildersAndFrameworks.selectedLanguage?.value
     const handleVersionSelection = (selected: OptionType) => {
         setBuildersAndFrameworks({
             ...buildersAndFrameworks,
@@ -341,7 +341,7 @@ export default function CIBuildpackBuildOptions({
                 ...currentCIBuildConfig.buildPackConfig,
                 builderId: selected.value,
                 language: buildersAndFrameworksLanguage,
-                languageVersion: buildersAndFrameworks.selectedVersion.value.toString(),
+                languageVersion: buildersAndFrameworks.selectedVersion.value,
                 builderLangEnvParam: selected.BuilderLangEnvParam,
                 currentBuilderLangEnvParam: buildersAndFrameworks.selectedBuilder.value,
             },

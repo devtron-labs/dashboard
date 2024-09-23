@@ -186,9 +186,12 @@ export interface BuilderIdOptionType extends OptionType {
 
 export interface VersionsOptionType extends OptionTypeWithIcon {
     infoText?: string
+    value: string
 }
 
-export interface LanguageOptionType extends OptionTypeWithIcon {}
+export interface LanguageOptionType extends OptionTypeWithIcon {
+    value: string
+}
 
 export interface BuildersAndFrameworksType {
     builders: LanguageBuilderType[]
