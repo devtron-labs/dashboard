@@ -40,8 +40,8 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
-    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { WorkflowDimensions } from './config'
@@ -221,8 +221,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
         action: any
         metadataField: string
     }
-    selectedEnv?: Environment
-    setSelectedEnv?: (selectedEnv: Environment) => void
+    selectedEnv?: EnvironmentOptionWithSelectPicker
+    setSelectedEnv?: (selectedEnv: EnvironmentOptionWithSelectPicker) => void
     environmentLists?: any[]
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange
@@ -413,7 +413,7 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
-    selectedEnv?: Environment
+    selectedEnv?: EnvironmentOptionWithSelectPicker
     environmentLists?: any[]
     appReleaseTags?: string[]
     tagsEditable?: boolean

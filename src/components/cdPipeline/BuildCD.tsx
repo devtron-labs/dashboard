@@ -60,6 +60,7 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
+import { EnvironmentOptionType, EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -370,12 +371,12 @@ export default function BuildCD({
 
     const renderEnvSelector = () => {
         const envId = formData.environmentId
-        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        if (selectedEnv) {
-            selectedEnv.label = selectedEnv.name
-            selectedEnv.value = selectedEnv.id.toString()
+        const _environment = formData.environments.find((env) => env.id == envId)
+        const selectedEnv: EnvironmentOptionWithSelectPicker = _environment &&{
+            ..._environment,
+            label: _environment.name,
+            value: _environment.id.toString(),
         }
-
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const renderVirtualEnvironmentInfo = () => {
@@ -384,7 +385,7 @@ export default function BuildCD({
             }
         }
 
-        const getEnvListOptions = () => {
+        const getEnvListOptions = (): EnvironmentOptionType[] => {
             return envList.map((_elm) => {
                 return {
                     ..._elm,
@@ -416,7 +417,7 @@ export default function BuildCD({
                             : getEnvListOptions()
                     }
                     value={selectedEnv}
-                    onChange={(selected: Environment) => selectEnvironment(selected)}
+                    onChange={(selected: EnvironmentOptionWithSelectPicker) => selectEnvironment(selected)}
                     size={ComponentSizeType.large}
                 />
                 {isEnvUsedState && (

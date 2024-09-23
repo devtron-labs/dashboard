@@ -911,13 +911,13 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(
+export function createClusterEnvGroup<T, K = T>(
     list: T[],
     propKey: string,
     optionLabel?: string,
     optionValue?: string,
-): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
-    const objList: Record<string, T[]> = list.reduce((acc, obj) => {
+): { label: string; options: K[]; isVirtualEnvironment?: boolean }[] {
+    const objList: Record<string, K[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []

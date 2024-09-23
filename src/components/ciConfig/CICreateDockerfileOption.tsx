@@ -92,7 +92,7 @@ export default function CICreateDockerfileOption({
             setSelectedLanguage(_selectedLanguage)
 
             const _frameworks = _languageFrameworks.get(
-                currentCIBuildConfig.dockerBuildConfig.language || _languages[0].value,
+                currentCIBuildConfig.dockerBuildConfig.language || _languages[0].value.toString(),
             )
             const _selectedFramework =
                 _frameworks.find((_f) => _f.value === currentCIBuildConfig.dockerBuildConfig.languageFramework) ||
@@ -180,7 +180,7 @@ export default function CICreateDockerfileOption({
                     dockerBuildConfig: {
                         ...currentCIBuildConfig.dockerBuildConfig,
                         dockerfileContent: respData,
-                        language: _selectedLanguage.value,
+                        language: _selectedLanguage.value.toString(),
                         languageFramework: _selectedFramework.value,
                     },
                 })
@@ -221,7 +221,7 @@ export default function CICreateDockerfileOption({
     const handleLanguageSelection = (selected: LanguageOptionType) => {
         setSelectedLanguage(selected)
 
-        const _selectedFramework = languageFrameworks.get(selected.value)?.[0] || null
+        const _selectedFramework = languageFrameworks.get(selected.value.toString())?.[0] || null
         setSelectedFramework(_selectedFramework)
         getTemplateData(selected, _selectedFramework)
     }
@@ -239,7 +239,7 @@ export default function CICreateDockerfileOption({
             dockerBuildConfig: {
                 ...currentCIBuildConfig.dockerBuildConfig,
                 dockerfileContent: editorData?.data,
-                language: selectedLanguage?.value,
+                language: selectedLanguage?.value.toString(),
                 languageFramework: selectedFramework?.value,
             },
         })

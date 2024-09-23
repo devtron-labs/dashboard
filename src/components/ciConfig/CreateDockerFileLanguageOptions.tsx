@@ -71,7 +71,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     handleFrameworkSelection,
     readOnly,
 }) => {
-    const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value)
+    const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value.toString())
     if (readOnly) {
         return (
             <div className="flex">

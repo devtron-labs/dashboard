@@ -16,20 +16,22 @@
 
 import { ComponentSizeType, Environment, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
-import { EnvironmentListType } from './types'
+import { EnvironmentListType, EnvironmentOptionType, EnvironmentOptionWithSelectPicker } from './types'
 
 export const EnvironmentList = ({ isBuildStage, environments, selectedEnv, setSelectedEnv, isBorderLess = false }: EnvironmentListType) => {
-    const selectEnvironment = (selection: Environment) => {
-        const _selectedEnv = environments.find((env) => env.id == selection.id)
+    const selectEnvironment = (selection: EnvironmentOptionWithSelectPicker) => {
+        const _selectedEnv = { ...selection }
+        _selectedEnv.label = _selectedEnv.name
+        _selectedEnv.value = _selectedEnv.id.toString()
         setSelectedEnv(_selectedEnv)
     }
 
-    const envList = createClusterEnvGroup(environments, 'clusterName')
+    const envList: EnvironmentOptionType[] = createClusterEnvGroup<Environment, EnvironmentOptionWithSelectPicker>(environments, 'clusterName')
 
     if (selectedEnv && !selectedEnv.label && !selectedEnv.value) {
         selectedEnv.label = selectedEnv.name
         selectedEnv.value = selectedEnv.id.toString()
-        selectedEnv.startIcon = !isBuildStage && <div className="dc__environment-icon" />
+        selectedEnv.startIcon = !isBuildStage ? <div className="dc__environment-icon" /> : null
     }
 
     const getEnvironmentSelectLabel = (): JSX.Element => {

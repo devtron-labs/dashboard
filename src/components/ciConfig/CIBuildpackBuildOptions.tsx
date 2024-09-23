@@ -276,7 +276,7 @@ export default function CIBuildpackBuildOptions({
                 selectedLanguage: _language,
                 selectedVersion: _version,
             })
-            updateBuildEnvArgs(_version.value, _builder, true)
+            updateBuildEnvArgs(_version.value.toString(), _builder, true)
         }
 
         // Always set currentCIBuildConfig on init for changing ciBuildType
@@ -303,14 +303,15 @@ export default function CIBuildpackBuildOptions({
             buildPackConfig: {
                 ...currentCIBuildConfig.buildPackConfig,
                 builderId: _selectedBuilder.value,
-                language: selected.value,
-                languageVersion: _selectedVersion.value,
+                language: selected.value.toString(),
+                languageVersion: _selectedVersion.value.toString(),
                 builderLangEnvParam: _selectedBuilder.BuilderLangEnvParam,
             },
         })
-        updateBuildEnvArgs(_selectedVersion.value, _selectedBuilder)
+        updateBuildEnvArgs(_selectedVersion.value.toString(), _selectedBuilder)
     }
 
+    const buildersAndFrameworksLanguage = buildersAndFrameworks.selectedLanguage?.value.toString()
     const handleVersionSelection = (selected: OptionType) => {
         setBuildersAndFrameworks({
             ...buildersAndFrameworks,
@@ -321,7 +322,7 @@ export default function CIBuildpackBuildOptions({
             buildPackConfig: {
                 ...currentCIBuildConfig.buildPackConfig,
                 builderId: buildersAndFrameworks.selectedBuilder.value,
-                language: buildersAndFrameworks.selectedLanguage.value,
+                language: buildersAndFrameworksLanguage,
                 languageVersion: selected.value,
                 builderLangEnvParam: buildersAndFrameworks.selectedBuilder.BuilderLangEnvParam,
             },
@@ -339,19 +340,19 @@ export default function CIBuildpackBuildOptions({
             buildPackConfig: {
                 ...currentCIBuildConfig.buildPackConfig,
                 builderId: selected.value,
-                language: buildersAndFrameworks.selectedLanguage.value,
-                languageVersion: buildersAndFrameworks.selectedVersion.value,
+                language: buildersAndFrameworksLanguage,
+                languageVersion: buildersAndFrameworks.selectedVersion.value.toString(),
                 builderLangEnvParam: selected.BuilderLangEnvParam,
                 currentBuilderLangEnvParam: buildersAndFrameworks.selectedBuilder.value,
             },
         })
-        updateBuildEnvArgs(buildersAndFrameworks.selectedVersion.value, selected)
+        updateBuildEnvArgs(buildersAndFrameworksLanguage, selected)
         setBuilderLanguageSupportMap((prevState) => {
-            const prevValue = prevState[buildersAndFrameworks.selectedLanguage.value]
+            const prevValue = prevState[buildersAndFrameworksLanguage]
             if (prevValue.BuilderLanguageMetadata.findIndex((_metadata) => _metadata.value === selected.value) === -1) {
                 return {
                     ...prevState,
-                    [buildersAndFrameworks.selectedLanguage.value]: {
+                    [buildersAndFrameworksLanguage]: {
                         ...prevValue,
                         BuilderLanguageMetadata: [
                             ...prevValue.BuilderLanguageMetadata,

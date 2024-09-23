@@ -81,6 +81,7 @@ import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
+import { EnvironmentOptionWithSelectPicker } from './types'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -130,7 +131,7 @@ export default function CIPipeline({
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
-    const [selectedEnv, setSelectedEnv] = useState<Environment>()
+    const [selectedEnv, setSelectedEnv] = useState<EnvironmentOptionWithSelectPicker>()
     const [environments, setEnvironments] = useState([])
     const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
