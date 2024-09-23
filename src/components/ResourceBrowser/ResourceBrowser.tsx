@@ -66,7 +66,8 @@ const ResourceBrowser: React.FC = () => {
                 ) as ClusterDetail[]
             ).filter(
                 (option) =>
-                    !window._env_.HIDE_DEFAULT_CLUSTER || option.id !== DEFAULT_CLUSTER_ID || option.isVirtualCluster,
+                    !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) ||
+                    !option.isVirtualCluster,
             ),
         [detailClusterList, clusterListMinData],
     )
