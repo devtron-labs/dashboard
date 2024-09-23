@@ -30,6 +30,7 @@ import {
     noop,
     SelectedChartDetailsType,
     logExceptionToSentry,
+    ConfigHeaderTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -75,6 +76,7 @@ import {
     getBaseDeploymentTemplate,
 } from './service'
 import './DeploymentTemplate.scss'
+import ConfigHeader from '../ConfigHeader'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -209,11 +211,11 @@ const DeploymentTemplate = ({
     // Question: Can remove appId dependency?
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
 
-    const { selectedTab, updateSearchParams, showReadMe, editMode } = useUrlFilters<
+    const { selectedTab, showReadMe, editMode, configHeaderTab, updateSearchParams } = useUrlFilters<
         never,
         DeploymentTemplateQueryParamsType
     >({
-        parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
+        parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin, envId),
     })
 
     // TODO: Redundant check since published template enum is set based on isDraftMode
@@ -1680,6 +1682,14 @@ const DeploymentTemplate = ({
         })
     }
 
+    const handleConfigHeaderTabChange = (tab: ConfigHeaderTabType) => {
+        if (configHeaderTab === tab) {
+            return
+        }
+
+        updateSearchParams({ configHeaderTab: tab })
+    }
+
     const renderEditorComponent = () => {
         if (isLoadingInitialData || isResolvingVariables) {
             return (
@@ -1883,6 +1893,8 @@ const DeploymentTemplate = ({
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+                <ConfigHeader configHeaderTab={configHeaderTab} handleTabChange={handleConfigHeaderTabChange} />
+
                 {ConfigToolbar ? (
                     <ConfigToolbar
                         loading={isLoadingInitialData || isResolvingVariables || isSaving}

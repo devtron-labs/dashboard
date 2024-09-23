@@ -102,7 +102,7 @@ export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeader
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'hideLockedKeys' | 'showReadMe'>,
+    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'showReadMe'>,
         Pick<DeploymentTemplateProps, 'isUnSet'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
         Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
@@ -117,6 +117,7 @@ export interface DeploymentTemplateFormProps
     wasGuiOrHideLockedKeysEdited: boolean
     handleChangeToYAMLMode: () => void
     handleEnableWasGuiOrHideLockedKeysEdited: () => void
+    hideLockedKeys: boolean
 }
 
 export interface DeploymentTemplateGUIViewProps
