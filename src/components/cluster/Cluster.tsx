@@ -657,7 +657,7 @@ const Cluster = ({
         toggleEditMode((t) => !t)
     }
 
-    const subTitle: string = isVirtualCluster ? 'Virtual cluster' : server_url
+    const subTitle: string = isVirtualCluster ? 'Isolated cluster' : server_url
 
     return (
         <>

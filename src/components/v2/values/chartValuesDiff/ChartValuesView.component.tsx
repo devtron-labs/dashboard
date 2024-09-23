@@ -92,7 +92,7 @@ export const ChartEnvironmentSelector = ({
         if (isVirtualEnvironment && VirtualEnvHelpTippy) {
             return (
                 <div className="flex left">
-                    <div className="ml-4 mr-4">(Virtual)</div>
+                    <div className="ml-4 mr-4">(Isolated)</div>
                     <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
