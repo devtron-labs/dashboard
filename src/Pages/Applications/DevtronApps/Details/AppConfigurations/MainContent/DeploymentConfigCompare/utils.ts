@@ -304,21 +304,3 @@ export const isConfigTypeNonDraftOrPublished = (type: AppEnvDeploymentConfigType
 
 export const isConfigTypePublished = (type: AppEnvDeploymentConfigType) =>
     type === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT || type === AppEnvDeploymentConfigType.PUBLISHED_ONLY
-
-export const getDeploymentTemplateValues = (data: AppEnvDeploymentConfigDTO) => {
-    try {
-        const parsedDraftData =
-            JSON.parse(data.deploymentTemplate?.deploymentDraftData?.configData[0].draftMetadata.data || null) || null
-
-        return (
-            JSON.stringify(
-                parsedDraftData?.envOverrideValues ||
-                    parsedDraftData?.valuesOverride ||
-                    parsedDraftData?.defaultAppOverride ||
-                    data.deploymentTemplate?.data,
-            ) ?? null
-        )
-    } catch {
-        return null
-    }
-}

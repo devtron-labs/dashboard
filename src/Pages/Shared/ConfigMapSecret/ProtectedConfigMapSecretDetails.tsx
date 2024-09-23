@@ -276,8 +276,7 @@ export const ProtectedConfigMapSecretDetails = ({
                     previousConfigAvailable
                     isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
                     isDeleteDraft={draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN}
-                    rootClassName="dc__no-top-radius mt-0-imp m-0-imp mb-16-imp"
-                    comparisonBodyClassName="m-0-imp"
+                    rootClassName="dc__no-top-radius"
                 />
                 {renderApproveButton()}
             </div>

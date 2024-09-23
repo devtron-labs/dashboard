@@ -11,6 +11,7 @@ import {
     SortingOrder,
     AppEnvDeploymentConfigType,
     getDefaultVersionAndPreviousDeploymentOptions,
+    getDeploymentTemplateValues,
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
     EnvResourceType,
@@ -42,7 +43,6 @@ import {
     getAppAndEnvIds,
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
-    getDeploymentTemplateValues,
 } from './utils'
 import {
     getConfigDiffData,
@@ -256,7 +256,7 @@ export const DeploymentConfigCompare = ({
                                 envName,
                                 type,
                                 compareName: compareTo,
-                                values: getDeploymentTemplateValues(comparisonData[0].result),
+                                values: getDeploymentTemplateValues(comparisonData[0].result?.deploymentTemplate),
                                 signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
                             }),
                             getDeploymentTemplateResolvedData({
@@ -264,7 +264,7 @@ export const DeploymentConfigCompare = ({
                                 appName,
                                 envName,
                                 compareName: compareWith,
-                                values: getDeploymentTemplateValues(comparisonData[1].result),
+                                values: getDeploymentTemplateValues(comparisonData[1].result?.deploymentTemplate),
                                 signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
                             }),
                         ]),
@@ -296,7 +296,6 @@ export const DeploymentConfigCompare = ({
                 currentList,
                 compareList,
                 getNavItemHref,
-                sortOrder,
                 isManifestView,
                 convertVariables,
                 ...(convertVariables
@@ -313,7 +312,6 @@ export const DeploymentConfigCompare = ({
     }, [
         comparisonDataLoader,
         comparisonData,
-        sortOrder,
         isManifestView,
         convertVariables,
         deploymentTemplateResolvedDataLoader,
@@ -505,6 +503,9 @@ export const DeploymentConfigCompare = ({
     const onTabClick = (tab: string) => {
         setSelectedTab(tab)
         const _isManifestView = tab === deploymentConfigDiffTabs.MANIFEST
+        if (_isManifestView) {
+            setConvertVariables(false)
+        }
         push(
             generatePath(path, {
                 ...params,
