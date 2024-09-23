@@ -36,13 +36,13 @@ import {
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 import { useAppContext } from '../../common'
-import { SERVER_MODE, DOCUMENTATION, URLS } from '../../../config'
+import { SERVER_MODE, DOCUMENTATION } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
-import { FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { appListUrls, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     getAppStatusFormattedValue,
@@ -401,12 +401,12 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     }
 
     function renderAppCreateRouter() {
-        const appListUrls = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
         return (
             <Switch>
                 {appListUrls.map((currentUrl) => (
                     <Route
                         path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                        key={currentUrl}
                         render={(props) => (
                             <AddNewApp
                                 close={closeDevtronAppCreateModal}

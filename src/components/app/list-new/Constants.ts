@@ -15,6 +15,7 @@
  */
 
 import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '@Config/routes'
 import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
 
 export const APP_LIST_HEADERS = {
@@ -95,3 +96,5 @@ export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
     label: 'Apps with no project',
     value: '0',
 }
+
+export const appListUrls = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
