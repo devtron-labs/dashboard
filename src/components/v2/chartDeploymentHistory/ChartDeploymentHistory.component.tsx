@@ -29,6 +29,9 @@ import {
     TabGroup,
     ToastManager,
     ToastVariantType,
+    ShowMoreText,
+    DEPLOYMENT_STATUS,
+    EMPTY_STATE_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -37,7 +40,7 @@ import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
+import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'
@@ -52,7 +55,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
@@ -60,6 +63,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
+import { ReactComponent as Rocket} from '@Icons/ic-nav-rocket.svg'
+import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
@@ -602,12 +607,34 @@ const ChartDeploymentHistory = ({
     }
 
     function renderSelectedDeploymentDetailHeader() {
-        const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+        const deployment: ChartDeploymentDetail = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+
+        const getViewMessage = () => {
+            const { message } = deployment
+            if (deployment.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED && message) {
+                return (
+                    <div className="trigger-details__grid-helm py-4 dc__grid">
+                        <div className="flex top dc__content-center">
+                            <ICLines className="icon-dim-20 dc__no-shrink scn-7" />
+                        </div>
+
+                        <div className="flex column left">
+                                <div className=" cn-9 fs-13 fw-4 lh-20">
+                                    <span>Message</span>
+                                </div>
+
+                            {/* Need key since using ref inside of this component as useEffect dependency, so there were issues while switching builds */}
+                            {message && <ShowMoreText text={message} key={message} textClass="cn-7" />}
+                        </div>
+                    </div>
+                )
+            }}
 
         return (
-            <div className="trigger-details ml-20 mr-20 pb-20">
+            <div className="trigger-details pb-20">
                 <div className="flex dc__content-space trigger-details__summary">
-                    <div className="flex column left pt-10">
+                    <div className="flex left py-10 px-20 dc__gap-8">
+                        <Rocket className="scn-6 icon-dim-20" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
                             Deployed at
                         </div>
@@ -629,7 +656,9 @@ const ChartDeploymentHistory = ({
                                 <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
                             )}
                         </div>
+
                     </div>
+
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
                         <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
                             <button
@@ -646,6 +675,8 @@ const ChartDeploymentHistory = ({
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
                     )}
                 </div>
+                {getViewMessage()}
+
             </div>
         )
     }
@@ -719,7 +750,7 @@ const ChartDeploymentHistory = ({
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
+                <div className="ci-details__body dc__overflow-scroll">{renderSelectedDeploymentDetail()}</div>
                 {showRollbackConfirmation && (
                     <RollbackConfirmationDialog
                         deploying={deploying}

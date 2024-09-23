@@ -34,7 +34,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
-import dots from '../../../assets/icons/ic-menu-dot.svg'
+import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
 import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
@@ -190,10 +190,17 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
     }
 
     return (
-        <div style={{ width: '40px' }}>
+        <>
             <PopupMenu autoClose>
-                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab>
-                    <img src={dots} className="pod-info__dots" />
+                <PopupMenu.Button
+                    dataTestId="node-resource-dot-button"
+                    isKebab
+                    rootClassName="dc__h-fit-content flex dc__align-self-center dc__no-border"
+                >
+                    <ICMoreOption
+                        className="icon-dim-20 fcn-6 rotate dc__no-shrink"
+                        style={{ ['--rotateBy' as string]: '90deg' }}
+                    />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <PodPopup
@@ -216,9 +223,8 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                     responseData={resourceScanResponse?.result}
                 />
             )}
-
             {renderDeleteResourcePopup()}
-        </div>
+        </>
     )
 }
 

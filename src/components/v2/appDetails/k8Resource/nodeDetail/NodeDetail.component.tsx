@@ -16,14 +16,31 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
-import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Checkbox,
+    CHECKBOX_VALUE,
+    OptionType,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { ManifestViewRefType, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import {
+    AppType,
+    ManifestCodeEditorMode,
+    ManifestViewRefType,
+    NodeDetailPropsType,
+    NodeType,
+    Options,
+    OptionsBase,
+} from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -74,6 +91,8 @@ const NodeDetailComponent = ({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [showManifestCompareView, setShowManifestCompareView] = useState(false)
+    const [manifestCodeEditorMode, setManifestCodeEditorMode] = useState<ManifestCodeEditorMode>(null)
 
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -98,6 +117,20 @@ const NodeDetailComponent = ({
         containers: [],
     }
 
+    const currentResource = isResourceBrowserView
+        ? selectedResource
+        : appDetails.resourceTree.nodes.filter(
+              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+          )[0]
+
+    const showDesiredAndCompareManifest =
+        !isResourceBrowserView &&
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        !currentResource?.['parentRefs']?.length
+
+    const isResourceMissing =
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART && currentResource?.['health']?.status === 'Missing'
+
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
@@ -117,13 +150,12 @@ const NodeDetailComponent = ({
             manifest: '',
             activeManifestEditorData: '',
             modifiedManifest: '',
-            isEditmode: false,
-            activeTab: 'Live manifest', // NOTE: default activeTab
         },
         id: '',
     })
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
+
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -301,6 +333,14 @@ const NodeDetailComponent = ({
         return Object.values(params).join('/')
     }
 
+    const handleManifestApplyChanges = () => setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+
+    const handleManifestCancel = () => setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+
+    const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
+
+    const handleManifestCompareWithDesired = () => setShowManifestCompareView(true)
+
     const renderPodTerminal = (): JSX.Element => {
         if (!startTerminal) {
             return null
@@ -323,6 +363,69 @@ const NodeDetailComponent = ({
             />
         )
     }
+
+    const renderManifestTabHeader = () => (
+        <>
+            {(isExternalApp ||
+                isResourceBrowserView ||
+                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                    appDetails.deploymentAppDeleteRequest)) &&
+                manifestCodeEditorMode &&
+                !showManifestCompareView &&
+                !isResourceMissing && (
+                    <>
+                        <div className="ml-4 mr-12 tab-cell-border" />
+                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                            <div className="flex dc__gap-12">
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                    onClick={handleManifestApplyChanges}
+                                >
+                                    <>
+                                        <ICCheck className="icon-dim-16 scb-5" />
+                                        <span>Apply changes</span>
+                                    </>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                    onClick={handleManifestCancel}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                onClick={handleManifestEdit}
+                            >
+                                <>
+                                    <ICPencil className="icon-dim-16 scb-5" />
+                                    <span>Edit live manifest</span>
+                                </>
+                            </button>
+                        )}
+                    </>
+                )}
+            {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
+                !showManifestCompareView &&
+                (showDesiredAndCompareManifest || isResourceMissing) && (
+                    <>
+                        <div className="ml-12 mr-12 tab-cell-border" />
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                            onClick={handleManifestCompareWithDesired}
+                        >
+                            <ICArrowsLeftRight className="icon-dim-16 scb-5" />
+                            <span>Compare with desired</span>
+                        </button>
+                    </>
+                )}
+        </>
+    )
 
     return (
         <>
@@ -388,6 +491,7 @@ const NodeDetailComponent = ({
                             </div>
                         </>
                     )}
+                    {selectedTabName === NodeDetailTab.MANIFEST && renderManifestTabHeader()}
                 </div>
                 {isResourceBrowserView &&
                     !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
@@ -414,7 +518,10 @@ const NodeDetailComponent = ({
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
-                            isExternalApp={isExternalApp}
+                            showManifestCompareView={showManifestCompareView}
+                            setShowManifestCompareView={setShowManifestCompareView}
+                            manifestCodeEditorMode={manifestCodeEditorMode}
+                            setManifestCodeEditorMode={setManifestCodeEditorMode}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
