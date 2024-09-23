@@ -113,3 +113,10 @@
         max-height: 444px;
     }
 }
+
+.trigger-details {
+    .trigger-details__grid-helm {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+    }
+}

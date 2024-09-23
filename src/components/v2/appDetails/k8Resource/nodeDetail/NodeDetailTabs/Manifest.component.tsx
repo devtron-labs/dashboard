@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
 import {
@@ -32,10 +32,7 @@ import {
     TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
-import { iLink } from '../../../../utils/tabUtils/link.type'
-import { TabActions, useTab } from '../../../../utils/tabUtils/useTab'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
 import {
     createResource,
@@ -45,7 +42,7 @@ import {
 } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
+import { AppType, ManifestActionPropsType, ManifestCodeEditorMode, NodeType } from '../../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -67,11 +64,13 @@ const ManifestComponent = ({
     selectedResource,
     manifestViewRef,
     getComponentKey,
-    isExternalApp,
+    showManifestCompareView,
+    setShowManifestCompareView,
+    manifestCodeEditorMode,
+    setManifestCodeEditorMode,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
-    const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
     /* TODO: can be unified later with resource browser */
     const params = useParams<{
@@ -94,7 +93,6 @@ const ManifestComponent = ({
     const [loading, setLoading] = useState(true)
     const [loadingMsg, setLoadingMsg] = useState('Fetching manifest')
     const [errorText, setErrorText] = useState('')
-    const [isEditmode, setIsEditmode] = useState(false)
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false)
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
@@ -102,25 +100,23 @@ const ManifestComponent = ({
 
     const [secretViewAccess, setSecretViewAccess] = useState(false)
     const { isSuperAdmin } = useMainContext() // to show the cluster meta data at the bottom
+    // Cancel is an intermediate state wherein edit is true
+    const isEditMode =
+        manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ||
+        manifestCodeEditorMode === ManifestCodeEditorMode.CANCEL
 
     const handleDeriveStatesFromManifestRef = () => {
         setError(manifestViewRef.current.data.error)
         setSecretViewAccess(manifestViewRef.current.data.secretViewAccess)
         setDesiredManifest(manifestViewRef.current.data.desiredManifest)
         setManifest(manifestViewRef.current.data.manifest)
-        switch (manifestViewRef.current.data.activeTab) {
-            case 'Helm generated manifest':
-                setActiveManifestEditorData(manifestViewRef.current.data.desiredManifest)
-                break
-            case 'Compare':
-                setActiveManifestEditorData(manifestViewRef.current.data.manifest)
-                break
-            case 'Live manifest':
-            default:
-                setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
-        }
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
-        setIsEditmode(manifestViewRef.current.data.isEditmode)
+
+        if (showManifestCompareView) {
+            setActiveManifestEditorData(manifestViewRef.current.data.manifest)
+        } else {
+            setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
+        }
     }
 
     useEffectAfterMount(() => {
@@ -132,23 +128,11 @@ const ManifestComponent = ({
                 manifest,
                 activeManifestEditorData,
                 modifiedManifest,
-                isEditmode,
-                activeTab,
             },
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [
-        error,
-        secretViewAccess,
-        desiredManifest,
-        activeManifestEditorData,
-        manifest,
-        modifiedManifest,
-        isEditmode,
-        activeTab,
-        id,
-    ])
+    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -183,15 +167,15 @@ const ManifestComponent = ({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
             (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
-            markActiveTab(
-                (manifestViewRef.current.id === id && manifestViewRef.current.data.activeTab) || 'Live manifest',
-            )
+            setShowManifestCompareView(false)
+            toggleManagedFields(!isEditMode)
         }
 
         /* NOTE: id helps discern data between manifests of different resources */
         if (manifestViewRef.current.data.manifest && manifestViewRef.current.id === id) {
             handleDeriveStatesFromManifestRef()
             setLoading(false)
+            setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
         } else {
             setLoading(true)
 
@@ -220,6 +204,7 @@ const ManifestComponent = ({
                             setModifiedManifest(_manifest)
                         }
                         setLoading(false)
+                        setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
 
                         // Clear out error on pod/node change
                         if (error) {
@@ -245,14 +230,18 @@ const ManifestComponent = ({
             }
         }
 
-        return () => abortController.abort()
+        return () => {
+            abortController.abort()
+            setShowManifestCompareView(false)
+            setManifestCodeEditorMode(null)
+        }
     }, [])
 
     useEffect(() => {
-        if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
+        if (!isDeleted && !isEditMode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
-        if (isEditmode) {
+        if (isEditMode) {
             try {
                 const jsonManifestData = YAML.parse(activeManifestEditorData)
                 if (jsonManifestData?.metadata?.managedFields) {
@@ -261,17 +250,11 @@ const ManifestComponent = ({
             } catch {}
             toggleManagedFields(false)
         }
-    }, [isEditmode])
-
-    useEffect(() => {
-        if (params.actionName) {
-            markActiveTab(params.actionName)
-        }
-    }, [params.actionName])
+    }, [isEditMode, modifiedManifest])
 
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
-        if (activeTab === 'Live manifest') {
+        if (!showManifestCompareView) {
             try {
                 const jsonManifestData = YAML.parse(activeManifestEditorData)
                 if (jsonManifestData?.metadata?.managedFields) {
@@ -282,17 +265,25 @@ const ManifestComponent = ({
                 }
             } catch {}
         }
-    }, [activeManifestEditorData, hideManagedFields, activeTab])
+    }, [activeManifestEditorData, hideManagedFields, showManifestCompareView])
+
+    useEffect(() => {
+        if (showManifestCompareView) {
+            toggleManagedFields(false)
+            setActiveManifestEditorData(manifest)
+        } else {
+            setActiveManifestEditorData(modifiedManifest)
+        }
+    }, [showManifestCompareView])
 
     const handleEditorValueChange = (codeEditorData: string) => {
-        if (activeTab === 'Live manifest' && isEditmode) {
+        if (!showManifestCompareView && isEditMode) {
             setModifiedManifest(codeEditorData)
         }
     }
 
     const handleEditLiveManifest = () => {
-        setIsEditmode(true)
-        markActiveTab('Live manifest')
+        toggleManagedFields(false)
         setActiveManifestEditorData(modifiedManifest)
     }
 
@@ -300,6 +291,7 @@ const ManifestComponent = ({
         setLoading(true)
         setLoadingMsg('Applying changes')
         setShowDecodedData(false)
+        setManifestCodeEditorMode(null)
 
         let manifestString
         try {
@@ -325,7 +317,7 @@ const ManifestComponent = ({
                 selectedResource,
             )
                 .then((response) => {
-                    setIsEditmode(false)
+                    setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
                     const _manifest = JSON.stringify(response?.result?.manifest)
                     if (_manifest) {
                         setManifest(_manifest)
@@ -337,6 +329,7 @@ const ManifestComponent = ({
                 })
                 .catch((err) => {
                     setLoading(false)
+                    setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
                     if (err.code === 403) {
                         ToastManager.showToast({
                             variant: ToastVariantType.notAuthorized,
@@ -378,42 +371,29 @@ const ManifestComponent = ({
     }
 
     const handleCancel = () => {
-        setIsEditmode(false)
+        setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
         setModifiedManifest(manifest)
         setActiveManifestEditorData('')
         setErrorText('')
         setShowDecodedData(false)
+        toggleManagedFields(true)
     }
 
-    const markActiveTab = (_tabName: string) => {
-        toggleManagedFields(_tabName === 'Live manifest' && !isEditmode)
-        dispatch({
-            type: TabActions.MarkActive,
-            tabName: _tabName,
-        })
-    }
-
-    const updateEditor = (_tabName: string) => {
-        switch (_tabName) {
-            case 'Compare':
-                setActiveManifestEditorData(manifest)
+    useEffectAfterMount(() => {
+        switch (manifestCodeEditorMode) {
+            case ManifestCodeEditorMode.CANCEL:
+                handleCancel()
                 break
-            case 'Helm generated manifest':
-                setActiveManifestEditorData(desiredManifest)
+            case ManifestCodeEditorMode.EDIT:
+                handleEditLiveManifest()
                 break
-            case 'Live manifest':
+            case ManifestCodeEditorMode.APPLY_CHANGES:
+                handleApplyChanges()
+                break
             default:
-                setActiveManifestEditorData(modifiedManifest)
+            // DO NOTHING
         }
-    }
-
-    const handleTabClick = (_tab: iLink) => {
-        if (_tab.isDisabled || loading) {
-            return
-        }
-        markActiveTab(_tab.name)
-        updateEditor(_tab.name)
-    }
+    }, [manifestCodeEditorMode])
 
     const onChangeToggleShowDecodedValue = (jsonManifestData) => {
         if (!jsonManifestData?.data) {
@@ -429,9 +409,11 @@ const ManifestComponent = ({
         }
     }
 
+    const handleDesiredManifestClose = () => setShowManifestCompareView(false)
+
     const renderShowDecodedValueCheckbox = () => {
         const jsonManifestData = YAML.parse(trimedManifestEditorData)
-        if (jsonManifestData?.kind === 'Secret' && !isEditmode && secretViewAccess) {
+        if (jsonManifestData?.kind === 'Secret' && !isEditMode && secretViewAccess) {
             return (
                 <ConditionalWrap
                     condition={!jsonManifestData?.data}
@@ -490,64 +472,7 @@ const ManifestComponent = ({
             )}
             {!error && (
                 <div className="bcn-0 h-100">
-                    {(isExternalApp ||
-                        isResourceBrowserView ||
-                        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                            appDetails.deploymentAppDeleteRequest)) && (
-                        <div
-                            className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky' : ''}`}
-                        >
-                            {tabs.map((tab: iLink, index) => {
-                                return (!showDesiredAndCompareManifest &&
-                                    (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
-                                    (isResourceMissing && tab.name == 'Compare') ? (
-                                    <></>
-                                ) : (
-                                    <div
-                                        key={`${index}tab`}
-                                        className={` ${
-                                            tab.isDisabled || loading ? 'no-drop' : 'cursor'
-                                        } pl-4 pt-8 pb-8 pr-4`}
-                                    >
-                                        <div
-                                            className={`${
-                                                tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
-                                            } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
-                                            onClick={() => handleTabClick(tab)}
-                                            data-testid={tab.name}
-                                        >
-                                            {tab.name}
-                                        </div>
-                                    </div>
-                                )
-                            })}
-
-                            {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
-                                <>
-                                    <div className="pl-16 pr-16">|</div>
-                                    {!isEditmode ? (
-                                        <div
-                                            className="flex left cb-5 cursor"
-                                            onClick={handleEditLiveManifest}
-                                            data-testid="edit-live-manifest"
-                                        >
-                                            <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <button className="apply-change" onClick={handleApplyChanges}>
-                                                Apply Changes
-                                            </button>
-                                            <button className="cancel-change" onClick={handleCancel}>
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    )}
-                    {isResourceMissing && !loading && activeTab === 'Live manifest' ? (
+                    {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
                             msg="Manifest not available"
                             size={24}
@@ -557,14 +482,14 @@ const ManifestComponent = ({
                         />
                     ) : (
                         <CodeEditor
-                            defaultValue={activeTab === 'Compare' && desiredManifest}
-                            cleanData={activeTab === 'Compare'}
-                            diffView={activeTab === 'Compare'}
+                            defaultValue={showManifestCompareView && desiredManifest}
+                            cleanData={showManifestCompareView}
+                            diffView={showManifestCompareView}
                             theme="vs-dark--dt"
                             height={isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 77px)'}
                             value={trimedManifestEditorData}
                             mode={MODES.YAML}
-                            readOnly={activeTab !== 'Live manifest' || !isEditmode}
+                            readOnly={showManifestCompareView || !isEditMode}
                             onChange={handleEditorValueChange}
                             loading={loading}
                             customLoader={
@@ -575,12 +500,12 @@ const ManifestComponent = ({
                                     minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
                                 />
                             }
-                            focus={isEditmode}
+                            focus={isEditMode}
                         >
                             {showInfoText && (
                                 <CodeEditor.Information
                                     text={
-                                        isEditmode && activeTab === 'Live manifest'
+                                        isEditMode && !showManifestCompareView
                                             ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
                                             : EA_MANIFEST_SECRET_INFO_TEXT
                                     }
@@ -589,15 +514,24 @@ const ManifestComponent = ({
                                     {renderShowDecodedValueCheckbox()}
                                 </CodeEditor.Information>
                             )}
-                            {activeTab === 'Compare' && (
-                                <CodeEditor.Header hideDefaultSplitHeader>
+                            {showManifestCompareView && (
+                                <CodeEditor.Header hideDefaultSplitHeader className="p-0">
                                     <div className="dc__split-header">
-                                        <div className="dc__left-pane">Helm generated manifest </div>
-                                        <div className="dc__right-pane">Live manifest</div>
+                                        <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
+                                            <span>Desired manifest</span>
+                                            <button
+                                                className="dc__unset-button-styles flex"
+                                                aria-label="Close Desired Manifest"
+                                                onClick={handleDesiredManifestClose}
+                                            >
+                                                <ICClose className="icon-dim-16 scn-0" />
+                                            </button>
+                                        </div>
+                                        <div className="dc__split-header__pane">Live manifest</div>
                                     </div>
                                 </CodeEditor.Header>
                             )}
-                            {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
+                            {!showManifestCompareView && errorText && <CodeEditor.ErrorBar text={errorText} />}
                         </CodeEditor>
                     )}
                 </div>

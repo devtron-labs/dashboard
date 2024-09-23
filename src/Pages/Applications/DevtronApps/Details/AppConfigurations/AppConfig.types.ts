@@ -241,6 +241,7 @@ export interface ExtendedCollapsibleListItem
     configState: ResourceConfigState
 }
 
+// DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- START
 export interface DeploymentConfigParams {
     appId: string
     envId: string
@@ -276,6 +277,8 @@ export enum AppEnvDeploymentConfigQueryParams {
     COMPARE_WITH_IDENTIFIER_ID = 'compareWithIdentifierId',
     COMPARE_WITH_PIPELINE_ID = 'compareWithPipelineId',
     CHART_REF_ID = 'chartRefId',
+    MANIFEST_CHART_REF_ID = 'manifestChartRefId',
+    COMPARE_WITH_MANIFEST_CHART_REF_ID = 'compareWithManifestChartRefId',
 }
 
 export interface AppEnvDeploymentConfigQueryParamsType {
@@ -287,4 +290,29 @@ export interface AppEnvDeploymentConfigQueryParamsType {
     compareWithIdentifierId?: number
     compareWithPipelineId?: number
     chartRefId?: number
+    manifestChartRefId?: number
+    compareWithManifestChartRefId?: number
 }
+
+export type GetConfigDiffDataProps = Required<
+    Pick<DeploymentConfigCompareProps, 'appName' | 'envName' | 'type'> & {
+        configType: AppEnvDeploymentConfigType
+        compareName: string
+        identifierId: number
+        pipelineId: number
+    }
+>
+
+export type GetDeploymentTemplateDataProps = Omit<GetConfigDiffDataProps, 'identifierId' | 'pipelineId'>
+
+export type GetManifestDataProps = Pick<DeploymentConfigCompareProps, 'type' | 'environments'> & {
+    appId: string
+    envId: string
+    configType: AppEnvDeploymentConfigType
+    compareName: string
+    values: string
+    identifierId: number
+    pipelineId: number
+    manifestChartRefId: number
+}
+// DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- END

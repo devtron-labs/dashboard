@@ -27,6 +27,8 @@ import {
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
     TemplateListDTO,
+    getUrlWithSearchParams,
+    SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -42,11 +44,13 @@ import {
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
     MinChartRefDTO,
+    ClusterEnvTeams,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
+import { getProjectList } from '@Components/project/service'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -170,9 +174,49 @@ export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): 
     return get(url)
 }
 
-export function getAppFilters() {
-    return get(`${Routes.APP_FILTER_LIST}?auth=false`)
+export const getCommonAppFilters = async (
+    serverMode: SERVER_MODE,
+): Promise<
+    | {
+          isFullMode: true
+          appListFilters: Awaited<ReturnType<typeof getAppFilters>>
+          projectList?: never
+          clusterList?: never
+      }
+    | {
+          isFullMode: false
+          appListFilters?: never
+          projectList?: Awaited<ReturnType<typeof getProjectList>>
+          clusterList?: Awaited<ReturnType<typeof getClusterListMinWithoutAuth>>
+      }
+> => {
+    if (serverMode === SERVER_MODE.FULL) {
+        const response = await Promise.all([getAppFilters()])
+        return {
+            isFullMode: true,
+            appListFilters: response[0],
+        }
+    }
+    const response = await Promise.all([
+        getProjectList(),
+        getClusterListMinWithoutAuth(),
+    ])
+    return {
+        isFullMode: false,
+        clusterList: response[1],
+        projectList: response[0],
+    }
 }
+
+export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> =>
+    get(getUrlWithSearchParams(Routes.APP_FILTER_LIST, { auth: false })).then((response) => ({
+        ...response,
+        result: {
+            clusters: response.result?.Clusters ?? [],
+            environments: response.result?.Environments ?? [],
+            teams: response.result?.Teams ?? [],
+        },
+    }))
 
 /**
  * @deprecated Use getEnvironmentListMinPublic form common lib instead
@@ -507,6 +551,6 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
     return post(URL, request)
 }
 
-export function getTemplateOptions(appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> {
-    return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
-}
+export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> => (
+    get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
+)

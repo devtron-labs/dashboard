@@ -15,6 +15,10 @@
  */
 
 import { sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 
 export function subtractArray(a: any[], b: any[], key: string): any[] {
     if (!(a && a.length && a.length > 0)) {
@@ -67,4 +71,18 @@ export const swap = (array: any[], indexA: number, indexB: number) => {
     const temp = array[indexA]
     array[indexA] = array[indexB]
     array[indexB] = temp
+}
+
+export const getGitProviderIcon = (gitUrl: string): JSX.Element => {
+    let IconComponent: React.ElementType = Git // Using React.ElementType for any JSX component
+
+    if (gitUrl.includes('gitlab')) {
+        IconComponent = GitLab
+    } else if (gitUrl.includes('github')) {
+        IconComponent = GitHub
+    } else if (gitUrl.includes('bitbucket')) {
+        IconComponent = BitBucket
+    }
+
+    return <IconComponent className="icon-dim-20 mw-20" />
 }

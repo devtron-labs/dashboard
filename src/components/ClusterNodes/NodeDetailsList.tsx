@@ -569,7 +569,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     noResults ? 'no-result-container' : ''
                 }`}
             >
-                <div className="pl-20 pr-20">
+                <div className="pl-20 pr-20 dc__zi-4">
                     <NodeListSearchFilter
                         defaultVersion={defaultVersion}
                         nodeK8sVersions={nodeK8sVersions}

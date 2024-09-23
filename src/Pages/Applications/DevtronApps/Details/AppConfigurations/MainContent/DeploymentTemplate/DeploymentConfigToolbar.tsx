@@ -61,7 +61,6 @@ const DeploymentConfigToolbar = ({
                                 icon: FileCode,
                                 tabType: 'button',
                                 active: selectedTabIndex === 1,
-                                iconType: 'stroke',
                                 props: {
                                     onClick: changeTab,
                                     'data-index': 1,
@@ -74,7 +73,6 @@ const DeploymentConfigToolbar = ({
                                 icon: CompareIcon,
                                 tabType: 'button',
                                 active: selectedTabIndex === 2,
-                                iconType: 'stroke',
                                 props: {
                                     onClick: changeTab,
                                     'data-index': 2,

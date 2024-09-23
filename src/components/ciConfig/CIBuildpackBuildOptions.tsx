@@ -51,6 +51,7 @@ import {
     VERSION_DETECT_OPTION,
     VERSION_SELECT_STYLES,
 } from './ciConfigConstant'
+import { getGitProviderIcon } from '@Components/common'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {
