@@ -41,12 +41,12 @@ import {
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
+    MinChartRefDTO,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
-import { MinChartRefDTO } from './types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)

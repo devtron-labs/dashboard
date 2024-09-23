@@ -20,6 +20,8 @@ import {
     ResponseType,
     SeverityCount,
     AppEnvironment,
+    DeploymentChartVersionType,
+    ChartMetadataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
@@ -158,4 +160,12 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface MinChartRefDTO {
+    chartMetadata: Record<string, ChartMetadataType>
+    chartRefs: DeploymentChartVersionType[]
+    latestAppChartRef: number
+    latestChartRef: number
+    latestEnvChartRef?: number
 }
