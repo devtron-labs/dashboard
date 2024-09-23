@@ -4,7 +4,6 @@ import {
     DATE_TIME_FORMATS,
     DEFAULT_BASE_PAGE_SIZE,
     ErrorScreenManager,
-    FilterButton,
     GenericEmptyState,
     Pagination,
     SearchBar,
@@ -20,6 +19,8 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     SecurityModal,
+    FilterSelectPicker,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
@@ -132,21 +133,36 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
-    const updateSeverityFilters = (selectedOptions: string[]) => {
-        updateSearchParams({ severity: selectedOptions })
+    const updateSeverityFilters = (selectedOptions: SelectPickerOptionType[]) => {
+        updateSearchParams({ severity: selectedOptions.map((severityOption) => String(severityOption.value)) })
     }
 
-    const updateEnvironmentFilters = (selectedOptions: string[]) => {
-        updateSearchParams({ environment: selectedOptions })
+    const updateEnvironmentFilters = (selectedOptions: SelectPickerOptionType[]) => {
+        updateSearchParams({ environment: selectedOptions.map((envOption) => String(envOption.value)) })
     }
 
-    const updateClusterFilters = (selectedOptions: string[]) => {
-        updateSearchParams({ cluster: selectedOptions })
+    const updateClusterFilters = (selectedOptions: SelectPickerOptionType[]) => {
+        updateSearchParams({ cluster: selectedOptions.map((clusterOption) => String(clusterOption.value)) })
     }
 
     const updateSearchType = (selectedOption: OptionType) => {
         updateSearchParams({ searchType: selectedOption.value })
     }
+
+    const selectedSeverities = severity.map((severityId) => ({
+        label: getSeverityFilterLabelFromValue(severityId),
+        value: severityId,
+    }))
+
+    const selectedEnvironments = environment.map((envId) => ({
+        label: getLabelFromValue(SecurityScansTabMultiFilterKeys.environment, envId),
+        value: envId,
+    }))
+
+    const selectedClusters = cluster.map((clusterId) => ({
+        label: getLabelFromValue(SecurityScansTabMultiFilterKeys.cluster, clusterId),
+        value: clusterId,
+    }))
 
     const handleAppNameSorting = () => handleSorting(SecurityListSortableKeys.APP_NAME)
     const handleEnvNameSorting = () => handleSorting(SecurityListSortableKeys.ENV_NAME)
@@ -252,30 +268,33 @@ export const SecurityScansTab = () => {
                 />
             </div>
             <div className="flexbox dc__gap-8">
-                <FilterButton
+                <FilterSelectPicker
+                    inputId="security-severity-filter"
                     placeholder="Severity"
-                    disabled={clusterEnvListLoading}
-                    appliedFilters={severity}
-                    options={clusterEnvListResult?.filters?.severity}
-                    handleApplyChange={updateSeverityFilters}
-                    controlWidth="140px"
+                    isDisabled={clusterEnvListLoading}
+                    isLoading={clusterEnvListLoading}
+                    appliedFilterOptions={selectedSeverities}
+                    handleApplyFilter={updateSeverityFilters}
+                    options={clusterEnvListResult?.filters.severity}
                 />
-                <FilterButton
+                <FilterSelectPicker
+                    inputId="security-cluster-filter"
                     placeholder="Cluster"
-                    disabled={clusterEnvListLoading}
-                    appliedFilters={cluster}
-                    options={clusterEnvListResult?.filters?.clusters || []}
-                    handleApplyChange={updateClusterFilters}
-                    controlWidth="140px"
+                    isDisabled={clusterEnvListLoading}
+                    isLoading={clusterEnvListLoading}
+                    appliedFilterOptions={selectedClusters}
+                    handleApplyFilter={updateClusterFilters}
+                    options={clusterEnvListResult?.filters.clusters}
                 />
-                <FilterButton
+                <FilterSelectPicker
+                    inputId="security-environment-filter"
                     placeholder="Environment"
-                    disabled={clusterEnvListLoading}
-                    appliedFilters={environment}
-                    options={clusterEnvListResult?.filters?.environments || []}
-                    handleApplyChange={updateEnvironmentFilters}
-                    menuAlignFromRight
-                    controlWidth="175px"
+                    isDisabled={clusterEnvListLoading}
+                    isLoading={clusterEnvListLoading}
+                    appliedFilterOptions={selectedEnvironments}
+                    handleApplyFilter={updateEnvironmentFilters}
+                    options={clusterEnvListResult?.filters.environments}
+                    shouldMenuAlignRight
                 />
             </div>
         </div>

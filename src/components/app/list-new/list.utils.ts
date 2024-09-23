@@ -117,7 +117,7 @@ export const useFilterOptions = ({
 
     const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
         () =>
-            appListFiltersResponse?.appListFilters.result.environments.reduce((prev, curr) => {
+            appListFiltersResponse?.appListFilters?.result.environments.reduce((prev, curr) => {
                 if (!prev.find((clusterItem) => clusterItem.label === curr.cluster_id)) {
                     prev.push({ label: curr.cluster_id, options: [] })
                 }
@@ -159,7 +159,7 @@ export const useFilterOptions = ({
             appListFiltersResponse?.isFullMode
                 ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
                 : getClusterOptions(appListFiltersResponse?.clusterList.result),
-        [appListFiltersResponse],
+        [appListFiltersResponse, isExternalArgo, isExternalFlux],
     )
 
     const namespaceOptions: GroupedOptionsType[] = useMemo(

@@ -70,6 +70,10 @@
         width: max-content;
         min-width: 100%;
 
+        &:hover > :first-child {
+            background-color: var(--N50);
+        }
+
         & > :first-child {
             position: sticky;
             left: 0;
