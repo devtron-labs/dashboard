@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, Fragment } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
 import {
     EnvResourceType,
@@ -27,22 +27,19 @@ import {
     getEnvironmentListMinPublic,
     ToastVariantType,
     ToastManager,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { ValueContainerProps, components } from 'react-select'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
 import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
 import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
 import { JobEnvOverrideRouteProps } from '../AppConfig.types'
-import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
-import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { renderNavItem } from './Navigation.helper'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
@@ -207,23 +204,6 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
     )
 }
 
-const ValueContainer = (props: ValueContainerProps) => {
-    const { selectProps, children } = props
-    return (
-        <components.ValueContainer {...props}>
-            {!selectProps.inputValue ? (
-                <>
-                    <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
-                    <span className="dc__position-abs dc__left-35 cn-5 ml-2">{selectProps.placeholder}</span>
-                </>
-            ) : (
-                <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
-            )}
-            <span className="dc__position-abs dc__left-30 cn-5 ml-2">{React.cloneElement(children[1])}</span>
-        </components.ValueContainer>
-    )
-}
-
 const EnvironmentOverrideRouter = () => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
@@ -248,7 +228,7 @@ const EnvironmentOverrideRouter = () => {
                     list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
                 }
             })
-            setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
+            setEnvironmentOptions(createClusterEnvGroup(environments, 'clusterName'))
             setCIPipelines(ciConfigRes?.ciPipelines)
         } catch (err) {
             showError(err)
@@ -311,43 +291,19 @@ const EnvironmentOverrideRouter = () => {
     }
 
     const renderEnvSelector = (): JSX.Element => (
-        <ReactSelect
+        <SelectPicker
+            inputId="job-pipeline-environment-dropdown"
             autoFocus
             menuIsOpen
             isSearchable
-            menuPlacement="auto"
-            closeMenuOnScroll
             placeholder="Select Environment"
             classNamePrefix="job-pipeline-environment-dropdown"
             options={environmentOptions}
-            value={environmentOptions.find((env) => env.id === -1)}
-            getOptionLabel={(option) => `${option.name}`}
-            getOptionValue={(option) => `${option.id}`}
-            isMulti={false}
+            value={environmentOptions.find((env) => env.value === -1)}
+            getOptionLabel={(option) => `${option.label}`}
+            getOptionValue={(option) => `${option.value}`}
             onChange={selectEnvironment}
             onBlur={handleAddEnvironment}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: null,
-                GroupHeading: groupHeading,
-                ValueContainer,
-            }}
-            styles={{
-                ...groupStyle(),
-                control: (base) => ({
-                    ...base,
-                    border: '1px solid #d6dbdf',
-                    minHeight: '20px',
-                    height: '30px',
-                    marginTop: '4px',
-                    width: '100%',
-                }),
-                container: (base) => ({
-                    ...base,
-                    paddingRight: '0px',
-                }),
-                valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
-            }}
         />
     )
 
