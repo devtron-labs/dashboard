@@ -87,6 +87,7 @@ jobs:
         fi
 
         echo "========================================================================"
+        unset GH_TOKEN
         gh auth login --with-token $GH_ADMIN_TOKEN
         repo_url=$(echo "$url" | cut -d'/' -f1-5)
         gh issue list --repo $repo_url --json "url" 
