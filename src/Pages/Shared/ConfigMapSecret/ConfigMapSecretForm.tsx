@@ -336,14 +336,14 @@ export const ConfigMapSecretForm = React.memo(
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
                 if (isESO) {
-                    isValidSecretData = !(state.esoData && state.esoDataFrom) && (state.esoData || state.esoDataFrom)
+                    isValidSecretData =
+                        !(state.esoData && state.esoDataFrom) &&
+                        (state.esoData || state.esoDataFrom) &&
+                        !state.secretStore !== !state.secretStoreRef
                     if (state.esoData && isValidSecretData) {
-                        isValidSecretData = state.esoData?.reduce(
-                            (_isValidSecretData, s) => {
-                                isValidSecretData = _isValidSecretData && !!s?.secretKey && !!s.key
-                                return isValidSecretData
-                            },
-                            !state.secretStore !== !state.secretStoreRef && !!state.esoData.length,
+                        isValidSecretData = state.esoData.reduce(
+                            (_isValidSecretData, s) => _isValidSecretData && !!s?.secretKey && !!s.key,
+                            isValidSecretData,
                         )
                     }
                 } else {
