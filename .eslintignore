@@ -242,7 +242,6 @@ src/components/cluster/ClusterComponentModal.tsx
 src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx
 src/components/cluster/ClusterInstallStatus.tsx
-src/components/cluster/Environment.tsx
 src/components/cluster/UseNameListDropdown.tsx
 src/components/cluster/cluster.service.ts
 src/components/cluster/cluster.util.ts

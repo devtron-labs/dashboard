@@ -1982,7 +1982,7 @@ const CDMaterial = ({
                             <>
                                 {getDeployButtonIcon()}
                                 {buttonLabel}
-                                {isVirtualEnvironment && ' to virtual env'}
+                                {isVirtualEnvironment && ' to isolated env'}
                                 {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
                                     <InfoOutline className="icon-dim-16 ml-5" />
                                 )}

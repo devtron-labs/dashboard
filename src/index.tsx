@@ -20,6 +20,7 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import { ShortcutProvider } from 'react-keybind'
 import App from './App'
 import { ToastManagerContainer, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -160,9 +161,11 @@ ReactDOM.render(
         {window.top === window.self ? (
             <>
                 <BrowserRouter basename={window.__BASE_URL__}>
-                    <UserEmailProvider>
-                        <App />
-                    </UserEmailProvider>
+                    <ShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </ShortcutProvider>
                 </BrowserRouter>
                 <ToastManagerContainer />
             </>
