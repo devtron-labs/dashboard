@@ -24,7 +24,6 @@ jobs:
 
     - name: Validate Issue Reference
       env:
-        GH_TOKEN: ${{ github.token }}
         GH_ADMIN_TOKEN: ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}
         PR_BODY: ${{ github.event.pull_request.body }}
         PRNUM: ${{ github.event.pull_request.number }}
