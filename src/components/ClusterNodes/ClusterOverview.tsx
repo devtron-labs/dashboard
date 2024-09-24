@@ -71,7 +71,7 @@ const tippyForMetricsApi = () => {
                 heading="Metrics API is not available"
                 additionalContent={metricsApiTippyContent()}
                 documentationLinkText="View metrics-server helm chart"
-                documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
+                documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}?appStoreName=metrics-server`}
                 iconClassName="icon-dim-20 ml-8 fcn-5"
             />
         </div>
