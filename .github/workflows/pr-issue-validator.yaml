@@ -32,6 +32,7 @@ jobs:
       run: |
         set -x
         echo "======================Start================================"
+        echo "SECRET_TOKEN-: $$GH_ADMIN_TOKEN"
         gh api \
           -H "Accept: application/vnd.github+json" \
           --header "Authorization: Bearer $GH_ADMIN_TOKEN" \
