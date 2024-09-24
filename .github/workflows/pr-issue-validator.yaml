@@ -32,11 +32,10 @@ jobs:
       run: |
         set -x
         echo "======================Start================================"
-        echo "SECRET_TOKEN-: $$GH_ADMIN_TOKEN"
         gh api \
           -H "Accept: application/vnd.github+json" \
           --header "Authorization: Bearer $GH_ADMIN_TOKEN" \
-          /repos/devtron-labs/sprint-tasks/issues
+          /repos/devtron-labs/devops-sprint/issues
         echo "========================================================================"
 
         # Skip validation for documentation or chore PRs
