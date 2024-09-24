@@ -56,6 +56,7 @@ jobs:
         extract_issue_number() {
           local pattern="$1"
           if [[ "$PR_BODY" =~ $pattern ]]; then
+            echo "matched for this patterent $pattern"
             echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n'
             return 0
           else
