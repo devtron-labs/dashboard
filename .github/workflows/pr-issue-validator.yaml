@@ -36,7 +36,7 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           --header "Authorization: Bearer $GH_ADMIN_TOKEN" \
-          /repos/devtron-labs/devops-sprint/issues
+          /repos/devtron-labs/devtron/issues
 
         echo "========================================================================"
 
