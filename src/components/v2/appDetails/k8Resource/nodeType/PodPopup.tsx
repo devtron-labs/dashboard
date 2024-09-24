@@ -31,10 +31,9 @@ const PodPopup = ({
     handleShowVulnerabilityModal,
 }: PodPopupProps) => {
     const { installedModuleMap } = useMainContext()
-    const showResourceScanModal = getShowResourceScanModal(
-        kind as NodeType,
-        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-    )
+    const showResourceScanModal =
+        window._env_.ENABLE_RESOURCE_SCAN_V2 &&
+        getShowResourceScanModal(kind as NodeType, installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY])
 
     const handleDescribeEvents = () => {
         describeNode(NodeDetailTabs.EVENTS)
