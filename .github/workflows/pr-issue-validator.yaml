@@ -24,7 +24,8 @@ jobs:
 
     - name: Validate Issue Reference
       env:
-        GH_TOKEN: ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}
+        GH_ADMIN_TOKEN: ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}
+        GH_TOKEN: ${{ github.token }}
         PR_BODY: ${{ github.event.pull_request.body }}
         PRNUM: ${{ github.event.pull_request.number }}
         TITLE: ${{ github.event.pull_request.title }}
@@ -86,6 +87,7 @@ jobs:
         fi
 
         echo "========================================================================"
+        gh auth login --with-token $GH_ADMIN_TOKEN
         repo_url=$(echo "$url" | cut -d'/' -f1-5)
         gh issue list --repo $repo_url --json "url" 
         echo "========================================================================"
