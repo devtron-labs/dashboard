@@ -35,6 +35,7 @@ jobs:
         # Skip validation for documentation or chore PRs
         if [[ "$TITLE" =~ ^(doc:|docs:|chore:) ]]; then
           echo "Skipping validation for docs/chore PR."
+          echo "PR NUMBER-: $PRNUM "
           gh pr edit $PRNUM --remove-label "PR:Issue-verification-failed"
           gh pr edit $PRNUM --add-label "PR:Ready-to-Review"
           exit 0
