@@ -39,7 +39,7 @@ import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, TriggerType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import { Info } from '../common/icons/Icons'
@@ -333,7 +333,11 @@ export default function BuildCD({
         formDataError.containerRegistryError = validationRules.containerRegistry(
             selectedRegistry.id || formData.containerRegistryName,
         )
-        form.selectedRegistry = selectedRegistry
+        form.selectedRegistry = { ...selectedRegistry,
+            value: selectedRegistry.id,
+            label: selectedRegistry.id,
+            startIcon: <div className={`dc__registry-icon ${selectedRegistry.registryType}`} />
+        } as RegistryPayloadWithSelectType
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
