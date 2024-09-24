@@ -65,6 +65,7 @@ jobs:
 
         issue_num=""
         for pattern in "${patterns[@]}"; do
+          echo "Now checking for $pattern"
           issue_num=$(extract_issue_number "$pattern") && echo "issue no-:" $issue_num  && break
         done
 
