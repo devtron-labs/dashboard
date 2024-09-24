@@ -92,7 +92,7 @@ export const ChartEnvironmentSelector = ({
         if (isVirtualEnvironment && VirtualEnvHelpTippy) {
             return (
                 <div className="flex left">
-                    <div className="ml-4 mr-4">(Virtual)</div>
+                    <div className="ml-4 mr-4">(Isolated)</div>
                     <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
@@ -645,7 +645,7 @@ export const ValueNameInput = ({
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                handleOnBlur={() => handleValueNameOnBlur()}
+                onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
                 isRequiredField
@@ -671,7 +671,7 @@ export const AppNameInput = ({
                 placeholder="Eg. app-name"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                handleOnBlur={handleAppNameOnBlur}
+                onBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
