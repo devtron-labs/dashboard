@@ -30,7 +30,10 @@ jobs:
         TITLE: ${{ github.event.pull_request.title }}
       run: |
         set -x
-        
+        echo "======================Start================================"
+        gh issue list --repo https://github.com/devtron-labs/sprint-tasks --json URL
+        echo "========================================================================"
+
         # Skip validation for documentation or chore PRs
         if [[ "$TITLE" =~ ^(doc:|docs:|chore:) ]]; then
           echo "Skipping validation for docs/chore PR."
@@ -85,10 +88,10 @@ jobs:
           url="https://github.com/devtron-labs/devtron/issues/$issue_num"
         fi
 
-        echo "========================================================================"
-        repo_url=$(echo "$url" | cut -d'/' -f1-5)
-        gh issue list --repo $repo_url --json "url" 
-        echo "========================================================================"
+        # echo "========================================================================"
+        # repo_url=$(echo "$url" | cut -d'/' -f1-5)
+        # gh issue list --repo $repo_url --json "url" 
+        # echo "========================================================================"
 
 
         # Check if the issue exists
