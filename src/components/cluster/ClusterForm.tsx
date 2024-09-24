@@ -139,7 +139,7 @@ export default function ClusterForm({
     const authenTicationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const isDefaultCluster = (): boolean => {
-        return id == 1
+        return id == DEFAULT_CLUSTER_ID
     }
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
