@@ -65,7 +65,7 @@ jobs:
 
         issue_num=""
         for pattern in "${patterns[@]}"; do
-          issue_num=$(extract_issue_number "$pattern") && break
+          issue_num=$(extract_issue_number "$pattern") && echo "issue no-:" $issue_num  && break
         done
 
         if [[ -z "$issue_num" ]]; then
