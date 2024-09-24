@@ -1,6 +1,4 @@
-import { toast } from 'react-toastify'
-
-import { DeleteDialog, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteDialog, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfig } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME } from './ConfigMapSecret.constants'
@@ -29,7 +27,10 @@ export const ConfigMapSecretDeleteModal = ({
                 await deleteEnvConfigMap(id, appId, envId, configMapSecretData.name)
             }
 
-            toast.success('Successfully deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully deleted',
+            })
             updateCMSecret()
         } catch (err) {
             closeDeleteModal()

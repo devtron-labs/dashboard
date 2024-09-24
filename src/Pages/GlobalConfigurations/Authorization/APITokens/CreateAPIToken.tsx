@@ -20,7 +20,6 @@
 import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
-import { toast } from 'react-toastify'
 import {
     ServerErrors,
     showError,
@@ -28,6 +27,8 @@ import {
     ResizableTextarea,
     InfoIconTippy,
     useMainContext,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
@@ -177,7 +178,10 @@ const CreateAPIToken = ({
                 invalidDescription: !descriptionValidation.isValid,
                 invalidDescriptionMessage: descriptionValidation.message,
             })
-            toast.error(REQUIRED_FIELDS_MISSING)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: REQUIRED_FIELDS_MISSING,
+            })
 
             return
         }

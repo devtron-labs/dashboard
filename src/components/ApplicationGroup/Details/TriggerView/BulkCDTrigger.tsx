@@ -39,8 +39,9 @@ import {
     CDMaterialSidebarType,
     CD_MATERIAL_SIDEBAR_TABS,
     RuntimeParamsListItemType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -148,7 +149,10 @@ export default function BulkCDTrigger({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
+            })
             return
         }
 
@@ -343,7 +347,10 @@ export default function BulkCDTrigger({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
+            })
             return
         }
 

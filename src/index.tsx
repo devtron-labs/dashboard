@@ -20,8 +20,9 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import { ShortcutProvider } from 'react-keybind'
 import App from './App'
-import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManagerContainer, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -158,11 +159,16 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UserEmailProvider>
-                    <App />
-                </UserEmailProvider>
-            </BrowserRouter>
+            <>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <ShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </ShortcutProvider>
+                </BrowserRouter>
+                <ToastManagerContainer />
+            </>
         ) : null}
     </React.StrictMode>,
     root,

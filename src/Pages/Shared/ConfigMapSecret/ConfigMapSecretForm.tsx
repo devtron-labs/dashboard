@@ -17,7 +17,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 
 import { Prompt, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 
 import {
@@ -27,13 +26,14 @@ import {
     CHECKBOX_VALUE,
     stopPropagation,
     InfoColourBar,
-    ToastBody,
     RadioGroup,
     RadioGroupItem,
     ServerErrors,
     CustomInput,
     usePrompt,
     ButtonWithLoader,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -243,7 +243,11 @@ export const ConfigMapSecretForm = React.memo(
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isFormValid = true
             if (componentType === CMSecretComponentType.Secret && state.unAuthorized) {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    title: 'View-only access',
+                    description: "You won't be able to make any changes",
+                })
                 return { isValid: false, arr: [] }
             }
             if (!state.configName.value) {
@@ -322,7 +326,10 @@ export const ConfigMapSecretForm = React.memo(
             const dataArray = state.yamlMode && !hasSecretCode ? tempArr.current : state.currentData
             const { isValid, arr } = validateKeyValuePair(dataArray)
             if (!isValid) {
-                toast.error(INVALID_YAML_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: INVALID_YAML_MSG,
+                })
                 dispatch({
                     type: ConfigMapActionTypes.updateCurrentData,
                     payload: arr,
@@ -331,7 +338,10 @@ export const ConfigMapSecretForm = React.memo(
             }
 
             if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
-                toast.error(`Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
+                })
                 isFormValid = false
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
@@ -525,12 +535,11 @@ export const ConfigMapSecretForm = React.memo(
                         }
                         toastTitle = 'Overridden'
                     }
-                    toast.success(
-                        <div className="toast">
-                            <div className="toast__title">{toastTitle}</div>
-                            <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                        </div>,
-                    )
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        title: toastTitle,
+                        description: 'Changes will be reflected after next deployment.',
+                    })
                     dispatch({ type: ConfigMapActionTypes.success })
 
                     if (!configMapSecretAbortRef.current.signal.aborted) {
@@ -561,7 +570,10 @@ export const ConfigMapSecretForm = React.memo(
                     await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
                 }
 
-                toast.success('Restored to global.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Restored to global.',
+                })
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {
@@ -923,7 +935,7 @@ export const ConfigMapSecretForm = React.memo(
                     value={state.configName.value}
                     autoFocus
                     onChange={onConfigNameChange}
-                    handleOnBlur={trimConfigMapName}
+                    onBlur={trimConfigMapName}
                     placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
                     isRequiredField
                     disabled={!!configMapSecretData?.name}

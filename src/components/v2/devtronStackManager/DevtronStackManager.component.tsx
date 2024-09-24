@@ -21,19 +21,18 @@ import {
     Progressing,
     ConditionalWrap,
     VisibleModal,
-    ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
     Toggle,
-    toastAccessDenied,
     ConfirmationDialog,
-    GenericEmptyState,
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
     useMainContext,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
     InstallationType,
@@ -142,12 +141,11 @@ const ModuleDetailsCard = ({
 }: ModuleDetailsCardType): JSX.Element => {
     const handleOnClick = (): void => {
         if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
-            toast.error(
-                <ToastBody
-                    title="Unknown integration status"
-                    subtitle="There was an error fetching the integration status. Please try again later."
-                />,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'Unknown integration status',
+                description: 'There was an error fetching the integration status. Please try again later.',
+            })
         } else if (handleModuleCardClick) {
             handleModuleCardClick(moduleDetails, fromDiscoverModules)
         }
@@ -483,7 +481,10 @@ const InstallationStatus = ({
             moduleDetails.moduleType === MODULE_TYPE_SECURITY,
     )
     const renderTransitonToggle = () => {
-        toastAccessDenied()
+        ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            description: TOAST_ACCESS_DENIED.SUBTITLE,
+        })
         setToggled(true)
         setTimeout(() => {
             setToggled(false)
@@ -674,15 +675,10 @@ const ModuleUpdateNote = (): JSX.Element => {
 
 export const handleError = (err: any, isUpgradeView?: boolean): void => {
     if (err.code === 403) {
-        toast.info(
-            <ToastBody
-                title="Access denied"
-                subtitle={`Only super-admin users can ${isUpgradeView ? 'update Devtron' : 'install integrations'}.`}
-            />,
-            {
-                className: 'devtron-toast unauthorized',
-            },
-        )
+        ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            description: `Only super-admin users can ${isUpgradeView ? 'update Devtron' : 'install integrations'}.`,
+        })
     } else {
         showError(err)
     }

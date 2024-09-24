@@ -44,8 +44,9 @@ import {
     SourceTypeMap,
     RuntimeParamsListItemType,
     preventBodyScroll,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
     BUILD_STATUS,
@@ -236,7 +237,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
                 } else {
-                    toast.error('Invalid node id')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Invalid node id',
+                    })
                     history.push({
                         search: '',
                     })
@@ -247,7 +251,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (!isNaN(nodeId)) {
                     onClickRollbackMaterial(nodeId)
                 } else {
-                    toast.error('Invalid node id')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Invalid node id',
+                    })
                     history.push({
                         search: '',
                     })
@@ -262,14 +269,20 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     nodeType !== DeploymentNodeType.PRECD &&
                     nodeType !== DeploymentNodeType.POSTCD
                 ) {
-                    toast.error('Invalid node type')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Invalid node type',
+                    })
                     history.push({
                         search: '',
                     })
                 } else if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
                 } else {
-                    toast.error('Invalid node id')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Invalid node id',
+                    })
                     history.push({
                         search: '',
                     })
@@ -285,7 +298,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (!isNaN(+ciNodeId) && !!pipelineName) {
                     onClickCIMaterial(ciNodeId, pipelineName, false)
                 } else {
-                    toast.error('Invalid Node')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Invalid Node',
+                    })
                 }
             }
         }
@@ -923,7 +939,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
 
         if (!_selectedNode) {
-            toast.error('Invalid node id')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid node id',
+            })
             history.push({
                 search: '',
             })
@@ -975,7 +994,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
 
         if (!_selectedNode) {
-            toast.error('Invalid node id')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid node id',
+            })
             history.push({
                 search: '',
             })
@@ -1044,12 +1066,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
         if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            toast.error(
-                CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
                     '$GIT_MATERIAL_ID',
                     `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
                 ),
-            )
+            })
             setCDLoading(false)
             return
         }
@@ -1068,7 +1091,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         triggerCINode(payload, abortCIBuildRef.current.signal)
             .then((response: any) => {
                 if (response.result) {
-                    toast.success('Pipeline Triggered')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Triggered',
+                    })
                     setCDLoading(false)
                     closeCIModal()
                     setErrorCode(response.code)
@@ -1153,7 +1179,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
 
         if (!appIds.length && !skippedResources.length) {
-            toast.error('No valid application present')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'No valid application present',
+            })
             return
         }
         setIsBranchChangeLoading(true)
@@ -1398,7 +1427,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (isRuntimeParamErrorPresent) {
             setCDLoading(false)
             setCILoading(false)
-            toast.error('Please resolve all the runtime parameter errors before triggering the pipeline')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the runtime parameter errors before triggering the pipeline',
+            })
             return false
         }
 
@@ -1676,7 +1708,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
 
         if (!_CITriggerPromiseFunctionList.length && !skippedResources.length) {
-            toast.error('No valid CI pipeline found')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'No valid CI pipeline found',
+            })
             setCDLoading(false)
             setCILoading(false)
             return

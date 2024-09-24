@@ -15,8 +15,15 @@
  */
 
 import React, { useState } from 'react'
-import { showError, DeleteDialog, Checkbox, CHECKBOX_VALUE, noop } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import {
+    showError,
+    DeleteDialog,
+    Checkbox,
+    CHECKBOX_VALUE,
+    noop,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType, ResourceListPayloadType } from '../Types'
@@ -50,7 +57,10 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
             }
 
             await deleteResource(resourceDeletePayload)
-            toast.success('Resource deleted successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Resource deleted successfully',
+            })
             await getResourceListData()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
