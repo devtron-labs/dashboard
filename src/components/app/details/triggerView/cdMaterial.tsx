@@ -76,6 +76,9 @@ import {
     useUserEmail,
     ToastManager,
     ToastVariantType,
+    AppDetailsPayload,
+    ResponseType,
+    ApiResponseResultType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -145,6 +148,17 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const getSecurityScan: ({
+    appId,
+    envId,
+    installedAppId,
+}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getSecurityScan',
+    null,
+    'function',
+)
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -191,6 +205,7 @@ const CDMaterial = ({
     const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
+    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
@@ -1562,10 +1577,11 @@ const CDMaterial = ({
                                 isSecurityModuleInstalled={state.isSecurityModuleInstalled}
                                 artifactId={+mat.id}
                                 applicationId={appId}
-                                environmentId={envId}
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
+                                SecurityModalSidebar={SecurityModalSidebar}
+                                getSecurityScan={getSecurityScan}
                             />
                         )}
                 </ImageCard>
