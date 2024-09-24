@@ -86,7 +86,7 @@ jobs:
         fi
 
         echo "========================================================================"
-        gh issue list --repo https://github.com/devtron-labs/devtron --json "url"
+        gh issue list --repo $url --json "url"
         echo "========================================================================"
 
         # Check if the issue exists
