@@ -24,14 +24,17 @@ jobs:
 
     - name: Validate Issue Reference
       env:
-        GH_TOKEN: ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}
+        GH_TOKEN: ${{ github.token }}
         PR_BODY: ${{ github.event.pull_request.body }}
         PRNUM: ${{ github.event.pull_request.number }}
         TITLE: ${{ github.event.pull_request.title }}
       run: |
         set -x
         echo "======================Start================================"
-        gh issue list --repo https://github.com/devtron-labs/sprint-tasks --json URL
+        gh api \
+          -H "Accept: application/vnd.github+json" \
+          --header "Authorization: Bearer ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}" \
+          /repos/devtron-labs/sprint-tasks/issues
         echo "========================================================================"
 
         # Skip validation for documentation or chore PRs
