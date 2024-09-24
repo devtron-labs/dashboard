@@ -86,8 +86,9 @@ jobs:
 
         echo "========================================================================"
         repo_url=$(echo "$url" | cut -d'/' -f1-5)
-        gh issue list --repo $repo_url --json "url" --limit 1000
+        gh issue list --repo $repo_url --json "url" 
         echo "========================================================================"
+
 
         # Check if the issue exists
         response_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
