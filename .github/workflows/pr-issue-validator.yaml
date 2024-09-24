@@ -56,9 +56,12 @@ jobs:
         # Extract issue number from PR body
         extract_issue_number() {
           local pattern="$1"
+          echo "$PR_BODY"
           if [[ "$PR_BODY" =~ $pattern ]]; then
             echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n'
             return 0
+          else
+            echo "Not match the patterns"
           fi
           return 1
         }
