@@ -25,6 +25,7 @@ jobs:
     - name: Validate Issue Reference
       env:
         GH_TOKEN: ${{ github.token }}
+        GH_ADMIN_TOKEN: ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}
         PR_BODY: ${{ github.event.pull_request.body }}
         PRNUM: ${{ github.event.pull_request.number }}
         TITLE: ${{ github.event.pull_request.title }}
@@ -33,7 +34,7 @@ jobs:
         echo "======================Start================================"
         gh api \
           -H "Accept: application/vnd.github+json" \
-          --header "Authorization: Bearer ${{ secrets.GH_SYSTEMSDT_TOKEN_ITEM_ISSUE_RW }}" \
+          --header "Authorization: Bearer $GH_ADMIN_TOKEN" \
           /repos/devtron-labs/sprint-tasks/issues
         echo "========================================================================"
 
