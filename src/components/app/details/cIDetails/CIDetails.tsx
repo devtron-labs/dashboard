@@ -744,6 +744,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 SecurityModalSidebar={SecurityModalSidebar}
                 isSecurityScanV2Enabled={isSecurityScanV2Enabled}
                 responseData={isSecurityScanV2Enabled ? scanResultResponse?.result : parseExecutionDetailResponse(executionDetailsResponse?.result)}
+                hidePolicy
             />
         </div>
     )

@@ -1577,6 +1577,7 @@ const CDMaterial = ({
                                 isSecurityModuleInstalled={state.isSecurityModuleInstalled}
                                 artifactId={+mat.id}
                                 applicationId={appId}
+                                environmentId={envId}
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}

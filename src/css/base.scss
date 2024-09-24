@@ -4931,3 +4931,14 @@ textarea::placeholder {
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
+
+.security-policy--whitelist,
+.security-policy--whitelisted {
+    color: var(--G500);
+    text-transform: capitalize;
+}
+
+.security-policy--block {
+    color: var(--R500);
+    text-transform: capitalize;
+}
