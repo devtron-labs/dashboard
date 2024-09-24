@@ -245,39 +245,44 @@ export const DeploymentConfigCompare = ({
             : !!configType && !!compareWithConfigType,
     )
 
-    const [deploymentTemplateResolvedDataLoader, deploymentTemplateResolvedData, deploymentTemplateResolvedDataErr] =
-        useAsync(
-            () =>
-                abortPreviousRequests(
-                    () =>
-                        Promise.all([
-                            getDeploymentTemplateResolvedData({
-                                appName,
-                                envName,
-                                type,
-                                compareName: compareTo,
-                                values: getDeploymentTemplateValues(comparisonData[0].result?.deploymentTemplate),
-                                signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                            }),
-                            getDeploymentTemplateResolvedData({
-                                type,
-                                appName,
-                                envName,
-                                compareName: compareWith,
-                                values: getDeploymentTemplateValues(comparisonData[1].result?.deploymentTemplate),
-                                signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                            }),
-                        ]),
-                    deploymentTemplateResolvedDataAbortControllerRef,
-                ),
-            [convertVariables, comparisonData],
-            convertVariables && !!comparisonData,
-        )
+    const [
+        deploymentTemplateResolvedDataLoader,
+        deploymentTemplateResolvedData,
+        deploymentTemplateResolvedDataErr,
+        reloadDeploymentTemplateResolvedData,
+    ] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () =>
+                    Promise.all([
+                        getDeploymentTemplateResolvedData({
+                            appName,
+                            envName,
+                            type,
+                            compareName: compareTo,
+                            values: getDeploymentTemplateValues(comparisonData[0].result?.deploymentTemplate),
+                            signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
+                        }),
+                        getDeploymentTemplateResolvedData({
+                            type,
+                            appName,
+                            envName,
+                            compareName: compareWith,
+                            values: getDeploymentTemplateValues(comparisonData[1].result?.deploymentTemplate),
+                            signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
+                        }),
+                    ]),
+                deploymentTemplateResolvedDataAbortControllerRef,
+            ),
+        [convertVariables, comparisonData],
+        convertVariables && !!comparisonData,
+    )
 
     const reload = () => {
         setConvertVariables(false)
         reloadOptions()
         reloadComparisonData()
+        reloadDeploymentTemplateResolvedData()
     }
 
     // Generate the deployment configuration list for the environments using comparison data
@@ -534,26 +539,17 @@ export const DeploymentConfigCompare = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
+    const isLoading = comparisonDataLoader || optionsLoader || deploymentTemplateResolvedDataLoader
+    const isError =
+        comparisonDataErr ||
+        optionsErr ||
+        (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
+
     return (
         <DeploymentConfigDiff
-            isLoading={
-                comparisonDataLoader ||
-                optionsLoader ||
-                deploymentTemplateResolvedDataLoader ||
-                (!(
-                    comparisonDataErr ||
-                    optionsErr ||
-                    (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
-                ) &&
-                    !appEnvDeploymentConfigList)
-            }
+            isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
-                error:
-                    (comparisonDataErr ||
-                        optionsErr ||
-                        (deploymentTemplateResolvedDataErr &&
-                            !getIsRequestAborted(deploymentTemplateResolvedDataErr))) &&
-                    !(comparisonDataLoader || optionsLoader || deploymentTemplateResolvedDataLoader),
+                error: isError && !isLoading,
                 code: comparisonDataErr?.code || optionsErr?.code || deploymentTemplateResolvedDataErr?.code,
                 reload,
             }}

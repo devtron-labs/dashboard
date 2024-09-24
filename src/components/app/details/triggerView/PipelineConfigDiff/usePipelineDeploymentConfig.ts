@@ -15,9 +15,9 @@ import {
     EnvResourceType,
     abortPreviousRequests,
     getIsRequestAborted,
-    showError,
     getDeploymentTemplateValues,
     DeploymentConfigDiffState,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getOptions } from '@Components/deploymentConfig/service'
@@ -60,16 +60,22 @@ export const usePipelineDeploymentConfig = ({
         parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
     })
 
-    const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr] = useAsync(
-        () =>
-            getOptions(appId, envId).then(
-                ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
-            ),
-        [],
-    )
+    const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
+        useAsync(
+            () =>
+                getOptions(appId, envId).then(
+                    ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
+                ),
+            [],
+        )
 
     // ASYNC CALLS
-    const [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, pipelineDeploymentConfigErr] = useAsync(
+    const [
+        pipelineDeploymentConfigLoading,
+        pipelineDeploymentConfigRes,
+        pipelineDeploymentConfigErr,
+        reloadPipelineDeploymentConfig,
+    ] = useAsync(
         async () => {
             const isLastDeployedConfigAvailable = previousDeployments.length !== 0
 
@@ -117,47 +123,51 @@ export const usePipelineDeploymentConfig = ({
     const specificDeploymentConfig = pipelineDeploymentConfigRes?.[2]?.result ?? null
     const isLastDeployedConfigAvailable = pipelineDeploymentConfigRes?.[0] !== null
 
-    const [deploymentTemplateResolvedDataLoader, deploymentTemplateResolvedData, deploymentTemplateResolvedDataErr] =
-        useAsync(
-            () =>
-                abortPreviousRequests(() => {
-                    const compareData = getComparisonDataBasedOnDeploy({
-                        deploy,
-                        latestDeploymentConfig,
-                        specificDeploymentConfig,
-                        recentDeploymentConfig,
-                    })
+    const [
+        deploymentTemplateResolvedDataLoader,
+        deploymentTemplateResolvedData,
+        deploymentTemplateResolvedDataErr,
+        reloadDeploymentTemplateResolvedData,
+    ] = useAsync(
+        () =>
+            abortPreviousRequests(() => {
+                const compareData = getComparisonDataBasedOnDeploy({
+                    deploy,
+                    latestDeploymentConfig,
+                    specificDeploymentConfig,
+                    recentDeploymentConfig,
+                })
 
-                    return Promise.all([
-                        getAppEnvDeploymentConfig({
-                            params: {
-                                configArea: 'ResolveData',
-                                appName,
-                                envName,
-                            },
-                            payload: {
-                                values: getDeploymentTemplateValues(compareData?.deploymentTemplate),
-                            },
-                            signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                        }),
-                        recentDeploymentConfig
-                            ? getAppEnvDeploymentConfig({
-                                  params: {
-                                      configArea: 'ResolveData',
-                                      appName,
-                                      envName,
-                                  },
-                                  payload: {
-                                      values: getDeploymentTemplateValues(recentDeploymentConfig?.deploymentTemplate),
-                                  },
-                                  signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                              })
-                            : { result: null },
-                    ])
-                }, deploymentTemplateResolvedDataAbortControllerRef),
-            [convertVariables, pipelineDeploymentConfigRes],
-            convertVariables && !!pipelineDeploymentConfigRes,
-        )
+                return Promise.all([
+                    getAppEnvDeploymentConfig({
+                        params: {
+                            configArea: 'ResolveData',
+                            appName,
+                            envName,
+                        },
+                        payload: {
+                            values: getDeploymentTemplateValues(compareData?.deploymentTemplate),
+                        },
+                        signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
+                    }),
+                    recentDeploymentConfig
+                        ? getAppEnvDeploymentConfig({
+                              params: {
+                                  configArea: 'ResolveData',
+                                  appName,
+                                  envName,
+                              },
+                              payload: {
+                                  values: getDeploymentTemplateValues(recentDeploymentConfig?.deploymentTemplate),
+                              },
+                              signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
+                          })
+                        : { result: null },
+                ])
+            }, deploymentTemplateResolvedDataAbortControllerRef),
+        [convertVariables, pipelineDeploymentConfigRes],
+        convertVariables && !!pipelineDeploymentConfigRes,
+    )
 
     useEffect(() => {
         if (!isLastDeployedConfigAvailable && deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
@@ -242,15 +252,11 @@ export const usePipelineDeploymentConfig = ({
         deploymentTemplateResolvedData,
     ])
 
-    useEffect(() => {
-        if (
-            previousDeploymentsErr ||
-            pipelineDeploymentConfigErr ||
-            (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
-        ) {
-            showError(previousDeploymentsErr || pipelineDeploymentConfigErr || deploymentTemplateResolvedDataErr)
-        }
-    }, [previousDeploymentsErr, pipelineDeploymentConfigErr, deploymentTemplateResolvedDataErr])
+    const reload = () => {
+        reloadPreviousDeployments()
+        reloadPipelineDeploymentConfig()
+        reloadDeploymentTemplateResolvedData()
+    }
 
     // DEPLOYMENT CONFIG SELECTOR PROPS
     const isConfigAvailable = ({ value }: SelectPickerOptionType) =>
@@ -295,6 +301,7 @@ export const usePipelineDeploymentConfig = ({
         ),
         onChange: onDeploymentConfigChange,
         isOptionDisabled,
+        menuSize: ComponentSizeType.medium,
     }
 
     const scopeVariablesConfig = {
@@ -302,10 +309,24 @@ export const usePipelineDeploymentConfig = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
+    const isLoading =
+        previousDeploymentsLoader || pipelineDeploymentConfigLoading || deploymentTemplateResolvedDataLoader
+    const isError =
+        previousDeploymentsErr ||
+        pipelineDeploymentConfigErr ||
+        (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
+
     return {
-        pipelineDeploymentConfigLoading:
-            previousDeploymentsLoader || pipelineDeploymentConfigLoading || deploymentTemplateResolvedDataLoader,
+        pipelineDeploymentConfigLoading: isLoading || (!isError && !pipelineDeploymentConfig),
         pipelineDeploymentConfig,
+        errorConfig: {
+            error: isError && !isLoading,
+            code:
+                previousDeploymentsErr?.code ||
+                pipelineDeploymentConfigErr?.code ||
+                deploymentTemplateResolvedDataErr?.code,
+            reload,
+        },
         deploymentConfigSelectorProps,
         diffFound: pipelineDeploymentConfig?.configList.some(
             ({ diffState }) => diffState !== DeploymentConfigDiffState.NO_DIFF,

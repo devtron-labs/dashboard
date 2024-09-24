@@ -1008,21 +1008,6 @@ const CDMaterial = ({
         }
     }
 
-    const getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
-        const subHeight = window?._env_?.ANNOUNCEMENT_BANNER_MSG ? 37 : 0
-
-        if (showConfigDiffView) {
-            return `calc(100vh - 141px - ${subHeight}px)`
-        }
-        if (
-            isApprovalConfigured &&
-            (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0)
-        ) {
-            return `calc(100vh - 156px - ${subHeight}px)`
-        }
-        return `calc(100vh - 116px - ${subHeight}px)`
-    }
-
     /* ------------ Render Utilities  ------------*/
     const renderGenerateButton = () => (
         <button className="flex cta h-32" onClick={clearSearch} type="button">
@@ -1628,12 +1613,12 @@ const CDMaterial = ({
 
         return (
             <div
-                className={`trigger-modal__trigger ${
+                className={`trigger-modal__trigger dc__position-rel ${
                     (!state.isRollbackTrigger && !state.isSelectImageTrigger) ||
                     showConfigDiffView ||
                     stageType === DeploymentNodeType.PRECD ||
                     stageType === DeploymentNodeType.POSTCD
-                        ? 'flex right'
+                        ? 'right'
                         : ''
                 }`}
             >
@@ -1701,12 +1686,7 @@ const CDMaterial = ({
     }
 
     const renderTriggerBody = (isApprovalConfigured: boolean) => (
-        <div
-            className="trigger-modal__body p-0"
-            style={{
-                height: getTriggerBodyHeight(isApprovalConfigured),
-            }}
-        >
+        <div className="trigger-modal__body p-0 flex-grow-1 h-100">
             {showConfigDiffView && canReviewConfig()
                 ? renderTriggerViewConfigDiff()
                 : renderMaterialList(isApprovalConfigured)}
@@ -1722,29 +1702,25 @@ const CDMaterial = ({
         <>
             <div className="trigger-modal__header">
                 {showConfigDiffView ? (
-                    <div className="flex left">
+                    <div className="flex dc__gap-16">
                         <button
                             type="button"
-                            className="dc__transparent icon-dim-24"
+                            className="dc__transparent icon-dim-24 flex"
                             onClick={() => onClickSetInitialParams('list')}
                         >
                             <BackIcon />
                         </button>
-                        <div className="flex column left ml-16">
-                            <h1 className="modal__title mb-8">{renderCDModalHeader()}</h1>
-                            {state.selectedMaterial && (
-                                <div className="flex left dc__column-gap-24">
-                                    <ArtifactInfo
-                                        {...getArtifactInfoProps(
-                                            state.selectedMaterial,
-                                            (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
-                                                isApprovalConfigured &&
-                                                ApprovalInfoTippy,
-                                        )}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        <h2 className="modal__title">{renderCDModalHeader()}</h2>
+                        {state.selectedMaterial && (
+                            <ArtifactInfo
+                                {...getArtifactInfoProps(
+                                    state.selectedMaterial,
+                                    (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
+                                        isApprovalConfigured &&
+                                        ApprovalInfoTippy,
+                                )}
+                            />
+                        )}
                     </div>
                 ) : (
                     <h1 className="modal__title">{renderCDModalHeader()}</h1>

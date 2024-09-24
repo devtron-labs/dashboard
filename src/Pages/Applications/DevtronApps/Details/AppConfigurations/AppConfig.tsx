@@ -292,8 +292,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     useEffect(() => {
-        // SET APP CONFIG DATA IN STATE
-        if (appConfigData) {
+        if (state.redirectionUrl && location.pathname === match.url) {
+            history.replace(state.redirectionUrl)
+        } else if (appConfigData) {
+            // SET APP CONFIG DATA IN STATE
             const [configStatusRes, workflowRes, { updatedEnvs, configProtections, isBaseConfigProtectionEnabled }] =
                 appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
@@ -321,7 +323,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 history.replace(redirectUrl)
             }
         }
-    }, [appConfigData])
+    }, [appConfigData, location.pathname])
 
     // METHODS
     const reloadAppConfig = () => {
