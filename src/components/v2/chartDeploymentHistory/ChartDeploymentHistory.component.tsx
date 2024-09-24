@@ -632,7 +632,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div className="trigger-details pb-20">
-                <div className="flex dc__content-space trigger-details__summary">
+                <div className="flex dc__content-space trigger-details__summary py-10 px-20">
                     <div className="flex left py-10 px-20 dc__gap-8">
                         <Rocket className="scn-6 icon-dim-20" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
