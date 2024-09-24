@@ -56,12 +56,11 @@ jobs:
         # Extract issue number from PR body
         extract_issue_number() {
           local pattern="$1"
-          echo "$PR_BODY"
           if [[ "$PR_BODY" =~ $pattern ]]; then
             echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n'
             return 0
           else
-            echo "Not match the patterns"
+            echo "Not match the patterns $pattern"
           fi
           return 1
         }
@@ -85,6 +84,10 @@ jobs:
         else
           url="https://github.com/devtron-labs/devtron/issues/$issue_num"
         fi
+
+        echo "========================================================================"
+        gh issue list --repo https://github.com/devtron-labs/devtron --json "url"
+        echo "========================================================================"
 
         # Check if the issue exists
         response_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
