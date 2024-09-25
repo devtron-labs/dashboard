@@ -15,8 +15,8 @@
  */
 
 import { useEffect, useState } from 'react'
+import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import {
     Progressing,
     DeleteDialog,
@@ -28,23 +28,18 @@ import {
     Drawer,
     TippyTheme,
     GitOpsAuthModeType,
+    SelectPicker,
+    SelectPickerOptionType,
+    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedText,
-    getCommonSelectStyle,
-    GroupHeading,
-    Option,
-} from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { importComponentFromFELibrary, Select } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 
 import {
     ActiveReadmeColumnProps,
@@ -72,9 +67,10 @@ import {
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
+import { getChartValuesFiltered } from '@Components/charts/charts.helper'
+import { ChartValuesType } from '@Components/charts/charts.types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -86,18 +82,17 @@ export const ChartEnvironmentSelector = ({
     selectedEnvironment,
     handleEnvironmentSelection,
     environments,
-    invalidaEnvironment,
+    invalidEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-    const singleOption = (props) => {
-        return <EnvFormatOptions {...props} environmentfieldName="label" />
-    }
 
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
         }
+
+        return null
     }
 
     const renderVirtualTippy = (): JSX.Element => {
@@ -109,10 +104,6 @@ export const ChartEnvironmentSelector = ({
                 </div>
             )
         }
-    }
-
-    const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'label')
     }
 
     return !isDeployChartView ? (
@@ -137,26 +128,17 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">
-                Deploy to environment
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    SingleValue: singleOption,
-                    GroupHeading,
-                }}
-                classNamePrefix="values-environment-select"
+            <SelectPicker
+                label="Deploy to environment"
+                inputId="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
-                formatOptionLabel={handleFormatHighlightedText}
+                required
+                error={invalidEnvironment ? REQUIRED_FIELD_MSG : null}
+                helperText={renderVirtualEnvironmentInfoText()}
             />
-            {invalidaEnvironment && renderValidationErrorLabel()}
-            {renderVirtualEnvironmentInfoText()}
         </div>
     )
 }
@@ -470,65 +452,50 @@ export const ChartProjectSelector = ({
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return (
-        <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">
-                Project
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
+        <div className="form__row form__row--w-100">
+            <SelectPicker
+                label="Project"
+                inputId="select-chart-project"
                 placeholder="Select Project"
-                classNamePrefix="select-chart-project"
                 value={selectedProject}
-                styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
                 options={projects}
+                required
+                error={invalidProject ? REQUIRED_FIELD_MSG : null}
             />
-            {invalidProject && renderValidationErrorLabel()}
-        </label>
+        </div>
     )
 }
 
 export const ChartVersionSelector = ({
     selectedVersion,
-    chartVersionObj,
     selectedVersionUpdatePage,
     handleVersionSelection,
     chartVersionsData,
 }: ChartVersionSelectorType) => {
+    const selectOptions = chartVersionsData.map(chartVersion => ({
+        value: chartVersion.id,
+        label: chartVersion.version,
+    }))
+
+    const selectedOption = selectOptions.find(
+        (option) => option.value === selectedVersionUpdatePage?.id || option.value === selectedVersion,
+    )
+
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">
-                Chart Version
-            </span>
-            <Select
-                tabIndex={4}
-                rootClassName="select-button--default chart-values-selector"
-                onChange={(event) => {
-                    handleVersionSelection(event.target.value, {
-                        id: event.target.value,
-                        version: event.target.innerText,
+            <SelectPicker<number, false>
+                label="Chart Version"
+                inputId="chart-values-selector"
+                options={selectOptions}
+                onChange={(option) =>
+                    handleVersionSelection(option.value, {
+                        id: option.value,
+                        version: option.label as string,
                     })
-                }}
-                value={selectedVersionUpdatePage?.id || selectedVersion}
-                dataTestId="select-chart-version"
-            >
-                <Select.Button dataTestIdDropdown="chart-version-of-preset">
-                    {selectedVersionUpdatePage?.version || chartVersionObj?.version}
-                </Select.Button>
-                {chartVersionsData.map((_chartVersion, index) => (
-                    <Select.Option
-                        key={_chartVersion.id}
-                        value={_chartVersion.id}
-                        dataTestIdMenuList={`chart-select-${index}`}
-                    >
-                        {_chartVersion.version}
-                    </Select.Option>
-                ))}
-            </Select>
+                }
+                value={selectedOption}
+            />
         </div>
     )
 }
@@ -541,21 +508,69 @@ export const ChartValuesSelector = ({
     hideVersionFromLabel,
     hideCreateNewOption,
 }: ChartValuesSelectorType) => {
+    const filteredChartValues = getChartValuesFiltered(chartValuesList)
+
+    const selectOptions: GroupBase<SelectPickerOptionType<ChartValuesType>>[] = [
+        {
+            label: 'Deployed',
+            options: filteredChartValues.deployedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+                description: `Deployed on: ${chartValue.environmentName || ''}`,
+            })),
+        },
+        {
+            label: 'Preset Values',
+            options: filteredChartValues.savedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+        {
+            label: 'Existing',
+            options: filteredChartValues.existingChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name}${hideVersionFromLabel || !chartValue.chartVersion ? '' : ` (${chartValue.chartVersion})`}`,
+            })),
+        },
+        {
+            label: 'Default',
+            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+    ]
+
+    const renderMenuListFooter = () => {
+        if (hideCreateNewOption) {
+            return null
+        }
+
+        return (
+            <button
+                className="dc__transparent fs-13 lh-20 flex left dc__gap-6 cb-5 px-12 py-4"
+                onClick={redirectToChartValues}
+                data-testid="add-preset-values-button-dropdown"
+            >
+                <ICAdd className="icon-dim-20 dc__no-shrink fcb-5" />
+                Create preset value
+            </button>
+        )
+    }
+
+    const selectedOption = getSelectPickerOptionByValue(selectOptions, chartValues, null)
+
     return (
-        <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
-                Chart Values
-            </span>
-            <ChartValuesSelect
-                className="chart-values-selector"
-                chartValuesList={chartValuesList}
-                chartValues={chartValues}
-                redirectToChartValues={redirectToChartValues}
-                onChange={handleChartValuesSelection}
-                hideVersionFromLabel={hideVersionFromLabel}
-                hideCreateNewOption={hideCreateNewOption}
-            />
-        </div>
+        <SelectPicker<ChartValuesType, false>
+            inputId="chart-values-selector"
+            options={selectOptions}
+            renderMenuListFooter={renderMenuListFooter}
+            getOptionValue={(option) => `${option.value.id} ${option.value.kind}`}
+            label="Chart Values"
+            onChange={(selectedOption) => handleChartValuesSelection(selectedOption.value)}
+            value={selectedOption}
+        />
     )
 }
 
