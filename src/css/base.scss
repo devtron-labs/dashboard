@@ -4931,3 +4931,59 @@ textarea::placeholder {
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
+
+.dc__transparent-div {
+    position: fixed;
+    background: transparent;
+    top: 0px;
+    left: 0px;
+    right: 0;
+    height: 100vh;
+    z-index: var(--transparent-div-index);
+}
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(255, 131, 0, 0.4);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    }
+}
+
+.badge {
+    font-size: 10px;
+    border-radius: 10px;
+    background-color: var(--B500);
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--white);
+    padding: 2px 10px;
+    margin-left: 10px;
+}
