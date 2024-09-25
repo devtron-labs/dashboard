@@ -25,19 +25,11 @@ jobs:
     - name: Validate Issue Reference
       env:
         GH_TOKEN: ${{ github.token }}
-        PR_VALIDATOR_TOKEN: ${{ secrets.GH_PR_VALIDATOR_TOKEN }}
         PR_BODY: ${{ github.event.pull_request.body }}
         PRNUM: ${{ github.event.pull_request.number }}
         TITLE: ${{ github.event.pull_request.title }}
       run: |
-        set -x
-        echo "======================Start================================"
-        curl -L \
-          --header 'authorization: Bearer ${{ secrets.GH_PR_VALIDATOR_TOKEN }}' \
-          https://api.github.com/repos/devtron-labs/sprint-tasks/issues/978
-          exit 1
-        echo "========================================================================"
-
+        set -x    
         # Skip validation for documentation or chore PRs
         if [[ "$TITLE" =~ ^(doc:|docs:|chore:) ]]; then
           echo "Skipping validation for docs/chore PR."
@@ -46,7 +38,7 @@ jobs:
           gh pr edit $PRNUM --add-label "PR:Ready-to-Review"
           exit 0
         fi
-
+    
         # Define all issue matching patterns
         patterns=(
           "((Fixes|Resolves) #[0-9]+)" 
@@ -58,50 +50,47 @@ jobs:
           "((Fixes|Resolves) https://github.com/devtron-labs/devops-sprint/issues/[0-9]+)"
           "((Fixes|Resolves) https://github.com/devtron-labs/sprint-tasks/issues/[0-9]+)"
         )
-        
-        # Extract issue number from PR body
+    
+        # Extract issue number and repo from PR body
         extract_issue_number() {
           local pattern="$1"
           if [[ "$PR_BODY" =~ $pattern ]]; then
-            echo "matched for this patterent $pattern"
-            echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n'
+            echo "matched for this pattern $pattern"
+            issue_num=$(echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n')
+            repo=$(echo "$PR_BODY" | grep -oE "devtron-labs/[a-zA-Z0-9_-]+")
+            echo "Extracted issue number: $issue_num from repo: $repo"
             return 0
           else
-            echo "Not match the patterns $pattern"
+            echo "No match for the pattern $pattern"
           fi
           return 1
         }
-
+    
         issue_num=""
+        repo="devtron-labs/devtron"  # Default repo
         for pattern in "${patterns[@]}"; do
           echo "Now checking for $pattern"
-          issue_num=$(extract_issue_number "$pattern") && echo "issue no-:" $issue_num  && break
+          extract_issue_number "$pattern" && break
         done
-
+    
         if [[ -z "$issue_num" ]]; then
           echo "No valid issue number found."
           gh pr edit $PRNUM --add-label "PR:Issue-verification-failed"
           gh pr edit $PRNUM --remove-label "PR:Ready-to-Review"
           exit 1
         fi
-
-        # Form the issue URL
-        if [[ "$PR_BODY" =~ (https://github.com/.*/issues/[0-9]+) ]]; then
-          url="${BASH_REMATCH[0]}"
-        else
-          url="https://github.com/devtron-labs/devtron/issues/$issue_num"
-        fi
-
-        # echo "========================================================================"
-        # repo_url=$(echo "$url" | cut -d'/' -f1-5)
-        # gh issue list --repo $repo_url --json "url" 
-        # echo "========================================================================"
-
-
-        # Check if the issue exists
-        response_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+    
+        # Form the issue API URL dynamically
+        issue_api_url="https://api.github.com/repos/$repo/issues/$issue_num"
+        echo "API URL: $issue_api_url"
+    
+        # Check if the issue exists in the private repo
+        response_code=$(curl -s -o /dev/null -w "%{http_code}" \
+          --header "authorization: Bearer ${{ secrets.GH_PR_VALIDATOR_TOKEN }}" \
+          "$issue_api_url")
+          
         if [[ "$response_code" -eq 200 ]]; then
-          echo "Issue #$issue_num is valid and exists."
+          echo "Issue #$issue_num is valid and exists in $repo."
           gh pr edit $PRNUM --remove-label "PR:Issue-verification-failed"
           gh pr edit $PRNUM --add-label "PR:Ready-to-Review"
         else
