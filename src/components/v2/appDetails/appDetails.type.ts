@@ -491,6 +491,7 @@ export interface NodeTreeDetailTabProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     isDeploymentBlocked?: boolean
+    isVirtualEnvironment: boolean
 }
 
 export interface K8ResourceComponentProps {

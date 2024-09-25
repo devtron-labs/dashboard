@@ -33,6 +33,7 @@ const NodeTreeDetailTab = ({
     isDevtronApp = false,
     isExternalApp,
     isDeploymentBlocked,
+    isVirtualEnvironment
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -43,8 +44,13 @@ const NodeTreeDetailTab = ({
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
         const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL, isExternalApp)
-    }, [params.appId, params.envId])
+        AppDetailsStore.initAppDetailsTabs(
+            url,
+            _pods.length > 0 && !isVirtualEnvironment,
+            isLogAnalyserURL,
+            isExternalApp,
+        )
+    }, [params.appId, params.envId, isVirtualEnvironment])
 
     const handleFocusTabs = () => {
         if (tabRef?.current) {

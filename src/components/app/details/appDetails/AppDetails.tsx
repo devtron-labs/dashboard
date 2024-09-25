@@ -622,6 +622,7 @@ export const Details: React.FC<DetailsType> = ({
                 monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp
                 isDeploymentBlocked={isDeploymentBlocked}
+                isVirtualEnvironment={isVirtualEnvRef.current}
             />
         )
     }
