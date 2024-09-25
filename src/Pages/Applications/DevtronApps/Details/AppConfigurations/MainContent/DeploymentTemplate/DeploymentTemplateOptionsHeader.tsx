@@ -2,7 +2,6 @@ import { SyntheticEvent } from 'react'
 import {
     ConditionalWrap,
     ConfigurationType,
-    DeploymentTemplateTabsType,
     StyledRadioGroup as RadioGroup,
     TippyCustomized,
     TippyTheme,
@@ -17,7 +16,6 @@ const DeploymentTemplateOptionsHeader = ({
     editMode,
     showReadMe,
     isUnSet,
-    selectedTab,
     handleChangeToGUIMode,
     handleChangeToYAMLMode,
     unableToParseYaml,
@@ -26,8 +24,9 @@ const DeploymentTemplateOptionsHeader = ({
     handleChartChange,
     chartDetails,
     selectedChart,
+    isCompareView,
 }: DeploymentTemplateOptionsHeaderProps) => {
-    if (selectedTab === DeploymentTemplateTabsType.COMPARE || showReadMe) {
+    if (isCompareView || showReadMe) {
         return null
     }
 

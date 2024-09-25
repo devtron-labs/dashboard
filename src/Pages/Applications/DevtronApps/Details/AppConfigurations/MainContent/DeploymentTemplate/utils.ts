@@ -1,20 +1,11 @@
 import {
     applyCompareDiffOnUneditedDocument,
-    CONFIG_HEADER_TAB_VALUES,
-    CONFIGURATION_TYPE_VALUES,
-    ConfigurationType,
-    DEPLOYMENT_TEMPLATE_TAB_VALUES,
-    DeploymentTemplateQueryParams,
-    DeploymentTemplateQueryParamsType,
-    DeploymentTemplateTabsType,
     getGuiSchemaFromChartName,
     handleUTCTime,
     ResponseType,
     TemplateListDTO,
     TemplateListType,
-    UseUrlFiltersProps,
     YAMLStringify,
-    ConfigHeaderTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 
@@ -81,56 +72,6 @@ export const applyCompareDiffOfTempFormDataOnOriginalData = (
     updateTempFormData?.(YAMLStringify(updated))
     return updated
 }
-
-/**
- * Just a fallback method in reality would be decided by whether template is inherited or not, which we will find through API
- */
-const getValidConfigHeaderTab = (envId: string, paramTab: string): ConfigHeaderTabType => {
-    if (envId) {
-        const isConfigHeaderTabValid = CONFIG_HEADER_TAB_VALUES.OVERRIDE.includes(paramTab as ConfigHeaderTabType)
-        return isConfigHeaderTabValid ? (paramTab as ConfigHeaderTabType) : ConfigHeaderTabType.INHERITED
-    }
-
-    const isConfigHeaderTabValid = CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE.includes(
-        paramTab as ConfigHeaderTabType,
-    )
-
-    return isConfigHeaderTabValid ? (paramTab as ConfigHeaderTabType) : ConfigHeaderTabType.VALUES
-}
-
-// FIXME: Will receive one parser from fe-lib as well to restrict weird reload cases
-const parseDeploymentTemplateQueryParams = (
-    params: URLSearchParams,
-    isSuperAdmin: boolean,
-    envId: string,
-): DeploymentTemplateQueryParamsType => {
-    const currentEditMode = params.get(DeploymentTemplateQueryParams.EDIT_MODE) as ConfigurationType
-    const isCurrentEditModeValid = CONFIGURATION_TYPE_VALUES.includes(currentEditMode)
-
-    const fallbackConfigurationType: ConfigurationType = isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI
-
-    const currentSelectedTab = Number(
-        params.get(DeploymentTemplateQueryParams.SELECTED_TAB),
-    ) as DeploymentTemplateTabsType
-    const isSelectedTabValid = DEPLOYMENT_TEMPLATE_TAB_VALUES.includes(currentSelectedTab)
-
-    const configHeader = params.get(DeploymentTemplateQueryParams.CONFIG_HEADER_TAB) as ConfigHeaderTabType
-
-    return {
-        editMode: isCurrentEditModeValid ? currentEditMode : fallbackConfigurationType,
-        selectedTab: isSelectedTabValid ? currentSelectedTab : DeploymentTemplateTabsType.EDIT,
-        showReadMe: params.get(DeploymentTemplateQueryParams.SHOW_READ_ME) === 'true' || null,
-        configHeaderTab: getValidConfigHeaderTab(envId, configHeader),
-    }
-}
-
-export const getDeploymentTemplateQueryParser =
-    (
-        isSuperAdmin: boolean,
-        envId: string,
-    ): UseUrlFiltersProps<never, DeploymentTemplateQueryParamsType>['parseSearchParams'] =>
-    (params) =>
-        parseDeploymentTemplateQueryParams(params, isSuperAdmin, envId)
 
 export const addGUISchemaIfAbsent = (response: ResponseType, chartName: string) => {
     if (response && response.result && !response.result.guiSchema) {

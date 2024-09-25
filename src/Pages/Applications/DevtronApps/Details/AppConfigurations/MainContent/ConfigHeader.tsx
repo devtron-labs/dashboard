@@ -5,6 +5,7 @@ import { getConfigHeaderTabConfig } from './utils'
 
 // TODO: Will have to (unsaved changes state?) of yellow dot
 const ConfigHeaderTab = ({ handleTabChange, tab, activeTabIndex, currentTabIndex }: ConfigHeaderTabProps) => {
+    const { envId } = useParams<BaseURLParams>()
     const handleChange = () => {
         handleTabChange(tab)
     }
@@ -14,7 +15,7 @@ const ConfigHeaderTab = ({ handleTabChange, tab, activeTabIndex, currentTabIndex
     const isNextTabActive = activeTabIndex === currentTabIndex + 1
 
     // TODO: Need to send not isOverridden
-    const { icon: Icon, text } = getConfigHeaderTabConfig(tab)
+    const { icon: Icon, text } = getConfigHeaderTabConfig(tab, !envId)
 
     // TODO: Replace with button component after syncing with product
     return (

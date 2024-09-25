@@ -26,6 +26,7 @@ const DeploymentTemplateForm = ({
     isPublishedValuesView,
     handleOverride,
 }: DeploymentTemplateFormProps) => {
+    // TODO: Have to add check for isGUISupported - since not showing this option in inherited mode
     if (editMode === ConfigurationType.GUI) {
         return (
             <DeploymentTemplateGUIView

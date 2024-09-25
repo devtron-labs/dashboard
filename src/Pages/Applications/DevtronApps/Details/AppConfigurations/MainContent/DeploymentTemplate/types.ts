@@ -3,7 +3,6 @@ import { GroupBase } from 'react-select'
 import { Operation } from 'fast-json-patch'
 import {
     ConfigKeysWithLockType,
-    DeploymentTemplateQueryParamsType,
     DeploymentChartVersionType,
     ChartMetadataType,
     DeploymentTemplateConfigState,
@@ -12,6 +11,7 @@ import {
     TemplateListDTO,
     SelectedChartDetailsType,
     CompareFromApprovalOptionsValuesType,
+    ConfigurationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface DeploymentTemplateProps {
@@ -35,12 +35,10 @@ export interface DeploymentTemplateProps {
 export interface DeploymentTemplateChartStateType {
     charts: DeploymentChartVersionType[]
     chartsMetadata: Record<string, ChartMetadataType>
-    globalChartRefId: number
+    globalChartDetails: DeploymentChartVersionType
 }
 
-export interface DeploymentTemplateOptionsHeaderProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'showReadMe' | 'selectedTab'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'> {
+export interface DeploymentTemplateOptionsHeaderProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
     disableVersionSelect: boolean
     handleChangeToGUIMode: () => void
     handleChangeToYAMLMode: () => void
@@ -50,6 +48,9 @@ export interface DeploymentTemplateOptionsHeaderProps
     handleChartChange: (selectedChart: DeploymentChartVersionType) => void
     selectedChart: DeploymentChartVersionType
     chartDetails: DeploymentTemplateChartStateType
+    isCompareView: boolean
+    editMode: ConfigurationType
+    showReadMe: boolean
 }
 
 export interface DeploymentTemplateEditorDataStateType
@@ -58,9 +59,7 @@ export interface DeploymentTemplateEditorDataStateType
     removedPatches: Operation[]
 }
 
-interface DeploymentTemplateEditorHeaderBaseProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'showReadMe'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'> {
+interface DeploymentTemplateEditorHeaderBaseProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
     /**
      * Chart version of editable template
      */
@@ -71,6 +70,7 @@ interface DeploymentTemplateEditorHeaderBaseProps
     environmentName: string
     latestDraft: any
     readOnly: boolean
+    showReadMe: boolean
 }
 
 interface DeploymentTemplateEditorHeaderCompareViewProps {
@@ -102,8 +102,7 @@ export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeader
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'editMode' | 'showReadMe'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'>,
+    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
         Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
     editorOnChange: (value: string) => void
@@ -118,6 +117,8 @@ export interface DeploymentTemplateFormProps
     handleChangeToYAMLMode: () => void
     handleEnableWasGuiOrHideLockedKeysEdited: () => void
     hideLockedKeys: boolean
+    editMode: ConfigurationType
+    showReadMe: boolean
 }
 
 export interface DeploymentTemplateGUIViewProps
@@ -141,17 +142,17 @@ export interface ResolvedEditorTemplateType {
     templateWithoutLockedKeys: string
 }
 
-export interface DeploymentTemplateCTAProps
-    extends Pick<DeploymentTemplateQueryParamsType, 'showReadMe' | 'selectedTab'>,
-        Pick<DeploymentTemplateProps, 'isCiPipeline'> {
+export interface DeploymentTemplateCTAProps extends Pick<DeploymentTemplateProps, 'isCiPipeline'> {
     isLoading: boolean
     isDisabled: boolean
     showApplicationMetrics: boolean
     isAppMetricsEnabled: boolean
     selectedChart: DeploymentChartVersionType
-    shouldDisableEditingInheritedTemplate: boolean
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
+    // FIXME: Maybe not even needed here since compare tab is removed
+    isCompareView: boolean
+    showReadMe: boolean
 }
 
 export interface CompareWithValuesDataStoreItemType {
@@ -206,17 +207,6 @@ export interface ChartSelectorDropdownProps
     selectChart: (
         selectedChart: DeploymentChartVersionType,
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
-}
-
-export interface DeploymentConfigToolbarProps {
-    selectedTabIndex: number
-    handleTabSelection: (index: number) => void
-    noReadme?: boolean
-    showReadme: boolean
-    handleReadMeClick: () => void
-    convertVariables?: boolean
-    setConvertVariables?: (convertVariables: boolean) => void
-    unableToParseYaml: boolean
 }
 
 interface EnvironmentConfigDTO {

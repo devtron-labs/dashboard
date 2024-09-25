@@ -798,7 +798,7 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
     try {
         let component = defaultComponent || null
         if (!module) {
