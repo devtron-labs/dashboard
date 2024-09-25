@@ -116,7 +116,7 @@ const ChartDeploymentHistory = ({
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && isScanV2Enabled && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            (ChartSecurityTab && isScanV2Enabled && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
