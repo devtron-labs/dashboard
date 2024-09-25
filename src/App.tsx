@@ -98,6 +98,8 @@ export default function App() {
             }
         } else {
             didMountRef.current = true
+            // Removing any toast explicitly due to race condition of offline toast for some users
+            ToastManager.dismissToast(onlineToastRef.current)
         }
     }, [isOnline])
 

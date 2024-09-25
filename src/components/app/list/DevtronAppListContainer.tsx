@@ -14,223 +14,433 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import * as queryString from 'query-string'
-import { withRouter } from 'react-router-dom'
-import { buildInitState, appListModal, createAppListPayload } from './appList.modal'
-import { AppListProps, AppListState, OrderBy, SortBy } from './types'
-import { URLS, ViewType } from '../../../config'
-import { AppListView } from './AppListView'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Tippy from '@tippyjs/react'
+import { Link, useHistory } from 'react-router-dom'
+import moment from 'moment'
+import {
+    abortPreviousRequests,
+    AppListConstants,
+    AppStatus,
+    DATE_TIME_FORMATS,
+    DEFAULT_BASE_PAGE_SIZE,
+    ErrorScreenManager,
+    GenericFilterEmptyState,
+    getIsRequestAborted,
+    handleUTCTime,
+    Pagination,
+    SortableTableHeaderCell,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
+import ContentCard from '@Components/common/ContentCard/ContentCard'
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
+import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
+import { appListModal, getDevtronAppListPayload } from './appList.modal'
+import { App, DevtronAppExpandedState, DevtronAppListProps } from './types'
+import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
 import { getAppList } from '../service'
-import { AppListViewType } from '../config'
 import './list.scss'
+import { AppListSortableKeys } from '../list-new/AppListType'
+import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
+import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
+import DeployCICD from '../../../assets/img/guide-onboard.png'
+import { appListLoadingArray, APP_LIST_HEADERS } from '../list-new/Constants'
+import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
+import { ExpandedRow } from './expandedRow/ExpandedRow'
+import { INITIAL_EXPANDED_STATE } from './constants'
 
-class DevtronAppListContainer extends Component<AppListProps, AppListState> {
-    abortController: AbortController
+const DevtronAppList = ({
+    filterConfig,
+    environmentList,
+    namespaceList,
+    appFiltersResponseLoading,
+    syncListData,
+    updateDataSyncing,
+    setCurrentAppName,
+    clearAllFilters,
+    handleSorting,
+    isArgoInstalled,
+    changePage,
+    changePageSize,
+    setAppCount,
+}: DevtronAppListProps) => {
+    const history = useHistory()
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            code: 0,
-            view: AppListViewType.LOADING,
-            errors: [],
-            apps: [],
-            size: 0,
-            sortRule: {
-                key: SortBy.APP_NAME,
-                order: OrderBy.ASC,
-            },
-            showCommandBar: false,
-            offset: 0,
-            pageSize: 20,
-            expandedRow: null,
-            isAllExpanded: false,
-            isAllExpandable: false,
+    const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
+
+    const { searchKey, offset, pageSize, appStatus, project, environment, namespace, cluster, sortBy, sortOrder } =
+        filterConfig
+
+    const isSearchOrFilterApplied =
+        searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
+
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [appListResponseLoading, appListResponse, appListError, appListReload] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () =>
+                    getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
+                        signal: abortControllerRef.current.signal,
+                    }),
+                abortControllerRef,
+            ),
+        [filterConfig, syncListData],
+        !appFiltersResponseLoading, // We need to wait until environment filters are created from cluster and namespace
+    )
+
+    const appListLoading = appListResponseLoading || getIsRequestAborted(appListError)
+
+    const parsedAppList: App[] = useMemo(
+        () => (appListResponse?.result?.appContainers ? appListModal(appListResponse.result.appContainers) : []),
+        [appListResponse],
+    )
+
+    useEffect(() => {
+        if (appListResponseLoading) {
+            updateDataSyncing(true)
+            return
         }
-    }
-
-    componentDidMount() {
-        buildInitState(this.props.payloadParsedFromUrl)
-            .then((response) => {
-                this.setState({
-                    code: response.code,
-                    apps: [],
-                    offset: response.offset,
-                    size: 0,
-                    pageSize: response.size,
-                    sortRule: {
-                        key: response.sortBy,
-                        order: response.sortOrder,
-                    },
-                })
-            })
-            .then(() => {
-                this.getAppList(
-                    createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList),
-                )
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ view: AppListViewType.ERROR, code: errors.code })
-            })
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.payloadParsedFromUrl != this.props.payloadParsedFromUrl) {
-            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList))
-        }
-    }
-
-    changePage = (pageNo: number): void => {
-        const offset = this.state.pageSize * (pageNo - 1)
-        const qs = queryString.parse(this.props.location.search)
-        const keys = Object.keys(qs)
-        const query = {}
-        keys.map((key) => {
-            query[key] = qs[key]
+        updateDataSyncing(false)
+        setExpandedState({
+            ...expandedState,
+            isAllExpandable: parsedAppList.some((app) => app.environments.length > 1),
         })
-        query['offset'] = offset
-        const queryStr = queryString.stringify(query)
-        const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`
-        this.props.history.push(url)
+        setAppCount(parsedAppList.length)
+    }, [appListResponseLoading])
+
+    const handleEditApp = (appId: number): void => {
+        const url = `/${Routes.APP}/${appId}/${Routes.EDIT}`
+        history.push(url)
     }
 
-    changePageSize = (size: number): void => {
-        const qs = queryString.parse(this.props.location.search)
-        const keys = Object.keys(qs)
-        const query = {}
-        keys.map((key) => {
-            query[key] = qs[key]
-        })
-        query['offset'] = 0
-        query['hOffset'] = 0
-        query['pageSize'] = size
-        const queryStr = queryString.stringify(query)
-        const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`
-        this.props.history.push(url)
+    const handleEditAppRedirect = (event): void => {
+        event.stopPropagation()
+        event.preventDefault()
+        handleEditApp(event.currentTarget.dataset.key)
     }
 
-    expandRow = (id: number): void => {
-        this.setState((prevState) => ({ expandedRow: { ...prevState.expandedRow, [id]: true } }))
-    }
-
-    closeExpandedRow = (id: number): void => {
-        this.setState((prevState) => ({ expandedRow: { ...prevState.expandedRow, [id]: false } }))
-    }
-
-    toggleExpandAllRow = (): void => {
-        this.setState((prevState) => {
-            const _expandedRow = {}
-            if (!prevState.isAllExpanded) {
-                for (const _app of prevState.apps) {
-                    _expandedRow[_app.id] = _app.environments.length > 1
-                }
-            }
-
-            return { expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
-        })
-    }
-
-    getAppList = (request): void => {
-        this.props.updateDataSyncing(true)
-        const isSearchOrFilterApplied =
-            request.environments?.length ||
-            request.teams?.length ||
-            request.namespaces?.length ||
-            request.appNameSearch?.length ||
-            request.appStatuses?.length
-        const state = { ...this.state }
-        state.view = AppListViewType.LOADING
-        state.sortRule = {
-            key: request.sortBy,
-            order: request.sortOrder,
-        }
-        state.expandedRow = {}
-        state.isAllExpanded = false
-        this.setState(state)
-        if (this.abortController) {
-            this.abortController.abort()
-            this.abortController = null
-        }
-
-        this.abortController = new AbortController()
-
-        getAppList(request, { signal: this.abortController.signal })
-            .then((response) => {
-                let view = AppListViewType.LIST
-                if (response.result.appCount === 0) {
-                    if (isSearchOrFilterApplied) {
-                        view = AppListViewType.NO_RESULT
-                    } else {
-                        view = AppListViewType.EMPTY
-                    }
-                }
-                const state = { ...this.state }
-                const apps =
-                    response.result && !!response.result.appContainers
-                        ? appListModal(response.result.appContainers)
-                        : []
-                state.code = response.code
-                state.apps = apps
-                state.isAllExpandable = apps.filter((app) => app.environments.length > 1).length > 0
-                state.view = view
-                state.offset = request.offset
-                state.size = response.result.appCount
-                state.pageSize = request.size
-                this.setState(state)
-                this.abortController = null
-                this.props.setAppCount(response.result.appCount)
-            })
-            .catch((errors: ServerErrors) => {
-                if (errors.code) {
-                    showError(errors)
-                    this.setState({ code: errors.code, view: ViewType.ERROR })
-                }
-            })
-            .finally(() => {
-                this.props.updateDataSyncing(false)
-            })
-    }
-
-    handleEditApp = (appId: number): void => {
-        const url = `/app/${appId}/edit`
-        this.props.history.push(url)
-    }
-
-    redirectToAppDetails = (app, envId: number): string => {
-        this.props.setCurrentAppName(app.name)
+    const redirectToAppDetails = (app, envId: number): string => {
+        setCurrentAppName(app.name)
 
         if (envId) {
-            return `/app/${app.id}/details/${envId}`
+            return `/${Routes.APP}/${app.id}/details/${envId}`
         }
-        return `/app/${app.id}/trigger`
+        return `/${Routes.APP}/${app.id}/trigger`
     }
 
-    render() {
-        return (
-            <AppListView
-                {...this.state}
-                match={this.props.match}
-                location={this.props.location}
-                history={this.props.history}
-                expandRow={this.expandRow}
-                closeExpandedRow={this.closeExpandedRow}
-                sort={this.props.sortApplicationList}
-                redirectToAppDetails={this.redirectToAppDetails}
-                handleEditApp={this.handleEditApp}
-                clearAll={this.props.clearAllFilters}
-                changePage={this.changePage}
-                changePageSize={this.changePageSize}
-                isSuperAdmin={this.props.isSuperAdmin}
-                appListCount={this.props.appListCount}
-                openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
-                updateDataSyncing={this.props.updateDataSyncing}
-                toggleExpandAllRow={this.toggleExpandAllRow}
-                isArgoInstalled={this.props.isArgoInstalled}
-            />
-        )
+    const expandRow = (id: number): void => {
+        setExpandedState((prevState) => ({ ...prevState, expandedRow: { ...prevState.expandedRow, [id]: true } }))
     }
+
+    const expandEnv = (event): void => {
+        event.stopPropagation()
+        event.preventDefault()
+        expandRow(event.currentTarget.dataset.key)
+    }
+
+    const closeExpandedRow = (id: number): void => {
+        setExpandedState((prevState) => ({ ...prevState, expandedRow: { ...prevState.expandedRow, [id]: false } }))
+    }
+
+    const handleCloseExpandedRow = (event): void => {
+        closeExpandedRow(event.currentTarget.dataset.key)
+    }
+
+    const toggleExpandAllRow = (): void => {
+        setExpandedState((prevState) => {
+            const _expandedRow = {}
+            if (!prevState.isAllExpanded) {
+                parsedAppList.forEach((app) => {
+                    _expandedRow[app.id] = app.environments.length > 1
+                })
+            }
+
+            return { ...prevState, expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
+        })
+    }
+
+    const handleAppNameSorting = () => {
+        handleSorting(AppListSortableKeys.APP_NAME)
+    }
+
+    const handleLastDeployedSorting = () => {
+        handleSorting(AppListSortableKeys.LAST_DEPLOYED)
+    }
+
+    const getArrowIconClass = (): string => {
+        if (expandedState.isAllExpandable) {
+            return `fcn-7 dc__transition--transform ${expandedState.isAllExpanded ? '' : 'dc__flip-n90'}`
+        }
+        return 'cursor-not-allowed dc__flip-n90'
+    }
+
+    const renderGuidedCards = () => (
+        <div className="devtron-app-guided-cards-container">
+            <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
+            <div className="devtron-app-guided-cards-wrapper">
+                <ContentCard
+                    datatestid="deploy-basic-k8snode"
+                    redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
+                    isExternalRedirect
+                    imgSrc={NodeAppThumbnail}
+                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
+                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
+                    LinkIcon={PlayMedia}
+                    linkIconClass="scb-5 mr-8"
+                    linkIconPlacement={CardLinkIconPlacement.BeforeLink}
+                />
+                <ContentCard
+                    datatestid="create-application"
+                    redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    rootClassName="ev-5"
+                    imgSrc={DeployCICD}
+                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
+                    LinkIcon={ArrowRight}
+                    linkIconClass="scb-5"
+                    linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                />
+            </div>
+        </div>
+    )
+
+    if (!appListLoading && appListError) {
+        return <ErrorScreenManager code={appListError.code} reload={appListReload} />
+    }
+
+    if (isSearchOrFilterApplied && appListResponse?.result?.appCount === 0) {
+        return <GenericFilterEmptyState handleClearFilters={clearAllFilters} />
+    }
+
+    if (appListResponse?.result.appCount === 0) {
+        return renderGuidedCards()
+    }
+
+    const renderEnvironmentList = (app: App) => {
+        const envCount = app.environments.length
+        if (envCount) {
+            const isEnvConfigured = app?.defaultEnv.name
+            return (
+                <div className="app-list__cell app-list__cell--env">
+                    <p
+                        data-testid={`${app.defaultEnv.name}-environment`}
+                        className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}
+                    >
+                        {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
+                    </p>
+                    {envCount > 1 ? (
+                        <button
+                            type="button"
+                            className="cell__link fs-13 dc__truncate-text mw-18"
+                            data-key={app.id}
+                            onClick={expandEnv}
+                        >
+                            +{envCount - 1} more
+                        </button>
+                    ) : null}
+                </div>
+            )
+        }
+        return <div className="app-list__cell app-list__cell--env" />
+    }
+
+    const renderAppList = () => (
+        <div className="app-list" data-testid="app-list-container">
+            <div className="app-list__header dc__position-sticky dc__top-47">
+                <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
+                    <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />
+                </div>
+                <div className="app-list__cell app-list__cell--name">
+                    <SortableTableHeaderCell
+                        title={APP_LIST_HEADERS.AppName}
+                        isSorted={sortBy === AppListSortableKeys.APP_NAME}
+                        sortOrder={sortOrder}
+                        isSortable
+                        triggerSorting={handleAppNameSorting}
+                        disabled={false}
+                    />
+                </div>
+                {isArgoInstalled && (
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header" data-testid="appstatus">
+                            {APP_LIST_HEADERS.AppStatus}
+                        </span>
+                    </div>
+                )}
+                <div className="app-list__cell app-list__cell--env">
+                    <span className="app-list__cell-header mr-4" data-testid="environment">
+                        {APP_LIST_HEADERS.Environment}
+                    </span>
+                    <Tippy
+                        data-testid="env-tippy"
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content="Environment is a unique combination of cluster and namespace"
+                    >
+                        <div className="flex">
+                            <ICHelpOutline className="icon-dim-16" />
+                        </div>
+                    </Tippy>
+                </div>
+                <div className="app-list__cell app-list__cell--cluster">
+                    <span className="app-list__cell-header" data-testid="cluster">
+                        {APP_LIST_HEADERS.Cluster}
+                    </span>
+                </div>
+                <div className="app-list__cell app-list__cell--namespace">
+                    <span className="app-list__cell-header" data-testid="namespace">
+                        {APP_LIST_HEADERS.Namespace}
+                    </span>
+                </div>
+                <div className="app-list__cell app-list__cell--time ">
+                    <SortableTableHeaderCell
+                        title={APP_LIST_HEADERS.LastDeployedAt}
+                        isSorted={sortBy === AppListSortableKeys.LAST_DEPLOYED}
+                        sortOrder={sortOrder}
+                        isSortable
+                        triggerSorting={handleLastDeployedSorting}
+                        disabled={false}
+                    />
+                </div>
+                <div className="app-list__cell app-list__cell--action" />
+            </div>
+            {appListLoading || appFiltersResponseLoading ? (
+                <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
+                    {appListLoadingArray.map((eachRow) => (
+                        <div className="pl-20 resource-list__table-row" key={eachRow.id}>
+                            {Object.keys(eachRow).map((eachKey) => (
+                                <div className="child child-shimmer-loading" key={eachKey} />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                parsedAppList.map((app) => {
+                    const len = app.environments.length > 1
+                    return (
+                        <React.Fragment key={app.id}>
+                            {!expandedState.expandedRow[app.id] ? (
+                                <Link
+                                    to={redirectToAppDetails(app, app.defaultEnv.id)}
+                                    className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                    data-testid="app-list-row"
+                                >
+                                    <div className="app-list__cell--icon">
+                                        <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
+                                        {len && (
+                                            <Arrow
+                                                className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
+                                                onClick={expandEnv}
+                                                data-key={app.id}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--name">
+                                        <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
+                                            {app.name}
+                                        </p>
+                                    </div>
+                                    {isArgoInstalled && (
+                                        <div
+                                            className="app-list__cell app-list__cell--app_status"
+                                            data-testid="devtron-app-status"
+                                        >
+                                            <AppStatus
+                                                appStatus={app.defaultEnv.appStatus}
+                                                isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                            />
+                                        </div>
+                                    )}
+                                    {renderEnvironmentList(app)}
+                                    <div className="app-list__cell app-list__cell--cluster">
+                                        <p
+                                            data-testid={`${app.defaultEnv.clusterName}-cluster`}
+                                            className="dc__truncate-text  m-0"
+                                        >
+                                            {app.defaultEnv ? app.defaultEnv.clusterName : ''}
+                                        </p>
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--namespace">
+                                        <p
+                                            data-testid={`${app.defaultEnv.namespace}-namespace`}
+                                            className="dc__truncate-text  m-0"
+                                        >
+                                            {app.defaultEnv ? app.defaultEnv.namespace : ''}
+                                        </p>
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--time">
+                                        {app.defaultEnv?.lastDeployedTime && (
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow
+                                                placement="top"
+                                                content={moment(app.defaultEnv.lastDeployedTime).format(
+                                                    DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
+                                                )}
+                                            >
+                                                <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
+                                                    {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
+                                                </p>
+                                            </Tippy>
+                                        )}
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--action">
+                                        <button
+                                            data-testid="edit-app-button"
+                                            type="button"
+                                            aria-label="redirect-to-app-config"
+                                            data-key={app.id}
+                                            className="button-edit"
+                                            onClick={handleEditAppRedirect}
+                                        >
+                                            <Edit className="button-edit__icon" />
+                                        </button>
+                                    </div>
+                                </Link>
+                            ) : null}
+                            {expandedState.expandedRow[app.id] && (
+                                <ExpandedRow
+                                    app={app}
+                                    close={handleCloseExpandedRow}
+                                    redirect={redirectToAppDetails}
+                                    handleEdit={handleEditApp}
+                                    isArgoInstalled={isArgoInstalled}
+                                />
+                            )}
+                        </React.Fragment>
+                    )
+                })
+            )}
+        </div>
+    )
+
+    const renderPagination = () => {
+        if (appListResponse?.result.appCount > DEFAULT_BASE_PAGE_SIZE) {
+            return (
+                <Pagination
+                    rootClassName="flex dc__content-space px-20"
+                    size={appListResponse?.result.appCount}
+                    pageSize={pageSize}
+                    offset={offset}
+                    changePage={changePage}
+                    changePageSize={changePageSize}
+                />
+            )
+        }
+        return null
+    }
+
+    return (
+        <>
+            {renderAppList()}
+            {renderPagination()}
+        </>
+    )
 }
 
-export default withRouter(DevtronAppListContainer)
+export default DevtronAppList

@@ -234,6 +234,7 @@ export interface SecurityVulnerabilityCardType {
     appId?: string
     envId?: string
     installedAppId?: number
+    artifactId?: number
     isExternalCI?: boolean
 }
 
@@ -268,6 +269,7 @@ export interface UseGetAppSecurityDetailsProps {
     appId: number
     envId: number
     installedAppId?: number
+    artifactId?: number
     imageScanDeployInfoId?: number
     isSecurityScanV2Enabled: boolean
 }

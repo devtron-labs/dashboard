@@ -14,56 +14,51 @@
  * limitations under the License.
  */
 
-import moment from 'moment'
-import { handleUTCTime } from '../../common'
-import { Environment } from './types'
+import { EnvironmentListHelmResult, EnvListMinDTO, handleUTCTime } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListFilterConfig, AppListPayloadType } from '../list-new/AppListType'
+import { Environment, GetEnvironmentsFromClusterNamespaceProps } from './types'
 
-export const buildInitState = (appListPayload): Promise<any> => {
-    return new Promise((resolve) => {
-        const parsedResponse = {
-            apps: [],
-            offset: appListPayload?.offset,
-            size: 0,
-            pageSize: appListPayload?.size,
-            sortRule: {
-                key: appListPayload?.sortBy,
-                order: appListPayload?.sortOrder,
-            },
-            searchQuery: appListPayload?.appNameSearch || '',
-            searchApplied: !!appListPayload?.appNameSearch?.length,
-        }
-        return resolve(parsedResponse)
-    })
-}
-
-export const createAppListPayload = (payloadParsedFromUrl, environmentClusterList) => {
-    const clustersMap = new Map()
-    const namespaceMap = new Map()
-    let environments = []
-
-    const entry = environmentClusterList?.entries()
-    if (entry) {
-        for (const [key, value] of entry) {
-            const { namespace, clusterId } = value
-            namespaceMap.set(`${clusterId}_${namespace}`, key)
-            const clusterKeys = clustersMap.get(clusterId) || []
-            clustersMap.set(clusterId, [...clusterKeys, key])
-        }
+const getEnvironmentsFromClusterNamespace = ({
+    selectedClusterIds,
+    selectedNamespaces,
+    environmentList,
+    namespaceList,
+}: GetEnvironmentsFromClusterNamespaceProps): number[] => {
+    const environments = new Set<number>()
+    // If namespace is selected we send environments of selected namespace
+    // Else we send all environments of selected clusters
+    if (selectedNamespaces.length) {
+        const namespaceVsEnvMap = new Map<string, number>()
+        namespaceList?.forEach((cluster) => {
+            cluster.environments.forEach((env) => {
+                namespaceVsEnvMap.set(`${cluster.clusterId}_${env.namespace}`, env.environmentId)
+            })
+        })
+        selectedNamespaces.forEach((namespace) => {
+            const envId = namespaceVsEnvMap.get(namespace)
+            if (envId) {
+                environments.add(envId)
+            }
+        })
+        return Array.from(environments)
     }
-
-    environments.push(...payloadParsedFromUrl.environments)
-
-    payloadParsedFromUrl.namespaces.forEach((item) => {
-        const [cluster, namespace] = item.split('_')
-        if (namespace) {
-            environments.push(namespaceMap.get(`${cluster}_${namespace}`))
-        } else if (+cluster) {
-            const envList = clustersMap.get(+cluster) || []
-            environments = [...environments, ...envList]
+    const clusterVsEnvMap = new Map<number, number[]>()
+    environmentList?.forEach((env) => {
+        const envList = clusterVsEnvMap.get(env.cluster_id)
+        if (envList) {
+            clusterVsEnvMap.set(env.cluster_id, [...envList, env.id])
+        } else {
+            clusterVsEnvMap.set(env.cluster_id, [env.id])
+        }
+    })
+    selectedClusterIds.forEach((clusterId) => {
+        const envIds = clusterVsEnvMap.get(clusterId)
+        if (envIds) {
+            envIds.forEach((envId) => environments.add(envId))
         }
     })
 
-    return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
+    return Array.from(environments)
 }
 
 export const appListModal = (appList) => {
@@ -78,10 +73,6 @@ export const appListModal = (appList) => {
 }
 
 const environmentModal = (env) => {
-    let { status } = env
-    if (env.status.toLocaleLowerCase() == 'deployment initiated') {
-        status = 'Progressing'
-    }
     let { appStatus } = env
     if (!env.appStatus) {
         if (env.lastDeployedTime) {
@@ -127,40 +118,37 @@ const getDefaultEnvironment = (envList): Environment => {
     }
 }
 
-const getLastDeployedEnv = (envList: Array<Environment>): Environment => {
-    let env = envList[0]
-    let ms = moment(new Date(0)).valueOf()
-    for (let i = 0; i < envList.length; i++) {
-        const time =
-            envList[i].lastDeployedTime && envList[i].lastDeployedTime.length
-                ? envList[i].lastDeployedTime
-                : new Date(0)
-        const tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
-        if (tmp > ms) {
-            ms = tmp
-            env = envList[i]
-        }
-    }
-    return env
-}
-
-const sortByLabel = (a, b) => {
-    if (a.label < b.label) {
-        return -1
-    }
-    if (a.label > b.label) {
-        return 1
-    }
-    return 0
-}
-
-const getStatus = () => {
-    return ['Not Deployed', 'Healthy', 'Missing', 'Unknown', 'Progressing', 'Suspended', 'Degraded']
-}
-
 const handleDeploymentInitiatedStatus = (status: string): string => {
     if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
         return 'progressing'
     }
     return status
+}
+
+export const getDevtronAppListPayload = (
+    filterConfig: AppListFilterConfig,
+    environmentList: EnvListMinDTO[],
+    namespaceList: EnvironmentListHelmResult[],
+): AppListPayloadType => {
+    const { searchKey, offset, pageSize, sortBy, sortOrder, appStatus, environment, cluster, namespace, project } =
+        filterConfig
+    return {
+        appNameSearch: searchKey,
+        offset,
+        size: pageSize,
+        sortBy,
+        sortOrder,
+        appStatuses: appStatus,
+        // If environment(s) is/are selected we send selected environment Ids else we send env Ids according to selected cluster and namespaces
+        environments: environment?.length
+            ? environment.map((envId) => +envId)
+            : getEnvironmentsFromClusterNamespace({
+                  selectedClusterIds: cluster.map((clusterId) => +clusterId),
+                  selectedNamespaces: namespace,
+                  environmentList,
+                  namespaceList,
+              }),
+        teams: project.map((team) => +team),
+        namespaces: namespace,
+    }
 }

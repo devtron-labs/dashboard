@@ -69,6 +69,9 @@ export function validateEmail(email) {
     return result
 }
 
+/**
+ * @deprecated use `useForm` from fe-common-lib.
+ */
 export function useForm(stateSchema, validationSchema = {}, callback) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)

@@ -245,7 +245,7 @@ export const GroupHeading = (props) => {
         <components.GroupHeading {...props}>
             <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
                 <span className="dc__truncate-text">
-                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Virtual Cluster : ' : 'Cluster : ')}
+                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Isolated Cluster : ' : 'Cluster : ')}
                     {data.label}
                 </span>
             </div>

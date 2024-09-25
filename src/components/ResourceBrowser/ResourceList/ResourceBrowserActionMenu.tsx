@@ -99,10 +99,12 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
         setShowVulnerabilityModal(false)
     }
 
-    const showResourceScanModal = getShowResourceScanModal(
-        selectedResource?.gvk?.Kind as NodeType,
-        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-    )
+    const showResourceScanModal =
+        getShowResourceScanModal(
+            selectedResource?.gvk?.Kind as NodeType,
+            installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+        ) && window._env_.ENABLE_RESOURCE_SCAN_V2
+
     return (
         <>
             <PopupMenu autoClose>
