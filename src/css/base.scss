@@ -4932,6 +4932,16 @@ textarea::placeholder {
     animation-timing-function: linear;
 }
 
+.security-policy--whitelist,
+.security-policy--whitelisted {
+    color: var(--G500);
+    text-transform: capitalize;
+}
+
+.security-policy--block {
+    color: var(--R500);
+    text-transform: capitalize;
+}
 .dc__transparent-div {
     position: fixed;
     background: transparent;
