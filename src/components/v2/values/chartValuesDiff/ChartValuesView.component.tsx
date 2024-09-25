@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import {
@@ -28,6 +29,9 @@ import {
     Drawer,
     TippyTheme,
     GitOpsAuthModeType,
+    SelectPicker,
+    SelectPickerOptionType,
+    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -39,12 +43,12 @@ import {
     Option,
 } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 
 import {
     ActiveReadmeColumnProps,
@@ -75,6 +79,8 @@ import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
+import { getChartValuesFiltered } from '@Components/charts/charts.helper'
+import { ChartValuesType } from '@Components/charts/charts.types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -541,21 +547,69 @@ export const ChartValuesSelector = ({
     hideVersionFromLabel,
     hideCreateNewOption,
 }: ChartValuesSelectorType) => {
+    const filteredChartValues = getChartValuesFiltered(chartValuesList)
+
+    const selectOptions: GroupBase<SelectPickerOptionType<ChartValuesType>>[] = [
+        {
+            label: 'Deployed',
+            options: filteredChartValues.deployedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+                description: `Deployed on: ${chartValue.environmentName || ''}`,
+            })),
+        },
+        {
+            label: 'Preset Values',
+            options: filteredChartValues.savedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+        {
+            label: 'Existing',
+            options: filteredChartValues.existingChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name}${hideVersionFromLabel || !chartValue.chartVersion ? '' : ` (${chartValue.chartVersion})`}`,
+            })),
+        },
+        {
+            label: 'Default',
+            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+    ]
+
+    const renderMenuListFooter = () => {
+        if (hideCreateNewOption) {
+            return null
+        }
+
+        return (
+            <button
+                className="dc__transparent fs-13 lh-20 flex left dc__gap-4 cb-5 px-8 py-6"
+                onClick={redirectToChartValues}
+                data-testid="add-preset-values-button-dropdown"
+            >
+                <ICAdd className="icon-dim-20 dc__no-shrink fcb-5" />
+                Create preset value
+            </button>
+        )
+    }
+
+    const selectedOption = getSelectPickerOptionByValue(selectOptions, chartValues, null)
+
     return (
-        <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
-                Chart Values
-            </span>
-            <ChartValuesSelect
-                className="chart-values-selector"
-                chartValuesList={chartValuesList}
-                chartValues={chartValues}
-                redirectToChartValues={redirectToChartValues}
-                onChange={handleChartValuesSelection}
-                hideVersionFromLabel={hideVersionFromLabel}
-                hideCreateNewOption={hideCreateNewOption}
-            />
-        </div>
+        <SelectPicker<ChartValuesType, false>
+            inputId="chart-values-selector"
+            options={selectOptions}
+            renderMenuListFooter={renderMenuListFooter}
+            getOptionValue={(option) => `${option.value.id} ${option.value.kind}`}
+            label="Chart Values"
+            onChange={(selectedOption) => handleChartValuesSelection(selectedOption.value)}
+            value={selectedOption}
+        />
     )
 }
 
