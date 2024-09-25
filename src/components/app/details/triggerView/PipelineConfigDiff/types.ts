@@ -3,6 +3,7 @@ import {
     DeploymentWithConfigType,
     EnvResourceType,
     SelectPickerProps,
+    UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface UsePipelineDeploymentConfigProps {
@@ -18,14 +19,14 @@ export interface UsePipelineDeploymentConfigProps {
 export type PipelineConfigDiffProps = Pick<
     DeploymentConfigDiffProps,
     'configList' | 'collapsibleNavList' | 'navList' | 'scopeVariablesConfig'
-> &
-    Pick<UsePipelineDeploymentConfigProps, 'isRollbackTriggerSelected'> & {
-        isLoading?: boolean
-        deploymentConfigSelectorProps: SelectPickerProps
-    }
+> & {
+    isLoading?: boolean
+    deploymentConfigSelectorProps: SelectPickerProps
+    urlFilters: UseUrlFiltersReturnType<string, PipelineConfigDiffQueryParamsType>
+}
 
 export interface PipelineConfigDiffStatusTileProps
-    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'deploymentConfigSelectorProps'> {
+    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'deploymentConfigSelectorProps' | 'urlFilters'> {
     hasDiff?: boolean
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void

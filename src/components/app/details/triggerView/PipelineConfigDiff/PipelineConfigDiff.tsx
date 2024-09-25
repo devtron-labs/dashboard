@@ -1,26 +1,15 @@
-import {
-    useUrlFilters,
-    DeploymentConfigDiff,
-    DeploymentConfigDiffProps,
-    SortingOrder,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigDiff, DeploymentConfigDiffProps, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 
-import { parseCompareWithSearchParams } from './utils'
-import { PipelineConfigDiffProps, PipelineConfigDiffQueryParamsType } from './types'
+import { PipelineConfigDiffProps } from './types'
 
 export const PipelineConfigDiff = ({
     deploymentConfigSelectorProps,
-    isRollbackTriggerSelected,
     scopeVariablesConfig,
+    urlFilters,
     ...props
 }: PipelineConfigDiffProps) => {
     // SEARCH PARAMS & SORTING
-    const { resourceName, resourceType, sortBy, sortOrder, handleSorting } = useUrlFilters<
-        string,
-        PipelineConfigDiffQueryParamsType
-    >({
-        parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
-    })
+    const { resourceName, resourceType, sortBy, sortOrder, handleSorting } = urlFilters
 
     // METHODS
     const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')

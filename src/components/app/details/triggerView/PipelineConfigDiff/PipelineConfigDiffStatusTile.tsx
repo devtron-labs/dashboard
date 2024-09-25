@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router-dom'
-
 import { DeploymentWithConfigType, Progressing, SelectPicker, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
@@ -14,12 +12,10 @@ export const PipelineConfigDiffStatusTile = ({
     deploymentConfigSelectorProps,
     onClick,
     canReviewConfig,
+    urlFilters,
 }: PipelineConfigDiffStatusTileProps) => {
-    const { search } = useLocation()
-
-    const lastDeployedOptionSelected =
-        new URLSearchParams(search).get('deploy') === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
-
+    const { deploy } = urlFilters
+    const lastDeployedOptionSelected = deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
     const _canReviewConfig = canReviewConfig && !noLastDeploymentConfig
 
     return (
@@ -31,6 +27,7 @@ export const PipelineConfigDiffStatusTile = ({
             <Tooltip
                 alwaysShowTippyOnHover={!isLoading && !lastDeployedOptionSelected && !noLastDeploymentConfig}
                 content={`${hasDiff ? 'Config' : 'No config'} diff from last deployed`}
+                className="dc__mxw-250"
             >
                 <button
                     type="button"

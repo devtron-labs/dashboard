@@ -267,6 +267,7 @@ const CDMaterial = ({
         canDeployWithConfig,
         canReviewConfig,
         scopeVariablesConfig,
+        urlFilters,
     } = usePipelineDeploymentConfig({
         appId,
         envId,
@@ -1633,6 +1634,7 @@ const CDMaterial = ({
                             onClick={() => onClickSetInitialParams('review-config')}
                             noLastDeploymentConfig={noLastDeploymentConfig}
                             canReviewConfig={canReviewConfig()}
+                            urlFilters={urlFilters}
                         />
                     )}
                 <ConditionalWrap
@@ -1677,10 +1679,10 @@ const CDMaterial = ({
         return (
             <PipelineConfigDiff
                 {...pipelineDeploymentConfig}
-                isRollbackTriggerSelected={state.isRollbackTrigger}
                 isLoading={pipelineDeploymentConfigLoading}
                 deploymentConfigSelectorProps={deploymentConfigSelectorProps}
                 scopeVariablesConfig={scopeVariablesConfig}
+                urlFilters={urlFilters}
             />
         )
     }

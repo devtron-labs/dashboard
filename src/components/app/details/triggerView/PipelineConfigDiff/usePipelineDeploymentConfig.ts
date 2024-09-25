@@ -15,7 +15,6 @@ import {
     EnvResourceType,
     abortPreviousRequests,
     getIsRequestAborted,
-    getDeploymentTemplateValues,
     DeploymentConfigDiffState,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -32,6 +31,7 @@ import {
     getPipelineDeploymentConfigSelectorOptions,
     parseCompareWithSearchParams,
 } from './utils'
+import { getDeploymentTemplateResolvedData } from './service.utils'
 
 export const usePipelineDeploymentConfig = ({
     appId,
@@ -53,12 +53,10 @@ export const usePipelineDeploymentConfig = ({
     const deploymentTemplateResolvedDataAbortControllerRef = useRef(new AbortController())
 
     // SEARCH PARAMS & SORTING
-    const { deploy, mode, updateSearchParams, handleSorting } = useUrlFilters<
-        string,
-        PipelineConfigDiffQueryParamsType
-    >({
+    const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
         parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
     })
+    const { deploy, mode, updateSearchParams, handleSorting } = urlFilters
 
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
         useAsync(
@@ -139,30 +137,18 @@ export const usePipelineDeploymentConfig = ({
                 })
 
                 return Promise.all([
-                    getAppEnvDeploymentConfig({
-                        params: {
-                            configArea: 'ResolveData',
-                            appName,
-                            envName,
-                        },
-                        payload: {
-                            values: getDeploymentTemplateValues(compareData?.deploymentTemplate),
-                        },
-                        signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
+                    getDeploymentTemplateResolvedData({
+                        appName,
+                        envName,
+                        data: compareData,
+                        abortControllerRef: deploymentTemplateResolvedDataAbortControllerRef,
                     }),
-                    recentDeploymentConfig
-                        ? getAppEnvDeploymentConfig({
-                              params: {
-                                  configArea: 'ResolveData',
-                                  appName,
-                                  envName,
-                              },
-                              payload: {
-                                  values: getDeploymentTemplateValues(recentDeploymentConfig?.deploymentTemplate),
-                              },
-                              signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                          })
-                        : { result: null },
+                    getDeploymentTemplateResolvedData({
+                        appName,
+                        envName,
+                        data: recentDeploymentConfig,
+                        abortControllerRef: deploymentTemplateResolvedDataAbortControllerRef,
+                    }),
                 ])
             }, deploymentTemplateResolvedDataAbortControllerRef),
         [convertVariables, pipelineDeploymentConfigRes],
@@ -336,5 +322,6 @@ export const usePipelineDeploymentConfig = ({
         canReviewConfig,
         canDeployWithConfig,
         scopeVariablesConfig,
+        urlFilters,
     }
 }
