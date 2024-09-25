@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -24,22 +24,44 @@ import {
     CHECKBOX_VALUE,
     useSearchString,
     MODAL_TYPE,
+    SecurityModal,
     ToastVariantType,
     ToastManager,
+    GetResourceScanDetailsPayloadType,
+    ResponseType,
+    ApiResponseResultType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
-import dots from '../../../assets/icons/ic-menu-dot.svg'
+import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
+import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const getResourceScanDetails: ({
+    name,
+    namespace,
+    clusterId,
+    group,
+    version,
+    kind,
+    appId,
+    appType,
+    deploymentType,
+    isAppDetailView,
+}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getResourceScanDetails',
+    null,
+    'function',
+)
 
 const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
@@ -50,6 +72,21 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
     const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
+
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
+
+    const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
+        () =>
+            getResourceScanDetails(
+                {
+                    ...nodeDetails,
+                    ...manifestPayload,
+                    isAppDetailView: true,
+                }
+            ),
+        [manifestPayload],
+        manifestPayload && getResourceScanDetails && isSecurityScanV2Enabled,
+    )
 
     const handleShowVulnerabilityModal = () => {
         /* TODO: need to set to prevent outsideClick propagation */
@@ -153,10 +190,17 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
     }
 
     return (
-        <div style={{ width: '40px' }}>
+        <>
             <PopupMenu autoClose>
-                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab>
-                    <img src={dots} className="pod-info__dots" />
+                <PopupMenu.Button
+                    dataTestId="node-resource-dot-button"
+                    isKebab
+                    rootClassName="dc__h-fit-content flex dc__align-self-center dc__no-border"
+                >
+                    <ICMoreOption
+                        className="icon-dim-20 fcn-6 rotate dc__no-shrink"
+                        style={{ ['--rotateBy' as string]: '90deg' }}
+                    />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <PodPopup
@@ -168,19 +212,19 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                 </PopupMenu.Body>
             </PopupMenu>
 
-            {!!manifestPayload && SecurityModal && (
+            {!!manifestPayload && !!isFELibAvailable && (
                 <SecurityModal
-                    resourceScanPayload={{
-                        ...nodeDetails,
-                        ...manifestPayload,
-                        isAppDetailView: true,
-                    }}
                     handleModalClose={handleCloseVulnerabilityModal}
+                    Sidebar={SecurityModalSidebar}
+                    isResourceScan
+                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                    isLoading={resourceScanLoading}
+                    error={resourceScanError}
+                    responseData={resourceScanResponse?.result}
                 />
             )}
-
             {renderDeleteResourcePopup()}
-        </div>
+        </>
     )
 }
 

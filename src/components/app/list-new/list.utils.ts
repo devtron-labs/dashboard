@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-import * as queryString from 'query-string'
-import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppListConstants,
+    GroupedOptionsType,
+    OptionType,
+    SelectPickerOptionType,
+    stringComparatorBySortOrder,
+    Teams,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useMemo } from 'react'
+import { Cluster } from '@Services/service.types'
 import { URLS } from '../../../config'
 import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
-import { buildClusterVsNamespace } from './AppListService'
-import { OrderBy, SortBy } from '../list/types'
-import { AppListAppliedFilters, AppListPayloadType } from './AppListType'
-
-export const getCurrentTabName = (appType: string): string => {
-    switch (appType) {
-        case AppListConstants.AppType.HELM_APPS:
-            return AppListConstants.AppTabs.HELM_APPS
-        case AppListConstants.AppType.ARGO_APPS:
-            return AppListConstants.AppTabs.ARGO_APPS
-        case AppListConstants.AppType.FLUX_APPS:
-            return AppListConstants.AppTabs.FLUX_APPS
-        default:
-            return AppListConstants.AppTabs.DEVTRON_APPS
-    }
-}
+import { AppListUrlFilters, AppStatuses, AppStatusesDTO, useFilterOptionsProps } from './AppListType'
+import { APPS_WITH_NO_PROJECT_OPTION } from './Constants'
 
 export const getChangeAppTabURL = (appTabType) => {
     switch (appTabType) {
@@ -49,6 +43,19 @@ export const getChangeAppTabURL = (appTabType) => {
     }
 }
 
+export const getAppTabNameFromAppType = (appType: string) => {
+    switch (appType) {
+        case AppListConstants.AppType.HELM_APPS:
+            return AppListConstants.AppTabs.HELM_APPS
+        case AppListConstants.AppType.ARGO_APPS:
+            return AppListConstants.AppTabs.ARGO_APPS
+        case AppListConstants.AppType.FLUX_APPS:
+            return AppListConstants.AppTabs.FLUX_APPS
+        default:
+            return AppListConstants.AppTabs.DEVTRON_APPS
+    }
+}
+
 export const renderIcon = (appType: string): string => {
     if (appType === AppListConstants.AppType.FLUX_APPS) {
         return FluxCDAppIcon
@@ -56,85 +63,134 @@ export const renderIcon = (appType: string): string => {
     return ArgoCDAppIcon
 }
 
-export const getPayloadFromUrl = (
-    searchQuery: string,
-    appCount: number,
-    showExportCsvButton: boolean,
-): { payload: AppListPayloadType; filterApplied: AppListAppliedFilters } => {
-    const params = queryString.parse(searchQuery)
-    const search = (params.search as string) || ''
-    const environments = params.environment || ''
-    const appStatus = params.appStatus || ''
-    const teams = params.team || ''
-    const clustersAndNamespaces = params.namespace || ''
-    const templateType = params.templateType || ''
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    [AppListUrlFilters.appStatus]: searchParams.getAll(AppListUrlFilters.appStatus),
+    [AppListUrlFilters.project]: searchParams.getAll(AppListUrlFilters.project),
+    [AppListUrlFilters.environment]: searchParams.getAll(AppListUrlFilters.environment),
+    [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster),
+    [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace),
+    [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType),
+})
 
-    const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
-    const environmentsArr = environments
-        .toString()
-        .split(',')
-        .map((env) => +env)
-        .filter((item) => item !== 0)
-    const teamsArr = teams
-        .toString()
-        .split(',')
-        .filter((team) => team !== '')
-        .map((team) => Number(team))
-    const appStatusArr = appStatus
-        .toString()
-        .split(',')
-        .filter((status) => status !== '')
-        .map((status) => status)
-    const templateTypesArr = templateType
-        .toString()
-        .split(',')
-        .filter((type) => !!type)
+export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {
+    if (filterType === AppListUrlFilters.appStatus) {
+        return 'App Status'
+    }
+    if (filterType === AppListUrlFilters.templateType) {
+        return 'Template Type'
+    }
+    return null
+}
 
-    // update master filters data (check/uncheck)
-    const filterApplied: AppListAppliedFilters = {
-        environments: new Set<number>(environmentsArr),
-        teams: new Set<number>(teamsArr),
-        appStatus: new Set<string>(appStatusArr),
-        clusterVsNamespaceMap: _clusterVsNamespaceMap,
-        templateType: new Set<string>(templateTypesArr),
+export const getAppStatusFormattedValue = (filterValue: string) => {
+    switch (filterValue) {
+        case AppStatusesDTO.HIBERNATING:
+            return AppStatuses.HIBERNATING
+        case AppStatusesDTO.NOT_DEPLOYED:
+            return AppStatuses.NOT_DEPLOYED
+        default:
+            return filterValue
+    }
+}
+
+export const useFilterOptions = ({
+    appListFiltersResponse,
+    namespaceListResponse,
+    getFormattedFilterValue,
+    isExternalFlux,
+    isExternalArgo,
+}: useFilterOptionsProps) => {
+    const getProjectOptions = (projectList: Teams[]): OptionType[] => {
+        if (!projectList) {
+            return []
+        }
+        return (
+            projectList.map((team) => ({
+                label: team.name,
+                value: String(team.id),
+            })) ?? []
+        )
     }
 
-    const sortBy = (params.orderBy as string) || SortBy.APP_NAME
-    const sortOrder = (params.sortOrder as string) || OrderBy.ASC
-    let offset = +params.offset || 0
-    let hOffset = +params.hOffset || 0
-    let pageSize: number = +params.pageSize || 20
-    const pageSizes = new Set([20, 40, 50])
+    const projectOptions: GroupedOptionsType[] = useMemo(
+        () => [
+            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
+            {
+                label: 'Projects',
+                options: appListFiltersResponse
+                    ? (appListFiltersResponse.isFullMode
+                          ? getProjectOptions(appListFiltersResponse.appListFilters.result.teams)
+                          : getProjectOptions(appListFiltersResponse.projectList.result)
+                      ).sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
+                    : [],
+            },
+        ],
+        [appListFiltersResponse],
+    )
 
-    if (!pageSizes.has(pageSize)) {
-        // handle invalid pageSize
-        pageSize = 20
-    }
-    if (offset % pageSize !== 0) {
-        // pageSize must be a multiple of offset
-        offset = 0
-    }
-    if (hOffset % pageSize !== 0) {
-        // pageSize must be a multiple of offset
-        hOffset = 0
+    const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            appListFiltersResponse?.appListFilters?.result.environments.reduce((prev, curr) => {
+                if (!prev.find((clusterItem) => clusterItem.label === curr.cluster_id)) {
+                    prev.push({ label: curr.cluster_id, options: [] })
+                }
+                prev.find((clusterItem) => clusterItem.label === curr.cluster_id).options.push({
+                    label: curr.environment_name,
+                    value: String(curr.id),
+                })
+
+                return prev
+            }, []) ?? [],
+        [appListFiltersResponse],
+    )
+
+    const environmentOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            clusterGroupedEnvOptions?.map((clusterItem) => ({
+                label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
+                options: clusterItem.options,
+            })) ?? [],
+        [clusterGroupedEnvOptions],
+    )
+
+    const handleVirtualClusterFiltering = (clusterList: Cluster[]): Cluster[] => {
+        if (!clusterList) return []
+        if (isExternalArgo || isExternalFlux) {
+            return clusterList.filter((clusterItem) => !clusterItem.isVirtualCluster)
+        }
+        return clusterList
     }
 
-    const payload: AppListPayloadType = {
-        environments: environmentsArr,
-        teams: teamsArr,
-        namespaces: clustersAndNamespaces
-            .toString()
-            .split(',')
-            .filter((item) => item !== ''),
-        appNameSearch: search,
-        appStatuses: appStatusArr,
-        templateType: templateTypesArr,
-        sortBy,
-        sortOrder,
-        offset,
-        hOffset,
-        size: showExportCsvButton ? appCount : +pageSize,
-    }
+    const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
+        handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
+            label: clusterItem.cluster_name,
+            value: String(clusterItem.id),
+        }))
 
-    return { payload, filterApplied }
+    const clusterOptions: SelectPickerOptionType[] = useMemo(
+        () =>
+            appListFiltersResponse?.isFullMode
+                ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
+                : getClusterOptions(appListFiltersResponse?.clusterList.result),
+        [appListFiltersResponse, isExternalArgo, isExternalFlux],
+    )
+
+    const namespaceOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            namespaceListResponse?.result
+                ?.map((clusterItem) => ({
+                    label: clusterItem.clusterName,
+                    options: clusterItem.environments
+                        .filter((env) => !!env.namespace)
+                        .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace))
+                        .map((env) => ({
+                            label: env.namespace,
+                            value: `${clusterItem.clusterId}_${env.namespace}`,
+                        })),
+                }))
+                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
+        [namespaceListResponse],
+    )
+
+    return { projectOptions, clusterOptions, environmentOptions, namespaceOptions }
 }

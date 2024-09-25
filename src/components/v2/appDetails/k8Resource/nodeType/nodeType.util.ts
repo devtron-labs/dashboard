@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { iNode } from '../../appDetails.type'
+import { iNode, NodeType } from '../../appDetails.type'
+import { NodePodStatus } from './types'
 
 export const getNodeStatus = (node: iNode) => {
     if (node.info && node.info.length > 0) {
@@ -37,4 +38,19 @@ export const getNodeStatus = (node: iNode) => {
         return node.health?.status
     }
     return ''
+}
+
+export const getFilteredPodStatus = (podStatusObj: NodePodStatus) => {
+    const podStatusKeys = Object.keys(podStatusObj)
+
+    if (podStatusKeys.length > 2 && podStatusObj['running'] === 0) {
+        return podStatusKeys.filter((n) => n !== 'all' && n !== 'running')
+    }
+
+    return podStatusKeys.filter((n) => n !== 'all')
+}
+
+export const nodeRowClassModifierMap = {
+    [NodeType.Pod.toLowerCase()]: 'col-6',
+    [NodeType.Service.toLowerCase()]: 'col-3',
 }

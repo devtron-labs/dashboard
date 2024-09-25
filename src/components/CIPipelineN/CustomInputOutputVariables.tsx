@@ -236,7 +236,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                     value={variable.name}
                                                     name="name"
                                                     onChange={(e) => handleInputOutputValueChange(e, index)}
-                                                    handleOnBlur={handleBlur}
+                                                    onBlur={handleBlur}
                                                 />
                                             </div>
 
@@ -297,7 +297,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                         value={variable.description}
                                         name="description"
                                         onChange={(e) => handleInputOutputValueChange(e, index)}
-                                        handleOnBlur={handleBlur}
+                                        onBlur={handleBlur}
                                     />
                                 </div>
 

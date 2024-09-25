@@ -50,7 +50,7 @@ import { ReactComponent as InfoFilled } from '@Icons/info-filled.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
-import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
+import { ReactComponent as UnHibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
 import { EnvironmentOverviewTable, EnvironmentOverviewTableRow } from '@Pages/Shared/EnvironmentOverviewTable'
@@ -141,9 +141,15 @@ export default function EnvironmentOverview({
             appId: +appDetail.appId,
             envId: +appDetail.envId,
         }))
-        setIsDeploymentLoading(true)
-        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
-        setHibernateInfoMap(_hibernate)
+        if (appEnvTuples.length) {
+            setIsDeploymentLoading(true)
+            const _hibernate = await processDeploymentWindowAppGroupOverviewMap(
+                appEnvTuples,
+                setShowDefaultDrawer,
+                envId,
+            )
+            setHibernateInfoMap(_hibernate)
+        }
         setIsDeploymentLoading(false)
     }
 
@@ -326,7 +332,7 @@ export default function EnvironmentOverview({
             },
             {
                 label: 'Unhibernate',
-                Icon: UnhibernateIcon,
+                Icon: UnHibernateIcon,
                 iconType: null,
                 disabled: !appInfo.lastDeployed,
                 onClick: () => {
@@ -529,7 +535,7 @@ export default function EnvironmentOverview({
                                 onClick={openUnHibernateModalPopup}
                                 className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                             >
-                                <UnhibernateIcon className="icon-dim-12 mr-4" />
+                                <UnHibernateIcon className="icon-dim-12 mr-4" />
                                 Unhibernate
                             </button>
                             <button

@@ -257,7 +257,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function validateData() {
         try {
-            const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
+            const nameRegexp = new RegExp(`^[a-z]+[a-z0-9-?]*[a-z0-9]+$`)
 
             const allNames = state.charts.map((chart) => chart.name.value)
             const duplicateNames = allNames.filter((name, index) => {

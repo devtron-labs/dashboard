@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
     showError,
     getUserRole,
@@ -22,6 +22,7 @@ import {
     useAsync,
     PageHeader,
     ErrorScreenManager,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { sortObjectArrayAlphabetically } from '../common'
@@ -31,11 +32,15 @@ import { ClusterDetail } from '../ClusterNodes/types'
 import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
         try {
-            return await getClusterList()
+            return await getClusterList(abortControllerRef.current.signal)
         } catch (err) {
-            showError(err)
+            if (!getIsRequestAborted(err)) {
+                showError(err)
+            }
             return null
         }
     })
@@ -45,6 +50,13 @@ const ResourceBrowser: React.FC = () => {
     /* transpose the data */
     const [clusterListMinData = null, userRoleData = null] = data || []
 
+    useEffect(
+        () => () => {
+            abortControllerRef.current.abort()
+        },
+        [],
+    )
+
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
             (
@@ -52,7 +64,11 @@ const ResourceBrowser: React.FC = () => {
                     detailClusterList?.result || clusterListMinData?.result || [],
                     'name',
                 ) as ClusterDetail[]
-            ).filter((option) => !window._env_.HIDE_DEFAULT_CLUSTER || option.id !== DEFAULT_CLUSTER_ID),
+            ).filter(
+                (option) =>
+                    !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
+                    !option.isVirtualCluster,
+            ),
         [detailClusterList, clusterListMinData],
     )
 
