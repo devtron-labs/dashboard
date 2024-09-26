@@ -30,7 +30,7 @@ import {
     GitOpsAuthModeType,
     SelectPicker,
     SelectPickerOptionType,
-    getSelectPickerOptionByValue,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -559,16 +559,26 @@ export const ChartValuesSelector = ({
         )
     }
 
-    const selectedOption = getSelectPickerOptionByValue(selectOptions, chartValues, null)
+    const getOptionValue: SelectPickerProps<ChartValuesType>['getOptionValue'] = (option) =>
+        `${option.value.id} ${option.value.kind}`
+
+    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
+        handleChartValuesSelection(selectedOption.value)
+
+    const selectedOption = selectOptions.flatMap(groupedOption => groupedOption.options).find(option => getOptionValue(option) === getOptionValue({
+        // Setting label null since the getOptionValue is not consuming it
+        label: null,
+        value: chartValues
+    }))
 
     return (
         <SelectPicker<ChartValuesType, false>
             inputId="chart-values-selector"
             options={selectOptions}
             renderMenuListFooter={renderMenuListFooter}
-            getOptionValue={(option) => `${option.value.id} ${option.value.kind}`}
+            getOptionValue={getOptionValue}
             label="Chart Values"
-            onChange={(selectedOption) => handleChartValuesSelection(selectedOption.value)}
+            onChange={handleChange}
             value={selectedOption}
         />
     )
