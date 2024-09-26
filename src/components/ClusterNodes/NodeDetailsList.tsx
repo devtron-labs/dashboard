@@ -133,7 +133,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         const qs = queryString.parse(location.search)
         const offset = Number(qs['offset'])
         setNodeListOffset(offset || 0)
-    }, [location.search])
+        if (k8sVersion && k8sVersion !== selectedVersion.value) {
+            setSelectedVersion({ label: `K8s version: ${k8sVersion}`, value: k8sVersion })
+        }
+    }, [location.search, k8sVersion])
 
     useEffect(() => {
         if (filteredFlattenNodeList) {
