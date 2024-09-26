@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { OutputTabType } from "./bulkEdits.type"
+
 export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
@@ -32,4 +34,15 @@ export const multiSelectStyles = {
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
+}
+
+export const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
+    return (
+        <label className="dc__tertiary-tab__radio flex fs-13">
+            <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
+            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={`${name}-link`}>
+                {name}
+            </div>
+        </label>
+    )
 }

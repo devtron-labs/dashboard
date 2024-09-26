@@ -15,7 +15,16 @@
  */
 
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
-import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
+import {
+    Switch,
+    Route,
+    Redirect,
+    useParams,
+    useRouteMatch,
+    useHistory,
+    generatePath,
+    useLocation,
+} from 'react-router-dom'
 import {
     Progressing,
     BreadCrumb,
@@ -24,14 +33,15 @@ import {
     DeleteDialog,
     showError,
     GenericEmptyState,
-    ToastBody,
     useAsync,
     PageHeader,
+    TabGroup,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
-import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel, useAppContext } from '../common'
 import { URLS } from '../../config'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
@@ -176,7 +186,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         try {
             await editDescription(payload)
-            toast.success('Successfully saved')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
             setDescription(value?.trim())
         } catch (err) {
             showError(err)
@@ -191,30 +204,29 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppGroupListData(result)
         setDescription(result.description)
         if (result.apps?.length) {
-            setAppListOptions(
-                result.apps
-                    .map((app): OptionType => {
-                        return {
-                            value: `${app.appId}`,
-                            label: app.appName,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
-            )
+            const _appListOptions = result.apps
+                .map((app): OptionType => {
+                    return {
+                        value: `${app.appId}`,
+                        label: app.appName,
+                    }
+                })
+                .sort(sortOptionsByLabel)
+
+            setAppListOptions(_appListOptions)
+            if (selectedGroupFilter.length) {
+                setSelectedAppList(_appListOptions.filter((app) => selectedGroupFilter[0].appIds.includes(+app.value)))
+            }
         }
         setAppListLoading(false)
     }
 
     const handleToast = (action: string) => {
-        return toast.info(
-            <ToastBody
-                title={`Cannot ${action} filter`}
-                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
-            />,
-            {
-                className: 'devtron-toast unauthorized',
-            },
-        )
+        return ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            title: `Cannot ${action} filter`,
+            description: `You can ${action} a filter with only those applications for which you have admin/manager permission.`,
+        })
     }
 
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
@@ -329,7 +341,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setDeleting(true)
         try {
             await deleteEnvGroup(envId, clickedGroup.value)
-            toast.success('Successfully deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully deleted',
+            })
             setShowDeleteGroup(false)
             getSavedFilterData(
                 selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
@@ -422,7 +437,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page">
+        <div className="env-details-page h-100vh flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}
@@ -583,70 +598,61 @@ export const EnvHeader = ({
     }
 
     const renderEnvDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) =>
-                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action)
-                        }
-                    >
-                        Overview
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_TRIGGER}`}
-                        className="tab-list__tab-link"
-                        data-testid="group-build-deploy"
-                        onClick={(event) =>
-                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action)
-                        }
-                    >
-                        Build & Deploy
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-testid="app-group-build-history"
-                        onClick={handleEventRegistration}
-                    >
-                        Build history
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
-                        className="tab-list__tab-link"
-                        onClick={handleEventRegistration}
-                    >
-                        Deployment history
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link flex"
-                        data-testid="group-configuration"
-                        onClick={(event) =>
-                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action)
-                        }
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
-                        Configurations
-                    </NavLink>
-                </li>
-            </ul>
-        )
+        const tabs: TabProps[] = [
+            {
+                id: 'overview-tab',
+                label: 'Overview',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    onClick: (event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action),
+                },
+            },
+            {
+                id: 'build-&-deploy-tab',
+                label: 'Build & Deploy',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    onClick: (event) =>
+                        handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action),
+                    'data-testid': 'group-build-deploy',
+                },
+            },
+            {
+                id: 'build-history-tab',
+                label: 'Build history',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    onClick: handleEventRegistration,
+                    'data-testid': 'app-group-build-history',
+                },
+            },
+            {
+                id: 'deployment-history-tab',
+                label: 'Deployment history',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CD_DETAILS}`,
+                    onClick: handleEventRegistration,
+                },
+            },
+            {
+                id: 'group-configurations-tab',
+                label: 'Configurations',
+                tabType: 'navLink',
+                icon: Settings,
+                props: {
+                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    onClick: (event) =>
+                        handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action),
+                    'data-testid': 'group-configuration',
+                },
+            },
+        ]
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
     const renderBreadcrumbs = () => {

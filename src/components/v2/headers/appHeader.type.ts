@@ -32,5 +32,5 @@ export interface ChartHeaderComponentType {
 export interface EAHeaderComponentType {
     title: string
     redirectURL: string
-    appType: string
+    showAppDetailsOnly?: boolean
 }

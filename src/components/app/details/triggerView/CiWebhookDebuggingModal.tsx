@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react'
-import { useHistory, useLocation } from 'react-router'
-import { showError, Progressing, sortCallback, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useLocation } from 'react-router-dom'
+import { showError, Progressing, sortCallback, stopPropagation, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { getCIWebhookPayload } from './ciWebhook.service'
 import { getCIPipelineURL } from '../../../common'
@@ -60,7 +60,7 @@ export default function CiWebhookModal({
                 'noreferrer',
             )
         } else {
-            history.push(`edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`)
+            history.push(`/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`)
         }
     }
 
@@ -267,7 +267,7 @@ export default function CiWebhookModal({
 
     const renderTimeStampDetailedDescription = () => {
         return (
-            <div style={{ height: 'calc(100vh - 75px' }} className="bcn-0 pl-16 mt-20">
+            <div style={{ height: 'calc(100vh - 75px' }} className="bcn-0 px-16 mt-20">
                 <div style={{ background: '#f2f4f7' }}>
                     <div className="cn-9 fs-12 fw-6 pt-12 pl-12">Incoming Payload</div>
                     <div
@@ -286,14 +286,14 @@ export default function CiWebhookModal({
                     >
                         {expandIncomingPayload ? 'Collapse' : 'Expand'}
                     </button>
-                    <div className="cn-9 fw-6 fs-14 flex left">
+                    <div className="cn-9 fw-6 fs-14 flex left dc__content-space">
                         Filter matching results
                         <button
                             type="button"
-                            className="mr-20 dc__transparent dc__align-right"
+                            className="dc__transparent"
                             onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
                         >
-                            // Here the CI model requires the CiPipelineId not the CiPipelineMaterialId
+                            {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>
@@ -358,7 +358,7 @@ export default function CiWebhookModal({
     const renderTimeStampDetailedIncomingModal = () => {
         return (
             <div
-                className={`bcn-0 w-800 bcn-0 dc__position-fixed dc__top-0 dc__right-0 timestamp-detail-container ${
+                className={`bcn-0 w-1024 bcn-0 dc__position-fixed dc__top-0 dc__right-0 timestamp-detail-container ${
                     fromBulkCITrigger ? 'env-modal-width' : ''
                 }`}
                 style={{ zIndex: 100 }}

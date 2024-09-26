@@ -15,15 +15,14 @@
  */
 
 import React from 'react'
-import { NavLink, Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { useRouteMatch } from 'react-router'
-import { URLS, AppListConstants } from '../../../config'
+import { Link, useRouteMatch } from 'react-router-dom'
+import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ChartHeaderComponentType } from './appHeader.type'
-import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
     const match = useRouteMatch()
@@ -49,77 +48,73 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
     }
 
     const renderHelmDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right fs-13">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Overview Clicked',
-                            })
-                        }}
-                    >
-                        Overview
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab dc__ellipsis-right fs-13">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DETAILS}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Details Clicked',
-                            })
-                        }}
-                    >
-                        App Details
-                    </NavLink>
-                </li>
-                {!appDetails.deploymentAppDeleteRequest && !errorResponseCode && (
-                    <>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                activeClassName="active"
-                                to={`${match.url}/${URLS.APP_VALUES}`}
-                                className="tab-list__tab-link flex"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'App',
-                                        action: 'Values Clicked',
-                                    })
-                                }}
-                                data-testid="helm-configure-link"
-                            >
-                                <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
-                                Configure
-                            </NavLink>
-                        </li>
+        const tabs: TabProps[] = [
+            {
+                id: 'overview-tab',
+                label: 'Overview',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    onClick: () => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'App Overview Clicked',
+                        })
+                    },
+                },
+            },
+            {
+                id: 'app-details-tab',
+                label: 'App Details',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    onClick: () => {
+                        ReactGA.event({
+                            category: 'App',
+                            action: 'App Details Clicked',
+                        })
+                    },
+                },
+            },
+        ]
 
-                        <li className="tab-list__tab">
-                            <NavLink
-                                activeClassName="active"
-                                to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                                className="tab-list__tab-link"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'App',
-                                        action: 'Deployment history Clicked',
-                                    })
-                                }}
-                            >
-                                Deployment history
-                            </NavLink>
-                        </li>
-                    </>
-                )}
-            </ul>
-        )
+        if (!appDetails.deploymentAppDeleteRequest && !errorResponseCode) {
+            tabs.push(
+                {
+                    id: 'configure-tab',
+                    label: 'Configure',
+                    tabType: 'navLink',
+                    icon: Settings,
+                    props: {
+                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        onClick: () => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'Values Clicked',
+                            })
+                        },
+                        ['data-testid']: 'helm-configure-link',
+                    },
+                },
+                {
+                    id: 'deployment-history-tab',
+                    label: 'Deployment history',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        onClick: () => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'Deployment history Clicked',
+                            })
+                        },
+                    },
+                },
+            )
+        }
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
     return (

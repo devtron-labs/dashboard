@@ -32,16 +32,17 @@ export const CIMaterialModal = ({
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
     usePrompt({ shouldPrompt: isLoading })
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             abortController.abort()
             resetAbortController()
-        }
-    }, [])
+        },
+        [],
+    )
 
     return (
         <VisibleModal className="" close={closeCIModal}>
-            <div className="modal-body--ci-material h-100" onClick={stopPropagation}>
+            <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
                 {loader ? (
                     <>
                         <div className="trigger-modal__header flex right">

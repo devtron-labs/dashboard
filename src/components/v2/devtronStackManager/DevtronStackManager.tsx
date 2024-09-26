@@ -16,7 +16,13 @@
 
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { showError, Progressing, ErrorScreenManager, DevtronProgressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DevtronProgressing,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
@@ -53,8 +59,7 @@ export default function DevtronStackManager({
     getCurrentServerInfo: () => Promise<void>
     isSuperAdmin: boolean
 }) {
-    const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
-        useMainContext()
+    const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useMainContext()
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({

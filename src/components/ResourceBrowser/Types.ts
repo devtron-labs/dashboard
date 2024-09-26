@@ -104,6 +104,7 @@ export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
     isSuperAdmin: boolean
     clusterListLoader: boolean
+    initialLoading: boolean
     refreshData: () => void
 }
 

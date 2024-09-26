@@ -23,8 +23,9 @@ import {
     not,
     showError,
     renderErrorHeaderMessage,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from './index.store'
@@ -38,7 +39,7 @@ import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetai
 import { TOAST_INFO } from '../../../config/constantMessaging'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-const SyncErrorComponent: React.FC<SyncErrorType> = ({showApplicationDetailedModal }) => {
+const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState<boolean>(false)
@@ -110,7 +111,10 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({showApplicationDetailedMod
         deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
             .then((response: ResponseType) => {
                 if (response.code === 200) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
                 }
             })
             .catch((error: ServerErrors) => {

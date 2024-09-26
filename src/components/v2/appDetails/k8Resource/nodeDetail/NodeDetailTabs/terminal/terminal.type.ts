@@ -59,13 +59,19 @@ export interface TerminalWrapperComponentType {
     appDetails?: AppDetails
 }
 
+type TerminalMetadata =
+    | Record<'app' | 'environment' | 'pod', string>
+    | Record<'cluster' | 'namespace' | 'pod', string>
+    | Record<'node' | 'namespace', string>
+
 export interface TerminalSelectionListDataType {
     firstRow: TerminalWrapperComponentType[]
     secondRow?: TerminalWrapperComponentType[]
     tabSwitcher: {
-        terminalData: TerminalViewType
+        terminalData: Omit<TerminalViewType, 'metadata'>
         terminalTabWrapper?: any
     }
+    metadata: TerminalMetadata
 }
 
 export interface TerminalWrapperProps {
@@ -77,7 +83,7 @@ export interface TerminalWrapperProps {
     isResourceBrowserView?: boolean
 }
 
-export interface TerminalViewType {
+export interface TerminalViewType extends Pick<TerminalWrapperProps, 'isResourceBrowserView'> {
     terminalRef: any
     sessionId: string
     socketConnection: SocketConnectionType
@@ -88,7 +94,7 @@ export interface TerminalViewType {
     terminalMessageData?: any
     clearTerminal: boolean
     dataTestId?: string
-    isResourceBrowserView?: boolean
+    metadata: TerminalSelectionListDataType['metadata']
 }
 
 export interface ConnectionStripMessageType {

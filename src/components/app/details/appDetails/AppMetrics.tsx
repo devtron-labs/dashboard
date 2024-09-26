@@ -15,10 +15,8 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
-import { not, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, NavLink } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { not, Progressing, ToastManager, ToastVariantType, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
 import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils'
@@ -210,12 +208,11 @@ export const AppMetrics: React.FC<{
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
 
-            toast.warn(
-                <div className="toast">
-                    <div className="toast__title">Error Parsing K8sVersion</div>
-                    <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                title: 'Error Parsing K8sVersion',
+                description: `Showing Graphs for ${DEFAULTK8SVERSION} and above`,
+            })
         }
 
         const appInfo = {

@@ -292,7 +292,7 @@
 
 .icon-use-fill-n6 {
     use {
-        fill: var(--N600)
+        fill: var(--N600);
     }
 }
 
@@ -313,6 +313,19 @@
             path {
                 stroke: var(--R500);
             }
+        }
+    }
+}
+
+.dc__hover-remove-btn {
+    @extend .icon-use-fill-n6;
+
+    &:hover {
+        background: var(--R100);
+        border-radius: 2px;
+
+        svg use {
+            fill: var(--R500);
         }
     }
 }

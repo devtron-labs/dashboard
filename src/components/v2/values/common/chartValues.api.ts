@@ -32,7 +32,7 @@ import {
 } from '../../../charts/charts.service'
 import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
-import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
+import { getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
 import { EnvironmentListMinType } from '../../../app/types'
 
 export async function fetchChartVersionsData(
@@ -55,8 +55,8 @@ export async function fetchChartVersionsData(
                     selectedVersionUpdatePage: _currentVersion,
                     initialChartVersionValues: {
                         chartVersionId: _currentVersion.id,
-                        chartValuesId: currentChartValueId
-                    }
+                        chartValuesId: currentChartValueId,
+                    },
                 },
             })
         }
@@ -99,7 +99,7 @@ export async function getChartRelatedReadMe(
     try {
         dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
         const { result } = await getReadme(id)
-        getAndUpdateSchemaValue(modifiedValuesYaml, convertSchemaJsonToMap(result.valuesSchemaJson), dispatch)
+        getAndUpdateSchemaValue(modifiedValuesYaml, result.valuesSchemaJson, dispatch)
 
         const _payload = {
             fetchingReadMe: false,

@@ -15,10 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, PopupMenu, not, useSearchString, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
-import { toast } from 'react-toastify'
+import { showError, PopupMenu, not, useSearchString, copyToClipboard, ToastManager, ToastVariantType, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation, NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import emptyPageIcon from '../../assets/icons/ic-empty-data.svg'
@@ -27,8 +25,6 @@ import { deleteResource } from './service'
 import { ReactComponent as DropDown } from '../../assets/icons/ic-dropdown-filled.svg'
 import {
     AggregatedNodes,
-    Nodes,
-    NodeType,
     NodeDetailTabs,
     NodeDetailTabsType,
     AggregationKeys,
@@ -304,10 +300,10 @@ export const NodeGroup: React.FC<{ title: AggregationKeysType; data: Object; agg
     aggregatedNodes,
 }) => {
     const [collapsed, setCollapsed] = useState(true)
-    const { url, path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const params = useParams<{ appId: string; envId: string; kind: NodeType; tab?: NodeDetailTabsType }>()
     const location = useLocation()
-    const { searchParams, queryParams } = useSearchString()
+    const { queryParams } = useSearchString()
     const filterStatus = queryParams.has('status') ? queryParams.get('status') : ''
 
     useEffect(() => {
@@ -662,7 +658,11 @@ const URL: React.FC<{ url: string }> = ({ url }) => {
                 {url}
                 <Clipboard
                     className="icon-dim-16 ml-8 pointer"
-                    onClick={(e) => copyToClipboard(url, () => toast.success('Copied to clipboard'))}
+                    onClick={(e) => copyToClipboard(url, () => ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Copied to clipboard'
+                        }))
+                    }
                 />
             </div>
         </td>
@@ -1009,7 +1009,10 @@ const PodPopup: React.FC<{
         }
         try {
             await deleteResource(apiParams)
-            toast.success('Deletion initiated successfully.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deletion initiated successfully.',
+            })
         } catch (err) {
             showError(err)
         }

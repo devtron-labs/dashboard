@@ -19,7 +19,6 @@ import {
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
-    KeyValueListType,
     MODAL_TYPE,
     ResponseType,
     UserApprovalConfigType,
@@ -27,12 +26,15 @@ import {
     WorkflowType,
     AppInfoListType,
     GVKType,
+    RuntimeParamsListItemType,
+    UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -94,7 +96,14 @@ export interface ResponseRowType {
     envId?: number
 }
 
-export interface BulkCITriggerType {
+interface BulkRuntimeParamsType {
+    runtimeParams: Record<string, RuntimeParamsListItemType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsListItemType[]>>>
+    runtimeParamsErrorState: Record<string, boolean>
+    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+}
+
+export interface BulkCITriggerType extends BulkRuntimeParamsType {
     appList: BulkCIDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
@@ -108,13 +117,11 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    runtimeParams: Record<string, KeyValueListType[]>
-    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
     setPageViewType: React.Dispatch<React.SetStateAction<string>>
     httpProtocol: string
 }
 
-export interface BulkCDTriggerType {
+export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     stage: DeploymentNodeType
     appList: BulkCDDetailType[]
     closePopup: (e) => void
@@ -243,12 +250,26 @@ export interface EnvSelectorType {
 }
 
 export interface ApplicationRouteType {
-    envListData: ConfigAppList
+    envAppList: ConfigAppList[]
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: () => void
 }
 
-export interface EnvironmentsListViewType {
-    removeAllFilters: () => void
+export interface AppGroupFilterConfig
+    extends Pick<UseUrlFiltersReturnType<never>, 'searchKey' | 'offset' | 'pageSize'> {
+    cluster: string[]
+}
+
+export interface GetEnvAppListParamsType extends Pick<AppGroupFilterConfig, 'offset'> {
+    size: number
+    envName: string
+    clusterIds: string
+}
+
+export interface EnvironmentsListViewType
+    extends Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'> {
     isSuperAdmin: boolean
+    filterConfig: AppGroupFilterConfig
 }
 
 export interface EnvironmentLinkProps {
@@ -465,7 +486,7 @@ type HibernateModalType = MODAL_TYPE.HIBERNATE | MODAL_TYPE.UNHIBERNATE
 
 export interface HibernateModalProps {
     setOpenedHibernateModalType: React.Dispatch<React.SetStateAction<HibernateModalType>>
-    selectedAppDetailsList: AppInfoListType[]
+    selectedAppDetailsList: AppInfoListType | AppInfoListType[]
     appDetailsList: AppGroupListType['apps']
     envName: string
     envId: string
@@ -494,7 +515,7 @@ export interface ManageAppsResponse {
 }
 
 export interface RestartWorkloadModalProps {
-    selectedAppDetailsList: AppInfoListType[]
+    selectedAppDetailsList: AppInfoListType | AppInfoListType[]
     envName: string
     envId: string
     restartLoader: boolean
@@ -583,3 +604,9 @@ export interface ManageAppsResponseType {
     id: string
     error: string
 }
+
+export enum AppGroupUrlFilters {
+    cluster = 'cluster',
+}
+
+export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
 
 export interface HostURLConfigState {

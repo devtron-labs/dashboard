@@ -25,7 +25,12 @@ const generateScope = (key, value) => {
     return ''
 }
 
-export const getScopedVariables = async (appId, envId, clusterId, hideObjectVariables: boolean = true): Promise<ScopedVariableType[]> => {
+export const getScopedVariables = async (
+    appId,
+    envId,
+    clusterId,
+    hideObjectVariables: boolean = true,
+): Promise<ScopedVariableType[]> => {
     let query = `?appId=${appId}&scope={`
 
     query += generateScope('appId', appId)
@@ -38,7 +43,7 @@ export const getScopedVariables = async (appId, envId, clusterId, hideObjectVari
 
     query += '}'
 
-    const { result } = await get(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`) as ResponseType<ScopedVariableType[]>
+    const { result } = (await get(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`)) as ResponseType<ScopedVariableType[]>
     if (!result) {
         return []
     }

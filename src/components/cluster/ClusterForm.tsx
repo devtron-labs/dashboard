@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     CHECKBOX_VALUE,
-    ToastBody,
     Checkbox,
     RadioGroupItem,
     RadioGroup,
@@ -33,9 +32,11 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
     CodeEditor,
+    DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
@@ -59,7 +60,6 @@ import {
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
-import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
@@ -68,7 +68,7 @@ import {
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
-import { UPLOAD_STATE } from '../CustomChart/types'
+import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -499,7 +499,10 @@ export default function ClusterForm({
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please add both username and password',
+                })
                 return
             }
             payload.prometheusAuth['userName'] = state.userName.value || ''
@@ -519,12 +522,10 @@ export default function ClusterForm({
         try {
             setLoadingState(true)
             await api(payload)
-            toast.success(
-                <ToastBody
-                    data-testid="validate-toast-for-kubeconfig"
-                    title={`Successfully ${id ? 'updated' : 'saved'}`}
-                />,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Successfully ${id ? 'updated' : 'saved'}`,
+            })
             toggleShowAddCluster()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
@@ -1043,9 +1044,7 @@ export default function ClusterForm({
     }
 
     const NoMatchingResults = (): JSX.Element => {
-        return (
-            <GenericFilterEmptyState />
-        )
+        return <GenericFilterEmptyState />
     }
 
     if (loader) {

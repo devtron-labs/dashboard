@@ -32,7 +32,7 @@ import {
     getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
-import PluginDetailHeader from './PluginDetailHeader'
+import { PluginDetailHeader } from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -150,7 +150,7 @@ export const TaskDetailComponent = () => {
                 _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails,
                 newInputVariables.length,
                 newPluginVersionData.outputVariables.length,
-            )
+            ),
         } as StepType['pluginRefStepDetail']
 
         calculateLastStepDetail(false, _formData, activeStageName)
@@ -199,9 +199,7 @@ export const TaskDetailComponent = () => {
 
     return (
         <>
-            {selectedStep.stepType === PluginType.PLUGIN_REF && (
-                <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
-            )}
+            <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
 
             <div className="p-20 dc__overflow-scroll">
                 <div>

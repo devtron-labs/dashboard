@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef, RefObject, useLayoutEffect } from 'react'
 import {
     showError,
-    useThrottledEffect,
     OptionType,
     DeploymentAppTypes,
     APIOptions,
@@ -28,6 +27,8 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
+    PipelineBuildStageType,
+    SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -43,9 +44,7 @@ import {
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
-import { PipelineBuildStageType } from '../../workflowEditor/types'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -70,6 +69,9 @@ export function validateEmail(email) {
     return result
 }
 
+/**
+ * @deprecated use `useForm` from fe-common-lib.
+ */
 export function useForm(stateSchema, validationSchema = {}, callback) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)
@@ -408,115 +410,6 @@ export function useOnline() {
     }, [])
 
     return online
-}
-
-interface scrollableInterface {
-    autoBottomScroll: boolean
-}
-
-/**
- * @deprecated
- */
-export function useScrollable(options: scrollableInterface) {
-    const targetRef = useRef(null)
-    const raf_id = useRef(0)
-    const wheelListener = useRef(null)
-    const [scrollHeight, setScrollHeight] = useState(0)
-    const [scrollTop, setScrollTop] = useState(0)
-    const [autoBottom, toggleAutoBottom] = useState(false)
-
-    const target = useCallback((node) => {
-        if (node === null) {
-            return
-        }
-        targetRef.current = node
-        wheelListener.current = node.addEventListener('wheel', handleWheel)
-        raf_id.current = requestAnimationFrame(rAFCallback)
-        return () => {
-            node.removeEventListener('wheel', handleWheel)
-            cancelAnimationFrame(raf_id.current)
-        }
-    }, [])
-
-    function handleWheel(e) {
-        if (e.deltaY < 0) {
-            toggleAutoBottom(false)
-        }
-    }
-
-    const [topScrollable, bottomScrollable] = useMemo(() => {
-        if (!targetRef.current) {
-            return [false, false]
-        }
-
-        let topScrollable = true
-        const bottomScrollable = !(
-            targetRef.current.scrollHeight - targetRef.current.scrollTop ===
-            targetRef.current.clientHeight
-        )
-        if (scrollTop === 0) {
-            topScrollable = false
-        }
-
-        if (!bottomScrollable && options.autoBottomScroll) {
-            toggleAutoBottom(true)
-        }
-        return [topScrollable, bottomScrollable]
-    }, [scrollHeight, scrollTop])
-
-    useEffect(() => {
-        if (options.autoBottomScroll) {
-            toggleAutoBottom(true)
-        } else {
-            toggleAutoBottom(false)
-        }
-    }, [options.autoBottomScroll])
-
-    useThrottledEffect(
-        () => {
-            if (!autoBottom || !targetRef.current) {
-                return
-            }
-            targetRef.current.scrollBy({
-                top: scrollHeight,
-                left: 0,
-            })
-        },
-        500,
-        [scrollHeight, autoBottom],
-    )
-
-    function scrollToTop(e) {
-        targetRef.current.scrollBy({
-            top: -1 * scrollTop,
-            left: 0,
-            behavior: 'smooth',
-        })
-        if (options.autoBottomScroll) {
-            toggleAutoBottom(false)
-        }
-    }
-
-    function scrollToBottom(e) {
-        toggleAutoBottom(true)
-        targetRef.current.scrollBy({
-            top: scrollHeight,
-            left: 0,
-            behavior: 'smooth',
-        })
-    }
-
-    function rAFCallback() {
-        if (!targetRef.current) {
-            return
-        }
-
-        setScrollHeight(targetRef.current.scrollHeight)
-        setScrollTop(targetRef.current.scrollTop)
-        raf_id.current = requestAnimationFrame(rAFCallback)
-    }
-
-    return [target, topScrollable ? scrollToTop : null, bottomScrollable ? scrollToBottom : null]
 }
 
 /**
@@ -1154,16 +1047,6 @@ export const reloadLocation = () => {
     window.location.reload()
 }
 
-export const reloadToastBody = () => {
-    return (
-        <UpdateToast
-            onClick={reloadLocation}
-            text="You are viewing an outdated version of Devtron UI."
-            buttonText="Reload"
-        />
-    )
-}
-
 /**
  * @deprecated
  */
@@ -1309,4 +1192,33 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     return <Git className="dc__vertical-align-middle icon-dim-20" />
+}
+
+export const getSeverityWithCount = (severityCount: SeverityCount) => {
+    if (severityCount.critical) {
+        return (
+            <span className="severity-chip severity-chip--critical dc__w-fit-content">
+                {severityCount.critical} Critical
+            </span>
+        )
+    }
+    if (severityCount.high) {
+        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
+    }
+    if (severityCount.medium) {
+        return (
+            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
+        )
+    }
+    if (severityCount.low) {
+        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
+    }
+    if (severityCount.unknown) {
+        return (
+            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
+                {severityCount.unknown} Unknown
+            </span>
+        )
+    }
+    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }

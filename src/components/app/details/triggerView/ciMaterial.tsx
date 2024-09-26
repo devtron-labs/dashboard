@@ -16,7 +16,18 @@
 
 import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader, ModuleNameMap, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    ServerErrors,
+    Checkbox,
+    noop,
+    CIMaterialSidebarType,
+    ButtonWithLoader,
+    ModuleNameMap,
+    SourceTypeMap,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -54,6 +65,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
+            runtimeParamsErrorState: false,
         }
     }
 
@@ -75,8 +87,21 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         } catch (error) {}
     }
 
+    handleRuntimeParamError = (errorState: boolean) => {
+        this.setState({
+            runtimeParamsErrorState: errorState,
+        })
+    }
 
     handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (this.state.runtimeParamsErrorState) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before switching tabs',
+            })
+            return
+        }
+
         this.setState({
             currentSidebarTab: e.target.value as CIMaterialSidebarType,
         })
@@ -160,6 +185,14 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleStartBuildAction = (e) => {
+        if (this.state.runtimeParamsErrorState) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve all the errors before starting the build',
+            })
+            return
+        }
+
         e.stopPropagation()
         this.context.onClickTriggerCINode()
     }
@@ -264,12 +297,12 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
-                        ciBlockState={this.props.ciBlockState}
                         isJobCI={this.props.isJobCI}
                         currentSidebarTab={this.state.currentSidebarTab}
                         handleSidebarTabChange={this.handleSidebarTabChange}
                         runtimeParams={this.props.runtimeParams}
-                        handleRuntimeParametersChange={this.props.handleRuntimeParametersChange}
+                        handleRuntimeParamChange={this.props.handleRuntimeParamChange}
+                        handleRuntimeParamError={this.handleRuntimeParamError}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null

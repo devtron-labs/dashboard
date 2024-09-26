@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { Component } from 'react'
+import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { AddWorkflowProps, AddWorkflowState } from './types'
 import { createWorkflow, updateWorkflow } from './service'
 import { getWorkflowList } from '../../services/service'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState> {
-    _inputName: HTMLInputElement
-
     constructor(props) {
         super(props)
         this.state = {
@@ -39,9 +35,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
         if (this.props.match.params.workflowId) {
             this.getWorkflow()
         }
-        if (this._inputName) {
-            this._inputName.focus()
-        }
     }
 
     getWorkflow(): void {
@@ -53,16 +46,16 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
                     if (workflow) {
                         this.setState({ id: workflow.id, name: workflow.name })
                     } else {
-                        toast.error('Workflow Not Found')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: 'Workflow Not Found',
+                        })
                     }
                 }
             })
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-        if (this._inputName) {
-            this._inputName.focus()
-        }
     }
 
     handleWorkflowName = (event): void => {
@@ -84,7 +77,10 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
         const promise = this.props.match.params.workflowId ? updateWorkflow(request) : createWorkflow(request)
         promise
             .then((response) => {
-                toast.success(message)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: message,
+                })
                 this.setState({
                     id: response.result.id,
                     name: response.result.name,
@@ -116,12 +112,6 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             >
                 <label className="form__row">
                     <CustomInput
-                        ref={(node) => {
-                            if (node) {
-                                node.focus()
-                            }
-                            this._inputName = node
-                        }}
                         name="workflow-name"
                         label="Workflow Name"
                         value={this.state.name}

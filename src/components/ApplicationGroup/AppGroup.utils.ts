@@ -23,11 +23,11 @@ import {
     ConsequenceAction,
     WorkflowType,
     getIsRequestAborted,
-    CIMaterialType
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
-import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
+import { AppGroupUrlFilters, CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
 
 let timeoutId
 
@@ -151,7 +151,7 @@ export const envListOptions = (inputValue: string, signal?: AbortSignal): Promis
                 resolve([])
                 return
             }
-            getEnvAppList({ envName: inputValue }, signal)
+            getEnvAppList({ searchKey: inputValue }, signal)
                 .then((response) => {
                     let appList = []
                     if (response.result) {
@@ -283,3 +283,7 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
     }
     return data.ciBlockState
 }
+
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
+})

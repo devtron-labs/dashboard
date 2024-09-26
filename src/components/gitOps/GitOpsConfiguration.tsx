@@ -15,7 +15,6 @@
  */
 
 import React, { Component, Fragment, SyntheticEvent } from 'react'
-import { toast } from 'react-toastify'
 import { withRouter } from 'react-router-dom'
 import {
     showError,
@@ -24,13 +23,14 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
-    noop,
     InfoColourBar,
     GitOpsFieldKeyType,
     GitOpsAuthModeType,
     handleDisableSubmitOnEnter,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -44,16 +44,7 @@ import {
     TLSConnectionForm,
 } from '@Components/common'
 import { ViewType, repoType, HEADER_TEXT } from '../../config'
-import {
-    GitOpsState,
-    GitOpsProps,
-    GitOpsConfig,
-    GitOpsOrganisationIdType,
-    GitProvider,
-    GitProviderTabProps,
-    GitProviderType,
-} from './gitops.type'
-import Check from '../../assets/icons/ic-selected-corner.png'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsOrganisationIdType } from './gitops.type'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import {
     updateGitOpsConfiguration,
@@ -77,8 +68,10 @@ import {
     DefaultErrorFields,
     PROVIDER_DOC_LINK_MAP,
 } from './constants'
-import GitProviderTabIcons from './GitProviderTabIcons'
-import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
+import { getGitOpsLabelText } from './utils'
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { GitProviderType } from '@Components/common/GitTabs/types'
+import { GitProviderTab } from '@Components/common/GitTabs/GitProviderTab'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
@@ -89,53 +82,13 @@ const BitbucketCloudAndServerToggleSection = importComponentFromFELibrary(
     'function',
 )
 
-const GitProviderTab: React.FC<GitProviderTabProps> = ({
-    providerTab,
-    handleGitopsTab,
-    lastActiveGitOp,
-    provider,
-    saveLoading,
-    datatestid,
-}) => {
-    const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
-    const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
-    const displayName = getProviderNameFromEnum(provider, !!BitBucketDCCredentials)
-
-    return (
-        <label className="dc__tertiary-tab__radio">
-            <input
-                type="radio"
-                name="status"
-                value={provider}
-                checked={providerTab === provider}
-                onChange={!saveLoading ? handleGitopsTab : noop}
-            />
-            <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={datatestid}>
-                <aside className="login__icon-alignment">
-                    <GitProviderTabIcons provider={provider} />
-                </aside>
-                <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
-                    {displayName}
-                </aside>
-                {showCheck && (
-                    <div>
-                        <aside className="dc__position-abs dc__right-0 dc__top-0">
-                            <img src={Check} className="h-32" alt="saved-provider-check" />
-                        </aside>
-                    </div>
-                )}
-            </span>
-        </label>
-    )
-}
-
 const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGroupAlias: string }> = ({
     gitLink,
     gitProvider,
     gitProviderGroupAlias,
 }) => {
     return (
-        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
+        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col w-100 flex-grow-1">
             <div className="flex left ">
                 <Info className="icon-dim-20" style={{ marginTop: 1 }} />
                 <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
@@ -686,7 +639,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     saveGitOps = () => {
         if (this.isInvalid()) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
 
@@ -725,7 +681,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 const errorMap = resp.stageErrorMap
                 if (errorMap == null || Object.keys(errorMap).length == 0) {
                     this.props.handleChecklistUpdate('gitOps')
-                    toast.success('Configuration saved successfully')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Configuration saved successfully',
+                    })
                     this.setState({
                         validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.SUCCESS : '',
                         saveLoading: false,
@@ -747,8 +706,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     })
                     {
                         this.state.selectedRepoType === repoType.DEFAULT
-                            ? toast.error('Configuration failed')
-                            : toast.success('Configuration saved successfully')
+                            ? ToastManager.showToast({
+                                  variant: ToastVariantType.error,
+                                  description: 'Configuration failed',
+                              })
+                            : ToastManager.showToast({
+                                  variant: ToastVariantType.success,
+                                  description: 'Configuration saved successfully',
+                              })
                     }
                 }
             })
@@ -760,7 +725,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     validateGitOps(tab) {
         if (this.isInvalid()) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
+
             return
         }
 
@@ -793,7 +762,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.error('Configuration validation failed')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: 'Configuration validation failed',
+                        })
                     } else {
                         this.setState({
                             validationStatus: VALIDATION_STATUS.SUCCESS,
@@ -803,7 +775,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.success('Configuration validated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Configuration validated',
+                        })
                     }
                 })
                 .catch((error) => {
@@ -1058,7 +1033,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const isTLSConfigFormVisible = formAuthMode === GitOpsAuthModeType.PASSWORD
 
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return (
+                <div className="bcn-0 h-100">
+                    <Progressing pageLoader />
+                </div>
+            )
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -1069,10 +1048,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const getGitOpsLabel = () => (
-            <span>
-                <span className="dc__required-field">{getGitOpsLabelText(this.state.providerTab)} </span>&nbsp;(Use
-                https://)
-            </span>
+            <div>
+                <span className="dc__required-field">{getGitOpsLabelText(this.state.providerTab)} </span>
+                &nbsp;(Use https://)
+            </div>
         )
 
         const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
@@ -1088,393 +1067,402 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
-      
+        const renderGitOpsTabs = () => (
+            <div className="login__sso-flex dc__gap-12">
+                {Object.values(GitProvider).map((provider: GitProvider) => {
+                    const isOtherGitOpsFormRequired =
+                        provider === GitProvider.OTHER_GIT_OPS || provider === GitProvider.AWS_CODE_COMMIT
+                    if (isOtherGitOpsFormRequired && !OtherGitOpsForm) {
+                        return null
+                    }
+                    // Keeping dataTestId backward compatible so that automation tests are not broken
+                    const dataTestId = `gitops-${provider.split('_').join('-').toLowerCase()}-button`
 
-        return (
-            <>
-                <section className="global-configuration__component flex-1">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.GITOPS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
-                        docLink={HEADER_TEXT.GITOPS.docLink}
-                        showInfoIconTippy
-                        additionalContainerClasses="mb-20"
-                        dataTestId="gitops-heading"
-                    />
-                    <form
-                        className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20"
-                        autoComplete="off"
-                        onKeyDown={handleDisableSubmitOnEnter}
-                    >
-                        <div className="login__sso-flex">
-                            {Object.values(GitProvider).map((provider) => {
-                                const isOtherGitOpsFormRequired =
-                                    provider === GitProvider.OTHER_GIT_OPS || provider === GitProvider.AWS_CODE_COMMIT
-                                if (isOtherGitOpsFormRequired && !OtherGitOpsForm) {
-                                    return null
-                                }
-                                // Keeping data testid backward compatible so that automation tests are not broken
-                                const dataTestId = `gitops-${provider.split('_').join('-').toLowerCase()}-button`
+                    return (
+                        <GitProviderTab
+                            isTabChecked={this.state.providerTab === provider}
+                            handleGitopsTab={this.handleGitopsTab}
+                            lastActiveTabName={this.state.lastActiveGitOp?.provider}
+                            provider={provider}
+                            saveLoading={this.state.saveLoading}
+                            dataTestId={dataTestId}
+                            key={provider}
+                        />
+                    )
+                })}
+            </div>
+        )
 
-                                return (
-                                    <GitProviderTab
-                                        providerTab={this.state.providerTab}
-                                        handleGitopsTab={this.handleGitopsTab}
-                                        lastActiveGitOp={this.state.lastActiveGitOp}
-                                        provider={provider}
-                                        saveLoading={this.state.saveLoading}
-                                        datatestid={dataTestId}
-                                        key={provider}
-                                    />
-                                )
-                            })}
-                        </div>
-
-                        {/* Not adding check for isAuthModeSSH since that no relation with form itself */}
-                        {(this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) &&
-                        OtherGitOpsForm ? (
-                            <OtherGitOpsForm
-                                sshHost={{ value: this.state.form.sshHost, error: this.state.isError.sshHost }}
-                                sshKey={{ value: this.state.form.sshKey, error: this.state.isError.sshKey }}
-                                username={{ value: this.state.form.username, error: this.state.isError.username }}
-                                handleChange={this.handleChange}
-                                id={this.state.form.id}
-                                // WARNING: Won't work in case we feed bitbucket dc as provider.
-                                isActive={this.state.lastActiveGitOp?.provider === this.state.providerTab}
-                                isAWSCodeCommit={this.isAWSCodeCommitTabSelected()}
-                                key={this.state.providerTab}
+        const renderGitOpsFormInputs = () => {
+            /* Not adding check for isAuthModeSSH since that no relation with form itself */
+            return (this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) && OtherGitOpsForm ? (
+                <OtherGitOpsForm
+                    sshHost={{ value: this.state.form.sshHost, error: this.state.isError.sshHost }}
+                    sshKey={{ value: this.state.form.sshKey, error: this.state.isError.sshKey }}
+                    username={{ value: this.state.form.username, error: this.state.isError.username }}
+                    handleChange={this.handleChange}
+                    id={this.state.form.id}
+                    // WARNING: Won't work in case we feed bitbucket dc as provider.
+                    isActive={this.state.lastActiveGitOp?.provider === this.state.providerTab}
+                    isAWSCodeCommit={this.isAWSCodeCommitTabSelected()}
+                    key={this.state.providerTab}
+                />
+            ) : (
+                <Fragment key={this.state.providerTab}>
+                    {!!BitbucketCloudAndServerToggleSection &&
+                        this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                            <BitbucketCloudAndServerToggleSection
+                                isBitbucketCloud={this.state.isBitbucketCloud}
+                                setIsBitbucketCloud={this.setIsBitbucketCloud}
                             />
-                        ) : (
-                            <Fragment key={this.state.providerTab}>
-                                {!!BitbucketCloudAndServerToggleSection &&
-                                    this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                                        <BitbucketCloudAndServerToggleSection
-                                            isBitbucketCloud={this.state.isBitbucketCloud}
-                                            setIsBitbucketCloud={this.setIsBitbucketCloud}
-                                        />
-                                    )}
-                                {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD ||
-                                    this.state.isBitbucketCloud) && (
-                                    <GitInfoTab
-                                        gitLink={
-                                            this.state.providerTab === GitProvider.GITLAB
-                                                ? GitLink.GITLAB
-                                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                  ? GitLink.AZURE_DEVOPS
-                                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                    ? GitLink.BITBUCKET_WORKSPACE
-                                                    : GitLink.GITHUB
-                                        }
-                                        gitProvider={
-                                            this.state.providerTab === GitProvider.GITLAB
-                                                ? 'GitLab'
-                                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                  ? 'Azure'
-                                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                    ? 'BitBucket'
-                                                    : 'GitHub'
-                                        }
-                                        gitProviderGroupAlias={
-                                            this.state.providerTab === GitProvider.GITLAB
-                                                ? 'group'
-                                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                  ? 'project'
-                                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                    ? 'workspace'
-                                                    : 'organization'
-                                        }
-                                    />
-                                )}
+                        )}
+                    {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD || this.state.isBitbucketCloud) && (
+                        <GitInfoTab
+                            gitLink={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? GitLink.GITLAB
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? GitLink.AZURE_DEVOPS
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? GitLink.BITBUCKET_WORKSPACE
+                                        : GitLink.GITHUB
+                            }
+                            gitProvider={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? 'GitLab'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? 'Azure'
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'BitBucket'
+                                        : 'GitHub'
+                            }
+                            gitProviderGroupAlias={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? 'group'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? 'project'
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'workspace'
+                                        : 'organization'
+                            }
+                        />
+                    )}
 
-                                {this.state.selectedRepoType === repoType.DEFAULT && (
-                                    <ValidateForm
-                                        id={this.state.form.id}
-                                        onClickValidate={() => this.validateGitOps(this.state.providerTab)}
-                                        validationError={this.state.validationError}
-                                        validationStatus={this.state.validationStatus}
-                                        configName="gitops "
-                                        warning={this.state.deleteRepoError ? warning : ''}
-                                    />
-                                )}
+                    {this.state.selectedRepoType === repoType.DEFAULT && (
+                        <ValidateForm
+                            id={this.state.form.id}
+                            onClickValidate={() => this.validateGitOps(this.state.providerTab)}
+                            validationError={this.state.validationError}
+                            validationStatus={this.state.validationStatus}
+                            configName="gitops"
+                            warning={this.state.deleteRepoError ? warning : ''}
+                        />
+                    )}
+                    <div className="flex-grow-1 w-100">
+                        <CustomInput
+                            value={this.state.form.host}
+                            onChange={(event) => this.handleChange(event, 'host')}
+                            name="Enter host"
+                            error={this.state.isError.host}
+                            label={getGitOpsLabel()}
+                            placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
+                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                            dataTestid={
+                                this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? 'gitops-azure-organisation-url-textbox'
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                      ? 'gitops-bitbucket-host-url-textbox'
+                                      : 'gitops-github-gitlab-host-url-textbox'
+                            }
+                            autoFocus
+                        />
+                    </div>
+                    {/* To display URL validation like http instead of https */}
+                    {this.state.isUrlValidationError && this.state.form.host.length ? (
+                        <div className="flex fs-12 left pt-4">
+                            <div className="form__error mr-4">
+                                <Error className="form__icon form__icon--error fs-13" />
+                                {this.state.form.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
+                            </div>
+                            {suggestedURL && (
+                                <>
+                                    Please Use:
+                                    <button
+                                        type="button"
+                                        onClick={(e) => this.updateGitopsUrl(suggestedURL)}
+                                        className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
+                                    >
+                                        {suggestedURL}
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    ) : null}
 
+                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && this.state.isBitbucketCloud && (
+                        <div className="w-100">
+                            <CustomInput
+                                name="workspaceID"
+                                placeholder="Enter Bitbucket Workspace ID"
+                                label={renderInputLabels(
+                                    'Bitbucket Workspace ID',
+                                    GitLink.BITBUCKET_WORKSPACE,
+                                    '(How to create workspace in bitbucket?)',
+                                )}
+                                value={this.state.form.bitBucketWorkspaceId}
+                                onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
+                                error={this.state.isError.bitBucketWorkspaceId}
+                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                                dataTestid="gitops-bitbucket-workspace-id-textbox"
+                                isRequiredField
+                            />
+                        </div>
+                    )}
+                    <div className="w-100">
+                        <CustomInput
+                            name="groupID"
+                            label={renderInputLabels(
+                                LinkAndLabelSpec[this.state.providerTab].label,
+                                LinkAndLabelSpec[this.state.providerTab].link,
+                                LinkAndLabelSpec[this.state.providerTab].linkText,
+                            )}
+                            placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
+                            value={this.state.form[key]}
+                            error={this.state.isError[key]}
+                            onChange={(event) => {
+                                this.handleChange(event, key)
+                            }}
+                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
+                            dataTestid={
+                                this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? 'gitops-azure-project-name-textbox'
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                      ? 'gitops-bitbucket-project-textbox'
+                                      : this.state.providerTab === GitProvider.GITLAB
+                                        ? 'gitops-gitlab-group-id-textbox'
+                                        : 'gitops-github-organisation-name-textbox'
+                            }
+                            isRequiredField
+                        />
+                    </div>
+                    <div
+                        className="fw-6 cn-9 fs-14 dc__border-top-n1 w-100 pt-16"
+                        data-testid="gitops-gitaccess-credentials-heading"
+                    >
+                        Git access credentials
+                    </div>
+
+                    {BitBucketDCCredentials && this.state.form.provider === 'BITBUCKET_DC' ? (
+                        <div className={`flexbox-col ${isTLSConfigFormVisible ? 'mb-16' : ''}`}>
+                            <BitBucketDCCredentials
+                                authMode={this.state.form.authMode}
+                                initialAuthMode={this.state.initialBitBucketDCAuthMode}
+                                handleAuthModeChange={this.handleAuthModeChange}
+                                handleChange={this.handleChange}
+                                username={{
+                                    value: this.state.form.username,
+                                    error: this.state.isError.username,
+                                }}
+                                sshKey={{
+                                    value: this.state.form.sshKey,
+                                    error: this.state.isError.sshKey,
+                                }}
+                                token={{
+                                    value: this.state.form.token,
+                                    error: this.state.isError.token,
+                                }}
+                                id={this.state.form.id}
+                            />
+                        </div>
+                    ) : (
+                        <div className="form__row--two-third gitops__id fs-13 w-100">
+                            <div>
                                 <CustomInput
-                                    value={this.state.form.host}
-                                    onChange={(event) => this.handleChange(event, 'host')}
-                                    name="Enter host"
-                                    error={this.state.isError.host}
-                                    label={getGitOpsLabel()}
-                                    placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
-                                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                                    value={this.state.form.username}
+                                    onChange={(event) => this.handleChange(event, 'username')}
+                                    name="Enter username"
+                                    placeholder="Enter username"
+                                    error={this.state.isError.username}
+                                    label={
+                                        this.state.providerTab === GitProvider.GITLAB
+                                            ? 'GitLab Username'
+                                            : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                              ? 'Azure DevOps Username'
+                                              : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                                ? 'Bitbucket Username'
+                                                : 'GitHub Username'
+                                    }
+                                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
                                     dataTestid={
                                         this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-organisation-url-textbox'
+                                            ? 'gitops-azure-username-textbox'
                                             : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-host-url-textbox'
-                                              : 'gitops-github-gitlab-host-url-textbox'
+                                              ? 'gitops-bitbucket-username-textbox'
+                                              : this.state.providerTab === GitProvider.GITLAB
+                                                ? 'gitops-gitlab-username-textbox'
+                                                : 'gitops-github-username-textbox'
                                     }
-                                    autoFocus
+                                    isRequiredField
                                 />
-
-                                {/* To display URL validation like http instead of https */}
-                                {this.state.isUrlValidationError && this.state.form.host.length ? (
-                                    <div className="flex fs-12 left pt-4">
-                                        <div className="form__error mr-4">
-                                            <Error className="form__icon form__icon--error fs-13" />
-                                            {this.state.form.host.startsWith('http:')
-                                                ? GITOPS_HTTP_MESSAGE
-                                                : GITOPS_FQDN_MESSAGE}
-                                        </div>
-                                        {suggestedURL && (
-                                            <>
-                                                Please Use:
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => this.updateGitopsUrl(suggestedURL)}
-                                                    className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
-                                                >
-                                                    {suggestedURL}
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <></>
-                                )}
-
-                                <div className="mt-16">
-                                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD &&
-                                        this.state.isBitbucketCloud && (
-                                            <CustomInput
-                                                name="workspaceID"
-                                                placeholder="Enter Bitbucket Workspace ID"
-                                                label={renderInputLabels(
-                                                    'Bitbucket Workspace ID',
-                                                    GitLink.BITBUCKET_WORKSPACE,
-                                                    '(How to create workspace in bitbucket?)',
-                                                )}
-                                                value={this.state.form.bitBucketWorkspaceId}
-                                                onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
-                                                error={this.state.isError.bitBucketWorkspaceId}
-                                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                                                dataTestid="gitops-bitbucket-workspace-id-textbox"
-                                                isRequiredField
-                                            />
-                                        )}
-                                </div>
-                                <div className="mt-16">
-                                    <CustomInput
-                                        name="groupID"
-                                        label={renderInputLabels(
-                                            LinkAndLabelSpec[this.state.providerTab].label,
-                                            LinkAndLabelSpec[this.state.providerTab].link,
-                                            LinkAndLabelSpec[this.state.providerTab].linkText,
-                                        )}
-                                        placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
-                                        value={this.state.form[key]}
-                                        error={this.state.isError[key]}
-                                        onChange={(event) => {
-                                            this.handleChange(event, key)
-                                        }}
-                                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                                        dataTestid={
-                                            this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                ? 'gitops-azure-project-name-textbox'
-                                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                  ? 'gitops-bitbucket-project-textbox'
-                                                  : this.state.providerTab === GitProvider.GITLAB
-                                                    ? 'gitops-gitlab-group-id-textbox'
-                                                    : 'gitops-github-organisation-name-textbox'
-                                        }
-                                        isRequiredField
-                                    />
-                                </div>
-                                <hr />
-                                <div
-                                    className="fw-6 cn-9 fs-14 mb-16"
-                                    data-testid="gitops-gitaccess-credentials-heading"
-                                >
-                                    Git access credentials
-                                </div>
-
-                                {BitBucketDCCredentials && this.state.form.provider === 'BITBUCKET_DC' ? (
-                                    <div className={`flexbox-col ${isTLSConfigFormVisible ? 'mb-16' : ''}`}>
-                                        <BitBucketDCCredentials
-                                            authMode={this.state.form.authMode}
-                                            initialAuthMode={this.state.initialBitBucketDCAuthMode}
-                                            handleAuthModeChange={this.handleAuthModeChange}
-                                            handleChange={this.handleChange}
-                                            username={{
-                                                value: this.state.form.username,
-                                                error: this.state.isError.username,
-                                            }}
-                                            sshKey={{
-                                                value: this.state.form.sshKey,
-                                                error: this.state.isError.sshKey,
-                                            }}
-                                            token={{
-                                                value: this.state.form.token,
-                                                error: this.state.isError.token,
-                                            }}
-                                            id={this.state.form.id}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="form__row--two-third gitops__id mb-20 fs-13">
-                                        <div>
-                                            <CustomInput
-                                                value={this.state.form.username}
-                                                onChange={(event) => this.handleChange(event, 'username')}
-                                                name="Enter username"
-                                                placeholder="Enter username"
-                                                error={this.state.isError.username}
-                                                label={
-                                                    this.state.providerTab === GitProvider.GITLAB
-                                                        ? 'GitLab Username'
-                                                        : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                          ? 'Azure DevOps Username'
-                                                          : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                            ? 'Bitbucket Username'
-                                                            : 'GitHub Username'
-                                                }
-                                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                                                dataTestid={
-                                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                        ? 'gitops-azure-username-textbox'
-                                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                          ? 'gitops-bitbucket-username-textbox'
-                                                          : this.state.providerTab === GitProvider.GITLAB
-                                                            ? 'gitops-gitlab-username-textbox'
-                                                            : 'gitops-github-username-textbox'
-                                                }
-                                                isRequiredField
-                                            />
-                                        </div>
-                                        <div>
-                                            <CustomInput
-                                                name="token"
-                                                placeholder="Enter access token"
-                                                label={renderInputLabels(
-                                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                        ? 'Azure DevOps Access Token '
-                                                        : 'Personal Access Token ',
-                                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
-                                                    '(Check permissions required for PAT)',
-                                                )}
-                                                value={this.state.form.token}
-                                                onChange={(event) => this.handleChange(event, 'token')}
-                                                error={this.state.isError.token}
-                                                onFocus={handleOnFocus}
-                                                labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
-                                                dataTestid={
-                                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                                        ? 'gitops-azure-pat-textbox'
-                                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                          ? 'gitops-bitbucket-pat-textbox'
-                                                          : this.state.providerTab === GitProvider.GITLAB
-                                                            ? 'gitops-gitlab-pat-textbox'
-                                                            : 'gitops-github-pat-textbox'
-                                                }
-                                                isRequiredField
-                                                handleOnBlur={this.handleOnBlur}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </Fragment>
-                        )}
-
-                        {isTLSConfigFormVisible ? (
-                            <TLSConnectionForm
-                                enableTLSVerification={this.state.form.enableTLSVerification}
-                                caData={{
-                                    value: this.state.form.caData,
-                                    error: this.state.isError.caData,
-                                }}
-                                tlsCertData={{
-                                    value: this.state.form.tlsCertData,
-                                    error: this.state.isError.tlsCertData,
-                                }}
-                                tlsKeyData={{
-                                    value: this.state.form.tlsKeyData,
-                                    error: this.state.isError.tlsKeyData,
-                                }}
-                                handleChange={this.handleTLSConfigChange}
-                                isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
-                                isCADataPresent={this.state.form.isCADataPresent}
-                                isTLSCertDataPresent={this.state.form.isTLSCertDataPresent}
-                                isTLSKeyDataPresent={this.state.form.isTLSKeyDataPresent}
-                                rootClassName="mb-16"
-                            />
-                        ) : (
-                            <hr />
-                        )}
-
-                        <div>
-                            <div className="form__row flex left">
-                                <div className="fw-6 cn-9 fs-14 mb-16">Directory management in Git</div>
-                                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
-                                    <RadioGroup
-                                        className="radio-group-no-border"
-                                        name="trigger-type"
-                                        value={this.state.selectedRepoType}
-                                        onChange={this.repoTypeChange}
-                                    >
-                                        <div className={isAuthModeSSH ? 'dc__disabled' : ''}>
-                                            <RadioGroupItem value={repoType.DEFAULT} disabled={isAuthModeSSH}>
-                                                Auto-create git repository for each application
-                                            </RadioGroupItem>
-                                            <div className="ml-26 cn-7">
-                                                Repository will be created automatically with application name to store
-                                                deployment manifests for each application
-                                            </div>
-                                        </div>
-                                        <div className="mt-10">
-                                            <RadioGroupItem value={repoType.CONFIGURE}>
-                                                Ask git repository for each application
-                                            </RadioGroupItem>
-                                            <div className="ml-26 cn-7">
-                                                Desired git repository can be provided to store deployment manifests for
-                                                each application
-                                            </div>
-                                        </div>
-                                    </RadioGroup>
-                                ) : (
-                                    <InfoColourBar
-                                        classname="eb-2 bw-1 bcb-1"
-                                        Icon={ICInfoFilled}
-                                        iconClass="dc__no-shrink"
-                                        message={
-                                            this.state.selectedRepoType === repoType.DEFAULT
-                                                ? 'Repository will be created automatically with application name to store deployment manifests for each application'
-                                                : 'Desired git repository can be provided to store deployment manifests for each application'
-                                        }
-                                    />
-                                )}
                             </div>
-                            <hr />
+                            <div>
+                                <CustomInput
+                                    name="token"
+                                    placeholder="Enter access token"
+                                    label={renderInputLabels(
+                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                            ? 'Azure DevOps Access Token '
+                                            : 'Personal Access Token ',
+                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
+                                        '(Check permissions required for PAT)',
+                                    )}
+                                    value={this.state.form.token}
+                                    onChange={(event) => this.handleChange(event, 'token')}
+                                    error={this.state.isError.token}
+                                    onFocus={handleOnFocus}
+                                    labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
+                                    dataTestid={
+                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                            ? 'gitops-azure-pat-textbox'
+                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                              ? 'gitops-bitbucket-pat-textbox'
+                                              : this.state.providerTab === GitProvider.GITLAB
+                                                ? 'gitops-gitlab-pat-textbox'
+                                                : 'gitops-github-pat-textbox'
+                                    }
+                                    isRequiredField
+                                    onBlur={this.handleOnBlur}
+                                />
+                            </div>
                         </div>
+                    )}
+                </Fragment>
+            )
+        }
 
-                        <div className="form__buttons flex left">
-                            <button
-                                type="submit"
-                                disabled={this.state.saveLoading}
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    this.saveGitOps()
-                                }}
-                                data-testid="gitops-save-button"
-                                className={`cta m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
-                            >
-                                {this.state.saveLoading && !this.state.validateLoading ? (
-                                    <Progressing />
-                                ) : this.state.form.id ? (
-                                    'Update'
-                                ) : (
-                                    'Save'
-                                )}
-                            </button>
+        const renderTLSConfigForm = () => {
+            return isTLSConfigFormVisible ? (
+                <TLSConnectionForm
+                    enableTLSVerification={this.state.form.enableTLSVerification}
+                    caData={{
+                        value: this.state.form.caData,
+                        error: this.state.isError.caData,
+                    }}
+                    tlsCertData={{
+                        value: this.state.form.tlsCertData,
+                        error: this.state.isError.tlsCertData,
+                    }}
+                    tlsKeyData={{
+                        value: this.state.form.tlsKeyData,
+                        error: this.state.isError.tlsKeyData,
+                    }}
+                    handleChange={this.handleTLSConfigChange}
+                    isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
+                    isCADataPresent={this.state.form.isCADataPresent}
+                    isTLSCertDataPresent={this.state.form.isTLSCertDataPresent}
+                    isTLSKeyDataPresent={this.state.form.isTLSKeyDataPresent}
+                    rootClassName="w-100"
+                />
+            ) : (
+                <div className="dc__border-top-n1 w-100" />
+            )
+        }
+
+        const renderDirectoryManagementInGitOps = () => (
+            <div className="flex column left w-100 dc__gap-16 pb-16">
+                <div className="fw-6 cn-9 fs-14">Directory management in Git</div>
+                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
+                    <RadioGroup
+                        className="radio-group-no-border"
+                        name="trigger-type"
+                        value={this.state.selectedRepoType}
+                        onChange={this.repoTypeChange}
+                    >
+                        <div className={isAuthModeSSH ? 'dc__disabled' : ''}>
+                            <RadioGroupItem value={repoType.DEFAULT} disabled={isAuthModeSSH}>
+                                Auto-create git repository for each application
+                            </RadioGroupItem>
+                            <div className="ml-26 cn-7">
+                                Repository will be created automatically with application name to store deployment
+                                manifests for each application
+                            </div>
                         </div>
-                    </form>
+                        <div className="mt-10">
+                            <RadioGroupItem value={repoType.CONFIGURE}>
+                                Ask git repository for each application
+                            </RadioGroupItem>
+                            <div className="ml-26 cn-7">
+                                Desired git repository can be provided to store deployment manifests for each
+                                application
+                            </div>
+                        </div>
+                    </RadioGroup>
+                ) : (
+                    <InfoColourBar
+                        classname="eb-2 bw-1 bcb-1 w-100"
+                        Icon={ICInfoFilled}
+                        iconClass="dc__no-shrink"
+                        message={
+                            this.state.selectedRepoType === repoType.DEFAULT
+                                ? 'Repository will be created automatically with application name to store deployment manifests for each application'
+                                : 'Desired git repository can be provided to store deployment manifests for each application'
+                        }
+                    />
+                )}
+            </div>
+        )
+        const renderGitOpsBody = () => {
+            return (
+                <form className="flex column left w-100" autoComplete="off" onKeyDown={handleDisableSubmitOnEnter}>
+                    <div className="pb-64 flex left column dc__gap-16 w-100 dc__mxw-1000">
+                        {renderGitOpsTabs()}
+                        {renderGitOpsFormInputs()}
+                        {renderTLSConfigForm()}
+                        {renderDirectoryManagementInGitOps()}
+                    </div>
+                </form>
+            )
+        }
+
+        const renderGitOpsFooter = () => {
+            return (
+                <div className="form__buttons flex left dc__position-fixed bcn-0 w-100 dc__bottom-0 px-20 py-16 dc__border-top-n1">
+                    <button
+                        type="submit"
+                        disabled={this.state.saveLoading}
+                        onClick={(e) => {
+                            e.preventDefault()
+                            this.saveGitOps()
+                        }}
+                        data-testid="gitops-save-button"
+                        className={`cta small m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
+                    >
+                        {this.state.saveLoading && !this.state.validateLoading ? (
+                            <Progressing />
+                        ) : this.state.form.id ? (
+                            'Update'
+                        ) : (
+                            'Save'
+                        )}
+                    </button>
+                </div>
+            )
+        }
+
+        return (
+            <div className="bcn-0 flex-grow-1 w-100 h-100">
+                <section className="flex-1 bcn-0 flex left column">
+                    <div className="flex left column px-20 py-16 dc__gap-24 w-100">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.GITOPS.title}
+                            renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
+                            docLink={HEADER_TEXT.GITOPS.docLink}
+                            showInfoIconTippy
+                            dataTestId="gitops-heading"
+                        />
+                        {renderGitOpsBody()}
+                    </div>
+                    {renderGitOpsFooter()}
                 </section>
 
                 {this.state.showUpdateConfirmationDialog && (
@@ -1487,7 +1475,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         enableBitBucketSource={!!BitBucketDCCredentials}
                     />
                 )}
-            </>
+            </div>
         )
     }
 }

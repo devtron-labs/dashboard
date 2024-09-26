@@ -15,7 +15,6 @@
  */
 
 import {
-    DATE_TIME_FORMAT_STRING,
     get,
     getClusterListMin,
     getEnvironmentListMinPublic,
@@ -24,55 +23,13 @@ import {
     ResponseType,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 import { Routes } from '../../config'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
+import { ScanListPayloadType } from './SecurityScansTab/types'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
     return get(URL)
-}
-
-export function getInitData(payload) {
-    return Promise.all([getEnvironmentListMinPublic(), getClusterListMinNoAuth(), getSecurityScanList(payload)]).then(
-        ([envResponse, clusterResponse, securityScanResponse]) => {
-            let environments = envResponse.result
-                ? envResponse.result.map((env) => {
-                      return {
-                          label: env.environment_name,
-                          value: env.id,
-                      }
-                  })
-                : []
-            let clusters = clusterResponse.result
-                ? clusterResponse.result.map((cluster) => {
-                      return {
-                          label: cluster.cluster_name,
-                          value: cluster.id,
-                      }
-                  })
-                : []
-            environments = environments.sort((a, b) => {
-                return sortCallback('label', a, b)
-            })
-            clusters = clusters.sort((a, b) => {
-                return sortCallback('label', a, b)
-            })
-            return {
-                responseCode: securityScanResponse.responseCode,
-                filters: {
-                    severity: [
-                        { label: 'Crtitical', value: 2 },
-                        { label: 'Moderate', value: 1 },
-                        { label: 'Low', value: 0 },
-                    ],
-                    clusters,
-                    environments,
-                },
-                ...securityScanResponse.result,
-            }
-        },
-    )
 }
 
 export function getVulnerabilityFilterData() {
@@ -81,7 +38,7 @@ export function getVulnerabilityFilterData() {
             ? envResponse.result.map((env) => {
                   return {
                       label: env.environment_name,
-                      value: env.id,
+                      value: `${env.id}`,
                   }
               })
             : []
@@ -89,7 +46,7 @@ export function getVulnerabilityFilterData() {
             ? clusterResponse.result.map((cluster) => {
                   return {
                       label: cluster.cluster_name,
-                      value: cluster.id,
+                      value: `${cluster.id}`,
                   }
               })
             : []
@@ -102,9 +59,11 @@ export function getVulnerabilityFilterData() {
         return {
             filters: {
                 severity: [
-                    { label: 'Crtitical', value: 2 },
-                    { label: 'Moderate', value: 1 },
-                    { label: 'Low', value: 0 },
+                    { label: 'Critical', value: 'critical' },
+                    { label: 'High', value: 'high' },
+                    { label: 'Medium', value: 'medium' },
+                    { label: 'Low', value: 'low' },
+                    { label: 'Unknown', value: 'unknown' },
                 ],
                 clusters,
                 environments,
@@ -113,30 +72,30 @@ export function getVulnerabilityFilterData() {
     })
 }
 
-export function getSecurityScanList(payload): Promise<SecurityScanListResponseType> {
-    const URL = `security/scan/list`
-    return post(URL, payload).then((response) => {
+export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: AbortSignal): Promise<SecurityScanListResponseType> {
+    const URL = 'security/scan/list'
+    return post(URL, payload, {signal: abortSignal}).then((response) => {
         const securityScans = response.result.scanList || []
         return {
-            responseCode: response.code,
             result: {
                 offset: response.result.offset,
-                size: response.result.total,
+                totalCount: response.result.total,
                 pageSize: response.result.size || 20,
                 securityScans: securityScans.map((scan) => {
                     return {
                         appId: scan.appId,
                         envId: scan.envId,
                         name: scan.name,
-                        type: scan.type,
                         imageScanDeployInfoId: scan.imageScanDeployInfoId,
                         environment: scan.environment,
                         severityCount: {
-                            critical: scan.severityCount.high,
-                            moderate: scan.severityCount.moderate,
+                            critical: scan.severityCount.critical,
+                            high: scan.severityCount.high,
+                            medium: scan.severityCount.medium,
                             low: scan.severityCount.low,
+                            unknown: scan.severityCount.unknown,
                         },
-                        lastExecution: handleUTCTime(scan.lastChecked) || '-',
+                        lastExecution: scan.lastChecked || '-',
                     }
                 }),
             },

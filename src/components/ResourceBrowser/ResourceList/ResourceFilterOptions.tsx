@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { Option } from '../../v2/common/ReactSelect.utils'
+import {
+    useAsync,
+    useRegisterShortcut,
+    OptionType,
+    SearchBar,
+    Option,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ResourceValueContainerWithIcon } from './ResourceList.component'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    NAMESPACE_NOT_APPLICABLE_TEXT,
+} from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
@@ -86,21 +95,24 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut, isOpen])
 
-    const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
+    const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
             searchInputRef.current?.blur()
         }
     }
 
-    const handleOnChangeSearchText: React.FormEventHandler<HTMLInputElement> = (event): void => {
-        setSearchText(event.currentTarget.value)
+    const handleOnChangeSearchText: ComponentProps<typeof SearchBar>['handleSearchChange'] = (text) => {
+        setSearchText(text)
+        if (!text) {
+            searchInputRef.current?.focus()
+        }
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}?${location.search}`
+        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
         updateK8sResourceTab(url)
         replace(url)
         setSelectedNamespace(selected)
@@ -118,40 +130,23 @@ const ResourceFilterOptions = ({
 
     const handleInputFocus = () => setIsInputFocused(true)
 
-    const clearSearchInput = () => {
-        setSearchText('')
-        searchInputRef.current?.focus()
-    }
-
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
-                    <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />
-                    <input
-                        ref={searchInputRef}
-                        type="text"
-                        placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
-                        value={searchText}
-                        className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
-                        onChange={handleOnChangeSearchText}
-                        onKeyUp={handleFilterKeyPress}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                        disabled={isSearchInputDisabled}
-                        data-testid="search-input-for-resource"
+                <div className="resource-filter-options-container__search-box dc__position-rel">
+                    <SearchBar
+                        inputProps={{
+                            placeholder: `Search ${selectedResource?.gvk?.Kind || ''}`,
+                            disabled: isSearchInputDisabled,
+                            onBlur: handleInputBlur,
+                            onFocus: handleInputFocus,
+                            ref: searchInputRef,
+                            onKeyUp: handleFilterKeyUp,
+                        }}
+                        handleSearchChange={handleOnChangeSearchText}
+                        initialSearchText={searchText}
                     />
-                    {!!searchText && (
-                        <button
-                            className="search__clear-button"
-                            type="button"
-                            onClick={clearSearchInput}
-                            aria-label="Search resources"
-                        >
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                        </button>
-                    )}
                     {showShortcutKey && (
                         <ShortcutKeyBadge
                             shortcutKey="r"
@@ -169,8 +164,11 @@ const ResourceFilterOptions = ({
                         setShowModal={setShowFilterModal}
                     />
                 )}
-                <div className="resource-filter-options-wrapper flex">
-                    <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
+                <Tooltip
+                    alwaysShowTippyOnHover={!!selectedResource && !selectedResource.namespaced}
+                    content={NAMESPACE_NOT_APPLICABLE_TEXT}
+                >
+                    <div className="resource-filter-options-wrapper flex">
                         <ReactSelect
                             placeholder="Select Namespace"
                             className="w-220 ml-8"
@@ -187,8 +185,8 @@ const ResourceFilterOptions = ({
                                 ValueContainer: ResourceValueContainerWithIcon,
                             }}
                         />
-                    </ConditionalWrap>
-                </div>
+                    </div>
+                </Tooltip>
             </div>
         </>
     )

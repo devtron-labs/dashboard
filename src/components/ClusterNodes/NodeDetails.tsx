@@ -18,7 +18,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
-    toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
     ClipboardButton,
@@ -26,14 +25,20 @@ import {
     Nodes,
     CodeEditor,
     GVKType,
+    SortableTableHeaderCell,
+    SortingOrder,
+    Tooltip,
+    TabGroup,
+    ComponentSizeType,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory } from 'react-router'
-import Tippy from '@tippyjs/react'
+import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
-import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import { ToastBodyWithButton } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -75,7 +80,7 @@ import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) => {
+const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -83,7 +88,6 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
-    const [copied, setCopied] = useState(false)
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
@@ -104,7 +108,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
-    const { push } = useHistory()
+    const { push, replace } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -159,6 +163,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
             } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
                 setSelectedTabIndex(2)
             }
+        } else {
+            replace({
+                pathname: location.pathname,
+                search: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+            })
         }
     }, [location.search])
 
@@ -180,43 +189,53 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
             } else if (_tabIndex === 2) {
                 _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
             }
-            push({
-                pathname: location.pathname,
-                search: _searchParam,
-            })
+            updateTabUrl(`${location.pathname}${_searchParam}`)
         }
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const cursorValue = 'cursor'
+        const tabs: TabProps[] = [
+            {
+                id: NODE_DETAILS_TABS.summary,
+                label: NODE_DETAILS_TABS.summary,
+                tabType: 'navLink',
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                    ['data-tab-index']: 0,
+                },
+            },
+            {
+                id: NODE_DETAILS_TABS.yaml,
+                label: NODE_DETAILS_TABS.yaml,
+                tabType: 'navLink',
+                icon: Edit,
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
+                    ['data-tab-index']: 1,
+                },
+            },
+            {
+                id: NODE_DETAILS_TABS.nodeConditions,
+                label: NODE_DETAILS_TABS.nodeConditions,
+                tabType: 'navLink',
+                props: {
+                    to: `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
+                    onClick: changeNodeTab,
+                    isActive: (_, { search }) =>
+                        search === `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
+                    ['data-tab-index']: 2,
+                },
+            },
+        ]
+
         return (
-            <div className="pl-20 flex dc__border-bottom">
-                <div className="flex left w-100">
-                    <ul role="tablist" className="tab-list pt-6">
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
-                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 0 ? ' fw-6 active' : ' fw-4'}`}>
-                                {NODE_DETAILS_TABS.summary}
-                            </div>
-                            {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
-                        </li>
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
-                            <div
-                                className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex === 1 ? ' fw-6 active' : ' fw-4'}`}
-                            >
-                                <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
-                                {NODE_DETAILS_TABS.yaml}
-                            </div>
-                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
-                        </li>
-                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
-                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 2 ? ' fw-6 active' : ' fw-4'}`}>
-                                {NODE_DETAILS_TABS.nodeConditions}
-                            </div>
-                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
-                        </li>
-                    </ul>
-                    {nodeControls()}
-                </div>
+            <div className="pl-20 dc__border-bottom flex dc__gap-16">
+                <TabGroup tabs={tabs} alignActiveBorderWithContainer size={ComponentSizeType.medium} />
+                {nodeControls()}
             </div>
         )
     }
@@ -285,21 +304,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div>{key}</div>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(instance) => {
-                        setCopied(false)
-                    }}
-                    interactive
-                >
-                    <div className="ml-8 flex dc__visible-hover--child">
-                        <ClipboardButton content={key} />
-                    </div>
-                </Tippy>
+                <div className="ml-8 flex dc__visible-hover--child">
+                    <ClipboardButton content={key} />
+                </div>
             </div>
         )
     }
@@ -346,43 +353,47 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
     }
 
     const renderLabelAnnotationTaint = (): JSX.Element => {
+        const tabs: TabProps[] = [
+            {
+                id: 'labels-tab',
+                label: `Labels (${nodeDetail.labels.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 0,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(0)
+                    },
+                },
+            },
+            {
+                id: 'annotation-tab',
+                label: `Annotation (${nodeDetail.annotations.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 1,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(1)
+                    },
+                },
+            },
+            {
+                id: 'taints-tab',
+                label: `Taints (${nodeDetail.taints?.length || 0})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 2,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(2)
+                    },
+                },
+            },
+        ]
+
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(0)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Labels ({nodeDetail.labels.length})
-                        </div>
-                        {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(1)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Annotation ({nodeDetail.annotations.length})
-                        </div>
-                        {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(2)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Taints ({nodeDetail.taints?.length || 0})
-                        </div>
-                        {selectedSubTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
-                </ul>
+                <div className="dc__border-bottom px-20">
+                    <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+                </div>
                 <div className=" pr-20 pl-20 pt-12 pb-12">
                     {selectedSubTabIndex == 0 && renderLabelTab()}
                     {selectedSubTabIndex == 1 && renderAnnotationTab()}
@@ -624,46 +635,30 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                 push(_url)
                 return
             }
-            toast.error(
-                <div>
-                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-                </div>,
-            )
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
+                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
+            })
         })
     }
 
-    const renderPodHeaderCell = (
-        columnName: string,
-        sortingFieldName: string,
-        columnType: string,
-        className: string,
-    ): JSX.Element => {
-        return (
-            <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
-                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
-                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                onClick={() => {
-                    handleSortClick(sortingFieldName, columnType)
-                }}
-            >
-                <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-                    <span
-                        className="dc__inline-block dc__ellipsis-right lh-20"
-                        style={{ maxWidth: 'calc(100% - 20px)' }}
-                    >
-                        {columnName}
-                    </span>
-                </Tippy>
-                {sortByColumnName === sortingFieldName ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`} />
-                ) : (
-                    <span className="sort-column dc__opacity-0_5 ml-4" />
-                )}
-            </div>
-        )
-    }
+    const getTriggerSortingHandler =
+        (...props: Parameters<typeof handleSortClick>) =>
+        () => {
+            handleSortClick(...props)
+        }
+
+    const renderPodHeaderCell = (columnName: string, sortingFieldName: string, columnType: string): JSX.Element => (
+        <SortableTableHeaderCell
+            showTippyOnTruncate
+            title={columnName}
+            triggerSorting={getTriggerSortingHandler(sortingFieldName, columnType)}
+            isSorted={sortByColumnName === sortingFieldName}
+            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+            disabled={false}
+        />
+    )
 
     const getPodListData = async (): Promise<void> => {
         getData([])
@@ -681,32 +676,24 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bcn-0 mb-20">
-                    <div className="pods-grid">
-                        <header className="bcn-0">
-                            {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
-                            {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
-                            {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Mem Requests', 'memory.requestPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Mem Limit', 'memory.limitPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
+                    <div className="pods-grid fw-4 fs-13 cn-9">
+                        <header className="bcn-0 dc__border-bottom-n1 fw-6">
+                            {renderPodHeaderCell('Namespace', 'namespace', 'string')}
+                            {renderPodHeaderCell('Pod', 'name', 'string')}
+                            {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number')}
+                            {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number')}
+                            {renderPodHeaderCell('Mem Requests', 'memory.requestPercentage', 'number')}
+                            {renderPodHeaderCell('Mem Limit', 'memory.limitPercentage', 'number')}
+                            {renderPodHeaderCell('Age', 'createdAt', 'string')}
                         </header>
                         <main>
                             {sortedPodList.map((pod) => (
-                                <div className="row-wrapper" key={pod.name}>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
-                                        {pod.namespace}
-                                    </div>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9 dc__align-items-center">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content={pod.name}
-                                            interactive
-                                        >
+                                <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
+                                    <span className="dc__ellipsis-right">{pod.namespace}</span>
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
+                                        <Tooltip content={pod.name} interactive>
                                             <span
-                                                className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
+                                                className="dc__inline-block dc__ellipsis-right cb-5 cursor"
                                                 style={{ maxWidth: 'calc(100% - 20px)' }}
                                                 data-name={pod.name}
                                                 data-namespace={pod.namespace}
@@ -714,7 +701,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                                             >
                                                 {pod.name}
                                             </span>
-                                        </Tippy>
+                                        </Tooltip>
                                         <div className="ml-8 dc__visible-hover--child">
                                             <ClipboardButton content={pod.name} />
                                         </div>
@@ -727,21 +714,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                                             handleResourceClick={handleResourceClick}
                                         />
                                     </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.cpu.requestPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.cpu.limitPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.memory.requestPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.memory.limitPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">
-                                        {pod.age}
-                                    </div>
+                                    <span>{pod.cpu.requestPercentage || '-'}</span>
+                                    <span>{pod.cpu.limitPercentage || '-'}</span>
+                                    <span>{pod.memory.requestPercentage || '-'}</span>
+                                    <span>{pod.memory.limitPercentage || '-'}</span>
+                                    <span>{pod.age}</span>
                                 </div>
                             ))}
                         </main>
@@ -873,7 +850,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
         setNodeDetail(null)
         const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
         getData(_patchData)
-        toast.dismiss(toastId.current)
+        ToastManager.dismissToast(toastId.current)
     }
 
     const saveYAML = (): void => {
@@ -891,7 +868,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
-                        toast.success('Node updated')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Node updated',
+                        })
                         setIsReviewStates(false)
                         setIsEdit(false)
                         setIsShowWarning(false)
@@ -904,19 +884,21 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                         modifiedYAMLError = error.errors.find((errorData) => Number(errorData.code) === 409)
                     }
                     if (modifiedYAMLError) {
-                        const updateToastBody = (
-                            <ToastBodyWithButton
-                                onClick={reloadDataAndHideToast}
-                                title="Cannot apply changes as node yaml has changed"
-                                subtitle="Please apply your changes to the latest version and try again."
-                                buttonText="Show latest YAML"
-                            />
+                        ToastManager.showToast(
+                            {
+                                variant: ToastVariantType.info,
+                                title: 'Cannot apply changes as node yaml has changed',
+                                description: 'Please apply your changes to the latest version and try again.',
+                                buttonProps: {
+                                    text: 'Show latest YAML',
+                                    dataTestId: 'show-latest-yaml',
+                                    onClick: reloadDataAndHideToast,
+                                },
+                            },
+                            {
+                                autoClose: false,
+                            },
                         )
-                        if (toast.isActive(toastId.current)) {
-                            toast.update(toastId.current, { render: updateToastBody })
-                        } else {
-                            toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
-                        }
                     } else {
                         showError(error)
                     }
@@ -1014,7 +996,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
 
     const isAuthorized = (): boolean => {
         if (!isSuperAdmin) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
             return false
         }
         return true

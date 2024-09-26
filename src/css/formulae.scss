@@ -63,7 +63,7 @@
 }
 
 .flex-grow-none {
-    flex-grow: 0 !important
+    flex-grow: 0 !important;
 }
 
 .flex-grow-1 {
@@ -240,15 +240,17 @@ $color-suffix: 00;
     font-family: 'Merriweather';
 }
 
-@mixin cta($bg, $color, $border, $cursor: pointer) {
+@mixin cta($bg, $color, $border, $cursor: pointer, $override-svg: true) {
     background: $bg;
     color: $color;
     border: 1px solid $border;
     cursor: $cursor;
 
-    svg {
-        path {
-            fill: $color;
+    @if $override-svg {
+        svg {
+            path {
+                fill: $color;
+            }
         }
     }
 }
@@ -280,7 +282,24 @@ $color-suffix: 00;
     text-transform: capitalize;
     line-height: 40px;
     text-align: center;
-    @include cta(var(--B500), var(--white), transparent);
+
+    &:not(&__no-svg-override) {
+        @include cta(var(--B500), var(--white), transparent);
+
+        &:hover,
+        &:focus {
+            @include cta(#004f9e, var(--white), transparent);
+        }
+    }
+
+    &__no-svg-override {
+        @include cta(var(--B500), var(--white), transparent, pointer, false);
+
+        &:hover,
+        &:focus {
+            @include cta(#004f9e, var(--white), transparent, pointer, false);
+        }
+    }
 
     &.disabled-opacity {
         @include cta-disabled-opacity(var(--B500), var(--white), transparent);
@@ -380,24 +399,31 @@ $color-suffix: 00;
     }
 
     &.cancel {
-        @include cta(white, var(--N700), var(--N200));
+        &:not(.cta__no-svg-override) {
+            @include cta(white, var(--N700), var(--N200));
 
-        &:hover {
-            @include cta(white, var(--N700), var(--N300));
+            &:hover {
+                @include cta(white, var(--N700), var(--N300));
+            }
+
+            &:active,
+            &:focus {
+                @include cta(var(--N700), white, transparent);
+            }
         }
 
-        &:active,
-        &:focus {
-            @include cta(var(--N700), white, transparent);
+        &.cta__no-svg-override {
+            @include cta(white, var(--N700), var(--N200), pointer, false);
+
+            &:hover {
+                @include cta(white, var(--N700), var(--N300), pointer, false);
+            }
+
+            &:active,
+            &:focus {
+                @include cta(var(--N700), white, transparent, pointer, false);
+            }
         }
-    }
-
-    &:hover {
-        @include cta(#004f9e, var(--white), transparent);
-    }
-
-    &:focus {
-        @include cta(#004f9e, var(--white), transparent);
     }
 
     &.delete,
@@ -412,11 +438,22 @@ $color-suffix: 00;
     &.warning,
     &.text,
     & {
-        &:disabled,
-        :disabled:hover,
-        &.disabled,
-        &.disabled:hover {
-            @include cta(var(--N100), var(--N400), var(--N200), not-allowed);
+        &:not(.cta__no-svg-override) {
+            &:disabled,
+            :disabled:hover,
+            &.disabled,
+            &.disabled:hover {
+                @include cta(var(--N100), var(--N400), var(--N200), not-allowed);
+            }
+        }
+
+        &.cta__no-svg-override {
+            &:disabled,
+            :disabled:hover,
+            &.disabled,
+            &.disabled:hover {
+                @include cta(var(--N100), var(--N400), var(--N200), not-allowed, false);
+            }
         }
     }
 }
@@ -494,4 +531,51 @@ $color-suffix: 00;
 
 .modal__top-fixed {
     height: 50px;
+}
+
+@mixin steps-with-trail($lineHeight, $stepSize, $gutterSize, $paddingLeft) {
+    list-style-type: none;
+    counter-reset: step-counter 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: $gutterSize;
+    --top-overflow: calc(calc(#{$lineHeight} - #{$stepSize}) / 2);
+    margin: 0;
+
+    &>li {
+        counter-increment: step-counter 1;
+        padding-left: $paddingLeft;
+        position: relative;
+        line-height: $lineHeight;
+    }
+
+    &>li::before {
+        position: absolute;
+        left: 0;
+        top: var(--top-overflow);
+        content: counter(step-counter);
+        height: $stepSize;
+        width: $stepSize;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        border: 1px solid var(--N200);
+        color: var(--N900);
+    }
+
+    &>li:not(:last-of-type)::after {
+        --top: calc(#{$stepSize} + calc(calc(#{$lineHeight} - #{$stepSize}) / 2));
+        content: '';
+        position: absolute;
+        left: calc(calc(#{$stepSize}) / 2);
+        top: var(--top);
+        height: calc(100% - var(--top) + #{$gutterSize} + var(--top-overflow));
+        width: 1px;
+        background-color: var(--N200);
+    }
+}
+
+.steps-with-trail--normal {
+    @include steps-with-trail(20px, 24px, 16px, 40px)
 }

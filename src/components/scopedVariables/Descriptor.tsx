@@ -45,7 +45,9 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                 <div className="flex dc__gap-8 w-100 dc__content-space">
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.SCOPED_VARIABLES.title}
-                        renderDescriptionContent={() => (additonalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description)}
+                        renderDescriptionContent={() =>
+                            additonalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
+                        }
                         additionalContent={additonalTippyContent?.()}
                         docLink={HEADER_TEXT.SCOPED_VARIABLES.docLink}
                         showInfoIconTippy

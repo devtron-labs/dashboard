@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
@@ -24,8 +24,10 @@ import {
     ConditionalWrap,
     useAsync,
     PageHeader,
+    DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
@@ -41,7 +43,6 @@ import {
     deleteChartGroup,
 } from './charts.service'
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
@@ -110,7 +111,10 @@ export default function ChartGroupDetails() {
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
         try {
             await deleteInstalledChart(installedAppId)
-            toast.success('Successfully Deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully Deleted',
+            })
             reloadChartGroupDetails()
         } catch (err) {
             showError(err)
@@ -252,7 +256,10 @@ export default function ChartGroupDetails() {
                                 getChartVersionsAndValues={getChartVersionsAndValues}
                                 configureChart={(index) => {
                                     if (!state.charts[index].isEnabled) {
-                                        toast.warn('Please enable chart to configure.')
+                                        ToastManager.showToast({
+                                            variant: ToastVariantType.warn,
+                                            description: 'Please enable chart to configure.',
+                                        })
                                         return
                                     }
                                     push(`${url}/deploy`, {

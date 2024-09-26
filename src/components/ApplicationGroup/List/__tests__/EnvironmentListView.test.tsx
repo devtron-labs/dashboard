@@ -24,9 +24,8 @@ import { mockEmptyFetch, mockFetch } from '../__mocks__/EnvironmentList.mock'
 import { renderWithRouter } from '../../Details/EnvironmentConfig/__test__/ApplicationRoutes.test'
 
 describe('EnvironmentList', () => {
-
     it('EnvironmentList renders without crashing', () => {
-        const { container } = render(<EnvironmentsListView isSuperAdmin={false} removeAllFilters={jest.fn()} />, {
+        const { container } = render(<EnvironmentsListView isSuperAdmin={false} clearFilters={jest.fn()} />, {
             wrapper: BrowserRouter,
         })
         expect(container).toBeInTheDocument()
@@ -42,7 +41,7 @@ describe('EnvironmentList', () => {
         let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockFetch)
         await act(async () => {
-            component = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
+            component = render(<EnvironmentsListView isSuperAdmin={true} clearFilters={jest.fn()} />, {
                 wrapper: BrowserRouter,
             })
         })
@@ -69,7 +68,6 @@ describe('EnvironmentList', () => {
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
         expect(component.getByText('No matching env')).toBeInTheDocument()
-        
     })
 
     it('EnvironmentList renders with empty state when ClusterId is available', async () => {
@@ -81,14 +79,13 @@ describe('EnvironmentList', () => {
                     <EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />
                 </Route>,
                 { route: 'application-group/list?cluster=3&offset=0' },
-                )
-            })
+            )
+        })
         expect(component.container).toBeInTheDocument()
         const emptyWrapper = component.container.querySelector('.flex.dc__border-top-n1')
         expect(emptyWrapper).toBeInTheDocument()
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
         expect(component.getByText('No app groups found')).toBeInTheDocument()
-        
     })
 })

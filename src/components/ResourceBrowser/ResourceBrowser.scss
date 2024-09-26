@@ -37,6 +37,7 @@
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
+        height: calc(100vh - 84px);
 
         .k8s-object-container {
             .k8s-object-kind-search {
@@ -111,27 +112,16 @@
                     }
                 }
 
-                .search {
-                    .search__icon {
-                        path:nth-child(2) {
-                            fill: var(--N600);
-                        }
-                    }
-
-                    .search__input:focus {
-                        outline: solid 1px var(--B500);
-                        border: none;
-                    }
-
+                &__search-box {
+                    width: 250px;
                     .resource-search-shortcut-key {
                         right: 8px;
-                        top: 5px;
+                        top: 50%;
+                        transform: translateY(-50%);
                     }
                 }
             }
             .scrollable-resource-list {
-                overflow: auto;
-                width: calc(100vw - 277px);
                 height: calc(100vh - 144px);
                 &.paginated-list-view {
                     height: calc(100vh - 201px);
@@ -144,16 +134,31 @@
                 &.paginated-list-view-with-sync-error {
                     height: calc(100vh - 233px);
                 }
-                .list-header {
+                &__row {
                     width: max-content;
-                    min-width: calc(100vw - 277px);
-                    top: 0;
-                    z-index: 3;
+                    min-width: 100%;
+                    display: grid;
+
+                    &:hover > :first-child {
+                        background-color: var(--N50);
+                    }
+
+                    & > :first-child {
+                        position: sticky;
+                        left: 0;
+                        z-index: 1;
+                        background-color: var(--N0);
+                        border-right: 1px solid var(--N200);
+                        padding-left: 20px;
+                    }
+
+                    & > :last-child {
+                        padding-right: 20px;
+                    }
                 }
             }
 
             .scrollable-event-list {
-                overflow: hidden auto;
                 height: calc(100vh - 180px);
                 &.paginated-list-view {
                     height: calc(100vh - 237px);
@@ -242,7 +247,7 @@
     height: 0;
     .terminal-action-strip {
         display: none;
-      }
+    }
 }
 
 .cluster-terminal-hidden * {

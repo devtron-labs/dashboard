@@ -15,15 +15,14 @@
  */
 
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
-import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
+import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
+import { BreadCrumb, useBreadcrumb, noop, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
 import { AppHeaderType } from '../types'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
@@ -137,105 +136,99 @@ export const AppHeader = ({
     )
 
     const renderAppDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link flex"
-                        data-action="Overview Clicked"
-                        data-testid="overview-click"
-                        onClick={handleEventClick}
-                    >
-                        Overview
-                        {MandatoryTagWarning && (
-                            <MandatoryTagWarning
-                                labelTags={appMetaInfo?.labels}
-                                handleAddTag={noop}
-                                selectedProjectId={appMetaInfo?.projectId}
-                                showOnlyIcon
-                                reloadProjectTags={reloadMandatoryProjects}
-                            />
-                        )}
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        data-testid="app-details-tab"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="App Details Clicked"
-                        onClick={handleEventClick}
-                    >
-                        App Details
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_TRIGGER}`}
-                        className="tab-list__tab-link"
-                        data-action="Build & Deploy Clicked"
-                        onClick={handleEventClick}
-                        data-testid="build-deploy-click"
-                        id="build-deploy"
-                    >
-                        Build & Deploy
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Build History Clicked"
-                        data-testid="build-history-clicked"
-                        onClick={handleEventClick}
-                    >
-                        Build History
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Deployment History Clicked"
-                        data-testid="deployment-history-link"
-                        onClick={handleEventClick}
-                    >
-                        Deployment History
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
-                        className="tab-list__tab-link"
-                        data-testid="deployment-matrix"
-                        data-action="Deployment Metrics Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Deployment Metrics
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="app-config-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link flex"
-                        data-action="App Configuration Clicked"
-                        onClick={handleEventClick}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
-                        App Configuration
-                    </NavLink>
-                </li>
-            </ul>
-        )
+        const showWarning =
+            MandatoryTagWarning &&
+            MandatoryTagWarning({
+                labelTags: appMetaInfo?.labels,
+                handleAddTag: noop,
+                selectedProjectId: appMetaInfo?.projectId,
+                showOnlyIcon: true,
+                reloadProjectTags: reloadMandatoryProjects,
+            })
+
+        const tabs: TabProps[] = [
+            {
+                id: 'overview-tab',
+                label: 'Overview',
+                tabType: 'navLink',
+                showWarning: !!showWarning,
+                props: {
+                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    ['data-action']: 'Overview Clicked',
+                    ['data-testid']: 'overview-click',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'app-details-tab',
+                label: 'App Details',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    ['data-action']: 'App Details Clicked',
+                    ['data-testid']: 'app-details-tab',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'build-deploy-tab',
+                label: 'Build & Deploy',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    ['data-action']: 'Build & Deploy Clicked',
+                    ['data-testid']: 'build-deploy-click',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'build-history-tab',
+                label: 'Build History',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    ['data-action']: 'Build History Clicked',
+                    ['data-testid']: 'build-history-clicked',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'deployment-history-tab',
+                label: 'Deployment History',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_CD_DETAILS}`,
+                    ['data-action']: 'Deployment History Clicked',
+                    ['data-testid']: 'deployment-history-link',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'deployment-metrics-tab',
+                label: 'Deployment Metrics',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`,
+                    ['data-action']: 'Deployment Metrics Clicked',
+                    ['data-testid']: 'deployment-matrix',
+                    onClick: handleEventClick,
+                },
+            },
+            {
+                id: 'app-configuration-tab',
+                label: 'Configurations',
+                tabType: 'navLink',
+                icon: Settings,
+                props: {
+                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    ['data-action']: 'App Configuration Clicked',
+                    ['data-testid']: 'app-config-link',
+                    onClick: handleEventClick,
+                },
+            },
+        ]
+
+        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
     const renderBreadcrumbs = () => {

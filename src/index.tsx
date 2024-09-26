@@ -20,8 +20,9 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import { ShortcutProvider } from 'react-keybind'
 import App from './App'
-import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManagerContainer, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -146,7 +147,11 @@ if (!window || !window._env_) {
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        HIDE_NETWORK_STATUS_INTERFACE: true,
+        SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
+        FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
     }
 }
@@ -154,11 +159,16 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UserEmailProvider>
-                    <App />
-                </UserEmailProvider>
-            </BrowserRouter>
+            <>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <ShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </ShortcutProvider>
+                </BrowserRouter>
+                <ToastManagerContainer />
+            </>
         ) : null}
     </React.StrictMode>,
     root,

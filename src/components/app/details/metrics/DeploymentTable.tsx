@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import { Component } from 'react'
+import { Progressing, DEFAULT_BASE_PAGE_SIZE, Pagination } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'
 import { ReactComponent as SortUp } from '../../../../assets/icons/ic-sort-up.svg'
@@ -23,7 +23,6 @@ import { ReactComponent as SortDown } from '../../../../assets/icons/ic-sort-dow
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { Pagination } from '../../../common'
 import { ViewType } from '../../../../config'
 
 export interface DeploymentTableCellType {
@@ -188,6 +187,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
         if (this.state.pagination.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={this.state.pagination.size}
                     pageSize={this.state.pagination.pageSize}
                     offset={this.state.pagination.offset}

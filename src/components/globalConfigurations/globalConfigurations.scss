@@ -93,7 +93,7 @@
         border-radius: 4px;
         border: solid 1px var(--N200);
         &.form__input--error {
-          border: solid 1px var(--R500);
+            border: solid 1px var(--R500);
         }
     }
 }
@@ -183,7 +183,7 @@
     background: white;
     border-radius: 8px;
 
-    &>.list {
+    & > .list {
         border: unset;
         margin-bottom: unset;
         grid-template-columns: 1fr 20px;
@@ -192,7 +192,7 @@
     }
 
     &.cluster-list--create {
-        &>.list {
+        & > .list {
             grid-template-columns: 24px 1fr 24px;
         }
 
@@ -248,7 +248,6 @@
 }
 
 .collapsed-list {
-
     &.collapsed-list--git,
     &.collapsed-list--docker {
         border: 1px solid #d6dbdf;
@@ -318,7 +317,7 @@
     .form__buttons {
         align-items: center;
     }
-    
+
     .docker-default {
         .form__checkbox-label {
             margin-right: auto;
@@ -330,7 +329,8 @@
         }
 
         &.registry-disabled-checkbox {
-            input, .form__checkbox-container {
+            input,
+            .form__checkbox-container {
                 opacity: 0.5;
             }
         }
@@ -343,7 +343,6 @@
 }
 
 .cluster-form {
-
     .form__row--bearer-token .bearer-token {
         display: flex;
         width: 100%;
@@ -370,7 +369,7 @@
     padding: 24px;
     margin: 5% auto auto auto;
 
-    .form__title+img {
+    .form__title + img {
         margin-left: auto;
         cursor: pointer;
     }
@@ -399,7 +398,7 @@
             cursor: pointer;
         }
 
-        input:checked+span {
+        input:checked + span {
             color: var(--B500);
         }
 

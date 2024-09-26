@@ -22,17 +22,16 @@ import {
     DockerConfigOverrideType,
     MandatoryPluginDataType,
     VariableType,
-    MandatoryPluginDetailType,
     CommonNodeAttr,
     WorkflowType,
     Material,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { Environment } from '../cdPipeline/cdPipeline.types'
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
@@ -342,7 +341,6 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
     mandatoryPluginData?: MandatoryPluginDataType
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
@@ -356,7 +354,6 @@ export interface CIPipelineSidebarType {
 
 export interface TaskListType {
     withWarning: boolean
-    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

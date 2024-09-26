@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router'
+import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
 import Select from 'react-select'
 import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'

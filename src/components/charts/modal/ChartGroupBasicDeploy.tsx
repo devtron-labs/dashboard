@@ -15,13 +15,12 @@
  */
 
 import React, { Component } from 'react'
-import { CustomInput, DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { styles, smallMenuList, menuList, DropdownIndicator, renderAdditionalErrorInfo } from '../charts.util'
-import { Option } from '../../v2/common/ReactSelect.utils'
+import { renderAdditionalErrorInfo } from '../charts.util'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
 import { Prompt } from 'react-router-dom'
@@ -99,7 +98,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             })
             .join(', ')
         return (
-            <div className="deploy-selected-charts__applications" tabIndex={0}>
+            <div className="deploy-selected-charts__applications dc__border-top-n1 pt-16" tabIndex={0}>
                 <div className="flex-1">
                     <h3 className="deploy-selected-charts__applications-title">Application Names</h3>
                     {this.state.showAppNames ? null : (
@@ -161,27 +160,19 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             >
                 <div className="deploy-selected-charts__body">
                     <label className="form__row">
-                        <span className="form__label dc__required-field" data-testid="group-deployment-project-heading">
-                            Project
-                        </span>
-                        <ReactSelect
+                        <SelectPicker
                             autoFocus
                             classNamePrefix="group-deployment-project"
-                            defaultValue={selectedProject}
-                            components={{
-                                DropdownIndicator,
-                                Option,
-                            }}
-                            tabIndex={1}
+                            inputId='chart-group-deployment-project'
+                            value={selectedProject}
                             placeholder="Select Project"
-                            styles={{
-                                ...styles,
-                                ...menuList,
-                            }}
                             onChange={(selected) => {
                                 this.props.handleProjectChange(parseInt((selected as any).value))
                             }}
                             options={projects}
+                            size={ComponentSizeType.large}
+                            label="Project"
+                            required
                         />
                         <span className="form__error">
                             {!this.props.selectedProjectId && this.state.showError ? (
@@ -193,26 +184,19 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         </span>
                     </label>
                     <div className="form__row">
-                        <span className="form__label dc__required-field" data-testid="group-deployment-env-heading">
-                            Deploy to Environment
-                        </span>
-                        <ReactSelect
-                            defaultValue={selectedEnvironment}
-                            components={{
-                                DropdownIndicator,
-                                Option,
-                            }}
-                            tabIndex={2}
+                        <SelectPicker
+                            name="chart-group-deployment-env"
+                            inputId='chart-group-deployment-env'
+                            value={selectedEnvironment}
                             classNamePrefix="group-deployment-env"
                             placeholder="Select Environment"
-                            styles={{
-                                ...smallMenuList,
-                                ...styles,
-                            }}
                             onChange={(selected) => {
                                 this.handleEnvironmentChange(parseInt((selected as any).value))
                             }}
                             options={environments?.filter((item) => !item.isVirtualEnvironment)}
+                            size={ComponentSizeType.large}
+                            label="Deploy to Environment"
+                            required
                         />
                         <span className="form__error">
                             {!this.state.selectedEnvironmentId && this.state.showError ? (
@@ -223,7 +207,6 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                             ) : null}
                         </span>
                     </div>
-                    <hr className="deploy-selected-chart-hr" />
                     {this.renderApplicationListHeader()}
                     <ApplicationNameList
                         charts={this.props.chartGroupEntries}

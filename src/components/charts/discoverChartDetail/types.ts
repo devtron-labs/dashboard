@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { ChartValuesType } from '../charts.types'
 
 export interface DiscoverChartDetailsProps extends RouteComponentProps<{ chartId: string }> {}

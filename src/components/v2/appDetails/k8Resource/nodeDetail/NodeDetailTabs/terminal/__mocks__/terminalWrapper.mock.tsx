@@ -85,6 +85,10 @@ export const selectionListData: TerminalSelectionListDataType = {
             sessionId: '',
         },
     },
+    metadata: {
+        node: '',
+        namespace: '',
+    },
 }
 
 export const selectionListDataWithSecondStrip = {
@@ -141,9 +145,9 @@ export const selectionListDataWithSecondStrip = {
     ],
 }
 
-const renderTerminalTabWrapper = (terminalView: () => JSX.Element) => {
-    return <div className="cluster-terminal__wrapper">{terminalView}</div>
-}
+const renderTerminalTabWrapper = (terminalView: () => JSX.Element) => (
+    <div className="cluster-terminal__wrapper">{terminalView}</div>
+)
 
 export const selectionListDataWithTerminalWrapper = {
     ...selectionListDataWithSecondStrip,
@@ -167,18 +171,16 @@ export const mockUseHeightObserver = jest.fn().mockImplementation(() => {
     return [ref]
 })
 
-export const renderStrip = jest.fn(() => {
-    return (
-        <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
-            {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
-        </div>
-    )
-})
+export const renderStrip = jest.fn(() => (
+    <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
+        {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
+    </div>
+))
 
 const userContextMock = {
     serverMode: SERVER_MODE.FULL,
 } as MainContext
 
-export const terminalContextWrapper = (terminalView) => {
-    return <MainContextProvider value={userContextMock}>{terminalView}</MainContextProvider>
-}
+export const terminalContextWrapper = (terminalView) => (
+    <MainContextProvider value={userContextMock}>{terminalView}</MainContextProvider>
+)

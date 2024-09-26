@@ -23,11 +23,12 @@ import {
     DevtronProgressing,
     PageHeader,
     useMainContext,
+    DetectBottom,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, NavLink } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
-import { toast } from 'react-toastify'
+import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -44,7 +45,7 @@ import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
@@ -54,7 +55,6 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
@@ -230,12 +230,18 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             // NOTE: This validation call also goes inside component as well discuss about it
             const validated = await validateData()
             if (!validated) {
-                toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 })
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: 'Click on highlighted charts and resolve errors.',
+                })
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
             await deployChartGroup(project.id, deployableCharts)
-            toast.success('Deployment initiated')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deployment initiated',
+            })
             setInstalling(false)
             const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
             history.push(url)
@@ -425,7 +431,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     return (
         <>
-            <div className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
+            <div
+                className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}
+            >
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
                     <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
@@ -534,6 +542,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                 <DetectBottom callback={reloadNextAfterBottom} />
                                                             )}
                                                         </div>
+
                                                         {state.hasMoreCharts && (
                                                             <Progressing
                                                                 size={25}

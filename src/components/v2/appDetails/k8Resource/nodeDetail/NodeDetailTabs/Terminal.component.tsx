@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router'
-import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useRouteMatch } from 'react-router-dom'
+import { get, showError, stopPropagation, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
@@ -73,7 +72,6 @@ const TerminalComponent = ({
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.DISCONNECTED)
-    const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
@@ -98,17 +96,18 @@ const TerminalComponent = ({
         }
 
         const deleteEphemeralContainer = (containerName: string) => {
-            deleteEphemeralUrl(
-                getPayload(containerName),
-                appDetails.clusterId,
-                appDetails.environmentId,
-                appDetails.namespace,
-                appDetails.appName,
-                appDetails.appId,
-                appDetails.appType,
+            deleteEphemeralUrl({
+                requestData: getPayload(containerName),
+                clusterId: appDetails.clusterId,
+                environmentId: appDetails.environmentId,
+                namespace: appDetails.namespace,
+                appName: appDetails.appName,
+                appId: appDetails.appId,
+                appType: appDetails.appType,
+                fluxTemplateType: appDetails.fluxTemplateType,
                 isResourceBrowserView,
                 params,
-            )
+            })
                 .then((response: any) => {
                     const _containers: Options[] = []
                     const containerName = response.result
@@ -119,7 +118,10 @@ const TerminalComponent = ({
                     })
                     switchSelectedContainer(containers?.[0]?.name || '')
                     setContainers(_containers)
-                    toast.success('Deleted successfully')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Deleted successfully',
+                    })
                 })
                 .catch((error) => {
                     showError(error)
@@ -170,21 +172,24 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+                : getAppId({
+                      clusterId: appDetails.clusterId,
+                      namespace: appDetails.namespace,
+                      appName: appDetails.appName,
+                      templateType: appDetails.fluxTemplateType ?? null,
+                  })
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else if (isExternalArgoApp) {
-            url += `${appDetails.clusterId}`
         } else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
+        url += `/${isResourceBrowserView ? selectedResource.namespace : selectedNamespace}/${nodeName}/${
             selectedTerminalType.value
-        }/${selectedContainerName}`
+        }/${selectedContainerName.value}`
         if (!isResourceBrowserView) {
-            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }
@@ -228,7 +233,7 @@ const TerminalComponent = ({
     }, [showTerminal])
 
     useEffect(() => {
-        setSelectedContainerName(_selectedContainer)
+        setSelectedContainerName({ label: _selectedContainer, value: _selectedContainer })
     }, [containers])
     useEffect(() => {
         clearTimeout(clusterTimeOut)
@@ -239,10 +244,10 @@ const TerminalComponent = ({
             clusterTimeOut = setTimeout(() => {
                 setSocketConnection(SocketConnectionType.CONNECTING)
             }, 300)
-        } else if (selectedContainerName) {
+        } else if (selectedContainerName.value) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName, params.podName, params.node, params.namespace])
+    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.node, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
@@ -259,7 +264,7 @@ const TerminalComponent = ({
     }
 
     const handleContainerChange = (selected: OptionType) => {
-        setSelectedContainerName(selected.value)
+        setSelectedContainerName(selected)
         setSelectedContainer(selectedContainer.set(selectedContainerValue, selected.value))
     }
 
@@ -267,7 +272,7 @@ const TerminalComponent = ({
         setSelectedTerminalType(selected)
     }
 
-    if (isDeleted || !selectedContainerName.length) {
+    if (isDeleted || !selectedContainerName.value.length) {
         return (
             showTerminal && (
                 <MessageUI
@@ -299,13 +304,8 @@ const TerminalComponent = ({
                 title: 'Container',
                 placeholder: 'Select container',
                 options: getGroupedContainerOptions(containers, true),
-                value: defaultContainerOption,
+                value: selectedContainerName,
                 onChange: handleContainerChange,
-                styles: getContainerSelectStyles(),
-                components: {
-                    IndicatorSeparator: null,
-                    Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
-                },
             },
             {
                 type: TerminalWrapperType.REACT_SELECT,
@@ -315,6 +315,7 @@ const TerminalComponent = ({
                 options: shellTypes,
                 defaultValue: shellTypes[0],
                 onChange: handleShellChange,
+                value: selectedTerminalType,
                 styles: getShellSelectStyles(),
                 components: {
                     IndicatorSeparator: null,
@@ -326,7 +327,7 @@ const TerminalComponent = ({
                 hideTerminalStripComponent: false,
                 isResourceBrowserView: !!isResourceBrowserView,
                 isClusterTerminalView: false,
-                containerName: selectedContainerName,
+                containerName: selectedContainerName.value,
                 appDetails,
             },
         ],
@@ -340,6 +341,17 @@ const TerminalComponent = ({
                 sessionId,
             },
         },
+        metadata: isResourceBrowserView
+            ? {
+                  cluster: selectedResource.clusterName ?? '',
+                  namespace: selectedResource.namespace ?? '',
+                  pod: nodeName ?? '',
+              }
+            : {
+                  app: appDetails.appName ?? '',
+                  environment: appDetails.environmentName ?? '',
+                  pod: nodeName ?? '',
+              },
     }
 
     return (
@@ -349,6 +361,7 @@ const TerminalComponent = ({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
+                isResourceBrowserView={isResourceBrowserView}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
         </div>

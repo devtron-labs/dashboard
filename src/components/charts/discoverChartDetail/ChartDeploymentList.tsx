@@ -27,8 +27,9 @@ import {
     ResponseType,
     DeploymentAppTypes,
     AppStatus,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import { deleteInstalledChart } from '../charts.service'
@@ -150,7 +151,7 @@ export const DeploymentRow = ({
 
     function _buildAppDetailUrl() {
         if (appOfferingMode == SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(clusterId, namespace, appName)}/${appName}`
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
         }
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
     }
@@ -164,7 +165,10 @@ export const DeploymentRow = ({
                 deleteAction,
             )
             if (response.result.deleteResponse?.deleteInitiated) {
-                toast.success('Successfully deleted')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully deleted',
+                })
                 toggleConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(false)

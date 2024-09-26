@@ -41,10 +41,10 @@ describe('EnvCIDetails', () => {
         jest.spyOn(serviceData, 'getTriggerHistory').mockImplementation(mockTrigger)
         await act(async () => {
             component = renderWithRouter(
-            <Route path="application-group/:envId/ci-details/:pipelineId/:buildId">
-                <EnvCIDetails filteredAppIds={'29,98'} />
-            </Route>,
-            { route: 'application-group/3/ci-details/45/363' },
+                <Route path="application-group/:envId/ci-details/:pipelineId/:buildId">
+                    <EnvCIDetails filteredAppIds={'29,98'} />
+                </Route>,
+                { route: 'application-group/3/ci-details/45/363' },
             )
         })
 

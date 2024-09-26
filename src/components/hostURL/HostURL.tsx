@@ -23,8 +23,9 @@ import {
     InfoColourBar,
     CustomInput,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -108,7 +109,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     onSave = (e: React.SyntheticEvent): void => {
         e.preventDefault()
         if (!this.state.form.value.length) {
-            toast.error('Some required fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing',
+            })
             return
         }
         if (!this.state.form.id) {
@@ -124,7 +128,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
         updateHostURLConfiguration(payload)
             .then((response) => {
-                toast.success('Saved Successful')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.setState({
                     saveLoading: false,
                     form: response.result,
@@ -153,11 +160,13 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
     renderHostErrorMessage() {
         return (
-            <InfoColourBar
-                classname="dc__hosturl-error m-20"
-                message="Saved host URL doesn’t match the domain address in your browser."
-                Icon={Error}
-            />
+            <div className="w-100">
+                <InfoColourBar
+                    classname="error_bar"
+                    message="Saved host URL doesn’t match the domain address in your browser."
+                    Icon={Error}
+                />
+            </div>
         )
     }
 
@@ -181,7 +190,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div className='bcn-0 h-100'><Progressing pageLoader /></div>
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -191,18 +200,21 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         return (
-            <section className="global-configuration__component" data-testid="section-host-url">
+            <section className="flex column left top bcn-0 h-100 dc__gap-24 px-20 py-16" data-testid="section-host-url">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.HOST_URL.title}
                     renderDescriptionContent={() => HEADER_TEXT.HOST_URL.description}
                     docLink={HEADER_TEXT.HOST_URL.docLink}
                     showInfoIconTippy
-                    additionalContainerClasses="mb-20"
                     dataTestId="host-url-heading"
                 />
-                <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url" onSubmit={this.onSave}>
+                <form
+                    className="flex left column dc__gap-16 bcn-0 br-8 bw-1 en-2 p-20"
+                    data-testid="form-host-url"
+                    onSubmit={this.onSave}
+                >
                     <InfoColourBar
-                        classname="hosturl__description m-20"
+                        classname="info_bar"
                         message={
                             <>
                                 Host URL is the domain address at which your devtron dashboard can be reached.
@@ -216,7 +228,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     {this.state.form.id && window.location.origin !== this.state.form.value
                         ? this.renderHostErrorMessage()
                         : ''}
-                    <div className="pl-20 pr-20">
+                    <div className="w-100">
                         <CustomInput
                             name="host-url"
                             label="Host URL"
@@ -241,18 +253,18 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 {window.location.origin}
                             </button>
                         </div>
-                        <div className="form__buttons pt-20">
+                    </div>
+                    <div className="flex left w-100 dc__border-top-n1 pt-16">
                             <button
                                 type="submit"
                                 tabIndex={2}
                                 disabled={this.state.saveLoading}
-                                className="cta"
+                                className="cta small"
                                 data-testid="host-url-update-button"
                             >
                                 {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
                             </button>
                         </div>
-                    </div>
                 </form>
             </section>
         )

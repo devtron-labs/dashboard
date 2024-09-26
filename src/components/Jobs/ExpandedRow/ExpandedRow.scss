@@ -85,15 +85,14 @@
 }
 
 .app-list__row--expanded:hover {
-    background-color: var(--N100) !important
+    background-color: var(--N100) !important;
 }
-
 
 .jobs-view-container {
     .app-list {
         .app-list__row {
             &.app-list__row--expanded {
-                grid-template-columns: 25px 300px 200px repeat(3, 248px)
+                grid-template-columns: 25px 300px 200px repeat(3, 248px);
             }
         }
 

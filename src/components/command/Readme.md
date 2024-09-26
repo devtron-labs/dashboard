@@ -1,20 +1,27 @@
 ## Routes
 
-## Components 
+## Components
 
-##### CommandErrorBoundary 
+##### CommandErrorBoundary
+
 `Wrapper for Command Component.`
+
 ##### Command
+
 `Main Command bar component.`
-- Always mounted in Navigation
-- Marked active/inactive via prop isCommandBarActive
+
+-   Always mounted in Navigation
+-   Marked active/inactive via prop isCommandBarActive
+
 ###### Props
+
 | Props              | Description                       |
 | ------------------ | --------------------------------- |
 | isCommandBarActive | Shows or hides command bar        |
 | toggleCommandBar   | Function to show/hide command bar |
 
 ###### State
+
 | State                 | Description                                                                |
 | --------------------- | -------------------------------------------------------------------------- |
 | isLoading             | Shows loader or suggestedArguments                                         |
@@ -28,6 +35,7 @@
 | suggestedArguments    | Used to show suggestions. Created from allSuggestedArguments via filtering |
 | groupName             | Name of the group to which suggestedArgument belongs                       |
 
-Note: 
-- Any argument that is not present is suggestedArgument is an invalid argument
-- isCommandBarActive is also used to make event listener active or inactive
+Note:
+
+-   Any argument that is not present is suggestedArgument is an invalid argument
+-   isCommandBarActive is also used to make event listener active or inactive

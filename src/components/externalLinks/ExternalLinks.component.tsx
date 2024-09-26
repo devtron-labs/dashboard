@@ -33,7 +33,6 @@ import {
     getMonitoringToolIcon,
     getParsedURL,
     MONITORING_TOOL_ICONS,
-    NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
 import {
@@ -43,6 +42,9 @@ import {
     GenericEmptyState,
     ConditionalWrap,
     GenericFilterEmptyState,
+    SelectPicker,
+    SelectPickerVariantType,
+    getHandleOpenURL,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -118,9 +120,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 }
 
 export const NoMatchingResults = (): JSX.Element => {
-    return (
-        <GenericFilterEmptyState />
-    )
+    return <GenericFilterEmptyState />
 }
 
 export const AppLevelExternalLinks = ({
@@ -150,12 +150,13 @@ export const AppLevelExternalLinks = ({
 
     useEffect(() => {
         if (externalLinks.length > 0 && monitoringTools.length > 0) {
-            const filteredLinks = externalLinks.filter(filterAppLevelExternalLinks)
+            const filteredLinks: ExternalLink[] = externalLinks.filter(filterAppLevelExternalLinks)
             setAppLevelExternalLinks(
-                filteredLinks.map((link) => ({
+                filteredLinks.map((link: ExternalLink) => ({
                     label: link.name,
                     value: link.url,
                     icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                    startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                     description: link.description,
                 })),
             )
@@ -184,7 +185,7 @@ export const AppLevelExternalLinks = ({
             >
                 <a
                     key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value, details)}
+                    href={getParsedURL(true, linkOption.value.toString(), details)}
                     target="_blank"
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                     rel="noreferrer"
@@ -214,7 +215,10 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0">
+            <div
+                data-testid="external-links-wrapper"
+                className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
+            >
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
@@ -228,6 +232,10 @@ export const AppLevelExternalLinks = ({
     )
 }
 
+export const getExternalLinkIcon = (link) => {
+    return <img src={link} alt={link} onError={onImageLoadError} />
+}
+
 export const NodeLevelExternalLinks = ({
     appDetails,
     helmAppDetails,
@@ -238,59 +246,22 @@ export const NodeLevelExternalLinks = ({
 }: NodeLevelExternalLinksType): JSX.Element | null => {
     const details = appDetails || helmAppDetails
 
-    const Option = (props: any): JSX.Element => {
-        if (!details) {
-            return null
-        }
-
-        const { data } = props
-
-        return (
-            <ConditionalWrap
-                condition={!!data.description}
-                wrap={(children) => (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement="left"
-                        iconPath={data.icon}
-                        heading={data.label}
-                        infoText={data.description}
-                    >
-                        <div>{children}</div>
-                    </TippyCustomized>
-                )}
-            >
-                <a
-                    key={data.label}
-                    href={getParsedURL(false, data.value, details, podName, containerName)}
-                    target="_blank"
-                    className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
-                    rel="noreferrer"
-                >
-                    <img className="icon-dim-20 mr-12" src={data.icon} alt={data.label} onError={onImageLoadError} />
-                    <span className="dc__ellipsis-right">{data.label}</span>
-                </a>
-            </ConditionalWrap>
-        )
+    const onClickExternalLink = (link: OptionTypeWithIcon) => {
+        getHandleOpenURL(getParsedURL(false, link.value.toString(), details, podName, containerName))()
     }
 
     return (
         nodeLevelExternalLinks.length > 0 && (
             <div className={`node-level__external-links flex column${addExtraSpace ? ' mr-4' : ''}`}>
-                <ReactSelect
-                    placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
+                <SelectPicker
+                    inputId={`${podName}-external-links`}
                     name={`${podName}-external-links`}
+                    placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
                     options={nodeLevelExternalLinks}
-                    isMulti={false}
                     isSearchable={false}
-                    closeMenuOnSelect
-                    components={{
-                        IndicatorSeparator: null,
-                        ClearIndicator: null,
-                        Option,
-                    }}
-                    styles={NodeLevelSelectStyles}
+                    shouldMenuAlignRight
+                    variant={SelectPickerVariantType.BORDER_LESS}
+                    onChange={onClickExternalLink}
                 />
             </div>
         )

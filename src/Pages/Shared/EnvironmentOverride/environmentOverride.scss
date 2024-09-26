@@ -1,0 +1,230 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.environment-override {
+    min-width: 768px;
+    width: 100%;
+    max-width: 1012px;
+    height: 100%;
+    padding: 20px 24px;
+    margin: 0 auto;
+
+    .form__title {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .form__title,
+    .form__subtitle {
+        color: var(--N900);
+    }
+
+    .form__label {
+        &.bold {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+    }
+
+    .rotateBy-180 {
+        transform: rotate(180deg);
+    }
+}
+
+.half {
+    width: 50%;
+}
+
+.override-key-value {
+    background: #fafafa;
+    border-radius: 4px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-row-gap: 16px;
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+}
+
+.white-card--list {
+    padding: 0 24px;
+    overflow: hidden;
+    position: relative;
+
+    &:not(:last-child) {
+        margin-bottom: 12px;
+    }
+    .uncollapse__delete {
+        &.flex {
+            position: absolute;
+            right: 72px;
+            top: 18px;
+            width: 24px;
+        }
+    }
+}
+
+#opt-metrics {
+    margin-bottom: 24px;
+}
+
+.code-editor {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+section.secret-overrides,
+section.config-map-overrides {
+    display: grid;
+    padding-bottom: 20px;
+    grid-template-columns: 1fr;
+}
+
+.environment-override-list {
+    height: 64px;
+    .tag {
+        border: 1px solid var(--N200);
+        height: 20px;
+        line-height: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--N900);
+        padding: 0 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+    & > div {
+        margin-left: 16px;
+    }
+}
+
+.configmap-secret-usage-radio {
+    .form__radio-item {
+        &.disabled {
+            opacity: 0.5;
+            background-color: transparent;
+        }
+    }
+}
+
+div.override-container {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    align-items: flex-start;
+    padding: 10px 16px;
+    grid-column-gap: 10px;
+    background: var(--B100);
+    border-bottom: 1px solid var(--B200);
+
+    // TODO: will be removed when app groups are revamped
+    &--revamp-design {
+        padding: 8px 12px;
+        border: 1px solid var(--B200);
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+
+    &.override-warning {
+        background: var(--Y100);
+        border-bottom: 1px solid var(--Y200);
+        
+        &--revamp-design {
+            border: 1px solid var(--Y200);
+            
+        }
+    }
+
+    .override-title,
+    .override-subtitle {
+        font-size: 13px;
+        color: var(--N900);
+        line-height: 20px;
+    }
+
+    .override-title {
+        font-weight: 600;
+    }
+
+    .override-subtitle {
+        font-weight: 400;
+    }
+}
+
+.override-textarea-container {
+    display: flex;
+    & > div {
+        width: 100%;
+    }
+    textarea {
+        width: calc(50% - 8px);
+        border: 1px solid var(--N200);
+        border-radius: 4px;
+        resize: vertical;
+        height: 100%;
+        &:disabled {
+            background: var(--N100);
+        }
+        &:first-child {
+            margin-right: 16px;
+        }
+    }
+}
+
+.list-collapse-enter {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.2s ease;
+    &.active {
+        transform: scaleY(1);
+    }
+}
+
+.collapse-enter {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.2s ease;
+}
+
+.collapse-enter-active {
+    transform: scaleY(1);
+}
+
+.collapse-exit {
+    max-height: 500px;
+}
+
+.collapse-exit-active {
+    max-height: 66px;
+    transition: max-height 0.3s ease-in;
+    overflow: hidden;
+}
+
+.deployment-template-override {
+    height: calc(100vh - 102px);
+
+    .chart-version.popup-button {
+        width: 100%;
+    }
+}
+
+.variables-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
+}

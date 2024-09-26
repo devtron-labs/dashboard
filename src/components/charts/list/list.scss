@@ -598,7 +598,7 @@
         display: grid;
         grid-template-rows: 36px 36px;
         z-index: 2;
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
     }
 
     .empty-state img {
@@ -615,7 +615,7 @@
         }
     }
 
-    .chart-list__row .list{
+    .chart-list__row .list {
         height: 36px;
         cursor: auto;
     }
@@ -627,7 +627,7 @@
     display: grid;
     grid-template-rows: 36px 36px;
     z-index: 2;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
 .add-repo-row:hover,
@@ -635,6 +635,6 @@
     background-color: var(--N50);
 }
 
-.accordian-add-position{
+.accordian-add-position {
     top: 350px;
 }

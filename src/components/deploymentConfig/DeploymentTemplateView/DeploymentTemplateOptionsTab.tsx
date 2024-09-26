@@ -137,10 +137,7 @@ export default function DeploymentTemplateOptionsTab({
                         disabled={_unableToParseYaml}
                         onChange={onChangeEditorMode}
                     >
-                        <RadioGroup.Radio
-                            value="gui"
-                            canSelect={!state.chartConfigLoading && codeEditorValue}
-                        >
+                        <RadioGroup.Radio value="gui" canSelect={!state.chartConfigLoading && codeEditorValue}>
                             GUI
                         </RadioGroup.Radio>
                         <RadioGroup.Radio

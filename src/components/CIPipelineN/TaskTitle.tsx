@@ -25,10 +25,10 @@ import { ReactComponent as ICCDStage } from '../../assets/icons/ic-cd-stage.svg'
 const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayName }: TaskTitleTippyContentProps) => (
     <div className="flexbox-col dc__gap-6">
         <div className="flexbox-col dc__gap-4">
-            <h4 className="m-0 cn-0 fs-12 fw-6 lh-18 dc__truncate">{displayName}</h4>
+            <h4 className="m-0 cn-0 fs-12 fw-6 lh-18 dc__truncate--clamp-3">{displayName}</h4>
 
-            <p className="m-0 dc__truncate c-n50">
-                {pluginName}({pluginVersion})
+            <p className="m-0 dc__truncate--clamp-3 c-n50 fs-12 lh-18">
+                {pluginName}&nbsp;({pluginVersion})
             </p>
         </div>
 
@@ -96,14 +96,12 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
         )
     }
 
-    const renderContent = () => {
-        return (
-            <div className="flex left dc__gap-6">
-                {renderPluginIcon()}
-                <span className="w-100 dc__truncate">{taskDetail.name}</span>
-            </div>
-        )
-    }
+    const renderContent = () => (
+        <div className="flex left dc__gap-6">
+            {renderPluginIcon()}
+            <span className="w-100 dc__truncate">{taskDetail.name}</span>
+        </div>
+    )
 
     if (isInline || !pluginId) {
         return renderContent()

@@ -62,16 +62,14 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         return () => clearTimeout(progressTimerRef.current)
     }, [clusterId, selectedCluster])
 
-    const renderInfo = (heading: string, _infoText: string) => {
-        return (
-            <>
-                <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300" data-testid="cluster_info_getting_loaded">
-                    {heading}
-                </h2>
-                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{_infoText}</p>
-            </>
-        )
-    }
+    const renderInfo = (heading: string, _infoText: string) => (
+        <>
+            <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300" data-testid="cluster_info_getting_loaded">
+                {heading}
+            </h2>
+            <p className="fs-13 fw-4 lh-20 w-300 mb-20">{_infoText}</p>
+        </>
+    )
 
     const handleCancelClick = () => {
         requestAbortController?.abort()
@@ -111,23 +109,21 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         return null
     }
 
-    const renderClusterState = () => {
-        return (
-            <div
-                className="flex column dc__text-center"
-                style={{
-                    height: 'calc(100vh - 152px)',
-                }}
-            >
-                {renderSelectionState()}
-                {showCancel && !errorMsg && (
-                    <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
-                        Cancel
-                    </span>
-                )}
-            </div>
-        )
-    }
+    const renderClusterState = () => (
+        <div
+            className="flex column dc__text-center"
+            style={{
+                height: 'calc(100vh - 152px)',
+            }}
+        >
+            {renderSelectionState()}
+            {showCancel && !errorMsg && (
+                <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
+                    Cancel
+                </span>
+            )}
+        </div>
+    )
 
     return (
         <div

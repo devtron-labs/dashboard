@@ -17,7 +17,7 @@
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
 import { NotificationConfiguration } from './NotificationTab'
-import { PipelineType } from './AddNotification'
+import { FilterOptions, PipelineType } from './AddNotification'
 import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
@@ -97,14 +97,22 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
             eventTypeIds.push(3)
         }
 
-        const teamId = config.appliedFilters.filter((filter) => filter.type === 'project').map((p) => p.id)
-        const appId = config.appliedFilters.filter((filter) => filter.type === 'application').map((app) => app.id)
-        const envId = config.appliedFilters.filter((filter) => filter.type === 'environment').map((e) => e.id)
+        const teamId = config.appliedFilters
+            .filter((filter) => filter.type === FilterOptions.PROJECT)
+            .map((p) => p.id)
+        const appId = config.appliedFilters
+            .filter((filter) => filter.type === FilterOptions.APPLICATION)
+            .map((app) => app.id)
+        const envId = config.appliedFilters.filter((filter) => filter.type === FilterOptions.ENVIRONMENT).map((e) => e.id)
+        const clusterId = config.appliedFilters
+            .filter((filter) => filter.type === FilterOptions.CLUSTER)
+            .map((e) => e.id)
 
         return {
             teamId,
             appId,
             envId,
+            clusterId,
             pipelineId: config.pipelineId,
             pipelineType: config.type,
             eventTypeIds,
@@ -243,6 +251,7 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                     project: config.team || [],
                     application: config.app || [],
                     environment: config.environment || [],
+                    cluster: config.cluster || [],
                 },
                 isVirtualEnvironment: config?.pipeline?.isVirtualEnvironment,
             }
@@ -379,7 +388,7 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
 
 export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
     const headerObj = {}
-    const headerPayload = data.payload !== '' ? data.payload : '';
+    const headerPayload = data.payload !== '' ? data.payload : ''
     data.header.forEach((element) => {
         if (element.key != '') {
             headerObj[element.key] = element.value
@@ -451,9 +460,10 @@ function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
 export function getPipelines(filters): Promise<GetPipelinesResponseType> {
     const URL = `${Routes.NOTIFIER}/search`
     const payload = {
-        teamId: filters.filter((p) => p.type == 'project').map((p) => p.value),
-        envId: filters.filter((p) => p.type == 'environment').map((p) => p.value),
-        appId: filters.filter((p) => p.type == 'application').map((p) => p.value),
+        teamId: filters.filter((p) => p.type === FilterOptions.PROJECT).map((p) => p.value),
+        envId: filters.filter((p) => p.type === FilterOptions.ENVIRONMENT).map((p) => p.value),
+        appId: filters.filter((p) => p.type === FilterOptions.APPLICATION).map((p) => p.value),
+        clusterId: filters.filter((p) => p.type === FilterOptions.CLUSTER).map(p => p.value),
         pipelineName: filters.find((p) => p.type == 'pipeline')?.value,
     }
     return post(URL, payload).then((response) => {
@@ -461,7 +471,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
             const projects = row.team
                 ? row.team.map((team) => {
                       return {
-                          type: 'project',
+                          type: FilterOptions.PROJECT,
                           ...team,
                       }
                   })
@@ -469,7 +479,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
             const app = row.app
                 ? row.app.map((team) => {
                       return {
-                          type: 'application',
+                          type: FilterOptions.APPLICATION,
                           ...team,
                       }
                   })
@@ -477,13 +487,22 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
             const environment = row.environment
                 ? row.environment?.map((team) => {
                       return {
-                          type: 'environment',
+                          type: FilterOptions.ENVIRONMENT,
                           ...team,
                       }
                   })
                 : []
+            const cluster = row.cluster
+                ? row.cluster?.map((cluster) => {
+                      return {
+                          type: FilterOptions.CLUSTER,
+                          ...cluster,
+                      }
+                  })
+                : []
+
             return {
-                appliedFilters: projects.concat(app, environment),
+                appliedFilters: projects.concat(app, environment, cluster),
                 checkbox: { isChecked: false, value: 'INTERMEDIATE' },
                 pipelineId: row.pipeline?.id,
                 appName: row?.pipeline?.appName,

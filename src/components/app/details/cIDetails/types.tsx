@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FetchIdDataStatus, History } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResponseResultType,
+    FetchIdDataStatus,
+    History,
+    ResponseType,
+    useScrollable,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getLastExecutionByAppArtifactId } from '@Services/service'
+import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from '../appDetails/appDetails.type'
 
 export interface CIPipeline {
     name: string
@@ -35,17 +43,25 @@ export interface BuildDetails {
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
     fetchIdData: FetchIdDataStatus
+    scrollToTop: ReturnType<typeof useScrollable>[1]
+    scrollToBottom: ReturnType<typeof useScrollable>[2]
 }
 
-export interface HistoryLogsType {
+export interface HistoryLogsType
+    extends Pick<
+        BuildDetails,
+        | 'scrollToTop'
+        | 'scrollToBottom'
+        | 'isBlobStorageConfigured'
+        | 'isJobView'
+        | 'isJobCI'
+        | 'appIdFromParent'
+        | 'appReleaseTags'
+        | 'tagsEditable'
+        | 'hideImageTaggingHardDelete'
+        | 'fullScreenView'
+    > {
     triggerDetails: History
-    isBlobStorageConfigured?: boolean
-    isJobView?: boolean
-    isJobCI?: boolean
-    appIdFromParent?: string
-    appReleaseTags?: []
-    tagsEditable: boolean
-    hideImageTaggingHardDelete: boolean
 }
 
 export interface SecurityTabType {
@@ -53,4 +69,18 @@ export interface SecurityTabType {
     artifactId: number
     status: string
     appIdFromParent?: string
+}
+
+export interface UseGetCISecurityDetailsProps
+    extends Pick<UseGetAppSecurityDetailsProps, 'appId' | 'isSecurityScanV2Enabled'> {
+    artifactId: number
+}
+
+export interface UseGetCISecurityDetailsReturnType
+    extends Pick<
+        UseGetAppSecurityDetailsReturnType,
+        'scanDetailsLoading' | 'scanDetailsError' | 'reloadScanDetails' | 'severityCount' | 'totalCount'
+    > {
+    scanResultResponse: ResponseType<ApiResponseResultType>
+    executionDetailsResponse: Awaited<ReturnType<typeof getLastExecutionByAppArtifactId>>
 }

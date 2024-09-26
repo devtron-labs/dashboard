@@ -16,9 +16,15 @@
 
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    DeploymentAppTypes,
+    getIsManualApprovalConfigured,
+    ReleaseMode,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -30,7 +36,7 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import { getLastExecutionByArtifactId } from '../../../../services/service'
+import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -62,7 +68,6 @@ export const SourceInfo = ({
     filteredEnvIds,
     deploymentUserActionState,
 }: SourceInfoType) => {
-    const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
@@ -71,6 +76,9 @@ export const SourceInfo = ({
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
+    // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
+    const helmMigratedAppNotTriggered =
+        appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -82,30 +90,6 @@ export const SourceInfo = ({
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
     }
-
-    const getScannedStatus = async () => {
-        const { appId, ciArtifactId } = appDetails
-        try {
-            const {
-                result: { scanEnabled, scanned },
-            } = await getLastExecutionByArtifactId(appId, ciArtifactId)
-            if (scanEnabled && scanned) {
-                // If scanEnabled and scanned is true, then show the vulnerabilities card
-                setShowVulnerabilitiesCard(true)
-            } else {
-                setShowVulnerabilitiesCard(false)
-            }
-        } catch (error) {
-            setShowVulnerabilitiesCard(false)
-            showError(error)
-        }
-    }
-
-    useEffect(() => {
-        if (appDetails?.ciArtifactId && appDetails?.appId) {
-            getScannedStatus()
-        }
-    }, [appDetails?.ciArtifactId, appDetails?.appId])
 
     const onClickShowCommitInfo = (e): void => {
         e.stopPropagation()
@@ -142,7 +126,20 @@ export const SourceInfo = ({
         )
     }
 
+    const getIsApprovalConfigured = (): boolean => {
+        try {
+            const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
+            const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
+            return getIsManualApprovalConfigured(parsedUserApprovalConfig)
+        } catch (error) {
+            return false
+        }
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
+        // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
+        const isApprovalConfigured = getIsApprovalConfigured()
+
         return (
             <div className="flex left w-100">
                 <EnvSelector
@@ -185,15 +182,12 @@ export const SourceInfo = ({
                                     </button>
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap
-                                        condition={appDetails?.userApprovalConfig?.length > 0}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
-                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                            disabled={isApprovalConfigured}
                                         >
                                             <ScaleDown
                                                 className="icon-dim-16 mr-6 rotate"
@@ -206,15 +200,12 @@ export const SourceInfo = ({
                                     </ConditionalWrap>
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap
-                                        condition={appDetails?.userApprovalConfig?.length > 0}
-                                        wrap={conditionalScalePodsButton}
-                                    >
+                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
-                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                            disabled={isApprovalConfigured}
                                         >
                                             <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
                                             Restart workloads
@@ -277,28 +268,32 @@ export const SourceInfo = ({
                               />
                           )}
                           {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                          {!loadingResourceTree && (
-                              <IssuesCard
-                                  cardLoading={cardLoading}
-                                  toggleIssuesModal={toggleIssuesModal}
-                                  setErrorsList={setErrorsList}
-                                  setDetailed={setDetailed}
-                              />
-                          )}
-                          <DeploymentStatusCard
-                              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                              cardLoading={cardLoading}
-                              hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
-                              isVirtualEnvironment={isVirtualEnvironment}
-                              refetchDeploymentStatus={refetchDeploymentStatus}
-                          />
-                          {appDetails?.dataSource !== 'EXTERNAL' && (
-                              <DeployedCommitCard
-                                  cardLoading={cardLoading}
-                                  showCommitInfoDrawer={onClickShowCommitInfo}
-                                  envId={envId}
-                                  ciArtifactId={ciArtifactId}
-                              />
+                          {!helmMigratedAppNotTriggered && (
+                              <>
+                                  {!loadingResourceTree && (
+                                      <IssuesCard
+                                          cardLoading={cardLoading}
+                                          toggleIssuesModal={toggleIssuesModal}
+                                          setErrorsList={setErrorsList}
+                                          setDetailed={setDetailed}
+                                      />
+                                  )}
+                                  <DeploymentStatusCard
+                                      deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                                      cardLoading={cardLoading}
+                                      hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                                      isVirtualEnvironment={isVirtualEnvironment}
+                                      refetchDeploymentStatus={refetchDeploymentStatus}
+                                  />
+                                  {appDetails?.dataSource !== 'EXTERNAL' && (
+                                      <DeployedCommitCard
+                                          cardLoading={cardLoading}
+                                          showCommitInfoDrawer={onClickShowCommitInfo}
+                                          envId={envId}
+                                          ciArtifactId={ciArtifactId}
+                                      />
+                                  )}
+                              </>
                           )}
                           {DeploymentWindowStatusCard && (
                               <DeploymentWindowStatusCard
@@ -308,15 +303,15 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest &&
-                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
-                                  <SecurityVulnerabilityCard
-                                      cardLoading={cardLoading}
-                                      appId={params.appId}
-                                      envId={params.envId}
-                                      isExternalCI={isExternalCI}
-                                  />
-                              )}
+                          {!appDetails?.deploymentAppDeleteRequest && !helmMigratedAppNotTriggered && (
+                              <SecurityVulnerabilityCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  artifactId={ciArtifactId}
+                                  isExternalCI={isExternalCI}
+                              />
+                          )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

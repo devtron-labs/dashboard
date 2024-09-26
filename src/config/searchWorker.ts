@@ -21,9 +21,8 @@ export default () => {
         DESC = 'DESC',
     }
 
-    const stringComparatorBySortOrder = (a: string, b: string, sortOrder: SortingOrder = SortingOrder.ASC) => {
-        return sortOrder === SortingOrder.ASC ? a.localeCompare(b) : b.localeCompare(a)
-    }
+    const stringComparatorBySortOrder = (a: string, b: string, sortOrder: SortingOrder = SortingOrder.ASC) =>
+        sortOrder === SortingOrder.ASC ? a.localeCompare(b) : b.localeCompare(a)
 
     const numberComparatorBySortOrder = (a: number, b: number, sortOrder: SortingOrder = SortingOrder.ASC) =>
         sortOrder === SortingOrder.ASC ? a - b : b - a
@@ -85,8 +84,9 @@ export default () => {
      * @param  sortOrder - The sorting order ('ASC' for ascending, 'DESC' for descending).
      * @returns A sorting function.
      */
-    const dynamicSort = (property: string, sortOrder: SortingOrder) => {
-        return (a: Record<string, string | number>, b: Record<string, string | number>) => {
+    const dynamicSort =
+        (property: string, sortOrder: SortingOrder) =>
+        (a: Record<string, string | number>, b: Record<string, string | number>) => {
             const valueA = a[property]
             const valueB = b[property]
 
@@ -114,7 +114,6 @@ export default () => {
 
             return 0
         }
-    }
 
     const debounceSearch = <T extends unknown[]>(callback: (...args: T) => void) => {
         let timeout: NodeJS.Timeout

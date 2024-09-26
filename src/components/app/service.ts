@@ -31,12 +31,22 @@ import {
     createGitCommitUrl,
     PromiseAllStatusType,
     ApiQueuingWithBatch,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
-import { getAPIOptionsWithTriggerTimeout } from '../common'
-import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
+import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
+import { getAPIOptionsWithTriggerTimeout, importComponentFromFELibrary } from '../common'
+import {
+    AppDetails,
+    ArtifactsCiJob,
+    EditAppRequest,
+    AppMetaInfo,
+    TriggerCDNodeServiceProps,
+    TriggerCDPipelinePayloadType,
+} from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
+
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 const stageMap = {
     PRECD: 'PRE',
@@ -45,9 +55,7 @@ const stageMap = {
     APPROVAL: 'APPROVAL',
 }
 
-export const getAppList = (request, options?) => {
-    return post(Routes.APP_LIST, request, options)
-}
+export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
     if (!group) {
@@ -254,25 +262,31 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
 export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
     const options = {
-        signal: abortSignal
+        signal: abortSignal,
     }
     return post(URL, request, options)
 }
 
-export const triggerCDNode = (
-    pipelineId: any,
-    ciArtifactId: any,
-    appId: string,
-    stageType: DeploymentNodeType,
-    deploymentWithConfig?: string,
-    wfrId?: number,
-    abortSignal?: AbortSignal
-) => {
-    const request = {
+export const triggerCDNode = ({
+    pipelineId,
+    ciArtifactId,
+    appId,
+    stageType,
+    deploymentWithConfig,
+    wfrId,
+    abortSignal,
+    runtimeParams = [],
+}: TriggerCDNodeServiceProps) => {
+    const areRuntimeParamsConfigured =
+        getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
+    const runtimeParamsPayload = areRuntimeParamsConfigured ? getRuntimeParamsPayload(runtimeParams) : null
+
+    const request: TriggerCDPipelinePayloadType = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
+        ...(areRuntimeParamsConfigured && runtimeParamsPayload),
     }
 
     if (deploymentWithConfig) {

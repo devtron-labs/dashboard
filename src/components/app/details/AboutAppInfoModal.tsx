@@ -15,12 +15,9 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
+import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
 
@@ -67,27 +64,16 @@ export default function AboutAppInfoModal({
 
     const renderProjectSelect = (): JSX.Element => {
         return (
-            <ReactSelect
+            <SelectPicker
+                label="Project"
+                required
+                inputId="overview-project-menu-list"
+                name="overview-project-menu-list"
                 classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
-                styles={getCommonSelectStyle({
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        marginBottom: '6px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                })}
+                size={ComponentSizeType.large}
             />
         )
     }
@@ -105,13 +91,19 @@ export default function AboutAppInfoModal({
 
         try {
             await editApp(payload)
-            toast.success(`Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`)
+             ToastManager.showToast({
+                 variant: ToastVariantType.success,
+                 description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
+             })
 
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
         } catch (err) {
             if (err['code'] === 403 && appMetaInfo.projectName !== selectedProject.label) {
-                toast.error(`You don't have the required access to the target project ${selectedProject.label}`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: `You don't have the required access to the target project ${selectedProject.label}`,
+                })
             } else {
                 showError(err)
             }
@@ -140,7 +132,6 @@ export default function AboutAppInfoModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                     {renderProjectSelect()}
                     {selectedProject &&
                         appMetaInfo &&

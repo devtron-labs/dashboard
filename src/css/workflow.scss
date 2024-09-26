@@ -17,7 +17,6 @@
 .branch-name {
     max-width: 100%;
     height: 18px;
-    margin-right: 4px;
     font-size: 12px;
     font-weight: 500;
     line-height: 1.5;
@@ -56,7 +55,7 @@
     min-width: 840px;
 
     .add-cd-edge-btn:hover {
-        fill: var(--V700)
+        fill: var(--V700);
     }
 }
 
@@ -218,7 +217,7 @@
 }
 
 .workflow-node__CD-rocket-icon {
-  background-image: url('../assets/icons/ic-paper-rocket.svg');
+    background-image: url('../assets/icons/ic-paper-rocket.svg');
 }
 
 .workflow-node__job-icon {

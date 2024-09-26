@@ -20,6 +20,7 @@ import {
     Progressing,
     ErrorScreenNotAuthorized,
     GenericEmptyState,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -40,7 +41,6 @@ import webhook from '../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as SMTP } from '../../assets/icons/ic-smtp.svg'
 import { ViewType } from '../../config/constants'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
-import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CONFIGURATION_CONFIRMATION_MESSAGE,
     DeleteComponentsName,

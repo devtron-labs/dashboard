@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
+import { InputPluginSelectionType, OptionsListType } from './types'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
 import { TIPPY_VAR_MSG } from './Constants'
@@ -226,8 +226,8 @@ export const InputPluginSelection = ({
                         (variableData?.variableType && variableData.variableType !== 'NEW')
                             ? 'pl-28'
                             : ''
-                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
-                    minHeight={30}
+                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable dc__lh-inherit`}
+                    minHeight={32}
                     maxHeight={80}
                     value={selectedValue}
                     onChange={handleInputChange}

@@ -25,7 +25,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     template: '',
     schema: null,
     guiSchema: null,
-    loading: false,
+    loading: true,
     chartConfig: null,
     isAppMetricsEnabled: false,
     tempFormData: '',
@@ -68,6 +68,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     convertVariablesOverride: false,
     showLockedTemplateDiff: false,
     lockChangesLoading: false,
+    wasGuiOrHideLockedKeysEdited: false,
 }
 
 export const deploymentConfigReducer = (
@@ -177,6 +178,8 @@ export const deploymentConfigReducer = (
             return { ...state, convertVariablesOverride: action.payload }
         case DeploymentConfigStateActionTypes.guiSchema:
             return { ...state, guiSchema: action.payload }
+        case DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited:
+            return { ...state, wasGuiOrHideLockedKeysEdited: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

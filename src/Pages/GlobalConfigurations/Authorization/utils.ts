@@ -19,11 +19,12 @@ import {
     BulkSelectionEvents,
     noop,
     OptionType,
+    ToastManager,
+    ToastVariantType,
     UserStatus,
     UserStatusDto,
     ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
     Moment12HourFormat,
@@ -42,7 +43,7 @@ import {
     PermissionGroup,
     PermissionGroupDto,
     User,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
@@ -58,7 +59,7 @@ import {
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive } from './libUtils'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -92,6 +93,7 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus,
         userRoleGroups,
         roleFilters,
+        userGroups,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
@@ -124,6 +126,7 @@ export const transformUserResponse = (_user: UserDto): User => {
                 },
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
+        userGroups: getParsedUserGroupList(userGroups),
     }
 }
 
@@ -237,11 +240,8 @@ export const handleToggleCheckForBulkSelection =
         )
     }
 
-const getSelectedPermissionValues = (options: OptionType[]) => {
-    return options.some((option) => option.value === SELECT_ALL_VALUE)
-        ? ''
-        : options.map((option) => option.value).join(',')
-}
+const getSelectedPermissionValues = (options: OptionType[]) =>
+    options.some((option) => option.value === SELECT_ALL_VALUE) ? '' : options.map((option) => option.value).join(',')
 
 const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
@@ -290,7 +290,7 @@ export const getRoleFilters = ({
     CreateUserPermissionPayloadParams,
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
 >) => {
-    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+    const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directPermission
             .filter(
                 (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -343,7 +343,7 @@ export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
-    userGroups,
+    userRoleGroups,
     serverMode,
     directPermission,
     chartPermission,
@@ -351,11 +351,12 @@ export const createUserPermissionPayload = ({
     permissionType,
     userStatus,
     timeToLive,
-}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    userGroups,
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    userRoleGroups: userGroups,
+    userRoleGroups,
     superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
@@ -365,6 +366,7 @@ export const createUserPermissionPayload = ({
         serverMode,
         chartPermission,
     }),
+    userGroups,
 })
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
@@ -392,7 +394,10 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     }, [])
 
     if (!isComplete) {
-        toast.error(REQUIRED_FIELDS_MISSING)
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: REQUIRED_FIELDS_MISSING,
+        })
         setDirectPermission(tempPermissions)
     }
 

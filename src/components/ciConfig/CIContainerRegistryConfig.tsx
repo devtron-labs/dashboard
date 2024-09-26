@@ -16,7 +16,13 @@
 
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { ComponentSizeType, CustomInput, InfoColourBar, REGISTRY_TYPE_MAP, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    CustomInput,
+    InfoColourBar,
+    REGISTRY_TYPE_MAP,
+    SelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -63,7 +69,7 @@ export default function CIContainerRegistryConfig({
                 message: (
                     <>
                         <span className="fw-6">Overrides:</span>&nbsp;
-                        <span className="mr-4">This configuration is overriden for build pipeline of</span>
+                        <span className="mr-4">This configuration is overridden for build pipeline of</span>
                     </>
                 ),
                 linkText: (
@@ -81,7 +87,7 @@ export default function CIContainerRegistryConfig({
                 <>
                     <span className="fw-6">Overrides:</span>&nbsp;
                     <span className="mr-8">
-                        Container registry & docker file location for build pipelines can be overriden.
+                        Container registry & docker file location for build pipelines can be overridden.
                     </span>
                     {isCDPipeline && (
                         <Link to={`/${Routes.APP}/${appId}/${Routes.WORKFLOW_EDITOR}`} onClick={onClickRedirectLink}>

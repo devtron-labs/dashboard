@@ -14,561 +14,458 @@
  * limitations under the License.
  */
 
-.page-header--security {
-    height: 80px;
-    grid-template-columns: 1fr;
-    position: sticky;
-    top: 0;
-}
-
-.dc__search-with-dropdown {
-    width: 100%;
-    border: solid 1px var(--N200);
-    display: flex;
-    border-radius: 4px;
-    background-color: var(--N100);
-    align-items: center;
-}
-
-.search-with-dropdown__dropdown {
-    width: 185px;
-    border: none;
-    border-right: solid 1px var(--N200);
-}
-
-.search-with-dropdown__search {
-    border: none;
-    background-color: transparent;
-    flex: 1;
-    padding: 7px;
-
-    &:focus {
-        outline: none;
+ .security-scan-container {
+    .page-header--security {
+        height: 80px;
+        grid-template-columns: 1fr;
+        position: sticky;
+        top: 0;
     }
-}
 
-.security-scan {
-    background-color: white;
-    min-height: calc(100vh - 80px);
+    .search-with-dropdown__search {
+        border: none;
+        background-color: transparent;
+        flex: 1;
+        padding: 7px;
 
-    .tab-list__tab-link {
-        padding: 0 0 8px 0;
-    }
-}
-
-.security-scan__filters {
-    width: 100%;
-    padding: 16px 24px 0px 24px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.dc__security-scan__filter {
-    min-width: 155px;
-    height: 36px;
-    margin-right: 12px;
-
-    &:last-child {
-        margin-right: 0px;
-    }
-}
-
-.security-scan__filter--environments {
-    width: 185px;
-}
-
-.user__table {
-    width: 100%;
-    min-width: 768px;
-}
-
-.table__title {
-    padding-top: 11px;
-    padding-bottom: 11px;
-    line-height: 18px;
-    width: 16%;
-    color: var(--N500);
-    font-size: 12px;
-    text-transform: uppercase;
-    font-weight: 600;
-}
-
-.table__row-head {
-    border-bottom: 1px solid var(--N200);
-}
-
-.table__row {
-    border-bottom: solid 1px #f5f5f5;
-    cursor: pointer;
-
-    &:hover {
-        background-color: var(--N100);
-
-        .table__row-icon {
-            visibility: visible;
-            fill: var(--N500);
+        &:focus {
+            outline: none;
         }
     }
-}
 
-.security__data {
-    line-height: 20px;
-    font-size: 12px;
-    width: 16%;
-    color: var(--N900);
-    padding-top: 18px;
-    padding-bottom: 18px;
-}
-
-.table__cell--type {
-    width: 10%;
-}
-
-.table__cell--time {
-    width: 23%;
-}
-
-.table__title:first-child,
-.security__data:first-child {
-    padding-left: 24px;
-}
-
-.security__title:last-child,
-.security__data:last-child {
-    padding-right: 24px;
-}
-
-.table__row-icon {
-    visibility: hidden;
-    transform: rotate(-90deg);
-    cursor: pointer;
-}
-
-.security-policy {
-    height: calc(100vh - 80px);
-    display: flex;
-    width: 100%;
-}
-
-.security-policy__content {
-    flex: 1;
-    overflow: auto;
-}
-
-.security-policy__card {
-    padding: 20px;
-    border-radius: 4px;
-    margin: 0 24px 20px 24px;
-    min-width: 750px;
-    width: calc(100% - 48px);
-    border: solid 1px var(--N200);
-    background-color: var(--N000);
-}
-
-.security-policy__table {
-    width: 100%;
-    overflow-y: auto;
-    max-height: 275px;
-}
-
-.security-policy__header-cell {
-    padding: 11px;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N500);
-    border-bottom: solid 1px #f5f5f5;
-}
-
-.security-policy__data-cell {
-    padding: 14px;
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1.54;
-    letter-spacing: normal;
-    color: var(--N600);
-    text-transform: capitalize;
-    border-bottom: solid 1px #f5f5f5;
-}
-
-.security-policy__overriden {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: var(--N500);
-}
-
-.security-policy__data-cell--policy {
-    padding: 7px 14px;
-}
-
-.security-policy__cve-cell {
-    width: 25%;
-    text-transform: uppercase;
-    padding-left: 0px;
-}
-
-.vulnerability {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    border-bottom: solid 1px var(--N200);
-
-    &:first-child {
-        margin-top: 0px;
+    .security-scan {
+        .tab-list__tab-link {
+            padding: 0 0 8px 0;
+        }
     }
 
-    &:last-child {
-        border-bottom: none;
-    }
-}
-
-.vulnerability__title {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-top: 0px;
-    margin-bottom: 8px;
-    position: relative;
-
-    &::before {
-        content: '';
-        width: 5px;
-        height: 18px;
-        position: absolute;
-        left: -20px;
-    }
-}
-
-.vulnerability__subtitle {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N500);
-    margin-top: 0;
-    margin-bottom: 24px;
-}
-
-.vulnerability__menu {
-    width: 180px;
-}
-
-.vulnerability__title--critical {
-    &::before {
-        background-color: var(--R500);
-    }
-}
-
-.vulnerability__title--moderate {
-    &::before {
-        background-color: var(--Y500);
-    }
-}
-
-.vulnerability__title--low {
-    &::before {
-        background-color: var(--Y200);
-    }
-}
-
-.security-policy-card__title {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-top: 0px;
-    margin-bottom: 4px;
-}
-
-.security-policy-card__subtitle {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N500);
-}
-
-.vulnerability-exp {
-    background-color: white;
-    min-height: calc(100vh - 80px);
-}
-
-.form__input--cve-search {
-    width: 200px;
-}
-
-.vulnerability-exp-table {
-    width: 100%;
-    padding: 0 24px;
-}
-
-.vulnerability-exp-table__header {
-    color: var(--N500);
-}
-
-.vulnerability-exp-table__title {
-    border-bottom: 1px solid var(--N200);
-    cursor: default;
-    width: 30%;
-    text-transform: uppercase;
-    line-height: 18px;
-    border-collapse: collapse;
-    color: var(--N500);
-    font-size: 12px;
-    padding: 11px 24px;
-    font-weight: 600;
-}
-
-.vulnerability-exp-table__row {
-    border-bottom: solid 1px #f5f5f5;
-    cursor: default;
-
-    &:hover {
-        background-color: var(--N100);
-    }
-}
-
-.vulnerability-exp-table__data {
-    padding: 11px 24px;
-    line-height: 20px;
-    font-size: 12px;
-    color: var(--N900);
-}
-
-.vulnerability-exp-table__title:first-child,
-.vulnerability-exp-table__data:first-child {
-    padding-left: 0px;
-}
-
-.vulnerability-exp-table__title:last-child,
-.vulnerability-exp-table__data:last-child {
-    padding-right: 0px;
-}
-
-.vulnerability-policy--type-whitelisted {
-    border-radius: 4px;
-    border: solid 1px var(--G300);
-    color: var(--G500);
-    padding: 1px 8px 1px 8px;
-    background-color: var(--G100);
-    width: 79px;
-    font-size: 12px;
-    text-transform: capitalize;
-}
-
-.vulnerability-policy--type-blocked {
-    border-radius: 4px;
-    border: solid 1px var(--R300);
-    color: var(--R500);
-    padding: 1px 8px 1px 8px;
-    background-color: var(--R100);
-    width: 61px;
-    font-size: 12px;
-    text-transform: capitalize;
-}
-
-.white-card--cluster {
-    padding: 0px;
-    border-radius: 4px;
-    margin: 0 24px;
-    min-height: 280px;
-}
-
-.security-polic__app-env-name {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 0px;
-}
-
-.security-policy-cluster__table {
-    width: 100%;
-    min-width: 400px;
-    background-color: white;
-    border-radius: inherit;
-}
-
-.security-policy-cluster__search {
-    background-color: var(--N100);
-    border-color: transparent;
-}
-
-.security-policy-cluster__title {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.43;
-    color: var(--N900);
-    padding: 20px;
-    display: flex;
-    cursor: pointer;
-}
-
-.security-policy-cluster__content-row {
-    font-size: 13px;
-    color: var(--B500);
-    line-height: 1.5;
-    box-shadow: inset 0 -1px 0 0 var(--N100);
-}
-
-.scanned-object {
-    border-radius: 8px;
-    background-color: var(--window-bg);
-    margin: 20px;
-    padding: 16px;
-}
-
-.scanned-object__label {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N600);
-    margin: 0;
-    margin-bottom: 4px;
-}
-
-.scanned-object__value {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin: 0;
-    margin-bottom: 16px;
-}
-
-.scanned-object__counts {
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1.54;
-    letter-spacing: normal;
-    color: var(--N900);
-}
-
-.scanned-object__icon {
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    margin-right: 5px;
-}
-
-.scanned-object__bar {
-    height: 8px;
-    width: 100%;
-    display: flex;
-    background-color: #e7635d;
-}
-
-.scanned-object__critical-count {
-    background-color: #e7635d;
-}
-
-.scanned-object__moderate-count {
-    background-color: #f0aa65;
-}
-
-.scanned-object__low-count {
-    background-color: var(--Y500);
-}
-
-.trigger-modal__body--security-scan {
-    background-color: var(--N000);
-    padding: 0;
-}
-
-.vulnerability-exp__form {
-    position: sticky;
-    top: 0px;
-    background-color: var(--N000);
-    padding-top: 18px;
-    padding-bottom: 16px;
-}
-
-.vulnerability-exp__clear-cve {
-    position: absolute;
-    top: 50%;
-    right: 24px;
-    transform: translateY(-50%);
-
-    .fill-color {
-        fill: var(--N400);
-    }
-}
-
-.form__subtitle--m-0 {
-    margin: 0px;
-}
-
-.whitelist-cve__cve-id {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-.whitelist-cve__nested-list {
-    height: 210px;
-    overflow-y: auto;
-    padding: 0px;
-}
-
-.whitelist-cve__empty-state {
-    height: 210px;
-}
-
-.whitelist-cve__empty-state-text {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-    text-align: center;
-    width: 250px;
-    color: var(--N400);
-}
-
-.whitelist-cve__section-name {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin: 0px 0px 4px 0px;
-}
-
-.nested-list {
-    padding: 0px;
-    list-style: none;
-}
-
-.nested-list__pl {
-    padding-left: 30px;
-}
-
-.nested-list__item {
-    padding: 14px 0px;
-    border-bottom: solid 1px var(--N200);
-}
-
-.form__title {
-    &.form__title--mt-20 {
-        margin-top: 20px;
-    }
-}
-
-.form__label {
-    &.form__label--flex {
+    .security-scan__filters {
+        width: 100%;
+        padding: 16px 24px 0px 24px;
         display: flex;
-        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .dc__security-scan__filter {
+        min-width: 155px;
+        height: 36px;
+        margin-right: 12px;
+
+        &:last-child {
+            margin-right: 0px;
+        }
+    }
+
+    .security-scan__filter--environments {
+        width: 185px;
+    }
+
+    .table__row-grid {
+        grid-template-columns: 24px 250px 200px 120px 1fr;
+    }
+
+    .table__row {
+        border-bottom: solid 1px #f5f5f5;
+        cursor: pointer;
+    }
+
+    .table__title:first-child,
+    .security__data:first-child {
+        padding-left: 24px;
+    }
+
+    .security__title:last-child,
+    .security__data:last-child {
+        padding-right: 24px;
+    }
+
+    .security-policy {
+        height: calc(100vh - 80px);
+        display: flex;
+        width: 100%;
+    }
+
+    .security-policy__content {
+        flex: 1;
+        overflow: auto;
+    }
+
+    .security-policy__card {
+        padding: 20px;
+        border-radius: 4px;
+        margin: 0 24px 20px 24px;
+        min-width: 750px;
+        width: calc(100% - 48px);
+        border: solid 1px var(--N200);
+        background-color: var(--N000);
+    }
+
+    .security-policy__table {
+        width: 100%;
+        overflow-y: auto;
+        max-height: 275px;
+    }
+
+    .security-policy__header-cell {
+        padding: 11px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: var(--N500);
+        border-bottom: solid 1px #f5f5f5;
+    }
+
+    .security-policy__data-cell {
+        padding: 14px;
+        font-size: 13px;
+        font-weight: normal;
+        line-height: 1.54;
+        letter-spacing: normal;
+        color: var(--N600);
+        text-transform: capitalize;
+        border-bottom: solid 1px #f5f5f5;
+    }
+
+    .security-policy__overriden {
+        font-size: 12px;
+        font-weight: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+        color: var(--N500);
+    }
+
+    .security-policy__data-cell--policy {
+        padding: 7px 14px;
+    }
+
+    .security-policy__cve-cell {
+        width: 25%;
+        text-transform: uppercase;
+        padding-left: 0px;
+    }
+
+    .vulnerability {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &:first-child {
+            margin-top: 0px;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .vulnerability__title {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: var(--N900);
+        margin-top: 0px;
+        margin-bottom: 4px;
+        position: relative;
+
+        &::before {
+            content: '';
+            width: 5px;
+            height: 18px;
+            position: absolute;
+            left: -20px;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+    }
+
+    .vulnerability__subtitle {
+        font-size: 12px;
+        font-weight: normal;
+        letter-spacing: normal;
+        margin-top: 0;
+    }
+
+    .vulnerability__title--critical {
+        &::before {
+            background-color: var(--R700);
+        }
+    }
+
+    .vulnerability__title--high {
+        &::before {
+            background-color: var(--R500);
+        }
+    }
+
+    .vulnerability__title--unknown {
+        &::before {
+            background-color: var(--N300);
+        }
+    }
+
+    .vulnerability__title--medium {
+        &::before {
+            background-color: var(--O500);
+        }
+    }
+
+    .vulnerability__title--low {
+        &::before {
+            background-color: var(--Y500);
+        }
+    }
+
+    .security-policy-card__title {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: var(--N900);
+        margin-top: 0px;
+        margin-bottom: 4px;
+    }
+
+    .security-policy-card__subtitle {
+        font-size: 12px;
+        font-weight: normal;
+        line-height: 1.67;
+        letter-spacing: normal;
+        color: var(--N500);
+    }
+
+    .vulnerability-exp {
+        background-color: white;
+        min-height: calc(100vh - 80px);
+    }
+
+    .form__input--cve-search {
+        width: 200px;
+    }
+
+    .vulnerability-exp-table {
+        width: 100%;
+        padding: 0 24px;
+    }
+
+    .vulnerability-exp-table__header {
+        color: var(--N500);
+    }
+
+    .vulnerability-exp-table__title {
+        border-bottom: 1px solid var(--N200);
+        cursor: default;
+        width: 30%;
+        text-transform: uppercase;
+        line-height: 18px;
+        border-collapse: collapse;
+        color: var(--N500);
+        font-size: 12px;
+        padding: 11px 24px;
+        font-weight: 600;
+    }
+
+    .vulnerability-exp-table__row {
+        border-bottom: solid 1px #f5f5f5;
+        cursor: default;
+
+        &:hover {
+            background-color: var(--N100);
+        }
+    }
+
+    .vulnerability-exp-table__data {
+        padding: 11px 24px;
+        line-height: 20px;
+        font-size: 12px;
+        color: var(--N900);
+    }
+
+    .vulnerability-exp-table__title:first-child,
+    .vulnerability-exp-table__data:first-child {
+        padding-left: 0px;
+    }
+
+    .vulnerability-exp-table__title:last-child,
+    .vulnerability-exp-table__data:last-child {
+        padding-right: 0px;
+    }
+
+    .vulnerability-policy--type-whitelisted {
+        border-radius: 4px;
+        border: solid 1px var(--G300);
+        color: var(--G500);
+        padding: 1px 8px 1px 8px;
+        background-color: var(--G100);
+        width: 79px;
+        font-size: 12px;
+        text-transform: capitalize;
+    }
+
+    .vulnerability-policy--type-blocked {
+        border-radius: 4px;
+        border: solid 1px var(--R300);
+        color: var(--R500);
+        padding: 1px 8px 1px 8px;
+        background-color: var(--R100);
+        width: 61px;
+        font-size: 12px;
+        text-transform: capitalize;
+    }
+
+    .white-card--cluster {
+        padding: 0px;
+        border-radius: 4px;
+        margin: 0 24px;
+        min-height: 280px;
+    }
+
+    .security-polic__app-env-name {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: var(--N900);
+        margin-bottom: 0px;
+    }
+
+    .security-policy-cluster__table {
+        width: 100%;
+        min-width: 400px;
+        background-color: white;
+        border-radius: inherit;
+    }
+
+    .security-policy-cluster__search {
+        background-color: var(--N100);
+        border-color: transparent;
+    }
+
+    .security-policy-cluster__title {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.43;
+        color: var(--N900);
+        padding: 20px;
+        display: flex;
+        cursor: pointer;
+    }
+
+    .security-policy-cluster__content-row {
+        font-size: 13px;
+        color: var(--B500);
+        line-height: 1.5;
+        box-shadow: inset 0 -1px 0 0 var(--N100);
+    }
+
+    .scanned-object {
+        margin: 20px;
+        padding: 16px;
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .trigger-modal__body--security-scan {
+        height: calc(100vh - 87px);
+    }
+
+    .vulnerability-exp__form {
+        position: sticky;
+        top: 0px;
+        background-color: var(--N000);
+        padding-top: 18px;
+        padding-bottom: 16px;
+    }
+
+    .vulnerability-exp__clear-cve {
+        position: absolute;
+        top: 50%;
+        right: 24px;
+        transform: translateY(-50%);
+
+        .fill-color {
+            fill: var(--N400);
+        }
+    }
+
+    .form__subtitle--m-0 {
+        margin: 0px;
+    }
+
+    .whitelist-cve__cve-id {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .whitelist-cve__nested-list {
+        height: 210px;
+        overflow-y: auto;
+        padding: 0px;
+    }
+
+    .whitelist-cve__empty-state {
+        height: 210px;
+    }
+
+    .whitelist-cve__empty-state-text {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.43;
+        letter-spacing: normal;
+        text-align: center;
+        width: 250px;
+        color: var(--N400);
+    }
+
+    .whitelist-cve__section-name {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: var(--N900);
+        margin: 0px 0px 4px 0px;
+    }
+
+    .nested-list {
+        padding: 0px;
+        list-style: none;
+    }
+
+    .nested-list__pl {
+        padding-left: 30px;
+    }
+
+    .nested-list__item {
+        padding: 14px 0px;
+        border-bottom: solid 1px var(--N200);
+    }
+
+    .form__title {
+        &.form__title--mt-20 {
+            margin-top: 20px;
+        }
+    }
+
+    .form__label {
+        &.form__label--flex {
+            display: flex;
+            align-items: flex-start;
+        }
+    }
+
+    .search-type__select-picker__control {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    .security-scan-search {
+        .search-bar {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-left: none;
+        }
     }
 }

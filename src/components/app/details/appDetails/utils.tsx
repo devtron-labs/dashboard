@@ -19,18 +19,9 @@ import React from 'react'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { AggregationKeys } from '../../types'
-import {
-    getVersionArr,
-    isVersionLessThanOrEqualToTarget,
-    DayPickerRangeControllerPresets,
-} from '../../../common'
+import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
-import {
-    ChartTypes,
-    AppMetricsTabType,
-    StatusType,
-    StatusTypes,
-} from './appDetails.type'
+import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
 import { ZERO_TIME_STRING, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {

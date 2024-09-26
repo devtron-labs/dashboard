@@ -27,9 +27,7 @@ export function getOptions(customDate) {
 
 const millisecondsInDay = 86400000
 
-export const getDateInMilliseconds = (days) => {
-    return 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
-}
+export const getDateInMilliseconds = (days) => 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
 
 export const isTokenExpired = (expiredDate: number): boolean => {
     if (expiredDate === 0) {

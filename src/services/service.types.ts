@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentStrategy,
+    EnvListMinDTO,
+    ResponseType,
+    SeverityCount,
+    Teams,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -24,14 +31,6 @@ export interface RootObject {
 
 export interface CDPipelines {
     pipelines: CDPipeline[]
-}
-
-type DeploymentStrategyType = 'CANARY' | 'ROLLING' | 'RECREATE' | 'BLUE_GREEN'
-
-export interface DeploymentStrategy {
-    deploymentTemplate: DeploymentStrategyType
-    config: any
-    default: boolean
 }
 
 export interface PrePostStage {
@@ -113,11 +112,8 @@ export interface LastExecutionMinResponseType {
     result: {
         lastExecution: string
         imageScanDeployInfoId: number
-        severityCount: {
-            critical: number
-            moderate: number
-            low: number
-        }
+        severityCount: SeverityCount
+        scanned: boolean
     }
 }
 
@@ -156,6 +152,7 @@ export interface Cluster {
     errorInConnecting?: string
     isVirtualCluster?: boolean
 }
+
 export interface LoginCountType extends ResponseType {
     result?: LoginCount
 }
@@ -184,4 +181,10 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface ClusterEnvTeams {
+    clusters: Cluster[]
+    environments: EnvListMinDTO[]
+    teams: Teams[]
 }

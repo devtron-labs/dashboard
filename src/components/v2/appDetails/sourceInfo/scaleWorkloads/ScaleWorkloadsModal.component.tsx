@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -22,6 +22,7 @@ import {
     DetailsProgressing,
     Checkbox,
     DeploymentAppTypes,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
@@ -62,6 +63,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
     const [isFetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
+    const isHelmApp =
+        appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
 
     useEffect(() => {
         _getAndSetAppDetail()
@@ -115,7 +118,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const _getAndSetAppDetail = async () => {
         try {
-            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS) {
+            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp) {
                 const response = await getInstalledChartDetailWithResourceTree(
                     +appDetails.installedAppId,
                     +appDetails.environmentId,
@@ -208,31 +211,26 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                {scaleWorkloadTabs.map((tab, index) => {
-                    return (
-                        <li
-                            onClick={() => {
+            <div className="pl-20 dc__border-bottom mr-20">
+                <TabGroup
+                    tabs={scaleWorkloadTabs.map((tab, index) => ({
+                        id: tab,
+                        label: getTabName(tab, index),
+                        tabType: 'button',
+                        active: selectedDeploymentTabIndex == index,
+                        disabled: scalingInProgress || fetchingLatestDetails,
+                        props: {
+                            onClick: () => {
                                 if (!scalingInProgress && !fetchingLatestDetails) {
                                     changeDeploymentTab(index)
                                 }
-                            }}
-                            key={tab}
-                            className="tab-list__tab"
-                            data-testid={`scale-workloads-tab-${index}`}
-                        >
-                            <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
-                                style={{
-                                    cursor: scalingInProgress || fetchingLatestDetails ? 'not-allowed' : 'pointer',
-                                }}
-                            >
-                                {getTabName(tab, index)}
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
+                            },
+                            'data-testid': `scale-workloads-tab-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
+            </div>
         )
     }
 
@@ -287,10 +285,6 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             setScalingInProgress(true)
-            if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
-                appId = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}`
-            }
-            const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
             const requestPayload: HibernateRequest = {
@@ -306,7 +300,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     })),
             }
 
-            const { result } = await workloadUpdate(requestPayload)
+            const { result } = isHibernateReq
+                ? await hibernateApp(requestPayload, appDetails.appType)
+                : await unhibernateApp(requestPayload, appDetails.appType)
 
             if (Array.isArray(result)) {
                 result.forEach((status) => {

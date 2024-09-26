@@ -24,11 +24,14 @@ import {
     InfoIconTippy,
     CodeEditor,
     SelectOption,
+    ToastManager,
+    ToastVariantType,
+    TabGroup,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
@@ -48,7 +51,7 @@ import {
 import sampleConfig from './sampleConfig.json'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
+import { menuComponentForImage } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
@@ -141,7 +144,12 @@ const EphemeralContainerDrawer = ({
             if (hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value
                 const filteredImageList = filterImageList(JSON.parse(imageValue), appDetails?.k8sVersion)
-                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE, IMAGE_LIST.DESCRIPTION)
+                const option = convertToOptionsList(
+                    filteredImageList,
+                    IMAGE_LIST.NAME,
+                    IMAGE_LIST.IMAGE,
+                    IMAGE_LIST.DESCRIPTION,
+                )
                 setImageListOption(option)
                 setEphemeralForm({
                     ...ephemeralForm,
@@ -173,7 +181,7 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pb-10 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
                     <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
@@ -246,7 +254,8 @@ const EphemeralContainerDrawer = ({
         return (
             <span style={{ display: 'block', width: '220px' }}>
                 <span className="fs-12 fw-4">{data.description}</span>
-            </span>)
+            </span>
+        )
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -297,7 +306,14 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
-                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" tippyContent={getImageTippyContent(props.data)} {...props} />,
+                            Option: (props) => (
+                                <SelectOption
+                                    showTippy
+                                    tippyClass="default-tt"
+                                    tippyContent={getImageTippyContent(props.data)}
+                                    {...props}
+                                />
+                            ),
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}
@@ -318,19 +334,14 @@ const EphemeralContainerDrawer = ({
                             <span className="text-underline-dashed">Target Container Name</span>
                         </Tippy>
                     </div>
-                    <ReactSelect
+                    <SelectPicker
+                        inputId="target-container-name"
+                        name="target-container-name"
                         value={selectedTargetContainer || targetContainerOption?.[0]}
                         options={targetContainerOption}
-                        className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        styles={selectStyles}
                     />
                 </div>
             </div>
@@ -340,32 +351,30 @@ const EphemeralContainerDrawer = ({
     const renderEphemeralContainerType = () => {
         return (
             <div className="dc__border-bottom pl-20">
-                <ul role="tablist" className="tab-list">
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active' : ''
-                            }`}
-                        >
-                            Basic
-                        </div>
-                    </li>
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active ' : ''
-                            }`}
-                        >
-                            Advanced
-                        </div>
-                    </li>
-                </ul>
+                <TabGroup
+                    tabs={[
+                        {
+                            id: 'basic-tab',
+                            label: 'Basic',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.BASIC,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC),
+                            },
+                        },
+                        {
+                            id: 'advanced-tab',
+                            label: 'Advanced',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.ADVANCED,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED),
+                            },
+                        },
+                    ]}
+                    hideTopPadding
+                    alignActiveBorderWithContainer
+                />
             </div>
         )
     }
@@ -449,19 +458,23 @@ const EphemeralContainerDrawer = ({
             }
         }
 
-        generateEphemeralUrl(
-            payload,
-            appDetails.clusterId,
-            appDetails.environmentId,
-            appDetails.namespace,
-            appDetails.appName,
-            appDetails.appId,
-            appDetails.appType,
+        generateEphemeralUrl({
+            requestData: payload,
+            clusterId: appDetails.clusterId,
+            environmentId: appDetails.environmentId,
+            namespace: appDetails.namespace,
+            appName: appDetails.appName,
+            appId: appDetails.appId,
+            appType: appDetails.appType,
+            fluxTemplateType: appDetails.fluxTemplateType,
             isResourceBrowserView,
             params,
-        )
+        })
             .then((response: any) => {
-                toast.success('Launched Container Successfully ')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Launched Container Successfully',
+                })
                 setShowEphemeralContainerDrawer(false)
                 setEphemeralForm({
                     ...ephemeralForm,

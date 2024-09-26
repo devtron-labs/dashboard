@@ -45,12 +45,3 @@ export const TriggerStatus = {
     notbuilt: Colors.gray,
     nottriggered: Colors.gray,
 }
-
-export const APP_STATUS = {
-    Degraded: 'Degraded',
-    Healthy: 'Healthy',
-    Hibernating: 'HIBERNATING',
-    Missing: 'Missing',
-    Progressing: 'Progressing',
-    'Not Deployed': 'NOT DEPLOYED',
-}

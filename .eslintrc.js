@@ -39,7 +39,8 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'airbnb',
         'airbnb/hooks',
-        'plugin:prettier/recommended',
+        'prettier',
+        'plugin:storybook/recommended',
     ],
     rules: {
         'prettier/prettier': ['error'],
@@ -108,7 +109,9 @@ module.exports = {
         'import/no-cycle': 'off',
         'import/prefer-default-export': 'off',
         'no-restricted-exports': 'off',
-        'import/named': 'off'
+        'import/named': 'off',
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': 'error',
     },
     overrides: [
         {
@@ -136,5 +139,5 @@ module.exports = {
         },
         'import/ignore': ['\\.png$', '\\.jpg$', '\\.svg$'],
     },
-    ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
+    ignorePatterns: ['.eslintrc.cjs', 'vite.config.mts'],
 }

@@ -24,20 +24,18 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetail
     }
     return (
         <>
-            {deployment.dockerImages.slice(0, 3).map((dockerImage) => {
-                return (
-                    <div key={dockerImage} className="dc__app-commit__hash ml-10">
-                        <Tippy arrow className="default-tt" content={dockerImage}>
-                            <span className="flex">
-                                <DockerIcon className="commit-hash__icon grayscale" />
-                                <span className="pl-3" data-testid="docker-version-deployment-history">
-                                    {dockerImage.split(':')[1] || dockerImage}
-                                </span>
+            {deployment.dockerImages.slice(0, 3).map((dockerImage) => (
+                <div key={dockerImage} className="dc__app-commit__hash">
+                    <Tippy arrow className="default-tt" content={dockerImage}>
+                        <span className="flex">
+                            <DockerIcon className="commit-hash__icon grayscale" />
+                            <span className="pl-3" data-testid="docker-version-deployment-history">
+                                {dockerImage.split(':')[1] || dockerImage}
                             </span>
-                        </Tippy>
-                    </div>
-                )
-            })}
+                        </span>
+                    </Tippy>
+                </div>
+            ))}
             {deployment.dockerImages.length > 3 && (
                 <button type="button" onClick={handleOnClick} className="cursor anchor ml-10">
                     <span>

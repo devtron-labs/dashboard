@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
+import { useState } from 'react'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     DeleteDialog,
@@ -24,27 +24,46 @@ import {
     CHECKBOX_VALUE,
     useSearchString,
     MODAL_TYPE,
+    SecurityModal,
+    ToastVariantType,
+    ToastManager,
+    GetResourceScanDetailsPayloadType,
+    ResponseType,
+    ApiResponseResultType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
-import { toast } from 'react-toastify'
-import dots from '../../../assets/icons/ic-menu-dot.svg'
+import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
+import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const getResourceScanDetails: ({
+    name,
+    namespace,
+    clusterId,
+    group,
+    version,
+    kind,
+    appId,
+    appType,
+    deploymentType,
+    isAppDetailView,
+}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getResourceScanDetails',
+    null,
+    'function',
+)
 
-const NodeDeleteComponent = ({
-    nodeDetails,
-    appDetails,
-    isDeploymentBlocked,
-}: NodeDeleteComponentType) => {
+const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -53,6 +72,21 @@ const NodeDeleteComponent = ({
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
     const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
+
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
+
+    const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
+        () =>
+            getResourceScanDetails(
+                {
+                    ...nodeDetails,
+                    ...manifestPayload,
+                    isAppDetailView: true,
+                }
+            ),
+        [manifestPayload],
+        manifestPayload && getResourceScanDetails && isSecurityScanV2Enabled,
+    )
 
     const handleShowVulnerabilityModal = () => {
         /* TODO: need to set to prevent outsideClick propagation */
@@ -66,7 +100,6 @@ const NodeDeleteComponent = ({
     }
 
     const { queryParams } = useSearchString()
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
@@ -127,7 +160,10 @@ const NodeDeleteComponent = ({
             await deleteResource(nodeDetails, appDetails, params.envId, forceDelete)
             setShowDeleteConfirmation(false)
             setForceDelete(false)
-            toast.success('Deletion initiated successfully.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deletion initiated successfully.',
+            })
             const _tabs = AppDetailsStore.getAppDetailsTabs()
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
 
@@ -154,35 +190,41 @@ const NodeDeleteComponent = ({
     }
 
     return (
-        <div style={{ width: '40px' }}>
+        <>
             <PopupMenu autoClose>
-                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab>
-                    <img src={dots} className="pod-info__dots" />
+                <PopupMenu.Button
+                    dataTestId="node-resource-dot-button"
+                    isKebab
+                    rootClassName="dc__h-fit-content flex dc__align-self-center dc__no-border"
+                >
+                    <ICMoreOption
+                        className="icon-dim-20 fcn-6 rotate dc__no-shrink"
+                        style={{ ['--rotateBy' as string]: '90deg' }}
+                    />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <PodPopup
                         kind={nodeDetails?.kind}
                         describeNode={describeNodeWrapper}
                         toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
-                        isExternalArgoApp={isExternalArgoApp}
                         handleShowVulnerabilityModal={handleShowVulnerabilityModal}
                     />
                 </PopupMenu.Body>
             </PopupMenu>
 
-            {!!manifestPayload && SecurityModal && (
+            {!!manifestPayload && !!isFELibAvailable && (
                 <SecurityModal
-                    resourceScanPayload={{
-                        ...nodeDetails,
-                        ...manifestPayload,
-                        isAppDetailView: true
-                    }}
                     handleModalClose={handleCloseVulnerabilityModal}
+                    Sidebar={SecurityModalSidebar}
+                    isResourceScan
+                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                    isLoading={resourceScanLoading}
+                    error={resourceScanError}
+                    responseData={resourceScanResponse?.result}
                 />
             )}
-
             {renderDeleteResourcePopup()}
-        </div>
+        </>
     )
 }
 

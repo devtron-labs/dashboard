@@ -40,7 +40,7 @@ const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 
 const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
 
 const UserPermissionGroupsSelector = () => {
-    const { userGroups, setUserGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
+    const { userRoleGroups, setUserRoleGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
     const [isLoading, result, error, reloadGroupList] = useAsync(() =>
         getPermissionGroupList({
             showAll: true,
@@ -48,8 +48,8 @@ const UserPermissionGroupsSelector = () => {
     )
 
     function populateDataFromAPI(data: User) {
-        const { userRoleGroups } = data
-        setUserGroups(userRoleGroups)
+        const { userRoleGroups: userRoleGroupsFromAPI } = data
+        setUserRoleGroups(userRoleGroupsFromAPI)
     }
 
     useEffect(() => {
@@ -64,7 +64,7 @@ const UserPermissionGroupsSelector = () => {
     const userGroupsMap = mapByKey<Map<PermissionGroup['name'], PermissionGroup>>(userGroupsList, 'name')
 
     const groupOptions = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
-    const selectedValue = userGroups.map((userGroup) => ({ value: userGroup.name, label: userGroup.name }))
+    const selectedValue = userRoleGroups.map((userGroup) => ({ value: userGroup.name, label: userGroup.name }))
 
     const formatChartGroupOptionLabel = ({ value, label }) => (
         <div className="flex left column">
@@ -74,7 +74,7 @@ const UserPermissionGroupsSelector = () => {
     )
 
     const handleChange = (selectedOptions: OptionType[]) => {
-        const alreadyAddedGroupsMap = mapByKey(userGroups, 'name')
+        const alreadyAddedGroupsMap = mapByKey(userRoleGroups, 'name')
         const selectedOptionsMap = mapByKey(selectedOptions, 'value')
 
         const filteredOptions: User['userRoleGroups'] = selectedOptions
@@ -91,11 +91,14 @@ const UserPermissionGroupsSelector = () => {
             })
 
         // Remove any group that was deselected
-        setUserGroups([...userGroups.filter((userGroup) => selectedOptionsMap.has(userGroup.name)), ...filteredOptions])
+        setUserRoleGroups([
+            ...userRoleGroups.filter((userGroup) => selectedOptionsMap.has(userGroup.name)),
+            ...filteredOptions,
+        ])
     }
 
     const handleDelete = (id) => {
-        setUserGroups(userGroups.filter((group) => group.id !== id))
+        setUserRoleGroups(userRoleGroups.filter((group) => group.id !== id))
     }
 
     const handleStatusUpdate = (
@@ -103,8 +106,8 @@ const UserPermissionGroupsSelector = () => {
         status: UserRoleGroup['status'],
         timeToLive: UserRoleGroup['timeToLive'],
     ) => {
-        setUserGroups(
-            userGroups.map((userGroup) => ({
+        setUserRoleGroups(
+            userRoleGroups.map((userGroup) => ({
                 ...userGroup,
                 ...(userGroup.id === id
                     ? {
@@ -153,9 +156,9 @@ const UserPermissionGroupsSelector = () => {
                     menuPlacement="auto"
                 />
             </div>
-            {userGroups.length > 0 && (
+            {userRoleGroups.length > 0 && (
                 <UserRoleGroupsTable
-                    roleGroups={userGroups}
+                    roleGroups={userRoleGroups}
                     showStatus={showStatus}
                     handleDelete={handleDelete}
                     statusComponent={UserStatusUpdate}

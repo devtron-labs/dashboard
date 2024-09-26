@@ -14,63 +14,92 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     ErrorScreenManager,
     showError,
     stopPropagation,
     ServerErrors,
-    useAsync,
     DevtronProgressing,
-    useMainContext,
     HeaderWithCreateButton,
-    SearchBar,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import * as queryString from 'query-string'
 import { URLS } from '../../../config'
-import { Filter, FilterOption } from '../../common'
-import { JobListViewType, JobsFilterTypeText, JobsStatusConstants } from '../Constants'
+import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
-import { OrderBy } from '../../app/list/types'
-import { onRequestUrlChange, populateQueryString } from '../Utils'
+import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
-import { getAppListDataToExport, getJobsInitData } from '../Service'
-import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
-import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
+import {
+    JobListFilterConfig,
+    JobListUrlFilters,
+    JobListUrlFiltersType,
+    JobsListSortableKeys,
+    JobsMasterFilters,
+} from '../Types'
 
-export default function JobsList() {
+const JobsList = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
-    const { setPageOverflowEnabled } = useMainContext()
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
-    const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
-    const [, userRoleResponse] = useAsync(getUserRole, [])
-    const showExportCsvButton = userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1
+    const [filtersLoading, setFiltersLoading] = useState<boolean>(false)
+    const [errorResponseCode, setErrorResponseCode] = useState<number>(0)
+    const [masterFilters, setMasterFilters] = useState<JobsMasterFilters>(INITIAL_EMPTY_MASTER_FILTERS)
+    const [jobCount, setJobCount] = useState<number>(0)
 
-    // search
-    const { searchKey = '', handleSearch, clearFilters } = useUrlFilters()
-    // filters
-    const [masterFilters, setMasterFilters] = useState({
-        appStatus: [],
-        projects: [],
-        environments: [],
+    const urlFilters = useUrlFilters<JobsListSortableKeys, JobListUrlFiltersType>({
+        initialSortKey: JobsListSortableKeys.APP_NAME,
+        parseSearchParams,
     })
-    const [jobCount, setJobCount] = useState(0)
+    const {
+        searchKey,
+        status,
+        project,
+        environment,
+        handleSearch,
+        updateSearchParams,
+        handleSorting,
+        clearFilters,
+        offset,
+        pageSize,
+        changePage,
+        changePageSize,
+        sortBy,
+        sortOrder,
+    } = urlFilters
+
+    const filterConfig: JobListFilterConfig = useMemo(
+        () => ({
+            searchKey,
+            status,
+            environment,
+            project,
+            offset,
+            pageSize,
+            sortBy,
+            sortOrder,
+        }),
+        [
+            searchKey,
+            JSON.stringify(status),
+            JSON.stringify(project),
+            JSON.stringify(environment),
+            offset,
+            pageSize,
+            sortBy,
+            sortOrder,
+        ],
+    )
 
     useEffect(() => {
-        // Payload parsed from url
-        const payloadParsedFromUrl = updatedParsedPayloadOnUrlChange()
-
         // fetch master filters data and some master data
-        getJobsInitData(payloadParsedFromUrl)
-            .then((initData) => {
-                setMasterFilters(initData.filters)
+        setFiltersLoading(true)
+        getJobsInitFilters()
+            .then((initFilters) => {
+                setMasterFilters(initFilters)
                 setDataStateType(JobListViewType.LIST)
             })
             .catch((errors: ServerErrors) => {
@@ -78,20 +107,25 @@ export default function JobsList() {
                 setDataStateType(JobListViewType.ERROR)
                 setErrorResponseCode(errors.code)
             })
+            .finally(() => {
+                setFiltersLoading(false)
+            })
     }, [])
 
-    useEffect(() => {
-        updatedParsedPayloadOnUrlChange()
-    }, [location.search])
-
-    const updatedParsedPayloadOnUrlChange = () => {
-        const payloadParsedFromUrl = onRequestUrlChange(masterFilters, setMasterFilters, location.search)
-        setParsedPayloadOnUrlChange(payloadParsedFromUrl)
-
-        return payloadParsedFromUrl
+    const getLabelFromValue = (filterKey: JobListUrlFilters, filterValue: string) => {
+        switch (filterKey) {
+            case JobListUrlFilters.environment:
+                return masterFilters.environments.find((env) => env.value === filterValue)?.label
+            case JobListUrlFilters.project:
+                return masterFilters.projects.find((team) => team.value === filterValue)?.label
+            case JobListUrlFilters.status:
+                return getJobStatusLabelFromValue(filterValue)
+            default:
+                return filterValue
+        }
     }
 
-    function openJobCreateModel() {
+    const openJobCreateModel = () => {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
@@ -100,181 +134,22 @@ export default function JobsList() {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
     }
 
-    const renderCreateJobRouter = () => {
-        return (
-            <Switch>
-                <Route
-                    path={`${path}/${URLS.CREATE_JOB}`}
-                    render={(props) => (
-                        <AddNewApp
-                            isJobView
-                            close={closeJobCreateModal}
-                            history={props.history}
-                            location={props.location}
-                            match={props.match}
-                        />
-                    )}
-                />
-            </Switch>
-        )
-    }
-
-    const applyFilter = (type: string, list: FilterOption[], selectedAppTab: string = undefined): void => {
-        const query = populateQueryString(location.search)
-        const checkedItems = list.filter((item) => item.isChecked)
-        const ids = checkedItems.map((item) => item.key)
-
-        query[type] = ids.toString()
-        query['offset'] = 0
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
-    const removeFilter = (filter, filterType: string): void => {
-        const query = populateQueryString(location.search)
-        query['offset'] = 0
-        query[filterType] = query[filterType]
-            .split(',')
-            .filter((item) => item !== filter.key.toString())
-            .toString()
-
-        if (query[filterType] == '') {
-            delete query[filterType]
-        }
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
-    const sortJobList = (key: string): void => {
-        const query = populateQueryString(location.search)
-        query['orderBy'] = key
-        query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
-
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
-    }
-
-    const onShowHideFilterContent = (show: boolean): void => {
-        setPageOverflowEnabled(!show)
-    }
-
-    const getJobsDataToExport = async () => getAppListDataToExport(parsedPayloadOnUrlChange, searchKey, jobCount)
-
-    function renderMasterFilters() {
-        return (
-            <div className="search-filter-section">
-                <SearchBar
-                    initialSearchText={searchKey}
-                    containerClassName="dc__mxw-250 flex-grow-1"
-                    handleEnter={handleSearch}
-                    inputProps={{
-                        placeholder: 'Search by job name',
-                    }}
-                    dataTestId="Search-by-job-name"
-                />
-                <div className="app-list-filters filters">
-                    <Filter
-                        list={masterFilters.appStatus}
-                        labelKey="label"
-                        buttonText={JobsFilterTypeText.StatusText}
-                        placeholder={JobsFilterTypeText.SearchStatus}
-                        searchable
-                        multi
-                        type={JobsFilterTypeText.APP_STATUS}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        isFirstLetterCapitalize
-                        dataTestId="job-status-filter"
+    const renderCreateJobRouter = () => (
+        <Switch>
+            <Route
+                path={`${path}/${URLS.CREATE_JOB}`}
+                render={({ history: routeHistory, location: routeLocation, match }) => (
+                    <AddNewApp
+                        isJobView
+                        close={closeJobCreateModal}
+                        history={routeHistory}
+                        location={routeLocation}
+                        match={match}
                     />
-                    <span className="filter-divider" />
-                    <Filter
-                        list={masterFilters.projects}
-                        labelKey="label"
-                        buttonText={JobsFilterTypeText.ProjectText}
-                        placeholder={JobsFilterTypeText.SearchProject}
-                        searchable
-                        multi
-                        type={JobsFilterTypeText.PROJECT}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        dataTestId="job-projects-filter"
-                    />
-                    <span className="filter-divider" />
-                    <Filter
-                        list={masterFilters.environments}
-                        labelKey="label"
-                        buttonText={JobsFilterTypeText.EnvironmentText}
-                        placeholder={JobsFilterTypeText.SearchEnvironment}
-                        searchable
-                        multi
-                        type={JobsFilterTypeText.ENVIRONMENT}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        dataTestId="job-environments-filter"
-                    />
-                    {showExportCsvButton && (
-                        <>
-                            <span className="filter-divider" />
-                            <ExportToCsv
-                                className="ml-10"
-                                apiPromise={getJobsDataToExport}
-                                fileName={FILE_NAMES.Jobs}
-                                disabled={!jobCount}
-                            />
-                        </>
-                    )}
-                </div>
-            </div>
-        )
-    }
-
-    const appliedFilterChip = (key: string) => {
-        let filterType = ''
-        let _filterKey = ''
-        if (key == JobsStatusConstants.PROJECT.pluralLower) {
-            filterType = JobsFilterTypeText.PROJECT
-            _filterKey = JobsStatusConstants.PROJECT.lowerCase
-        } else if (key == JobsStatusConstants.APP_STATUS.noSpaceLower) {
-            filterType = JobsFilterTypeText.APP_STATUS
-            _filterKey = JobsStatusConstants.APP_STATUS.normalText
-        } else {
-            filterType = JobsFilterTypeText.ENVIRONMENT
-            _filterKey = JobsStatusConstants.ENVIRONMENT.lowerCase
-        }
-
-        return masterFilters[key].map((filter) => {
-            if (filter.isChecked) {
-                return (
-                    <div key={filter.key} className="saved-filter">
-                        <span className="fw-6 mr-5">{_filterKey}</span>
-                        <span className="saved-filter-divider" />
-                        <span className="ml-5">{filter.label}</span>
-                        <button
-                            type="button"
-                            className="saved-filter__close-btn"
-                            onClick={() => removeFilter(filter, filterType)}
-                        >
-                            <i className="fa fa-times-circle" aria-hidden="true" />
-                        </button>
-                    </div>
-                )
-            }
-        })
-    }
-    const renderAppliedFilters = () => {
-        const keys = Object.keys(masterFilters)
-        const shouldRenderFilterChips = keys.some((key) => masterFilters[key].some((filter) => filter.isChecked))
-
-        return (
-            shouldRenderFilterChips && (
-                <div className="saved-filters__wrap dc__position-rel">
-                    {keys.map((key) => appliedFilterChip(key))}
-                    <button type="button" className="saved-filters__clear-btn fs-13" onClick={clearFilters}>
-                        Clear All Filters
-                    </button>
-                </div>
-            )
-        )
-    }
+                )}
+            />
+        </Switch>
+    )
 
     if (dataStateType === JobListViewType.ERROR) {
         return <ErrorScreenManager code={errorResponseCode} />
@@ -292,18 +167,24 @@ export default function JobsList() {
                     <HeaderWithCreateButton headerName="Jobs" />
                     {renderCreateJobRouter()}
                     <JobListContainer
-                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                        clearAllFilters={clearFilters}
-                        sortJobList={sortJobList}
+                        masterFilters={masterFilters}
+                        filterConfig={filterConfig}
+                        clearFilters={clearFilters}
+                        handleSorting={handleSorting}
                         jobListCount={jobCount}
-                        isSuperAdmin
-                        openJobCreateModel={openJobCreateModel}
+                        filtersLoading={filtersLoading}
                         setJobCount={setJobCount}
-                        renderMasterFilters={renderMasterFilters}
-                        renderAppliedFilters={renderAppliedFilters}
+                        openJobCreateModel={openJobCreateModel}
+                        handleSearch={handleSearch}
+                        updateSearchParams={updateSearchParams}
+                        getLabelFromValue={getLabelFromValue}
+                        changePage={changePage}
+                        changePageSize={changePageSize}
                     />
                 </>
             )}
         </div>
     )
 }
+
+export default JobsList

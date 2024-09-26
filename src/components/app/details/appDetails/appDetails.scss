@@ -261,7 +261,7 @@ table.pod__table td:last-child {
     padding-right: 20px;
 }
 
-.no-pod-list{
+.no-pod-list {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1929,14 +1929,14 @@ table.resource-tree {
 
 .app-details-manifest-download-card {
     overflow: hidden;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .app-details-info-card {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
 
     &__top-container {
         align-items: flex-start;
@@ -1994,7 +1994,7 @@ table.resource-tree {
 
     .issues-listing-modal__header {
         position: sticky;
-        top: 0
+        top: 0;
     }
 
     &__body {

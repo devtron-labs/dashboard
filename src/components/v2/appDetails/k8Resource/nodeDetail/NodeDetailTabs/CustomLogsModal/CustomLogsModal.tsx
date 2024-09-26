@@ -216,7 +216,7 @@ export const InputForSelectedOption = ({
                     <div className="flexbox-col">
                         <div className="flex">
                             <SingleDatePicker
-                                id= "single_date_picker"
+                                id="single_date_picker"
                                 placeholder="Select date"
                                 focused={focused}
                                 onFocusChange={handleFocusChange}

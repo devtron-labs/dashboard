@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import YAML from 'yaml'
 import {
     InfoColourBar,
@@ -24,22 +24,17 @@ import {
     GenericEmptyState,
     joinObjects,
     flatMapOfJSONPaths,
+    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps, DeploymentConfigStateActionTypes } from '../types'
+import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
 import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
-
-const baseUISchema = {
-    'ui:submitButtonOptions': {
-        norender: true,
-    },
-}
 
 const DeploymentTemplateGUIView = ({
     fetchingValues,
@@ -53,7 +48,8 @@ const DeploymentTemplateGUIView = ({
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading, guiSchema, selectedChart },
+        state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
+        dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
@@ -75,7 +71,7 @@ const DeploymentTemplateGUIView = ({
             if (!hideLockedKeys) {
                 return {
                     guiSchema: parsedGUISchema,
-                    uiSchema: baseUISchema,
+                    uiSchema: HIDE_SUBMIT_BUTTON_UI_SCHEMA,
                 }
             }
             // Note: if the locked keys are not resolved from the following json(s)
@@ -88,7 +84,7 @@ const DeploymentTemplateGUIView = ({
             return {
                 guiSchema: parsedGUISchema,
                 uiSchema: joinObjects([
-                    baseUISchema,
+                    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
                     ...lockedConfigKeysWithLockType.config.flatMap((key) => {
                         // NOTE: we need to use the original document to evaluate the actual paths
                         return flatMapOfJSONPaths([key], parsedUneditedDocument)
@@ -110,6 +106,9 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
+        if (!wasGuiOrHideLockedKeysEdited) {
+            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+        }
         editorOnChange?.(YAML.stringify(data.formData))
     }
 
@@ -120,10 +119,7 @@ const DeploymentTemplateGUIView = ({
 
         if (state.error) {
             return (
-                <GenericEmptyState
-                    image={EmptyFolderImage}
-                    {...state.error}
-                >
+                <GenericEmptyState image={EmptyFolderImage} {...state.error}>
                     <button
                         type="button"
                         className="cta cta-with-img secondary dc__gap-6"

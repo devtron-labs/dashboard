@@ -21,8 +21,9 @@ import {
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
@@ -63,7 +64,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             })
             .catch((errors) => {
                 if (Array.isArray(errors.error)) {
-                    errors.error.map((err) => toast.error(err.userMessage))
+                    errors.error.map((err) =>
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: err.userMessage,
+                        }),
+                    )
                 }
                 this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
             })
@@ -135,7 +141,10 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ loadingData: true, isValid })
         createProject(project)
             .then((response) => {
-                toast.success('Project Created Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Project Created Successfully',
+                })
                 projects[index] = {
                     ...response.result,
                     isCollapsed: true,
@@ -169,14 +178,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     renderPageHeader() {
         return (
-                <FeatureTitleWithInfo
-                    title={HEADER_TEXT.PROJECTS.title}
-                    renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
-                    docLink={HEADER_TEXT.PROJECTS.docLink}
-                    showInfoIconTippy
-                    additionalContainerClasses="mb-20"
-                    dataTestId="project-list-title"
-                />
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.PROJECTS.title}
+                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
+                docLink={HEADER_TEXT.PROJECTS.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="project-list-title"
+            />
         )
     }
 

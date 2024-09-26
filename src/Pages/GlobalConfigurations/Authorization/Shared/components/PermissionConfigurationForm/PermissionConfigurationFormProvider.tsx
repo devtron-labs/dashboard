@@ -57,15 +57,15 @@ export const PermissionConfigurationFormProvider = ({
     const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
 
     const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
-    const [userGroups, _setUserGroups] = useState<User['userRoleGroups']>([])
+    const [userRoleGroups, _setUserRoleGroups] = useState<User['userRoleGroups']>([])
     const [userStatus, setUserStatus] = useState<User['userStatus']>()
     const [timeToLive, setTimeToLive] = useState<User['timeToLive']>()
 
     /**
      * Sorts the groups alphabetically by name
      */
-    const setUserGroups = (groups: User['userRoleGroups'] | React.SetStateAction<User['userRoleGroups']>) => {
-        _setUserGroups((currentGroups) => {
+    const setUserRoleGroups = (groups: User['userRoleGroups'] | React.SetStateAction<User['userRoleGroups']>) => {
+        _setUserRoleGroups((currentGroups) => {
             // Determine the nextState
             const nextState = (typeof groups === 'function' ? groups(currentGroups) : groups).sort((a, b) =>
                 a.name.localeCompare(b.name),
@@ -88,7 +88,7 @@ export const PermissionConfigurationFormProvider = ({
         // Not required if the user level timeToLive is less than the permission level timeToLive
         // Note: Not updating for chart permissions since the status is read only
         if (updatedStatus === UserStatus.inactive) {
-            setUserGroups((_userGroups) =>
+            setUserRoleGroups((_userGroups) =>
                 _userGroups.map((userGroup) => ({
                     ...userGroup,
                     ...changeStatusToInactiveIfTemporary(userGroup.status, userGroup.timeToLive),
@@ -120,8 +120,8 @@ export const PermissionConfigurationFormProvider = ({
             k8sPermission,
             setK8sPermission,
             currentK8sPermissionRef,
-            userGroups,
-            setUserGroups,
+            userRoleGroups,
+            setUserRoleGroups,
             userStatus,
             timeToLive,
             handleUserStatusUpdate,
@@ -138,8 +138,8 @@ export const PermissionConfigurationFormProvider = ({
             k8sPermission,
             setK8sPermission,
             currentK8sPermissionRef,
-            userGroups,
-            setUserGroups,
+            userRoleGroups,
+            setUserRoleGroups,
             userStatus,
             timeToLive,
             handleUserStatusUpdate,
