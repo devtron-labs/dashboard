@@ -23,7 +23,6 @@ const ConfigHeaderTab = ({
     // TODO: Need to send not isOverridden
     const { icon: Icon, text } = getConfigHeaderTabConfig(tab, !envId)
 
-    // TODO: Replace with button component after syncing with product
     return (
         <button
             data-testid={`config-head-tab-${tab}`}
@@ -31,6 +30,7 @@ const ConfigHeaderTab = ({
             type="button"
             disabled={isDisabled}
             className={`dc__transparent flexbox dc__align-items-center dc__gap-6 py-8 px-12 ${isDisabled ? 'dc__disabled' : ''} ${isActive ? 'bcn-0 scn-9 cn-9' : 'bc-n50 cn-7 scn-7 dc__border-bottom'} ${isNextTabActive ? 'dc__border-right' : ''} ${isPreviousTabActive ? 'dc__border-left' : ''} fs-12 fw-6 lh-20`}
+            role="tab"
         >
             <Icon className="icon-dim-16 dc__no-shrink" />
             <span>{text}</span>

@@ -1748,7 +1748,7 @@ const DeploymentTemplate = ({
         )
     }
 
-    const getShowMergePatchesButton = (): boolean => {
+    const getShouldShowMergePatchesButton = (): boolean => {
         if (!isCompareView) {
             return false
         }
@@ -1911,6 +1911,7 @@ const DeploymentTemplate = ({
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+                {/* TODO: Need to get clarity from product regarding unsaved changes (is it dirty state or unsaved changes?) and No override (is draft only and dirty state considered override?) */}
                 <ConfigHeader
                     configHeaderTab={configHeaderTab}
                     handleTabChange={handleConfigHeaderTabChange}
@@ -1923,7 +1924,7 @@ const DeploymentTemplate = ({
                     handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
                     handleToggleCommentsView={handleToggleDraftComments}
                     areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
-                    showMergePatchesButton={getShowMergePatchesButton()}
+                    showMergePatchesButton={getShouldShowMergePatchesButton()}
                     shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                     handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
                     mergeStrategy={currentEditorTemplateData?.mergeStrategy}
