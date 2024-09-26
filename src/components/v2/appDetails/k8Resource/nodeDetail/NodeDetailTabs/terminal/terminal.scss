@@ -44,9 +44,52 @@
     background: var(--terminal-bg);
     overflow: hidden;
     flex: 1;
+    position: relative;
+    // NOTE: fixing height for consistency
+    --metadata-header-height: 28px;
+
+    &__metadata {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: calc(var(--modal-index) + 1);
+        border-bottom: 1px solid #2C3354;
+        background: var(--terminal-bg);
+        height: var(--metadata-header-height);
+
+        & > span {
+            opacity: 0.8;
+        }
+    }
+
     .terminal-component {
         overflow: hidden;
         flex: 1;
+
+        &--fullscreen {
+            position: fixed;
+            top: var(--metadata-header-height);
+            left: 0;
+            height: calc(100vh - var(--metadata-header-height));
+            width: 100vw;
+            z-index: var(--modal-index);
+            margin: 0;
+            background-color: var(--terminal-bg);
+            padding: 12px;
+        }
+
+        & .zoom {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            z-index: 11;
+        }
+
+        &__zoom--bottom-41 {
+            & .zoom {
+                bottom: 41px;
+            }
+        }
     }
 }
 

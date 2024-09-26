@@ -419,8 +419,9 @@ const NavItem = ({ serverMode }) => {
                                         key={`nav_item_${index}`}
                                         to={route.href}
                                         data-testid="user-authorization-link"
-                                        className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'
-                                            } flex dc__content-space`}
+                                        className={`cursor ${
+                                            collapsedState[route.name] ? '' : 'fw-6'
+                                        } flex dc__content-space`}
                                         onClick={(e) => {
                                             handleGroupCollapsedState(e, route)
                                         }}
@@ -484,17 +485,18 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Catalog Framework</div>
                         </NavLink>
                     )}
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
-                        <NavLink
-                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Scoped Variables</div>
-                        </NavLink>
-                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <>
+                            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                                <NavLink
+                                    to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Scoped Variables</div>
+                                </NavLink>
+                            )}
+
                             {PluginsPolicy && (
                                 <NavLink
                                     to={URLS.GLOBAL_CONFIG_PLUGINS}
@@ -679,20 +681,20 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     ]
                     : []),
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route
-                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
-                    path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                >
-                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                </Route>
-            )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {serverMode !== SERVER_MODE.EA_ONLY && [
+                window._env_.ENABLE_SCOPED_VARIABLES && (
+                    <Route
+                        key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
+                        path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                    >
+                        <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
                 DeploymentWindow && (
                     <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                         <DeploymentWindow isSuperAdmin={isSuperAdmin} />

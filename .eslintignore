@@ -293,7 +293,6 @@ src/components/common/icons/Icons.tsx
 src/components/common/lineChart/lineChart.tsx
 src/components/common/navigation/Navigation.tsx
 src/components/common/navigation/NavigationRoutes.tsx
-src/components/common/security/ScanDetailsModal.tsx
 src/components/deploymentConfig/ChartSelectorDropdown.tsx
 src/components/deploymentConfig/DeploymentConfig.tsx
 src/components/deploymentConfig/DeploymentConfig.utils.ts
