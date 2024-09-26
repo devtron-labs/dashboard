@@ -9,8 +9,9 @@ import { FunctionComponent, ReactNode } from 'react'
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
     handleTabChange: (tab: ConfigHeaderTabType) => void
+    isDisabled: boolean
 }
-export interface ConfigHeaderTabProps extends Pick<ConfigHeaderProps, 'handleTabChange'> {
+export interface ConfigHeaderTabProps extends Pick<ConfigHeaderProps, 'handleTabChange' | 'isDisabled'> {
     tab: ConfigHeaderTabType
     activeTabIndex: number
     currentTabIndex: number
@@ -48,7 +49,6 @@ export interface ConfigToolbarProps {
     mergeStrategy: OverrideMergeStrategyType
     handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
 
-    shouldDisableActions: boolean
     /**
      * Used to place toggle editor view and chart selectors in deployment template
      */
@@ -61,13 +61,7 @@ export interface ConfigToolbarProps {
      * If provided, will show popup menu on click three dots button
      * If empty/null, will not show the button
      */
-    popupMenuConfig?: {
-        items: ConfigToolbarPopupMenuConfigType[]
-        /**
-         * If provided will append this node to the footer of the popup menu with a separator above it
-         */
-        footerConfig?: ConfigToolbarPopupMenuConfigType
-    }
+    popupMenuConfig?: Record<string, ConfigToolbarPopupMenuConfigType[]>
     /**
      * If provided, will replace the popup menu view with the provided node given popupMenuConfig is not empty
      */
@@ -82,5 +76,35 @@ export interface ConfigToolbarProps {
     isApprovalPending?: boolean
     isDraftPresent?: boolean
     approvalUsers: string[]
-    isLoading: boolean
+    /**
+     * Loading state fetching initial info (template, draft info, etc) to hide comments, approvals.
+     */
+    isLoadingInitialData: boolean
+    /**
+     * @default - false
+     * If given would disable all the actions
+     */
+    disableAllActions?: boolean
+    /**
+     * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
+     * @default - true
+     * If false we will hide all the action in toolbar.
+     */
+    isPublishedTemplatePresent?: boolean
+}
+
+interface ConfigToolbarPopupMenuLockedConfigDataType {
+    /**
+     * If false would not show hide/show locked keys button
+     */
+    areLockedKeysPresent: boolean
+    hideLockedKeys: boolean
+    handleSetHideLockedKeys: (value: boolean) => void
+}
+
+export interface GetConfigToolbarPopupConfigProps {
+    /**
+     * If not provided won't show locked config data
+     */
+    lockedConfigData: ConfigToolbarPopupMenuLockedConfigDataType
 }

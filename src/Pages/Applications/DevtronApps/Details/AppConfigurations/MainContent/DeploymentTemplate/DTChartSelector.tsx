@@ -212,9 +212,9 @@ const DTChartSelector = ({
         : null
 
     return (
-        <div className="flexbox dc__gap-16 pr-16 py-8">
+        <div className="flexbox dc__gap-8 dc__align-items-center">
             <div className="flexbox dc__gap-8 dc__align-items-center">
-                <span className="fs-13 fw-4 cn-9">Chart type:</span>
+                <span className="fs-12 lh-18 fw-4 cn-7">Chart</span>
                 <ChartSelectorDropdown
                     charts={charts}
                     chartsMetadata={chartsMetadata}
@@ -224,10 +224,11 @@ const DTChartSelector = ({
                     isUnSet={isUnSet}
                 />
             </div>
+
             <div className="flexbox dc__gap-8 dc__align-items-center">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className="fs-13 fw-4 cn-9 m-0" id="dt-chart-version-select">
-                    Chart version:
+                <label className="fs-12 fw-4 cn-7 m-0 lh-18" id="dt-chart-version-select">
+                    Version
                 </label>
                 {disableVersionSelect ? (
                     <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>

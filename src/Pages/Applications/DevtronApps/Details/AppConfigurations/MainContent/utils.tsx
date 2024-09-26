@@ -9,12 +9,12 @@ const getValuesViewTabText = (
     isOverridden: Parameters<typeof getConfigHeaderTabConfig>[2],
 ) => {
     if (isBaseDeploymentTemplate) {
-        return 'No override'
+        return 'Configuration'
     }
     if (isOverridden) {
         return 'Override'
     }
-    return 'Values'
+    return 'No override'
 }
 
 export const getConfigHeaderTabConfig = (

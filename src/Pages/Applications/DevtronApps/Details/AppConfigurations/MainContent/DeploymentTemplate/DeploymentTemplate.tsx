@@ -73,6 +73,8 @@ import {
 import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
+import { DEFAULT_MERGE_STRATEGY } from '../constants'
+import { ConfigToolbarProps } from '../types'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -212,9 +214,12 @@ const DeploymentTemplate = ({
     )
 
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState<boolean>(false)
+    // TODO: On reload reset this
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(
         ProtectConfigTabsType.EDIT_DRAFT,
     )
+
+    const isGuiSupported = configHeaderTab !== ConfigHeaderTabType.INHERITED
 
     const isPublishedValuesView: boolean = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
@@ -834,6 +839,8 @@ const DeploymentTemplate = ({
                 active,
                 namespace,
             },
+            // FIXME: Assumed on FE not replace when BE supports
+            mergeStrategy: DEFAULT_MERGE_STRATEGY,
             editorTemplateWithoutLockedKeys,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
@@ -934,6 +941,8 @@ const DeploymentTemplate = ({
             namespace,
             readme,
             schema,
+            // FIXME: Not actual type change it after BE changes
+            mergeStrategy,
         } = JSON.parse(latestDraft.data)
         const stringifiedTemplate = YAMLStringify(envOverrideValues)
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
@@ -960,6 +969,7 @@ const DeploymentTemplate = ({
                 active,
                 namespace,
             },
+            mergeStrategy: mergeStrategy || DEFAULT_MERGE_STRATEGY,
         }
 
         setDraftTemplateData(response)
@@ -1727,6 +1737,35 @@ const DeploymentTemplate = ({
         )
     }
 
+    const getShowMergePatchesButton = (): boolean => {
+        if (!isCompareView) {
+            return false
+        }
+
+        const compareWithEditorTemplate = getCompareWithEditorTemplate()
+        const compareFromEditorTemplate = getCurrentEditorValue()
+
+        return (
+            compareWithEditorTemplate === OverrideMergeStrategyType.PATCH ||
+            compareFromEditorTemplate === OverrideMergeStrategyType.PATCH
+        )
+    }
+
+    const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (strategy) => {
+        if (!currentEditorTemplateData.mergeStrategy) {
+            logExceptionToSentry(new Error('Merge strategy change without merge strategy'))
+            return
+        }
+
+        const currentEditorTemplateClone = structuredClone(currentEditorTemplateData)
+
+        const newTemplateData: typeof currentEditorTemplateClone = {
+            ...currentEditorTemplateClone,
+            mergeStrategy: strategy,
+        }
+        setCurrentEditorTemplateData(newTemplateData)
+    }
+
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
     const renderCTA = () => {
@@ -1816,43 +1855,42 @@ const DeploymentTemplate = ({
         </div>
     )
 
+    // const getConfigToolbarPopupConfig = (): ConfigToolbarProps['popupMenuConfig'] => {}
+
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
-                <ConfigHeader configHeaderTab={configHeaderTab} handleTabChange={handleConfigHeaderTabChange} />
-
+                <ConfigHeader
+                    configHeaderTab={configHeaderTab}
+                    handleTabChange={handleConfigHeaderTabChange}
+                    isDisabled={currentEditorTemplateData?.unableToParseYaml}
+                />
+                {/* FIXME: For readme won't render this */}
                 <ConfigToolbar
                     baseConfigurationURL={baseDeploymentTemplateURL}
                     selectedProtectionViewTab={selectedProtectionViewTab}
                     handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
                     handleToggleCommentsView={handleToggleDraftComments}
                     areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
-                    // FIXME: As of now since api structure is unknown have hard coded the value
-                    showMergePatchesButton={false}
+                    showMergePatchesButton={getShowMergePatchesButton()}
                     shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                     handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                    // FIXME: Should come from current editor
-                    mergeStrategy={OverrideMergeStrategyType.REPLACE}
-                    handleMergeStrategyChange={noop}
+                    mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                    handleMergeStrategyChange={handleMergeStrategyChange}
                     handleEnableReadmeView={handleEnableReadmeView}
                     popupMenuConfig={null}
                     popupMenuNode={null}
                     handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                     resolveScopedVariables={resolveScopedVariables}
-                    shouldDisableActions={
-                        resolveScopedVariables ||
-                        // FIXME: need to check this
-                        currentEditorTemplateData.unableToParseYaml ||
-                        isLoadingInitialData ||
-                        isResolvingVariables ||
-                        isSaving
-                    }
+                    // TODO: Can make variable
+                    disableAllActions={currentEditorTemplateData?.unableToParseYaml || isResolvingVariables || isSaving}
                     configHeaderTab={configHeaderTab}
                     isProtected={isProtected}
                     isApprovalPending={draftTemplateData?.latestDraft?.draftState === DraftState.AwaitApproval}
                     isDraftPresent={isDraftAvailable}
                     approvalUsers={draftTemplateData?.latestDraft?.approvers}
-                    isLoading={isLoadingInitialData || isResolvingVariables || isSaving}
+                    isLoadingInitialData={isLoadingInitialData}
+                    isPublishedTemplatePresent={!(envId && !publishedTemplateData?.isOverridden)}
                 >
                     <DeploymentTemplateOptionsHeader
                         disableVersionSelect={
@@ -1871,6 +1909,7 @@ const DeploymentTemplate = ({
                         handleChartChange={handleChartChange}
                         chartDetails={chartDetails}
                         selectedChart={getCurrentTemplateSelectedChart()}
+                        isGuiSupported={isGuiSupported}
                     />
                 </ConfigToolbar>
 

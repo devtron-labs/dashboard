@@ -51,6 +51,7 @@ export interface DeploymentTemplateOptionsHeaderProps extends Pick<DeploymentTem
     isCompareView: boolean
     editMode: ConfigurationType
     showReadMe: boolean
+    isGuiSupported: boolean
 }
 
 export interface DeploymentTemplateEditorDataStateType

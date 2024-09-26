@@ -1,10 +1,9 @@
-import { SyntheticEvent } from 'react'
 import {
     ConditionalWrap,
     ConfigurationType,
-    StyledRadioGroup as RadioGroup,
     TippyCustomized,
     TippyTheme,
+    Toggle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '@Icons/ic-arrow-anticlockwise.svg'
@@ -25,18 +24,14 @@ const DeploymentTemplateOptionsHeader = ({
     chartDetails,
     selectedChart,
     isCompareView,
+    isGuiSupported,
 }: DeploymentTemplateOptionsHeaderProps) => {
     if (isCompareView || showReadMe) {
         return null
     }
 
-    const handleChangeEditMode = (e: SyntheticEvent) => {
-        const targetMode = (e.target as HTMLInputElement).value as ConfigurationType
-        if (targetMode === editMode) {
-            return
-        }
-
-        if (targetMode === ConfigurationType.GUI) {
+    const handleToggleEditMode = () => {
+        if (editMode === ConfigurationType.GUI) {
             handleChangeToGUIMode()
             return
         }
@@ -67,50 +62,44 @@ const DeploymentTemplateOptionsHeader = ({
             interactive
             showCloseButton
         >
-            <span>{children}</span>
+            <div>{children}</div>
         </TippyCustomized>
     )
 
     const showRevertToLastSaved = unableToParseYaml && canEditTemplate
 
     return (
-        <div className="flexbox dc__align-items-center dc__content-space pl-16 pr-16 bcn-0">
-            <div className="flex">
-                <DTChartSelector
-                    isUnSet={isUnSet}
-                    charts={chartDetails.charts}
-                    chartsMetadata={chartDetails.chartsMetadata}
-                    selectedChart={selectedChart}
-                    selectedChartRefId={selectedChart?.chartRefId}
-                    selectChart={handleChartChange}
-                    disableVersionSelect={disableVersionSelect}
-                />
+        <div className="flexbox dc__align-items-center dc__content-space bcn-0 dc__gap-8">
+            {isGuiSupported && (
+                <>
+                    <div className="flexbox dc__align-items-center dc__gap-6">
+                        <ConditionalWrap condition={showRevertToLastSaved} wrap={invalidYamlTippyWrapper}>
+                            <div className="w-24 h-16">
+                                <Toggle
+                                    selected={editMode === ConfigurationType.YAML}
+                                    onSelect={handleToggleEditMode}
+                                    dataTestId="dt-switch-gui-yaml-mode"
+                                    disabled={showRevertToLastSaved}
+                                />
+                            </div>
+                        </ConditionalWrap>
 
-                <ConditionalWrap condition={showRevertToLastSaved} wrap={invalidYamlTippyWrapper}>
-                    <RadioGroup
-                        className="gui-yaml-switch"
-                        name="yaml-mode"
-                        initialTab={editMode}
-                        disabled={showRevertToLastSaved}
-                        onChange={handleChangeEditMode}
-                    >
-                        <RadioGroup.Radio value={ConfigurationType.GUI} canSelect={false}>
-                            GUI
-                        </RadioGroup.Radio>
-                        <RadioGroup.Radio
-                            value={ConfigurationType.YAML}
-                            canSelect={false}
-                            dataTestId="base-deployment-template-advanced-button"
-                            className="flexbox dc__gap-6"
-                        >
-                            {showRevertToLastSaved && (
-                                <ErrorIcon className="icon-dim-12 dc__no-shrink dc__no-svg-stroke" />
-                            )}
-                            YAML
-                        </RadioGroup.Radio>
-                    </RadioGroup>
-                </ConditionalWrap>
-            </div>
+                        <span className="cn-7 fs-12 fw-4 lh-20">YAML</span>
+                    </div>
+
+                    <div className="dc__border-right-n1 h-16" />
+                </>
+            )}
+
+            <DTChartSelector
+                isUnSet={isUnSet}
+                charts={chartDetails.charts}
+                chartsMetadata={chartDetails.chartsMetadata}
+                selectedChart={selectedChart}
+                selectedChartRefId={selectedChart?.chartRefId}
+                selectChart={handleChartChange}
+                disableVersionSelect={disableVersionSelect}
+            />
         </div>
     )
 }

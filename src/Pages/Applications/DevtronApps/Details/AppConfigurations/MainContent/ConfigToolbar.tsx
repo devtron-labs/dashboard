@@ -8,13 +8,16 @@ import {
     Toggle,
     Tooltip,
     BaseURLParams,
+    InfoIconTippy,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import { ReactComponent as ICViewVariableToggle } from '@Icons/ic-view-variable-toggle.svg'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
-import { useParams } from 'react-router-dom'
+import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import { Fragment } from 'react'
 import { ConfigToolbarProps } from './types'
 import { PopupMenuItem } from './utils'
 
@@ -29,7 +32,7 @@ const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
 )
 
 /**
- * 1. Values view:
+ * 1. Base template view (without protect config):
     - ToggleEditorView (LHS)
     - Chart selectors
     - Readme(RHS)
@@ -42,9 +45,10 @@ const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
     - Readme
     - Scoped variables
     - Popup menu (Locked keys (in case of OSS no popup))
-4. OVERRIDE:
+4. In case of override:
     1. In case of no override - nothing
-    2. In case of edit draft
+5. In case of protect config
+    1. In case of edit draft
         - protected tabs
         - ToggleEditorView
         - ChartSelectors
@@ -54,7 +58,7 @@ const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
         - Readme
         - Scoped variables
         - Popup menu (Locked keys, Delete override, Discard draft - only in case of saved as draft)
-    3. In compare:
+    2. In compare:
         - protected tabs (NOTE: in case of approve tab name is Compare & Approve)
         - show merged template button (in case at least on strategy is patch)
         - Approver tippy (RHS)
@@ -88,93 +92,117 @@ const ConfigToolbar = ({
     handleToggleScopedVariablesView,
     resolveScopedVariables,
 
-    shouldDisableActions,
     configHeaderTab,
     isProtected = false,
     isApprovalPending,
     isDraftPresent,
     approvalUsers,
-    isLoading,
+    isLoadingInitialData,
+    // TODO: Will have to segregate cases where all actions are disabled
+    disableAllActions = false,
+    isPublishedTemplatePresent = true,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
 
-    // FIXME: 3 issues - 1. the divider needs to placed accordingly 2. Can make segments based configuration 3. No relation of override with protected tabs
     if (configHeaderTab === ConfigHeaderTabType.DRY_RUN) {
         return null
     }
 
-    const isDisabled = isLoading || shouldDisableActions
+    const isCompareView = !!(
+        isProtected &&
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        selectedProtectionViewTab === ProtectConfigTabsType.COMPARE
+    )
 
-    const isOverrideView = !!envId && configHeaderTab === ConfigHeaderTabType.VALUES
-    const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED && isProtected
-    const isEditDraftView =
-        isOverrideView && isProtected && selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-    const isEditView = isEditDraftView || configHeaderTab === ConfigHeaderTabType.VALUES
+    const isPublishedValuesView = !!(
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED &&
+        isProtected &&
+        isDraftPresent
+    )
 
-    const renderOverrideView = () => {
-        if (!isOverrideView) {
+    const isEditView = !!(
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        (isProtected && isDraftPresent ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT : true)
+    )
+
+    const getLHSActionNodes = (): JSX.Element => {
+        if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
+            return (
+                <div className="flexbox dc__align-items-center dc__gap-6">
+                    <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                    <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
+                    <a
+                        href={baseConfigurationURL}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="anchor dc__border-bottom--n1"
+                    >
+                        Base Configurations
+                    </a>
+                </div>
+            )
+        }
+
+        if (!isProtected || !isDraftPresent) {
             return null
         }
 
-        const isCompareView = selectedProtectionViewTab === ProtectConfigTabsType.COMPARE
-
         return (
-            <>
-                {/* FIXME: No relation to override */}
+            <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                {/* Internally handles right border */}
                 {ProtectionViewTabGroup && (
                     <>
                         <ProtectionViewTabGroup
                             selectedTab={selectedProtectionViewTab}
                             handleProtectionViewTabChange={handleProtectionViewTabChange}
-                            isApprovalView={isApprovalPending}
-                            isDisabled={isDisabled}
+                            isApprovalPending={isApprovalPending}
+                            isDisabled={disableAllActions}
                         />
 
-                        <div className="dc__border-right-n1 h-100" />
+                        <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
                     </>
                 )}
 
+                {/* Data should always be valid in case we are in approval view */}
                 {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
                     <MergePatchWithTemplateCheckbox
                         shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                        isDisabled={isDisabled}
+                        // Will remove this check if merging is happening on ui
+                        isDisabled={disableAllActions}
                     />
                 )}
-            </>
+            </div>
         )
     }
 
     const renderProtectedConfigActions = () => {
         const shouldRenderApproverInfoTippy =
-            isDraftPresent && isApprovalPending && ConfigApproversInfoTippy && !isLoading
-        const shouldRenderCommentsView = !!isDraftPresent && !isLoading
+            !!isDraftPresent && isApprovalPending && ConfigApproversInfoTippy && !isLoadingInitialData
+        const shouldRenderCommentsView = !!isDraftPresent && !isLoadingInitialData
         const hasNothingToRender = !shouldRenderApproverInfoTippy && !shouldRenderCommentsView
 
-        if (!isOverrideView || !isProtected || hasNothingToRender) {
+        if (!isProtected || hasNothingToRender) {
             return null
         }
 
         return (
-            <>
-                <div className="flexbox dc__gap-4">
-                    {shouldRenderApproverInfoTippy && <ConfigApproversInfoTippy approvalUsers={approvalUsers} />}
-                    {shouldRenderCommentsView && (
-                        <ProtectConfigShowCommentsButton
-                            areCommentsPresent={areCommentsPresent}
-                            handleToggleCommentsView={handleToggleCommentsView}
-                        />
-                    )}
-                </div>
-
-                <div className="dc__border-right-n1 h-100" />
-            </>
+            <div className="flexbox dc__gap-4 dc__align-items-center">
+                {shouldRenderApproverInfoTippy && <ConfigApproversInfoTippy approvalUsers={approvalUsers} />}
+                {shouldRenderCommentsView && (
+                    <ProtectConfigShowCommentsButton
+                        areCommentsPresent={areCommentsPresent}
+                        handleToggleCommentsView={handleToggleCommentsView}
+                    />
+                )}
+            </div>
         )
     }
 
     const renderReadmeAndScopedVariablesBlock = () => {
         const shouldRenderReadmeButton = !!handleEnableReadmeView
-        const shouldRenderScopedVariables = window._env_.ENABLE_SCOPED_VARIABLES && !isLoading
+        const shouldRenderScopedVariables = window._env_.ENABLE_SCOPED_VARIABLES && !isLoadingInitialData
         const hasNothingToRender = !shouldRenderReadmeButton && !shouldRenderScopedVariables
 
         if (hasNothingToRender) {
@@ -182,128 +210,130 @@ const ConfigToolbar = ({
         }
 
         return (
-            <>
-                <div className="flexbox dc__gap-4">
-                    {shouldRenderReadmeButton && (
-                        <Button
-                            onClick={handleEnableReadmeView}
-                            disabled={isDisabled}
-                            dataTestId="config-readme-button"
-                            ariaLabel="Show Readme view"
-                            variant={ButtonVariantType.borderLess}
-                            style={ButtonStyleType.neutral}
-                            icon={<ICBookOpen className="p-4 icon-dim-16 dc__no-shrink" />}
-                        />
-                    )}
+            <div className="flexbox dc__gap-4 dc__align-items-center">
+                {shouldRenderReadmeButton && (
+                    <Button
+                        onClick={handleEnableReadmeView}
+                        disabled={disableAllActions}
+                        dataTestId="config-readme-button"
+                        ariaLabel="Show Readme view"
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        icon={<ICBookOpen className="p-4 icon-dim-16 dc__no-shrink" />}
+                    />
+                )}
 
-                    {shouldRenderScopedVariables && (
-                        <Tooltip
-                            alwaysShowTippyOnHover
-                            content={resolveScopedVariables ? 'Hide variables value' : 'Show variables value'}
-                        >
-                            <div className="w-40 h-20">
-                                <Toggle
-                                    selected={resolveScopedVariables}
-                                    color="var(--B500)"
-                                    onSelect={handleToggleScopedVariablesView}
-                                    Icon={ICViewVariableToggle}
-                                    disabled={isDisabled}
-                                />
-                            </div>
-                        </Tooltip>
-                    )}
-                </div>
-                <div className="dc__border-right-n1 h-100" />
+                {shouldRenderScopedVariables && (
+                    <Tooltip
+                        alwaysShowTippyOnHover
+                        content={resolveScopedVariables ? 'Hide variables value' : 'Show variables value'}
+                    >
+                        <div className="w-40 h-20">
+                            <Toggle
+                                selected={resolveScopedVariables}
+                                color="var(--B500)"
+                                onSelect={handleToggleScopedVariablesView}
+                                Icon={ICViewVariableToggle}
+                                disabled={isLoadingInitialData}
+                            />
+                        </div>
+                    </Tooltip>
+                )}
+            </div>
+        )
+    }
+
+    const renderSelectMergeStrategy = () => {
+        if (!envId || !isEditView) {
+            return null
+        }
+
+        return (
+            <>
+                {!!children && <div className="dc__border-right-n1 h-16" />}
+
+                {SelectMergeStrategy ? (
+                    <SelectMergeStrategy
+                        mergeStrategy={mergeStrategy}
+                        handleMergeStrategyChange={handleMergeStrategyChange}
+                        isDisabled={disableAllActions}
+                    />
+                ) : (
+                    <div className="flexbox dc__gap-4">
+                        <InfoIconTippy
+                            heading="Merge strategy"
+                            // TODO: Replace with actual content and docLink
+                            additionalContent="Merge strategy determines how environment configurations are combined with inherited configurations configurations. Choose the strategy that best suits your needs:"
+                        />
+
+                        <span className="cn-7 fs-12 fw-4 lh-16">Merge strategy</span>
+                        {/* TODO: can make a constant for label text from enum */}
+                        <span className="cn-9 fs-12 fw-6 lh-20">{OverrideMergeStrategyType.REPLACE}</span>
+                    </div>
+                )}
             </>
         )
     }
 
+    const popupConfigGroups = Object.keys(popupMenuConfig ?? {})
+
     return (
-        <div className="px-12 py-4 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8">
-            <div className="flexbox dc__content-space dc__align-items-center dc__gap-8">
-                {renderOverrideView()}
-
-                {/* Not adding divider since renderOverrideView can't be true with isInheritedView */}
-                {isInheritedView && (
-                    <>
-                        <div className="flexbox dc__align-items-center dc__gap-6">
-                            <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
-                            <a
-                                href={baseConfigurationURL}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                                className="anchor dc__border-bottom--n"
-                            >
-                                Base Configurations
-                            </a>
-                        </div>
-
-                        {(!!children || (isEditView && SelectMergeStrategy)) && (
-                            <div className="dc__border-right-n1 h-100" />
-                        )}
-                    </>
-                )}
+        <div className="px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8">
+            <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
+                {getLHSActionNodes()}
 
                 {children}
 
-                {isEditView && SelectMergeStrategy && (
-                    <SelectMergeStrategy
-                        mergeStrategy={mergeStrategy}
-                        handleMergeStrategyChange={handleMergeStrategyChange}
-                        isDisabled={isDisabled}
-                    />
-                )}
+                {renderSelectMergeStrategy()}
             </div>
 
-            <div className="flexbox dc__align-items-center dc__gap-8">
-                {renderProtectedConfigActions()}
+            {isPublishedValuesView && !isPublishedTemplatePresent ? null : (
+                <div className="flexbox dc__align-items-center dc__gap-8">
+                    {renderProtectedConfigActions()}
 
-                {renderReadmeAndScopedVariablesBlock()}
+                    {renderReadmeAndScopedVariablesBlock()}
 
-                {popupMenuConfig.items.length > 0 && (
-                    <PopupMenu autoClose>
-                        <PopupMenu.Button rootClassName="flex dc__no-shrink" disabled={isDisabled} isKebab>
-                            <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
-                        </PopupMenu.Button>
+                    {!!popupConfigGroups.length && (
+                        <PopupMenu autoClose>
+                            <PopupMenu.Button rootClassName="flex dc__no-shrink" disabled={disableAllActions} isKebab>
+                                <ICMore
+                                    className="icon-dim-16 fcn-6 dc__flip-90"
+                                    data-testid="config-more-options-popup"
+                                />
+                            </PopupMenu.Button>
 
-                        <PopupMenu.Body
-                            rootClassName={popupMenuNode ? '' : 'dc__border pt-4 pb-4 w-150 dc__gap-4 flexbox-col'}
-                        >
-                            {popupMenuNode ?? (
-                                <>
-                                    <div className="flexbox-col">
-                                        {popupMenuConfig.items.map(
-                                            ({ itemKey, text, onClick, dataTestId, disabled, icon }) => (
-                                                <PopupMenuItem
-                                                    key={itemKey}
-                                                    text={text}
-                                                    onClick={onClick}
-                                                    dataTestId={dataTestId}
-                                                    disabled={disabled}
-                                                    icon={icon}
-                                                />
-                                            ),
-                                        )}
+                            <PopupMenu.Body
+                                rootClassName={popupMenuNode ? '' : 'dc__border pt-4 pb-4 w-150 dc__gap-4 flexbox-col'}
+                            >
+                                {popupMenuNode ?? (
+                                    <div className="flexbox-col dc__gap-4">
+                                        {popupConfigGroups.map((groupName, index) => {
+                                            const groupItems = popupMenuConfig[groupName] ?? []
+
+                                            return (
+                                                <Fragment key={groupName}>
+                                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
+
+                                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
+                                                        <PopupMenuItem
+                                                            key={text}
+                                                            text={text}
+                                                            onClick={onClick}
+                                                            dataTestId={dataTestId}
+                                                            disabled={disabled}
+                                                            icon={icon}
+                                                        />
+                                                    ))}
+                                                </Fragment>
+                                            )
+                                        })}
                                     </div>
-
-                                    <div className="dc__border-bottom-n1 w-100" />
-
-                                    {popupMenuConfig.footerConfig && (
-                                        <PopupMenuItem
-                                            text={popupMenuConfig.footerConfig.text}
-                                            onClick={popupMenuConfig.footerConfig.onClick}
-                                            dataTestId={popupMenuConfig.footerConfig.dataTestId}
-                                            disabled={popupMenuConfig.footerConfig.disabled}
-                                            icon={popupMenuConfig.footerConfig.icon}
-                                        />
-                                    )}
-                                </>
-                            )}
-                        </PopupMenu.Body>
-                    </PopupMenu>
-                )}
-            </div>
+                                )}
+                            </PopupMenu.Body>
+                        </PopupMenu>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
