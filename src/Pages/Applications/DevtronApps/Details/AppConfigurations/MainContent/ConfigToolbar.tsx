@@ -100,7 +100,7 @@ const ConfigToolbar = ({
     isLoadingInitialData,
     // TODO: Will have to segregate cases where all actions are disabled
     disableAllActions = false,
-    isPublishedTemplatePresent = true,
+    isPublishedConfigPresent = true,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
 
@@ -234,7 +234,7 @@ const ConfigToolbar = ({
                                 color="var(--B500)"
                                 onSelect={handleToggleScopedVariablesView}
                                 Icon={ICViewVariableToggle}
-                                disabled={isLoadingInitialData}
+                                disabled={disableAllActions}
                             />
                         </div>
                     </Tooltip>
@@ -287,7 +287,7 @@ const ConfigToolbar = ({
                 {renderSelectMergeStrategy()}
             </div>
 
-            {isPublishedValuesView && !isPublishedTemplatePresent ? null : (
+            {isPublishedValuesView && !isPublishedConfigPresent ? null : (
                 <div className="flexbox dc__align-items-center dc__gap-8">
                     {renderProtectedConfigActions()}
 

@@ -90,7 +90,7 @@ export interface ConfigToolbarProps {
      * @default - true
      * If false we will hide all the action in toolbar.
      */
-    isPublishedTemplatePresent?: boolean
+    isPublishedConfigPresent?: boolean
 }
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -106,5 +106,15 @@ export interface GetConfigToolbarPopupConfigProps {
     /**
      * If not provided won't show locked config data
      */
-    lockedConfigData: ConfigToolbarPopupMenuLockedConfigDataType
+    lockedConfigData?: ConfigToolbarPopupMenuLockedConfigDataType | null
+    configHeaderTab: ConfigHeaderTabType
+    isOverridden: boolean
+    isPublishedValuesView: boolean
+    isPublishedConfigPresent: boolean
+    handleDeleteOverride: () => void
+    handleDiscardDraft: () => void
+    unableToParseData: boolean
+    isLoading: boolean
+    isDraftAvailable: boolean
+    handleShowEditHistory: () => void
 }

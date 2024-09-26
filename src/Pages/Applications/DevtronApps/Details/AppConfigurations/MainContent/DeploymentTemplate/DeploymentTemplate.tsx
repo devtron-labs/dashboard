@@ -31,6 +31,7 @@ import {
     ProtectConfigTabsType,
     OverrideMergeStrategyType,
     CONFIG_HEADER_TAB_VALUES,
+    ConfigToolbarPopupNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -75,6 +76,7 @@ import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
 import { ConfigToolbarProps } from '../types'
+import { getConfigToolbarPopupConfig } from '../utils'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -93,6 +95,7 @@ const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTem
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
+const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 
 // FIXME: What if selectedTab is 3 and person re-freshes the page and it was approved? and cases like that
 const DeploymentTemplate = ({
@@ -176,6 +179,7 @@ const DeploymentTemplate = ({
     const [isSaving, setIsSaving] = useState<boolean>(false)
     const [showLockedTemplateDiffModal, setShowLockedTemplateDiffModal] = useState<boolean>(false)
     const [showSaveChangesModal, setShowSaveChangesModal] = useState<boolean>(false)
+    const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
 
     // FIXME: Need clean up as well on reload for states below
     // Compare view states
@@ -246,6 +250,8 @@ const DeploymentTemplate = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT &&
         isDraftAvailable
+
+    const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
     // TODO: memoize
     const compareWithTemplateSelectPickerOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = (() => {
@@ -1766,6 +1772,18 @@ const DeploymentTemplate = ({
         setCurrentEditorTemplateData(newTemplateData)
     }
 
+    const handleOpenDiscardDraftPopup = () => {
+        setPopupNodeType(ConfigToolbarPopupNodeType.DISCARD_DRAFT)
+    }
+
+    const handleShowEditHistory = () => {
+        setPopupNodeType(ConfigToolbarPopupNodeType.EDIT_HISTORY)
+    }
+
+    const handleClearPopupNode = () => {
+        setPopupNodeType(null)
+    }
+
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
     const renderCTA = () => {
@@ -1855,8 +1873,6 @@ const DeploymentTemplate = ({
         </div>
     )
 
-    // const getConfigToolbarPopupConfig = (): ConfigToolbarProps['popupMenuConfig'] => {}
-
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
@@ -1878,8 +1894,35 @@ const DeploymentTemplate = ({
                     mergeStrategy={currentEditorTemplateData?.mergeStrategy}
                     handleMergeStrategyChange={handleMergeStrategyChange}
                     handleEnableReadmeView={handleEnableReadmeView}
-                    popupMenuConfig={null}
-                    popupMenuNode={null}
+                    popupMenuConfig={getConfigToolbarPopupConfig({
+                        lockedConfigData: {
+                            areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
+                            hideLockedKeys,
+                            handleSetHideLockedKeys,
+                        },
+                        configHeaderTab,
+                        // FIXME: Check if need to send others as well
+                        isOverridden: currentEditorTemplateData?.isOverridden,
+                        isPublishedValuesView,
+                        isPublishedConfigPresent,
+                        handleDeleteOverride: handleOverride,
+                        unableToParseData: currentEditorTemplateData?.unableToParseYaml,
+                        isLoading: isLoadingInitialData || isResolvingVariables || isSaving,
+                        isDraftAvailable,
+                        handleDiscardDraft: handleOpenDiscardDraftPopup,
+                        handleShowEditHistory,
+                    })}
+                    popupMenuNode={
+                        ProtectionViewToolbarPopupNode ? (
+                            <ProtectionViewToolbarPopupNode
+                                popupNodeType={popupNodeType}
+                                handleClearPopupNode={handleClearPopupNode}
+                                draftId={draftTemplateData?.latestDraft?.draftId}
+                                draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                                handleReload={handleReload}
+                            />
+                        ) : null
+                    }
                     handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                     resolveScopedVariables={resolveScopedVariables}
                     // TODO: Can make variable
@@ -1890,7 +1933,7 @@ const DeploymentTemplate = ({
                     isDraftPresent={isDraftAvailable}
                     approvalUsers={draftTemplateData?.latestDraft?.approvers}
                     isLoadingInitialData={isLoadingInitialData}
-                    isPublishedTemplatePresent={!(envId && !publishedTemplateData?.isOverridden)}
+                    isPublishedConfigPresent={!isPublishedConfigPresent}
                 >
                     <DeploymentTemplateOptionsHeader
                         disableVersionSelect={
