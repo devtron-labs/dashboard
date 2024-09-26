@@ -70,6 +70,7 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
+    isAirGappedIsolatedEnv,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -187,6 +188,7 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
+                {/* TODO: Add last synced time */}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -304,7 +306,7 @@ export const SourceInfo = ({
                                           setDetailed={setDetailed}
                                       />
                                   )}
-                                  {isVirtualEnvironment && appDetails?.resourceTree && (
+                                  {isAirGappedIsolatedEnv && (
                                       <HelmAppConfigApplyStatusCard
                                           cardLoading={cardLoading}
                                           releaseStatus={appDetails.resourceTree.releaseStatus}
@@ -312,13 +314,16 @@ export const SourceInfo = ({
                                   )}
                               </>
                           )}
-                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          {isVirtualEnvironment && !isAirGappedIsolatedEnv && renderGeneratedManifestDownloadCard()}
                           {!helmMigratedAppNotTriggered && (
                               <>
                                   <DeploymentStatusCard
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}
-                                      hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                                      hideDetails={
+                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM ||
+                                          isAirGappedIsolatedEnv
+                                      }
                                       isVirtualEnvironment={isVirtualEnvironment}
                                       refetchDeploymentStatus={refetchDeploymentStatus}
                                   />

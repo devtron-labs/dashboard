@@ -294,6 +294,8 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
 
+    const isAirGappedIsolatedEnv = isVirtualEnvRef.current && appDetails?.resourceTree
+
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
@@ -354,6 +356,7 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    // This is called only when timeline modal is open
     const getDeploymentDetailStepsData = useCallback(
         (showTimeline?: boolean): void => {
             const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
@@ -474,7 +477,7 @@ export const Details: React.FC<DetailsType> = ({
         getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppTypes.HELM) {
+                    if (deploymentAppType === DeploymentAppTypes.HELM || isAirGappedIsolatedEnv) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
@@ -732,6 +735,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
+                    isAirGappedIsolatedEnv={isAirGappedIsolatedEnv}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
