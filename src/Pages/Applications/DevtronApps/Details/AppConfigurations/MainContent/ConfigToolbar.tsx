@@ -10,6 +10,7 @@ import {
     BaseURLParams,
     InfoIconTippy,
     OverrideMergeStrategyType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -86,8 +87,7 @@ const ConfigToolbar = ({
     handleEnableReadmeView,
     children,
 
-    popupMenuConfig,
-    popupMenuNode,
+    popupConfig,
 
     handleToggleScopedVariablesView,
     resolveScopedVariables,
@@ -125,6 +125,9 @@ const ConfigToolbar = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         (isProtected && isDraftPresent ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT : true)
     )
+
+    const showProtectedTabs =
+        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && ProtectionViewTabGroup
 
     const getLHSActionNodes = (): JSX.Element => {
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
@@ -188,7 +191,7 @@ const ConfigToolbar = ({
         }
 
         return (
-            <div className="flexbox dc__gap-4 dc__align-items-center">
+            <>
                 {shouldRenderApproverInfoTippy && <ConfigApproversInfoTippy approvalUsers={approvalUsers} />}
                 {shouldRenderCommentsView && (
                     <ProtectConfigShowCommentsButton
@@ -196,7 +199,7 @@ const ConfigToolbar = ({
                         handleToggleCommentsView={handleToggleCommentsView}
                     />
                 )}
-            </div>
+            </>
         )
     }
 
@@ -210,7 +213,7 @@ const ConfigToolbar = ({
         }
 
         return (
-            <div className="flexbox dc__gap-4 dc__align-items-center">
+            <>
                 {shouldRenderReadmeButton && (
                     <Button
                         onClick={handleEnableReadmeView}
@@ -219,7 +222,8 @@ const ConfigToolbar = ({
                         ariaLabel="Show Readme view"
                         variant={ButtonVariantType.borderLess}
                         style={ButtonStyleType.neutral}
-                        icon={<ICBookOpen className="p-4 icon-dim-16 dc__no-shrink" />}
+                        icon={<ICBookOpen className="scn-7" />}
+                        size={ComponentSizeType.xs}
                     />
                 )}
 
@@ -239,7 +243,7 @@ const ConfigToolbar = ({
                         </div>
                     </Tooltip>
                 )}
-            </div>
+            </>
         )
     }
 
@@ -275,10 +279,12 @@ const ConfigToolbar = ({
         )
     }
 
-    const popupConfigGroups = Object.keys(popupMenuConfig ?? {})
+    const popupConfigGroups = Object.keys(popupConfig?.menuConfig ?? {})
 
     return (
-        <div className="px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8">
+        <div
+            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 ${!showProtectedTabs ? 'py-6' : ''}`}
+        >
             <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
                 {getLHSActionNodes()}
 
@@ -303,12 +309,18 @@ const ConfigToolbar = ({
                             </PopupMenu.Button>
 
                             <PopupMenu.Body
-                                rootClassName={popupMenuNode ? '' : 'dc__border pt-4 pb-4 w-150 dc__gap-4 flexbox-col'}
+                                rootClassName={
+                                    popupConfig.popupNodeType
+                                        ? ''
+                                        : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                                }
                             >
-                                {popupMenuNode ?? (
+                                {popupConfig.popupNodeType ? (
+                                    popupConfig.popupMenuNode
+                                ) : (
                                     <div className="flexbox-col dc__gap-4">
                                         {popupConfigGroups.map((groupName, index) => {
-                                            const groupItems = popupMenuConfig[groupName] ?? []
+                                            const groupItems = popupConfig.menuConfig[groupName] ?? []
 
                                             return (
                                                 <Fragment key={groupName}>

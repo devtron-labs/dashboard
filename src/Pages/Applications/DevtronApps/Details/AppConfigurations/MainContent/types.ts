@@ -1,6 +1,7 @@
 import {
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
+    ConfigToolbarPopupNodeType,
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -20,6 +21,18 @@ export interface ConfigHeaderTabProps extends Pick<ConfigHeaderProps, 'handleTab
 export interface ConfigHeaderTabConfigType {
     text: string
     icon?: FunctionComponent<React.SVGProps<SVGSVGElement>> | null
+}
+
+interface ConfigToolbarPopupConfigType {
+    menuConfig: Record<string, ConfigToolbarPopupMenuConfigType[]>
+    /**
+     * If true, would show popupMenuNode in body of the popup menu
+     */
+    popupNodeType?: ConfigToolbarPopupNodeType
+    /**
+     * If provided, will replace the popup menu view with the provided node given popupMenuConfig is not empty
+     */
+    popupMenuNode?: ReactNode
 }
 
 export interface ConfigToolbarProps {
@@ -61,11 +74,7 @@ export interface ConfigToolbarProps {
      * If provided, will show popup menu on click three dots button
      * If empty/null, will not show the button
      */
-    popupMenuConfig?: Record<string, ConfigToolbarPopupMenuConfigType[]>
-    /**
-     * If provided, will replace the popup menu view with the provided node given popupMenuConfig is not empty
-     */
-    popupMenuNode?: ReactNode
+    popupConfig?: ConfigToolbarPopupConfigType
     /**
      * @default false
      */

@@ -67,15 +67,10 @@ export const getConfigHeaderTabConfig = (
     }
 }
 
-export const PopupMenuItem = ({
-    text,
-    onClick,
-    dataTestId,
-    disabled,
-    icon,
-}: Omit<ConfigToolbarPopupMenuConfigType, 'itemKey'>) => (
+// TODO: Ask for button variant
+export const PopupMenuItem = ({ text, onClick, dataTestId, disabled, icon }: ConfigToolbarPopupMenuConfigType) => (
     <button
-        className={`dc__transparent py-6 px-8 flexbox dc__gap-8 dc__hover-n50 ${disabled ? 'dc__disabled' : ''}`}
+        className={`dc__transparent py-6 px-8 flexbox dc__gap-8 dc__align-items-center dc__hover-n50 ${disabled ? 'dc__disabled' : ''}`}
         onClick={onClick}
         data-testid={dataTestId}
         disabled={disabled}
@@ -100,7 +95,7 @@ export const getConfigToolbarPopupConfig = ({
     isLoading,
     isDraftAvailable,
     handleShowEditHistory,
-}: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupMenuConfig'] => {
+}: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
     }

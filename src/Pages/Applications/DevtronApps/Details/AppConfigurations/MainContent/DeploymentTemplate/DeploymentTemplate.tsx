@@ -253,6 +253,11 @@ const DeploymentTemplate = ({
 
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
+    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
+    // const areChangesPresent =
+    //     currentEditorTemplateData &&
+    //     currentEditorTemplateData.editorTemplate !== YAMLStringify(currentEditorTemplateData.originalTemplate)
+
     // TODO: memoize
     const compareWithTemplateSelectPickerOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = (() => {
         const initialOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = [
@@ -1780,11 +1785,10 @@ const DeploymentTemplate = ({
         setPopupNodeType(ConfigToolbarPopupNodeType.EDIT_HISTORY)
     }
 
+    // TODO: Product req is to close modal not go back to reverted popup menu, check if can be easily done
     const handleClearPopupNode = () => {
         setPopupNodeType(null)
     }
-
-    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
     const renderCTA = () => {
         const selectedChart = isPublishedValuesView
@@ -1873,6 +1877,37 @@ const DeploymentTemplate = ({
         </div>
     )
 
+    const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
+        menuConfig: getConfigToolbarPopupConfig({
+            lockedConfigData: {
+                areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
+                hideLockedKeys,
+                handleSetHideLockedKeys,
+            },
+            configHeaderTab,
+            // FIXME: Check if need to send others as well
+            isOverridden: currentEditorTemplateData?.isOverridden,
+            isPublishedValuesView,
+            isPublishedConfigPresent,
+            handleDeleteOverride: handleOverride,
+            unableToParseData: currentEditorTemplateData?.unableToParseYaml,
+            isLoading: isLoadingInitialData || isResolvingVariables || isSaving,
+            isDraftAvailable,
+            handleDiscardDraft: handleOpenDiscardDraftPopup,
+            handleShowEditHistory,
+        }),
+        popupNodeType,
+        popupMenuNode: ProtectionViewToolbarPopupNode ? (
+            <ProtectionViewToolbarPopupNode
+                popupNodeType={popupNodeType}
+                handleClearPopupNode={handleClearPopupNode}
+                draftId={draftTemplateData?.latestDraft?.draftId}
+                draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                handleReload={handleReload}
+            />
+        ) : null,
+    }
+
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
@@ -1894,35 +1929,7 @@ const DeploymentTemplate = ({
                     mergeStrategy={currentEditorTemplateData?.mergeStrategy}
                     handleMergeStrategyChange={handleMergeStrategyChange}
                     handleEnableReadmeView={handleEnableReadmeView}
-                    popupMenuConfig={getConfigToolbarPopupConfig({
-                        lockedConfigData: {
-                            areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
-                            hideLockedKeys,
-                            handleSetHideLockedKeys,
-                        },
-                        configHeaderTab,
-                        // FIXME: Check if need to send others as well
-                        isOverridden: currentEditorTemplateData?.isOverridden,
-                        isPublishedValuesView,
-                        isPublishedConfigPresent,
-                        handleDeleteOverride: handleOverride,
-                        unableToParseData: currentEditorTemplateData?.unableToParseYaml,
-                        isLoading: isLoadingInitialData || isResolvingVariables || isSaving,
-                        isDraftAvailable,
-                        handleDiscardDraft: handleOpenDiscardDraftPopup,
-                        handleShowEditHistory,
-                    })}
-                    popupMenuNode={
-                        ProtectionViewToolbarPopupNode ? (
-                            <ProtectionViewToolbarPopupNode
-                                popupNodeType={popupNodeType}
-                                handleClearPopupNode={handleClearPopupNode}
-                                draftId={draftTemplateData?.latestDraft?.draftId}
-                                draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                                handleReload={handleReload}
-                            />
-                        ) : null
-                    }
+                    popupConfig={toolbarPopupConfig}
                     handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                     resolveScopedVariables={resolveScopedVariables}
                     // TODO: Can make variable
