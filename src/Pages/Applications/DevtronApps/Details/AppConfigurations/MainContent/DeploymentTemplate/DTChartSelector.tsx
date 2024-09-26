@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useState } from 'react'
 import {
     PopupMenu,
@@ -8,17 +24,13 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { sortObjectArrayAlphabetically, versionComparator } from '@Components/common'
+import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
 import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
-import {
-    CHART_TYPE_TAB_KEYS,
-    CHART_TYPE_TAB,
-    CHART_DOCUMENTATION_LINK,
-    DEPLOYMENT_TEMPLATE_LABELS_KEYS,
-} from './constants'
+import { CHART_TYPE_TAB_KEYS, CHART_TYPE_TAB, CHART_DOCUMENTATION_LINK } from './constants'
 
 // NOTE: Have migrated directly
 const ChartSelectorDropdown = ({
@@ -61,7 +73,7 @@ const ChartSelectorDropdown = ({
             selectChart(targetChart)
         } else {
             const sortedFilteredCharts = filteredCharts.sort((a, b) =>
-                versionComparator(a, b, 'version', SortingOrder.DESC),
+                versionComparatorBySortOrder(a.version, b.version),
             )
             selectChart(sortedFilteredCharts[0])
         }
@@ -189,9 +201,7 @@ const DTChartSelector = ({
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name === selectedChart.name)
-              .sort((a, b) =>
-                  versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
-              )
+              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version, SortingOrder.DESC))
         : []
 
     const onSelectChartVersion = (selected: SelectPickerOptionType) => {

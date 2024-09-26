@@ -85,6 +85,10 @@ export const selectionListData: TerminalSelectionListDataType = {
             sessionId: '',
         },
     },
+    metadata: {
+        node: '',
+        namespace: '',
+    },
 }
 
 export const selectionListDataWithSecondStrip = {

@@ -96,6 +96,7 @@ export interface LastExecutionMinResponseType {
         lastExecution: string
         imageScanDeployInfoId: number
         severityCount: SeverityCount
+        scanned: boolean
     }
 }
 

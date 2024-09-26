@@ -194,7 +194,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                                     SourceTypeMap.BranchFixed,
                                                 )
                                             }}
-                                            handleOnBlur={onBlur}
+                                            onBlur={onBlur}
                                             isRequiredField
                                             error={
                                                 errorObj &&

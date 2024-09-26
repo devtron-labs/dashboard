@@ -23,11 +23,11 @@ import {
     TeamList,
     trash,
     LastExecutionResponseType,
-    DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
     TemplateListDTO,
     getUrlWithSearchParams,
+    ROUTES,
     SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
@@ -310,11 +310,6 @@ export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVeri
     return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
-function getLastExecution(queryString: number | string): Promise<ResponseType> {
-    const URL = `security/scan/executionDetail?${queryString}`
-    return get(URL)
-}
-
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     const vulnerabilities = response.result.vulnerabilities || []
     const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
@@ -347,55 +342,13 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
     }
 }
 
-export function getLastExecutionByImage(image: string): Promise<LastExecutionResponseType> {
-    const queryString = `image=${image}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByArtifactId(
-    appId: string | number,
-    artifact: string | number,
+export function getLastExecutionByAppArtifactId(
+    artifactId: string | number,
+    appId?: string | number,
 ): Promise<LastExecutionResponseType> {
-    const queryString = `artifactId=${artifact}&appId=${appId}`
-    return getLastExecution(queryString).then((response) => {
+    const url = getUrlWithSearchParams(ROUTES.SECURITY_SCAN_EXECUTION_DETAILS, { appId, artifactId })
+    return get(url).then((response) => {
         return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByImageScanDeploy(
-    imageScanDeployInfoId: string | number,
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `imageScanDeployInfoId=${imageScanDeployInfoId}&appId=${appId}&envId=${envId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionMinByAppAndEnv(
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionMinResponseType> {
-    const URL = `security/scan/executionDetail/min?appId=${appId}&envId=${envId}`
-    return get(URL).then((response) => {
-        return {
-            code: response.code,
-            status: response.status,
-            result: {
-                lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
-                imageScanDeployInfoId: response.result.imageScanDeployInfoId,
-                severityCount: {
-                    critical: response.result.severityCount.critical,
-                    high: response.result.severityCount.high,
-                    medium: response.result.severityCount.medium,
-                    low: response.result.severityCount.low,
-                    unknown: response.result.severityCount.unknown,
-                },
-            },
-        }
     })
 }
 

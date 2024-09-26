@@ -155,6 +155,7 @@ const GenericAppList = ({
     }, [])
 
     const handleArgoAppListing = () => {
+        if (!clusterIdsCsv) return
         setDataStateType(AppListViewType.LOADING)
         getArgoInstalledExternalApps(clusterIdsCsv)
             .then((appsListResponse) => {

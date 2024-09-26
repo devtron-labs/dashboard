@@ -242,7 +242,6 @@ src/components/cluster/ClusterComponentModal.tsx
 src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx
 src/components/cluster/ClusterInstallStatus.tsx
-src/components/cluster/Environment.tsx
 src/components/cluster/UseNameListDropdown.tsx
 src/components/cluster/cluster.service.ts
 src/components/cluster/cluster.util.ts
@@ -282,7 +281,6 @@ src/components/common/formFields/CopyButton.tsx
 src/components/common/formFields/CustomPassword.tsx
 src/components/common/formFields/DevtronSwitch.tsx
 src/components/common/formFields/Typeahead.tsx
-src/components/common/formFields/Widgets/Widgets.tsx
 src/components/common/helpers/Helpers.tsx
 src/components/common/helpers/compareVersion.ts
 src/components/common/helpers/isSubset.ts
@@ -295,7 +293,6 @@ src/components/common/icons/Icons.tsx
 src/components/common/lineChart/lineChart.tsx
 src/components/common/navigation/Navigation.tsx
 src/components/common/navigation/NavigationRoutes.tsx
-src/components/common/security/ScanDetailsModal.tsx
 src/components/dockerRegistry/Docker.tsx
 src/components/dockerRegistry/ManageRegistry.tsx
 src/components/dockerRegistry/service.tsx
@@ -448,11 +445,9 @@ src/components/v2/utils/useSharedState.ts
 src/components/v2/values/ChartValues.component.tsx
 src/components/v2/values/chartValuesDiff/ChartRepoSelector.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesEditor.tsx
-src/components/v2/values/chartValuesDiff/ChartValuesGUIView.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.component.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.reducer.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
-src/components/v2/values/chartValuesDiff/ChartValuesView.utils.ts
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx

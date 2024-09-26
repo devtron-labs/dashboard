@@ -328,7 +328,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                                 value={this.state.form.configName}
                                 onChange={this.handleWebhookConfigNameChange}
                                 data-field="configName"
-                                handleOnBlur={this.onBlur}
+                                onBlur={this.onBlur}
                                 placeholder="Enter name"
                                 autoFocus
                                 tabIndex={1}
@@ -347,7 +347,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                                 tabIndex={2}
                                 onChange={this.handleWebhookUrlChange}
                                 data-field="webhookUrl"
-                                handleOnBlur={this.onBlur}
+                                onBlur={this.onBlur}
                                 isRequiredField
                                 error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
                                 data-testid="webhook-url-error"

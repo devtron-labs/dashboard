@@ -341,6 +341,17 @@ const TerminalComponent = ({
                 sessionId,
             },
         },
+        metadata: isResourceBrowserView
+            ? {
+                  cluster: selectedResource.clusterName ?? '',
+                  namespace: selectedResource.namespace ?? '',
+                  pod: nodeName ?? '',
+              }
+            : {
+                  app: appDetails.appName ?? '',
+                  environment: appDetails.environmentName ?? '',
+                  pod: nodeName ?? '',
+              },
     }
 
     return (
@@ -350,6 +361,7 @@ const TerminalComponent = ({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
+                isResourceBrowserView={isResourceBrowserView}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
         </div>

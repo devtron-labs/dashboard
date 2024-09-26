@@ -43,6 +43,19 @@ export const getChangeAppTabURL = (appTabType) => {
     }
 }
 
+export const getAppTabNameFromAppType = (appType: string) => {
+    switch (appType) {
+        case AppListConstants.AppType.HELM_APPS:
+            return AppListConstants.AppTabs.HELM_APPS
+        case AppListConstants.AppType.ARGO_APPS:
+            return AppListConstants.AppTabs.ARGO_APPS
+        case AppListConstants.AppType.FLUX_APPS:
+            return AppListConstants.AppTabs.FLUX_APPS
+        default:
+            return AppListConstants.AppTabs.DEVTRON_APPS
+    }
+}
+
 export const renderIcon = (appType: string): string => {
     if (appType === AppListConstants.AppType.FLUX_APPS) {
         return FluxCDAppIcon
@@ -117,7 +130,7 @@ export const useFilterOptions = ({
 
     const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
         () =>
-            appListFiltersResponse?.appListFilters.result.environments.reduce((prev, curr) => {
+            appListFiltersResponse?.appListFilters?.result.environments.reduce((prev, curr) => {
                 if (!prev.find((clusterItem) => clusterItem.label === curr.cluster_id)) {
                     prev.push({ label: curr.cluster_id, options: [] })
                 }
@@ -159,7 +172,7 @@ export const useFilterOptions = ({
             appListFiltersResponse?.isFullMode
                 ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
                 : getClusterOptions(appListFiltersResponse?.clusterList.result),
-        [appListFiltersResponse],
+        [appListFiltersResponse, isExternalArgo, isExternalFlux],
     )
 
     const namespaceOptions: GroupedOptionsType[] = useMemo(
