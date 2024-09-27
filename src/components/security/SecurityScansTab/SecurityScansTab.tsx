@@ -18,11 +18,13 @@ import {
     SortableTableHeaderCell,
     abortPreviousRequests,
     getIsRequestAborted,
+    SecurityModal,
     FilterSelectPicker,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
-import { ScanDetailsModal, getSeverityWithCount } from '@Components/common'
+import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
+import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import {
@@ -38,6 +40,8 @@ import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchPa
 import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import { SecurityScanType } from '../security.types'
+
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 export const SecurityScansTab = () => {
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
@@ -62,6 +66,15 @@ export const SecurityScansTab = () => {
         handleSearch,
         updateSearchParams,
     } = urlFilters
+
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && SecurityModalSidebar
+
+    const { scanDetailsLoading, scanDetailsResponse, scanDetailsError } = useGetAppSecurityDetails({
+        appId: scanDetails.uniqueId.appId,
+        envId: scanDetails.uniqueId.envId,
+        imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
+        isSecurityScanV2Enabled,
+    })
 
     const payload: ScanListPayloadType = {
         offset,
@@ -89,6 +102,8 @@ export const SecurityScansTab = () => {
             searchType,
         ],
     )
+
+    const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
 
     const [clusterEnvListLoading, clusterEnvListResult] = useAsync(() => getVulnerabilityFilterData())
 
@@ -174,6 +189,18 @@ export const SecurityScansTab = () => {
             <div className="flexbox-col flex-grow-1 dc__content-center">
                 <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
             </div>
+        )
+    }
+
+    const isScanListEmpty = !scanListLoading && !securityScansResult?.result.securityScans.length
+
+    if (isScanListEmpty && !areFiltersActive) {
+        return (
+            <GenericEmptyState
+                image={AppNotDeployed}
+                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                classname="flex-grow-1"
+            />
         )
     }
 
@@ -348,25 +375,24 @@ export const SecurityScansTab = () => {
 
     const renderScanDetailsModal = () => {
         if (scanDetails.uniqueId.appId) {
-            return <ScanDetailsModal showAppInfo uniqueId={scanDetails.uniqueId} close={handleCloseScanDetailsModal} />
+            return (
+                <SecurityModal
+                    handleModalClose={handleCloseScanDetailsModal}
+                    Sidebar={SecurityModalSidebar}
+                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                    isHelmApp={false}
+                    isLoading={scanDetailsLoading}
+                    error={scanDetailsError}
+                    responseData={scanDetailsResponse?.result}
+                />
+            )
         }
         return null
     }
 
     const renderScanListContainer = () => {
-        if (!scanListLoading && !securityScansResult?.result.securityScans.length) {
-            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
-            if (areFiltersActive) {
-                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
-            }
-
-            return (
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                    classname="flex-grow-1"
-                />
-            )
+        if (isScanListEmpty && areFiltersActive) {
+            return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
         }
 
         return (

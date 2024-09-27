@@ -1129,13 +1129,14 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.3.14-beta-2":
-  version "0.3.14-beta-2"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.3.14-beta-2.tgz#9a6b870f9dd211fdf76be2eecbe49f1a91373974"
-  integrity sha512-3H5XcHepUd8lt/5r98pE4mmQ3UdZBsb+Xa99yVjcNXh43/qkxFHFRYdNDuq1eNcb/KNnSBLjOpH1Qmo7yu2XoQ==
+"@devtron-labs/devtron-fe-common-lib@0.3.15-beta-3":
+  version "0.3.15-beta-3"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.3.15-beta-3.tgz#fa227dbcf2d45fa6910116004ab435431371461c"
+  integrity sha512-EJeIrN0EycHciOwpHvdUM9L6vMwr5nW+aDJ9oGrmQ2g2z7EOmn5ytwme4zVq5DiSLOf+o8D+Ccl3Qj0kQ+INtw==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
+    dayjs "^1.11.12"
     fast-json-patch "^3.1.1"
     jsonpath-plus "^9.0.0"
     react-dates "^21.8.0"
@@ -4127,6 +4128,11 @@ data-view-byte-offset@^1.0.0:
     call-bind "^1.0.6"
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
+
+dayjs@^1.11.12:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 dayjs@^1.11.8:
   version "1.11.11"
