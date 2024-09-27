@@ -17,19 +17,19 @@
 import { useState, useEffect } from 'react'
 import {
     Progressing,
-    toastAccessDenied,
     useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { NavLink } from 'react-router-dom'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
-import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps } from '../AppGroup.types'
+import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
 
 const EnvironmentLink = ({
     namespace,
@@ -57,62 +57,35 @@ const EnvironmentLink = ({
     )
 }
 
-export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }: EnvironmentsListViewType) {
-    const match = useRouteMatch()
-    const location = useLocation()
-    const history = useHistory()
+export default function EnvironmentsListView({
+    isSuperAdmin,
+    filterConfig,
+    clearFilters,
+    changePage,
+    changePageSize,
+}: EnvironmentsListViewType) {
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
-    const [envCount, setEnvCount] = useState<number>()
-    const [paginationParamsChange, setPaginationParamsChange] = useState({ pageSize: 20, offset: 0 })
-    const params = new URLSearchParams(location.search)
-    const paramObj = {
-        envName: params.get('search'),
-        clusterIds: params.get('cluster'),
-        offset: params.get('offset') || '0',
-        size: params.get('pageSize') || '20',
-    }
-    const [paramsData, setParamsData] = useState(paramObj)
-    const [loading, appList] = useAsync(() => getEnvAppList(paramsData), [paramsData])
-    const emptyStateData = paramObj.clusterIds
+    const [envCount, setEnvCount] = useState<number>(0)
+    const { cluster } = filterConfig
+    const [appListLoading, appListResponse] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
+    const emptyStateData = cluster.join()
         ? { title: 'No app groups found', subTitle: "We couldn't find any matching app groups." }
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        setParamsData(paramObj)
-    }, [location.search])
-
-    useEffect(() => {
-        if (appList?.result?.envList) {
-            setFilteredEnvList(appList.result.envList)
-            setEnvCount(appList.result.envCount)
-            setPaginationParamsChange({ pageSize: +params.get('pageSize') || 20, offset: +params.get('offset') })
-        } else {
-            setFilteredEnvList([])
-        }
-    }, [appList?.result])
-
-    const changePage = (pageNo: number): void => {
-        const pageSize = params.get('pageSize') || '20'
-        const newOffset = +pageSize * (pageNo - 1)
-        params.set('pageSize', pageSize)
-        params.set('offset', newOffset.toString())
-        history.push(`${match.url}?${params.toString()}`)
-    }
-
-    const changePageSize = (size: number): void => {
-        params.set('pageSize', size.toString())
-        params.set('offset', '0')
-        history.push(`${match.url}?${params.toString()}`)
-    }
+        const appListResult: EnvApp = appListResponse?.result || {envCount: 0, envList: []}
+        setFilteredEnvList(appListResult.envList)
+        setEnvCount(appListResult.envCount)
+    }, [appListResponse?.result])
 
     const renderPagination = () => {
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="flex dc__content-space px-20 dc__border-top"
+                    rootClassName="flex dc__content-space px-20"
                     size={envCount}
-                    pageSize={paginationParamsChange.pageSize}
-                    offset={paginationParamsChange.offset}
+                    pageSize={filterConfig.pageSize}
+                    offset={filterConfig.offset}
                     changePage={changePage}
                     changePageSize={changePageSize}
                 />
@@ -124,22 +97,29 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         if (e.currentTarget.dataset.noapp === 'true') {
             e.preventDefault()
             if (isSuperAdmin) {
-                toast.info(NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN)
+                ToastManager.showToast({
+                    variant: ToastVariantType.info,
+                    description: NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN,
+                })
             } else {
-                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
+                ToastManager.showToast({
+                    variant: ToastVariantType.notAuthorized,
+                    title: EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT,
+                    description: NO_ACCESS_TOAST_MESSAGE.NON_ADMIN,
+                })
             }
         }
     }
 
     const renderEmptyLoader = () => {
-        if (loading) {
+        if (appListLoading) {
             return <Progressing pageLoader />
         }
         return (
             <EnvEmptyStates
                 title={emptyStateData.title}
                 subTitle={emptyStateData.subTitle}
-                actionHandler={removeAllFilters}
+                actionHandler={clearFilters}
             />
         )
     }
@@ -155,7 +135,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         )
     }
 
-    return filteredEnvList.length === 0 || loading ? (
+    return filteredEnvList.length === 0 || appListLoading ? (
         <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
             {renderEmptyLoader()}
         </div>

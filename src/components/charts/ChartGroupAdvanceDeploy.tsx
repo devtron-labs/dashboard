@@ -24,8 +24,9 @@ import {
     ConditionalWrap,
     useEffectAfterMount,
     PageHeader,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
@@ -131,7 +132,10 @@ export default function ChartGroupAdvanceDeploy() {
             setInstalling(true)
             const validated = await validateData()
             if (!validated) {
-                toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 })
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: 'Click on highlighted charts and resolve errors.',
+                })
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)

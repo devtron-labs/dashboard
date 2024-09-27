@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { getTeamListMin, showError, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { useState, useEffect } from 'react'
+import {
+    getTeamListMin,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
 import {
     getChartVersionsMin,
@@ -252,7 +257,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function validateData() {
         try {
-            const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
+            const nameRegexp = new RegExp(`^[a-z]+[a-z0-9-?]*[a-z0-9]+$`)
 
             const allNames = state.charts.map((chart) => chart.name.value)
             const duplicateNames = allNames.filter((name, index) => {
@@ -311,7 +316,10 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             return validated
         } catch (err) {
             console.error(err)
-            toast.warn('App names could not be validated. You may try to install anyway.')
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                description: 'App names could not be validated. You may try to install anyway.',
+            })
         }
     }
 
@@ -433,7 +441,10 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function configureChart(index: number, _currentCharts?: ChartGroupEntry[]) {
         if (!state.charts[index]?.isEnabled) {
-            toast.warn('Please enable first to configure chart')
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                description: 'Please enable first to configure chart',
+            })
             return
         }
         setState((state) => ({ ...state, configureChartIndex: index, advanceVisited: true }))

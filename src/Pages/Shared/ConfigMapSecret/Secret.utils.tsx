@@ -16,10 +16,15 @@
 
 import { components, OptionProps, GroupHeadingProps } from 'react-select'
 import { NavLink } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import YAML from 'yaml'
 
-import { OptionType, YAMLStringify, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    ToastManager,
+    ToastVariantType,
+    YAMLStringify,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-outlined.svg'
 import { URLS, DOCUMENTATION } from '@Config/index'
@@ -357,7 +362,10 @@ export const secretValidationInfoToast = ({
     } else {
         errorMessage = SECRET_TOAST_INFO.CHECK_KEY_NAME
     }
-    toast.error(errorMessage)
+    ToastManager.showToast({
+        variant: ToastVariantType.error,
+        description: errorMessage,
+    })
 }
 
 export async function prepareSecretOverrideData(configMapSecretData, dispatch: (action: ConfigMapAction) => void) {

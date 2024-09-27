@@ -19,13 +19,14 @@ import YAML from 'yaml'
 import {
     Progressing,
     showError,
-    SortingOrder,
     YAMLStringify,
     MarkDown,
     CodeEditor,
+    ToastVariantType,
+    ToastManager,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -34,7 +35,7 @@ import {
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
-import { importComponentFromFELibrary, versionComparator } from '../../common'
+import { importComponentFromFELibrary } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
 import { MODES } from '../../../config'
 import {
@@ -182,7 +183,10 @@ const DeploymentTemplateEditorView = ({
                     return chart.name === state.selectedChart.name
                 })
                 .sort((a, b) =>
-                    versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+                    versionComparatorBySortOrder(
+                        a[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                        b[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                    ),
                 )
 
             setFilteredCharts(
@@ -344,7 +348,11 @@ const DeploymentTemplateEditorView = ({
                     Object.keys(rhs.variableSnapshot || {}).length === 0
                 ) {
                     setConvertVariables(false)
-                    toast.error(NO_SCOPED_VARIABLES_MESSAGE)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: NO_SCOPED_VARIABLES_MESSAGE,
+                    })
+
                 }
                 setResolvedValuesLHS(lhs.resolvedData)
                 setResolvedValuesRHS(rhs.resolvedData)

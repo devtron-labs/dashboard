@@ -42,7 +42,6 @@ export const RestartStatusListDrawer = ({
 }: RestartStatusListDrawerProps) => {
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
-
     const hasPartialDeploymentWindowAccess = (appId) =>
         hibernateInfoMap[appId] &&
         hibernateInfoMap[appId].userActionState &&

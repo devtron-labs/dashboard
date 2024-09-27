@@ -20,12 +20,12 @@ import ReactSelect, { components } from 'react-select'
 import {
     ConfirmationDialog,
     Progressing,
-    SortingOrder,
     VisibleModal2,
     DropdownIndicator,
+    ToastManager,
+    ToastVariantType,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import { versionComparator } from '../../common'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
@@ -68,7 +68,10 @@ export const ChartTypeVersionOptions = ({
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
               .sort((a, b) =>
-                  versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+                  versionComparatorBySortOrder(
+                      a[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                      b[DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version],
+                  ),
               )
         : []
 
@@ -431,20 +434,6 @@ export const CompareWithApprovalPendingAndDraft = ({
     )
 }
 
-export const SuccessToastBody = ({ chartConfig }) => (
-    <div className="toast">
-        <div
-            className="toast__title"
-            data-testid={`${
-                chartConfig.id ? 'update-base-deployment-template-popup' : 'saved-base-deployment-template-popup'
-            }`}
-        >
-            {chartConfig.id ? 'Updated' : 'Saved'}
-        </div>
-        <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-    </div>
-)
-
 export const SaveConfirmationDialog = ({
     onSave,
     showAsModal,
@@ -517,7 +506,10 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
         try {
             setApiInProgress(true)
             await deleteDeploymentTemplate(state.data.environmentConfig.id, Number(appId), Number(envId))
-            toast.success('Restored to global.', { autoClose: null })
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Restored to global.',
+            })
             dispatch({
                 type: DeploymentConfigStateActionTypes.duplicate,
                 payload: null,

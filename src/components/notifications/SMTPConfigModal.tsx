@@ -22,8 +22,9 @@ import {
     Drawer,
     CustomInput,
     CHECKBOX_VALUE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -128,7 +129,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 ...prevState,
                 form: { ...prevState.form, isLoading: false, isError: true },
             }))
-            toast.error('Some required fields are missing or Invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
             return
         }
         this.setState((prevState) => ({
@@ -142,7 +146,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     ...prevState,
                     form: { ...prevState.form, isLoading: false },
                 }))
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
                 if (this.props.selectSMTPFromChild) {
                     this.props.selectSMTPFromChild(response?.result[0])
@@ -197,7 +204,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 data-testid="add-smtp-configuration-name"
                                 value={this.state.form.configName}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Configuration name"
                                 autoFocus
                                 tabIndex={1}
@@ -212,7 +219,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="host"
                                 value={this.state.form.host}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Eg. smtp.gmail.com"
                                 tabIndex={2}
                                 isRequiredField
@@ -226,7 +233,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="port"
                                 value={this.state.form.port}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Enter SMTP port"
                                 tabIndex={3}
                                 isRequiredField
@@ -240,7 +247,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="authUser"
                                 value={this.state.form.authUser}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Enter SMTP username"
                                 tabIndex={3}
                                 isRequiredField
@@ -267,7 +274,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 name="fromEmail"
                                 value={this.state.form.fromEmail}
                                 onChange={this.handleInputChange}
-                                handleOnBlur={this.handleBlur}
+                                onBlur={this.handleBlur}
                                 placeholder="Email"
                                 tabIndex={5}
                                 isRequiredField

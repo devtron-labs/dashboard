@@ -37,20 +37,6 @@
         position: absolute;
         bottom: 12px;
         right: 12px;
-        transition: top 0.3s;
-        padding: 6px;
-        width: 32px;
-        height: 32px;
-        border-radius: 4px;
-        box-shadow:
-            0 0 4px 0 rgba(0, 10, 20, 0.5),
-            0 0 4px 0 rgba(0, 10, 20, 0.5);
-        background-color: #2c3354;
-        opacity: 0.8;
-
-        &:hover {
-            opacity: 1;
-        }
     }
 
     .ci-details__history {
@@ -109,10 +95,6 @@
                 height: 0px;
                 transition: height 0.3s;
             }
-        }
-
-        .zoom {
-            transition: top 0.3s;
         }
     }
 }

@@ -24,12 +24,14 @@ import {
     InfoIconTippy,
     CodeEditor,
     SelectOption,
+    ToastManager,
+    ToastVariantType,
     TabGroup,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
@@ -49,7 +51,7 @@ import {
 import sampleConfig from './sampleConfig.json'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
+import { menuComponentForImage } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
@@ -332,19 +334,14 @@ const EphemeralContainerDrawer = ({
                             <span className="text-underline-dashed">Target Container Name</span>
                         </Tippy>
                     </div>
-                    <ReactSelect
+                    <SelectPicker
+                        inputId="target-container-name"
+                        name="target-container-name"
                         value={selectedTargetContainer || targetContainerOption?.[0]}
                         options={targetContainerOption}
-                        className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        styles={selectStyles}
                     />
                 </div>
             </div>
@@ -474,7 +471,10 @@ const EphemeralContainerDrawer = ({
             params,
         })
             .then((response: any) => {
-                toast.success('Launched Container Successfully ')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Launched Container Successfully',
+                })
                 setShowEphemeralContainerDrawer(false)
                 setEphemeralForm({
                     ...ephemeralForm,
