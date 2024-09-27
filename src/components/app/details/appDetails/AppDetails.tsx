@@ -480,6 +480,7 @@ export const Details: React.FC<DetailsType> = ({
         getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
+                    // Timelines are not applicable for helm deployments and air gapped envs
                     if (deploymentAppType === DeploymentAppTypes.HELM || isAirGappedIsolatedEnv) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,

@@ -187,6 +187,7 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
+    lastSnapshotTime?: string
 }
 
 interface Node {
