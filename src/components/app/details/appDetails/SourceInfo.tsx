@@ -26,6 +26,7 @@ import {
     showError,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -188,13 +189,31 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {/* TODO: Add last synced time */}
                 {isdeploymentAppDeleting && (
-                    <div data-testid="deleteing-argocd-pipeline">
+                    <div data-testid="deleteing-argocd-pipeline" className="flex left">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
                         <span className="dc__loading-dots cr-5" />
                     </div>
+                )}
+                {/* Last snapshot time */}
+                {isAirGappedIsolatedEnv && deploymentStatusDetailsBreakdownData.statusLastFetchedAt && (
+                    <Tooltip
+                        content={
+                            <div className="fs-12 fw-4 lh-18">
+                                <h6 className="fw-6 cn-0 m-0">Last snapshot received</h6>
+                                <p className="m-0 cn-50">{deploymentStatusDetailsBreakdownData.statusLastFetchedAt}</p>
+                            </div>
+                        }
+                    >
+                        <div className="dc__divider h-20 mx-8" />
+                        <div className="flex left dc__gap-6 px-8 py-4">
+                            <ICCamera className="scn-9 dc__no-shrink icon-dim-16" />
+                            <p className="m-0 fs-13 fw-4 lh-20 cn-9 dc__truncate">
+                                {deploymentStatusDetailsBreakdownData.statusLastFetchedAt}
+                            </p>
+                        </div>
+                    </Tooltip>
                 )}
                 {!loadingResourceTree && environment && (
                     <>

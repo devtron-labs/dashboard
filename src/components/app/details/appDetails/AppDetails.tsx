@@ -32,6 +32,7 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
     ReleaseMode,
+    handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -489,6 +490,10 @@ export const Details: React.FC<DetailsType> = ({
                             deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
                             deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
                             triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
+                            statusLastFetchedAt: deploymentStatusDetailRes.result.statusLastFetchedAt ? handleUTCTime(
+                                deploymentStatusDetailRes.result.statusLastFetchedAt,
+                                true,
+                            ) : '',
                         })
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
