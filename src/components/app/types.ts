@@ -590,7 +590,6 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
-    isAirGappedIsolatedEnv?: boolean
 }
 
 export interface AppDetailsCDButtonType

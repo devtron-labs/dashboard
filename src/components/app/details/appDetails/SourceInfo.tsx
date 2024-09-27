@@ -71,7 +71,6 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
-    isAirGappedIsolatedEnv,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -85,6 +84,7 @@ export const SourceInfo = ({
     // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
     const helmMigratedAppNotTriggered =
         appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
+    const isAirGappedIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -197,21 +197,26 @@ export const SourceInfo = ({
                     </div>
                 )}
                 {/* Last snapshot time */}
-                {isAirGappedIsolatedEnv && deploymentStatusDetailsBreakdownData.statusLastFetchedAt && (
+                {isAirGappedIsolatedEnv && deploymentStatusDetailsBreakdownData?.statusLastFetchedAt && (
                     <Tooltip
                         content={
-                            <div className="fs-12 fw-4 lh-18">
-                                <h6 className="fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 cn-50">{deploymentStatusDetailsBreakdownData.statusLastFetchedAt}</p>
+                            <div className="fw-4 lh-18 flexbox-col dc__ga-2">
+                                <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
+                                <p className="m-0 fs-12 cn-50">
+                                    {deploymentStatusDetailsBreakdownData.statusLastFetchedAt}
+                                </p>
                             </div>
                         }
+                        alwaysShowTippyOnHover
                     >
-                        <div className="dc__divider h-20 mx-8" />
-                        <div className="flex left dc__gap-6 px-8 py-4">
-                            <ICCamera className="scn-9 dc__no-shrink icon-dim-16" />
-                            <p className="m-0 fs-13 fw-4 lh-20 cn-9 dc__truncate">
-                                {deploymentStatusDetailsBreakdownData.statusLastFetchedAt}
-                            </p>
+                        <div className="flex left">
+                            <div className="dc__divider h-20 mr-8 ml-8" />
+                            <div className="flex left dc__gap-6 px-8 py-4">
+                                <ICCamera className="scn-9 dc__no-shrink icon-dim-16" />
+                                <p className="m-0 fs-13 fw-4 lh-20 cn-9 dc__truncate">
+                                    {deploymentStatusDetailsBreakdownData.statusLastFetchedAt}
+                                </p>
+                            </div>
                         </div>
                     </Tooltip>
                 )}

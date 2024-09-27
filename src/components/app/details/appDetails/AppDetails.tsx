@@ -295,7 +295,6 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
 
-    const isAirGappedIsolatedEnv = isVirtualEnvRef.current && appDetails?.resourceTree
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -427,7 +426,10 @@ export const Details: React.FC<DetailsType> = ({
                 }
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
-                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
+                _getDeploymentStatusDetail(
+                    appDetailsRef.current.deploymentAppType,
+                    isVirtualEnvRef.current && appDetailsRef.current.resourceTree,
+                )
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
@@ -472,7 +474,7 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isAirGappedIsolatedEnv: boolean) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
         getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
@@ -490,10 +492,9 @@ export const Details: React.FC<DetailsType> = ({
                             deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
                             deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
                             triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                            statusLastFetchedAt: deploymentStatusDetailRes.result.statusLastFetchedAt ? handleUTCTime(
-                                deploymentStatusDetailRes.result.statusLastFetchedAt,
-                                true,
-                            ) : '',
+                            statusLastFetchedAt: deploymentStatusDetailRes.result.statusLastFetchedAt
+                                ? handleUTCTime(deploymentStatusDetailRes.result.statusLastFetchedAt, true)
+                                : '',
                         })
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
@@ -740,7 +741,6 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
-                    isAirGappedIsolatedEnv={isAirGappedIsolatedEnv}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
