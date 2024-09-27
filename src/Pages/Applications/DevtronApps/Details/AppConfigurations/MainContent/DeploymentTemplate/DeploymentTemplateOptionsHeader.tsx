@@ -31,7 +31,7 @@ const DeploymentTemplateOptionsHeader = ({
     }
 
     const handleToggleEditMode = () => {
-        if (editMode === ConfigurationType.GUI) {
+        if (editMode === ConfigurationType.YAML) {
             handleChangeToGUIMode()
             return
         }
