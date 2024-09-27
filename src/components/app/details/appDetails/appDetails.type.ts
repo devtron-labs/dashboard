@@ -232,7 +232,7 @@ export interface SecurityVulnerabilityCardType {
 }
 
 export interface DeployedCommitCardType {
-    showCommitInfoDrawer: () => void
+    showCommitInfoDrawer: (e) => void
     cardLoading?: boolean
     envId: number | string
     ciArtifactId: number

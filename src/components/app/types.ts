@@ -25,6 +25,7 @@ import {
     RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
     ReleaseMode,
+    HelmReleaseStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
@@ -90,9 +91,14 @@ export interface CDModalProps {
     parentEnvironmentName: string
     ciPipelineId?: number
     isRedirectedFromAppDetails?: boolean
+    deploymentUserActionState?: ACTION_STATE
 }
 
 export interface AppDetails extends CDModalProps {
+    appStoreChartId: number
+    appStoreChartName: string
+    appStoreAppVersion: string
+    appStoreAppName: string
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
@@ -188,6 +194,7 @@ interface ResourceTree {
     podMetadata: PodMetadatum[]
     conditions?: any
     lastSnapshotTime?: string
+    releaseStatus?: HelmReleaseStatus
 }
 
 interface Node {
