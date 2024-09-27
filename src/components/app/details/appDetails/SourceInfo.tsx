@@ -18,6 +18,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import moment from 'moment'
 import {
     ConditionalWrap,
     DATE_TIME_FORMATS,
