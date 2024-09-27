@@ -25,6 +25,7 @@ const DeploymentTemplateOptionsHeader = ({
     selectedChart,
     isCompareView,
     isGuiSupported,
+    areChartsLoading,
 }: DeploymentTemplateOptionsHeaderProps) => {
     if (isCompareView || showReadMe) {
         return null
@@ -99,6 +100,7 @@ const DeploymentTemplateOptionsHeader = ({
                 selectedChartRefId={selectedChart?.chartRefId}
                 selectChart={handleChartChange}
                 disableVersionSelect={disableVersionSelect}
+                areChartsLoading={areChartsLoading}
             />
         </div>
     )

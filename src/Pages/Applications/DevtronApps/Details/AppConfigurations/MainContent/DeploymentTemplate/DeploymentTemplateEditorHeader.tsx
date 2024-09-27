@@ -10,7 +10,6 @@ import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { DeploymentTemplateEditorHeaderProps } from './types'
-import { getDTCodeEditorBackgroundClass } from './utils'
 import OverrideTemplateButton from './OverrideTemplateButton'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 
@@ -83,9 +82,7 @@ const DeploymentTemplateEditorHeader = ({
                             )}
 
                             <div className="flexbox-col flex-grow-1">
-                                <div
-                                    className={`flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 ${getDTCodeEditorBackgroundClass(!!envId, isOverridden)}`}
-                                >
+                                <div className="flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 bcn-0">
                                     <div className="flexbox w-100 dc__gap-8 dc__align-items-center">
                                         {isApprovalView && CompareFromApprovalSelector ? (
                                             <CompareFromApprovalSelector

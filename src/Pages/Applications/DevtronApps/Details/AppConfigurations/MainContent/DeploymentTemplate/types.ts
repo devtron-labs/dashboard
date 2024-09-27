@@ -52,12 +52,14 @@ export interface DeploymentTemplateOptionsHeaderProps extends Pick<DeploymentTem
     editMode: ConfigurationType
     showReadMe: boolean
     isGuiSupported: boolean
+    areChartsLoading: boolean
 }
 
 export interface DeploymentTemplateEditorDataStateType
     extends Omit<DeploymentTemplateConfigState, 'editorTemplateWithoutLockedKeys'> {
     unableToParseYaml: boolean
     removedPatches: Operation[]
+    originalTemplateState: DeploymentTemplateConfigState
 }
 
 interface DeploymentTemplateEditorHeaderBaseProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
@@ -193,16 +195,18 @@ export interface DeleteOverrideDialogProps {
 
 export interface DTChartSelectorProps
     extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'> {
-    disableVersionSelect?: boolean
-    selectedChart: DeploymentChartVersionType
+        Pick<
+            DeploymentTemplateOptionsHeaderProps,
+            'isUnSet' | 'selectedChart' | 'disableVersionSelect' | 'areChartsLoading'
+        > {
     selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number
 }
 
 export interface ChartSelectorDropdownProps
     extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'> {
+        Pick<DeploymentTemplateProps, 'isUnSet'>,
+        Pick<DTChartSelectorProps, 'areChartsLoading'> {
     selectedChartRefId: number
     selectedChart: DeploymentChartVersionType
     selectChart: (

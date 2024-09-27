@@ -10,9 +10,25 @@ import { FunctionComponent, ReactNode } from 'react'
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
     handleTabChange: (tab: ConfigHeaderTabType) => void
+    areChangesPresent: boolean
     isDisabled: boolean
+    /**
+     * If false, can not override config and will show values tab as Configuration
+     */
+    isOverridable: boolean
+    /**
+     * This prop holds meaning if isOverridable is true
+     * This depicts if we show No override if false,
+     * In case of true, we show Override
+     */
+    isPublishedTemplateOverridden: boolean
 }
-export interface ConfigHeaderTabProps extends Pick<ConfigHeaderProps, 'handleTabChange' | 'isDisabled'> {
+
+export interface ConfigHeaderTabProps
+    extends Pick<
+        ConfigHeaderProps,
+        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'isPublishedTemplateOverridden'
+    > {
     tab: ConfigHeaderTabType
     activeTabIndex: number
     currentTabIndex: number

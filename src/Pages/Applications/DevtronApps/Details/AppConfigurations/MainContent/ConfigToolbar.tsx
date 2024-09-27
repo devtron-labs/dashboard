@@ -12,7 +12,7 @@ import {
     OverrideMergeStrategyType,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICViewVariableToggle } from '@Icons/ic-view-variable-toggle.svg'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
@@ -135,14 +135,14 @@ const ConfigToolbar = ({
                 <div className="flexbox dc__align-items-center dc__gap-6">
                     <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
                     <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
-                    <a
-                        href={baseConfigurationURL}
+                    <Link
+                        to={baseConfigurationURL}
                         target="_blank"
                         rel="noreferrer noopener"
                         className="anchor dc__border-bottom--n1"
                     >
                         Base Configurations
-                    </a>
+                    </Link>
                 </div>
             )
         }

@@ -27,18 +27,6 @@ export const getCompareWithTemplateOptionsLabel = (template: TemplateListDTO, ch
     }
 }
 
-export const getDTCodeEditorBackgroundClass = (isOverrideView: boolean, isOverridden: boolean): string => {
-    if (!isOverrideView) {
-        return 'bcn-1'
-    }
-
-    if (isOverridden) {
-        return 'bcy-1'
-    }
-
-    return 'bcb-1'
-}
-
 export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
     if (index >= paths.length) {
         return {

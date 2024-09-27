@@ -17,7 +17,6 @@
 import { useState } from 'react'
 import {
     PopupMenu,
-    SortingOrder,
     stopPropagation,
     StyledRadioGroup as RadioGroup,
     DeploymentChartVersionType,
@@ -32,6 +31,8 @@ import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
 import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
 import { CHART_TYPE_TAB_KEYS, CHART_TYPE_TAB, CHART_DOCUMENTATION_LINK } from './constants'
 
+const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
+
 // NOTE: Have migrated directly
 const ChartSelectorDropdown = ({
     charts,
@@ -40,6 +41,7 @@ const ChartSelectorDropdown = ({
     selectedChart,
     selectChart,
     isUnSet,
+    areChartsLoading,
 }: ChartSelectorDropdownProps) => {
     const [popupOpen, togglePopup] = useState(false)
     const [selectedChartTypeTab, setSelectedChartTypeTab] = useState(
@@ -87,6 +89,10 @@ const ChartSelectorDropdown = ({
         togglePopup(isOpen)
     }
 
+    if (areChartsLoading) {
+        return <LoadingShimmer />
+    }
+
     if (!isUnSet) {
         return (
             <span className="fs-13 fw-6 cn-9 flex" data-testid="select-chart-type-dropdown">
@@ -94,6 +100,7 @@ const ChartSelectorDropdown = ({
             </span>
         )
     }
+
     return (
         <PopupMenu onToggleCallback={setPopupState} autoClose>
             <PopupMenu.Button isKebab dataTestId="select-chart-type-dropdown">
@@ -197,11 +204,12 @@ const DTChartSelector = ({
     selectedChart,
     selectChart,
     selectedChartRefId,
+    areChartsLoading,
 }: DTChartSelectorProps) => {
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name === selectedChart.name)
-              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version, SortingOrder.DESC))
+              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
         : []
 
     const onSelectChartVersion = (selected: SelectPickerOptionType) => {
@@ -221,6 +229,29 @@ const DTChartSelector = ({
           }
         : null
 
+    const renderVersionSelector = () => {
+        if (areChartsLoading) {
+            return <LoadingShimmer />
+        }
+
+        if (disableVersionSelect) {
+            return <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
+        }
+
+        return (
+            <SelectPicker
+                // TODO: When label is extended
+                inputId="dt-chart-version-select"
+                classNamePrefix="select-chart-version"
+                options={options}
+                value={selectedOption}
+                onChange={onSelectChartVersion}
+                isSearchable={false}
+                variant={SelectPickerVariantType.BORDER_LESS}
+            />
+        )
+    }
+
     return (
         <div className="flexbox dc__gap-8 dc__align-items-center">
             <div className="flexbox dc__gap-8 dc__align-items-center">
@@ -232,6 +263,7 @@ const DTChartSelector = ({
                     selectChart={selectChart}
                     selectedChart={selectedChart}
                     isUnSet={isUnSet}
+                    areChartsLoading={areChartsLoading}
                 />
             </div>
 
@@ -240,20 +272,7 @@ const DTChartSelector = ({
                 <label className="fs-12 fw-4 cn-7 m-0 lh-18" id="dt-chart-version-select">
                     Version
                 </label>
-                {disableVersionSelect ? (
-                    <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
-                ) : (
-                    <SelectPicker
-                        // TODO: When label is extended
-                        inputId="dt-chart-version-select"
-                        classNamePrefix="select-chart-version"
-                        options={options}
-                        value={selectedOption}
-                        onChange={onSelectChartVersion}
-                        isSearchable={false}
-                        variant={SelectPickerVariantType.BORDER_LESS}
-                    />
-                )}
+                {renderVersionSelector()}
             </div>
         </div>
     )

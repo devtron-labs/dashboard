@@ -1,4 +1,4 @@
-import { useEffect, useState, SyntheticEvent } from 'react'
+import { useEffect, useState, SyntheticEvent, useMemo } from 'react'
 import {
     BaseURLParams,
     ConfigurationType,
@@ -32,6 +32,10 @@ import {
     OverrideMergeStrategyType,
     CONFIG_HEADER_TAB_VALUES,
     ConfigToolbarPopupNodeType,
+    Button,
+    ComponentSizeType,
+    ButtonStyleType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -39,6 +43,7 @@ import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Com
 import { getChartReferences, getTemplateOptions } from '@Services/service'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import {
     CompareWithTemplateGroupedSelectPickerOptionType,
     CompareWithValuesDataStoreItemType,
@@ -97,7 +102,6 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 
-// FIXME: What if selectedTab is 3 and person re-freshes the page and it was approved? and cases like that
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isUnSet = false,
@@ -218,7 +222,6 @@ const DeploymentTemplate = ({
     )
 
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState<boolean>(false)
-    // TODO: On reload reset this
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(
         ProtectConfigTabsType.EDIT_DRAFT,
     )
@@ -246,17 +249,33 @@ const DeploymentTemplate = ({
 
     const isDraftAvailable: boolean = isProtected && !!draftTemplateData?.latestDraft
 
-    const isEditingDraft =
-        configHeaderTab === ConfigHeaderTabType.VALUES &&
-        selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT &&
-        isDraftAvailable
-
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
-    // const areChangesPresent =
-    //     currentEditorTemplateData &&
-    //     currentEditorTemplateData.editorTemplate !== YAMLStringify(currentEditorTemplateData.originalTemplate)
+
+    const areChangesPresent: boolean = useMemo(() => {
+        if (!currentEditorTemplateData) {
+            return false
+        }
+
+        // In case of hide/show locked keys have intentionally not added check for this since it is computation heavy
+        const isEditorTemplateChanged =
+            currentEditorTemplateData.editorTemplate !== currentEditorTemplateData.originalTemplateState.editorTemplate
+
+        const isChartRefIdChanged =
+            currentEditorTemplateData.selectedChartRefId !==
+            currentEditorTemplateData.originalTemplateState.selectedChartRefId
+
+        const areApplicationMetricsChanged =
+            currentEditorTemplateData.isAppMetricsEnabled !==
+            currentEditorTemplateData.originalTemplateState.isAppMetricsEnabled
+
+        if (isEditorTemplateChanged || isChartRefIdChanged || areApplicationMetricsChanged) {
+            return true
+        }
+
+        return false
+    }, [currentEditorTemplateData])
 
     // TODO: memoize
     const compareWithTemplateSelectPickerOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = (() => {
@@ -627,7 +646,6 @@ const DeploymentTemplate = ({
         }
 
         try {
-            // Unset unableToParseYaml flag when yaml is successfully parsed
             YAML.parse(value)
             setCurrentEditorTemplateData({
                 ...currentEditorTemplateData,
@@ -884,6 +902,7 @@ const DeploymentTemplate = ({
             ...clonedTemplateData,
             unableToParseYaml: false,
             removedPatches: [],
+            originalTemplateState: publishedData,
         })
     }
 
@@ -1036,6 +1055,7 @@ const DeploymentTemplate = ({
                 ...clonedTemplateData,
                 unableToParseYaml: false,
                 removedPatches: [],
+                originalTemplateState: response,
             })
 
             const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
@@ -1406,7 +1426,7 @@ const DeploymentTemplate = ({
         handleRemoveResolvedVariables()
         setWasGuiOrHideLockedKeysEdited(hideLockedKeys)
 
-        const originalTemplateData = isEditingDraft ? draftTemplateData : publishedTemplateData
+        const originalTemplateData = currentEditorTemplateData.originalTemplateState
 
         const stringifiedYAML = originalTemplateData.editorTemplate
         // Since have'nt stored removed patches in global scope so had to re-calculate
@@ -1419,6 +1439,7 @@ const DeploymentTemplate = ({
             editorTemplate: hideLockedKeys ? editorTemplate : stringifiedYAML,
             removedPatches: hideLockedKeys ? removedPatches : [],
             unableToParseYaml: false,
+            originalTemplateState: originalTemplateData,
         })
     }
 
@@ -1650,9 +1671,7 @@ const DeploymentTemplate = ({
             return
         }
 
-        const parentTemplateData = isEditingDraft ? draftTemplateData : publishedTemplateData
-
-        if (parentTemplateData.isOverridden) {
+        if (currentEditorTemplateData.originalTemplateState.isOverridden) {
             // Not directly overriding state since user can use cancel
             if (isProtected) {
                 handleShowDeleteDraftOverrideDialog()
@@ -1908,63 +1927,91 @@ const DeploymentTemplate = ({
         ) : null,
     }
 
+    const renderBody = () => (
+        <>
+            {showReadMe ? (
+                <div className="flexbox dc__gap-8 px-12 py-6 dc__border-bottom">
+                    <Button
+                        text="Readme"
+                        startIcon={<ICClose />}
+                        onClick={handleDisableReadmeView}
+                        dataTestId="close-readme-view-btn"
+                        size={ComponentSizeType.xs}
+                        style={ButtonStyleType.negativeGrey}
+                        variant={ButtonVariantType.text}
+                    />
+                </div>
+            ) : (
+                <>
+                    {/* TODO: Need to get clarity from product regarding unsaved changes (is it dirty state or unsaved changes?) and No override (is draft only and dirty state considered override?) */}
+                    <ConfigHeader
+                        configHeaderTab={configHeaderTab}
+                        handleTabChange={handleConfigHeaderTabChange}
+                        isDisabled={currentEditorTemplateData?.unableToParseYaml}
+                        areChangesPresent={areChangesPresent}
+                        isOverridable={!!envId}
+                        isPublishedTemplateOverridden={publishedTemplateData?.isOverridden}
+                    />
+
+                    <ConfigToolbar
+                        baseConfigurationURL={baseDeploymentTemplateURL}
+                        selectedProtectionViewTab={selectedProtectionViewTab}
+                        handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
+                        handleToggleCommentsView={handleToggleDraftComments}
+                        areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
+                        showMergePatchesButton={getShouldShowMergePatchesButton()}
+                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                        handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
+                        mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                        handleMergeStrategyChange={handleMergeStrategyChange}
+                        handleEnableReadmeView={handleEnableReadmeView}
+                        popupConfig={toolbarPopupConfig}
+                        handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
+                        resolveScopedVariables={resolveScopedVariables}
+                        // TODO: Can make variable
+                        disableAllActions={
+                            currentEditorTemplateData?.unableToParseYaml || isResolvingVariables || isSaving
+                        }
+                        configHeaderTab={configHeaderTab}
+                        isProtected={isProtected}
+                        isApprovalPending={draftTemplateData?.latestDraft?.draftState === DraftState.AwaitApproval}
+                        isDraftPresent={isDraftAvailable}
+                        approvalUsers={draftTemplateData?.latestDraft?.approvers}
+                        isLoadingInitialData={isLoadingInitialData}
+                        isPublishedConfigPresent={!isPublishedConfigPresent}
+                    >
+                        <DeploymentTemplateOptionsHeader
+                            disableVersionSelect={
+                                isPublishedValuesView || isResolvingVariables || isSaving || isLoadingInitialData
+                            }
+                            editMode={editMode}
+                            showReadMe={showReadMe}
+                            isUnSet={isUnSet}
+                            isCompareView={isCompareView}
+                            handleChangeToGUIMode={handleChangeToGUIMode}
+                            handleChangeToYAMLMode={handleChangeToYAMLMode}
+                            unableToParseYaml={currentEditorTemplateData?.unableToParseYaml}
+                            // Have'nt added check for compare since not showing the component altogether at that moment
+                            canEditTemplate={!isPublishedValuesView}
+                            restoreLastSavedTemplate={restoreLastSavedTemplate}
+                            handleChartChange={handleChartChange}
+                            chartDetails={chartDetails}
+                            selectedChart={getCurrentTemplateSelectedChart()}
+                            isGuiSupported={isGuiSupported}
+                            areChartsLoading={isLoadingInitialData}
+                        />
+                    </ConfigToolbar>
+                </>
+            )}
+
+            {renderValuesView()}
+        </>
+    )
+
     return (
         <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
-                {/* TODO: Need to get clarity from product regarding unsaved changes (is it dirty state or unsaved changes?) and No override (is draft only and dirty state considered override?) */}
-                <ConfigHeader
-                    configHeaderTab={configHeaderTab}
-                    handleTabChange={handleConfigHeaderTabChange}
-                    isDisabled={currentEditorTemplateData?.unableToParseYaml}
-                />
-                {/* FIXME: For readme won't render this */}
-                <ConfigToolbar
-                    baseConfigurationURL={baseDeploymentTemplateURL}
-                    selectedProtectionViewTab={selectedProtectionViewTab}
-                    handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
-                    handleToggleCommentsView={handleToggleDraftComments}
-                    areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
-                    showMergePatchesButton={getShouldShowMergePatchesButton()}
-                    shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                    handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                    mergeStrategy={currentEditorTemplateData?.mergeStrategy}
-                    handleMergeStrategyChange={handleMergeStrategyChange}
-                    handleEnableReadmeView={handleEnableReadmeView}
-                    popupConfig={toolbarPopupConfig}
-                    handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
-                    resolveScopedVariables={resolveScopedVariables}
-                    // TODO: Can make variable
-                    disableAllActions={currentEditorTemplateData?.unableToParseYaml || isResolvingVariables || isSaving}
-                    configHeaderTab={configHeaderTab}
-                    isProtected={isProtected}
-                    isApprovalPending={draftTemplateData?.latestDraft?.draftState === DraftState.AwaitApproval}
-                    isDraftPresent={isDraftAvailable}
-                    approvalUsers={draftTemplateData?.latestDraft?.approvers}
-                    isLoadingInitialData={isLoadingInitialData}
-                    isPublishedConfigPresent={!isPublishedConfigPresent}
-                >
-                    <DeploymentTemplateOptionsHeader
-                        disableVersionSelect={
-                            isPublishedValuesView || isResolvingVariables || isSaving || isLoadingInitialData
-                        }
-                        editMode={editMode}
-                        showReadMe={showReadMe}
-                        isUnSet={isUnSet}
-                        isCompareView={isCompareView}
-                        handleChangeToGUIMode={handleChangeToGUIMode}
-                        handleChangeToYAMLMode={handleChangeToYAMLMode}
-                        unableToParseYaml={currentEditorTemplateData?.unableToParseYaml}
-                        // Have'nt added check for compare since not showing the component altogether at that moment
-                        canEditTemplate={!isPublishedValuesView}
-                        restoreLastSavedTemplate={restoreLastSavedTemplate}
-                        handleChartChange={handleChartChange}
-                        chartDetails={chartDetails}
-                        selectedChart={getCurrentTemplateSelectedChart()}
-                        isGuiSupported={isGuiSupported}
-                    />
-                </ConfigToolbar>
-
-                {renderValuesView()}
+                {renderBody()}
 
                 {showDeleteOverrideDialog && (
                     <DeleteOverrideDialog
@@ -2013,7 +2060,9 @@ const DeploymentTemplate = ({
                         resourceType={3}
                         // TODO: Util for this name
                         resourceName={
-                            environmentName ? `${environmentName}-DeploymentTemplateOverride` : 'BaseDeploymentTemplate'
+                            environmentName
+                                ? `${environmentName}-DeploymentTemplateOverride`
+                                : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
                         }
                         prepareDataToSave={prepareDataToSave}
                         toggleModal={handleToggleShowSaveChangesModal}

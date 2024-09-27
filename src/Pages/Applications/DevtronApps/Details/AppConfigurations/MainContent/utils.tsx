@@ -25,13 +25,13 @@ const getEditHistoryPopupButtonConfig = importComponentFromFELibrary(
 )
 
 const getValuesViewTabText = (
-    isBaseDeploymentTemplate: Parameters<typeof getConfigHeaderTabConfig>[1],
-    isOverridden: Parameters<typeof getConfigHeaderTabConfig>[2],
+    isOverridable: Parameters<typeof getConfigHeaderTabConfig>[1],
+    isPublishedTemplateOverridden: Parameters<typeof getConfigHeaderTabConfig>[2],
 ) => {
-    if (isBaseDeploymentTemplate) {
+    if (!isOverridable) {
         return 'Configuration'
     }
-    if (isOverridden) {
+    if (isPublishedTemplateOverridden) {
         return 'Override'
     }
     return 'No override'
@@ -39,8 +39,8 @@ const getValuesViewTabText = (
 
 export const getConfigHeaderTabConfig = (
     tab: ConfigHeaderTabType,
-    isBaseDeploymentTemplate: boolean,
-    isOverridden?: boolean,
+    isOverridable: boolean,
+    isPublishedTemplateOverridden: boolean,
 ): ConfigHeaderTabConfigType => {
     switch (tab) {
         case ConfigHeaderTabType.DRY_RUN:
@@ -51,7 +51,7 @@ export const getConfigHeaderTabConfig = (
 
         case ConfigHeaderTabType.VALUES:
             return {
-                text: getValuesViewTabText(isBaseDeploymentTemplate, isOverridden),
+                text: getValuesViewTabText(isOverridable, isPublishedTemplateOverridden),
                 icon: ICFileCode,
             }
 
