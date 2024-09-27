@@ -182,7 +182,10 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.configmaps,
+            items: updatedEnvConfig.configmaps.map((configMap) => {
+                const { title, subtitle, href, iconConfig } = configMap
+                return { title, subtitle, tabType: 'navLink', href, iconConfig }
+            }),
             noItemsText: 'No configmaps',
             isExpanded: expandedIds?.configmap,
         },
@@ -207,7 +210,10 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.secrets,
+            items: updatedEnvConfig.secrets.map((secret) => {
+                const { title, subtitle, href, iconConfig } = secret
+                return { title, subtitle, tabType: 'navLink', href, iconConfig }
+            }),
             noItemsText: 'No secrets',
             isExpanded: expandedIds?.secrets,
         },
