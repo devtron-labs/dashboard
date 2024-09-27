@@ -100,7 +100,7 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const isSuperAdmin = window._env_.K8S_CLIENT || !!userRole?.result.superAdmin
+    const isSuperAdmin = (selectedCluster.label && window._env_.K8S_CLIENT) || !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
