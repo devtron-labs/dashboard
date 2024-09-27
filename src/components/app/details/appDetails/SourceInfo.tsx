@@ -85,7 +85,7 @@ export const SourceInfo = ({
     // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
     const helmMigratedAppNotTriggered =
         appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
-    const isAirGappedIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
+    const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -203,7 +203,7 @@ export const SourceInfo = ({
                     </div>
                 )}
                 {/* Last snapshot time */}
-                {isAirGappedIsolatedEnv && relativeSnapshotTime && (
+                {isIsolatedEnv && relativeSnapshotTime && (
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
@@ -338,7 +338,7 @@ export const SourceInfo = ({
                                           setDetailed={setDetailed}
                                       />
                                   )}
-                                  {isAirGappedIsolatedEnv && (
+                                  {isIsolatedEnv && (
                                       <HelmAppConfigApplyStatusCard
                                           cardLoading={cardLoading}
                                           releaseStatus={appDetails.resourceTree.releaseStatus}
@@ -346,7 +346,7 @@ export const SourceInfo = ({
                                   )}
                               </>
                           )}
-                          {isVirtualEnvironment && !isAirGappedIsolatedEnv && renderGeneratedManifestDownloadCard()}
+                          {isVirtualEnvironment && !isIsolatedEnv && renderGeneratedManifestDownloadCard()}
                           {!helmMigratedAppNotTriggered && (
                               <>
                                   <DeploymentStatusCard
@@ -354,7 +354,7 @@ export const SourceInfo = ({
                                       cardLoading={cardLoading}
                                       hideDetails={
                                           appDetails?.deploymentAppType === DeploymentAppTypes.HELM ||
-                                          isAirGappedIsolatedEnv
+                                          isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
                                       refetchDeploymentStatus={refetchDeploymentStatus}

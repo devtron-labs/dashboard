@@ -193,8 +193,10 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
-    lastSnapshotTime?: string
     releaseStatus?: HelmReleaseStatus
+    // lastSnapshotTime and wfrId are only available for isolated
+    lastSnapshotTime?: string
+    wfrId?: number
 }
 
 interface Node {

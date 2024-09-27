@@ -426,10 +426,10 @@ export const Details: React.FC<DetailsType> = ({
                 }
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
-                _getDeploymentStatusDetail(
-                    appDetailsRef.current.deploymentAppType,
-                    isVirtualEnvRef.current && appDetailsRef.current.resourceTree,
-                )
+
+                const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
+
+                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType, isIsolatedEnv, isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null)
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
@@ -474,14 +474,15 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isAirGappedIsolatedEnv: boolean) {
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isIsolatedEnv: boolean, triggerIdToFetch?: number) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
+        // triggerIdToFetch represents the wfrId to fetch for any specific deployment
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, triggerIdToFetch?.toString())
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     // Timelines are not applicable for helm deployments and air gapped envs
-                    if (deploymentAppType === DeploymentAppTypes.HELM || isAirGappedIsolatedEnv) {
+                    if (deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
