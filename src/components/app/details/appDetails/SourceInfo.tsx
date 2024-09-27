@@ -22,6 +22,7 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     getIsManualApprovalConfigured,
+    handleUTCTime,
     ReleaseMode,
     showError,
     Tooltip,
@@ -169,6 +170,10 @@ export const SourceInfo = ({
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = getIsApprovalConfigured()
+        const lastSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
+            appDetails.resourceTree.lastSnapshotTime,
+            true,
+        ) : ''
 
         return (
             <div className="flex left w-100">
@@ -197,14 +202,12 @@ export const SourceInfo = ({
                     </div>
                 )}
                 {/* Last snapshot time */}
-                {isAirGappedIsolatedEnv && deploymentStatusDetailsBreakdownData?.statusLastFetchedAt && (
+                {isAirGappedIsolatedEnv && lastSnapshotTime && (
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
                                 <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 fs-12 cn-50">
-                                    {deploymentStatusDetailsBreakdownData.statusLastFetchedAt}
-                                </p>
+                                <p className="m-0 fs-12 cn-50">{lastSnapshotTime}</p>
                             </div>
                         }
                         alwaysShowTippyOnHover

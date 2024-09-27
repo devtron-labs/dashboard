@@ -112,7 +112,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
         APP_HEALTH?: DeploymentStatusDetailRow
         HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
     }
-    statusLastFetchedAt?: string
 }
 
 export interface DeploymentStatusDetailModalType {

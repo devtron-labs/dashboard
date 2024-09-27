@@ -492,9 +492,6 @@ export const Details: React.FC<DetailsType> = ({
                             deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
                             deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
                             triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                            statusLastFetchedAt: deploymentStatusDetailRes.result.statusLastFetchedAt
-                                ? handleUTCTime(deploymentStatusDetailRes.result.statusLastFetchedAt, true)
-                                : '',
                         })
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
