@@ -20,6 +20,7 @@ import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import {
     ConditionalWrap,
+    DATE_TIME_FORMATS,
     DeploymentAppTypes,
     getIsManualApprovalConfigured,
     handleUTCTime,
@@ -170,7 +171,7 @@ export const SourceInfo = ({
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = getIsApprovalConfigured()
-        const lastSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
+        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
             appDetails.resourceTree.lastSnapshotTime,
             true,
         ) : ''
@@ -202,12 +203,14 @@ export const SourceInfo = ({
                     </div>
                 )}
                 {/* Last snapshot time */}
-                {isAirGappedIsolatedEnv && lastSnapshotTime && (
+                {isAirGappedIsolatedEnv && relativeSnapshotTime && (
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
                                 <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 fs-12 cn-50">{lastSnapshotTime}</p>
+                                <p className="m-0 fs-12 cn-50">
+                                    {moment(relativeSnapshotTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
+                                </p>
                             </div>
                         }
                         alwaysShowTippyOnHover
