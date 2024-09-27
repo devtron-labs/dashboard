@@ -32,6 +32,7 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
     ReleaseMode,
+    handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -294,6 +295,7 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
 
+
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
@@ -354,6 +356,7 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    // This is called only when timeline modal is open
     const getDeploymentDetailStepsData = useCallback(
         (showTimeline?: boolean): void => {
             const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
@@ -423,7 +426,10 @@ export const Details: React.FC<DetailsType> = ({
                 }
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
-                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
+
+                const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
+
+                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType, isIsolatedEnv, isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null)
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
@@ -468,13 +474,15 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isIsolatedEnv: boolean, triggerIdToFetch?: number) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
+        // triggerIdToFetch represents the wfrId to fetch for any specific deployment
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, triggerIdToFetch?.toString())
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppTypes.HELM) {
+                    // Timelines are not applicable for helm deployments and air gapped envs
+                    if (deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
