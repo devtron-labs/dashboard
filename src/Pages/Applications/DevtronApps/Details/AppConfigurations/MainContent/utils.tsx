@@ -90,11 +90,14 @@ export const getConfigToolbarPopupConfig = ({
     isPublishedValuesView,
     isPublishedConfigPresent,
     handleDeleteOverride,
+    handleDelete,
     handleDiscardDraft,
     unableToParseData,
     isLoading,
     isDraftAvailable,
     handleShowEditHistory,
+    isProtected = false,
+    showDeleteBtn = false,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -140,6 +143,16 @@ export const getConfigToolbarPopupConfig = ({
             text: 'Delete override',
             onClick: handleDeleteOverride,
             dataTestId: 'delete-override',
+            disabled: isLoading,
+            icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+        })
+    }
+
+    if (showDeleteBtn && configHeaderTab === ConfigHeaderTabType.VALUES) {
+        secondConfigSegment.push({
+            text: `Delete${isProtected ? '...' : ''}`,
+            onClick: handleDelete,
+            dataTestId: 'delete',
             disabled: isLoading,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
         })

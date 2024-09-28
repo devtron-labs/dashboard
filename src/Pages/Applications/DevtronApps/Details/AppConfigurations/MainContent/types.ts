@@ -149,11 +149,14 @@ export interface GetConfigToolbarPopupConfigProps {
     isPublishedValuesView: boolean
     isPublishedConfigPresent: boolean
     handleDeleteOverride: () => void
+    handleDelete?: () => void
     handleDiscardDraft: () => void
     unableToParseData: boolean
     isLoading: boolean
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
+    isProtected?: boolean
+    showDeleteBtn?: boolean
 }
 
 export interface ConfigDryRunProps {

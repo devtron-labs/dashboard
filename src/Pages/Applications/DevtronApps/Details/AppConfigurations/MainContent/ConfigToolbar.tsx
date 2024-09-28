@@ -145,6 +145,21 @@ const ConfigToolbar = ({
             )
         }
 
+        // TODO: fix-this
+        if (configHeaderTab === ConfigHeaderTabType.VALUES) {
+            return (
+                <div className="flexbox dc__align-items-center dc__gap-6">
+                    <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                    {/* TODO: check for componentType */}
+                    <span className="cn-9 fs-12 fw-4 lh-20">
+                        {envId
+                            ? 'This is an environment specific ConfigMap'
+                            : 'Placeholder Text - This is an environment specific ConfigMap'}
+                    </span>
+                </div>
+            )
+        }
+
         if (!isProtected || !isDraftPresent) {
             return null
         }
@@ -325,7 +340,7 @@ const ConfigToolbar = ({
                                 rootClassName={
                                     popupConfig.popupNodeType
                                         ? ''
-                                        : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                                        : 'dc__border mt-8 pt-4 pb-4 w-200 dc__gap-4 flexbox-col'
                                 }
                             >
                                 {popupConfig.popupNodeType ? (
