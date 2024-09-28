@@ -31,7 +31,7 @@ import {
     ConfigMapSecretData,
     CMSecretProtectedTab,
     CMSecretDeleteModalType,
-} from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+} from '@Pages/Shared/ConfigMapSecretOld/ConfigMapSecret.types'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getCMSecret } from './ConfigMapSecret.service'

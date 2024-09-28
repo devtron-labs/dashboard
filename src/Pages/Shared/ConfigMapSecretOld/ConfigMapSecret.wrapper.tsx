@@ -13,7 +13,7 @@ import {
 import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { CMSecretComponentType, CMSecretWrapperProps } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType, CMSecretWrapperProps } from '@Pages/Shared/ConfigMapSecretOld/ConfigMapSecret.types'
 
 import { ConfigMapSecretContainer } from './ConfigMapSecret.container'
 import { CM_SECRET_COMPONENT_NAME } from './ConfigMapSecret.constants'

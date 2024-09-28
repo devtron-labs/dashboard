@@ -30,8 +30,8 @@ import {
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
-import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecretOld/ConfigMapSecret.wrapper'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecretOld/ConfigMapSecret.types'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 

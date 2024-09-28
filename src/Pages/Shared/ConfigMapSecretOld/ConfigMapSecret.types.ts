@@ -188,10 +188,10 @@ export interface ConfigDatum {
     defaultData: Record<string, string>
     global: boolean
     externalType: string
-    esoSecretData: {}
-    defaultESOSecretData: {}
-    secretData: Record<string, string>
-    defaultSecretData: Record<string, string>
+    esoSecretData: Record<string, string>
+    defaultESOSecretData: Record<string, string>
+    secretData: Record<string, string>[]
+    defaultSecretData: Record<string, string>[]
     roleARN: string
     subPath: boolean
     filePermission: string
@@ -219,6 +219,7 @@ export interface CMSecretWrapperProps
     isProtected?: boolean
     envName: string
     appName: string
+    newUI?: boolean
 }
 
 export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {

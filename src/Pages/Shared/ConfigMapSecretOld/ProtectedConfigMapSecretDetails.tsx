@@ -25,7 +25,7 @@ import {
     CMSecretConfigData,
     CMSecretProtectedTab,
     ProtectedConfigMapSecretProps,
-} from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+} from '@Pages/Shared/ConfigMapSecretOld/ConfigMapSecret.types'
 
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'

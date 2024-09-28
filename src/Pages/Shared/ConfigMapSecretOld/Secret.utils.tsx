@@ -41,8 +41,8 @@ export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 export const DATA_HEADER_MAP = { DEFAULT: 'default' }
 
 export const VIEW_MODE = {
-    YAML: 'yaml',
     GUI: 'gui',
+    YAML: 'yaml',
     MANIFEST: 'manifest',
 }
 
