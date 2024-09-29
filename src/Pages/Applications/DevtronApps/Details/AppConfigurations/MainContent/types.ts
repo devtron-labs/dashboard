@@ -2,6 +2,7 @@ import {
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
     ConfigToolbarPopupNodeType,
+    DeploymentTemplateConfigState,
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -142,4 +143,25 @@ export interface GetConfigToolbarPopupConfigProps {
     isLoading: boolean
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
+}
+
+export interface ConfigDryRunProps {
+    isLoading: boolean
+    handleToggleResolveScopedVariables: () => void
+    resolveScopedVariables: boolean
+    showManifest: boolean
+    chartRefId?: number
+    editorTemplate: string
+    editorSchema?: DeploymentTemplateConfigState['schema']
+    selectedChartVersion?: string
+    dryRunEditorMode: string
+    handleChangeDryRunEditorMode: (mode: string) => void
+    isDraftPresent: boolean
+    isPublishedConfigPresent: boolean
+}
+
+export interface ToggleResolveScopedVariablesProps {
+    resolveScopedVariables: boolean
+    handleToggleScopedVariablesView: () => void
+    isDisabled?: boolean
 }

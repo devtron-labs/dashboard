@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import {
     Button,
     ButtonStyleType,
@@ -5,8 +6,6 @@ import {
     ConfigHeaderTabType,
     ProtectConfigTabsType,
     PopupMenu,
-    Toggle,
-    Tooltip,
     BaseURLParams,
     InfoIconTippy,
     OverrideMergeStrategyType,
@@ -14,11 +13,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICViewVariableToggle } from '@Icons/ic-view-variable-toggle.svg'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import { Fragment } from 'react'
+import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import { ConfigToolbarProps } from './types'
 import { PopupMenuItem } from './utils'
 
@@ -228,20 +226,11 @@ const ConfigToolbar = ({
                 )}
 
                 {shouldRenderScopedVariables && (
-                    <Tooltip
-                        alwaysShowTippyOnHover
-                        content={resolveScopedVariables ? 'Hide variables value' : 'Show variables value'}
-                    >
-                        <div className="w-40 h-20">
-                            <Toggle
-                                selected={resolveScopedVariables}
-                                color="var(--B500)"
-                                onSelect={handleToggleScopedVariablesView}
-                                Icon={ICViewVariableToggle}
-                                disabled={disableAllActions}
-                            />
-                        </div>
-                    </Tooltip>
+                    <ToggleResolveScopedVariables
+                        resolveScopedVariables={resolveScopedVariables}
+                        handleToggleScopedVariablesView={handleToggleScopedVariablesView}
+                        isDisabled={disableAllActions}
+                    />
                 )}
             </>
         )
