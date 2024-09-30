@@ -15,7 +15,6 @@ import {
     EnvConfigType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
-    EnvironmentNavOptionType,
 } from '../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 
@@ -115,7 +114,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    { value: id, isProtected }: EnvironmentNavOptionType,
+    { value: id, isProtected },
     paramToCheck: 'appId' | 'envId' = 'envId',
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem

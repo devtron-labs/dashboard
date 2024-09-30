@@ -19,7 +19,6 @@ import {
     CollapsibleListItem,
     AppEnvDeploymentConfigType,
     EnvResourceType,
-    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -218,9 +217,6 @@ export interface EnvironmentOptionType {
     isProtected?: boolean
 }
 
-export interface EnvironmentNavOptionType extends SelectPickerOptionType, Pick<EnvironmentOptionType, 'isProtected'> {
-    value: number
-}
 export interface EnvConfigurationsNavProps {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
