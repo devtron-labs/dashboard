@@ -215,14 +215,6 @@ div.override-container {
     overflow: hidden;
 }
 
-.deployment-template-override {
-    height: calc(100vh - 102px);
-
-    .chart-version.popup-button {
-        width: 100%;
-    }
-}
-
 .variables-widget-position {
     position: absolute;
     bottom: 120px;

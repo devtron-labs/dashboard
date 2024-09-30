@@ -1,10 +1,13 @@
 import {
+    CompareFromApprovalOptionsValuesType,
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
     ConfigToolbarPopupNodeType,
+    DeploymentHistorySingleValue,
     DeploymentTemplateConfigState,
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { FunctionComponent, ReactNode } from 'react'
@@ -186,3 +189,33 @@ export type NoOverrideEmptyStateProps = {
     handleCreateOverride: () => void
     handleViewInheritedConfig: () => void
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
+
+type DeploymentTemplateDiffViewConfigType =
+    | {
+          applicationMetrics?: DeploymentHistorySingleValue
+          chartName: DeploymentHistorySingleValue
+          chartVersion: DeploymentHistorySingleValue
+          mergeStrategy: DeploymentHistorySingleValue
+      }
+    | {
+          applicationMetrics?: never
+          chartName?: never
+          chartVersion?: never
+          mergeStrategy?: never
+      }
+
+export interface CompareConfigViewProps {
+    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
+    handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
+    isApprovalView: boolean
+
+    currentEditorTemplate: Record<string | number, unknown>
+    publishedEditorTemplate: Record<string | number, unknown>
+
+    // For CM/CS Please add required typing using | operator
+    currentEditorConfig: DeploymentTemplateDiffViewConfigType
+    publishedEditorConfig: DeploymentTemplateDiffViewConfigType
+    draftChartVersion?: string
+    selectedChartVersion?: string
+    isDeleteDraft: boolean
+}

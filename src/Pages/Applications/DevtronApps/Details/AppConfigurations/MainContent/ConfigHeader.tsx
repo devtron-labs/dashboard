@@ -58,6 +58,7 @@ const ConfigHeader = ({
         <div className="flexbox w-100 dc__align-items-center">
             {validTabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
                 <ConfigHeaderTab
+                    key={currentTab}
                     handleTabChange={handleTabChange}
                     tab={currentTab}
                     activeTabIndex={activeTabIndex}
