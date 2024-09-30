@@ -110,6 +110,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
             </div>
         )
     }
+    console.log(materialOptions, 'materialOptions')
 
     return (
         <div className="flex">
@@ -125,9 +126,10 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+            <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
+
             <SelectPicker
                 label="Language"
-                required
                 inputId="build-pack-language"
                 classNamePrefix="select-create-dockerfile-language-dropdown"
                 options={languages}
@@ -139,15 +141,16 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                    <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
+
                     <SelectPicker
-                        label="Framework"
-                        required
                         inputId="build-pack-framework"
                         options={selectedLanguageFrameworks || []}
                         value={selectedFramework}
                         classNamePrefix="build-config__select-framework"
                         isSearchable={false}
                         onChange={handleFrameworkSelection}
+                        variant={SelectPickerVariantType.BORDER_LESS}
                     />
                 </>
             )}
