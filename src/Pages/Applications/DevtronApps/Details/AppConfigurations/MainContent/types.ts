@@ -121,6 +121,7 @@ export interface ConfigToolbarProps {
      * If false we will hide all the action in toolbar.
      */
     isPublishedConfigPresent?: boolean
+    handleClearPopupNode: () => void
 }
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {

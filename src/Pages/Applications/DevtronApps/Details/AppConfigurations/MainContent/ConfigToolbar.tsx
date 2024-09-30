@@ -99,6 +99,7 @@ const ConfigToolbar = ({
     // TODO: Will have to segregate cases where all actions are disabled
     disableAllActions = false,
     isPublishedConfigPresent = true,
+    handleClearPopupNode,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
 
@@ -268,6 +269,12 @@ const ConfigToolbar = ({
         )
     }
 
+    const handlePopupMenuToggle = (isOpen: boolean) => {
+        if (!isOpen) {
+            handleClearPopupNode()
+        }
+    }
+
     const popupConfigGroups = Object.keys(popupConfig?.menuConfig ?? {})
 
     return (
@@ -289,7 +296,7 @@ const ConfigToolbar = ({
                     {renderReadmeAndScopedVariablesBlock()}
 
                     {!!popupConfigGroups.length && (
-                        <PopupMenu autoClose>
+                        <PopupMenu onToggleCallback={handlePopupMenuToggle} autoClose>
                             <PopupMenu.Button rootClassName="flex dc__no-shrink" disabled={disableAllActions} isKebab>
                                 <ICMore
                                     className="icon-dim-16 fcn-6 dc__flip-90"

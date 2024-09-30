@@ -116,7 +116,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isOverridden && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         const activityHistoryConfig = getEditHistoryPopupButtonConfig(handleShowEditHistory, isLoading)
         if (activityHistoryConfig) {
             firstConfigSegment.push(activityHistoryConfig)
