@@ -431,12 +431,22 @@ export interface CIBuildTypeOptionType {
     addDivider: boolean
 }
 
+export interface MaterialOptionType extends SelectPickerOptionType {
+    checkoutPath: string
+    fetchSubmodules: boolean
+    filterPath: string
+    id: number
+    isUsedInCiConfig: boolean
+    name: string
+    url: string
+}
+
 export interface CreateDockerFileLanguageOptionsProps {
     editorData: TemplateDataType
     editorValue: string
     handleGitRepoChange: (selectedMaterial) => void
-    materialOptions: any[]
-    selectedMaterial: any
+    materialOptions: MaterialOptionType[]
+    selectedMaterial: MaterialOptionType
     languageFrameworks: Map<string, FrameworkOptionType[]>
     selectedLanguage: LanguageOptionType
     resetChanges: () => void

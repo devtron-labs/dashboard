@@ -16,7 +16,8 @@
 
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
-import { SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { getGitProviderIcon } from '@Components/common'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
@@ -79,9 +80,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
 
                 {/* TODO: Look into this condition, this won't ever be true since we derive icon from url  */}
                 <div className="flex left">
-                    {selectedMaterial?.icon && (
-                        <img src={currentMaterial.icon} alt={currentMaterial.label} className="icon-dim-20 mr-8" />
-                    )}
+                    {getGitProviderIcon(currentMaterial?.icon)}
                     <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
                 </div>
 
@@ -122,28 +121,27 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 value={selectedMaterial}
                 onChange={handleGitRepoChange}
                 classNamePrefix="build-config__select-repository-containing-code"
+                variant={SelectPickerVariantType.BORDER_LESS}
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-            <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
-            {console.log('languages', languages)}
-            {console.log('languages', selectedLanguageFrameworks)}
-            {console.log('materialOption', materialOptions)}
-
             <SelectPicker
+                label="Language"
+                required
                 inputId="build-pack-language"
                 classNamePrefix="select-create-dockerfile-language-dropdown"
                 options={languages}
                 value={selectedLanguage}
                 isSearchable={false}
                 onChange={handleLanguageSelection}
+                variant={SelectPickerVariantType.BORDER_LESS}
             />
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-                    <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
-
                     <SelectPicker
+                        label="Framework"
+                        required
                         inputId="build-pack-framework"
                         options={selectedLanguageFrameworks || []}
                         value={selectedFramework}

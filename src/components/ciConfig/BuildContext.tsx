@@ -91,9 +91,7 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
     }
 
     const getSelectedBuildContextGitMaterial = () => selectedBuildContextGitMaterial ?? currentMaterial
-    // TODO: remove console after test
-    console.log('option', sourceConfig.material)
-    console.log('value', getSelectedBuildContextGitMaterial())
+
     const handleBuildContextPathChange = (_selectedBuildContextGitMaterial): void => {
         setSelectedBuildContextGitMaterial(_selectedBuildContextGitMaterial)
         // Don't know how and why we are directly setting state.

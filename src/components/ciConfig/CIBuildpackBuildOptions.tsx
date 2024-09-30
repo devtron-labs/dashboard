@@ -566,7 +566,6 @@ export default function CIBuildpackBuildOptions({
                         options={sourceConfig.material}
                         value={selectedMaterial}
                         onChange={handleFileLocationChange}
-                        variant={SelectPickerVariantType.BORDER_LESS}
                     />
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
@@ -602,7 +601,6 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedLanguage}
                             isSearchable={false}
                             onChange={handleLanguageSelection}
-                            variant={SelectPickerVariantType.BORDER_LESS}
                         />
                     </div>
 
@@ -620,7 +618,6 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedVersion}
                             isSearchable={false}
                             onChange={handleVersionSelection}
-                            variant={SelectPickerVariantType.BORDER_LESS}
                         />
                     </div>
                 </div>
