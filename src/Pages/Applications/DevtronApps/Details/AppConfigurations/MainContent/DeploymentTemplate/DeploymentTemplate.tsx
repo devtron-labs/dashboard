@@ -203,7 +203,10 @@ const DeploymentTemplate = ({
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
         useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
 
-    const [resolvedBaseDeploymentTemplate, setResolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
+    /**
+     * @deprecated remove with compare view
+     */
+    const [resolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
         originalTemplate: '',
         templateWithoutLockedKeys: '',
     })
@@ -229,7 +232,10 @@ const DeploymentTemplate = ({
         ProtectConfigTabsType.EDIT_DRAFT,
     )
 
-    const isGuiSupported = configHeaderTab !== ConfigHeaderTabType.INHERITED
+    const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
+    const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED && !showReadMe
+
+    const isGuiSupported = !isInheritedView && !isDryRunView
 
     const isPublishedValuesView: boolean = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
@@ -238,8 +244,6 @@ const DeploymentTemplate = ({
         isProtected &&
         draftTemplateData?.latestDraft
     )
-
-    const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
 
     const isCompareView =
         configHeaderTab === ConfigHeaderTabType.VALUES &&
@@ -458,6 +462,10 @@ const DeploymentTemplate = ({
     }
 
     const getCurrentEditorPayloadForScopedVariables = (): string => {
+        if (isInheritedView) {
+            return baseDeploymentTemplateData.editorTemplate
+        }
+
         if (isDryRunView) {
             return getRawEditorValueForDryRunMode()
         }
@@ -574,15 +582,11 @@ const DeploymentTemplate = ({
         // TODO: can think about adding abort controller
         try {
             setIsResolvingVariables(true)
-            // If caching response, then make sure to invalidate on reload of base deployment template
-            const shouldFetchResolvedBaseDeploymentTemplate =
-                configHeaderTab === ConfigHeaderTabType.INHERITED ||
-                (isCompareView && compareWithSelectedOption.value === BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
 
             // TODO: check if need to enhance this
-            const shouldFetchDefaultTemplate: boolean = !isDryRunView
+            const shouldFetchDefaultTemplate: boolean = !!isGuiSupported
 
-            const [currentEditorTemplate, defaultTemplate, baseTemplate] = await Promise.all([
+            const [currentEditorTemplate, defaultTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
                     appId: +appId,
                     chartRefId: currentEditorTemplateData.selectedChartRefId,
@@ -593,27 +597,7 @@ const DeploymentTemplate = ({
                 shouldFetchDefaultTemplate
                     ? getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables())
                     : null,
-                shouldFetchResolvedBaseDeploymentTemplate
-                    ? getResolvedDeploymentTemplate({
-                          appId: +appId,
-                          chartRefId: chartDetails?.globalChartDetails.id ? +chartDetails.globalChartDetails.id : null,
-                          values: baseDeploymentTemplateData?.editorTemplate,
-                          valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
-                      })
-                    : null,
             ])
-
-            if (shouldFetchResolvedBaseDeploymentTemplate && baseTemplate) {
-                const { editorTemplate: resolvedBaseTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-                    baseTemplate.resolvedData,
-                    // No need to send locked keys here since on load we do not resolve scoped variables
-                )
-
-                setResolvedBaseDeploymentTemplate({
-                    originalTemplate: baseTemplate.resolvedData,
-                    templateWithoutLockedKeys: resolvedBaseTemplateWithoutLockedKeys,
-                })
-            }
 
             // FIXME: In case of compare, we have to fix this
             if (!currentEditorTemplate.areVariablesPresent) {
@@ -769,6 +753,11 @@ const DeploymentTemplate = ({
             return getDryRunModeSelectedChart()
         }
 
+        if (isInheritedView) {
+            // TODO: Look for null checks
+            return baseDeploymentTemplateData?.selectedChart
+        }
+
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.selectedChart
         }
@@ -783,7 +772,7 @@ const DeploymentTemplate = ({
             return publishedTemplateData.guiSchema
         }
 
-        return currentEditorTemplateData?.guiSchema
+        return currentEditorTemplateData?.guiSchema || '{}'
     }
 
     const getDryRunModeEditorSchema = (): DeploymentTemplateConfigState['schema'] => {
@@ -806,6 +795,10 @@ const DeploymentTemplate = ({
     const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] => {
         if (isDryRunView) {
             return getDryRunModeEditorSchema()
+        }
+
+        if (isInheritedView) {
+            return baseDeploymentTemplateData.schema
         }
 
         if (isPublishedValuesView && publishedTemplateData) {
@@ -840,6 +833,10 @@ const DeploymentTemplate = ({
     }
 
     const getIsCurrentTemplateOverridden = (): boolean => {
+        if (isInheritedView) {
+            return false
+        }
+
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.isOverridden
         }
@@ -1589,6 +1586,7 @@ const DeploymentTemplate = ({
         return getRawEditorValueForDryRunMode()
     }
 
+    // TODO: Maybe can separate scoped variables and non scoped variables, and then based on that we can directly get data state
     const getCurrentEditorValue = (): string => {
         if (isDryRunView) {
             return getDryRunModeEditorValue()
@@ -1608,6 +1606,12 @@ const DeploymentTemplate = ({
             return hideLockedKeys
                 ? resolvedEditorTemplate.templateWithoutLockedKeys
                 : resolvedEditorTemplate.originalTemplate
+        }
+
+        if (isInheritedView) {
+            return hideLockedKeys
+                ? baseDeploymentTemplateData.editorTemplateWithoutLockedKeys
+                : baseDeploymentTemplateData.editorTemplate
         }
 
         if (isPublishedValuesView) {
@@ -1711,6 +1715,9 @@ const DeploymentTemplate = ({
         }
     }
 
+    /**
+     * @deprecated
+     */
     const getCompareWithEditorTemplate = (): string => {
         if (compareWithSelectedOption.value === COMPARE_WITH_BASE_TEMPLATE_OPTION.value) {
             if (resolveScopedVariables) {
@@ -1850,7 +1857,7 @@ const DeploymentTemplate = ({
                 editMode={editMode}
                 hideLockedKeys={hideLockedKeys}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                readOnly={isPublishedValuesView || resolveScopedVariables}
+                readOnly={isPublishedValuesView || resolveScopedVariables || isInheritedView}
                 selectedChart={getCurrentTemplateSelectedChart()}
                 guiSchema={getCurrentTemplateGUISchema()}
                 schema={getCurrentEditorSchema()}
@@ -1863,6 +1870,7 @@ const DeploymentTemplate = ({
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
                 showReadMe={showReadMe}
+                // TODO: Confirm with product which editor to show
                 readMe={currentEditorTemplateData?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
@@ -1992,7 +2000,8 @@ const DeploymentTemplate = ({
                         zIndex={100}
                         appId={appId}
                         hideObjectVariables={false}
-                        {...(envId ? { envId, clusterId } : '')}
+                        {...(envId && { envId })}
+                        {...(clusterId && { clusterId })}
                     />
                 </div>
             )}
@@ -2084,7 +2093,7 @@ const DeploymentTemplate = ({
                         isDraftPresent={isDraftAvailable}
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}
                         isLoadingInitialData={isLoadingInitialData}
-                        isPublishedConfigPresent={!isPublishedConfigPresent}
+                        isPublishedConfigPresent={isPublishedConfigPresent}
                     >
                         <DeploymentTemplateOptionsHeader
                             disableVersionSelect={
