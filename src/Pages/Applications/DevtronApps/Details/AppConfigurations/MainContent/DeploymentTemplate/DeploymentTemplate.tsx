@@ -21,7 +21,6 @@ import {
     ToastManager,
     ToastVariantType,
     SelectPickerOptionType,
-    TemplateListType,
     ValuesAndManifestFlagDTO,
     CompareFromApprovalOptionsValuesType,
     noop,
@@ -29,7 +28,6 @@ import {
     logExceptionToSentry,
     ConfigHeaderTabType,
     ProtectConfigTabsType,
-    OverrideMergeStrategyType,
     CONFIG_HEADER_TAB_VALUES,
     ConfigToolbarPopupNodeType,
     Button,
@@ -41,23 +39,18 @@ import {
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
-import { getChartReferences, getTemplateOptions } from '@Services/service'
+import { getChartReferences } from '@Services/service'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import {
-    CompareWithTemplateGroupedSelectPickerOptionType,
-    CompareWithValuesDataStoreItemType,
     DeploymentTemplateChartStateType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
     ResolvedEditorTemplateType,
-    TemplateListItemType,
 } from './types'
 import {
     BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
-    COMPARE_WITH_BASE_TEMPLATE_OPTION,
-    COMPARE_WITH_OPTIONS_ORDER,
     DEFAULT_LOCKED_KEYS_CONFIG,
     NO_SCOPED_VARIABLES_MESSAGE,
     PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
@@ -65,9 +58,7 @@ import {
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
-import { CompareTemplateView } from './CompareTemplateView'
-import { getCompareWithOptionsLabel } from './CompareTemplateView/utils'
-import { applyCompareDiffOfTempFormDataOnOriginalData, getCompareWithTemplateOptionsLabel } from './utils'
+import { applyCompareDiffOfTempFormDataOnOriginalData } from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import {
     updateBaseDeploymentTemplate,
@@ -81,10 +72,11 @@ import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
+import { CompareConfigViewProps, ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
 import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
 import NoOverrideEmptyState from '../NoOverrideEmptyState'
+import CompareConfigView from '../CompareConfigView'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -188,29 +180,8 @@ const DeploymentTemplate = ({
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
 
     // FIXME: Need clean up as well on reload for states below
-    // Compare view states
-    const [templateListMap, setTemplateListMap] = useState<Record<number, TemplateListItemType>>({})
-    const [isComparisonViewLoading, setIsComparisonViewLoading] = useState<boolean>(false)
-    /**
-     * @deprecated
-     */
-    const [compareWithSelectedOption, setCompareWithSelectedOption] = useState<SelectPickerOptionType>(
-        COMPARE_WITH_BASE_TEMPLATE_OPTION,
-    )
-    // Question: Should it contain data for -1?
-    const [compareWithValuesDataStore, setCompareWithValuesDataStore] = useState<
-        Record<number, CompareWithValuesDataStoreItemType>
-    >({})
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
         useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
-
-    /**
-     * @deprecated remove with compare view
-     */
-    const [resolvedBaseDeploymentTemplate] = useState<ResolvedEditorTemplateType>({
-        originalTemplate: '',
-        templateWithoutLockedKeys: '',
-    })
 
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.PUBLISHED_VALUES)
 
@@ -265,6 +236,10 @@ const DeploymentTemplate = ({
         !publishedTemplateData?.isOverridden &&
         !currentEditorTemplateData?.isOverridden &&
         configHeaderTab === ConfigHeaderTabType.VALUES
+
+    const isApprovalPendingOptionSelected =
+        isApprovalView && compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
+
     // TODO: Can rename as publishedOverriddenState
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
@@ -287,91 +262,20 @@ const DeploymentTemplate = ({
             currentEditorTemplateData.isAppMetricsEnabled !==
             currentEditorTemplateData.originalTemplateState.isAppMetricsEnabled
 
-        if (isEditorTemplateChanged || isChartRefIdChanged || areApplicationMetricsChanged) {
+        const isOverriddenStatusChanged =
+            currentEditorTemplateData.isOverridden !== currentEditorTemplateData.originalTemplateState.isOverridden
+
+        if (
+            isEditorTemplateChanged ||
+            isChartRefIdChanged ||
+            areApplicationMetricsChanged ||
+            isOverriddenStatusChanged
+        ) {
             return true
         }
 
         return false
     }, [currentEditorTemplateData])
-
-    // TODO: memoize
-    const compareWithTemplateSelectPickerOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = (() => {
-        const initialOptions: CompareWithTemplateGroupedSelectPickerOptionType[] = [
-            {
-                label: getCompareWithOptionsLabel(environmentName),
-                options: [COMPARE_WITH_BASE_TEMPLATE_OPTION],
-            },
-        ]
-
-        const templateListKeys = Object.keys(templateListMap)
-
-        if (!templateListKeys.length) {
-            return initialOptions
-        }
-
-        const chartVersionMappedToChartId: Record<number, string> = chartDetails.charts.reduce(
-            (acc, chart) => {
-                acc[chart.id] = chart.version
-                return acc
-            },
-            {} as Record<number, string>,
-        )
-
-        const templateMappedToType: Record<TemplateListType, TemplateListItemType[]> = templateListKeys.reduce(
-            (acc, templateId) => {
-                const template = templateListMap[+templateId]
-
-                if (
-                    template.type === TemplateListType.DefaultVersions &&
-                    currentEditorTemplateData?.selectedChart.name !== template.chartType
-                ) {
-                    return acc
-                }
-
-                if (!acc[template.type]) {
-                    acc[template.type] = []
-                }
-
-                acc[template.type].push(template)
-                return acc
-            },
-            {} as Record<TemplateListType, TemplateListItemType[]>,
-        )
-
-        if (envId) {
-            COMPARE_WITH_OPTIONS_ORDER.OVERRIDDEN.forEach((templateType) => {
-                initialOptions.push({
-                    label: getCompareWithOptionsLabel(environmentName, templateType),
-                    // TODO: Can be util
-                    options:
-                        templateMappedToType[templateType]?.map((template) => ({
-                            label: getCompareWithTemplateOptionsLabel(
-                                template,
-                                chartVersionMappedToChartId[template.chartRefId],
-                            ),
-                            value: template.id,
-                        })) ?? [],
-                })
-            })
-        } else {
-            COMPARE_WITH_OPTIONS_ORDER.BASE_TEMPLATE.forEach((templateType) => {
-                initialOptions.push({
-                    label: getCompareWithOptionsLabel(environmentName, templateType),
-                    // TODO: Can be util
-                    options:
-                        templateMappedToType[templateType]?.map((template) => ({
-                            label: getCompareWithTemplateOptionsLabel(
-                                template,
-                                chartVersionMappedToChartId[template.chartRefId],
-                            ),
-                            value: template.id,
-                        })) ?? [],
-                })
-            })
-        }
-
-        return initialOptions.filter((option) => option.options.length)
-    })()
 
     const handleRemoveResolvedVariables = () => {
         setIsResolvingVariables(false)
@@ -481,6 +385,10 @@ const DeploymentTemplate = ({
             return publishedTemplateData.editorTemplate
         }
 
+        if (isApprovalPendingOptionSelected) {
+            return draftTemplateData.editorTemplate
+        }
+
         if (hideLockedKeys) {
             try {
                 const templateWithLockedKeys = getCurrentTemplateWithLockedKeys()
@@ -548,7 +456,6 @@ const DeploymentTemplate = ({
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleSetHideLockedKeys = (value: boolean) => {
         if (!removeLockedKeysFromYaml || !reapplyRemovedLockedKeysToYaml) {
             return
@@ -725,7 +632,6 @@ const DeploymentTemplate = ({
         handleUpdateReadmeMode(true)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleDisableReadmeView = () => {
         handleUpdateReadmeMode(false)
     }
@@ -749,14 +655,14 @@ const DeploymentTemplate = ({
         }
 
         if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
-            return draftTemplateData.selectedChart
+            return draftTemplateData?.selectedChart
         }
 
         if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
-            return publishedTemplateData.selectedChart
+            return publishedTemplateData?.selectedChart
         }
 
-        return currentEditorTemplateData.selectedChart
+        return currentEditorTemplateData?.selectedChart
     }
 
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => {
@@ -774,11 +680,14 @@ const DeploymentTemplate = ({
         }
 
         // Not added the case of approval pending view in compare since thats not an editor state
-
         return currentEditorTemplateData?.selectedChart
     }
 
     const getCurrentTemplateGUISchema = (): string => {
+        if (!isGuiSupported) {
+            return '{}'
+        }
+
         if (isPublishedValuesView && publishedTemplateData) {
             return publishedTemplateData.guiSchema
         }
@@ -792,14 +701,14 @@ const DeploymentTemplate = ({
         }
 
         if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
-            return draftTemplateData.schema
+            return draftTemplateData?.schema
         }
 
         if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
-            return publishedTemplateData.schema
+            return publishedTemplateData?.schema
         }
 
-        return currentEditorTemplateData.schema
+        return currentEditorTemplateData?.schema
     }
 
     // FIXME: These sort of methods seems to be duplicated
@@ -809,38 +718,18 @@ const DeploymentTemplate = ({
         }
 
         if (isInheritedView) {
-            return baseDeploymentTemplateData.schema
+            return baseDeploymentTemplateData?.schema
         }
 
         if (isPublishedValuesView && publishedTemplateData) {
-            return publishedTemplateData.schema
+            return publishedTemplateData?.schema
         }
 
-        if (
-            isApprovalView &&
-            draftTemplateData &&
-            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
-        ) {
+        if (draftTemplateData && isApprovalPendingOptionSelected) {
             return draftTemplateData.schema
         }
 
-        return currentEditorTemplateData.schema
-    }
-
-    const getIsCurrentEditorTemplateOverridden = (): boolean => {
-        if (isPublishedValuesView && publishedTemplateData) {
-            return publishedTemplateData.isOverridden
-        }
-
-        if (
-            isApprovalView &&
-            draftTemplateData &&
-            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
-        ) {
-            return draftTemplateData.isOverridden
-        }
-
-        return currentEditorTemplateData?.isOverridden
+        return currentEditorTemplateData?.schema
     }
 
     const getIsCurrentTemplateOverridden = (): boolean => {
@@ -1153,25 +1042,6 @@ const DeploymentTemplate = ({
         handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
     }
 
-    const handleLoadCompareWithTemplateChartDataList = async (): Promise<void> => {
-        try {
-            const { result } = await getTemplateOptions(+appId, +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
-            const parsedMap = result.reduce(
-                (acc, templateItem, index) => {
-                    acc[index] = {
-                        ...templateItem,
-                        id: index,
-                    }
-                    return acc
-                },
-                {} as typeof templateListMap,
-            )
-            setTemplateListMap(parsedMap)
-        } catch {
-            setTemplateListMap({})
-        }
-    }
-
     // TODO: Check why inf loading is happening in case of null check error
     const handleInitialDataLoad = async () => {
         // TODO: Can be collected together
@@ -1188,7 +1058,6 @@ const DeploymentTemplate = ({
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
                 getChartList(),
                 getJsonPath ? getJsonPath(appId, envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID) : Promise.resolve(null),
-                handleLoadCompareWithTemplateChartDataList(),
             ])
 
             if (chartRefsDataResponse.status === 'rejected') {
@@ -1604,10 +1473,7 @@ const DeploymentTemplate = ({
         }
 
         if (resolveScopedVariables) {
-            if (
-                isApprovalView &&
-                compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
-            ) {
+            if (isApprovalPendingOptionSelected) {
                 return hideLockedKeys
                     ? resolvedOriginalTemplate.templateWithoutLockedKeys
                     : resolvedOriginalTemplate.originalTemplate
@@ -1631,10 +1497,7 @@ const DeploymentTemplate = ({
                 : publishedTemplateData.editorTemplate
         }
 
-        if (
-            isApprovalView &&
-            compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
-        ) {
+        if (isApprovalPendingOptionSelected) {
             return hideLockedKeys ? draftTemplateData.editorTemplateWithoutLockedKeys : draftTemplateData.editorTemplate
         }
 
@@ -1682,82 +1545,6 @@ const DeploymentTemplate = ({
         }
     }
 
-    const handleCompareWithOptionChange = async (option: SelectPickerOptionType) => {
-        handleRemoveResolvedVariables()
-
-        if (compareWithValuesDataStore[+option.value] || option.value === BASE_DEPLOYMENT_TEMPLATE_ENV_ID) {
-            setCompareWithSelectedOption(option)
-            return
-        }
-
-        try {
-            // TODO: Add disabled states
-            setIsComparisonViewLoading(true)
-
-            const templateData = templateListMap[+option.value]
-            // if (templateData.type === TemplateListType.DefaultVersions) {
-            //     // FIXME: On prod different call is there for some reason
-            //     await getDefaultDeploymentTemplate(+appId, templateData.chartRefId)
-            // } else {
-            const { resolvedData, data } = await getResolvedDeploymentTemplate({
-                appId: +appId,
-                chartRefId: +templateData.chartRefId || null,
-                envId: +templateData.environmentId || null,
-                type: templateData.type,
-                deploymentTemplateHistoryId: +templateData.deploymentTemplateHistoryId || null,
-                pipelineId: +templateData.pipelineId || null,
-                valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
-            })
-
-            const currentCompareWithValuesDataStore = structuredClone(compareWithValuesDataStore)
-            currentCompareWithValuesDataStore[+option.value] = {
-                id: +option.value,
-                originalTemplate: data,
-                resolvedTemplate: resolvedData,
-                originalTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(data).editorTemplate,
-                resolvedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(resolvedData).editorTemplate,
-            }
-            setCompareWithValuesDataStore(currentCompareWithValuesDataStore)
-            setCompareWithSelectedOption(option)
-        } catch (error) {
-            showError(error)
-        } finally {
-            setIsComparisonViewLoading(false)
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    const getCompareWithEditorTemplate = (): string => {
-        if (compareWithSelectedOption.value === COMPARE_WITH_BASE_TEMPLATE_OPTION.value) {
-            if (resolveScopedVariables) {
-                return hideLockedKeys
-                    ? resolvedBaseDeploymentTemplate.templateWithoutLockedKeys
-                    : resolvedBaseDeploymentTemplate.originalTemplate
-            }
-
-            return hideLockedKeys
-                ? baseDeploymentTemplateData.editorTemplateWithoutLockedKeys
-                : baseDeploymentTemplateData.editorTemplate
-        }
-
-        const selectedTemplateData = compareWithValuesDataStore[+compareWithSelectedOption.value]
-        if (!selectedTemplateData) {
-            return ''
-        }
-
-        if (resolveScopedVariables) {
-            return hideLockedKeys
-                ? selectedTemplateData.resolvedTemplateWithoutLockedKeys
-                : selectedTemplateData.resolvedTemplate
-        }
-
-        return hideLockedKeys
-            ? selectedTemplateData.originalTemplateWithoutLockedKeys
-            : selectedTemplateData.originalTemplate
-    }
-
     const handleCloseDeleteOverrideDialog = () => {
         setShowDeleteOverrideDialog(false)
     }
@@ -1798,6 +1585,58 @@ const DeploymentTemplate = ({
         })
     }
 
+    const getCompareFromEditorConfig = (): CompareConfigViewProps['currentEditorConfig'] => {
+        const templateState = isApprovalPendingOptionSelected ? draftTemplateData : currentEditorTemplateData
+
+        return {
+            chartName: {
+                displayName: 'Chart',
+                value: templateState?.selectedChart?.name,
+            },
+            chartVersion: {
+                displayName: 'Version',
+                value: templateState?.selectedChart?.version,
+            },
+            mergeStrategy: {
+                displayName: 'Merge strategy',
+                value: templateState?.mergeStrategy,
+            },
+            ...(window._env_.APPLICATION_METRICS_ENABLED && {
+                applicationMetrics: {
+                    displayName: 'Application metrics',
+                    value: String(templateState?.isAppMetricsEnabled),
+                },
+            }),
+        }
+    }
+
+    const getPublishedEditorConfig = (): CompareConfigViewProps['publishedEditorConfig'] => {
+        if (!isPublishedConfigPresent) {
+            return {}
+        }
+
+        return {
+            chartName: {
+                displayName: 'Chart',
+                value: publishedTemplateData?.selectedChart?.name,
+            },
+            chartVersion: {
+                displayName: 'Version',
+                value: publishedTemplateData?.selectedChart?.version,
+            },
+            mergeStrategy: {
+                displayName: 'Merge strategy',
+                value: publishedTemplateData?.mergeStrategy,
+            },
+            ...(window._env_.APPLICATION_METRICS_ENABLED && {
+                applicationMetrics: {
+                    displayName: 'Application metrics',
+                    value: String(publishedTemplateData?.isAppMetricsEnabled),
+                },
+            }),
+        }
+    }
+
     const renderEditorComponent = () => {
         if (isLoadingInitialData || isResolvingVariables) {
             return (
@@ -1825,33 +1664,19 @@ const DeploymentTemplate = ({
 
         if (isCompareView) {
             return (
-                <CompareTemplateView
-                    schema={getCurrentEditorSchema()}
-                    isLoading={isLoadingInitialData || isResolvingVariables || isSaving || isComparisonViewLoading}
-                    currentEditorTemplate={getCurrentEditorValue()}
-                    currentEditorSelectedChart={getCurrentTemplateSelectedChart()}
-                    editorOnChange={handleEditorChange}
-                    compareWithEditorTemplate={getCompareWithEditorTemplate()}
-                    compareWithOptions={compareWithTemplateSelectPickerOptions}
-                    // TODO: Handle default selection of environment name in case of !!envId
-                    selectedCompareWithOption={compareWithSelectedOption}
-                    handleCompareWithOptionChange={handleCompareWithOptionChange}
-                    readOnly={isApprovalView || resolveScopedVariables}
-                    isApprovalView={isApprovalView}
+                <CompareConfigView
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
+                    isApprovalView={isApprovalView}
+                    currentEditorConfig={getCompareFromEditorConfig()}
+                    currentEditorTemplate={YAML.parse(getCurrentEditorValue())}
+                    publishedEditorConfig={getPublishedEditorConfig()}
+                    publishedEditorTemplate={YAML.parse(
+                        isPublishedConfigPresent ? publishedTemplateData?.editorTemplate : '',
+                    )}
+                    selectedChartVersion={getCurrentTemplateSelectedChart().version}
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
-                    isUnSet={isUnSet}
-                    environmentName={environmentName}
-                    isCurrentEditorOverridden={getIsCurrentEditorTemplateOverridden()}
-                    handleOverride={handleOverride}
-                    latestDraft={draftTemplateData?.latestDraft}
-                    isDeleteOverrideDraftState={
-                        draftTemplateData?.latestDraft.action === 3 &&
-                        compareWithSelectedOption &&
-                        compareWithSelectedOption.value !== COMPARE_WITH_BASE_TEMPLATE_OPTION.value &&
-                        templateListMap[+compareWithSelectedOption.value]?.environmentId === +envId
-                    }
+                    isDeleteDraft={draftTemplateData?.latestDraft?.action === 3}
                 />
             )
         }
@@ -1902,19 +1727,8 @@ const DeploymentTemplate = ({
         )
     }
 
-    const getShouldShowMergePatchesButton = (): boolean => {
-        if (!isCompareView) {
-            return false
-        }
-
-        const compareWithEditorTemplate = getCompareWithEditorTemplate()
-        const compareFromEditorTemplate = getCurrentEditorValue()
-
-        return (
-            compareWithEditorTemplate === OverrideMergeStrategyType.PATCH ||
-            compareFromEditorTemplate === OverrideMergeStrategyType.PATCH
-        )
-    }
+    // TODO: Need to implement when we have support for merge patches
+    const getShouldShowMergePatchesButton = (): boolean => false
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (strategy) => {
         if (!currentEditorTemplateData.mergeStrategy) {
