@@ -90,7 +90,11 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
 
                 <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
                     {selectedLanguage?.icon && (
-                        <img src={selectedLanguage.icon} alt={selectedLanguage.label} className="icon-dim-20 mr-8" />
+                        <img
+                            src={selectedLanguage.icon}
+                            alt={selectedLanguage.label.toString()}
+                            className="icon-dim-20 mr-8"
+                        />
                     )}
                     <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
                 </div>

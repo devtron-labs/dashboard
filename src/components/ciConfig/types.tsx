@@ -26,6 +26,7 @@ import {
     WorkflowType,
     Material,
     Environment,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
@@ -188,8 +189,9 @@ export interface VersionsOptionType extends OptionTypeWithIcon {
     value: string
 }
 
-export interface LanguageOptionType extends OptionTypeWithIcon {
+export interface LanguageOptionType extends SelectPickerOptionType {
     value: string
+    icon: string
 }
 
 export interface BuildersAndFrameworksType {

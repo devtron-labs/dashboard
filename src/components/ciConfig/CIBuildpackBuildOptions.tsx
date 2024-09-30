@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { CIBuildType, CustomInput, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, CustomInput, InfoIconTippy, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -46,6 +46,7 @@ import {
     USE_CUSTOM_BUILDER,
     VERSION_DETECT_OPTION,
 } from './ciConfigConstant'
+import { getSelectStartIcon } from './utils'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {
@@ -142,6 +143,7 @@ export default function CIBuildpackBuildOptions({
         }
     }, [buildersAndFrameworks.builders])
 
+
     const initBuilderData = () => {
         const _supportedLanguagesList: LanguageOptionType[] = []
         const _builderLanguageSupportMap: Record<string, LanguageBuilderOptionType> = {}
@@ -167,6 +169,7 @@ export default function CIBuildpackBuildOptions({
                 label: _languageBuilder.Language,
                 value: _languageBuilder.Language,
                 icon: _languageBuilder.LanguageIcon,
+                startIcon: getSelectStartIcon(_languageBuilder.LanguageIcon, _languageBuilder.Language),
             })
 
             if (!initOption) {
@@ -214,6 +217,10 @@ export default function CIBuildpackBuildOptions({
                     label: ciBuildConfig.buildPackConfig.language,
                     value: ciBuildConfig.buildPackConfig.language,
                     icon: _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]?.LanguageIcon,
+                    startIcon: getSelectStartIcon(
+                        _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]?.LanguageIcon,
+                        ciBuildConfig.buildPackConfig.language,
+                    ),
                 }
                 _version = {
                     label: ciBuildConfig.buildPackConfig.languageVersion,
@@ -254,6 +261,7 @@ export default function CIBuildpackBuildOptions({
                     label: initOption.language,
                     value: initOption.language,
                     icon: initOption.icon,
+                    startIcon: getSelectStartIcon(initOption.icon, initOption.language),
                 }
                 _version = {
                     label: initOption.version,
@@ -495,7 +503,7 @@ export default function CIBuildpackBuildOptions({
                                 {buildersAndFrameworks.selectedLanguage?.icon && (
                                     <img
                                         src={buildersAndFrameworks.selectedLanguage.icon}
-                                        alt={buildersAndFrameworks.selectedLanguage.label}
+                                        alt={buildersAndFrameworks.selectedLanguage.label.toString()}
                                         className="icon-dim-20 mr-8"
                                     />
                                 )}
@@ -546,7 +554,8 @@ export default function CIBuildpackBuildOptions({
             <div className="flex top project-material-options">
                 <div className="form__field">
                     {/* TODO: Remove console after testing  */}
-                    {console.log('git options', sourceConfig.material)}
+                    {console.log('sourceConfig', sourceConfig)}
+                    {console.log('git options > sourceConfig.material', sourceConfig.material)}
                     {console.log('values', selectedMaterial)}
 
                     <SelectPicker
@@ -557,6 +566,7 @@ export default function CIBuildpackBuildOptions({
                         options={sourceConfig.material}
                         value={selectedMaterial}
                         onChange={handleFileLocationChange}
+                        variant={SelectPickerVariantType.BORDER_LESS}
                     />
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
@@ -592,6 +602,7 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedLanguage}
                             isSearchable={false}
                             onChange={handleLanguageSelection}
+                            variant={SelectPickerVariantType.BORDER_LESS}
                         />
                     </div>
 
@@ -609,6 +620,7 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedVersion}
                             isSearchable={false}
                             onChange={handleVersionSelection}
+                            variant={SelectPickerVariantType.BORDER_LESS}
                         />
                     </div>
                 </div>

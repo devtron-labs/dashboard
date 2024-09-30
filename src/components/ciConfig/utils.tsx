@@ -14,3 +14,10 @@ export const getLanguageOptions = (languages) =>
         label: _language.value.label,
         startIcon: _language.value.icon,
     }))
+
+export const getSelectStartIcon = (icon: string, label: string) => {
+    if (!icon) {
+        return null
+    }
+    return <img src={icon} alt={label} className="icon-dim-20 mr-8" />
+}
