@@ -75,6 +75,8 @@ export const EnvConfigurationsNav = ({
         const envConfigKey =
             resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
 
+        setExpandedIds({ ...expandedIds, [resourceType]: true })
+
         return {
             ..._updatedEnvConfig,
             [envConfigKey]: [

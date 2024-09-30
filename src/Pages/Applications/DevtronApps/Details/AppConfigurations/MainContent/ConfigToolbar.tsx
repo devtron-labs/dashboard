@@ -105,6 +105,7 @@ const ConfigToolbar = ({
     restoreLastSavedYAML,
     isPublishedConfigPresent = true,
     handleClearPopupNode,
+    headerMessage,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -145,57 +146,51 @@ const ConfigToolbar = ({
             )
         }
 
-        // TODO: fix-this
-        if (configHeaderTab === ConfigHeaderTabType.VALUES) {
-            return (
-                <div className="flexbox dc__align-items-center dc__gap-6">
-                    <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
-                    {/* TODO: check for componentType */}
-                    <span className="cn-9 fs-12 fw-4 lh-20">
-                        {envId
-                            ? 'This is an environment specific ConfigMap'
-                            : 'Placeholder Text - This is an environment specific ConfigMap'}
-                    </span>
-                </div>
-            )
-        }
-
-        if (!isProtected || !isDraftPresent) {
-            return null
-        }
-
         return (
-            <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                {/* Internally handles right border */}
-                {ProtectionViewTabGroup && (
-                    <>
-                        <ProtectionViewTabGroup
-                            selectedTab={selectedProtectionViewTab}
-                            handleProtectionViewTabChange={handleProtectionViewTabChange}
-                            isApprovalPending={isApprovalPending}
-                            isDisabled={isDisabled}
+            <>
+                {headerMessage &&
+                    configHeaderTab === ConfigHeaderTabType.VALUES &&
+                    !(isProtected && isDraftPresent) && (
+                        <div className="flexbox dc__align-items-center dc__gap-6">
+                            <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                            <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
+                        </div>
+                    )}
+                <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                    {/* Internally handles right border */}
+                    {ProtectionViewTabGroup && (
+                        <>
+                            <ProtectionViewTabGroup
+                                selectedTab={selectedProtectionViewTab}
+                                handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                isApprovalPending={isApprovalPending}
+                                isDisabled={isDisabled}
+                                parsingError={parsingError}
+                                restoreLastSavedYAML={restoreLastSavedYAML}
+                            />
+
+                            <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                        </>
+                    )}
+
+                    {/* Data should always be valid in case we are in approval view */}
+                    {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                        <InvalidYAMLTippyWrapper
                             parsingError={parsingError}
                             restoreLastSavedYAML={restoreLastSavedYAML}
-                        />
-
-                        <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                    </>
-                )}
-
-                {/* Data should always be valid in case we are in approval view */}
-                {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
-                        <div>
-                            <MergePatchWithTemplateCheckbox
-                                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                                // Will remove this check if merging is happening on ui
-                                isDisabled={isDisabled}
-                            />
-                        </div>
-                    </InvalidYAMLTippyWrapper>
-                )}
-            </div>
+                        >
+                            <div>
+                                <MergePatchWithTemplateCheckbox
+                                    shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                    handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
+                                    // Will remove this check if merging is happening on ui
+                                    isDisabled={isDisabled}
+                                />
+                            </div>
+                        </InvalidYAMLTippyWrapper>
+                    )}
+                </div>
+            </>
         )
     }
 

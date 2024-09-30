@@ -1,0 +1,34 @@
+import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getConfigMapSecretInheritedFormValues } from './utils'
+import { ConfigMapSecretInheritedProps } from './types'
+
+export const ConfigMapSecretInherited = ({ componentType, configMapSecretData }: ConfigMapSecretInheritedProps) => {
+    const displayValues = getConfigMapSecretInheritedFormValues({
+        configMapSecretData,
+        componentType,
+    })
+
+    return (
+        <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
+            <div className="dc__border br-4 py-4">
+                {displayValues.configData.map(({ displayName, value }) =>
+                    value ? (
+                        <div key={displayName} className="px-16 py-6 flex left dc__gap-8 fs-13 lh-20">
+                            <p className="m-0 w-150 cn-7">{displayName}</p>
+                            <p className="m-0 flex-grow-1 cn-9 dc__capitalize">{value}</p>
+                        </div>
+                    ) : null,
+                )}
+            </div>
+            {displayValues.data && (
+                <div className="dc__border br-4 dc__overflow-hidden">
+                    <div className="px-16 py-6 dc__border-bottom">
+                        <p className="m-0 fs-13 lh-20 fw-6 cn-9">Data</p>
+                    </div>
+                    <CodeEditor value={displayValues.data} mode="yaml" inline height={350} readOnly />
+                </div>
+            )}
+        </div>
+    )
+}

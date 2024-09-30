@@ -97,7 +97,7 @@ export const getConfigToolbarPopupConfig = ({
     isDraftAvailable,
     handleShowEditHistory,
     isProtected = false,
-    showDeleteBtn = false,
+    isDeletable = false,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -148,7 +148,7 @@ export const getConfigToolbarPopupConfig = ({
         })
     }
 
-    if (showDeleteBtn && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (isDeletable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         secondConfigSegment.push({
             text: `Delete${isProtected ? '...' : ''}`,
             onClick: handleDelete,

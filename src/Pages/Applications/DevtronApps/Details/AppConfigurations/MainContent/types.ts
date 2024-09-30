@@ -9,7 +9,7 @@ import {
     ProtectConfigTabsType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, ReactNode } from 'react'
 
 export interface ConfigHeaderProps {
@@ -28,6 +28,7 @@ export interface ConfigHeaderProps {
     showNoOverride: boolean
     parsingError: string
     restoreLastSavedYAML: () => void
+    hideDryRunTab?: boolean
 }
 
 export interface ConfigHeaderTabProps
@@ -128,6 +129,7 @@ export type ConfigToolbarProps = {
      */
     isPublishedConfigPresent?: boolean
     handleClearPopupNode: () => void
+    headerMessage?: string
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -156,7 +158,7 @@ export interface GetConfigToolbarPopupConfigProps {
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
     isProtected?: boolean
-    showDeleteBtn?: boolean
+    isDeletable?: boolean
 }
 
 export interface ConfigDryRunProps {

@@ -223,7 +223,6 @@ export interface CMSecretWrapperProps
 }
 
 export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
-    draftDataMap: Record<string, Record<string, number>>
     appChartRef: { id: number; version: string; name: string }
 }
 

@@ -1,8 +1,16 @@
+import { useState } from 'react'
+
 import { DeleteDialog, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfig } from './ConfigMapSecret.service'
-import { CM_SECRET_COMPONENT_NAME } from './ConfigMapSecret.constants'
-import { CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './ConfigMapSecret.types'
+import {
+    deleteEnvSecret,
+    deleteEnvConfigMap,
+    deleteSecret,
+    deleteConfig,
+} from '../ConfigMapSecretOld/ConfigMapSecret.service'
+
+import { CM_SECRET_COMPONENT_NAME } from './constants'
+import { CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
 
 export const ConfigMapSecretDeleteModal = ({
     appId,
@@ -13,7 +21,10 @@ export const ConfigMapSecretDeleteModal = ({
     closeDeleteModal,
     updateCMSecret,
 }: ConfigMapSecretDeleteModalProps) => {
+    const [isDeleting, setIsDeleting] = useState(false)
+
     const handleDelete = async () => {
+        setIsDeleting(true)
         try {
             if (!envId) {
                 if (componentType === CMSecretComponentType.Secret) {
@@ -27,13 +38,14 @@ export const ConfigMapSecretDeleteModal = ({
                 await deleteEnvConfigMap(id, appId, envId, configMapSecretData.name)
             }
 
+            setIsDeleting(false)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Successfully deleted',
             })
             updateCMSecret()
         } catch (err) {
-            closeDeleteModal()
+            setIsDeleting(false)
             showError(err)
         }
     }
@@ -44,6 +56,7 @@ export const ConfigMapSecretDeleteModal = ({
             description={`'${configMapSecretData.name}' will not be used in future deployments. Are you sure?`}
             closeDelete={closeDeleteModal}
             delete={handleDelete}
+            apiCallInProgress={isDeleting}
         />
     )
 }

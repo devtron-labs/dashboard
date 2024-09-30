@@ -38,7 +38,7 @@ import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
+import { ConfigMapSecretDeleteModal } from '../ConfigMapSecret/ConfigMapSecretDeleteModal'
 
 import './ConfigMapSecret.scss'
 
@@ -57,7 +57,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         envConfig,
         fetchEnvConfig,
         onErrorRedirectURL,
-        draftDataMap,
         envName,
         appName,
         isJob,
@@ -193,10 +192,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                                 ..._cmSecretData.configData[0],
                                 secretMode: _cmSecretData.configData[0].externalType === '',
                                 unAuthorized: true,
-                                ...(draftDataMap?.[_cmSecretData.configData[0].name]
+                                ...(draftId && draftState
                                     ? {
-                                          draftId: draftDataMap[_cmSecretData.configData[0].name].draftId,
-                                          draftState: draftDataMap[_cmSecretData.configData[0].name].draftState,
+                                          draftId,
+                                          draftState,
                                       }
                                     : {}),
                             },
@@ -462,28 +461,30 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         if (name && isProtected && draftData?.draftId) {
             return (
                 <>
-                    <ConfigToolbar
-                        loading={loader}
-                        draftId={draftData.draftId}
-                        draftVersionId={draftData.draftVersionId}
-                        selectedTabIndex={selectedTab}
-                        handleTabSelection={handleTabSelection}
-                        isDraftMode={
-                            draftData.draftState === DraftState.Init ||
-                            draftData.draftState === DraftState.AwaitApproval
-                        }
-                        noReadme
-                        showReadme={false}
-                        isReadmeAvailable={false}
-                        handleReadMeClick={noop}
-                        handleCommentClick={toggleDraftCommentModal}
-                        commentsPresent={draftData.commentsCount > 0}
-                        isApprovalPending={draftData.draftState === DraftState.AwaitApproval}
-                        approvalUsers={draftData.approvers}
-                        reload={() => updateCMSecret()}
-                        componentType={componentType}
-                        className="p-0-imp"
-                    />
+                    {ConfigToolbar && (
+                        <ConfigToolbar
+                            loading={loader}
+                            draftId={draftData.draftId}
+                            draftVersionId={draftData.draftVersionId}
+                            selectedTabIndex={selectedTab}
+                            handleTabSelection={handleTabSelection}
+                            isDraftMode={
+                                draftData.draftState === DraftState.Init ||
+                                draftData.draftState === DraftState.AwaitApproval
+                            }
+                            noReadme
+                            showReadme={false}
+                            isReadmeAvailable={false}
+                            handleReadMeClick={noop}
+                            handleCommentClick={toggleDraftCommentModal}
+                            commentsPresent={draftData.commentsCount > 0}
+                            isApprovalPending={draftData.draftState === DraftState.AwaitApproval}
+                            approvalUsers={draftData.approvers}
+                            reload={() => updateCMSecret()}
+                            componentType={componentType}
+                            className="p-0-imp"
+                        />
+                    )}
                     <ProtectedConfigMapSecretDetails
                         {...props}
                         componentType={componentType}
