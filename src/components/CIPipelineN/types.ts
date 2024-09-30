@@ -20,7 +20,6 @@ import {
     StepType,
     PipelineFormType,
     Environment,
-    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExtendedOptionType } from '@Components/app/types'
 
@@ -103,20 +102,10 @@ export interface InputPluginSelectionType {
     selectedVariableIndex: number
 }
 
-export interface EnvironmentOptionWithSelectPicker extends Environment, SelectPickerOptionType {}
-
-export interface EnvironmentOptionType {
-    label: string
-    options: EnvironmentOptionWithSelectPicker[]
-    isVirtualEnvironment?: boolean
-}
-
 export interface EnvironmentListType {
     isBuildStage?: boolean
     environments: Environment[]
-    selectedEnv: EnvironmentOptionWithSelectPicker
-    setSelectedEnv?: (
-        _selectedEnv: EnvironmentOptionWithSelectPicker,
-    ) => void | React.Dispatch<React.SetStateAction<EnvironmentOptionWithSelectPicker>>
+    selectedEnv: Environment
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
     isBorderLess?: boolean
 }

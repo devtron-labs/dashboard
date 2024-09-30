@@ -14,24 +14,70 @@
  * limitations under the License.
  */
 
-import { ComponentSizeType, Environment, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    Environment,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
-import { EnvironmentListType, EnvironmentOptionType, EnvironmentOptionWithSelectPicker } from './types'
+import { EnvironmentListType } from './types'
+import { GroupBase } from 'react-select'
 
-export const EnvironmentList = ({ isBuildStage, environments, selectedEnv, setSelectedEnv, isBorderLess = false }: EnvironmentListType) => {
-    const selectEnvironment = (selection: EnvironmentOptionWithSelectPicker) => {
+export const EnvironmentList = ({
+    isBuildStage,
+    environments,
+    selectedEnv,
+    setSelectedEnv,
+    isBorderLess = false,
+}: EnvironmentListType) => {
+    const selectEnvironment = (selection) => {
         const _selectedEnv = { ...selection }
         _selectedEnv.label = _selectedEnv.name
         _selectedEnv.value = _selectedEnv.id.toString()
         setSelectedEnv(_selectedEnv)
     }
 
-    const envList: EnvironmentOptionType[] = createClusterEnvGroup<Environment, EnvironmentOptionWithSelectPicker>(environments, 'clusterName')
+    const envList = createClusterEnvGroup(environments as Environment[], 'clusterName')
 
-    if (selectedEnv && !selectedEnv.label && !selectedEnv.value) {
-        selectedEnv.label = selectedEnv.name
-        selectedEnv.value = selectedEnv.id.toString()
-        selectedEnv.startIcon = !isBuildStage ? <div className="dc__environment-icon" /> : null
+    const getEnvListOptions = (): GroupBase<SelectPickerOptionType<Environment>>[] =>
+        envList.reduce((acc, _elm) => {
+            if (_elm.label) {
+                return [
+                    ...acc,
+                    {
+                        label: `Cluster: ${_elm.label}`,
+                        options: _elm.options.map((_option) => ({
+                            label: _option?.name,
+                            value: _option,
+                            description: _option?.description,
+                        })),
+                    },
+                ]
+            }
+
+            return [
+                ...acc,
+                ..._elm?.options?.map((_option) => {
+                    return {
+                        label: _option?.name,
+                        value: _option,
+                        description: _option?.description,
+                    }
+                }),
+            ]
+        }, [])
+
+    const getSelectedEnvironment = (): SelectPickerOptionType<Environment> => {
+        let _selectedEnv: SelectPickerOptionType<Environment> = {
+            ...selectedEnv,
+            label: selectedEnv?.name,
+            value: selectedEnv, // assuming the whole object is set as value
+            startIcon: !isBuildStage ? <div className="dc__environment-icon" /> : null,
+        }
+
+        return _selectedEnv
     }
 
     const getEnvironmentSelectLabel = (): JSX.Element => {
@@ -48,14 +94,14 @@ export const EnvironmentList = ({ isBuildStage, environments, selectedEnv, setSe
         >
             <div className={`${!isBuildStage ? 'w-250 dc__align-items-center flex left' : ''}`}>
                 {getEnvironmentSelectLabel()}
-                <SelectPicker
+                <SelectPicker<Environment, false>
                     required
                     inputId="job-pipeline-environment-dropdown"
                     name="job-pipeline-environment-dropdown"
                     classNamePrefix="job-pipeline-environment-dropdown"
                     placeholder="Select Environment"
-                    options={envList}
-                    value={selectedEnv}
+                    options={getEnvListOptions()}
+                    value={getSelectedEnvironment()}
                     onChange={selectEnvironment}
                     size={ComponentSizeType.large}
                     variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}

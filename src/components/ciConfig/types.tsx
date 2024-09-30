@@ -28,7 +28,6 @@ import {
     Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
-import { EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
@@ -373,8 +372,8 @@ export interface CIPipelineSidebarType {
         }>
     >
     environments?: Environment[]
-    selectedEnv?: EnvironmentOptionWithSelectPicker
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentOptionWithSelectPicker>>
+    selectedEnv?: Environment
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
 }
 
 export interface TaskListType {

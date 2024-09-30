@@ -90,7 +90,6 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
-import { EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -1132,7 +1131,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    setSelectedEnv = (_selectedEnv: EnvironmentOptionWithSelectPicker) => {
+    setSelectedEnv = (_selectedEnv) => {
         this.setState({ selectedEnv: _selectedEnv })
     }
 

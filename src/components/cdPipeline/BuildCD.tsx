@@ -61,7 +61,6 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
-import { EnvironmentOptionType, EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
 import { GroupBase } from 'react-select'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
