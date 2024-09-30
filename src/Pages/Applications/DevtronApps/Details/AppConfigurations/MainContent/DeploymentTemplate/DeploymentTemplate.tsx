@@ -1,4 +1,5 @@
 import { useEffect, useState, SyntheticEvent, useMemo } from 'react'
+import ReactGA from 'react-ga4'
 import {
     BaseURLParams,
     ConfigurationType,
@@ -280,15 +281,27 @@ const DeploymentTemplate = ({
     const handleRemoveResolvedVariables = () => {
         setIsResolvingVariables(false)
         setResolveScopedVariables(false)
+
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: 'clicked-unresolve-scoped-variable',
+        })
     }
 
     const handleToggleShowTemplateMergedWithPatch = () => {
         setShouldMergeTemplateWithPatches((prev) => !prev)
     }
 
-    const handleUpdateProtectedTabSelection = (tab: ProtectConfigTabsType) => {
+    const handleUpdateProtectedTabSelection = (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
         if (tab === selectedProtectionViewTab) {
             return
+        }
+
+        if (triggerGA && tab === ProtectConfigTabsType.COMPARE) {
+            ReactGA.event({
+                category: 'devtronapp-configuration-dt',
+                action: 'clicked-compare',
+            })
         }
 
         handleRemoveResolvedVariables()
@@ -461,6 +474,11 @@ const DeploymentTemplate = ({
             return
         }
 
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: value ? 'clicked-hide-locked-keys' : 'clicked-show-locked-keys',
+        })
+
         if (value) {
             handleEnableWasGuiOrHideLockedKeysEdited()
             const { editorTemplate, removedPatches } = getEditorTemplateAndLockedKeys(
@@ -561,6 +579,11 @@ const DeploymentTemplate = ({
     }
 
     const handleResolveScopedVariables = async () => {
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: 'clicked-resolve-scoped-variable',
+        })
+
         setResolveScopedVariables(true)
         await handleLoadScopedVariables()
     }
@@ -639,6 +662,13 @@ const DeploymentTemplate = ({
     const handleConfigHeaderTabChange = (tab: ConfigHeaderTabType) => {
         if (configHeaderTab === tab) {
             return
+        }
+
+        if (configHeaderTab === ConfigHeaderTabType.DRY_RUN) {
+            ReactGA.event({
+                category: 'devtronapp-configuration-dt',
+                action: 'clicked-dry-run',
+            })
         }
 
         handleRemoveResolvedVariables()
@@ -1030,7 +1060,7 @@ const DeploymentTemplate = ({
             const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
             if (isApprovalPending) {
                 handleConfigHeaderTabChange(ConfigHeaderTabType.VALUES)
-                handleUpdateProtectedTabSelection(ProtectConfigTabsType.COMPARE)
+                handleUpdateProtectedTabSelection(ProtectConfigTabsType.COMPARE, false)
                 return
             }
 
@@ -1318,6 +1348,12 @@ const DeploymentTemplate = ({
 
     const handleTriggerSave = async (e: SyntheticEvent) => {
         e.preventDefault()
+
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
+        })
+
         const shouldValidateLockChanges = lockedConfigKeysWithLockType.config.length > 0 && !isSuperAdmin
 
         // TODO: Try catch
@@ -1570,6 +1606,11 @@ const DeploymentTemplate = ({
                 return
             }
 
+            ReactGA.event({
+                category: 'devtronapp-configuration-dt',
+                action: 'clicked-delete-override',
+            })
+
             setShowDeleteOverrideDialog(true)
             return
         }
@@ -1583,6 +1624,14 @@ const DeploymentTemplate = ({
             ...currentEditorTemplateData,
             isOverridden: true,
         })
+    }
+
+    const handleCreateOverrideFromNoOverrideEmptyState = () => {
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: 'clicked-create-override-button',
+        })
+        handleOverride()
     }
 
     const getCompareFromEditorConfig = (): CompareConfigViewProps['currentEditorConfig'] => {
@@ -1656,7 +1705,7 @@ const DeploymentTemplate = ({
                 <NoOverrideEmptyState
                     componentType={DeploymentTemplateComponentType.DEPLOYMENT_TEMPLATE}
                     environmentName={environmentName}
-                    handleCreateOverride={handleOverride}
+                    handleCreateOverride={handleCreateOverrideFromNoOverrideEmptyState}
                     handleViewInheritedConfig={handleViewInheritedConfig}
                 />
             )
@@ -1731,6 +1780,11 @@ const DeploymentTemplate = ({
     const getShouldShowMergePatchesButton = (): boolean => false
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (strategy) => {
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: 'clicked-merge-strategy-dropdown',
+        })
+
         if (!currentEditorTemplateData.mergeStrategy) {
             logExceptionToSentry(new Error('Merge strategy change without merge strategy'))
             return
@@ -1933,6 +1987,7 @@ const DeploymentTemplate = ({
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}
                         isLoadingInitialData={isLoadingInitialData}
                         isPublishedConfigPresent={isPublishedConfigPresent}
+                        handleClearPopupNode={handleClearPopupNode}
                     >
                         <DeploymentTemplateOptionsHeader
                             disableVersionSelect={
