@@ -198,6 +198,7 @@ const ChartValuesView = ({
                 : chartValuesFromParent,
             installedConfigFromParent,
             chartVersionsDataFromParent,
+            appDetails?.deploymentAppType,
         ),
     )
 

@@ -23,6 +23,7 @@ export const initState = (
     chartValuesFromParent: ChartValuesType,
     installedConfigFromParent: any,
     chartVersionsDataFromParent: ChartVersionType[],
+    deploymentAppType: DeploymentAppTypes,
 ): ChartValuesViewState => {
     return {
         isLoading: true,
@@ -79,7 +80,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: DeploymentAppTypes.HELM,
+        deploymentAppType: deploymentAppType ?? DeploymentAppTypes.HELM,
         gitRepoURL: '',
         authMode: null,
         initialChartVersionValues: {
