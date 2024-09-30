@@ -6,6 +6,7 @@ import {
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { FunctionComponent, ReactNode } from 'react'
 
 export interface ConfigHeaderProps {
@@ -165,3 +166,23 @@ export interface ToggleResolveScopedVariablesProps {
     handleToggleScopedVariablesView: () => void
     isDisabled?: boolean
 }
+
+export enum DeploymentTemplateComponentType {
+    DEPLOYMENT_TEMPLATE = '3',
+}
+
+type NoOverrideEmptyStateCMCSProps = {
+    componentType: CMSecretComponentType
+    configName: string
+}
+
+type NoOverrideEmptyStateDeploymentTemplateProps = {
+    componentType: DeploymentTemplateComponentType
+    configName?: never
+}
+
+export type NoOverrideEmptyStateProps = {
+    environmentName: string
+    handleCreateOverride: () => void
+    handleViewInheritedConfig: () => void
+} & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)

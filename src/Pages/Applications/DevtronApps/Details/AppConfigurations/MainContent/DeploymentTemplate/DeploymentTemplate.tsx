@@ -81,9 +81,10 @@ import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { ConfigToolbarProps } from '../types'
+import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
 import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
+import NoOverrideEmptyState from '../NoOverrideEmptyState'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -258,6 +259,12 @@ const DeploymentTemplate = ({
 
     const isDraftAvailable: boolean = isProtected && !!draftTemplateData?.latestDraft
 
+    const showNoOverrideEmptyState =
+        !!envId &&
+        !isDraftAvailable &&
+        !publishedTemplateData?.isOverridden &&
+        !currentEditorTemplateData?.isOverridden &&
+        configHeaderTab === ConfigHeaderTabType.VALUES
     // TODO: Can rename as publishedOverriddenState
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
@@ -730,6 +737,10 @@ const DeploymentTemplate = ({
 
         handleRemoveResolvedVariables()
         setConfigHeaderTab(tab)
+    }
+
+    const handleViewInheritedConfig = () => {
+        handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
     const getDryRunModeSelectedChart = (): DeploymentChartVersionType => {
@@ -1801,6 +1812,17 @@ const DeploymentTemplate = ({
             return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
         }
 
+        if (showNoOverrideEmptyState) {
+            return (
+                <NoOverrideEmptyState
+                    componentType={DeploymentTemplateComponentType.DEPLOYMENT_TEMPLATE}
+                    environmentName={environmentName}
+                    handleCreateOverride={handleOverride}
+                    handleViewInheritedConfig={handleViewInheritedConfig}
+                />
+            )
+        }
+
         if (isCompareView) {
             return (
                 <CompareTemplateView
@@ -1928,7 +1950,7 @@ const DeploymentTemplate = ({
             : currentEditorTemplateData?.selectedChart
 
         // TODO: Confirm if we are hiding in case of isDryRunView
-        if (!selectedChart || isDryRunView) {
+        if (!selectedChart || isDryRunView || showNoOverrideEmptyState) {
             return null
         }
 
@@ -2042,9 +2064,9 @@ const DeploymentTemplate = ({
         ) : null,
     }
 
-    const renderBody = () => (
-        <>
-            {showReadMe ? (
+    const renderHeader = () => {
+        if (showReadMe) {
+            return (
                 <div className="flexbox dc__gap-8 px-12 py-6 dc__border-bottom">
                     <Button
                         text="Readme"
@@ -2056,18 +2078,21 @@ const DeploymentTemplate = ({
                         variant={ButtonVariantType.text}
                     />
                 </div>
-            ) : (
-                <>
-                    {/* TODO: Need to get clarity from product regarding unsaved changes (is it dirty state or unsaved changes?) and No override (is draft only and dirty state considered override?) */}
-                    <ConfigHeader
-                        configHeaderTab={configHeaderTab}
-                        handleTabChange={handleConfigHeaderTabChange}
-                        isDisabled={currentEditorTemplateData?.unableToParseYaml}
-                        areChangesPresent={areChangesPresent}
-                        isOverridable={!!envId}
-                        isPublishedTemplateOverridden={publishedTemplateData?.isOverridden}
-                    />
+            )
+        }
 
+        return (
+            <>
+                <ConfigHeader
+                    configHeaderTab={configHeaderTab}
+                    handleTabChange={handleConfigHeaderTabChange}
+                    isDisabled={currentEditorTemplateData?.unableToParseYaml}
+                    areChangesPresent={areChangesPresent}
+                    isOverridable={!!envId}
+                    isPublishedTemplateOverridden={publishedTemplateData?.isOverridden}
+                />
+
+                {!showNoOverrideEmptyState && (
                     <ConfigToolbar
                         baseConfigurationURL={baseDeploymentTemplateURL}
                         selectedProtectionViewTab={selectedProtectionViewTab}
@@ -2116,9 +2141,14 @@ const DeploymentTemplate = ({
                             areChartsLoading={isLoadingInitialData}
                         />
                     </ConfigToolbar>
-                </>
-            )}
+                )}
+            </>
+        )
+    }
 
+    const renderBody = () => (
+        <>
+            {renderHeader()}
             {renderValuesView()}
         </>
     )
