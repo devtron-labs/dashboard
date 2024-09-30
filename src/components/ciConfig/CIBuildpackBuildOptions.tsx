@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { CIBuildType, CustomInput, InfoIconTippy, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -553,11 +553,6 @@ export default function CIBuildpackBuildOptions({
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    {/* TODO: Remove console after testing  */}
-                    {console.log('sourceConfig', sourceConfig)}
-                    {console.log('git options > sourceConfig.material', sourceConfig.material)}
-                    {console.log('values', selectedMaterial)}
-
                     <SelectPicker
                         label="Select repository containing code"
                         inputId="buildpack-select-repository-code"
@@ -566,6 +561,7 @@ export default function CIBuildpackBuildOptions({
                         options={sourceConfig.material}
                         value={selectedMaterial}
                         onChange={handleFileLocationChange}
+                        size={ComponentSizeType.large}
                     />
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
@@ -601,6 +597,7 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedLanguage}
                             isSearchable={false}
                             onChange={handleLanguageSelection}
+                            size={ComponentSizeType.large}
                         />
                     </div>
 
@@ -618,6 +615,7 @@ export default function CIBuildpackBuildOptions({
                             value={buildersAndFrameworks.selectedVersion}
                             isSearchable={false}
                             onChange={handleVersionSelection}
+                            size={ComponentSizeType.large}
                         />
                     </div>
                 </div>

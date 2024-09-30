@@ -87,7 +87,7 @@ export default function CIConfigForm({
     const getParsedSourceConfig = (): SourceConfigType => {
         const _sourceConfig = { ...sourceConfig }
         _sourceConfig.material = _sourceConfig.material.map((_material) => {
-            return { ..._material, value: _material.checkoutPath, label: _material.name }
+            return { ..._material, value: _material.checkoutPath, label: _material.name, startIcon: getGitProviderIcon(_material.url) }
         })
         return _sourceConfig
     }

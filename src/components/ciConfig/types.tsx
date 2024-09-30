@@ -434,7 +434,7 @@ export interface CIBuildTypeOptionType {
 export interface MaterialOptionType extends SelectPickerOptionType {
     checkoutPath: string
     fetchSubmodules: boolean
-    filterPath: string
+    filterPattern: string
     id: number
     isUsedInCiConfig: boolean
     name: string
