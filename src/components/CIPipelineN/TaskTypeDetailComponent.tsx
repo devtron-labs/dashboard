@@ -25,6 +25,9 @@ import {
     ScriptType,
     CustomInput,
     ClipboardButton,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
@@ -222,6 +225,12 @@ export const TaskTypeDetailComponent = () => {
         )
     }
 
+    const renderMenuListFooter = () => (
+        <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+            Type to enter a custom value. Press Enter to accept.
+        </div>
+    )
+
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
 
@@ -234,25 +243,16 @@ export const TaskTypeDetailComponent = () => {
                     />
 
                     <div className="dc__position-rel">
-                        <CreatableSelect
-                            tabIndex={1}
+                          <SelectPicker
+                            inputId='container-image-select'
                             value={selectedContainerImage}
                             options={containerImageOptions}
                             placeholder="Select container image or input value"
                             onChange={handleContainerImageSelector}
-                            styles={containerImageSelectStyles}
                             classNamePrefix="select"
-                            components={{
-                                MenuList: menuList,
-                                Option,
-                                IndicatorSeparator: null,
-                                ValueContainer,
-                            }}
-                            noOptionsMessage={(): string => {
-                                return 'No matching options'
-                            }}
+                            renderMenuListFooter={renderMenuListFooter}
+                            size={ComponentSizeType.large}
                             onBlur={handleCreatableBlur}
-                            isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
                         {selectedContainerImage?.label && (

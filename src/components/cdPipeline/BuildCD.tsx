@@ -33,6 +33,7 @@ import {
     ToastVariantType,
     ToastManager,
     ComponentSizeType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -61,18 +62,20 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
 import { EnvironmentOptionType, EnvironmentOptionWithSelectPicker } from '@Components/CIPipelineN/types'
+import { GroupBase } from 'react-select'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
-const validateUserApprovalConfig: (userApprovalConfig: UserApprovalConfigType) => PipelineFormDataErrorType['userApprovalConfig'] =
-    importComponentFromFELibrary(
-        'validateUserApprovalConfig',
-        () => ({
-            isValid: true,
-        }),
-        'function',
-    )
+const validateUserApprovalConfig: (
+    userApprovalConfig: UserApprovalConfigType,
+) => PipelineFormDataErrorType['userApprovalConfig'] = importComponentFromFELibrary(
+    'validateUserApprovalConfig',
+    () => ({
+        isValid: true,
+    }),
+    'function',
+)
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
@@ -372,10 +375,9 @@ export default function BuildCD({
     const renderEnvSelector = () => {
         const envId = formData.environmentId
         const _environment = formData.environments.find((env) => env.id == envId)
-        const selectedEnv: EnvironmentOptionWithSelectPicker = _environment &&{
-            ..._environment,
-            label: _environment.name,
-            value: _environment.id.toString(),
+        const selectedEnv = {
+            label: _environment?.name,
+            value: _environment,
         }
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
@@ -385,24 +387,18 @@ export default function BuildCD({
             }
         }
 
-        const getEnvListOptions = (): EnvironmentOptionType[] => {
-            return envList.map((_elm) => {
-                return {
-                    ..._elm,
-                    label: `Cluster: ${_elm.label}`,
-
-                    options: _elm.options.map((_option) => ({
-                        ..._option,
-                        label: _option.name,
-                        value: _option.id.toString(),
-                    })),
-                }
-            })
-        }
+        const getEnvListOptions = (): GroupBase<SelectPickerOptionType<Environment>>[] =>
+            envList.map((_elm) => ({
+                label: `Cluster: ${_elm.label}`,
+                options: _elm.options.map((_option) => ({
+                    label: _option?.name,
+                    value: _option,
+                })),
+            }))
 
         return (
             <>
-                <SelectPicker
+                <SelectPicker<Environment, false>
                     label="Environment"
                     required
                     inputId="environment"
@@ -413,11 +409,14 @@ export default function BuildCD({
                     autoFocus
                     options={
                         releaseMode === ReleaseMode.MIGRATE_HELM
-                            ? getEnvListOptions().filter((env) => !env.isVirtualEnvironment)
+                            ? getEnvListOptions().filter((env) =>
+                                  env.options.filter(({ value }) => !value.isVirtualEnvironment),
+                              )
                             : getEnvListOptions()
                     }
                     value={selectedEnv}
-                    onChange={(selected: EnvironmentOptionWithSelectPicker) => selectEnvironment(selected)}
+                    getOptionValue={(option) => option.value?.id as unknown as string}
+                    onChange={(selected) => selectEnvironment(selected.value)}
                     size={ComponentSizeType.large}
                 />
                 {isEnvUsedState && (
@@ -668,7 +667,7 @@ export default function BuildCD({
                         handleStrategy(selected.value)
                     }}
                 />
-                {isWebhookCD && !parentPipelineId ? renderWebhookInfo(): null}
+                {isWebhookCD && !parentPipelineId ? renderWebhookInfo() : null}
             </>
         )
     }
@@ -793,8 +792,8 @@ export default function BuildCD({
                     getBuildCDManualApproval(
                         formData.userApprovalConfig,
                         formDataErrorObj.userApprovalConfig,
-                        handleUpdateUserApprovalConfig
-                )}
+                        handleUpdateUserApprovalConfig,
+                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

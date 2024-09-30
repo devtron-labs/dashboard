@@ -74,43 +74,41 @@ export default function CIConfigForm({
                 )
               : sourceConfig.material[0]
 
-              const getCurrentMaterial = (): SelectedGitMaterialType => {
-                  const _currentMaterial: SelectedGitMaterialType = {
-                      ...currentMaterial,
-                      value: currentMaterial.checkoutPath,
-                      label: currentMaterial.name,
-                      startIcon: getGitProviderIcon(currentMaterial.url),
-                  }
-                  return _currentMaterial
-              }
+    const getCurrentMaterial = (): SelectedGitMaterialType => {
+        const _currentMaterial: SelectedGitMaterialType = {
+            ...currentMaterial,
+            value: currentMaterial.checkoutPath,
+            label: currentMaterial.name,
+            startIcon: getGitProviderIcon(currentMaterial.url),
+        }
+        return _currentMaterial
+    }
 
-              const getParsedSourceConfig = (): SourceConfigType => {
-                  const _sourceConfig = { ...sourceConfig }
-                  _sourceConfig.material = _sourceConfig.material.map((_material) => {
-                      return { ..._material, value: _material.checkoutPath, label: _material.name }
-                  })
-                  return _sourceConfig
-              }
+    const getParsedSourceConfig = (): SourceConfigType => {
+        const _sourceConfig = { ...sourceConfig }
+        _sourceConfig.material = _sourceConfig.material.map((_material) => {
+            return { ..._material, value: _material.checkoutPath, label: _material.name }
+        })
+        return _sourceConfig
+    }
 
-              const currentBuildContextGitMaterial = buildCtxGitMaterial || getCurrentMaterial()
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || getCurrentMaterial()
 
-              const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(getCurrentMaterial)
-              const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
-                  useState(currentBuildContextGitMaterial)
-              const currentRegistry =
-                  allowOverride && selectedCIPipeline?.isDockerConfigOverridden
-                      ? dockerRegistries.find(
-                            (reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry,
-                        )
-                      : ciConfig && ciConfig.dockerRegistry
-                        ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
-                        : dockerRegistries.find((reg) => reg.isDefault)
-              const { state, handleOnChange, handleOnSubmit } = useForm(
-                  getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
-                  CI_CONFIG_FORM_VALIDATION,
-                  onValidation,
-              )
-              const [args, setArgs] = useState<CIBuildArgType[]>([])
+    const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(getCurrentMaterial)
+    const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
+        useState(currentBuildContextGitMaterial)
+    const currentRegistry =
+        allowOverride && selectedCIPipeline?.isDockerConfigOverridden
+            ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
+            : ciConfig && ciConfig.dockerRegistry
+              ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
+              : dockerRegistries.find((reg) => reg.isDefault)
+    const { state, handleOnChange, handleOnSubmit } = useForm(
+        getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
+        CI_CONFIG_FORM_VALIDATION,
+        onValidation,
+    )
+    const [args, setArgs] = useState<CIBuildArgType[]>([])
     const [buildEnvArgs, setBuildEnvArgs] = useState<CIBuildArgType[]>([])
     const [loadingDataState, setLoadingDataState] = useState<LoadingState>({
         loading: false,
