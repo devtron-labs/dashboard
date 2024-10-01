@@ -36,13 +36,15 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     DryRunEditorMode,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
+import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getChartReferences } from '@Services/service'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import {
     DeploymentTemplateChartStateType,
@@ -78,6 +80,7 @@ import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
 import NoOverrideEmptyState from '../NoOverrideEmptyState'
 import CompareConfigView from '../CompareConfigView'
+import NoPublishedVersionEmptyState from '../NoPublishedVersionEmptyState'
 
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -246,14 +249,60 @@ const DeploymentTemplate = ({
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
+    const getCurrentTemplateWithLockedKeys = (): string => {
+        if (!currentEditorTemplateData.removedPatches.length) {
+            return currentEditorTemplateData.editorTemplate
+        }
+
+        try {
+            const originalDocument = currentEditorTemplateData.originalTemplate
+            const parsedDocument = YAML.parse(currentEditorTemplateData.editorTemplate)
+
+            const updatedEditorObject = reapplyRemovedLockedKeysToYaml(
+                parsedDocument,
+                currentEditorTemplateData.removedPatches,
+            )
+            if (wasGuiOrHideLockedKeysEdited) {
+                return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
+                    simpleKeys: true,
+                })
+            }
+            return YAMLStringify(updatedEditorObject, { simpleKeys: true })
+        } catch {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Something went wrong while parsing locked keys',
+            })
+        }
+
+        return currentEditorTemplateData.editorTemplate
+    }
+
     const areChangesPresent: boolean = useMemo(() => {
         if (!currentEditorTemplateData) {
             return false
         }
 
-        // In case of hide/show locked keys have intentionally not added check for this since it is computation heavy
-        const isEditorTemplateChanged =
-            currentEditorTemplateData.editorTemplate !== currentEditorTemplateData.originalTemplateState.editorTemplate
+        if (currentEditorTemplateData?.unableToParseYaml) {
+            return true
+        }
+
+        if (hideLockedKeys) {
+            const finalEditorValue = getCurrentTemplateWithLockedKeys()
+            const isEditorTemplateChanged =
+                finalEditorValue !== currentEditorTemplateData.originalTemplateState.editorTemplate
+            if (isEditorTemplateChanged) {
+                return true
+            }
+        } else {
+            const isEditorTemplateChanged =
+                currentEditorTemplateData.editorTemplate !==
+                currentEditorTemplateData.originalTemplateState.editorTemplate
+
+            if (isEditorTemplateChanged) {
+                return true
+            }
+        }
 
         const isChartRefIdChanged =
             currentEditorTemplateData.selectedChartRefId !==
@@ -266,17 +315,16 @@ const DeploymentTemplate = ({
         const isOverriddenStatusChanged =
             currentEditorTemplateData.isOverridden !== currentEditorTemplateData.originalTemplateState.isOverridden
 
-        if (
-            isEditorTemplateChanged ||
-            isChartRefIdChanged ||
-            areApplicationMetricsChanged ||
-            isOverriddenStatusChanged
-        ) {
+        if (isChartRefIdChanged || areApplicationMetricsChanged || isOverriddenStatusChanged) {
             return true
         }
 
         return false
     }, [currentEditorTemplateData])
+
+    usePrompt({
+        shouldPrompt: areChangesPresent,
+    })
 
     const handleRemoveResolvedVariables = () => {
         setIsResolvingVariables(false)
@@ -338,35 +386,6 @@ const DeploymentTemplate = ({
 
     const handleEnableWasGuiOrHideLockedKeysEdited = () => {
         setWasGuiOrHideLockedKeysEdited(true)
-    }
-
-    const getCurrentTemplateWithLockedKeys = (): string => {
-        if (!currentEditorTemplateData.removedPatches.length) {
-            return currentEditorTemplateData.editorTemplate
-        }
-
-        try {
-            const originalDocument = currentEditorTemplateData.originalTemplate
-            const parsedDocument = YAML.parse(currentEditorTemplateData.editorTemplate)
-
-            const updatedEditorObject = reapplyRemovedLockedKeysToYaml(
-                parsedDocument,
-                currentEditorTemplateData.removedPatches,
-            )
-            if (wasGuiOrHideLockedKeysEdited) {
-                return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
-                    simpleKeys: true,
-                })
-            }
-            return YAMLStringify(updatedEditorObject, { simpleKeys: true })
-        } catch {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Something went wrong while parsing locked keys',
-            })
-        }
-
-        return currentEditorTemplateData.editorTemplate
     }
 
     const getRawEditorValueForDryRunMode = (): string => {
@@ -1748,6 +1767,10 @@ const DeploymentTemplate = ({
             )
         }
 
+        if (isPublishedValuesView && !isPublishedConfigPresent) {
+            return <NoPublishedVersionEmptyState />
+        }
+
         return (
             <DeploymentTemplateForm
                 editMode={editMode}
@@ -2023,80 +2046,86 @@ const DeploymentTemplate = ({
     )
 
     return (
-        <div className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}>
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
-                {renderBody()}
+        <>
+            <div
+                className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
+            >
+                <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+                    {renderBody()}
 
-                {showDeleteOverrideDialog && (
-                    <DeleteOverrideDialog
-                        environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
-                        handleReload={handleReload}
-                        handleClose={handleCloseDeleteOverrideDialog}
-                        handleShowDeleteDraftOverrideDialog={handleShowDeleteDraftOverrideDialog}
-                        reloadEnvironments={reloadEnvironments}
-                    />
-                )}
+                    {showDeleteOverrideDialog && (
+                        <DeleteOverrideDialog
+                            environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
+                            handleReload={handleReload}
+                            handleClose={handleCloseDeleteOverrideDialog}
+                            handleShowDeleteDraftOverrideDialog={handleShowDeleteDraftOverrideDialog}
+                            reloadEnvironments={reloadEnvironments}
+                        />
+                    )}
 
-                {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
-                    <DeleteOverrideDraftModal
-                        appId={Number(appId)}
-                        envId={Number(envId)}
-                        resourceType={3}
-                        resourceName={`${environmentName}-DeploymentTemplateOverride`}
-                        prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
-                        toggleModal={handleToggleDeleteDraftOverrideDialog}
-                        latestDraft={draftTemplateData?.latestDraft}
-                        reload={handleReload}
-                    />
-                )}
+                    {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
+                        <DeleteOverrideDraftModal
+                            appId={Number(appId)}
+                            envId={Number(envId)}
+                            resourceType={3}
+                            resourceName={`${environmentName}-DeploymentTemplateOverride`}
+                            prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
+                            toggleModal={handleToggleDeleteDraftOverrideDialog}
+                            latestDraft={draftTemplateData?.latestDraft}
+                            reload={handleReload}
+                        />
+                    )}
 
-                {DeploymentTemplateLockedDiff && showLockedTemplateDiffModal && (
-                    <DeploymentTemplateLockedDiff
-                        closeModal={handleCloseLockedDiffModal}
-                        showLockedDiffForApproval={showLockedDiffForApproval}
-                        onSave={handleSaveTemplate}
-                        isSaving={isSaving}
-                        lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                        // TODO: Should not do this on runtime.
-                        documents={getLockedDiffModalDocuments()}
-                        // TODO: Should not send this and its state as well
-                        setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
-                        appId={appId}
-                        envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
-                    />
-                )}
+                    {DeploymentTemplateLockedDiff && showLockedTemplateDiffModal && (
+                        <DeploymentTemplateLockedDiff
+                            closeModal={handleCloseLockedDiffModal}
+                            showLockedDiffForApproval={showLockedDiffForApproval}
+                            onSave={handleSaveTemplate}
+                            isSaving={isSaving}
+                            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                            // TODO: Should not do this on runtime.
+                            documents={getLockedDiffModalDocuments()}
+                            // TODO: Should not send this and its state as well
+                            setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                            appId={appId}
+                            envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        />
+                    )}
 
-                {/* FIXME: Can move this as well in ProtectedDeploymentTemplateCTA */}
-                {SaveChangesModal && showSaveChangesModal && (
-                    <SaveChangesModal
-                        appId={Number(appId)}
-                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
-                        resourceType={3}
-                        // TODO: Util for this name
-                        resourceName={
-                            environmentName
-                                ? `${environmentName}-DeploymentTemplateOverride`
-                                : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
-                        }
-                        prepareDataToSave={prepareDataToSave}
-                        toggleModal={handleToggleShowSaveChangesModal}
-                        latestDraft={draftTemplateData?.latestDraft}
-                        reload={handleReload}
-                        closeLockedDiffDrawerWithChildModal={handleCloseSaveChangesModal}
-                        showAsModal={!showLockedTemplateDiffModal}
-                        saveEligibleChangesCb={showLockedTemplateDiffModal}
+                    {/* FIXME: Can move this as well in ProtectedDeploymentTemplateCTA */}
+                    {SaveChangesModal && showSaveChangesModal && (
+                        <SaveChangesModal
+                            appId={Number(appId)}
+                            envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                            resourceType={3}
+                            // TODO: Util for this name
+                            resourceName={
+                                environmentName
+                                    ? `${environmentName}-DeploymentTemplateOverride`
+                                    : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
+                            }
+                            prepareDataToSave={prepareDataToSave}
+                            toggleModal={handleToggleShowSaveChangesModal}
+                            latestDraft={draftTemplateData?.latestDraft}
+                            reload={handleReload}
+                            closeLockedDiffDrawerWithChildModal={handleCloseSaveChangesModal}
+                            showAsModal={!showLockedTemplateDiffModal}
+                            saveEligibleChangesCb={showLockedTemplateDiffModal}
+                        />
+                    )}
+                </div>
+
+                {DraftComments && showDraftComments && (
+                    <DraftComments
+                        draftId={draftTemplateData?.latestDraft?.draftId}
+                        draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                        toggleDraftComments={handleToggleDraftComments}
                     />
                 )}
             </div>
 
-            {DraftComments && showDraftComments && (
-                <DraftComments
-                    draftId={draftTemplateData?.latestDraft?.draftId}
-                    draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                    toggleDraftComments={handleToggleDraftComments}
-                />
-            )}
-        </div>
+            <Prompt when={areChangesPresent} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+        </>
     )
 }
 
