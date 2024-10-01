@@ -759,7 +759,7 @@ node-details-full-screen
         ]
 
         return (
-            <div className="mr-16">
+            <div>
                 <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
             </div>
         )
