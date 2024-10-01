@@ -228,7 +228,7 @@ const EnvironmentOverrideRouter = () => {
                     list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
                 }
             })
-            setEnvironmentOptions(createClusterEnvGroup(environments, 'clusterName'))
+            setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
             setCIPipelines(ciConfigRes?.ciPipelines)
         } catch (err) {
             showError(err)

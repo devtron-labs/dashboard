@@ -188,9 +188,6 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             Build Context Path (Relative)
                         </label>
 
-                        {console.log('docker option', checkoutPathOptions)}
-                        {console.log(getCheckoutPathValue(useRootBuildContextFlag))}
-
                         <div className="docker-file-container">
                             <SelectPicker
                                 inputId="docker-file-container"
