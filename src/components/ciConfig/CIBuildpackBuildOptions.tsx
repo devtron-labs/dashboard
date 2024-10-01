@@ -608,7 +608,6 @@ export default function CIBuildpackBuildOptions({
                             isSearchable={false}
                             onChange={handleVersionSelection}
                             size={ComponentSizeType.large}
-                            isCreatableSingleSelect
                         />
                     </div>
                 </div>
