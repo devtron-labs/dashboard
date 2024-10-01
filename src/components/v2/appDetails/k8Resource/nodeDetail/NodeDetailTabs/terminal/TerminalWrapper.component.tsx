@@ -32,7 +32,7 @@ export default function TerminalWrapper({
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
-            <div className="flex left w-100 dc__gap-10 dc__zi-12">
+            <div className="flex left w-100 dc__gap-10 dc__zi-13">
                 {selectionListData.firstRow.map((ele) => {
                     return terminalStripTypeData(ele)
                 })}
