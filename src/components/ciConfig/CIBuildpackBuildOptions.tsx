@@ -16,7 +16,13 @@
 
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
-import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DropdownIndicator,
+    getCommonSelectStyle,
+    getCustomOptionSelectionStyle,
+    Option,
+} from '../v2/common/ReactSelect.utils'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -41,6 +47,7 @@ import {
     VERSION_DETECT_OPTION,
 } from './ciConfigConstant'
 import { getSelectStartIcon } from './utils'
+import CreatableSelect from 'react-select/creatable'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {
@@ -67,6 +74,47 @@ const menuListComponent = (props): JSX.Element => {
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">{USE_CUSTOM_BUILDER}</div>
             {props.children}
         </components.MenuList>
+    )
+}
+
+
+export const repositoryOption = (props): JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            {props.data.url && renderOptionIcon(props.data.url)}
+            {props.label}
+        </components.Option>
+    )
+}
+
+export const releaseTagOption = (props): JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props} onClick={stopPropagation}>
+            {props.value}
+        </components.Option>
+    )
+}
+
+export const checkoutPathOption = (props): JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return <components.Option {...props}>{props.value}</components.Option>
+}
+export const repositoryControls = (props): JSX.Element => {
+    let value = ''
+    if (props.hasValue) {
+        value = props.getValue()[0].url
+    }
+    const showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
+    return (
+        <components.Control {...props}>
+            {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
+            {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-10" />}
+            {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-10" />}
+            {showGit && <Git className="icon-dim-20 ml-10" />}
+            {props.children}
+        </components.Control>
     )
 }
 
@@ -454,14 +502,7 @@ export default function CIBuildpackBuildOptions({
         setBuildEnvArgs(_buildEnvArgs)
     }
 
-    const formatOptionLabel = (option: VersionsOptionType) => {
-        return (
-            <div className="flex left column w-100 dc__ellipsis-right">
-                <span>{option.label}</span>
-                {option.infoText && <small className="cn-6">{option.infoText}</small>}
-            </div>
-        )
-    }
+    const formatCreateLabel = (inputValue: string) => `Use '${inputValue}'`
 
     const projectPathVal = readOnly ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
@@ -617,17 +658,25 @@ export default function CIBuildpackBuildOptions({
                         <BuilderTippy />
                     </label>
 
-                    <SelectPicker
-                        inputId="build-pack-builder"
-                        isCreatableSingleSelect
+                    <CreatableSelect
                         classNamePrefix="build-pack-select-builder-dropdown"
                         placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
+                        className="m-0"
+                        tabIndex={3}
                         isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
                         options={
                             builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
                                 ?.BuilderLanguageMetadata
                         }
                         value={buildersAndFrameworks.selectedBuilder}
+                        formatCreateLabel={formatCreateLabel}
+                        styles={getCommonSelectStyle(BUILDER_SELECT_STYLES)}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                            MenuList: menuListComponent,
+                        }}
                         onChange={handleBuilderSelection}
                     />
                 </div>
