@@ -16,13 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
-import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    DropdownIndicator,
-    getCommonSelectStyle,
-    Option,
-} from '../v2/common/ReactSelect.utils'
+import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -469,8 +463,6 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
-    const formatCreateLabel = (inputValue: string) => `Use '${inputValue}'`
-
     const projectPathVal = readOnly ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
     if (readOnly) {
@@ -616,6 +608,7 @@ export default function CIBuildpackBuildOptions({
                             isSearchable={false}
                             onChange={handleVersionSelection}
                             size={ComponentSizeType.large}
+                            isCreatableSingleSelect
                         />
                     </div>
                 </div>
@@ -625,25 +618,17 @@ export default function CIBuildpackBuildOptions({
                         <BuilderTippy />
                     </label>
 
-                    <CreatableSelect
+                    <SelectPicker
+                        inputId="build-pack-builder"
+                        isCreatableSingleSelect
                         classNamePrefix="build-pack-select-builder-dropdown"
                         placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
-                        className="m-0"
-                        tabIndex={3}
                         isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
                         options={
                             builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
                                 ?.BuilderLanguageMetadata
                         }
                         value={buildersAndFrameworks.selectedBuilder}
-                        formatCreateLabel={formatCreateLabel}
-                        styles={getCommonSelectStyle(BUILDER_SELECT_STYLES)}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                            MenuList: menuListComponent,
-                        }}
                         onChange={handleBuilderSelection}
                     />
                 </div>

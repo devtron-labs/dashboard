@@ -26,10 +26,8 @@ import {
     CustomInput,
     ClipboardButton,
     SelectPicker,
-    SelectPickerVariantType,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import OutputDirectoryPath from './OutputDirectoryPath'
@@ -40,10 +38,8 @@ import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
-import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const TaskTypeDetailComponent = () => {
@@ -243,8 +239,9 @@ export const TaskTypeDetailComponent = () => {
                     />
 
                     <div className="dc__position-rel">
-                          <SelectPicker
+                        <SelectPicker
                             inputId='container-image-select'
+                            isCreatableSingleSelect
                             value={selectedContainerImage}
                             options={containerImageOptions}
                             placeholder="Select container image or input value"

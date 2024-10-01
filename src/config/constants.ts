@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -569,6 +569,8 @@ export interface RegistryPayloadType {
         }
     }
 }
+
+export interface RegistryPayloadWithSelectType extends RegistryPayloadType, SelectPickerOptionType {}
 
 export const RegistryType = {
     DOCKER_HUB: 'docker-hub',
