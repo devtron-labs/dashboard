@@ -17,12 +17,10 @@
 import moment from 'moment'
 import React from 'react'
 import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
-import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { ZERO_TIME_STRING, Nodes, NodeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -74,13 +72,6 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
     }
 }
 
-export const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 fcn-6" />
-        </components.DropdownIndicator>
-    )
-}
 
 const throughputAndLatencySelectStyle = {
     container: (base, state) => ({
@@ -118,8 +109,9 @@ const throughputAndLatencySelectStyle = {
 
 export const ThroughputSelect = (props) => {
     return (
-        <CreatableSelect
-            className=""
+        <SelectPicker
+            isCreatableSingleSelect
+            inputId="throughput-select"
             placeholder="Status Code"
             value={{ label: props.status, value: props.status }}
             options={[
@@ -132,19 +124,15 @@ export const ThroughputSelect = (props) => {
                 { label: 'Throughput', value: 'Throughput' },
             ]}
             onChange={props.handleStatusChange}
-            styles={throughputAndLatencySelectStyle}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-            }}
         />
     )
 }
 
 export const LatencySelect = (props) => {
     return (
-        <CreatableSelect
-            className=""
+        <SelectPicker
+            inputId='latency-select'
+            isCreatableSingleSelect
             placeholder="Latency"
             value={{ label: props.latency, value: props.latency }}
             options={[
@@ -154,12 +142,6 @@ export const LatencySelect = (props) => {
                 { label: '95', value: '95' },
             ]}
             onChange={props.handleLatencyChange}
-            styles={throughputAndLatencySelectStyle}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-            }}
-            formatCreateLabel={(inputValue) => inputValue}
         />
     )
 }
