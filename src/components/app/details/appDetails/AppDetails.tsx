@@ -1027,347 +1027,347 @@ export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
     )
 }
 
-export const NodeSelectors: React.FC<NodeSelectorsType> = ({
-    logsPaused = false,
-    socketConnection = true,
-    nodeName,
-    selectedNodes,
-    nodes,
-    containerName,
-    selectedContainer,
-    shell,
-    isReconnection,
-    nodeItems,
-    logsCleared,
-    isAppDeployment,
-    setIsReconnection,
-    selectShell,
-    setTerminalCleared,
-    handleLogsPause = null,
-    setSocketConnection,
-    selectNode,
-    setSelectNode,
-    selectContainer,
-    setLogsCleared,
-    children = null,
-}) => {
-    const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs; showOldOrNewSuffix }>()
-    const { queryParams, searchParams } = useSearchString()
-    const { url, path } = useRouteMatch()
-    const history = useHistory()
+// export const NodeSelectors: React.FC<NodeSelectorsType> = ({
+//     logsPaused = false,
+//     socketConnection = true,
+//     nodeName,
+//     selectedNodes,
+//     nodes,
+//     containerName,
+//     selectedContainer,
+//     shell,
+//     isReconnection,
+//     nodeItems,
+//     logsCleared,
+//     isAppDeployment,
+//     setIsReconnection,
+//     selectShell,
+//     setTerminalCleared,
+//     handleLogsPause = null,
+//     setSocketConnection,
+//     selectNode,
+//     setSelectNode,
+//     selectContainer,
+//     setLogsCleared,
+//     children = null,
+// }) => {
+//     const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs; showOldOrNewSuffix }>()
+//     const { queryParams, searchParams } = useSearchString()
+//     const { url, path } = useRouteMatch()
+//     const history = useHistory()
 
-    if (!searchParams?.kind) {
-        queryParams.set('kind', params.kind)
-        history.replace(`${url}?${queryParams.toString()}`)
-        return null
-    }
-    const kind: Nodes = searchParams.kind as Nodes
+//     if (!searchParams?.kind) {
+//         queryParams.set('kind', params.kind)
+//         history.replace(`${url}?${queryParams.toString()}`)
+//         return null
+//     }
+//     const kind: Nodes = searchParams.kind as Nodes
 
-    const nodesMap = nodes.nodes[kind] || new Map()
+//     const nodesMap = nodes.nodes[kind] || new Map()
 
-    let containers = []
-    let initContainers = []
-    let selectedNodesItem = []
-    if (selectedNodes) {
-        selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind)
-    }
+//     let containers = []
+//     let initContainers = []
+//     let selectedNodesItem = []
+//     if (selectedNodes) {
+//         selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind)
+//     }
 
-    if (selectedNodesItem) {
-        selectedNodesItem.forEach((item) => {
-            if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
-                containers.push(nodesMap.get(item.value)?.containers)
-                initContainers.push(nodesMap.get(item.value)?.initContainers)
-            } else {
-                containers.push(null)
-                initContainers.push(null)
-            }
-        })
-    }
+//     if (selectedNodesItem) {
+//         selectedNodesItem.forEach((item) => {
+//             if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
+//                 containers.push(nodesMap.get(item.value)?.containers)
+//                 initContainers.push(nodesMap.get(item.value)?.initContainers)
+//             } else {
+//                 containers.push(null)
+//                 initContainers.push(null)
+//             }
+//         })
+//     }
 
-    const additionalOptions = [
-        { label: 'All pods', value: 'All pods' },
-        { label: 'All new pods', value: 'All new pods' },
-        { label: 'All old pods', value: 'All old pods' },
-    ]
-    let options = []
-    if (nodeItems?.length > 1) {
-        options = additionalOptions.concat(nodeItems)
-    } else {
-        options = nodeItems
-    }
+//     const additionalOptions = [
+//         { label: 'All pods', value: 'All pods' },
+//         { label: 'All new pods', value: 'All new pods' },
+//         { label: 'All old pods', value: 'All old pods' },
+//     ]
+//     let options = []
+//     if (nodeItems?.length > 1) {
+//         options = additionalOptions.concat(nodeItems)
+//     } else {
+//         options = nodeItems
+//     }
 
-    if (!containers) {
-        containers = []
-    }
-    if (!initContainers) {
-        initContainers = []
-    }
+//     if (!containers) {
+//         containers = []
+//     }
+//     if (!initContainers) {
+//         initContainers = []
+//     }
 
-    if (params.tab === NodeDetailTabs.TERMINAL) {
-        initContainers = []
-    }
+//     if (params.tab === NodeDetailTabs.TERMINAL) {
+//         initContainers = []
+//     }
 
-    const total = containers.concat(initContainers)
-    const allContainers = total.filter((item) => !!item)
+//     const total = containers.concat(initContainers)
+//     const allContainers = total.filter((item) => !!item)
 
-    allContainers.forEach((item) => {
-        if (item?.length < 2) {
-            const contAvailable = allContainers[0]
-            if (contAvailable && !selectedContainer) {
-                selectContainer(contAvailable[0])
-            }
-        } else if (!selectedContainer) {
-            selectContainer(null)
-        }
-    })
+//     allContainers.forEach((item) => {
+//         if (item?.length < 2) {
+//             const contAvailable = allContainers[0]
+//             if (contAvailable && !selectedContainer) {
+//                 selectContainer(contAvailable[0])
+//             }
+//         } else if (!selectedContainer) {
+//             selectContainer(null)
+//         }
+//     })
 
-    function selectPod(selected) {
-        setSelectNode(selected.value)
-        onLogsCleared()
-    }
+//     function selectPod(selected) {
+//         setSelectNode(selected.value)
+//         onLogsCleared()
+//     }
 
-    function onLogsCleared() {
-        setLogsCleared(true)
-        setTimeout(() => setLogsCleared(false), 1000)
-    }
+//     function onLogsCleared() {
+//         setLogsCleared(true)
+//         setTimeout(() => setLogsCleared(false), 1000)
+//     }
 
-    const onClickDisconnectTab = () => {
-        setSocketConnection('DISCONNECTING')
-        setIsReconnection(true)
-    }
+//     const onClickDisconnectTab = () => {
+//         setSocketConnection('DISCONNECTING')
+//         setIsReconnection(true)
+//     }
 
-    const onClickConnectTab = () => {
-        setSocketConnection('CONNECTING')
-    }
+//     const onClickConnectTab = () => {
+//         setSocketConnection('CONNECTING')
+//     }
 
-    const onClickAbort = () => {
-        setTerminalCleared(true)
-    }
+//     const onClickAbort = () => {
+//         setTerminalCleared(true)
+//     }
 
-    const onClickPlayStop = () => {
-        handleLogsPause(!logsPaused)
-    }
+//     const onClickPlayStop = () => {
+//         handleLogsPause(!logsPaused)
+//     }
 
-    const isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
-    const podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
-    return (
-        <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
-            {params.tab === NodeDetailTabs.TERMINAL && (
-                <>
-                    <div className="flex mr-12">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={isSocketConnecting ? 'Disconnect' : 'Connect'}
-                        >
-                            <div className="flex">
-                                {isSocketConnecting ? (
-                                    <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
-                                ) : (
-                                    <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
-                                )}
-                            </div>
-                        </Tippy>
+//     const isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
+//     const podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
+//     return (
+//         <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
+//             {params.tab === NodeDetailTabs.TERMINAL && (
+//                 <>
+//                     <div className="flex mr-12">
+//                         <Tippy
+//                             className="default-tt"
+//                             arrow={false}
+//                             placement="bottom"
+//                             content={isSocketConnecting ? 'Disconnect' : 'Connect'}
+//                         >
+//                             <div className="flex">
+//                                 {isSocketConnecting ? (
+//                                     <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
+//                                 ) : (
+//                                     <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
+//                                 )}
+//                             </div>
+//                         </Tippy>
 
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                            <div className="flex">
-                                <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
-                            </div>
-                        </Tippy>
-                    </div>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
-                <>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
-                    >
-                        <div className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`} onClick={onClickPlayStop}>
-                            {logsPaused ? (
-                                <PlayButton className="icon-dim-20" />
-                            ) : (
-                                <StopButton className="stop-btn fcr-5" />
-                            )}
-                        </div>
-                    </Tippy>
+//                         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+//                             <div className="flex">
+//                                 <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
+//                             </div>
+//                         </Tippy>
+//                     </div>
+//                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+//                 </>
+//             )}
+//             {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
+//                 <>
+//                     <Tippy
+//                         className="default-tt"
+//                         arrow={false}
+//                         placement="bottom"
+//                         content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
+//                     >
+//                         <div className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`} onClick={onClickPlayStop}>
+//                             {logsPaused ? (
+//                                 <PlayButton className="icon-dim-20" />
+//                             ) : (
+//                                 <StopButton className="stop-btn fcr-5" />
+//                             )}
+//                         </div>
+//                     </Tippy>
 
-                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                        <div className="flex">
-                            <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
-                        </div>
-                    </Tippy>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            <div className="events-logs__dropdown-selector pods">
-                <span className="events-logs__label">{kind}</span>
-                <div style={{ width: '175px', zIndex: 1000 }}>
-                    <Select
-                        placeholder={`Select ${kind}`}
-                        name="pods"
-                        value={
-                            podItems
-                                ? {
-                                      label: podItems + getPodNameSuffix(podItems, isAppDeployment, nodesMap, kind),
-                                      value: podItems,
-                                  }
-                                : null
-                        }
-                        options={
-                            params.tab?.toLowerCase() == 'logs'
-                                ? options
-                                : Array.from(nodesMap).map(([name, data]) => ({
-                                      label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
-                                      value: name,
-                                  }))
-                        }
-                        closeMenuOnSelect={false}
-                        onChange={(selected) => {
-                            params.tab?.toLowerCase() == 'logs' ? selectPod(selected) : selectNode(selected.value)
-                        }}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
-                            control: (base, state) => ({
-                                ...base,
-                                backgroundColor: 'transparent',
-                                borderColor: 'transparent',
-                            }),
-                            singleValue: (base, state) => ({
-                                ...base,
-                                marginLeft: '0',
-                                marginRight: '0',
-                                textAlign: 'left',
-                                direction: 'rtl',
-                                color: 'var(--N000)',
-                            }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                direction: 'rtl',
-                            }),
-                        }}
-                    />
-                </div>
-            </div>
-            {Array.isArray(allContainers) &&
-                (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
-                    <>
-                        <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                        <div className="events-logs__dropdown-selector">
-                            <span className="events-logs__label">Containers</span>
-                            <div style={{ width: '175px' }}>
-                                <Select
-                                    placeholder="Select Container"
-                                    options={
-                                        allContainers[0] &&
-                                        allContainers[0].map((container) => ({ label: container, value: container }))
-                                    }
-                                    value={containerName ? { label: containerName, value: containerName } : null}
-                                    onChange={(selected) => {
-                                        selectContainer(selected.value)
-                                        onLogsCleared()
-                                    }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
-                                        control: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: 'transparent',
-                                            borderColor: 'transparent',
-                                        }),
-                                        singleValue: (base, state) => ({
-                                            ...base,
-                                            direction: 'rtl',
-                                            textAlign: 'left',
-                                            color: 'var(--N000)',
-                                        }),
-                                        input: (base, state) => ({
-                                            ...base,
-                                            caretColor: 'var(--N000)',
-                                            color: 'var(--N000)',
-                                        }),
-                                        option: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                            color: 'var(--N900)',
-                                            textOverflow: 'ellipsis',
-                                            overflow: 'hidden',
-                                            whiteSpace: 'nowrap',
-                                            direction: 'rtl',
-                                        }),
-                                    }}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </>
-                )}
-            {params.tab === NodeDetailTabs.TERMINAL && (
-                <>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
-                        <Select
-                            placeholder="Select shell"
-                            className="pl-20"
-                            options={[
-                                { label: 'bash', value: 'bash' },
-                                { label: 'sh', value: 'sh' },
-                                { label: 'powershell', value: 'powershell' },
-                                { label: 'cmd', value: 'cmd' },
-                            ]}
-                            value={shell}
-                            onChange={(selected) => {
-                                selectShell(selected)
-                            }}
-                            styles={{
-                                menu: (base) => ({ ...base, zIndex: 12 }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'transparent',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    textAlign: 'left',
-                                    color: 'var(--N000)',
-                                }),
-                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
-                                    color: 'var(--N900)',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                        />
-                    </div>
-                </>
-            )}
-            {children}
-        </div>
-    )
-}
+//                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+//                         <div className="flex">
+//                             <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
+//                         </div>
+//                     </Tippy>
+//                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+//                 </>
+//             )}
+//             <div className="events-logs__dropdown-selector pods">
+//                 <span className="events-logs__label">{kind}</span>
+//                 <div style={{ width: '175px', zIndex: 1000 }}>
+//                     <Select
+//                         placeholder={`Select ${kind}`}
+//                         name="pods"
+//                         value={
+//                             podItems
+//                                 ? {
+//                                       label: podItems + getPodNameSuffix(podItems, isAppDeployment, nodesMap, kind),
+//                                       value: podItems,
+//                                   }
+//                                 : null
+//                         }
+//                         options={
+//                             params.tab?.toLowerCase() == 'logs'
+//                                 ? options
+//                                 : Array.from(nodesMap).map(([name, data]) => ({
+//                                       label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
+//                                       value: name,
+//                                   }))
+//                         }
+//                         closeMenuOnSelect={false}
+//                         onChange={(selected) => {
+//                             params.tab?.toLowerCase() == 'logs' ? selectPod(selected) : selectNode(selected.value)
+//                         }}
+//                         components={{
+//                             IndicatorSeparator: null,
+//                             Option,
+//                         }}
+//                         styles={{
+//                             ...multiSelectStyles,
+//                             menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
+//                             control: (base, state) => ({
+//                                 ...base,
+//                                 backgroundColor: 'transparent',
+//                                 borderColor: 'transparent',
+//                             }),
+//                             singleValue: (base, state) => ({
+//                                 ...base,
+//                                 marginLeft: '0',
+//                                 marginRight: '0',
+//                                 textAlign: 'left',
+//                                 direction: 'rtl',
+//                                 color: 'var(--N000)',
+//                             }),
+//                             input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+//                             option: (base, state) => ({
+//                                 ...base,
+//                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+//                                 color: 'var(--N900)',
+//                                 textOverflow: 'ellipsis',
+//                                 overflow: 'hidden',
+//                                 whiteSpace: 'nowrap',
+//                                 direction: 'rtl',
+//                             }),
+//                         }}
+//                     />
+//                 </div>
+//             </div>
+//             {Array.isArray(allContainers) &&
+//                 (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
+//                     <>
+//                         <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+//                         <div className="events-logs__dropdown-selector">
+//                             <span className="events-logs__label">Containers</span>
+//                             <div style={{ width: '175px' }}>
+//                                 {/* <Select
+//                                     placeholder="Select Container"
+//                                     options={
+//                                         allContainers[0] &&
+//                                         allContainers[0].map((container) => ({ label: container, value: container }))
+//                                     }
+//                                     value={containerName ? { label: containerName, value: containerName } : null}
+//                                     onChange={(selected) => {
+//                                         selectContainer(selected.value)
+//                                         onLogsCleared()
+//                                     }}
+//                                     styles={{
+//                                         ...multiSelectStyles,
+//                                         menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
+//                                         control: (base, state) => ({
+//                                             ...base,
+//                                             backgroundColor: 'transparent',
+//                                             borderColor: 'transparent',
+//                                         }),
+//                                         singleValue: (base, state) => ({
+//                                             ...base,
+//                                             direction: 'rtl',
+//                                             textAlign: 'left',
+//                                             color: 'var(--N000)',
+//                                         }),
+//                                         input: (base, state) => ({
+//                                             ...base,
+//                                             caretColor: 'var(--N000)',
+//                                             color: 'var(--N000)',
+//                                         }),
+//                                         option: (base, state) => ({
+//                                             ...base,
+//                                             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+//                                             color: 'var(--N900)',
+//                                             textOverflow: 'ellipsis',
+//                                             overflow: 'hidden',
+//                                             whiteSpace: 'nowrap',
+//                                             direction: 'rtl',
+//                                         }),
+//                                     }}
+//                                     components={{
+//                                         IndicatorSeparator: null,
+//                                         Option,
+//                                     }}
+//                                 /> */}
+//                             </div>
+//                         </div>
+//                     </>
+//                 )}
+//             {params.tab === NodeDetailTabs.TERMINAL && (
+//                 <>
+//                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+//                     <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
+//                         {/* <Select
+//                             placeholder="Select shell"
+//                             className="pl-20"
+//                             options={[
+//                                 { label: 'bash', value: 'bash' },
+//                                 { label: 'sh', value: 'sh' },
+//                                 { label: 'powershell', value: 'powershell' },
+//                                 { label: 'cmd', value: 'cmd' },
+//                             ]}
+//                             value={shell}
+//                             onChange={(selected) => {
+//                                 selectShell(selected)
+//                             }}
+//                             styles={{
+//                                 menu: (base) => ({ ...base, zIndex: 12 }),
+//                                 control: (base, state) => ({
+//                                     ...base,
+//                                     backgroundColor: 'transparent',
+//                                     borderColor: 'transparent',
+//                                 }),
+//                                 singleValue: (base, state) => ({
+//                                     ...base,
+//                                     textAlign: 'left',
+//                                     color: 'var(--N000)',
+//                                 }),
+//                                 input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+//                                 option: (base, state) => ({
+//                                     ...base,
+//                                     backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
+//                                     color: 'var(--N900)',
+//                                 }),
+//                             }}
+//                             components={{
+//                                 IndicatorSeparator: null,
+//                                 Option,
+//                             }}
+//                         /> */}
+//                     </div>
+//                 </>
+//             )}
+//             {children}
+//         </div>
+//     )
+// }
 
 export const AppNotConfigured = ({
     image,
