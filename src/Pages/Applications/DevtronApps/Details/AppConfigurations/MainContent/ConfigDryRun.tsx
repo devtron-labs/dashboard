@@ -4,7 +4,6 @@ import {
     BaseURLParams,
     CodeEditor,
     DryRunEditorMode,
-    GenericEmptyState,
     getDeploymentManifest,
     MODES,
     useAsync,
@@ -13,9 +12,9 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 // FIXME: Placeholder icon since no sense of git merge icon as of now
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import noArtifact from '@Images/no-artifact@2x.png'
 import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import { ConfigDryRunProps } from './types'
+import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 
@@ -50,13 +49,7 @@ const ConfigDryRun = ({
 
     const renderEditorBody = () => {
         if (isDraftPresent && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES && !isPublishedConfigPresent) {
-            return (
-                <GenericEmptyState
-                    image={noArtifact}
-                    title="No published version"
-                    subTitle="Published override for this file does not exist"
-                />
-            )
+            return <NoPublishedVersionEmptyState />
         }
 
         return (
