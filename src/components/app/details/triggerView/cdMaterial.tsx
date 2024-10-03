@@ -1630,12 +1630,12 @@ const CDMaterial = ({
 
         return (
             <div
-                className={`trigger-modal__trigger dc__position-rel ${
+                className={`trigger-modal__trigger dc__position-sticky ${
                     (!state.isRollbackTrigger && !state.isSelectImageTrigger) ||
                     showConfigDiffView ||
                     stageType === DeploymentNodeType.PRECD ||
                     stageType === DeploymentNodeType.POSTCD
-                        ? 'right'
+                        ? 'flex right'
                         : ''
                 }`}
             >

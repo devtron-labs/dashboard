@@ -323,7 +323,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 history.replace(redirectUrl)
             }
         }
-    }, [appConfigData, location.pathname])
+    }, [appConfigData])
 
     // METHODS
     const reloadAppConfig = () => {

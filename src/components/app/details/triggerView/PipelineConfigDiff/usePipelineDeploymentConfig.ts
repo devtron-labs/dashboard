@@ -64,7 +64,8 @@ export const usePipelineDeploymentConfig = ({
                 getOptions(appId, envId).then(
                     ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
                 ),
-            [],
+            [envId],
+            !!appId && !!envId,
         )
 
     // ASYNC CALLS
