@@ -264,6 +264,7 @@ export const Routes = {
     GVK: 'gvk',
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
+    SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure'
 }
 
 export enum ViewType {

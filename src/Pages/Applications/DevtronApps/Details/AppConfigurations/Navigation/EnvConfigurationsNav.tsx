@@ -6,7 +6,6 @@ import {
     CollapsibleList,
     CollapsibleListConfig,
     EnvResourceType,
-    getSelectPickerOptionByValue,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
@@ -69,8 +68,8 @@ export const EnvConfigurationsNav = ({
         environments && environments.find((environment) => environment.id === +params[paramToCheck])
     const selectedNavEnvironmentOptions = {
         ..._environmentData,
-        label: _environmentData?.name,
-        value: _environmentData?.id,
+        label: _environmentData?.name || BASE_CONFIGURATIONS.name,
+        value: _environmentData?.id || BASE_CONFIGURATIONS.id,
         isProtected: _environmentData?.isProtected,
     }
 
@@ -271,7 +270,7 @@ export const EnvConfigurationsNav = ({
                 inputId="env-config-selector"
                 classNamePrefix="env-config-selector"
                 isClearable={false}
-                value={getSelectPickerOptionByValue(envOptions, envId ? +envId : -1)}
+                value={environmentData}
                 options={envOptions}
                 getOptionLabel={(option) => `${option.label}`}
                 getOptionValue={(option) => `${option.value}`}

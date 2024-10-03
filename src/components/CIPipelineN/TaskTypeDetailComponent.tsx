@@ -25,8 +25,6 @@ import {
     ScriptType,
     CustomInput,
     ClipboardButton,
-    SelectPicker,
-    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
@@ -41,6 +39,9 @@ import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import CreatableSelect from 'react-select/creatable'
+import { containerImageSelectStyles } from './ciPipeline.utils'
+import { ValueContainer } from '@Components/app/details/appDetails/utils'
 
 export const TaskTypeDetailComponent = () => {
     const {
@@ -239,17 +240,25 @@ export const TaskTypeDetailComponent = () => {
                     />
 
                     <div className="dc__position-rel">
-                        <SelectPicker
-                            inputId='container-image-select'
-                            isCreatableSingleSelect
+                        <CreatableSelect
+                            tabIndex={1}
                             value={selectedContainerImage}
                             options={containerImageOptions}
                             placeholder="Select container image or input value"
                             onChange={handleContainerImageSelector}
+                            styles={containerImageSelectStyles}
                             classNamePrefix="select"
-                            renderMenuListFooter={renderMenuListFooter}
-                            size={ComponentSizeType.large}
+                            components={{
+                                MenuList: menuList,
+                                Option,
+                                IndicatorSeparator: null,
+                                ValueContainer,
+                            }}
+                            noOptionsMessage={(): string => {
+                                return 'No matching options'
+                            }}
                             onBlur={handleCreatableBlur}
+                            isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
                         {selectedContainerImage?.label && (

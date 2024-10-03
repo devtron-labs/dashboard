@@ -49,8 +49,9 @@ export const EnvironmentList = ({
                     {
                         label: `Cluster: ${_elm.label}`,
                         options: _elm.options.map((_option) => ({
+                            ..._option,
                             label: _option?.name,
-                            value: _option,
+                            value: _option?.id.toString(),
                             description: _option?.description,
                         })),
                     },
@@ -61,8 +62,9 @@ export const EnvironmentList = ({
                 ...acc,
                 ..._elm?.options?.map((_option) => {
                     return {
+                        ..._option,
                         label: _option?.name,
-                        value: _option,
+                        value: _option?.id.toString(),
                         description: _option?.description,
                     }
                 }),
