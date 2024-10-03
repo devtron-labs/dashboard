@@ -137,7 +137,6 @@ export interface DeploymentTemplateGUIViewProps
     handleChangeToYAMLMode: () => void
     guiSchema: string
     selectedChart: DeploymentChartVersionType
-    rootClassName?: string
 }
 
 export interface ResolvedEditorTemplateType {

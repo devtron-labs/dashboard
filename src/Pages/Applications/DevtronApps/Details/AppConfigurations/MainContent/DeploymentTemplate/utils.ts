@@ -37,7 +37,7 @@ export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
         return makeObjectFromJsonPathArray(index + 1, paths)
     }
     const key = paths[index]
-    const isKeyNumber = !Number.isNaN(Number(key))
+    const isKeyNumber = !Number.isNaN(Number(key)) || key === '*'
     if (isKeyNumber) {
         return { items: makeObjectFromJsonPathArray(index + 1, paths) }
     }

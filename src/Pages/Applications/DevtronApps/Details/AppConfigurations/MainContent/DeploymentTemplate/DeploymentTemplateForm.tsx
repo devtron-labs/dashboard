@@ -45,7 +45,6 @@ const DeploymentTemplateForm = ({
                 wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
                 handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
-                rootClassName="flexbox-col flex-grow-1"
             />
         )
     }
