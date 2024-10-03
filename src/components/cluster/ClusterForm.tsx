@@ -70,7 +70,6 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
-import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 
@@ -140,7 +139,7 @@ export default function ClusterForm({
     const authenTicationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const isDefaultCluster = (): boolean => {
-        return id == 1
+        return id == DEFAULT_CLUSTER_ID
     }
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
@@ -164,7 +163,7 @@ export default function ClusterForm({
 
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
-        [clusterId],
+        [DEFAULT_CLUSTER_ID],
         !window._env_.K8S_CLIENT,
     )
 
@@ -442,7 +441,7 @@ export default function ClusterForm({
     }
 
     const handleOnBlur = (e): void => {
-        if (id && id !== 1 && !e.target.value) {
+        if (id && id !== DEFAULT_CLUSTER_ID && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
     }
@@ -735,9 +734,7 @@ export default function ClusterForm({
                                 name="token"
                                 value={
                                     id
-                                        ? id !== 1
-                                            ? DEFAULT_SECRET_PLACEHOLDER
-                                            : config?.bearer_token
+                                        ? config?.bearer_token
                                               ? config.bearer_token
                                               : ''
                                         : state.token.value
@@ -808,7 +805,7 @@ export default function ClusterForm({
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
                                         value={
-                                            id && id !== 1 && isTlsConnection
+                                            id && id !== DEFAULT_CLUSTER_ID && isTlsConnection
                                                 ? DEFAULT_SECRET_PLACEHOLDER
                                                 : state.certificateAuthorityData.value
                                         }
@@ -833,7 +830,7 @@ export default function ClusterForm({
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
                                         value={
-                                            id && id !== 1 && isTlsConnection
+                                            id && id !== DEFAULT_CLUSTER_ID && isTlsConnection
                                                 ? DEFAULT_SECRET_PLACEHOLDER
                                                 : state.tlsClientKey.value
                                         }
@@ -858,7 +855,7 @@ export default function ClusterForm({
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
                                         value={
-                                            id && id !== 1 && isTlsConnection
+                                            id && id !== DEFAULT_CLUSTER_ID && isTlsConnection
                                                 ? DEFAULT_SECRET_PLACEHOLDER
                                                 : state.tlsClientCert.value
                                         }

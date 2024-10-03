@@ -63,7 +63,7 @@
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false vite build",
-        "build-k8s-app": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false VITE_K8S_CLIENT=true vite build",
+        "build-k8s-app": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false vite build --mode K8S_CLIENT",
         "test": "vitest test",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
