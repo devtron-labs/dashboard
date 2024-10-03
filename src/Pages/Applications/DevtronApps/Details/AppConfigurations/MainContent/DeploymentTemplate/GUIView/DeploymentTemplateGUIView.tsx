@@ -40,7 +40,7 @@ import {
     GUIViewModelType,
     ViewErrorType,
 } from './types'
-import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { makeObjectFromJsonPathArray } from './utils'
 import { GUIViewModel, ViewError } from './GUIViewModel'
 
@@ -262,7 +262,11 @@ const DeploymentTemplateGUIView = ({
                 {modelRef.current && (
                     <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-12">
                         {modelRef.current.root.children.map((child) => (
-                            <DeploymentTemplateGUICheckbox node={child} updateNodeForPath={updateNodeForPath} />
+                            <DeploymentTemplateGUICheckbox
+                                key={child.key}
+                                node={child}
+                                updateNodeForPath={updateNodeForPath}
+                            />
                         ))}
                     </div>
                 )}
