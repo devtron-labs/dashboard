@@ -107,8 +107,6 @@ const DeploymentTemplateGUIView = ({
     uneditedDocument,
     editedDocument,
     isUnSet,
-    handleEnableWasGuiOrHideLockedKeysEdited,
-    wasGuiOrHideLockedKeysEdited,
     handleChangeToYAMLMode,
     guiSchema,
     selectedChart,
@@ -195,9 +193,6 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys, uncheckedPathsList, modelRef.current?.totalCheckedCount])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        if (!wasGuiOrHideLockedKeysEdited) {
-            handleEnableWasGuiOrHideLockedKeysEdited()
-        }
         editorOnChange?.(YAML.stringify(data.formData))
     }
 

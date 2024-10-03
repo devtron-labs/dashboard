@@ -1,4 +1,3 @@
-import { ConfigKeysWithLockType } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '@Config/constants'
 
 export const BASE_DEPLOYMENT_TEMPLATE_ENV_ID = -1
@@ -50,8 +49,3 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
 }
 
 export const NO_SCOPED_VARIABLES_MESSAGE = 'No valid variable found on this page'
-
-export const DEFAULT_LOCKED_KEYS_CONFIG: Readonly<ConfigKeysWithLockType> = {
-    config: [],
-    allowed: false,
-}

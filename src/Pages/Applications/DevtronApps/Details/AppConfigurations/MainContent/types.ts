@@ -162,6 +162,7 @@ export interface ConfigDryRunProps {
     dryRunEditorMode: string
     handleChangeDryRunEditorMode: (mode: string) => void
     isDraftPresent: boolean
+    isApprovalPending: boolean
     isPublishedConfigPresent: boolean
 }
 

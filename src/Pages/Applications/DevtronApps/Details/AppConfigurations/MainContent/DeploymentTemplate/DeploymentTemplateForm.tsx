@@ -13,8 +13,6 @@ const DeploymentTemplateForm = ({
     guiSchema,
     schema,
     isUnSet,
-    wasGuiOrHideLockedKeysEdited,
-    handleEnableWasGuiOrHideLockedKeysEdited,
     handleChangeToYAMLMode,
     editorOnChange,
     editedDocument,
@@ -42,8 +40,6 @@ const DeploymentTemplateForm = ({
                 isUnSet={isUnSet}
                 selectedChart={selectedChart}
                 guiSchema={guiSchema}
-                wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
-                handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
             />
         )

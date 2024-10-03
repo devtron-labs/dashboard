@@ -1,4 +1,4 @@
-import { useEffect, useState, SyntheticEvent, useMemo } from 'react'
+import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer } from 'react'
 import ReactGA from 'react-ga4'
 import {
     BaseURLParams,
@@ -9,13 +9,10 @@ import {
     useMainContext,
     YAMLStringify,
     DeploymentTemplateConfigState,
-    ServerErrors,
     Progressing,
     ErrorScreenManager,
     getResolvedDeploymentTemplate,
     GetResolvedDeploymentTemplateProps,
-    ConfigKeysWithLockType,
-    applyCompareDiffOnUneditedDocument,
     ModuleStatus,
     useAsync,
     ModuleNameMap,
@@ -25,18 +22,17 @@ import {
     ValuesAndManifestFlagDTO,
     CompareFromApprovalOptionsValuesType,
     noop,
-    SelectedChartDetailsType,
     logExceptionToSentry,
     ConfigHeaderTabType,
     ProtectConfigTabsType,
-    CONFIG_HEADER_TAB_VALUES,
-    ConfigToolbarPopupNodeType,
     Button,
     ComponentSizeType,
     ButtonStyleType,
     ButtonVariantType,
     DryRunEditorMode,
     usePrompt,
+    DraftMetadataDTO,
+    DEFAULT_LOCKED_KEYS_CONFIG,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -47,21 +43,29 @@ import { URLS } from '@Config/routes'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import {
-    DeploymentTemplateChartStateType,
-    DeploymentTemplateEditorDataStateType,
+    DeploymentTemplateActionState,
+    DeploymentTemplateActionType,
     DeploymentTemplateProps,
-    ResolvedEditorTemplateType,
+    DeploymentTemplateStateType,
+    GetChartListReturnType,
+    GetPublishedAndBaseDeploymentTemplateReturnType,
+    HandleInitializeTemplatesWithoutDraftParamsType,
 } from './types'
 import {
     BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
-    DEFAULT_LOCKED_KEYS_CONFIG,
     NO_SCOPED_VARIABLES_MESSAGE,
     PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
 } from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
-import { applyCompareDiffOfTempFormDataOnOriginalData } from './utils'
+import {
+    deploymentTemplateReducer,
+    getCurrentTemplateWithLockedKeys,
+    getDeploymentTemplateInitialState,
+    getEditorTemplateAndLockedKeys,
+    getLockedDiffModalDocuments,
+} from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import {
     updateBaseDeploymentTemplate,
@@ -85,8 +89,6 @@ import NoPublishedVersionEmptyState from '../NoPublishedVersionEmptyState'
 // TODO: Verify null checks for all imports
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function')
-const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
-const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 const getLockConfigEligibleAndIneligibleChanges: (props: {
     documents: Record<'edited' | 'unedited', object>
     lockedConfigKeysWithLockType: { config: string[]; allowed: boolean }
@@ -115,104 +117,50 @@ const DeploymentTemplate = ({
     const { appId, envId } = useParams<BaseURLParams>()
     const { isSuperAdmin } = useMainContext()
 
-    const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true)
-    const [initialLoadError, setInitialLoadError] = useState<ServerErrors>(null)
-    // TODO: Constant
+    const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
+        deploymentTemplateReducer,
+        getDeploymentTemplateInitialState({ isSuperAdmin, isEnvView: !!envId }),
+    )
+
+    const {
+        chartDetails,
+        lockedConfigKeysWithLockType,
+        publishedTemplateData,
+        baseDeploymentTemplateData,
+        draftTemplateData,
+        resolveScopedVariables,
+        isResolvingVariables,
+        resolvedEditorTemplate,
+        resolvedOriginalTemplate,
+        showDraftComments,
+        wasGuiOrHideLockedKeysEdited,
+        hideLockedKeys,
+        editMode,
+        configHeaderTab,
+        shouldMergeTemplateWithPatches,
+        selectedProtectionViewTab,
+        dryRunEditorMode,
+        popupNodeType,
+        showReadMe,
+        compareFromSelectedOptionValue,
+        lockedDiffModalState: { showLockedDiffForApproval, showLockedTemplateDiffModal },
+        currentEditorTemplateData,
+        showDeleteDraftOverrideDialog,
+        showDeleteOverrideDialog,
+        isSaving,
+        showSaveChangesModal,
+    } = state
+
     /**
-     * publishedChartDetails is the chart details of saved chart
-     */
-    const [chartDetails, setChartDetails] = useState<DeploymentTemplateChartStateType>({
-        charts: [],
-        chartsMetadata: {},
-        globalChartDetails: null,
-    })
-    /**
-     * Last saved template data, meant to be readonly no changes should be made to this state when saved
-     */
-    const [publishedTemplateData, setPublishedTemplateData] = useState<DeploymentTemplateConfigState>(null)
-    /**
-     * Last saved draft template data
-     * Only present in case of protected config
-     * Meant to be readonly
-     * TODO: Add null checks
+     * TODO: Add null checks for all draftTemplateData
      * TODO: Will have to put as empty string in case draft is not available
      */
-    const [draftTemplateData, setDraftTemplateData] = useState<DeploymentTemplateConfigState>(null)
-    const [baseDeploymentTemplateData, setBaseDeploymentTemplateData] = useState<DeploymentTemplateConfigState>(null)
-    /**
-     * The config that we are going to feed the editor, this can be modified
-     */
-    const [currentEditorTemplateData, setCurrentEditorTemplateData] =
-        useState<DeploymentTemplateEditorDataStateType>(null)
-    /**
-     * Action to resolve scoped variables
-     */
-    const [resolveScopedVariables, setResolveScopedVariables] = useState<boolean>(false)
-    const [isResolvingVariables, setIsResolvingVariables] = useState<boolean>(false)
-
-    // TODO: Add simpleKeys: true for locked
-    /**
-     * The resolved scoped variables for editorTemplate in currentEditorTemplateData
-     */
-    const [resolvedEditorTemplate, setResolvedEditorTemplate] = useState<ResolvedEditorTemplateType>({
-        originalTemplate: '',
-        templateWithoutLockedKeys: '',
-    })
-    /**
-     * In case of GUI, it is of actual template, in case of compare mode, it is Default value of editor
-     */
-    const [resolvedOriginalTemplate, setResolvedOriginalTemplate] = useState<ResolvedEditorTemplateType>({
-        originalTemplate: '',
-        templateWithoutLockedKeys: '',
-    })
-    const [wasGuiOrHideLockedKeysEdited, setWasGuiOrHideLockedKeysEdited] = useState<boolean>(false)
-    const [showDraftComments, setShowDraftComments] = useState<boolean>(false)
-
-    const [hideLockedKeys, setHideLockedKeys] = useState<boolean>(false)
-    const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>(
-        structuredClone(DEFAULT_LOCKED_KEYS_CONFIG),
-    )
-    /**
-     * State to show locked changes modal in case user is non super admin and is changing locked keys
-     * Would be showing an info bar in locked modal
-     * TODO: Maybe can combine state with showLockedTemplateDiffModal
-     */
-    const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState<boolean>(false)
-    const [isSaving, setIsSaving] = useState<boolean>(false)
-    const [showLockedTemplateDiffModal, setShowLockedTemplateDiffModal] = useState<boolean>(false)
-    const [showSaveChangesModal, setShowSaveChangesModal] = useState<boolean>(false)
-    const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
-
-    // FIXME: Need clean up as well on reload for states below
-    const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
-        useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
-
-    const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.PUBLISHED_VALUES)
-
-    const [showDeleteOverrideDialog, setShowDeleteOverrideDialog] = useState<boolean>(false)
-    const [showDeleteDraftOverrideDialog, setShowDeleteDraftOverrideDialog] = useState<boolean>(false)
+    // TODO: Add simpleKeys: true for locked in resolved states
 
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
 
-    const [showReadMe, setShowReadMe] = useState<boolean>(false)
-    const [editMode, setEditMode] = useState<ConfigurationType>(
-        isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
-    )
-    // Initially will set here but in case of protected will change the tab
-    const [configHeaderTab, setConfigHeaderTab] = useState<ConfigHeaderTabType>(
-        envId ? CONFIG_HEADER_TAB_VALUES.OVERRIDE[0] : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE[0],
-    )
-
-    const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState<boolean>(false)
-    const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(
-        ProtectConfigTabsType.EDIT_DRAFT,
-    )
-
-    const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
+    const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN && !showReadMe
     const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED && !showReadMe
-
-    const isGuiSupported = !isInheritedView && !isDryRunView
-
     const isPublishedValuesView: boolean = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED &&
@@ -220,19 +168,20 @@ const DeploymentTemplate = ({
         isProtected &&
         draftTemplateData?.latestDraft
     )
-
     const isCompareView =
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE &&
         !showReadMe &&
         isProtected
 
-    const isApprovalView =
-        isCompareView &&
-        !!draftTemplateData?.latestDraft &&
-        draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
+    const isGuiSupported = !isInheritedView && !isDryRunView
 
     const isDraftAvailable: boolean = isProtected && !!draftTemplateData?.latestDraft
+
+    const isApprovalPending: boolean =
+        isDraftAvailable && draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
+
+    const isApprovalView = isCompareView && isApprovalPending
 
     const showNoOverrideEmptyState =
         !!envId &&
@@ -244,40 +193,13 @@ const DeploymentTemplate = ({
     const isApprovalPendingOptionSelected =
         isApprovalView && compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
 
-    // TODO: Can rename as publishedOverriddenState
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
 
-    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
+    const baseDeploymentTemplateURL = envId
+        ? `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CONFIG}/${appId}/${URLS.APP_DEPLOYMENT_CONFIG}`
+        : `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
-    const getCurrentTemplateWithLockedKeys = (): string => {
-        if (!currentEditorTemplateData.removedPatches.length) {
-            return currentEditorTemplateData.editorTemplate
-        }
-
-        try {
-            const originalDocument = currentEditorTemplateData.originalTemplate
-            const parsedDocument = YAML.parse(currentEditorTemplateData.editorTemplate)
-
-            const updatedEditorObject = reapplyRemovedLockedKeysToYaml(
-                parsedDocument,
-                currentEditorTemplateData.removedPatches,
-            )
-            if (wasGuiOrHideLockedKeysEdited) {
-                return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
-                    simpleKeys: true,
-                })
-            }
-            return YAMLStringify(updatedEditorObject, { simpleKeys: true })
-        } catch {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Something went wrong while parsing locked keys',
-            })
-        }
-
-        return currentEditorTemplateData.editorTemplate
-    }
-
+    // TODO: Can we move all handlers into utils by sending state and dispatch as params?
     const areChangesPresent: boolean = useMemo(() => {
         if (!currentEditorTemplateData) {
             return false
@@ -288,7 +210,10 @@ const DeploymentTemplate = ({
         }
 
         if (hideLockedKeys) {
-            const finalEditorValue = getCurrentTemplateWithLockedKeys()
+            const finalEditorValue = getCurrentTemplateWithLockedKeys({
+                currentEditorTemplateData,
+                wasGuiOrHideLockedKeysEdited,
+            })
             const isEditorTemplateChanged =
                 finalEditorValue !== currentEditorTemplateData.originalTemplateState.editorTemplate
             if (isEditorTemplateChanged) {
@@ -327,17 +252,20 @@ const DeploymentTemplate = ({
     })
 
     const handleRemoveResolvedVariables = () => {
-        setIsResolvingVariables(false)
-        setResolveScopedVariables(false)
-
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
             action: 'clicked-unresolve-scoped-variable',
         })
+
+        dispatch({
+            type: DeploymentTemplateActionType.UN_RESOLVE_SCOPED_VARIABLES,
+        })
     }
 
     const handleToggleShowTemplateMergedWithPatch = () => {
-        setShouldMergeTemplateWithPatches((prev) => !prev)
+        dispatch({
+            type: DeploymentTemplateActionType.TOGGLE_SHOW_COMPARISON_WITH_MERGED_PATCHES,
+        })
     }
 
     const handleUpdateProtectedTabSelection = (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
@@ -352,18 +280,24 @@ const DeploymentTemplate = ({
             })
         }
 
-        handleRemoveResolvedVariables()
-        setSelectedProtectionViewTab(tab)
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB,
+            payload: {
+                selectedProtectionViewTab: tab,
+            },
+        })
     }
 
     const handleCompareFromOptionSelection = (option: SelectPickerOptionType) => {
-        setCompareFromSelectedOptionValue(option.value as CompareFromApprovalOptionsValuesType)
+        dispatch({
+            type: DeploymentTemplateActionType.CHANGE_COMPARE_FROM_SELECTED_OPTION,
+            payload: {
+                compareFromSelectedOptionValue: option.value as CompareFromApprovalOptionsValuesType,
+            },
+        })
     }
 
-    const getChartList = async (): Promise<
-        Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata' | 'globalChartDetails'> &
-            SelectedChartDetailsType
-    > => {
+    const getChartList = async (): Promise<GetChartListReturnType> => {
         const chartRefResp = await getChartReferences(+appId, +envId)
 
         const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
@@ -382,10 +316,6 @@ const DeploymentTemplate = ({
             selectedChart: chart,
             globalChartDetails: selectedGlobalChart,
         }
-    }
-
-    const handleEnableWasGuiOrHideLockedKeysEdited = () => {
-        setWasGuiOrHideLockedKeysEdited(true)
     }
 
     const getRawEditorValueForDryRunMode = (): string => {
@@ -423,7 +353,10 @@ const DeploymentTemplate = ({
 
         if (hideLockedKeys) {
             try {
-                const templateWithLockedKeys = getCurrentTemplateWithLockedKeys()
+                const templateWithLockedKeys = getCurrentTemplateWithLockedKeys({
+                    currentEditorTemplateData,
+                    wasGuiOrHideLockedKeysEdited,
+                })
                 return templateWithLockedKeys
             } catch {
                 // Do nothing
@@ -462,82 +395,28 @@ const DeploymentTemplate = ({
         }
     }
 
-    const getEditorTemplateAndLockedKeys = (
-        template: string,
-        lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
-    ): Pick<DeploymentTemplateEditorDataStateType, 'editorTemplate' | 'removedPatches'> => {
-        const removedPatches: DeploymentTemplateEditorDataStateType['removedPatches'] = []
-
-        if (!removeLockedKeysFromYaml || !lockedConfigKeys.length) {
-            return { editorTemplate: template, removedPatches }
-        }
-
-        // QUESTION: Should we wrap try catch here or at usage?
-        try {
-            const { document, addOperations } = removeLockedKeysFromYaml(template, lockedConfigKeys)
-            if (addOperations.length) {
-                removedPatches.push(...addOperations)
-            }
-
-            const updatedTemplate = YAMLStringify(document, {
-                simpleKeys: true,
-            })
-            return { editorTemplate: updatedTemplate, removedPatches }
-        } catch {
-            return { editorTemplate: template, removedPatches: [] }
-        }
-    }
-
     const handleSetHideLockedKeys = (value: boolean) => {
-        if (!removeLockedKeysFromYaml || !reapplyRemovedLockedKeysToYaml) {
-            return
-        }
-
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
             action: value ? 'clicked-hide-locked-keys' : 'clicked-show-locked-keys',
         })
 
-        if (value) {
-            handleEnableWasGuiOrHideLockedKeysEdited()
-            const { editorTemplate, removedPatches } = getEditorTemplateAndLockedKeys(
-                currentEditorTemplateData.editorTemplate,
-            )
-            setCurrentEditorTemplateData({
-                ...currentEditorTemplateData,
-                editorTemplate,
-                removedPatches,
-            })
-            setHideLockedKeys(true)
-
-            return
-        }
-
-        try {
-            const updatedEditorValue = getCurrentTemplateWithLockedKeys()
-            setCurrentEditorTemplateData({
-                ...currentEditorTemplateData,
-                editorTemplate: updatedEditorValue,
-                removedPatches: [],
-            })
-            setHideLockedKeys(false)
-        } catch {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Something went wrong while parsing locked keys',
-            })
-        }
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_HIDE_LOCKED_KEYS,
+            payload: {
+                hideLockedKeys,
+            },
+        })
     }
 
     const handleLoadScopedVariables = async () => {
         // TODO: can think about adding abort controller
         try {
-            setIsResolvingVariables(true)
-
             // TODO: check if need to enhance this
-            const shouldFetchDefaultTemplate: boolean = !!isGuiSupported
+            const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
+            const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isApprovalView
 
-            const [currentEditorTemplate, defaultTemplate] = await Promise.all([
+            const [currentEditorTemplate, defaultTemplate, publishedTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
                     appId: +appId,
                     chartRefId: currentEditorTemplateData.selectedChartRefId,
@@ -545,56 +424,78 @@ const DeploymentTemplate = ({
                     valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
                 }),
-                shouldFetchDefaultTemplate
+                shouldFetchOriginalTemplate
                     ? getResolvedDeploymentTemplate(getPayloadForOriginalTemplateVariables())
+                    : null,
+                shouldFetchPublishedTemplate
+                    ? getResolvedDeploymentTemplate({
+                          appId: +appId,
+                          chartRefId: publishedTemplateData.selectedChartRefId,
+                          values: publishedTemplateData.editorTemplate,
+                          valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+                          ...(envId && { envId: +envId }),
+                      })
                     : null,
             ])
 
-            // FIXME: In case of compare, we have to fix this
-            if (!currentEditorTemplate.areVariablesPresent) {
+            const areNoVariablesPresent = shouldFetchPublishedTemplate
+                ? !publishedTemplate.areVariablesPresent && !currentEditorTemplate.areVariablesPresent
+                : !currentEditorTemplate.areVariablesPresent
+
+            if (areNoVariablesPresent) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: NO_SCOPED_VARIABLES_MESSAGE,
                 })
-                handleRemoveResolvedVariables()
+
+                dispatch({
+                    type: DeploymentTemplateActionType.UN_RESOLVE_SCOPED_VARIABLES,
+                })
                 return
             }
 
-            // Recalculate locked keys since even variable values can be object
-            const { editorTemplate: resolvedEditorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-                currentEditorTemplate.resolvedData,
-                // No need to send locked keys here since on load we do not resolve scoped variables
-            )
-
-            setResolvedEditorTemplate({
-                originalTemplate: currentEditorTemplate.resolvedData,
-                templateWithoutLockedKeys: resolvedEditorTemplateWithoutLockedKeys,
+            dispatch({
+                type: DeploymentTemplateActionType.RESOLVE_SCOPED_VARIABLES,
+                payload: {
+                    resolvedEditorTemplate: {
+                        originalTemplateString: currentEditorTemplate.resolvedData,
+                        templateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                            currentEditorTemplate.resolvedData,
+                            lockedConfigKeysWithLockType.config,
+                        ).editorTemplate,
+                    },
+                    resolvedOriginalTemplate: shouldFetchOriginalTemplate
+                        ? {
+                              originalTemplateString: defaultTemplate.resolvedData,
+                              templateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                                  defaultTemplate.resolvedData,
+                                  lockedConfigKeysWithLockType.config,
+                              ).editorTemplate,
+                          }
+                        : null,
+                    resolvedPublishedTemplate: shouldFetchPublishedTemplate
+                        ? {
+                              originalTemplateString: publishedTemplate.resolvedData,
+                              templateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                                  publishedTemplate.resolvedData,
+                                  lockedConfigKeysWithLockType.config,
+                              ).editorTemplate,
+                          }
+                        : null,
+                },
             })
-
-            if (shouldFetchDefaultTemplate) {
-                const { editorTemplate: resolvedOriginalTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-                    defaultTemplate.resolvedData,
-                    // No need to send locked keys here since on load we do not resolve scoped variables
-                )
-
-                setResolvedOriginalTemplate({
-                    originalTemplate: defaultTemplate.resolvedData,
-                    templateWithoutLockedKeys: resolvedOriginalTemplateWithoutLockedKeys,
-                })
-            }
-
-            setIsResolvingVariables(false)
-        } catch {
-            handleRemoveResolvedVariables()
+        } catch (error) {
+            showError(error)
+            dispatch({
+                type: DeploymentTemplateActionType.UN_RESOLVE_SCOPED_VARIABLES,
+            })
         }
     }
 
     const handleToggleDraftComments = () => {
-        setShowDraftComments((prev) => !prev)
-    }
-
-    const handleToggleShowSaveChangesModal = () => {
-        setShowSaveChangesModal((prev) => !prev)
+        dispatch({
+            type: DeploymentTemplateActionType.TOGGLE_DRAFT_COMMENTS,
+        })
     }
 
     const handleResolveScopedVariables = async () => {
@@ -603,29 +504,21 @@ const DeploymentTemplate = ({
             action: 'clicked-resolve-scoped-variable',
         })
 
-        setResolveScopedVariables(true)
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_RESOLVE_SCOPED_VARIABLES,
+        })
         await handleLoadScopedVariables()
     }
 
-    const handleEditorChange = (value: string) => {
+    const handleEditorChange = (template: string) => {
         if (resolveScopedVariables || isApprovalView) {
             return
         }
 
-        try {
-            YAML.parse(value)
-            setCurrentEditorTemplateData({
-                ...currentEditorTemplateData,
-                editorTemplate: value,
-                unableToParseYaml: false,
-            })
-        } catch {
-            setCurrentEditorTemplateData({
-                ...currentEditorTemplateData,
-                editorTemplate: value,
-                unableToParseYaml: true,
-            })
-        }
+        dispatch({
+            type: DeploymentTemplateActionType.CURRENT_EDITOR_VALUE_CHANGE,
+            payload: { template },
+        })
     }
 
     const handleToggleResolveScopedVariables = () => {
@@ -639,35 +532,33 @@ const DeploymentTemplate = ({
     }
 
     const handleChangeToGUIMode = () => {
-        setEditMode(ConfigurationType.GUI)
+        dispatch({
+            type: DeploymentTemplateActionType.CHANGE_TO_GUI_MODE,
+        })
     }
 
     const handleChangeToYAMLMode = () => {
-        if (editMode === ConfigurationType.GUI && wasGuiOrHideLockedKeysEdited) {
-            try {
-                applyCompareDiffOfTempFormDataOnOriginalData(
-                    // TODO: Should add simpleKeys here as well?
-                    YAMLStringify(currentEditorTemplateData.originalTemplate),
-                    currentEditorTemplateData.editorTemplate,
-                    handleEditorChange,
-                )
-            } catch {
-                // Do nothing
-            }
-        }
-
-        setEditMode(ConfigurationType.YAML)
+        dispatch({
+            type: DeploymentTemplateActionType.CHANGE_TO_YAML_MODE,
+        })
     }
 
     const handleChangeDryRunEditorMode = (mode: DryRunEditorMode) => {
-        setDryRunEditorMode(mode)
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_DRY_RUN_EDITOR_MODE,
+            payload: {
+                dryRunEditorMode: mode,
+            },
+        })
     }
 
     const handleUpdateReadmeMode = (value: boolean) => {
-        handleChangeToYAMLMode()
-        handleRemoveResolvedVariables()
-
-        setShowReadMe(value)
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_README_MODE,
+            payload: {
+                showReadMe: value,
+            },
+        })
     }
 
     const handleEnableReadmeView = () => {
@@ -690,8 +581,12 @@ const DeploymentTemplate = ({
             })
         }
 
-        handleRemoveResolvedVariables()
-        setConfigHeaderTab(tab)
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB,
+            payload: {
+                configHeaderTab: tab,
+            },
+        })
     }
 
     const handleViewInheritedConfig = () => {
@@ -827,7 +722,6 @@ const DeploymentTemplate = ({
             readme,
             guiSchema,
             isAppMetricsEnabled,
-            // FIXME: IF i remove chartConfig TS is not throwing error need to check
             chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
             editorTemplate: stringifiedTemplate,
             editorTemplateWithoutLockedKeys,
@@ -850,7 +744,6 @@ const DeploymentTemplate = ({
 
         const {
             result: {
-                // This is the base deployment template
                 globalConfig,
                 // TODO: Check if null check is needed here for environmentConfig
                 environmentConfig: { id, status, manualReviewed, active, namespace, envOverrideValues },
@@ -878,7 +771,6 @@ const DeploymentTemplate = ({
             isAppMetricsEnabled: appMetrics,
             editorTemplate: stringifiedTemplate,
             isOverridden: !!IsOverride,
-            // FIXME: IF i remove environmentConfig TS is not throwing error need to check
             environmentConfig: {
                 id,
                 status,
@@ -894,10 +786,10 @@ const DeploymentTemplate = ({
         }
     }
 
-    const handleInitializePublishedData = async (
+    const getPublishedAndBaseDeploymentTemplate = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedConfigKeys: string[],
-    ): Promise<DeploymentTemplateConfigState & SelectedChartDetailsType> => {
+    ): Promise<GetPublishedAndBaseDeploymentTemplateReturnType> => {
         const shouldFetchBaseDeploymentData = !envId
         const [templateData, baseDeploymentTemplateDataResponse] = await Promise.all([
             handleFetchDeploymentTemplate(chartRefsData.selectedChart, lockedConfigKeys),
@@ -906,36 +798,65 @@ const DeploymentTemplate = ({
                 : null,
         ])
 
-        setBaseDeploymentTemplateData(shouldFetchBaseDeploymentData ? baseDeploymentTemplateDataResponse : templateData)
-        setPublishedTemplateData(templateData)
-        return templateData
+        return {
+            publishedTemplateState: templateData,
+            baseDeploymentTemplateState: shouldFetchBaseDeploymentData
+                ? baseDeploymentTemplateDataResponse
+                : templateData,
+        }
     }
 
-    const handleInitializeCurrentEditorWithPublishedData = (publishedData: DeploymentTemplateConfigState) => {
-        const clonedTemplateData = structuredClone(publishedData)
+    const handleInitializeTemplatesWithoutDraft = ({
+        baseDeploymentTemplateState,
+        publishedTemplateState,
+        chartDetailsState,
+        lockedConfigKeysWithLockTypeState,
+    }: HandleInitializeTemplatesWithoutDraftParamsType) => {
+        const clonedTemplateData = structuredClone(publishedTemplateState)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
 
         // Since hideLockedKeys is initially false so saving it as whole
-        setCurrentEditorTemplateData({
+        const currentEditorState: typeof state.currentEditorTemplateData = {
             ...clonedTemplateData,
             unableToParseYaml: false,
             removedPatches: [],
-            originalTemplateState: publishedData,
+            originalTemplateState: publishedTemplateState,
+        }
+
+        dispatch({
+            type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT,
+            payload: {
+                baseDeploymentTemplateData: baseDeploymentTemplateState,
+                publishedTemplateData: publishedTemplateState,
+                chartDetails: chartDetailsState,
+                lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
+                currentEditorTemplateData: currentEditorState,
+            },
         })
     }
 
-    // Should it be method or should duplicate?
-    const handleInitializePublishedDataAndCurrentEditorData = async (
+    const handleInitializePublishedAndCurrentEditorData = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
-        lockedConfigKeys: string[],
+        lockedKeysConfig: typeof lockedConfigKeysWithLockType,
     ) => {
-        const publishedData = await handleInitializePublishedData(chartRefsData, lockedConfigKeys)
-        handleInitializeCurrentEditorWithPublishedData(publishedData)
+        const { publishedTemplateState, baseDeploymentTemplateState } = await getPublishedAndBaseDeploymentTemplate(
+            chartRefsData,
+            lockedKeysConfig.config,
+        )
+        handleInitializeTemplatesWithoutDraft({
+            baseDeploymentTemplateState,
+            publishedTemplateState,
+            chartDetailsState: {
+                charts: chartRefsData.charts,
+                chartsMetadata: chartRefsData.chartsMetadata,
+                globalChartDetails: chartRefsData.globalChartDetails,
+            },
+            lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+        })
     }
 
-    // TODO: Needs to confirm type with BE
     const handleInitializeDraftData = (
-        latestDraft: any,
+        latestDraft: DraftMetadataDTO,
         guiSchema: string,
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedConfigKeys: string[],
@@ -973,7 +894,6 @@ const DeploymentTemplate = ({
                 editorTemplateWithoutLockedKeys,
             }
 
-            setDraftTemplateData(response)
             return response
         }
 
@@ -1020,17 +940,16 @@ const DeploymentTemplate = ({
             mergeStrategy: mergeStrategy || DEFAULT_MERGE_STRATEGY,
         }
 
-        setDraftTemplateData(response)
         return response
     }
 
     // Should remove edit draft mode in case of error and show normal edit values view with zero drafts where user can save as draft?
     const handleLoadProtectedDeploymentTemplate = async (
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
-        lockedConfigKeys: string[],
+        lockedKeysConfig: typeof lockedConfigKeysWithLockType,
     ) => {
         // In case of error of draftResponse
-        const [draftPromiseResponse, publishedDataPromiseResponse] = await Promise.allSettled([
+        const [draftPromiseResponse, publishedAndBaseTemplateDataResponse] = await Promise.allSettled([
             getDraftByResourceName(
                 +appId,
                 +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
@@ -1040,68 +959,86 @@ const DeploymentTemplate = ({
                       `${environmentName}-DeploymentTemplateOverride`
                     : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO,
             ),
-            handleInitializePublishedData(chartRefsData, lockedConfigKeys),
+            getPublishedAndBaseDeploymentTemplate(chartRefsData, lockedKeysConfig.config),
         ])
 
-        if (publishedDataPromiseResponse.status === 'rejected') {
-            throw publishedDataPromiseResponse.reason
+        if (publishedAndBaseTemplateDataResponse.status === 'rejected') {
+            throw publishedAndBaseTemplateDataResponse.reason
         }
 
-        if (draftPromiseResponse.status === 'rejected') {
-            handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
+        const { publishedTemplateState, baseDeploymentTemplateState } = publishedAndBaseTemplateDataResponse.value
+
+        const shouldInitializeWithoutDraft =
+            draftPromiseResponse.status === 'rejected' ||
+            (draftPromiseResponse.value?.result &&
+                (draftPromiseResponse.value.result.draftState === DraftState.Init ||
+                    draftPromiseResponse.value.result.draftState === DraftState.AwaitApproval))
+
+        if (shouldInitializeWithoutDraft) {
+            handleInitializeTemplatesWithoutDraft({
+                baseDeploymentTemplateState,
+                publishedTemplateState,
+                chartDetailsState: {
+                    charts: chartRefsData.charts,
+                    chartsMetadata: chartRefsData.chartsMetadata,
+                    globalChartDetails: chartRefsData.globalChartDetails,
+                },
+                lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+            })
             return
         }
 
         const draftResponse = draftPromiseResponse.value
         // NOTE: In case of support for version based guiSchema this won't work
         // Since we do not have guiSchema for draft, we are using published guiSchema
-        const { guiSchema } = publishedDataPromiseResponse.value
+        const { guiSchema } = publishedTemplateState
 
-        if (
-            draftResponse?.result &&
-            (draftResponse.result.draftState === DraftState.Init ||
-                draftResponse.result.draftState === DraftState.AwaitApproval)
-        ) {
-            const latestDraft = draftResponse.result
-            const response = handleInitializeDraftData(latestDraft, guiSchema, chartRefsData, lockedConfigKeys)
+        const latestDraft = draftResponse.result
+        const draftTemplateState = handleInitializeDraftData(
+            latestDraft,
+            guiSchema,
+            chartRefsData,
+            lockedKeysConfig.config,
+        )
 
-            const clonedTemplateData = structuredClone(response)
-            delete clonedTemplateData.editorTemplateWithoutLockedKeys
+        const clonedTemplateData = structuredClone(draftTemplateState)
+        delete clonedTemplateData.editorTemplateWithoutLockedKeys
 
-            // Since hideLockedKeys is initially false so saving it as whole
-            setCurrentEditorTemplateData({
-                ...clonedTemplateData,
-                unableToParseYaml: false,
-                removedPatches: [],
-                originalTemplateState: response,
-            })
-
-            const isApprovalPending = latestDraft.draftState === DraftState.AwaitApproval
-            if (isApprovalPending) {
-                handleConfigHeaderTabChange(ConfigHeaderTabType.VALUES)
-                handleUpdateProtectedTabSelection(ProtectConfigTabsType.COMPARE, false)
-                return
-            }
-
-            handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
-            return
-        }
-
-        // TODO: Can we move above this if
-        handleInitializeCurrentEditorWithPublishedData(publishedDataPromiseResponse.value)
+        dispatch({
+            type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT,
+            payload: {
+                baseDeploymentTemplateData: baseDeploymentTemplateState,
+                publishedTemplateData: publishedTemplateState,
+                chartDetails: {
+                    charts: chartRefsData.charts,
+                    chartsMetadata: chartRefsData.chartsMetadata,
+                    globalChartDetails: chartRefsData.globalChartDetails,
+                },
+                lockedConfigKeysWithLockType: lockedKeysConfig,
+                draftTemplateData: draftTemplateState,
+                // Since hideLockedKeys is initially false so saving it as whole
+                currentEditorTemplateData: {
+                    ...clonedTemplateData,
+                    unableToParseYaml: false,
+                    removedPatches: [],
+                    originalTemplateState: draftTemplateState,
+                },
+                configHeaderTab:
+                    isApprovalPending || !envId ? ConfigHeaderTabType.VALUES : ConfigHeaderTabType.INHERITED,
+                selectedProtectionViewTab: isApprovalPending
+                    ? ProtectConfigTabsType.COMPARE
+                    : ProtectConfigTabsType.EDIT_DRAFT,
+            },
+        })
     }
 
     // TODO: Check why inf loading is happening in case of null check error
     const handleInitialDataLoad = async () => {
-        // TODO: Can be collected together
-        setPublishedTemplateData(null)
-        setCurrentEditorTemplateData(null)
-        setDraftTemplateData(null)
-        setIsLoadingInitialData(true)
-        setInitialLoadError(null)
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_INITIAL_DATA_LOAD,
+        })
 
         // TODO: Handle case where we have draft as delete override then set set draft from base deployment template
-
         try {
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
@@ -1114,34 +1051,29 @@ const DeploymentTemplate = ({
             }
             const chartRefsData = chartRefsDataResponse.value
 
-            // TODO: Can move block somewhere to make const
-            let lockedKeysConfig: typeof lockedConfigKeysWithLockType = structuredClone(DEFAULT_LOCKED_KEYS_CONFIG)
-            // Not handling error since user can save without locked keys
-            if (lockedKeysConfigResponse.status === 'fulfilled' && lockedKeysConfigResponse.value?.result) {
-                lockedKeysConfig = structuredClone(lockedKeysConfigResponse.value.result)
-            }
+            const isLockedConfigResponseValid =
+                lockedKeysConfigResponse.status === 'fulfilled' && lockedKeysConfigResponse.value?.result
 
-            setLockedConfigKeysWithLockType(lockedKeysConfig)
-
-            setChartDetails({
-                charts: chartRefsData.charts,
-                chartsMetadata: chartRefsData.chartsMetadata,
-                globalChartDetails: chartRefsData.globalChartDetails,
-            })
+            const lockedKeysConfig: typeof lockedConfigKeysWithLockType = isLockedConfigResponseValid
+                ? structuredClone(lockedKeysConfigResponse.value.result)
+                : structuredClone(DEFAULT_LOCKED_KEYS_CONFIG)
 
             const shouldFetchDraftDetails = isProtected && typeof getDraftByResourceName === 'function'
 
             if (shouldFetchDraftDetails) {
-                await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig.config)
+                await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig)
                 return
             }
 
-            await handleInitializePublishedDataAndCurrentEditorData(chartRefsData, lockedKeysConfig.config)
+            await handleInitializePublishedAndCurrentEditorData(chartRefsData, lockedKeysConfig)
         } catch (error) {
             showError(error)
-            setInitialLoadError(error)
-        } finally {
-            setIsLoadingInitialData(false)
+            dispatch({
+                type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
+                payload: {
+                    error,
+                },
+            })
         }
     }
 
@@ -1151,22 +1083,16 @@ const DeploymentTemplate = ({
     }, [])
 
     const handleReload = async () => {
-        setHideLockedKeys(false)
-        setResolveScopedVariables(false)
-        setWasGuiOrHideLockedKeysEdited(false)
-        setShowLockedDiffForApproval(false)
-        setShowLockedTemplateDiffModal(false)
-        setIsLoadingInitialData(true)
-        setShowReadMe(false)
-        // TODO: UTIL
-        setEditMode(isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI)
-        // TODO: Can be util BTW just fallback in case of error in data load
-        setConfigHeaderTab(
-            envId ? CONFIG_HEADER_TAB_VALUES.OVERRIDE[0] : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE[0],
-        )
+        dispatch({
+            type: DeploymentTemplateActionType.RESET_ALL,
+            payload: {
+                isSuperAdmin,
+                isEnvView: !!envId,
+            },
+        })
+
         fetchEnvConfig(+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
-        // TODO: Check if async, and on change of isProtected maybe should re-call this
-        await reloadEnvironments()
+        reloadEnvironments()
         await handleInitialDataLoad()
     }
 
@@ -1176,10 +1102,13 @@ const DeploymentTemplate = ({
      * @param skipReadmeAndSchema - true only while doing handleSave
      */
     const prepareDataToSave = (skipReadmeAndSchema: boolean = false, fromDeleteOverride: boolean = false) => {
-        if (!envId) {
-            const editorTemplate = getCurrentTemplateWithLockedKeys()
-            const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
+        const editorTemplate = getCurrentTemplateWithLockedKeys({
+            currentEditorTemplateData,
+            wasGuiOrHideLockedKeysEdited,
+        })
+        const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
 
+        if (!envId) {
             const baseRequestData = {
                 ...(currentEditorTemplateData.chartConfig.chartRefId === currentEditorTemplateData.selectedChart.id
                     ? currentEditorTemplateData.chartConfig
@@ -1204,10 +1133,7 @@ const DeploymentTemplate = ({
             if (showLockedTemplateDiffModal) {
                 // FIXME: In case of draft edit should we do this or approval as unedited?
                 const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                    documents: {
-                        unedited: currentEditorTemplateData.originalTemplate,
-                        edited: editorTemplateObject,
-                    },
+                    documents: getLockedDiffModalDocuments(false, state),
                     lockedConfigKeysWithLockType,
                 })
 
@@ -1231,9 +1157,9 @@ const DeploymentTemplate = ({
                 envOverrideValues: baseDeploymentTemplateData.originalTemplate,
                 chartRefId: chartDetails.globalChartDetails.id,
                 IsOverride: false,
-                // FIXME:
-                isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
+                isAppMetricsEnabled: baseDeploymentTemplateData.isAppMetricsEnabled,
                 saveEligibleChanges: false,
+                // FIXME: Check again with old service
                 ...(currentEditorTemplateData.environmentConfig.id > 0
                     ? {
                           id: currentEditorTemplateData.environmentConfig.id,
@@ -1248,16 +1174,12 @@ const DeploymentTemplate = ({
                           id: currentEditorTemplateData.environmentConfig.id,
                           globalConfig: baseDeploymentTemplateData.originalTemplate,
                           isDraftOverriden: false,
-                          // FIXME: Even this is wrong
-                          readme: currentEditorTemplateData.readme,
-                          schema: currentEditorTemplateData.schema,
+                          readme: baseDeploymentTemplateData.readme,
+                          schema: baseDeploymentTemplateData.schema,
                       }
                     : {}),
             }
         }
-
-        const editorTemplate = getCurrentTemplateWithLockedKeys()
-        const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
 
         const baseObject = {
             environmentId: +envId,
@@ -1291,10 +1213,7 @@ const DeploymentTemplate = ({
 
         if (showLockedTemplateDiffModal) {
             const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: {
-                    unedited: currentEditorTemplateData.originalTemplate,
-                    edited: editorTemplateObject,
-                },
+                documents: getLockedDiffModalDocuments(false, state),
                 lockedConfigKeysWithLockType,
             })
 
@@ -1329,19 +1248,29 @@ const DeploymentTemplate = ({
     }
 
     const handleSaveTemplate = async () => {
-        setIsSaving(true)
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_SAVE,
+        })
+
         try {
-            // TODO: Check in case of envOverrides the service names are same but are different entities
             const apiService = getSaveAPIService()
+            // TODO: Test concurrency, maybe would have to re-compute all the values
 
             // TODO: Can send signal
             const response = await apiService(prepareDataToSave(true), null)
-            if (response?.result?.isLockConfigError) {
-                // TODO: Can think of concurrency, maybe would have to re-compute all the values
-                setShowLockedTemplateDiffModal(true)
+
+            const isLockConfigError = !!response?.result?.isLockConfigError
+
+            dispatch({
+                type: DeploymentTemplateActionType.FINISH_SAVE,
+                payload: {
+                    isLockConfigError,
+                },
+            })
+
+            if (isLockConfigError) {
                 return
             }
-            setIsSaving(false)
 
             await handleReload()
             respondOnSuccess(!isCiPipeline)
@@ -1351,17 +1280,19 @@ const DeploymentTemplate = ({
                 description: 'Changes will be reflected after next deployment.',
             })
         } catch (error) {
-            // TODO: Check concurrency error due to this
-            // TODO: Check when adding protected config
-            // handleConfigProtectionError(2, error, dispatch, reloadEnvironments)
-            // TODO: Use util from above
-            if (error.code === 423) {
-                setShowSaveChangesModal(true)
+            const isProtectionError = error.code === 423
+
+            showError(error)
+            dispatch({
+                type: DeploymentTemplateActionType.SAVE_ERROR,
+                payload: {
+                    isProtectionError,
+                },
+            })
+
+            if (isProtectionError) {
                 reloadEnvironments()
             }
-            // TODO: Remove this later
-            showError(error)
-            setIsSaving(false)
         }
     }
 
@@ -1373,28 +1304,29 @@ const DeploymentTemplate = ({
             action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
         })
 
+        // TODO: Not handle in case of isUnset
         const shouldValidateLockChanges = lockedConfigKeysWithLockType.config.length > 0 && !isSuperAdmin
 
-        // TODO: Try catch
         if (shouldValidateLockChanges) {
-            const editorTemplate = getCurrentTemplateWithLockedKeys()
-
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: {
-                    unedited: currentEditorTemplateData.originalTemplate,
-                    edited: YAML.parse(editorTemplate),
-                },
+                documents: getLockedDiffModalDocuments(false, state),
                 lockedConfigKeysWithLockType,
             })
 
             if (Object.keys(ineligibleChanges || {}).length) {
-                setShowLockedTemplateDiffModal(true)
+                dispatch({
+                    type: DeploymentTemplateActionType.LOCKED_CHANGES_DETECTED_ON_SAVE,
+                })
+
                 return
             }
         }
 
         if (isProtected) {
-            setShowSaveChangesModal(true)
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
+            })
+
             return
         }
 
@@ -1408,19 +1340,17 @@ const DeploymentTemplate = ({
         const shouldValidateLockChanges = lockedConfigKeysWithLockType.config.length > 0 && !isSuperAdmin
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
-            // TODO: Can think of some concurrent behaviors
-            // TODO: Can common documents: { unedited, edited } for both
+            // TODO: Test concurrent behavior for api validation
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: {
-                    unedited: publishedTemplateData.originalTemplate,
-                    edited: draftTemplateData.originalTemplate,
-                },
+                documents: getLockedDiffModalDocuments(true, state),
                 lockedConfigKeysWithLockType,
             })
 
             if (Object.keys(ineligibleChanges || {}).length) {
-                setShowLockedDiffForApproval(true)
-                setShowLockedTemplateDiffModal(true)
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_LOCKED_DIFF_FOR_APPROVAL,
+                })
+
                 return false
             }
         }
@@ -1429,93 +1359,55 @@ const DeploymentTemplate = ({
     }
 
     const restoreLastSavedTemplate = () => {
-        handleRemoveResolvedVariables()
-        setWasGuiOrHideLockedKeysEdited(hideLockedKeys)
-
-        const originalTemplateData = currentEditorTemplateData.originalTemplateState
-
-        const stringifiedYAML = originalTemplateData.editorTemplate
-        // Since have'nt stored removed patches in global scope so had to re-calculate
-        const { editorTemplate, removedPatches } = getEditorTemplateAndLockedKeys(stringifiedYAML)
-
-        // When restoring would restore everything, including schema, readme, etc, that is why not using originalTemplate from currentEditorTemplate
-
-        setCurrentEditorTemplateData({
-            ...originalTemplateData,
-            editorTemplate: hideLockedKeys ? editorTemplate : stringifiedYAML,
-            removedPatches: hideLockedKeys ? removedPatches : [],
-            unableToParseYaml: false,
-            originalTemplateState: originalTemplateData,
+        dispatch({
+            type: DeploymentTemplateActionType.RESTORE_LAST_SAVED_TEMPLATE,
         })
     }
 
     const handleChartChange = async (selectedChart: DeploymentChartVersionType) => {
-        // FIXME: Should only update config, and not editor template
-        // TODO: Not the intended loading state, will change later
-        setIsLoadingInitialData(true)
-        setInitialLoadError(null)
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_CHART_CHANGE,
+        })
+
         try {
-            const { id, name, isAppMetricsSupported } = selectedChart
-            // No need to send locked config here since won't call this method on load
-            // TODO: Can be a util for whole process itself
-            const templateData = await handleFetchBaseDeploymentTemplate(selectedChart)
-            // TODO: Sync with product for which values to retains!!!
-            // FIXME: From tech POV, it should be simple,
-            // Since we want to retain edited values so, not changing editorTemplate
-            // TODO: Ask if to retain app config
-
-            // If user changing chart type then we should reset the editor template in case of version change we won't change edited template
-            const isChartTypeChanged = currentEditorTemplateData?.selectedChart.name !== name
-
-            const updatedEditorTemplateData: typeof currentEditorTemplateData = {
-                ...currentEditorTemplateData,
-                isAppMetricsEnabled: isAppMetricsSupported ? currentEditorTemplateData.isAppMetricsEnabled : false,
-                selectedChart,
-                selectedChartRefId: +id,
-                schema: templateData.schema,
-                readme: templateData.readme,
-                guiSchema: templateData.guiSchema,
-                ...(isChartTypeChanged && {
-                    editorTemplate: templateData.editorTemplate,
-                    // Not resetting originalTemplate since we are not changing it
-                }),
-            }
-
-            // TODO: Need to confirm with product once
-            if (isChartTypeChanged) {
-                handleRemoveResolvedVariables()
-                setHideLockedKeys(false)
-            }
-
-            setCurrentEditorTemplateData(updatedEditorTemplateData)
+            const selectedChartTemplateDetails = await handleFetchBaseDeploymentTemplate(selectedChart)
+            dispatch({
+                type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
+                payload: {
+                    selectedChart,
+                    selectedChartTemplateDetails,
+                },
+            })
         } catch (error) {
             showError(error)
-            setInitialLoadError(error)
-        } finally {
-            setIsLoadingInitialData(false)
+            dispatch({
+                type: DeploymentTemplateActionType.CHART_CHANGE_ERROR,
+            })
         }
     }
 
     const handleCloseLockedDiffModal = () => {
-        setShowLockedTemplateDiffModal(false)
+        dispatch({
+            type: DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL,
+        })
     }
 
     const handleCloseSaveChangesModal = () => {
-        setShowSaveChangesModal(false)
-        handleCloseLockedDiffModal()
+        dispatch({
+            type: DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL,
+        })
     }
 
     const handleAppMetricsToggle = () => {
-        setCurrentEditorTemplateData((prevTemplateData) => ({
-            ...prevTemplateData,
-            isAppMetricsEnabled: !prevTemplateData.isAppMetricsEnabled,
-        }))
+        dispatch({
+            type: DeploymentTemplateActionType.TOGGLE_APP_METRICS,
+        })
     }
 
     // We don't have options for locked keys here
     const getDryRunModeEditorValue = (): string => {
         if (resolveScopedVariables) {
-            return resolvedEditorTemplate.originalTemplate
+            return resolvedEditorTemplate.originalTemplateString
         }
 
         return getRawEditorValueForDryRunMode()
@@ -1531,13 +1423,13 @@ const DeploymentTemplate = ({
             if (isApprovalPendingOptionSelected) {
                 return hideLockedKeys
                     ? resolvedOriginalTemplate.templateWithoutLockedKeys
-                    : resolvedOriginalTemplate.originalTemplate
+                    : resolvedOriginalTemplate.originalTemplateString
             }
 
             // Since editor is disabled for scoped variables we do'nt need to worry about keys changing in editor
             return hideLockedKeys
                 ? resolvedEditorTemplate.templateWithoutLockedKeys
-                : resolvedEditorTemplate.originalTemplate
+                : resolvedEditorTemplate.originalTemplateString
         }
 
         if (isInheritedView) {
@@ -1568,7 +1460,7 @@ const DeploymentTemplate = ({
      */
     const getUneditedDocument = (): string => {
         if (resolveScopedVariables) {
-            return resolvedOriginalTemplate.originalTemplate
+            return resolvedOriginalTemplate.originalTemplateString
         }
 
         if (isPublishedValuesView) {
@@ -1584,34 +1476,25 @@ const DeploymentTemplate = ({
         return ''
     }
 
-    const getLockedDiffModalDocuments = () => {
-        if (isApprovalView) {
-            return {
-                unedited: publishedTemplateData.originalTemplate,
-                edited: YAML.parse(draftTemplateData.editorTemplate),
-            }
-        }
-
-        const editorTemplate = getCurrentTemplateWithLockedKeys()
-
-        return {
-            unedited: currentEditorTemplateData.originalTemplate,
-            edited: YAML.parse(editorTemplate),
-        }
-    }
-
     const handleCloseDeleteOverrideDialog = () => {
-        setShowDeleteOverrideDialog(false)
+        dispatch({
+            type: DeploymentTemplateActionType.CLOSE_OVERRIDE_DIALOG,
+        })
     }
 
-    const handleShowDeleteDraftOverrideDialog = () => {
-        setShowDeleteDraftOverrideDialog(true)
+    const handleDeleteOverrideProtectionError = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR,
+        })
     }
 
     const handleToggleDeleteDraftOverrideDialog = () => {
-        setShowDeleteDraftOverrideDialog((prev) => !prev)
+        dispatch({
+            type: DeploymentTemplateActionType.CLOSE_DELETE_DRAFT_OVERRIDE_DIALOG,
+        })
     }
 
+    // TODO: Check if can break this method
     const handleOverride = () => {
         if (!envId) {
             logExceptionToSentry(new Error('Trying to access override without envId in DeploymentTemplate'))
@@ -1619,29 +1502,30 @@ const DeploymentTemplate = ({
         }
 
         if (currentEditorTemplateData.originalTemplateState.isOverridden) {
-            // Not directly overriding state since user can use cancel
-            if (isProtected) {
-                handleShowDeleteDraftOverrideDialog()
-                return
-            }
-
             ReactGA.event({
                 category: 'devtronapp-configuration-dt',
                 action: 'clicked-delete-override',
             })
 
-            setShowDeleteOverrideDialog(true)
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG,
+                payload: {
+                    isProtected,
+                },
+            })
             return
         }
 
+        // TODO: Check if can be removed
         if (currentEditorTemplateData.isOverridden) {
-            restoreLastSavedTemplate()
+            dispatch({
+                type: DeploymentTemplateActionType.DELETE_LOCAL_OVERRIDE,
+            })
             return
         }
 
-        setCurrentEditorTemplateData({
-            ...currentEditorTemplateData,
-            isOverridden: true,
+        dispatch({
+            type: DeploymentTemplateActionType.OVERRIDE_TEMPLATE,
         })
     }
 
@@ -1705,18 +1589,29 @@ const DeploymentTemplate = ({
         }
     }
 
+    const getPublishedTemplate = (): string => {
+        if (!isPublishedConfigPresent) {
+            return ''
+        }
+
+        if (state.resolveScopedVariables) {
+            return state.hideLockedKeys
+                ? state.resolvedPublishedTemplate.templateWithoutLockedKeys
+                : state.resolvedPublishedTemplate.originalTemplateString
+        }
+
+        return state.hideLockedKeys
+            ? publishedTemplateData.editorTemplateWithoutLockedKeys
+            : publishedTemplateData.editorTemplate
+    }
+
     const renderEditorComponent = () => {
-        if (isLoadingInitialData || isResolvingVariables) {
+        if (isResolvingVariables || state.isLoadingChangedChartDetails) {
             return (
                 <div className="flex h-100 dc__overflow-scroll">
                     <Progressing pageLoader />
                 </div>
             )
-        }
-
-        if (initialLoadError) {
-            // TODO: re-visit reload mechanism
-            return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
         }
 
         if (showNoOverrideEmptyState) {
@@ -1739,9 +1634,7 @@ const DeploymentTemplate = ({
                     currentEditorConfig={getCompareFromEditorConfig()}
                     currentEditorTemplate={YAML.parse(getCurrentEditorValue())}
                     publishedEditorConfig={getPublishedEditorConfig()}
-                    publishedEditorTemplate={YAML.parse(
-                        isPublishedConfigPresent ? publishedTemplateData?.editorTemplate : '',
-                    )}
+                    publishedEditorTemplate={YAML.parse(getPublishedTemplate())}
                     selectedChartVersion={getCurrentTemplateSelectedChart().version}
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteDraft={draftTemplateData?.latestDraft?.action === 3}
@@ -1753,7 +1646,7 @@ const DeploymentTemplate = ({
             return (
                 <ConfigDryRun
                     showManifest
-                    isLoading={isLoadingInitialData || isResolvingVariables || isSaving}
+                    isLoading={isResolvingVariables || isSaving || state.isLoadingChangedChartDetails}
                     handleToggleResolveScopedVariables={handleToggleResolveScopedVariables}
                     resolveScopedVariables={resolveScopedVariables}
                     editorTemplate={getCurrentEditorValue()}
@@ -1762,6 +1655,7 @@ const DeploymentTemplate = ({
                     dryRunEditorMode={dryRunEditorMode}
                     handleChangeDryRunEditorMode={handleChangeDryRunEditorMode}
                     isDraftPresent={isDraftAvailable}
+                    isApprovalPending={isApprovalPending}
                     isPublishedConfigPresent={isPublishedConfigPresent}
                 />
             )
@@ -1782,14 +1676,12 @@ const DeploymentTemplate = ({
                 schema={getCurrentEditorSchema()}
                 isOverridden={getIsCurrentTemplateOverridden()}
                 isUnSet={isUnSet}
-                wasGuiOrHideLockedKeysEdited={wasGuiOrHideLockedKeysEdited}
-                handleEnableWasGuiOrHideLockedKeysEdited={handleEnableWasGuiOrHideLockedKeysEdited}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
                 editorOnChange={handleEditorChange}
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
                 showReadMe={showReadMe}
-                // TODO: Confirm with product which editor to show
+                // TODO: Show readme only in case of edit/values mode
                 readMe={currentEditorTemplateData?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
@@ -1799,10 +1691,10 @@ const DeploymentTemplate = ({
         )
     }
 
-    // TODO: Need to implement when we have support for merge patches
+    // NOTE: Need to implement when we have support for merge patches
     const getShouldShowMergePatchesButton = (): boolean => false
 
-    const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (strategy) => {
+    const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
             action: 'clicked-merge-strategy-dropdown',
@@ -1813,26 +1705,30 @@ const DeploymentTemplate = ({
             return
         }
 
-        const currentEditorTemplateClone = structuredClone(currentEditorTemplateData)
-
-        const newTemplateData: typeof currentEditorTemplateClone = {
-            ...currentEditorTemplateClone,
-            mergeStrategy: strategy,
-        }
-        setCurrentEditorTemplateData(newTemplateData)
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY,
+            payload: {
+                mergeStrategy,
+            },
+        })
     }
 
     const handleOpenDiscardDraftPopup = () => {
-        setPopupNodeType(ConfigToolbarPopupNodeType.DISCARD_DRAFT)
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_DISCARD_DRAFT_POPUP,
+        })
     }
 
     const handleShowEditHistory = () => {
-        setPopupNodeType(ConfigToolbarPopupNodeType.EDIT_HISTORY)
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EDIT_HISTORY,
+        })
     }
 
-    // TODO: Product req is to close modal not go back to reverted popup menu, check if can be easily done
     const handleClearPopupNode = () => {
-        setPopupNodeType(null)
+        dispatch({
+            type: DeploymentTemplateActionType.CLEAR_POPUP_NODE,
+        })
     }
 
     const renderCTA = () => {
@@ -1855,14 +1751,14 @@ const DeploymentTemplate = ({
             ? !!publishedTemplateData?.isAppMetricsEnabled
             : !!currentEditorTemplateData?.isAppMetricsEnabled
 
-        const isLoading = isLoadingInitialData || isResolvingVariables || isSaving
+        const isLoading = isResolvingVariables || isSaving || state.isLoadingChangedChartDetails
 
         const isDisabled =
             resolveScopedVariables ||
             currentEditorTemplateData.unableToParseYaml ||
-            isLoadingInitialData ||
             isResolvingVariables ||
-            isSaving
+            isSaving ||
+            state.isLoadingChangedChartDetails
 
         if (isProtected && ProtectedDeploymentTemplateCTA) {
             return (
@@ -1938,7 +1834,7 @@ const DeploymentTemplate = ({
             isPublishedConfigPresent,
             handleDeleteOverride: handleOverride,
             unableToParseData: currentEditorTemplateData?.unableToParseYaml,
-            isLoading: isLoadingInitialData || isResolvingVariables || isSaving,
+            isLoading: isResolvingVariables || isSaving || state.isLoadingChangedChartDetails,
             isDraftAvailable,
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
@@ -2001,20 +1897,26 @@ const DeploymentTemplate = ({
                         resolveScopedVariables={resolveScopedVariables}
                         // TODO: Can make variable
                         disableAllActions={
-                            currentEditorTemplateData?.unableToParseYaml || isResolvingVariables || isSaving
+                            currentEditorTemplateData?.unableToParseYaml ||
+                            isResolvingVariables ||
+                            isSaving ||
+                            state.isLoadingChangedChartDetails
                         }
                         configHeaderTab={configHeaderTab}
                         isProtected={isProtected}
-                        isApprovalPending={draftTemplateData?.latestDraft?.draftState === DraftState.AwaitApproval}
+                        isApprovalPending={isApprovalPending}
                         isDraftPresent={isDraftAvailable}
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}
-                        isLoadingInitialData={isLoadingInitialData}
+                        isLoadingInitialData={false}
                         isPublishedConfigPresent={isPublishedConfigPresent}
                         handleClearPopupNode={handleClearPopupNode}
                     >
                         <DeploymentTemplateOptionsHeader
                             disableVersionSelect={
-                                isPublishedValuesView || isResolvingVariables || isSaving || isLoadingInitialData
+                                isPublishedValuesView ||
+                                isResolvingVariables ||
+                                isSaving ||
+                                state.isLoadingChangedChartDetails
                             }
                             editMode={editMode}
                             showReadMe={showReadMe}
@@ -2030,7 +1932,7 @@ const DeploymentTemplate = ({
                             chartDetails={chartDetails}
                             selectedChart={getCurrentTemplateSelectedChart()}
                             isGuiSupported={isGuiSupported}
-                            areChartsLoading={isLoadingInitialData}
+                            areChartsLoading={false}
                         />
                     </ConfigToolbar>
                 )}
@@ -2045,75 +1947,86 @@ const DeploymentTemplate = ({
         </>
     )
 
+    const renderDeploymentTemplate = () => {
+        if (state.isLoadingInitialData) {
+            return <Progressing pageLoader />
+        }
+
+        if (state.initialLoadError) {
+            return <ErrorScreenManager code={state.initialLoadError.code} reload={handleReload} />
+        }
+
+        return (
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+                {renderBody()}
+
+                {showDeleteOverrideDialog && (
+                    <DeleteOverrideDialog
+                        environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
+                        handleReload={handleReload}
+                        handleClose={handleCloseDeleteOverrideDialog}
+                        handleProtectionError={handleDeleteOverrideProtectionError}
+                        reloadEnvironments={reloadEnvironments}
+                    />
+                )}
+
+                {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
+                    <DeleteOverrideDraftModal
+                        appId={Number(appId)}
+                        envId={Number(envId)}
+                        resourceType={3}
+                        resourceName={`${environmentName}-DeploymentTemplateOverride`}
+                        prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
+                        // TODO: Should rename it to handleClose after merging cm/cs
+                        toggleModal={handleToggleDeleteDraftOverrideDialog}
+                        latestDraft={draftTemplateData?.latestDraft}
+                        reload={handleReload}
+                    />
+                )}
+
+                {DeploymentTemplateLockedDiff && showLockedTemplateDiffModal && (
+                    <DeploymentTemplateLockedDiff
+                        closeModal={handleCloseLockedDiffModal}
+                        showLockedDiffForApproval={showLockedDiffForApproval}
+                        onSave={handleSaveTemplate}
+                        isSaving={isSaving}
+                        // TODO: Should not do this on runtime.
+                        documents={getLockedDiffModalDocuments(isApprovalView, state)}
+                        appId={appId}
+                        envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                    />
+                )}
+
+                {/* FIXME: Can move this as well in ProtectedDeploymentTemplateCTA */}
+                {SaveChangesModal && showSaveChangesModal && (
+                    <SaveChangesModal
+                        appId={Number(appId)}
+                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        resourceType={3}
+                        // TODO: Util for this name
+                        resourceName={
+                            environmentName
+                                ? `${environmentName}-DeploymentTemplateOverride`
+                                : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
+                        }
+                        prepareDataToSave={prepareDataToSave}
+                        toggleModal={handleCloseSaveChangesModal}
+                        latestDraft={draftTemplateData?.latestDraft}
+                        reload={handleReload}
+                        showAsModal={!showLockedTemplateDiffModal}
+                        saveEligibleChangesCb={showLockedTemplateDiffModal}
+                    />
+                )}
+            </div>
+        )
+    }
+
     return (
         <>
             <div
                 className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
             >
-                <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
-                    {renderBody()}
-
-                    {showDeleteOverrideDialog && (
-                        <DeleteOverrideDialog
-                            environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
-                            handleReload={handleReload}
-                            handleClose={handleCloseDeleteOverrideDialog}
-                            handleShowDeleteDraftOverrideDialog={handleShowDeleteDraftOverrideDialog}
-                            reloadEnvironments={reloadEnvironments}
-                        />
-                    )}
-
-                    {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
-                        <DeleteOverrideDraftModal
-                            appId={Number(appId)}
-                            envId={Number(envId)}
-                            resourceType={3}
-                            resourceName={`${environmentName}-DeploymentTemplateOverride`}
-                            prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
-                            toggleModal={handleToggleDeleteDraftOverrideDialog}
-                            latestDraft={draftTemplateData?.latestDraft}
-                            reload={handleReload}
-                        />
-                    )}
-
-                    {DeploymentTemplateLockedDiff && showLockedTemplateDiffModal && (
-                        <DeploymentTemplateLockedDiff
-                            closeModal={handleCloseLockedDiffModal}
-                            showLockedDiffForApproval={showLockedDiffForApproval}
-                            onSave={handleSaveTemplate}
-                            isSaving={isSaving}
-                            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                            // TODO: Should not do this on runtime.
-                            documents={getLockedDiffModalDocuments()}
-                            // TODO: Should not send this and its state as well
-                            setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
-                            appId={appId}
-                            envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
-                        />
-                    )}
-
-                    {/* FIXME: Can move this as well in ProtectedDeploymentTemplateCTA */}
-                    {SaveChangesModal && showSaveChangesModal && (
-                        <SaveChangesModal
-                            appId={Number(appId)}
-                            envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
-                            resourceType={3}
-                            // TODO: Util for this name
-                            resourceName={
-                                environmentName
-                                    ? `${environmentName}-DeploymentTemplateOverride`
-                                    : PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
-                            }
-                            prepareDataToSave={prepareDataToSave}
-                            toggleModal={handleToggleShowSaveChangesModal}
-                            latestDraft={draftTemplateData?.latestDraft}
-                            reload={handleReload}
-                            closeLockedDiffDrawerWithChildModal={handleCloseSaveChangesModal}
-                            showAsModal={!showLockedTemplateDiffModal}
-                            saveEligibleChangesCb={showLockedTemplateDiffModal}
-                        />
-                    )}
-                </div>
+                {renderDeploymentTemplate()}
 
                 {DraftComments && showDraftComments && (
                     <DraftComments

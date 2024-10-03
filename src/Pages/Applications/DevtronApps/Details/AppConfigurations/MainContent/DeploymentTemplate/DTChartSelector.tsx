@@ -112,7 +112,7 @@ const ChartSelectorDropdown = ({
                     />
                 </span>
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="chart-selector-container dc__border br-4">
+            <PopupMenu.Body rootClassName="dc__overflow-scroll mh-350 w-400 dc__border br-4">
                 <>
                     {customCharts.length > 0 && (
                         <div
@@ -150,8 +150,8 @@ const ChartSelectorDropdown = ({
                             <div
                                 // eslint-disable-next-line react/no-array-index-key
                                 key={`${selectedChartTypeTab}-${index}`}
-                                className={`p-12 pointer chart-row ${
-                                    chart.name === selectedChart?.name ? ' bcb-1' : ''
+                                className={`p-12 pointer chart-row  ${
+                                    chart.name === selectedChart?.name ? ' bcb-1' : 'dc__hover-n50'
                                 }`}
                                 data-testid={`select-chart-type-menu-${index}`}
                                 onClick={() => onSelectChartType(chart.name)}

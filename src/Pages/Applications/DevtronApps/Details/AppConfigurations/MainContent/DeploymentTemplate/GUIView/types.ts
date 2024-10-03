@@ -57,8 +57,6 @@ export interface DeploymentTemplateGUIViewProps
     value: string
     readOnly: boolean
     isUnSet: boolean
-    handleEnableWasGuiOrHideLockedKeysEdited: () => void
-    wasGuiOrHideLockedKeysEdited: boolean
     handleChangeToYAMLMode: () => void
     guiSchema: string
     selectedChart: DeploymentChartVersionType
