@@ -75,7 +75,7 @@ export const ClusterMetaDataBar = ({
         >
             <span className="dc__opacity-0_8"> Cluster: {clusterName}</span>
             <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
-            <span className="dc__opacity-0_8">Namespace: {namespace}</span>
+            <span className="dc__opacity-0_8">Namespace: {namespace || '-'}</span>
             {!isVirtualEnvironment && (
                 <>
                     <ArrowLeft
