@@ -99,15 +99,6 @@
     margin-right: 12px;
 }
 
-.option-with-subtitle__subtitle {
-    font-size: 10px;
-    font-weight: normal;
-    font-stretch: normal;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: #404040;
-}
-
 .option-group__label {
     padding: 8px 16px;
     font-size: 12px;

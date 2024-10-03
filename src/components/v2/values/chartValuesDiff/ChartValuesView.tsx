@@ -1698,7 +1698,7 @@ const ChartValuesView = ({
                                 selectedEnvironment={commonState.selectedEnvironment}
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
-                                invalidaEnvironment={commonState.invalidaEnvironment}
+                                invalidEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
