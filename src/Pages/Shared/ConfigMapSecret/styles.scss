@@ -64,10 +64,14 @@
     }
 }
 
+.variables-widget-position-cm-cs {
+    position: absolute;
+    bottom: 100px;
+    right: 160px;
+}
+
 // TODO: remove when issue for svg button height is fixed
-.cm-cs-empty-state-container {
-    .empty-state svg {
-        height: 100%;
-        width: 100%;
-    }
+.cm-cs-empty-state.empty-state svg {
+    height: 100%;
+    width: 100%;
 }

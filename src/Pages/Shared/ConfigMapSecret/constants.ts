@@ -1,6 +1,11 @@
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
-import { CMSecretComponentType, CMSecretExternalType, ConfigMapSecretDataTypeOptionType } from './types'
+import {
+    CMSecretComponentType,
+    CMSecretExternalType,
+    ConfigMapSecretDataTypeOptionType,
+    ConfigMapSecretNullStateProps,
+} from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
     [CMSecretComponentType.ConfigMap]: 'configmap',
@@ -34,6 +39,25 @@ export const CM_SECRET_EMPTY_STATE_TEXT = {
         buttonText: 'Create Secret',
     },
 }
+
+export const getCMSecretNullStateText = (
+    componentName: string,
+): Record<ConfigMapSecretNullStateProps['nullStateType'], { title: string; subTitle: string }> => ({
+    DELETE_OVERRIDE: {
+        title: 'Delete override requested',
+        subTitle: 'This override will be deleted on approval',
+    },
+    DELETE: {
+        title: 'File deletion requested',
+        subTitle: `This ${componentName} will be deleted on approval`,
+    },
+    NOT_OVERRIDDEN: {
+        title: 'This file is not overridden',
+        subTitle: `Published override for this file will be available here`,
+    },
+    NO_OVERRIDE: null,
+    NO_CM_CS: null,
+})
 
 export const configMapDataTypeOptions: ConfigMapSecretDataTypeOptionType[] = [
     { value: '', label: 'Kubernetes ConfigMap' },

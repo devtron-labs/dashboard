@@ -4,33 +4,32 @@ import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
 import {
     abortPreviousRequests,
     AppEnvDeploymentConfigDTO,
-    Button,
-    ButtonComponentType,
     ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     DraftAction,
     DraftState,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
-    GenericEmptyState,
     getIsRequestAborted,
     noop,
     OverrideMergeStrategyType,
     Progressing,
+    ProtectConfigTabsType,
+    ServerErrors,
     showError,
     ToastManager,
     ToastVariantType,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import EmptyStateImg from '@Images/cm-cs-empty-state.png'
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { URLS } from '@Config/routes'
 import ConfigHeader from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigHeader'
 import ConfigToolbar from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigToolbar'
 import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
     overRideConfigMap,
@@ -46,26 +45,29 @@ import {
     getConfigMapSecretStateLabel,
 } from './utils'
 import { getConfigMapSecretConfigData } from './service.utils'
-import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT } from './constants'
+import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
     CM_SECRET_STATE,
     CMSecretComponentType,
     CMSecretDeleteModalType,
+    CMSecretDraftPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretInherited } from './ConfigMapSecretInherited'
-import { ConfigMapSecretOverrideEmptyState } from './ConfigMapSecretOverrideEmptyState'
+import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
+import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
+import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { useConfigMapSecretContext } from './ConfigMapSecretContext'
 
 import './styles.scss'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
-const DeleteModal = importComponentFromFELibrary('DeleteModal')
+const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 
 export const ConfigMapSecretContainer = ({
     componentType = CMSecretComponentType.ConfigMap,
@@ -78,8 +80,11 @@ export const ConfigMapSecretContainer = ({
     onErrorRedirectURL,
     envName,
     appName,
+    parentName,
+    reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
+    const { isFormDirty } = useConfigMapSecretContext()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
@@ -89,10 +94,15 @@ export const ConfigMapSecretContainer = ({
 
     // STATES
     const [configHeaderTab, setConfigHeaderTab] = useState<ConfigHeaderTabType>(null)
+    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(OverrideMergeStrategyType.REPLACE)
+    const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
     const [showComments, setShowComments] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
+    const [showDraftSaveModal, setShowDraftSaveModal] = useState(false)
+    const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
+    const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -105,8 +115,17 @@ export const ConfigMapSecretContainer = ({
     const cmSecretStateLabel = getConfigMapSecretStateLabel(selectedCMSecret?.configStage, isOverrideView)
 
     const id = selectedCMSecret?.id
-    const isCreateState = name === 'create'
+    const isCreateState = name === 'create' && !id
     const isEmptyState = !name && !envConfigData.length
+
+    // COMPONENT PROP CONSTANTS
+    const baseConfigurationURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${isSecret ? URLS.APP_CS_CONFIG : URLS.APP_CM_CONFIG}/${name}`
+    const headerMessage =
+        cmSecretStateLabel === CM_SECRET_STATE.ENV ||
+        cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
+        cmSecretStateLabel === CM_SECRET_STATE.BASE
+            ? `${envId ? 'This is an environment specific' : 'base-placeholder-get-text'} ${componentName}`
+            : null
 
     // USE EFFECTS
     useEffect(() => {
@@ -117,39 +136,30 @@ export const ConfigMapSecretContainer = ({
         }
     }, [envId])
 
-    useEffect(() => {
-        switch (cmSecretStateLabel) {
-            case CM_SECRET_STATE.INHERITED:
-                setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
-                break
-            default:
-                setConfigHeaderTab(ConfigHeaderTabType.VALUES)
-                break
-        }
-    }, [cmSecretStateLabel])
-
     // ASYNC CALLS
     const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
                     Promise.all([
-                        getConfigMapSecretConfigData({
-                            appId,
-                            appName,
-                            envId,
-                            envName,
-                            componentType,
-                            name,
-                            resourceId:
-                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
-                                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-                                    ? id
-                                    : null,
-                            isJob,
-                            abortRef,
-                        }),
-                        cmSecretStateLabel !== CM_SECRET_STATE.ENV && cmSecretStateLabel !== CM_SECRET_STATE.BASE
+                        // Fetch Published Configuration
+                        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                        cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+                            ? getConfigMapSecretConfigData({
+                                  appId,
+                                  appName,
+                                  envId,
+                                  envName,
+                                  componentType,
+                                  name,
+                                  resourceId: id,
+                                  isJob,
+                                  abortRef,
+                              })
+                            : null,
+                        // Fetch Base Configuration (Inherited Tab Data)
+                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                             ? getConfigMapSecretConfigData({
                                   appId,
                                   appName,
@@ -162,7 +172,11 @@ export const ConfigMapSecretContainer = ({
                                   abortRef,
                               })
                             : null,
-                        isProtected && getDraftByResourceName
+                        // Fetch Draft Configuration
+                        selectedCMSecret.configState === ResourceConfigState.ApprovalPending ||
+                        (selectedCMSecret.configState === ResourceConfigState.Draft &&
+                            isProtected &&
+                            getDraftByResourceName)
                             ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortRef.current.signal)
                             : null,
                     ]),
@@ -177,7 +191,7 @@ export const ConfigMapSecretContainer = ({
         try {
             if (!configMapSecretResLoading && configMapSecretRes) {
                 const { data, hasNotFoundErr } = getConfigMapSecretDraftAndPublishedData({
-                    cmSecretConfigData: configMapSecretRes[0].result,
+                    cmSecretConfigData: configMapSecretRes[0]?.result,
                     draftConfigData: configMapSecretRes[2]?.result,
                     configStage: selectedCMSecret.configStage,
                     cmSecretStateLabel,
@@ -186,6 +200,14 @@ export const ConfigMapSecretContainer = ({
                     isJob,
                     name,
                 })
+
+                if (data.draftData) {
+                    setSelectedProtectionViewTab(
+                        data.draftData.draftState === DraftState.AwaitApproval
+                            ? ProtectConfigTabsType.COMPARE
+                            : ProtectConfigTabsType.EDIT_DRAFT,
+                    )
+                }
 
                 return {
                     ...data,
@@ -204,31 +226,38 @@ export const ConfigMapSecretContainer = ({
         return { configMapSecretData: null, draftData: null, inheritedConfigMapSecretData: null, notFoundErr: null }
     }, [configMapSecretResLoading, configMapSecretRes])
 
-    // LOADING
+    // DATA CONSTANTS
     const isLoading = configMapSecretResLoading || isEnvConfigLoading
     const isError = notFoundErr || (configMapSecretResErr && !getIsRequestAborted(configMapSecretResErr))
 
     // ERROR HANDLING
     useEffect(() => {
-        if (isError) {
-            if (
-                (!isJob &&
-                    configMapSecretRes &&
-                    !(configMapSecretRes[0].result as AppEnvDeploymentConfigDTO).isAppAdmin) ||
-                configMapSecretResErr?.code === ERROR_STATUS_CODE.PERMISSION_DENIED
-            ) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.warn,
-                    title: 'View-only access',
-                    description: "You won't be able to make any changes",
-                })
-            }
+        if (
+            (!isJob &&
+                configMapSecretRes?.[0]?.result &&
+                !(configMapSecretRes[0].result as AppEnvDeploymentConfigDTO).isAppAdmin) ||
+            configMapSecretResErr?.code === ERROR_STATUS_CODE.PERMISSION_DENIED
+        ) {
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                title: 'View-only access',
+                description: "You won't be able to make any changes",
+            })
+        }
 
-            if (configMapSecretResErr) {
-                showError(configMapSecretResErr)
-            }
+        if (configMapSecretResErr) {
+            showError(configMapSecretResErr)
         }
     }, [configMapSecretRes, configMapSecretResErr])
+
+    // TAB HANDLING
+    useEffect(() => {
+        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
+            setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
+        } else {
+            setConfigHeaderTab(ConfigHeaderTabType.VALUES)
+        }
+    }, [cmSecretStateLabel, draftData])
 
     const redirectURLToValidPage = () => {
         history.replace(
@@ -261,8 +290,6 @@ export const ConfigMapSecretContainer = ({
 
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
-    const getBaseConfigurationURL = () => generatePath(path.replace('/env-override/:envId(\\d+)?', ''), params)
-
     const handleOpenDiscardDraftPopup = () => setPopupNodeType(ConfigToolbarPopupNodeType.DISCARD_DRAFT)
 
     const handleShowEditHistory = () => setPopupNodeType(ConfigToolbarPopupNodeType.EDIT_HISTORY)
@@ -271,40 +298,49 @@ export const ConfigMapSecretContainer = ({
 
     const handleViewInheritedConfig = () => setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
 
-    // const handleError = (actionType: number, err: any, payloadData: ReturnType<typeof getConfigMapSecretPayload>) => {
-    const handleError = (actionType: number, err: any) => {
-        // if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-        //     err.errors.forEach((error) => {
-        //         if (error.code === 423) {
-        //             if (actionType === 3 && state.dialog) {
-        //                 dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
-        //             } else {
-        //                 const _draftPayload = {
-        //                     id: id ?? 0,
-        //                     appId: +appId,
-        //                     configData: [payloadData],
-        //                     environmentId: null,
-        //                 }
-        //                 if (envId) {
-        //                     _draftPayload.environmentId = +envId
-        //                 }
-        //                 dispatch({
-        //                     type: ConfigMapActionTypes.multipleOptions,
-        //                     payload: {
-        //                         showDraftSaveModal: true,
-        //                         draftPayload: _draftPayload,
-        //                     },
-        //                 })
-        //             }
-        //             reloadEnvironments()
-        //         }
-        //     })
-        // }
+    const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => setSelectedProtectionViewTab(tab)
+
+    const handleToggleScopedVariablesView = () => setResolvedScopeVariables(!resolvedScopeVariables)
+
+    const toggleSaveChangesModal = () => {
+        setIsSubmitting(false)
+        setShowDraftSaveModal(false)
+    }
+
+    const reloadSaveChangesModal = () => {
+        updateCMSecret(draftPayload.configData[0].name)
+        setDraftPayload(null)
+    }
+
+    const handleError = (
+        actionType: DraftAction,
+        err: any,
+        payloadData?: ReturnType<typeof getConfigMapSecretPayload>,
+    ) => {
+        if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+            err.errors.forEach((error) => {
+                if (error.code === 423) {
+                    if (actionType === DraftAction.Delete) {
+                        setOpenDeleteModal('protectedDeleteModal')
+                    } else {
+                        const _draftPayload: CMSecretDraftPayloadType = {
+                            id: id ?? 0,
+                            appId: +appId,
+                            configData: [payloadData],
+                            environmentId: envId ? +envId : null,
+                        }
+                        setDraftPayload(_draftPayload)
+                        setShowDraftSaveModal(true)
+                    }
+                    reloadEnvironments()
+                }
+            })
+        }
         showError(err)
     }
 
     const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (formData) => {
-        if (isSecret && configMapSecretData?.unAuthorized) {
+        if (configMapSecretData?.unAuthorized) {
             ToastManager.showToast({
                 variant: ToastVariantType.warn,
                 title: 'View-only access',
@@ -314,6 +350,18 @@ export const ConfigMapSecretContainer = ({
         }
 
         const payloadData = getConfigMapSecretPayload(formData)
+
+        if (isProtected) {
+            setDraftPayload({
+                id: id ?? 0,
+                appId: +appId,
+                configData: [payloadData],
+                environmentId: envId ? +envId : null,
+            })
+            setShowDraftSaveModal(true)
+            return
+        }
+
         try {
             setIsSubmitting(true)
             let toastTitle = ''
@@ -345,14 +393,13 @@ export const ConfigMapSecretContainer = ({
         } catch (err) {
             setIsSubmitting(false)
             if (!abortRef.current.signal.aborted) {
-                // handleError(2, err, payloadData)
-                handleError(2, err)
+                handleError(DraftAction.Update, err, payloadData)
             }
         }
     }
 
     const onError: ConfigMapSecretFormProps['onError'] = (errors) => {
-        if ((errors.currentData || errors.yaml) === '__NO_DATA__') {
+        if ((errors.currentData || errors.yaml) === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
@@ -364,7 +411,7 @@ export const ConfigMapSecretContainer = ({
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description:
-                    secretYamlErrMsg === '__NO_DATA__'
+                    secretYamlErrMsg === CONFIG_MAP_SECRET_NO_DATA_ERROR
                         ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`
                         : secretYamlErrMsg,
             })
@@ -384,15 +431,15 @@ export const ConfigMapSecretContainer = ({
             configHeaderTab,
             isOverridden: cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN,
             isProtected,
-            isPublishedValuesView: false,
-            isPublishedConfigPresent: false,
-            handleDeleteOverride: handleDelete,
+            isPublishedValuesView: selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED,
+            isPublishedConfigPresent: !!configMapSecretData,
             unableToParseData: false,
             isLoading: isLoading || isSubmitting,
-            isDraftAvailable: false,
+            isDraftAvailable: !!draftData,
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             handleDelete,
+            handleDeleteOverride: handleDelete,
             isDeletable:
                 cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
                 cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
@@ -407,45 +454,65 @@ export const ConfigMapSecretContainer = ({
                 handleClearPopupNode={handleClearPopupNode}
                 draftId={draftData?.draftId}
                 draftVersionId={draftData?.draftVersionId}
-                handleReload={() => {}}
+                handleReload={updateCMSecret}
             />
         ) : null,
     }
 
     // RENDERERS
-    const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) => (
-        <ConfigMapSecretForm
-            id={id}
-            cmSecretStateLabel={cmSecretStateLabel}
-            componentType={componentType}
-            configMapSecretData={configMapSecretData}
-            isJob={isJob}
-            isAppAdmin={false}
-            draftMode={false}
-            isSubmitting={isSubmitting}
-            onSubmit={onSubmit}
-            onError={onError}
-            onCancel={onCancel}
-        />
-    )
+    const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
+        isProtected && draftData ? (
+            <ConfigMapSecretProtected
+                appName={appName}
+                cmSecretStateLabel={cmSecretStateLabel}
+                componentName={componentName}
+                publishedConfigMapSecretData={configMapSecretData}
+                draftData={draftData}
+                inheritedConfigMapSecretData={inheritedConfigMapSecretData}
+                envName={envName}
+                id={id}
+                onError={onError}
+                onSubmit={onSubmit}
+                selectedProtectionViewTab={selectedProtectionViewTab}
+                updateCMSecret={updateCMSecret}
+                componentType={componentType}
+                isJob={isJob}
+                parentName={parentName}
+            />
+        ) : (
+            <ConfigMapSecretForm
+                id={id}
+                cmSecretStateLabel={cmSecretStateLabel}
+                componentType={componentType}
+                configMapSecretData={configMapSecretData}
+                isJob={isJob}
+                isProtected={isProtected}
+                isSubmitting={isSubmitting}
+                onSubmit={onSubmit}
+                onError={onError}
+                onCancel={onCancel}
+            />
+        )
 
-    const renderContent = () => {
+    const renderConfigHeaderTabContent = () => {
         switch (configHeaderTab) {
             case ConfigHeaderTabType.VALUES:
-                return cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? (
+                return cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || draftData ? (
                     renderForm({ onCancel: redirectURLToValidPage })
                 ) : (
-                    <ConfigMapSecretOverrideEmptyState
+                    <ConfigMapSecretNullState
                         configName={name}
                         envName={envName}
+                        nullStateType="NO_OVERRIDE"
                         componentType={componentType}
                         handleViewInheritedConfig={handleViewInheritedConfig}
                         renderFormComponent={renderForm}
+                        hideOverrideButton={configMapSecretData?.unAuthorized}
                     />
                 )
             case ConfigHeaderTabType.INHERITED:
                 return (
-                    <ConfigMapSecretInherited
+                    <ConfigMapSecretReadyOnly
                         componentType={componentType}
                         configMapSecretData={inheritedConfigMapSecretData}
                     />
@@ -457,74 +524,76 @@ export const ConfigMapSecretContainer = ({
 
     const renderDeleteModal = (): JSX.Element => (
         <ConfigMapSecretDeleteModal
+            id={id}
             appId={+appId}
             envId={envId ? +envId : null}
             componentType={componentType}
-            id={id}
+            openDeleteModal={openDeleteModal}
+            draftData={draftData}
             configMapSecretData={configMapSecretData}
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
+            handleError={handleError}
         />
     )
 
-    const renderProtectedDeleteModal = () => {
-        if (DeleteModal) {
+    const renderContent = () => {
+        if (isEmptyState) {
+            return <ConfigMapSecretNullState nullStateType="NO_CM_CS" componentType={componentType} />
+        }
+
+        if (isLoading) {
+            return <Progressing fullHeight size={48} />
+        }
+
+        if (isError && !isLoading) {
             return (
-                <DeleteModal
-                    id={id}
-                    appId={+appId}
-                    envId={envId ? +envId : -1}
-                    resourceType={componentType}
-                    resourceName={selectedCMSecret?.name}
-                    latestDraft={
-                        draftData?.draftId
-                            ? {
-                                  draftId: draftData.draftId,
-                                  draftState: draftData.draftState,
-                                  draftVersionId: draftData.draftVersionId,
-                                  action: draftData.action,
-                              }
-                            : null
-                    }
-                    toggleModal={closeDeleteModal}
-                    reload={updateCMSecret}
+                <ErrorScreenManager
+                    code={notFoundErr ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}
+                    redirectURL={onErrorRedirectURL}
                 />
             )
         }
 
-        return null
-    }
-
-    if (isError && !isLoading) {
         return (
-            <ErrorScreenManager
-                code={notFoundErr ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}
-                redirectURL={onErrorRedirectURL}
-            />
-        )
-    }
-
-    if (isEmptyState) {
-        return (
-            <div className="h-100 bcn-0 cm-cs-empty-state-container">
-                <GenericEmptyState
-                    title={CM_SECRET_EMPTY_STATE_TEXT[componentType].title}
-                    subTitle={CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle}
-                    image={EmptyStateImg}
-                    imageType="large"
-                    isButtonAvailable
-                    renderButton={() => (
-                        <Button
-                            dataTestId="cm-cs-empty-state-btn"
-                            component={ButtonComponentType.link}
-                            startIcon={<ICAdd className="icon-dim-16" />}
-                            text={CM_SECRET_EMPTY_STATE_TEXT[componentType].buttonText}
-                            linkProps={{
-                                to: generatePath(path, { appId, envId, name: 'create' }),
-                            }}
-                        />
-                    )}
+            <div className="dc__border br-4 dc__overflow-hidden flexbox-col h-100 bcn-0">
+                <ConfigHeader
+                    configHeaderTab={configHeaderTab}
+                    handleTabChange={setConfigHeaderTab}
+                    isDisabled={isLoading}
+                    areChangesPresent={isFormDirty}
+                    isOverridable={
+                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    }
+                    isPublishedTemplateOverridden={cmSecretStateLabel !== CM_SECRET_STATE.INHERITED}
+                    hideDryRunTab
                 />
+                <ConfigToolbar
+                    configHeaderTab={configHeaderTab}
+                    mergeStrategy={mergeStrategy}
+                    handleMergeStrategyChange={setMergeStrategy}
+                    approvalUsers={draftData?.approvers}
+                    areCommentsPresent={draftData?.commentsCount > 0}
+                    isProtected={isProtected}
+                    isDraftPresent={!!draftData}
+                    isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
+                    isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
+                    showMergePatchesButton={false}
+                    baseConfigurationURL={baseConfigurationURL}
+                    headerMessage={headerMessage}
+                    selectedProtectionViewTab={selectedProtectionViewTab}
+                    handleProtectionViewTabChange={handleProtectionViewTabChange}
+                    handleToggleCommentsView={toggleDraftComments}
+                    isLoadingInitialData={isLoading}
+                    resolveScopedVariables={resolvedScopeVariables}
+                    handleToggleScopedVariablesView={handleToggleScopedVariablesView}
+                    popupConfig={toolbarPopupConfig}
+                    handleClearPopupNode={handleClearPopupNode}
+                    handleToggleShowTemplateMergedWithPatch={noop}
+                    shouldMergeTemplateWithPatches={null}
+                />
+                {renderConfigHeaderTabContent()}
             </div>
         )
     }
@@ -533,77 +602,32 @@ export const ConfigMapSecretContainer = ({
         <div
             className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
         >
-            {isLoading ? (
-                <div className="h-100 bcn-0">
-                    <Progressing fullHeight size={48} />
+            <div className="h-100 bcn-0">{renderContent()}</div>
+            {openDeleteModal && renderDeleteModal()}
+            {SaveChangesModal && showDraftSaveModal && (
+                <SaveChangesModal
+                    appId={+appId}
+                    envId={envId ? +envId : -1}
+                    resourceType={componentType}
+                    resourceName={draftPayload.configData[0].name}
+                    prepareDataToSave={() => draftPayload}
+                    toggleModal={toggleSaveChangesModal}
+                    latestDraft={draftData}
+                    reload={reloadSaveChangesModal}
+                    showAsModal
+                />
+            )}
+            {DraftComments && showComments && draftData && (
+                <DraftComments
+                    draftId={draftData.draftId}
+                    draftVersionId={draftData.draftVersionId}
+                    toggleDraftComments={toggleDraftComments}
+                />
+            )}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position-cm-cs">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
                 </div>
-            ) : (
-                <>
-                    <div className="dc__border br-4 dc__overflow-hidden flexbox-col h-100 bcn-0">
-                        <ConfigHeader
-                            configHeaderTab={configHeaderTab}
-                            handleTabChange={setConfigHeaderTab}
-                            isDisabled={isLoading}
-                            areChangesPresent={false}
-                            isOverridable={
-                                cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-                                cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                            }
-                            isPublishedTemplateOverridden={cmSecretStateLabel !== CM_SECRET_STATE.INHERITED}
-                            hideDryRunTab
-                        />
-                        <ConfigToolbar
-                            configHeaderTab={configHeaderTab}
-                            mergeStrategy={OverrideMergeStrategyType.REPLACE}
-                            approvalUsers={draftData?.approvers}
-                            areCommentsPresent={draftData?.commentsCount > 0}
-                            isProtected={isProtected}
-                            isDraftPresent={!!draftData}
-                            isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
-                            isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
-                            showMergePatchesButton={false}
-                            baseConfigurationURL={getBaseConfigurationURL()}
-                            headerMessage={
-                                cmSecretStateLabel === CM_SECRET_STATE.ENV ||
-                                cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
-                                cmSecretStateLabel === CM_SECRET_STATE.BASE
-                                    ? `${envId ? 'This is an environment specific' : 'base-placeholder-get-text'} ${componentName}`
-                                    : null
-                            }
-                            selectedProtectionViewTab={null}
-                            handleProtectionViewTabChange={() => {}}
-                            handleToggleCommentsView={toggleDraftComments}
-                            isLoadingInitialData={isLoading}
-                            resolveScopedVariables={false}
-                            handleToggleScopedVariablesView={() => {}}
-                            popupConfig={toolbarPopupConfig}
-                            handleClearPopupNode={handleClearPopupNode}
-                            handleMergeStrategyChange={noop}
-                            handleToggleShowTemplateMergedWithPatch={noop}
-                            shouldMergeTemplateWithPatches={null}
-                        />
-                        {renderContent()}
-                    </div>
-                    {openDeleteModal === 'deleteModal' && renderDeleteModal()}
-                    {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
-                    {DraftComments && showComments && draftData && (
-                        <DraftComments
-                            draftId={draftData.draftId}
-                            draftVersionId={draftData.draftVersionId}
-                            toggleDraftComments={toggleDraftComments}
-                        />
-                    )}
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
-                        <div className="variables-widget-position-cmcs">
-                            <FloatingVariablesSuggestions
-                                zIndex={100}
-                                appId={appId}
-                                envId={envId}
-                                clusterId={clusterId}
-                            />
-                        </div>
-                    )}
-                </>
             )}
         </div>
     )

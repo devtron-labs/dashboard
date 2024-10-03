@@ -44,6 +44,7 @@ const NoOverrideEmptyState = ({
     componentType,
     configName,
     environmentName,
+    hideOverrideButton,
     handleCreateOverride,
     handleViewInheritedConfig,
 }: NoOverrideEmptyStateProps) => (
@@ -53,7 +54,7 @@ const NoOverrideEmptyState = ({
             title={getNoOverrideEmptyStateTitle({ componentType, environmentName, configName })}
             subTitle="Override configurations for this environment and set a merge strategy. The merge strategy determines how overrides are combined with inherited configurations."
             imageType={ImageType.Large}
-            isButtonAvailable
+            isButtonAvailable={!hideOverrideButton}
             renderButton={renderCreateOverrideButton({ handleCreateOverride })}
         >
             <Button

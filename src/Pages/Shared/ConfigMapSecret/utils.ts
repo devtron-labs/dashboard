@@ -4,6 +4,7 @@ import {
     AppEnvDeploymentConfigDTO,
     decode,
     DraftAction,
+    DraftMetadataDTO,
     DraftState,
     getSelectPickerOptionByValue,
     ToastManager,
@@ -27,6 +28,8 @@ import {
     CMSecretExternalType,
     CMSecretComponentType,
     CM_SECRET_STATE,
+    CMSecretDraftData,
+    CMSecretPayloadType,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -60,11 +63,15 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-const secureValues = (data: Record<string, string>, isExternalType: boolean) => {
-    const decodedData = isExternalType ? decode(data) : data
+const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean) => {
+    const decodedData = decodeData ? decode(data) : data
+    const hiddenData = hideData && Array(8).fill('*').join('')
     return Object.keys(decodedData).map((k, id) => ({
         k,
-        v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
+        v:
+            typeof decodedData[k] === 'object'
+                ? hiddenData || YAMLStringify(decodedData[k])
+                : hiddenData || decodedData[k],
         keyError: '',
         valueError: '',
         id,
@@ -80,12 +87,14 @@ export const processCurrentData = (
         return secureValues(
             configMapSecretData.data,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
+            componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
+            componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
     return [{ k: '', v: '', keyError: '', valueError: '' }]
@@ -230,10 +239,17 @@ export const getConfigMapSecretFormInitialValues = ({
     }
 }
 
-export const getConfigMapSecretInheritedFormValues = ({
+export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
     componentType,
 }: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData'>) => {
+    if (!configMapSecretData) {
+        return {
+            configData: [],
+            data: null,
+        }
+    }
+
     const {
         external,
         externalType,
@@ -283,7 +299,10 @@ export const getConfigMapSecretInheritedFormValues = ({
             },
             {
                 displayName: 'Set Sub Path',
-                value: `${isSubPathChecked}`,
+                value:
+                    (configMapSecretMountDataMap[selectedType].value === 'volume' && isSubPathChecked
+                        ? 'True'
+                        : 'False') || '',
             },
             {
                 displayName: 'External Subpath Values',
@@ -389,7 +408,7 @@ export const getConfigMapSecretPayload = ({
         }
     }, {})
 
-    const payload = {
+    const payload: CMSecretPayloadType = {
         name,
         type: selectedType,
         external,
@@ -480,15 +499,12 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     name: string
     componentName: string
     cmSecretConfigData: CMSecret | AppEnvDeploymentConfigDTO
-    draftConfigData: any
-}): {
-    data: {
+    draftConfigData: DraftMetadataDTO
+}) => {
+    const data: {
         configMapSecretData: CMSecretConfigData
-        draftData: any
-    }
-    hasNotFoundErr: boolean
-} => {
-    const data = { configMapSecretData: null, draftData: null }
+        draftData: CMSecretDraftData
+    } = { configMapSecretData: null, draftData: null }
 
     let hasNotFoundErr = false
 
@@ -501,14 +517,10 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     ) {
         data.draftData = {
             ...draftConfigData,
-            unAuthorized: draftConfigData.dataEncrypted,
+            unAuthorized: !draftConfigData.isAppAdmin,
         }
         draftId = draftConfigData.draftId
         draftState = draftConfigData.draftState
-
-        // TODO: Switch Protected Tabs Here
-    } else {
-        // TODO: protected tabs null
     }
 
     // MAIN DATA PROCESSING
@@ -525,8 +537,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
         if (configData?.length) {
             configMapSecretData = {
                 ...configData[0],
-                secretMode: configData[0].externalType === '',
-                unAuthorized: true,
+                unAuthorized,
                 ...(draftId && draftState
                     ? {
                           draftId,
@@ -540,14 +551,10 @@ export const getConfigMapSecretDraftAndPublishedData = ({
             if (configData?.length) {
                 const result: CMSecretConfigData = {
                     ...configData[0],
+                    unAuthorized,
                 }
 
                 result.overridden = configStage === ResourceConfigStage.Overridden
-
-                if (draftId && draftState) {
-                    result.draftId = draftId
-                    result.draftState = draftState
-                }
 
                 if (isSecret && data.draftData) {
                     if (
@@ -567,7 +574,6 @@ export const getConfigMapSecretDraftAndPublishedData = ({
 
                 configMapSecretData = {
                     ...result,
-                    unAuthorized,
                 }
                 data.configMapSecretData = configMapSecretData
             } else {
@@ -583,7 +589,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
                 const dataFromDraft = JSON.parse(data.draftData.data).configData[0]
                 data.configMapSecretData = {
                     ...dataFromDraft,
-                    unAuthorized: dataFromDraft.dataEncrypted,
+                    unAuthorized: !dataFromDraft.isAppAdmin,
                 }
             } else if (draftState === DraftState.Discarded) {
                 ToastManager.showToast({
@@ -607,13 +613,17 @@ export const getConfigMapSecretInheritedData = ({
     cmSecretConfigData: CMSecret | AppEnvDeploymentConfigDTO
     isJob: boolean
     isSecret: boolean
-}) => {
+}): CMSecretConfigData => {
     if (!cmSecretConfigData) {
         return null
     }
 
     return isJob
-        ? (cmSecretConfigData as CMSecret).configData[0]
-        : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
-              .configData[0]
+        ? { ...(cmSecretConfigData as CMSecret).configData[0], unAuthorized: false }
+        : {
+              ...(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
+                  .configData[0],
+              unAuthorized: !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin,
+          }
 }
+// DATA UTILS ----------------------------------------------------------------

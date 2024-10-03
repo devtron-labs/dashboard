@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Prompt } from 'react-router-dom'
 
 import {
@@ -18,6 +19,7 @@ import {
 
 import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 
+import { useConfigMapSecretContext } from './ConfigMapSecretContext'
 import {
     CM_SECRET_COMPONENT_NAME,
     configMapDataTypeOptions,
@@ -45,15 +47,21 @@ export const ConfigMapSecretForm = ({
     isJob,
     componentType,
     isSubmitting,
-    draftMode,
-    isAppAdmin,
+    isProtected,
     onSubmit,
     onError,
     onCancel,
 }: ConfigMapSecretFormProps) => {
+    // HOOKS
+    const { setFormState } = useConfigMapSecretContext()
+
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
-        initialValues: getConfigMapSecretFormInitialValues({ configMapSecretData, componentType, cmSecretStateLabel }),
+        initialValues: getConfigMapSecretFormInitialValues({
+            configMapSecretData,
+            componentType,
+            cmSecretStateLabel,
+        }),
         validations: getConfigMapSecretFormValidations,
     })
     const { data, errors, formState, setValue, register, handleSubmit } = useFormProps
@@ -64,6 +72,11 @@ export const ConfigMapSecretForm = ({
     const isUnAuthorized = configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
+
+    // UPDATING FORM STATE CONTEXT
+    useEffect(() => {
+        setFormState(data, formState)
+    }, [data, formState])
 
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt: formState.isDirty })
@@ -277,14 +290,7 @@ export const ConfigMapSecretForm = ({
         )
 
     const renderFormButtons = () => (
-        <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12">
-            <Button
-                dataTestId="cm-secret-form-submit-btn"
-                text="Save"
-                buttonProps={{ type: 'submit' }}
-                isLoading={isSubmitting}
-                disabled={draftMode && !isAppAdmin}
-            />
+        <div className="py-12 px-16 dc__border-top-n1 flex right dc__gap-12">
             {(isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
                 <Button
                     dataTestId="cm-secret-form-cancel-btn"
@@ -292,9 +298,14 @@ export const ConfigMapSecretForm = ({
                     variant={ButtonVariantType.secondary}
                     style={ButtonStyleType.neutral}
                     onClick={onCancel}
-                    disabled={draftMode && !isAppAdmin}
                 />
             )}
+            <Button
+                dataTestId="cm-secret-form-submit-btn"
+                text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                buttonProps={{ type: 'submit' }}
+                isLoading={isSubmitting}
+            />
         </div>
     )
 

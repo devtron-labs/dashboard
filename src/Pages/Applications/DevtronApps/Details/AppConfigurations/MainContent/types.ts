@@ -205,6 +205,7 @@ export type NoOverrideEmptyStateProps = {
     environmentName: string
     handleCreateOverride: () => void
     handleViewInheritedConfig: () => void
+    hideOverrideButton?: boolean
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
 type DeploymentTemplateDiffViewConfigType =

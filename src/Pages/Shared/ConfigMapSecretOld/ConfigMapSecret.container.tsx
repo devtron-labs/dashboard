@@ -212,11 +212,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             _result.configData.overridden =
                                 selectedCMSecret.configStage === ResourceConfigStage.Overridden
 
-                            if (draftId || draftState) {
-                                _result.configData.draftId = draftId
-                                _result.configData.draftState = draftState
-                            }
-
                             if (
                                 componentType === CMSecretComponentType.Secret &&
                                 draftDataRes?.status === 'fulfilled' &&
@@ -397,6 +392,9 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
             configMapSecretData={cmSecretData?.configData}
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
+            handleError={noop}
+            draftData={null}
+            openDeleteModal={null}
         />
     )
 

@@ -234,10 +234,7 @@ export interface ConfigMapSecretDeleteModalProps
 }
 
 export interface CMSecretConfigData extends ConfigDatum {
-    secretMode?: boolean
-    unAuthorized?: boolean
-    draftId?: number
-    draftState?: number
+    unAuthorized: boolean
 }
 
 export interface ConfigMapSecretData {

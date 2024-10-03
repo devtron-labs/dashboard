@@ -1,10 +1,10 @@
 import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getConfigMapSecretInheritedFormValues } from './utils'
-import { ConfigMapSecretInheritedProps } from './types'
+import { getConfigMapSecretReadOnlyValues } from './utils'
+import { ConfigMapSecretReadyOnlyProps } from './types'
 
-export const ConfigMapSecretInherited = ({ componentType, configMapSecretData }: ConfigMapSecretInheritedProps) => {
-    const displayValues = getConfigMapSecretInheritedFormValues({
+export const ConfigMapSecretReadyOnly = ({ componentType, configMapSecretData }: ConfigMapSecretReadyOnlyProps) => {
+    const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
         componentType,
     })
@@ -16,7 +16,7 @@ export const ConfigMapSecretInherited = ({ componentType, configMapSecretData }:
                     value ? (
                         <div key={displayName} className="px-16 py-6 flex left dc__gap-8 fs-13 lh-20">
                             <p className="m-0 w-150 cn-7">{displayName}</p>
-                            <p className="m-0 flex-grow-1 cn-9 dc__capitalize">{value}</p>
+                            <p className="m-0 flex-grow-1 cn-9">{value}</p>
                         </div>
                     ) : null,
                 )}

@@ -18,6 +18,7 @@ import { PATTERNS } from '@Config/constants'
 import {
     CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
+    CONFIG_MAP_SECRET_NO_DATA_ERROR,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
@@ -40,7 +41,7 @@ export const ConfigMapSecretData = ({
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
 
     // CONSTANTS
-    const isLocked = data.isSecret && (secretMode || isUnAuthorized)
+    const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
 
     // METHODS & CONFIGURATIONS
     const config: KeyValueConfig<'k' | 'v'> = {
@@ -124,8 +125,7 @@ export const ConfigMapSecretData = ({
     const toggleSecretMode = () => setSecretMode(!secretMode)
 
     /**
-     * Toggles between YAML view mode and key-value pair mode in the editor. \
-     * @note This is useForm register sanitizeFn param.
+     * Toggles between YAML view mode and key-value pair mode in the editor.
      *
      * @param e - The change event triggered by switching modes (YAML or key-value pair).
      * @returns The current mode if there are unresolved errors, or the selected mode.
@@ -133,10 +133,10 @@ export const ConfigMapSecretData = ({
     const toggleYamlMode = (e: ChangeEvent<HTMLInputElement>) => {
         // The selected mode from the event (either YAML view or key-value pair view).
         const yamlMode = e.target.value
-
-        // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the '__NO_DATA__' placeholder.
+        // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the '__NO_DATA__' error.
         const hasDataError =
-            (errors.yaml || errors.currentData) && (errors.yaml || errors.currentData) !== '__NO_DATA__'
+            (errors.yaml || errors.currentData) &&
+            (errors.yaml || errors.currentData) !== CONFIG_MAP_SECRET_NO_DATA_ERROR
 
         // If there are validation errors, show a toast notification and return the current mode without switching.
         if (hasDataError) {
@@ -145,20 +145,25 @@ export const ConfigMapSecretData = ({
                 description: 'Please resolve the errors before switching editor mode.', // Error message in the toast.
             })
 
-            // Return the current mode to prevent switching due to errors.
-            return data.yamlMode
+            // Return to prevent switching due to errors.
+            return
         }
 
         // If the selected mode is YAML, convert the current key-value data to YAML format and set it in the 'yaml' field.
-        if (e.target.value === VIEW_MODE.YAML) {
-            setValue('yaml', convertKeyValuePairToYAML(data.currentData))
+        if (yamlMode === VIEW_MODE.YAML) {
+            setValue('yaml', convertKeyValuePairToYAML(data.currentData), { shouldDirty: true })
         } else {
             // If the selected mode is key-value pairs, convert the YAML data to key-value pairs and set it in 'currentData'.
-            setValue('currentData', convertYAMLToKeyValuePair(data.yaml))
+            setValue('currentData', convertYAMLToKeyValuePair(data.yaml), { shouldDirty: true })
         }
 
-        // Return true if the selected mode is YAML, otherwise return false.
-        return yamlMode === VIEW_MODE.YAML
+        /*
+         * We use setValue instead of the register method from useForm to avoid marking the form as dirty when switching modes. \
+         * Since the data doesn't change during mode switches, the dirty state is unnecessary.
+         * Additionally, we require the form state for data processing upon submission, so we're not using useState.
+         */
+        // Set 'yamlMode' true if the selected mode is YAML, otherwise return false.
+        setValue('yamlMode', yamlMode === VIEW_MODE.YAML)
     }
 
     const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) => setCodeEditorRadio(e.target.value)
@@ -199,7 +204,9 @@ export const ConfigMapSecretData = ({
                         className="gui-yaml-switch"
                         disabled={false}
                         initialTab={data.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                        {...register('yamlMode', toggleYamlMode)}
+                        name="yamlMode"
+                        // Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm
+                        onChange={toggleYamlMode}
                     >
                         {Object.keys(VIEW_MODE).map((key) =>
                             VIEW_MODE[key] !== VIEW_MODE.MANIFEST ? (
@@ -246,7 +253,7 @@ export const ConfigMapSecretData = ({
         )
     }
 
-    const renderCodeEditor = ({ sheBangText, readonly }: { sheBangText: string; readonly?: boolean }) => {
+    const renderCodeEditor = ({ sheBangText }: { sheBangText: string }) => {
         const { onChange, onFocus } = register(getCodeEditorFormKey(), null, { isCustomComponent: true })
 
         const yamlValue = isLocked
@@ -268,7 +275,7 @@ export const ConfigMapSecretData = ({
                     inline
                     height={350}
                     shebang={sheBangText}
-                    readOnly={isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE || readonly}
+                    readOnly={isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
                 >
                     <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bcn-50 dc__border-bottom fs-13 lh-20">
                         {data.external ? (
@@ -284,9 +291,7 @@ export const ConfigMapSecretData = ({
                                     </StyledRadioGroup.Radio>
                                 ))}
                             </StyledRadioGroup>
-                        ) : (
-                            <CodeEditor.ValidationError />
-                        )}
+                        ) : null}
                         <div className="flexbox dc__align-items-center dc__gap-8">
                             {renderSecretShowHide()}
                             <div className="flex p-4">
@@ -294,7 +299,7 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {!data.external && errors.yaml && errors.yaml !== '__NO_DATA__' && (
+                    {!data.external && errors.yaml && errors.yaml !== CONFIG_MAP_SECRET_NO_DATA_ERROR && (
                         <div className="validation-error-block">
                             <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
                             <div>{errors.yaml}</div>
@@ -367,7 +372,6 @@ export const ConfigMapSecretData = ({
                 (data.yamlMode
                     ? renderCodeEditor({
                           sheBangText: '#key: value',
-                          readonly: secretMode || isUnAuthorized,
                       })
                     : renderGUIEditor())}
             {externalSecretEditor()}

@@ -85,7 +85,7 @@ const validateYaml = (yaml: string): UseFormValidation['custom'] => {
         // Catch any errors, and return an invalid result with a relevant message.
         return {
             isValid: () => false, // Always return false when an error occurs.
-            message: err.message, // Display a parsing error if applicable.
+            message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error if applicable.
         }
     }
 }
@@ -168,7 +168,7 @@ const validateEsoSecretYaml = (esoSecretYaml: string): UseFormValidation => {
         return {
             custom: {
                 isValid: () => false, // Always return false when an error occurs.
-                message: err.message, // Display a parsing error message if applicable.
+                message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error message if applicable.
             },
         }
     }
@@ -224,7 +224,7 @@ const validateSecretDataYaml = (secretDataYaml: string): UseFormValidation => {
         return {
             custom: {
                 isValid: () => false, // Always return false when an error occurs.
-                message: err.message, // Display a parsing error message if applicable.
+                message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error message if applicable.
             },
         }
     }
@@ -309,7 +309,6 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                       : {}),
               }
             : {}),
-        // TODO: check for hasSecretCode
         ...(yamlMode
             ? {
                   yaml: {
