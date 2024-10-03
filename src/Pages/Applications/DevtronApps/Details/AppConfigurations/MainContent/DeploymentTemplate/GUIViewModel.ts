@@ -86,18 +86,30 @@ function hasCorrespondingValueInYaml(json: object, path: string) {
     }
 }
 
+function getArrayItems(items: Record<'type' | 'properties', unknown>) {
+    if (items.type === 'object') {
+        return items.properties
+    }
+    return items
+}
+
 function _constructTree(key: string, path: string, json: RJSFFormSchema): NodeType {
     if (!json) {
         // Maybe throw error ?
         throw new ViewError('Problem constructing the tree', 'In traversal found an undefined json object')
     }
 
-    const isArray = json.type === 'array' && json.items && typeof json.items === 'object'
+    const isArray =
+        json.type === 'array' &&
+        json.items &&
+        typeof json.items === 'object' &&
+        !Array.isArray(json.items) &&
+        (json.items as Record<'type', unknown>).type === 'object'
     const isObject = json.type === 'object' && json.properties && typeof json.properties === 'object'
 
     if (isArray || isObject) {
         // @ts-ignore
-        const children = Object.entries(isArray ? json.items.properties : json.properties).map(
+        const children = Object.entries(isArray ? getArrayItems(json.items) : json.properties).map(
             ([childKey, child]: [string, RJSFFormSchema]) =>
                 _constructTree.call(this, childKey, isArray ? `${path}/*/${childKey}` : `${path}/${childKey}`, child),
         )
