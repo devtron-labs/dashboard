@@ -198,6 +198,7 @@ const ChartValuesView = ({
                 : chartValuesFromParent,
             installedConfigFromParent,
             chartVersionsDataFromParent,
+            appDetails?.deploymentAppType,
         ),
     )
 
@@ -706,7 +707,8 @@ const ChartValuesView = ({
                 // helm app delete failed due to cluster not reachable (ArgoCD installed)
                 if (
                     deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                    !response.result.deleteResponse?.clusterReachable
+                    !response.result.deleteResponse?.clusterReachable &&
+                    commonState.deploymentAppType === DeploymentAppTypes.GITOPS
                 ) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
