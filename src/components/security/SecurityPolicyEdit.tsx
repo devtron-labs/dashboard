@@ -23,6 +23,7 @@ import {
     Severity,
     SelectPicker,
     SelectPickerVariantType,
+    getCVEUrlFromCVEName,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { styles, portalStyles, DropdownIndicator } from './security.util'
@@ -433,7 +434,7 @@ export class SecurityPolicyEdit extends Component<
                                 <tr key={cve.name} className="security-policy__table-row">
                                     <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
                                         <a
-                                            href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`}
+                                            href={getCVEUrlFromCVEName(cve.name)}
                                             rel="noopener noreferrer"
                                             target="_blank"
                                         >
