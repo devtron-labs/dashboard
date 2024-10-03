@@ -1,7 +1,7 @@
 import { JSONPath } from 'jsonpath-plus'
 import YAML from 'yaml'
 import { convertJSONPointerToJSONPath, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeEntityType, NodeType, traversalType } from './types'
+import { NodeEntityType, NodeType, TraversalType } from '../types'
 
 export function ViewError(title: string, subTitle: string) {
     this.title = title
@@ -130,7 +130,7 @@ GUIViewModel.prototype.getRoot = function getRoot() {
     return this.root
 }
 
-function inOrder(props: traversalType) {
+function inOrder(props: TraversalType) {
     const { node, wf } = props
     if (!props.node) {
         return
@@ -139,7 +139,7 @@ function inOrder(props: traversalType) {
     node.children?.forEach((child) => inOrder({ ...props, node: child }))
 }
 
-function postOrder(props: traversalType) {
+function postOrder(props: TraversalType) {
     const { node, wf } = props
     if (!props.node) {
         return
