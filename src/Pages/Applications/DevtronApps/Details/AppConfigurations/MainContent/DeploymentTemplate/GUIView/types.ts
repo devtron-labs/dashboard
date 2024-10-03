@@ -38,7 +38,7 @@ export type GUIViewModelType = {
 
 export type ViewErrorType = Record<'title' | 'subTitle', string>
 
-export type DeploymentTemplateGUICheckboxEditorProps = {
+export type GUIViewCheckboxProps = {
     node: NodeType
     updateNodeForPath: (path: string) => void
 }
@@ -49,7 +49,7 @@ export type traversalType = {
     data: unknown
 }
 
-export interface DeploymentTemplateGUIViewProps
+export interface GUIViewProps
     extends Pick<
         DeploymentTemplateFormProps,
         'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'uneditedDocument' | 'editedDocument'

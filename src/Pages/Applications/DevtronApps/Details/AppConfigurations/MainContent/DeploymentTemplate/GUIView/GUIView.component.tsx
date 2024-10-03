@@ -24,81 +24,20 @@ import {
     joinObjects,
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    Checkbox,
-    CHECKBOX_VALUE,
     convertJSONPointerToJSONPath,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactGA from 'react-ga4'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
-import {
-    DeploymentTemplateGUICheckboxEditorProps,
-    DeploymentTemplateGUIViewProps,
-    GUIViewModelType,
-    ViewErrorType,
-} from './types'
+import { GUIViewProps, GUIViewModelType, ViewErrorType } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
-import { makeObjectFromJsonPathArray } from './utils'
+import { getRenderActionButton, makeObjectFromJsonPathArray } from './utils'
 import { GUIViewModel, ViewError } from './GUIViewModel'
+import GUIViewCheckbox from './GUIViewCheckbox'
 
-export const getRenderActionButton =
-    ({ handleChangeToYAMLMode }: Pick<DeploymentTemplateGUIViewProps, 'handleChangeToYAMLMode'>) =>
-    () => (
-        <button
-            type="button"
-            className="dc__unset-button-styles"
-            onClick={handleChangeToYAMLMode}
-            data-testid="base-deployment-template-switchtoadvanced-button"
-        >
-            <span className="cb-5 cursor fw-6">Switch to Advanced</span>
-        </button>
-    )
-
-const DeploymentTemplateGUICheckbox = ({ node, updateNodeForPath }: DeploymentTemplateGUICheckboxEditorProps) => {
-    const getCheckboxClickHandler = () => {
-        ReactGA.event({
-            category: 'Deployment Template',
-            action: 'GUI Checkbox clicked',
-        })
-        updateNodeForPath(node.path)
-    }
-
-    const hasChildren = !!node.children && !!node.children.length
-
-    return (
-        <div className="flexbox-col dc__gap-4">
-            <div className="flexbox dc__gap-8 lh-20 fs-13 dc__align-items-center">
-                {!hasChildren && (
-                    <Checkbox
-                        value={CHECKBOX_VALUE.CHECKED}
-                        isChecked={node.isChecked}
-                        onChange={getCheckboxClickHandler}
-                        rootClassName="mb-0"
-                    />
-                )}
-                <span className={`fs-13 lh-20 ${hasChildren ? 'fw-6 cn-9' : 'fw-4 cn-7'}`}>
-                    {node.title ?? node.key}
-                </span>
-            </div>
-            {hasChildren && (
-                <div className="flexbox-col pl-12 mt-8 mb-8 dc__border-left-n1 dc__gap-8">
-                    {node.children.map((child) => (
-                        <DeploymentTemplateGUICheckbox
-                            key={child.key}
-                            node={child}
-                            updateNodeForPath={updateNodeForPath}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
-    )
-}
-
-const DeploymentTemplateGUIView = ({
+const GUIView = ({
     value,
     readOnly,
     editorOnChange,
@@ -110,7 +49,7 @@ const DeploymentTemplateGUIView = ({
     handleChangeToYAMLMode,
     guiSchema,
     selectedChart,
-}: DeploymentTemplateGUIViewProps) => {
+}: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
     const [uncheckedPathsList, setUncheckedPathsList] = useState([])
     const modelRef = useRef<GUIViewModelType>(null)
@@ -203,7 +142,7 @@ const DeploymentTemplateGUIView = ({
         }
     }
 
-    const renderContent = () => {
+    const renderForm = () => {
         if (state.error) {
             return (
                 <GenericEmptyState image={EmptyFolderImage} {...state.error}>
@@ -246,22 +185,17 @@ const DeploymentTemplateGUIView = ({
                 </div>
             )}
 
-            {/* TODO: maybe move it into the render content */}
             <div
                 className="dc__grid dc__overflow-hidden flex-grow-1"
                 style={{
-                    gridTemplateColumns: '1fr 300px',
+                    gridTemplateColumns: '1fr 350px',
                 }}
             >
-                {renderContent()}
+                {renderForm()}
                 {modelRef.current && (
-                    <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-12">
+                    <div className="dc__overflow-scroll py-20 pl-32 pr-20 flexbox-col dc__gap-12">
                         {modelRef.current.root.children.map((child) => (
-                            <DeploymentTemplateGUICheckbox
-                                key={child.key}
-                                node={child}
-                                updateNodeForPath={updateNodeForPath}
-                            />
+                            <GUIViewCheckbox key={child.key} node={child} updateNodeForPath={updateNodeForPath} />
                         ))}
                     </div>
                 )}
@@ -281,4 +215,4 @@ const DeploymentTemplateGUIView = ({
     )
 }
 
-export default DeploymentTemplateGUIView
+export default GUIView

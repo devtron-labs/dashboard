@@ -2,7 +2,7 @@ import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-l
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { DeploymentTemplateFormProps } from './types'
 import DeploymentTemplateEditorHeader from './DeploymentTemplateEditorHeader'
-import { DeploymentTemplateGUIView } from './GUIView'
+import { GUIView as DeploymentTemplateGUIView } from './GUIView'
 
 const DeploymentTemplateForm = ({
     editMode,

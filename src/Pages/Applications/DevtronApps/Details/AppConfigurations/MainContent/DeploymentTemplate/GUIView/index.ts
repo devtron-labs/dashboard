@@ -1,1 +1,1 @@
-export { default as DeploymentTemplateGUIView } from './DeploymentTemplateGUIView'
+export { default as GUIView } from './GUIView.component'
