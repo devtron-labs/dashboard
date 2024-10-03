@@ -69,10 +69,8 @@ const DeploymentTemplateGUICheckbox = ({ node, updateNodeForPath }: DeploymentTe
     const hasChildren = !!node.children && !!node.children.length
 
     return (
-        <div className="flexbox-col dc__gap-8">
-            <div
-                className={`flexbox dc__gap-8 lh-20 fs-13 dc__align-items-center ${hasChildren ? 'pb-8 dc__border-bottom' : ''}`}
-            >
+        <div className="flexbox-col dc__gap-4">
+            <div className="flexbox dc__gap-8 lh-20 fs-13 dc__align-items-center">
                 {!hasChildren && (
                     <Checkbox
                         value={CHECKBOX_VALUE.CHECKED}
@@ -86,7 +84,7 @@ const DeploymentTemplateGUICheckbox = ({ node, updateNodeForPath }: DeploymentTe
                 </span>
             </div>
             {hasChildren && (
-                <div className="flexbox-col pl-12 mt-8 dc__border-left-n1 dc__gap-8">
+                <div className="flexbox-col pl-12 mt-8 mb-8 dc__border-left-n1 dc__gap-8">
                     {node.children.map((child) => (
                         <DeploymentTemplateGUICheckbox
                             key={child.key}
@@ -257,16 +255,15 @@ const DeploymentTemplateGUIView = ({
             <div
                 className="dc__grid dc__overflow-hidden flex-grow-1"
                 style={{
-                    gridTemplateColumns: '1fr 250px',
+                    gridTemplateColumns: '1fr 300px',
                 }}
             >
                 {renderContent()}
                 {modelRef.current && (
-                    <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-16">
-                        <DeploymentTemplateGUICheckbox
-                            node={modelRef.current.root}
-                            updateNodeForPath={updateNodeForPath}
-                        />
+                    <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-12">
+                        {modelRef.current.root.children.map((child) => (
+                            <DeploymentTemplateGUICheckbox node={child} updateNodeForPath={updateNodeForPath} />
+                        ))}
                     </div>
                 )}
             </div>
