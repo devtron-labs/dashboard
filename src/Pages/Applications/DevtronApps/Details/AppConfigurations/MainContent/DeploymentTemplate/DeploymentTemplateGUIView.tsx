@@ -37,7 +37,7 @@ import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { DeploymentTemplateGUIViewProps } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 import { makeObjectFromJsonPathArray } from './utils'
-import { GUIViewModel, NodeType, ViewError } from './GUIViewModel'
+import { GUIViewModel, GUIViewModelType, NodeType, ViewError, ViewErrorType } from './GUIViewModel'
 
 export const getRenderActionButton =
     ({ handleChangeToYAMLMode }: Pick<DeploymentTemplateGUIViewProps, 'handleChangeToYAMLMode'>) =>
@@ -88,7 +88,11 @@ const DeploymentTemplateGUICheckbox = ({ node, updateNodeForPath }: DeploymentTe
             {hasChildren && (
                 <div className="flexbox-col pl-12 mt-8 dc__border-left-n1 dc__gap-8">
                     {node.children.map((child) => (
-                        <DeploymentTemplateGUICheckbox node={child} updateNodeForPath={updateNodeForPath} />
+                        <DeploymentTemplateGUICheckbox
+                            key={child.key}
+                            node={child}
+                            updateNodeForPath={updateNodeForPath}
+                        />
                     ))}
                 </div>
             )}
@@ -113,17 +117,19 @@ const DeploymentTemplateGUIView = ({
 }: DeploymentTemplateGUIViewProps) => {
     const [formData, setFormData] = useState(null)
     const [uncheckedPathsList, setUncheckedPathsList] = useState([])
-    const modelRef = useRef<any>(new GUIViewModel(guiSchema, value))
+    const modelRef = useRef<GUIViewModelType>(null)
 
     useEffect(() => {
         try {
             setFormData(YAML.parse(value))
+            if (!modelRef.current) {
+                modelRef.current = new GUIViewModel(guiSchema, value)
+                setUncheckedPathsList(modelRef.current.getUncheckedNodes())
+            }
         } catch {
             handleChangeToYAMLMode()
         }
-    }, [value])
-
-    // TODO: Can look if we need to update editor template
+    }, [value, guiSchema])
 
     const state = useMemo(() => {
         try {
@@ -135,9 +141,9 @@ const DeploymentTemplateGUIView = ({
                 )
             }
 
-            if (!modelRef.current.totalCheckedCount) {
+            if (!modelRef.current?.totalCheckedCount) {
                 throw new ViewError(
-                    'All fields unselected',
+                    'All fields are unselected',
                     'Select fields from the side pane that you wish to be displayed here',
                 )
             }
@@ -178,7 +184,7 @@ const DeploymentTemplateGUIView = ({
         } catch (err) {
             if (err instanceof ViewError) {
                 return {
-                    error: err as Record<'title' | 'subTitle', string>,
+                    error: err as ViewErrorType,
                 }
             }
             return {
@@ -188,13 +194,20 @@ const DeploymentTemplateGUIView = ({
                 },
             }
         }
-    }, [guiSchema, hideLockedKeys, uncheckedPathsList])
+    }, [guiSchema, hideLockedKeys, uncheckedPathsList, modelRef.current?.totalCheckedCount])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
         if (!wasGuiOrHideLockedKeysEdited) {
             handleEnableWasGuiOrHideLockedKeysEdited()
         }
         editorOnChange?.(YAML.stringify(data.formData))
+    }
+
+    const updateNodeForPath = (path: string) => {
+        if (modelRef.current) {
+            modelRef.current.updateNodeForPath(path)
+            setUncheckedPathsList(modelRef.current.getUncheckedNodes())
+        }
     }
 
     const renderContent = () => {
@@ -231,12 +244,6 @@ const DeploymentTemplateGUIView = ({
         )
     }
 
-    const updateNodeForPath = (path: string) => {
-        modelRef.current.updateNodeForPath(path)
-        const list = modelRef.current.getUncheckedNodes()
-        setUncheckedPathsList(list)
-    }
-
     return (
         <>
             {isUnSet && (
@@ -254,9 +261,14 @@ const DeploymentTemplateGUIView = ({
                 }}
             >
                 {renderContent()}
-                <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-16">
-                    <DeploymentTemplateGUICheckbox node={modelRef.current.root} updateNodeForPath={updateNodeForPath} />
-                </div>
+                {modelRef.current && (
+                    <div className="dc__border-left-n1 dc__overflow-scroll p-20 flexbox-col dc__gap-16">
+                        <DeploymentTemplateGUICheckbox
+                            node={modelRef.current.root}
+                            updateNodeForPath={updateNodeForPath}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* In case of readOnly makes no sense */}

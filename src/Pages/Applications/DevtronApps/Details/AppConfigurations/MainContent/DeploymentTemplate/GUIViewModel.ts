@@ -28,6 +28,17 @@ export type NodeType =
           children?: never
       }
 
+export type GUIViewModelType = {
+    schema: object
+    json: object
+    totalCheckedCount: number
+    root: NodeType
+    updateNodeForPath: (path: string) => void
+    getUncheckedNodes: () => string[]
+}
+
+export type ViewErrorType = Record<'title' | 'subTitle', string>
+
 export function ViewError(title: string, subTitle: string) {
     this.title = title
     this.subTitle = subTitle
@@ -126,8 +137,12 @@ function constructTree() {
     return _constructTree.apply(this, ['', '', this.schema])
 }
 
+/**
+ * Can throw error while parsing schema & json
+ * @param schema (string) the json schema
+ * @param json (string) the corresponding json
+ */
 export function GUIViewModel(schema: string, json: string) {
-    // TODO: try catch
     this.schema = YAML.parse(schema)
     this.json = YAML.parse(json)
     this.totalCheckedCount = 0
@@ -158,7 +173,7 @@ function postOrder(props: traversalType) {
     if (!props.node) {
         return
     }
-    node.children?.forEach((child) => inOrder({ ...props, node: child }))
+    node.children?.forEach((child) => postOrder({ ...props, node: child }))
     wf(node, props.data)
 }
 
@@ -184,7 +199,7 @@ function updateNodeWherePathMatches(node: NodeType, data: string) {
 }
 
 function addPathToListIfUnchecked(node: NodeType, data: Array<string>) {
-    if ((node.isChecked && !node.isChecked) || node.selectionStatus === 'none-selected') {
+    if ((Object.hasOwn(node, 'isChecked') && !node.isChecked) || node.selectionStatus === 'none-selected') {
         data.push(node.path)
     }
 }
