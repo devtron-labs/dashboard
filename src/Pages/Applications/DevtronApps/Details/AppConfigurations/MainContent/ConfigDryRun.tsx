@@ -31,6 +31,7 @@ const ConfigDryRun = ({
     handleChangeDryRunEditorMode,
     isDraftPresent,
     isPublishedConfigPresent,
+    isApprovalPending,
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
@@ -72,7 +73,7 @@ const ConfigDryRun = ({
                 <div className="py-6 px-12 flexbox dc__content-space dc__border-bottom">
                     <div className="flexbox dc__gap-8">
                         <ICFileCode className="dc__no-shrink scn-9 icon-dim-16" />
-                        {DryRunEditorModeSelect && isDraftPresent ? (
+                        {DryRunEditorModeSelect && isApprovalPending ? (
                             <DryRunEditorModeSelect
                                 selectedOptionValue={dryRunEditorMode}
                                 handleChangeDryRunEditorMode={handleChangeDryRunEditorMode}

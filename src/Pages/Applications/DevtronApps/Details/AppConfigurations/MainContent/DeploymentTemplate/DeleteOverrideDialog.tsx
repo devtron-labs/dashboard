@@ -18,7 +18,7 @@ const DeleteOverrideDialog = ({
     environmentConfigId,
     handleReload,
     handleClose,
-    handleShowDeleteDraftOverrideDialog,
+    handleProtectionError,
     reloadEnvironments,
 }: DeleteOverrideDialogProps) => {
     const { appId, envId } = useParams<BaseURLParams>()
@@ -35,12 +35,9 @@ const DeleteOverrideDialog = ({
             handleClose()
             handleReload()
         } catch (error) {
-            // TODO: Remove this later
             showError(error)
-            // handleConfigProtectionError(2, error, dispatch, reloadEnvironments)
-            // TODO: Use util from above
             if (error.code === 423) {
-                handleShowDeleteDraftOverrideDialog()
+                handleProtectionError()
                 reloadEnvironments()
             }
         } finally {
