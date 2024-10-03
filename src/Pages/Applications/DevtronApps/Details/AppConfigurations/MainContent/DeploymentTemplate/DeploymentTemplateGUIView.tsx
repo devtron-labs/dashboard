@@ -34,10 +34,15 @@ import EmptyFolderImage from '@Images/Empty-folder.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
-import { DeploymentTemplateGUIViewProps } from './types'
+import {
+    DeploymentTemplateGUICheckboxEditorProps,
+    DeploymentTemplateGUIViewProps,
+    GUIViewModelType,
+    ViewErrorType,
+} from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 import { makeObjectFromJsonPathArray } from './utils'
-import { GUIViewModel, GUIViewModelType, NodeType, ViewError, ViewErrorType } from './GUIViewModel'
+import { GUIViewModel, ViewError } from './GUIViewModel'
 
 export const getRenderActionButton =
     ({ handleChangeToYAMLMode }: Pick<DeploymentTemplateGUIViewProps, 'handleChangeToYAMLMode'>) =>
@@ -51,11 +56,6 @@ export const getRenderActionButton =
             <span className="cb-5 cursor fw-6">Switch to Advanced</span>
         </button>
     )
-
-type DeploymentTemplateGUICheckboxEditorProps = {
-    node: NodeType
-    updateNodeForPath: (path: string) => void
-}
 
 const DeploymentTemplateGUICheckbox = ({ node, updateNodeForPath }: DeploymentTemplateGUICheckboxEditorProps) => {
     const getCheckboxClickHandler = () => {

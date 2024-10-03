@@ -1,43 +1,7 @@
 import { convertJSONPointerToJSONPath, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import YAML from 'yaml'
-
-export enum NodeEntityType {
-    ARRAY = 'ARRAY',
-    OBJECT = 'OBJECT',
-    LEAF = 'LEAF',
-}
-
-export type NodeType =
-    | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType
-          selectionStatus: 'all-selected' | 'some-selected' | 'none-selected'
-          isChecked?: never
-          children: Array<NodeType>
-      }
-    | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType.LEAF
-          isChecked: boolean
-          selectionStatus?: never
-          children?: never
-      }
-
-export type GUIViewModelType = {
-    schema: object
-    json: object
-    totalCheckedCount: number
-    root: NodeType
-    updateNodeForPath: (path: string) => void
-    getUncheckedNodes: () => string[]
-}
-
-export type ViewErrorType = Record<'title' | 'subTitle', string>
+import { NodeEntityType, NodeType, traversalType } from './types'
 
 export function ViewError(title: string, subTitle: string) {
     this.title = title
@@ -109,10 +73,11 @@ function _constructTree(key: string, path: string, json: RJSFFormSchema): NodeTy
 
     if (isArray || isObject) {
         // @ts-ignore
-        const children = Object.entries(isArray ? getArrayItems(json.items) : json.properties).map(
-            ([childKey, child]: [string, RJSFFormSchema]) =>
+        const children = Object.entries(isArray ? getArrayItems(json.items) : json.properties)
+            .sort(([, child]) => (child.type === 'boolean' ? -1 : 0))
+            .map(([childKey, child]: [string, RJSFFormSchema]) =>
                 _constructTree.call(this, childKey, isArray ? `${path}/*/${childKey}` : `${path}/${childKey}`, child),
-        )
+            )
 
         const selectionStatus = getSelectionStatus(children)
 
@@ -163,12 +128,6 @@ export function GUIViewModel(schema: string, json: string) {
 
 GUIViewModel.prototype.getRoot = function getRoot() {
     return this.root
-}
-
-type traversalType = {
-    node: NodeType
-    wf: (node: NodeType, data: unknown) => void
-    data: unknown
 }
 
 function inOrder(props: traversalType) {
