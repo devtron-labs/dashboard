@@ -133,6 +133,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         const qs = queryString.parse(location.search)
         const offset = Number(qs['offset'])
         setNodeListOffset(offset || 0)
+        const version = qs['k8sversion']
+        if (version && typeof version === 'string' && selectedVersion.value !== version) {
+            setSelectedVersion({ label: `K8s version: ${version}`, value: version })
+        }
     }, [location.search])
 
     useEffect(() => {
@@ -569,7 +573,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     noResults ? 'no-result-container' : ''
                 }`}
             >
-                <div className="pl-20 pr-20">
+                <div className="pl-20 pr-20 dc__zi-4">
                     <NodeListSearchFilter
                         defaultVersion={defaultVersion}
                         nodeK8sVersions={nodeK8sVersions}

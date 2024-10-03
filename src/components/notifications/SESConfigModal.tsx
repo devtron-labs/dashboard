@@ -22,8 +22,11 @@ import {
     Drawer,
     CustomInput,
     CHECKBOX_VALUE,
+    ToastManager,
+    ToastVariantType,
+    SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 import { validateEmail } from '../common'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
@@ -211,7 +214,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.isLoading = false
             state.form.isError = true
             this.setState(state)
-            toast.error('Some required fields are missing or Invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
             return
         }
         const state = { ...this.state }
@@ -224,7 +230,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                 const state = { ...this.state }
                 state.form.isLoading = false
                 this.setState(state)
-                toast.success('Saved Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Saved Successfully',
+                })
                 this.props.onSaveSuccess()
                 if (this.props.selectSESFromChild) {
                     this.props.selectSESFromChild(response?.result[0])
@@ -278,7 +287,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="configname"
                                 value={this.state.form.configName}
                                 onChange={this.handleConfigNameChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'configName')}
+                                onBlur={(event) => this.handleBlur(event, 'configName')}
                                 placeholder="Configuration name"
                                 autoFocus
                                 tabIndex={1}
@@ -294,7 +303,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="app-name"
                                 value={this.state.form.accessKey}
                                 onChange={this.handleAccessKeyIDChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'accessKey')}
+                                onBlur={(event) => this.handleBlur(event, 'accessKey')}
                                 placeholder="Access Key ID"
                                 tabIndex={2}
                                 isRequiredField
@@ -309,7 +318,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 name="app-name"
                                 value={this.state.form.secretKey}
                                 onChange={this.handleSecretAccessKeyChange}
-                                handleOnBlur={(event) => this.handleBlur(event, 'secretKey')}
+                                onBlur={(event) => this.handleBlur(event, 'secretKey')}
                                 placeholder="Secret Access Key"
                                 tabIndex={3}
                                 isRequiredField
@@ -317,33 +326,17 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             />
                         </label>
                         <div className="form__row">
-                            <label htmlFor="" className="form__label dc__required-field">
-                                AWS Region
-                            </label>
-                            <ReactSelect
+                            <SelectPicker
+                                inputId="aws-region"
+                                label="AWS Region"
                                 classNamePrefix="add-ses-aws-region"
-                                defaultValue={this.state.form.region}
-                                components={{
-                                    DropdownIndicator,
-                                    Option,
-                                }}
-                                tabIndex={4}
+                                required
+                                value={this.state.form.region}
                                 placeholder="Select AWS Region"
-                                styles={{
-                                    ...multiSelectStyles,
-                                    multiValue: (base) => ({
-                                        ...base,
-                                        border: `1px solid var(--N200)`,
-                                        borderRadius: `4px`,
-                                        background: 'white',
-                                        height: '30px',
-                                        margin: '0 8px 0 0',
-                                        padding: '1px',
-                                    }),
-                                }}
                                 onBlur={(event) => this.handleBlur(event, 'region')}
                                 onChange={(selected) => this.handleAWSRegionChange(selected)}
                                 options={this.awsRegionListParsed}
+                                size={ComponentSizeType.large}
                             />
                             <span className="form__error">
                                 {!this.state.isValid.region ? (
@@ -361,7 +354,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 type="email"
                                 name="app-name"
                                 value={this.state.form.fromEmail}
-                                handleOnBlur={(event) => this.handleBlur(event, 'fromEmail')}
+                                onBlur={(event) => this.handleBlur(event, 'fromEmail')}
                                 placeholder="Email"
                                 tabIndex={5}
                                 onChange={this.handleEmailChange}

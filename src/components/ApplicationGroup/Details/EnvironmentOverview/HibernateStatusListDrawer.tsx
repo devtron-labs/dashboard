@@ -73,7 +73,7 @@ export default function HibernateStatusListDrawer({
                 <>
                     <GenericEmptyState
                         classname="dc__text-center"
-                        title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
+                        title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected application(s) on ${envName}`}
                         subTitle="It might take some time depending upon the number of applications"
                         SvgImage={MechanicalOperation}
                         imageType={ImageType.Large}

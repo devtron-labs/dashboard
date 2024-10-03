@@ -15,7 +15,17 @@
  */
 
 import React, { useState } from 'react'
-import { PopupMenu, Nodes, useMainContext, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    PopupMenu,
+    Nodes,
+    useMainContext,
+    ModuleNameMap,
+    SecurityModal,
+    ResponseType,
+    ApiResponseResultType,
+    GetResourceScanDetailsPayloadType,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
 import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
 import { RESOURCE_ACTION_MENU } from '../Constants'
@@ -28,8 +38,25 @@ import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-in
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 
-const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const getResourceScanDetails: ({
+    name,
+    namespace,
+    clusterId,
+    group,
+    version,
+    kind,
+    appId,
+    appType,
+    deploymentType,
+    isAppDetailView,
+}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getResourceScanDetails',
+    null,
+    'function',
+)
 
 const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     clusterId,
@@ -41,8 +68,24 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
 }) => {
     const { installedModuleMap } = useMainContext()
 
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
+
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
+
+    const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
+        () =>
+            getResourceScanDetails({
+                name: String(resourceData.name),
+                namespace: String(resourceData.namespace),
+                group: selectedResource?.gvk?.Group,
+                kind: selectedResource?.gvk?.Kind,
+                version: selectedResource?.gvk?.Version,
+                clusterId: +clusterId,
+            }),
+        [],
+        showVulnerabilityModal && getResourceScanDetails && isSecurityScanV2Enabled,
+    )
 
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
@@ -56,10 +99,12 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
         setShowVulnerabilityModal(false)
     }
 
-    const showResourceScanModal = getShowResourceScanModal(
-        selectedResource?.gvk?.Kind as NodeType,
-        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-    )
+    const showResourceScanModal =
+        getShowResourceScanModal(
+            selectedResource?.gvk?.Kind as NodeType,
+            installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+        ) && window._env_.ENABLE_RESOURCE_SCAN_V2
+
     return (
         <>
             <PopupMenu autoClose>
@@ -141,17 +186,16 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 />
             )}
 
-            {showVulnerabilityModal && SecurityModal && (
+            {showVulnerabilityModal && !!isFELibAvailable && (
                 <SecurityModal
-                    resourceScanPayload={{
-                        name: resourceData.name,
-                        namespace: resourceData.namespace,
-                        group: selectedResource?.gvk?.Group,
-                        kind: selectedResource?.gvk?.Kind,
-                        version: selectedResource?.gvk?.Version,
-                        clusterId,
-                    }}
+                    isResourceScan
                     handleModalClose={handleCloseVulnerabilityModal}
+                    Sidebar={SecurityModalSidebar}
+                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                    isLoading={resourceScanLoading}
+                    error={resourceScanError}
+                    responseData={resourceScanResponse?.result}
+                    hidePolicy
                 />
             )}
         </>

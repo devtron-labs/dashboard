@@ -26,8 +26,9 @@ import {
     RadioGroupItem,
     CustomInput,
     noop,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service'
@@ -151,7 +152,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             form[key] = stages
             this.setState({ form })
         } else {
-            toast.error('Fill the required fields or cancel changes')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Fill the required fields or cancel changes',
+            })
         }
     }
 
@@ -167,7 +171,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         )
             .then((response) => {
                 if (response) {
-                    toast.success('Pipeline Deleted')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Deleted',
+                    })
                     this.setState({ loadingData: false })
                     this.props.close()
 

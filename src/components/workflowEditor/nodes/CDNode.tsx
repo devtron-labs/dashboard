@@ -17,13 +17,14 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import {
     ConfirmationDialog,
     DeploymentAppTypes,
     MODAL_TYPE,
     ServerErrors,
     showError,
+    ToastManager,
+    ToastVariantType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -146,7 +147,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
                         this.handleHideDeleteModal()
-                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: TOAST_INFO.PIPELINE_DELETION_INIT,
+                        })
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
                         this.props.handleDisplayLoader?.()
                         this.props.getWorkflows?.()
@@ -196,7 +200,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
 
         if (this.props.deploymentAppDeleteRequest) {
-            toast.error(ERR_MESSAGE_ARGOCD)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: ERR_MESSAGE_ARGOCD,
+            })
             return
         }
 

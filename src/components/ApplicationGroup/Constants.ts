@@ -151,15 +151,6 @@ export const NO_ACCESS_TOAST_MESSAGE = {
     NON_ADMIN: 'You don’t have access to any application in this app group',
 }
 
-export const OVERVIEW_HEADER = {
-    APPLICATION: 'application',
-    APP_STATUS: 'app status',
-    COMMIT: 'commit',
-    DEPLOYMENT_STATUS: 'deployment status',
-    LAST_DEPLOYED: 'last deployed',
-    DEPLOYED_AT: 'deployed at',
-}
-
 export const ENV_APP_GROUP_GA_EVENTS = {
     OverviewClicked: {
         category: 'Environment',
@@ -238,8 +229,3 @@ export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
     title: `Verifying selected code sources for ${noOfApps} Applications & initiating build pipelines Applications`,
     subTitle: 'It might take some time depending upon the number of applications',
 })
-
-export enum EnvironmentOverviewSortableKeys {
-    application = 'application',
-    deployedAt = 'deployedAt',
-}

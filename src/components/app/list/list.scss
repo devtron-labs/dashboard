@@ -28,6 +28,7 @@
     z-index: var(--page-header-index);
 }
 
+// TODO (Arun): Remove unused css after filter clean up
 .app-list-filters.filters .filter {
     min-width: unset;
     flex-basis: unset;
@@ -454,10 +455,6 @@
 .ea-fetch-error-message {
     background-color: var(--R100);
     border: solid 1px var(--R200);
-}
-
-.first-app-container {
-    margin-top: 60px;
 }
 
 .helm-app-guided-cards-wrapper,

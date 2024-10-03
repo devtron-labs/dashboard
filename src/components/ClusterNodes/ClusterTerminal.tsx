@@ -39,7 +39,7 @@ import {
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { GroupHeading, menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
+import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
@@ -52,7 +52,6 @@ import {
     CLUSTER_TERMINAL_MESSAGING,
     ErrorMessageType,
     IMAGE_LIST,
-    nodeSelect,
     POD_LINKS,
     PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
@@ -690,8 +689,6 @@ const ClusterTerminal = ({
         )
     }
 
-    const groupHeading = (props) => <GroupHeading {...props} hideClusterName />
-
     const terminalTabWrapper = (terminalView: () => JSX.Element) => (
         <div
             className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
@@ -762,7 +759,7 @@ node-details-full-screen
         ]
 
         return (
-            <div className="mr-16">
+            <div>
                 <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
             </div>
         )
@@ -864,6 +861,26 @@ node-details-full-screen
 
     const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
 
+    const getNodeGroupOptions = () => {
+        const nodeGroupOptions = nodeGroups.reduce((acc, group) => {
+            if (group.label) {
+                acc.push({
+                    label: group.label,
+                    options: group.options,
+                })
+            } else {
+                const options = group.options.map((option) => ({
+                    label: option.label,
+                    value: option.value,
+                }))
+                acc.push(...options) // Flatten the array into the accumulator
+            }
+            return acc
+        }, [])
+
+        return nodeGroupOptions
+    }
+
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
@@ -871,16 +888,10 @@ node-details-full-screen
                 classNamePrefix: 'cluster-terminal-node',
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
-                options: nodeGroups,
+                options: getNodeGroupOptions(),
                 defaultValue: selectedNodeName,
                 value: selectedNodeName,
                 onChange: onChangeNodes,
-                styles: nodeSelect,
-                components: {
-                    IndicatorSeparator: null,
-                    GroupHeading: groupHeading,
-                    Option,
-                },
             },
             {
                 type: TerminalWrapperType.CREATABLE_SELECT,
@@ -931,7 +942,7 @@ node-details-full-screen
                 customComponent: renderTabs,
             },
             {
-                type: TerminalWrapperType.CONNCTION_SWITCH,
+                type: TerminalWrapperType.CONNECTION_SWITCH,
                 hideTerminalStripComponent: hideShell,
                 classNamePrefix: 'cluster-terminal-select-shell',
                 stopTerminalConnection,
@@ -1007,6 +1018,10 @@ node-details-full-screen
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
+        },
+        metadata: {
+            node: selectedNodeName?.label ?? '',
+            namespace: selectedNamespace?.label ?? '',
         },
     }
 

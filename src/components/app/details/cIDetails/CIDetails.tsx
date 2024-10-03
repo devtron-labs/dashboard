@@ -40,9 +40,15 @@ import {
     LogsRenderer,
     ModuleNameMap,
     EMPTY_STATE_STATUS,
+    SecuritySummaryCard,
+    SeverityCount,
     TabGroup,
-    ScanVulnerabilitiesTable,
     TRIGGER_STATUS_PROGRESSING,
+    SCAN_TOOL_ID_TRIVY,
+    ErrorScreenManager,
+    getTotalSeverityCount,
+    getSeverityCountFromSummary,
+    parseExecutionDetailResponse,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -54,8 +60,6 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
-import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -64,8 +68,11 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
-import { getSeverityWithCount } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
+import { useGetCISecurityDetails } from './CISecurity.utils'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
 
@@ -328,7 +335,6 @@ export const Details = ({
     scrollToTop,
     scrollToBottom,
 }: BuildDetails) => {
-    const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
@@ -479,7 +485,7 @@ export const Details = ({
                                         'data-testid': 'artifacts-link',
                                     },
                                 },
-                                ...(!isJobCard && isSecurityModuleInstalled
+                                ...(isSecurityModuleInstalled
                                     ? [
                                           {
                                               id: 'security-tab',
@@ -532,7 +538,6 @@ const HistoryLogs = ({
     fullScreenView,
 }: HistoryLogsType) => {
     const { path } = useRouteMatch()
-    const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
 
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
@@ -630,7 +635,7 @@ const HistoryLogs = ({
                         </div>
                     )}
                 </Route>
-                {!isJobCard && (
+                {
                     <Route path={`${path}/security`}>
                         <SecurityTab
                             ciPipelineId={triggerDetails.ciPipelineId}
@@ -639,7 +644,7 @@ const HistoryLogs = ({
                             appIdFromParent={appIdFromParent}
                         />
                     </Route>
-                )}
+                }
                 <Redirect
                     to={
                         !isJobView && triggerDetails.status.toLowerCase() === 'succeeded'
@@ -669,70 +674,35 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
 }
 
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
-    const [isCollapsed, setIsCollapsed] = useState(false)
-    const [securityData, setSecurityData] = useState({
-        vulnerabilities: [],
-        lastExecution: '',
-        severityCount: {
-            critical: 0,
-            high: 0,
-            medium: 0,
-            low: 0,
-            unknown: 0,
-        },
-        scanEnabled: false,
-        scanned: false,
-        isLoading: !!artifactId,
-        isError: false,
-        ScanToolId: null,
-    })
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
-    async function callGetSecurityIssues() {
-        try {
-            const { result } = await getLastExecutionByArtifactId(appId ?? appIdFromParent, artifactId)
-            setSecurityData({
-                vulnerabilities: result.vulnerabilities,
-                lastExecution: result.lastExecution,
-                severityCount: result.severityCount,
-                scanEnabled: result.scanEnabled,
-                scanned: result.scanned,
-                isLoading: false,
-                isError: false,
-                ScanToolId: result.scanToolId,
-            })
-        } catch (error) {
-            // showError(error);
-            setSecurityData({
-                ...securityData,
-                isLoading: false,
-                isError: true,
-            })
-        }
-    }
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
-    function toggleCollapse() {
-        setIsCollapsed(!isCollapsed)
-    }
+    const computedAppId = appId ?? appIdFromParent
 
-    useEffect(() => {
-        if (artifactId) {
-            callGetSecurityIssues()
-        }
-    }, [artifactId])
+    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails, severityCount, totalCount } =
+        useGetCISecurityDetails({
+            appId: +computedAppId,
+            artifactId,
+            isSecurityScanV2Enabled,
+        })
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
             return
         }
         push(
-            `${URLS.APP}/${appId ?? appIdFromParent}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
+            `${URLS.APP}/${computedAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
                 URLS.APP_CI_CONFIG
             }/${ciPipelineId}/build`,
         )
     }
 
-    if (['failed', 'cancelled'].includes(status.toLowerCase()) || !artifactId ) {
+    if (['starting', 'running'].includes(status.toLowerCase())) {
+        return <CIRunningView isSecurityTab />
+    }
+
+    if (!artifactId || ['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
@@ -740,51 +710,42 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             />
         )
     }
-    if (['starting', 'running'].includes(status.toLowerCase())) {
-        return <CIRunningView isSecurityTab />
-    }
-    if (securityData.isLoading) {
+
+    if (scanDetailsLoading) {
         return <Progressing pageLoader />
     }
-    if (securityData.isError) {
-        return <Reload />
+    if (scanDetailsError) {
+        return <ErrorScreenManager code={scanDetailsError.code} reload={reloadScanDetails} />
     }
-    if (artifactId && !securityData.scanned) {
-        if (!securityData.scanEnabled) {
+    if (
+        (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
+        (scanResultResponse && !scanResultResponse.result.scanned)
+    ) {
+        if (!executionDetailsResponse?.result.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
         }
         return <ImageNotScannedView />
     }
-    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId} />
+
+    if (artifactId && !totalCount) {
+        return (
+            <NoVulnerabilityViewWithTool
+                scanToolId={isSecurityScanV2Enabled ? SCAN_TOOL_ID_TRIVY : executionDetailsResponse.result?.scanToolId} // Since v2 scan is via trivy only
+            />
+        )
     }
-    const scanToolId = securityData.ScanToolId
 
     return (
-        <>
-            <div className="security__top" data-testid="security-scan-execution-heading">
-                Latest Scan Execution
-            </div>
-            <div className="white-card white-card--ci-scan" data-testid="last-scan-execution">
-                <div className="security-scan__header" onClick={toggleCollapse}>
-                    <Down
-                        style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
-                        className="icon-dim-24 rotate fcn-9 mr-12"
-                    />
-                    <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {getSeverityWithCount(securityData.severityCount)}
-                    <div className="security-scan__type flex">
-                        <ScannedByToolModal scanToolId={scanToolId} />
-                    </div>
-                </div>
-                {isCollapsed ? (
-                    ''
-                ) : (
-                    <div className="px-24 security-scan-table">
-                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
-                    </div>
-                )}
-            </div>
-        </>
+        <div className="p-16">
+            <SecuritySummaryCard
+                severityCount={severityCount}
+                scanToolId={executionDetailsResponse?.result.scanToolId ?? SCAN_TOOL_ID_TRIVY}
+                rootClassName="w-500"
+                SecurityModalSidebar={SecurityModalSidebar}
+                isSecurityScanV2Enabled={isSecurityScanV2Enabled}
+                responseData={isSecurityScanV2Enabled ? scanResultResponse?.result : parseExecutionDetailResponse(executionDetailsResponse?.result)}
+                hidePolicy
+            />
+        </div>
     )
 }
