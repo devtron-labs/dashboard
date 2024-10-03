@@ -30,12 +30,13 @@ import {
     ReleaseMode,
     SelectPicker,
     CDFormType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import yamlJsParser from 'yaml'
-import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
@@ -535,7 +536,10 @@ export default function BuildCD({
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
-            toast.error('Cannot remove default strategy')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Cannot remove default strategy',
+            })
             return
         }
         const savedStrategies = _form.savedStrategies.filter(

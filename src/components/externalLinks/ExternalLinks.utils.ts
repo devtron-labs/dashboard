@@ -153,7 +153,7 @@ export const NodeLevelSelectStyles = {
     ...customMultiSelectStyles,
     menu: (base) => ({
         ...base,
-        width: '150px',
+        width: '120px',
     }),
     control: (base) => ({
         ...base,

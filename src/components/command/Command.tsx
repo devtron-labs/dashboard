@@ -303,8 +303,9 @@ export class Command extends Component<CommandProps, CommandState> {
         return isTotal
     }
 
-    handleKeyPress(event) {
-        if (event.metaKey && event.key === 'k') {
+    handleKeyPress(event: KeyboardEvent) {
+        if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+            event.preventDefault()
             this.props.toggleCommandBar(true)
             ReactGA.event({
                 category: 'Command Bar',

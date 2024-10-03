@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import K8ResourceComponent from './k8Resource/K8Resource.component'
+import { K8ResourceComponent } from './k8Resource/K8Resource.component'
 import './appDetails.scss'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { Route, Switch, useRouteMatch, Redirect, useParams } from 'react-router-dom'

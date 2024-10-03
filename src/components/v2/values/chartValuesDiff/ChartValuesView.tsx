@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useReducer, useRef } from 'react'
+import { useState, useEffect, useReducer, useRef } from 'react'
 import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
@@ -36,6 +35,8 @@ import {
     getIsRequestAborted,
     deepEqual,
     useDownload,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -112,7 +113,7 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
+import { getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
@@ -197,6 +198,7 @@ const ChartValuesView = ({
                 : chartValuesFromParent,
             installedConfigFromParent,
             chartVersionsDataFromParent,
+            appDetails?.deploymentAppType,
         ),
     )
 
@@ -259,7 +261,7 @@ const ChartValuesView = ({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
-                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                commonState.installedConfig.valuesSchemaJson,
                 dispatch,
             )
 
@@ -314,11 +316,7 @@ const ChartValuesView = ({
                         setChartValuesList([_chartValues])
 
                         const _valuesYaml = YAMLStringify(JSON.parse(_releaseInfo.mergedValues))
-                        getAndUpdateSchemaValue(
-                            _valuesYaml,
-                            convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
-                            dispatch,
-                        )
+                        getAndUpdateSchemaValue(_valuesYaml, _releaseInfo.valuesSchemaJson, dispatch)
                         dispatch({
                             type: ChartValuesViewActionTypes.multipleOptions,
                             payload: {
@@ -357,7 +355,7 @@ const ChartValuesView = ({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.valuesOverrideYaml,
-                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                commonState.installedConfig.valuesSchemaJson,
                 dispatch,
             )
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
@@ -592,11 +590,7 @@ const ChartValuesView = ({
             }
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
-            getAndUpdateSchemaValue(
-                result?.valuesOverrideYaml,
-                convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
-                dispatch,
-            )
+            getAndUpdateSchemaValue(result?.valuesOverrideYaml, _releaseInfo.valuesSchemaJson, dispatch)
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -682,7 +676,11 @@ const ChartValuesView = ({
             .then((response: ResponseType) => {
                 // preset value deleted successfully
                 if (isCreateValueView) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
+
                     if (typeof init === 'function') {
                         init()
                     }
@@ -696,7 +694,11 @@ const ChartValuesView = ({
                     response.result.deleteResponse?.deleteInitiated ||
                     (isExternalApp && !commonState.installedAppInfo)
                 ) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: TOAST_INFO.DELETION_INITIATED,
+                    })
+
                     init && init()
                     history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
                     return
@@ -705,7 +707,8 @@ const ChartValuesView = ({
                 // helm app delete failed due to cluster not reachable (ArgoCD installed)
                 if (
                     deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                    !response.result.deleteResponse?.clusterReachable
+                    !response.result.deleteResponse?.clusterReachable &&
+                    commonState.deploymentAppType === DeploymentAppTypes.GITOPS
                 ) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -837,7 +840,10 @@ const ChartValuesView = ({
                     invalidValueNameMessage: validatedName.message,
                 },
             })
-            toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: MULTI_REQUIRED_FIELDS_MSG,
+            })
             return false
         }
         if (!isValidData(validatedName)) {
@@ -850,7 +856,10 @@ const ChartValuesView = ({
                     invalidProject: !commonState.selectedProject,
                 },
             })
-            toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: MULTI_REQUIRED_FIELDS_MSG,
+            })
             return false
         }
         if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
@@ -865,7 +874,10 @@ const ChartValuesView = ({
                     type: ChartValuesViewActionTypes.formValidationError,
                     payload: formErrors,
                 })
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
                 return false
             }
             dispatch({
@@ -877,12 +889,18 @@ const ChartValuesView = ({
         // validate data
         try {
             if (!commonState.modifiedValuesYaml) {
-                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: `${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`,
+                })
                 return false
             }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`,
+            })
             return false
         }
 
@@ -1025,13 +1043,19 @@ const ChartValuesView = ({
             })
 
             if (isCreateValueView) {
-                toast.success(toastMessage)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: toastMessage,
+                })
                 history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
             } else if (isDeployChartView && res?.result) {
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
-                toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: CHART_VALUE_TOAST_MSGS.DeploymentInitiated,
+                })
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
                 appDetails?.isVirtualEnvironment &&
@@ -1041,16 +1065,25 @@ const ChartValuesView = ({
                         res.result.appName,
                         res.result?.helmPackageName,
                     )
-                toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
+                })
                 IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
-                toast.error(SOME_ERROR_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: SOME_ERROR_MSG,
+                })
             }
         } catch (err) {
             if (err['code'] === 409) {
                 handleDrawerState(true)
-                toast.error('Some global configurations for GitOps has changed')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some global configurations for GitOps has changed',
+                })
                 setStaleData(true)
                 dispatch({
                     type: ChartValuesViewActionTypes.setGitRepoURL,
@@ -1104,7 +1137,10 @@ const ChartValuesView = ({
                             invalidValueNameMessage: validatedName.message,
                         },
                     })
-                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MANIFEST_TAB_VALIDATION_ERROR,
+                    })
                     return
                 }
                 if (!isValidData(validatedName)) {
@@ -1119,7 +1155,10 @@ const ChartValuesView = ({
                             invalidProject: !commonState.selectedProject,
                         },
                     })
-                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MANIFEST_TAB_VALIDATION_ERROR,
+                    })
                     return
                 }
             }
@@ -1290,7 +1329,7 @@ const ChartValuesView = ({
 
     const renderValuesTabsContainer = () => {
         return (
-            <div className="chart-values-view__tabs-container flex dc__content-space">
+            <div className="chart-values-view__tabs-container flex dc__content-space dc__border-bottom">
                 {renderValuesTabs()}
                 <div className="flex">
                     <ConditionalWrap
@@ -1456,12 +1495,7 @@ const ChartValuesView = ({
         return (
             <div className="chart-values-view__editor">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <GenericEmptyState
-                        SvgImage={ErrorExclamation}
-                        classname="dc__align-reload-center"
-                        title=""
-                        subTitle={commonState.valuesEditorError}
-                    />
+                    <GenericEmptyState title="" subTitle={commonState.valuesEditorError} />
                 ) : (
                     <ChartValuesEditor
                         loading={
@@ -1496,13 +1530,6 @@ const ChartValuesView = ({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
-                <UpdateApplicationButton
-                    isUpdateInProgress={commonState.isUpdateInProgress}
-                    isDeleteInProgress={commonState.isDeleteInProgress}
-                    isDeployChartView={isDeployChartView}
-                    isCreateValueView={isCreateValueView}
-                    deployOrUpdateApplication={deployOrUpdateApplication}
-                />
             </div>
         )
     }
@@ -1581,16 +1608,8 @@ const ChartValuesView = ({
         )
     }
 
-    const getDynamicWrapperClassName = (): string => {
-        if (isDeployChartView) {
-            return 'sub162-vh'
-        }
-        return 'sub189-vh'
-    }
-
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
-        const wrapperClassName = getDynamicWrapperClassName()
         const showDeploymentTools =
             !isExternalApp &&
             !isCreateValueView &&
@@ -1599,16 +1618,15 @@ const ChartValuesView = ({
             !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
+                className={`chart-values-view__container flexbox-col h-100 bcn-0 dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
                 }`}
             >
                 {renderValuesTabsContainer()}
-                <div className="chart-values-view__hr-divider bcn-2" />
-                <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
-                    <div className="chart-values-view__details">
+                <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
+                    <div className="chart-values-view__details dc__border-right dc__overflow-scroll">
                         {isCreateValueView && (
                             <ValueNameInput
                                 valueName={valueName}
@@ -1630,7 +1648,7 @@ const ChartValuesView = ({
                         )}
 
                         {!isDeployChartView && !isCreateValueView && (
-                            <div className="mb-16">
+                            <div className="w-100">
                                 <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
                                     Project
                                 </div>
@@ -1802,17 +1820,13 @@ const ChartValuesView = ({
                             activeReadMe={commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0)}
                         />
                     )}
-                    {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
                     {commonState.activeTab === 'gui' ? (
                         <ChartValuesGUIForm
                             schemaJson={commonState.schemaJson}
                             valuesYamlDocument={commonState.valuesYamlDocument}
                             fetchingSchemaJson={commonState.fetchingReadMe}
-                            openReadMe={commonState.openReadMe}
                             isUpdateInProgress={commonState.isUpdateInProgress}
                             isDeleteInProgress={commonState.isDeleteInProgress}
-                            isDeployChartView={isDeployChartView}
-                            isCreateValueView={isCreateValueView}
                             deployOrUpdateApplication={deployOrUpdateApplication}
                             dispatch={dispatch}
                             formValidationError={commonState.formValidationError}
@@ -1821,6 +1835,15 @@ const ChartValuesView = ({
                         renderChartValuesEditor()
                     )}
                 </div>
+                <footer className="flexbox dc__content-end dc__border-top px-16 py-10">
+                    <UpdateApplicationButton
+                        isUpdateInProgress={commonState.isUpdateInProgress}
+                        isDeleteInProgress={commonState.isDeleteInProgress}
+                        isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
+                        deployOrUpdateApplication={deployOrUpdateApplication}
+                    />
+                </footer>
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
                         appName={

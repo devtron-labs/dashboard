@@ -27,8 +27,9 @@ import {
     ResponseType,
     DeploymentAppTypes,
     AppStatus,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import { deleteInstalledChart } from '../charts.service'
@@ -164,7 +165,10 @@ export const DeploymentRow = ({
                 deleteAction,
             )
             if (response.result.deleteResponse?.deleteInitiated) {
-                toast.success('Successfully deleted')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully deleted',
+                })
                 toggleConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(false)
@@ -172,7 +176,8 @@ export const DeploymentRow = ({
                 fetchDeployments()
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                !response.result.deleteResponse?.clusterReachable
+                !response.result.deleteResponse?.clusterReachable &&
+                deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 toggleConfirmation(false)
@@ -204,6 +209,7 @@ export const DeploymentRow = ({
     const handleForceDelete = () => {
         handleDelete(DELETE_ACTION.FORCE_DELETE)
     }
+
     const handleCascadeDelete = () => {
         handleDelete(DELETE_ACTION.DELETE)
     }

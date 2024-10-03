@@ -23,10 +23,12 @@ import {
     useBreadcrumb,
     useEffectAfterMount,
     PageHeader,
+    versionComparatorBySortOrder,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { toast } from 'react-toastify'
 import { List } from '../../common'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
@@ -126,19 +128,19 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         [chartId],
     )
 
-    function goBackToDiscoverChart() {
-        history.push(`${URLS.CHARTS}/discover/chart/${chartId}`)
-    }
-
     async function fetchVersions() {
         setLoading(true)
         try {
             const { result } = await getChartVersionsMin(chartId)
             if (result?.length) {
-                setChartVersions(result)
-                selectVersion(result[0]?.id)
+                const sorted = [...result].sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+                setChartVersions(sorted)
+                selectVersion(sorted[0].id)
             } else {
-                toast.error('Some error occurred. Please try reloading the page')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Some error occurred. Please try reloading the page',
+                })
             }
         } catch (err) {
             showError(err)
@@ -187,9 +189,9 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }, [selectedVersion])
 
     useEffect(() => {
-        const chartValues = chartValuesList.find((chrtValue) => {
-            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) {
-                return chrtValue
+        const chartValues = chartValuesList.find((chartValue) => {
+            if (chartValue.kind === 'DEFAULT' && chartValue.id === selectedVersion) {
+                return chartValue
             }
         })
         if (chartValues) {
@@ -207,7 +209,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     return (
         <DiscoverDetailsContext.Provider
             value={{
-                goBackToDiscoverChart,
                 openSavedValuesList,
                 availableVersions,
                 selectedVersion,
@@ -218,66 +219,53 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                 redirectToChartValues,
             }}
         >
-            <div className="chart-detail-container">
-                <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-                {loading ? (
-                    <Progressing pageLoader />
-                ) : (
-                    <div style={{ overflow: 'auto' }}>
-                        <div className="left-right-container">
-                            <div className="chart-detail-left">
-                                <About {...chartInformation} chartYaml={chartYaml} />
-                                <ReadmeRowHorizontal {...chartInformation} />
-                                <ChartDeploymentList chartId={chartId} />
-                            </div>
-                            <div className="chart-detail-right">
-                                <Deployment
-                                    chartId={chartId}
-                                    {...chartInformation}
-                                    availableVersions={mapById(availableVersions)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
             <Switch>
-                <Route
-                    path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}
-                    render={(props) => {
-                        return (
-                            <div className="deploy-chart__container">
-                                {!chartInformation.chartName ||
-                                !selectedVersion ||
-                                chartValuesList.length <= 0 ||
-                                availableVersions.length <= 0 ? (
-                                    <Progressing pageLoader />
-                                ) : (
-                                    <>
-                                        <PageHeader
-                                            headerName={`Deploy chart: ${chartInformation.chartName}/${chartInformation.name}`}
-                                            additionalHeaderInfo={() =>
-                                                chartInformation.deprecated && (
-                                                    <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
-                                                )
-                                            }
-                                            showCloseButton
-                                            onClose={goBackToDiscoverChart}
+                <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId`} exact>
+                    <div className="chart-detail-container">
+                        <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+                        {loading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <div style={{ overflow: 'auto' }}>
+                                <div className="left-right-container">
+                                    <div className="chart-detail-left">
+                                        <About {...chartInformation} chartYaml={chartYaml} />
+                                        <ReadmeRowHorizontal {...chartInformation} />
+                                        <ChartDeploymentList chartId={chartId} />
+                                    </div>
+                                    <div className="chart-detail-right">
+                                        <Deployment
+                                            chartId={chartId}
+                                            {...chartInformation}
+                                            availableVersions={mapById(availableVersions)}
                                         />
-                                        <ChartValuesView
-                                            isDeployChartView
-                                            installedConfigFromParent={chartInformation as ChartInstalledConfig}
-                                            chartValuesListFromParent={chartValuesList}
-                                            chartVersionsDataFromParent={availableVersions}
-                                            chartValuesFromParent={chartValues}
-                                            selectedVersionFromParent={selectedVersion}
-                                        />
-                                    </>
-                                )}
+                                    </div>
+                                </div>
                             </div>
-                        )
-                    }}
-                />
+                        )}
+                    </div>
+                </Route>
+                <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}>
+                    <div className="flexbox-col h-100">
+                        <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+                        {!chartInformation.chartName ||
+                        !selectedVersion ||
+                        chartValuesList.length <= 0 ||
+                        availableVersions.length <= 0 ||
+                        loading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <ChartValuesView
+                                isDeployChartView
+                                installedConfigFromParent={chartInformation as ChartInstalledConfig}
+                                chartValuesListFromParent={chartValuesList}
+                                chartVersionsDataFromParent={availableVersions}
+                                chartValuesFromParent={chartValues}
+                                selectedVersionFromParent={selectedVersion}
+                            />
+                        )}
+                    </div>
+                </Route>
             </Switch>
         </DiscoverDetailsContext.Provider>
     )
@@ -503,7 +491,7 @@ export const MarkDown = ({ markdown = '', className = '', breaks = false, disabl
         <article
             {...props}
             ref={mdeRef}
-            className={`deploy-chart__readme-markdown mr-20 ${className}`}
+            className={`deploy-chart__readme-markdown pr-20 ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
         />

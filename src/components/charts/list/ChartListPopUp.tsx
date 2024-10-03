@@ -23,9 +23,10 @@ import {
     ImageType,
     stopPropagation,
     SearchBar,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import { ChartListPopUpType } from '../charts.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
@@ -100,7 +101,10 @@ const ChartListPopUp = ({
         await reSyncChartRepo()
             .then((response) => {
                 setFetching(false)
-                toast.success(TOAST_INFO.RE_SYNC)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: TOAST_INFO.RE_SYNC,
+                })
             })
             .catch((error) => {
                 showError(error)

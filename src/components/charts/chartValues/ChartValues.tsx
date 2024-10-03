@@ -115,7 +115,7 @@ export default function ChartValues() {
         )
     }
     return (
-        <>
+        <div className="flexbox-col h-100">
             <Header appStoreApplicationName={appStoreApplicationName} name={valueName} />
             <ChartValuesView
                 isCreateValueView
@@ -125,7 +125,7 @@ export default function ChartValues() {
                 chartValuesFromParent={chartValues}
                 selectedVersionFromParent={chartVersionId}
             />
-        </>
+        </div>
     )
 }
 

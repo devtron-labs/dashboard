@@ -32,9 +32,10 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
     ReleaseMode,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -551,7 +552,10 @@ export const Details: React.FC<DetailsType> = ({
             )
             await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
-            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated',
+            })
         } catch (err) {
             showError(err)
         } finally {
@@ -761,7 +765,6 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-
             {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
@@ -884,7 +887,7 @@ export const EnvSelector = ({
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {
-            const key = env.isVirtualEnvironment ? 'Virtual environments' : ''
+            const key = env.isVirtualEnvironment ? 'Isolated environments' : ''
             const found = acc.find((item) => item.label === key)
 
             if (found) {
@@ -910,7 +913,7 @@ export const EnvSelector = ({
         }, []) || []
 
     // Pushing the virtual environment group to the end of the list
-    if (groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+    if (groupList[0]?.label === 'Isolated environments' && groupList.length === 2) {
         groupList.reverse()
     }
 

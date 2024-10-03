@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import notScanned from '../../../../assets/img/not-scanned.png'
 import scannedDisabled from '../../../../assets/img/ic-empty-scanner-disabled.png'

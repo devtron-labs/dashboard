@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { Component } from 'react'
+import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
@@ -138,7 +137,10 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             this.state.recipientWithoutEmailAgent &&
             !this.state.selectedEmailAgent
         ) {
-            toast.error('Some required fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing',
+            })
             return
         }
         updateNotificationRecipients(
@@ -149,7 +151,11 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
         )
             .then((response) => {
                 if (response.result) {
-                    toast.success('Saved Successfully')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Saved Successfully',
+                    })
+
                     this.props.onSaveSuccess()
                 }
             })

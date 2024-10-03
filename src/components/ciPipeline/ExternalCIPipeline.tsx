@@ -23,8 +23,9 @@ import {
     VisibleModal,
     DeleteDialog,
     ButtonWithLoader,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import {
@@ -197,7 +198,10 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         valid = valid && errObj.isValid
         if (!valid) {
             this.setState({ loadingData: false })
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
         const msg = this.state.ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
@@ -213,7 +217,10 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         )
             .then((response) => {
                 if (response) {
-                    toast.success(msg)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: msg,
+                    })
                     const state = { ...this.state }
                     this.setState({
                         ...state,
@@ -245,7 +252,10 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         )
             .then((response) => {
                 if (response) {
-                    toast.success('Pipeline Deleted')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Deleted',
+                    })
                     this.props.close()
 
                     if (this.props.deleteWorkflow) {
@@ -258,7 +268,12 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             .catch((error: ServerErrors) => {
                 this.setState({ loadingData: false })
                 if (Array.isArray(error.errors)) {
-                    error.errors.map((err) => toast.error(err.userMessage))
+                    error.errors.map((err) =>
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: err.userMessage,
+                        }),
+                    )
                 }
             })
     }

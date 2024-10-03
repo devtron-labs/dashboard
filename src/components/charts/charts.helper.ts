@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { toast } from 'react-toastify'
-
+import { ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
-import { renderToastMessage } from './charts.util'
 
 export const MultiChartSummaryView = {
     SELECT_CHART: 'SELECT-CHART',
@@ -107,21 +105,31 @@ export const renderChartGroupDeploymentToastMessage = ({ chartGroupInstallMetada
         return acc
     }, 0)
 
-    let status = ''
+    let status: ToastVariantType = null
     let title = ''
     let description = ''
 
     if (failedDeployments === 0) {
-        status = 'success'
+        status = ToastVariantType.success
         title = 'Deployment initiated'
     } else if (failedDeployments === chartGroupInstallMetadata.length) {
-        status = 'error'
+        status = ToastVariantType.error
         title = 'Deployment failed'
     } else {
-        status = 'warn'
+        status = ToastVariantType.warn
         title = 'Deployment initiated partially'
         description = `Deployment could not be initiated for ${failedDeployments}/${chartGroupInstallMetadata.length} applications`
     }
 
-    toast[status](renderToastMessage(title, description))
+    ToastManager.showToast({
+        variant: status,
+        ...(description
+            ? {
+                  title,
+                  description,
+              }
+            : {
+                  description: title,
+              }),
+    })
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- .security-scan-container {
+.security-scan-container {
     .page-header--security {
         height: 80px;
         grid-template-columns: 1fr;
@@ -41,24 +41,9 @@
 
     .security-scan__filters {
         width: 100%;
-        padding: 16px 24px 0px 24px;
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
-    }
-
-    .dc__security-scan__filter {
-        min-width: 155px;
-        height: 36px;
-        margin-right: 12px;
-
-        &:last-child {
-            margin-right: 0px;
-        }
-    }
-
-    .security-scan__filter--environments {
-        width: 185px;
     }
 
     .table__row-grid {
@@ -246,13 +231,10 @@
         width: 200px;
     }
 
-    .vulnerability-exp-table {
-        width: 100%;
-        padding: 0 24px;
-    }
-
-    .vulnerability-exp-table__header {
-        color: var(--N500);
+    .vulnerability-exp-table-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column-gap: 16px;
     }
 
     .vulnerability-exp-table__title {
@@ -266,54 +248,6 @@
         font-size: 12px;
         padding: 11px 24px;
         font-weight: 600;
-    }
-
-    .vulnerability-exp-table__row {
-        border-bottom: solid 1px #f5f5f5;
-        cursor: default;
-
-        &:hover {
-            background-color: var(--N100);
-        }
-    }
-
-    .vulnerability-exp-table__data {
-        padding: 11px 24px;
-        line-height: 20px;
-        font-size: 12px;
-        color: var(--N900);
-    }
-
-    .vulnerability-exp-table__title:first-child,
-    .vulnerability-exp-table__data:first-child {
-        padding-left: 0px;
-    }
-
-    .vulnerability-exp-table__title:last-child,
-    .vulnerability-exp-table__data:last-child {
-        padding-right: 0px;
-    }
-
-    .vulnerability-policy--type-whitelisted {
-        border-radius: 4px;
-        border: solid 1px var(--G300);
-        color: var(--G500);
-        padding: 1px 8px 1px 8px;
-        background-color: var(--G100);
-        width: 79px;
-        font-size: 12px;
-        text-transform: capitalize;
-    }
-
-    .vulnerability-policy--type-blocked {
-        border-radius: 4px;
-        border: solid 1px var(--R300);
-        color: var(--R500);
-        padding: 1px 8px 1px 8px;
-        background-color: var(--R100);
-        width: 61px;
-        font-size: 12px;
-        text-transform: capitalize;
     }
 
     .white-card--cluster {
@@ -369,29 +303,6 @@
 
     .trigger-modal__body--security-scan {
         height: calc(100vh - 87px);
-    }
-
-    .vulnerability-exp__form {
-        position: sticky;
-        top: 0px;
-        background-color: var(--N000);
-        padding-top: 18px;
-        padding-bottom: 16px;
-    }
-
-    .vulnerability-exp__clear-cve {
-        position: absolute;
-        top: 50%;
-        right: 24px;
-        transform: translateY(-50%);
-
-        .fill-color {
-            fill: var(--N400);
-        }
-    }
-
-    .form__subtitle--m-0 {
-        margin: 0px;
     }
 
     .whitelist-cve__cve-id {
@@ -467,5 +378,16 @@
             border-bottom-left-radius: 0 !important;
             border-left: none;
         }
+    }
+
+    .security-tab__cell-policy--whitelist,
+    .security-tab__cell-policy--whitelisted {
+        color: var(--G500);
+        text-transform: capitalize;
+    }
+
+    .security-tab__cell-policy--block {
+        color: var(--R500);
+        text-transform: capitalize;
     }
 }
