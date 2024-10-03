@@ -6,8 +6,7 @@ import {
     getAppEnvDeploymentConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCMSecret } from '../ConfigMapSecretOld/ConfigMapSecret.service'
-
+import { getCMSecret } from './ConfigMapSecret.service'
 import { CMSecretComponentType, ConfigMapSecretContainerProps } from './types'
 
 export const getConfigMapSecretConfigData = ({

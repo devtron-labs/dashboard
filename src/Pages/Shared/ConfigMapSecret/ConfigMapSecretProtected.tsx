@@ -26,9 +26,7 @@ import CompareConfigView from '@Pages/Applications/DevtronApps/Details/AppConfig
 import NoPublishedVersionEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoPublishedVersionEmptyState'
 import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
-import { CMSecretConfigData } from '../ConfigMapSecretOld/ConfigMapSecret.types'
-
-import { CM_SECRET_STATE, CMSecretComponentType, ConfigMapSecretProtectedProps } from './types'
+import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'

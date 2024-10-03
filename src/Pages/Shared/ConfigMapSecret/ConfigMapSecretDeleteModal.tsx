@@ -10,13 +10,7 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import {
-    deleteEnvSecret,
-    deleteEnvConfigMap,
-    deleteSecret,
-    deleteConfig,
-} from '../ConfigMapSecretOld/ConfigMapSecret.service'
-
+import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfig } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
 

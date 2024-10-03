@@ -14,7 +14,6 @@ import {
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
-import { CMSecret, CMSecretConfigData } from '../ConfigMapSecretOld/ConfigMapSecret.types'
 import {
     CODE_EDITOR_RADIO_STATE,
     configMapDataTypeOptions,
@@ -30,6 +29,8 @@ import {
     CM_SECRET_STATE,
     CMSecretDraftData,
     CMSecretPayloadType,
+    CMSecretConfigData,
+    CMSecretDTO,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -498,7 +499,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     configStage: ResourceConfigStage
     name: string
     componentName: string
-    cmSecretConfigData: CMSecret | AppEnvDeploymentConfigDTO
+    cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO
     draftConfigData: DraftMetadataDTO
 }) => {
     const data: {
@@ -527,7 +528,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     if (cmSecretConfigData) {
         let configMapSecretData: CMSecretConfigData
         const configData = isJob
-            ? (cmSecretConfigData as CMSecret).configData
+            ? (cmSecretConfigData as CMSecretDTO).configData
             : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                   .configData
 
@@ -610,7 +611,7 @@ export const getConfigMapSecretInheritedData = ({
     isJob,
     isSecret,
 }: {
-    cmSecretConfigData: CMSecret | AppEnvDeploymentConfigDTO
+    cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO
     isJob: boolean
     isSecret: boolean
 }): CMSecretConfigData => {
@@ -619,7 +620,7 @@ export const getConfigMapSecretInheritedData = ({
     }
 
     return isJob
-        ? { ...(cmSecretConfigData as CMSecret).configData[0], unAuthorized: false }
+        ? { ...(cmSecretConfigData as CMSecretDTO).configData[0], unAuthorized: false }
         : {
               ...(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                   .configData[0],

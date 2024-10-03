@@ -31,13 +31,7 @@ import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Com
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
-import {
-    overRideConfigMap,
-    overRideSecret,
-    updateConfig,
-    updateSecret,
-} from '../ConfigMapSecretOld/ConfigMapSecret.service'
-
+import { overRideConfigMap, overRideSecret, updateConfig, updateSecret } from './ConfigMapSecret.service'
 import {
     getConfigMapSecretDraftAndPublishedData,
     getConfigMapSecretInheritedData,

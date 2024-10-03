@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 
 import {
+    ConfigDatum,
     DraftAction,
     DraftMetadataDTO,
     ProtectConfigTabsType,
@@ -13,7 +14,6 @@ import {
 import { NoOverrideEmptyStateProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
-import { CMSecretConfigData } from '../ConfigMapSecretOld/ConfigMapSecret.types'
 
 // ENUMS
 export enum CMSecretComponentType {
@@ -122,6 +122,10 @@ export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps
     appChartRef: { id: number; version: string; name: string }
 }
 
+export interface CMSecretConfigData extends ConfigDatum {
+    unAuthorized: boolean
+}
+
 export interface ConfigMapSecretFormProps {
     id: number
     configMapSecretData: CMSecretConfigData
@@ -210,3 +214,10 @@ export type ConfigMapSecretProtectedProps = Pick<
         draftData: CMSecretDraftData
         selectedProtectionViewTab: ProtectConfigTabsType
     }
+
+// DTO
+export interface CMSecretDTO {
+    id: number
+    appId: number
+    configData: ConfigDatum[]
+}

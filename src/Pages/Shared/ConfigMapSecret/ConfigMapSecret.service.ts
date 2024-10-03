@@ -17,8 +17,8 @@
 import { get, post, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
-import { getEnvironmentConfigs, getEnvironmentSecrets } from '@Services/service'
-import { CMSecret, CMSecretComponentType } from './ConfigMapSecret.types'
+
+import { CMSecretDTO, CMSecretComponentType } from './types'
 
 export function updateConfig(id, appId, configData, signal?) {
     return post(
@@ -52,13 +52,6 @@ export function overRideConfigMap(appId, environmentId, configData, signal?) {
     )
 }
 
-export function getConfigMapList(appId, envId?, signal?) {
-    if (envId) {
-        return getEnvironmentConfigs(appId, envId, { signal })
-    }
-    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
-}
-
 export function updateSecret(id, appId, configData, signal?) {
     return post(
         `${Routes.APP_CREATE_SECRET}`,
@@ -79,6 +72,18 @@ export function deleteEnvSecret(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 }
 
+export function overRideSecret(appId, environmentId, configData, signal?) {
+    return post(
+        `${Routes.APP_CREATE_ENV_SECRET}`,
+        {
+            appId,
+            environmentId,
+            configData,
+        },
+        { signal },
+    )
+}
+
 export const getCMSecret = (
     componentType: CMSecretComponentType,
     id,
@@ -86,7 +91,7 @@ export const getCMSecret = (
     name,
     envId?,
     signal?,
-): Promise<ResponseType<CMSecret>> => {
+): Promise<ResponseType<CMSecretDTO>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -98,23 +103,4 @@ export const getCMSecret = (
         url = `${componentType === CMSecretComponentType.Secret ? Routes.APP_CREATE_SECRET : Routes.APP_CREATE_CONFIG_MAP}/edit/${appId}`
     }
     return get(`${url}/${id}?name=${name}`, { signal })
-}
-
-export function getSecretList(appId, envId?, signal?) {
-    if (envId) {
-        return getEnvironmentSecrets(appId, envId)
-    }
-    return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
-}
-
-export function overRideSecret(appId, environmentId, configData, signal?) {
-    return post(
-        `${Routes.APP_CREATE_ENV_SECRET}`,
-        {
-            appId,
-            environmentId,
-            configData,
-        },
-        { signal },
-    )
 }
