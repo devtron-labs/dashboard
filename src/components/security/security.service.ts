@@ -24,7 +24,7 @@ import {
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
+import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse, CVEControlList, CVEControlListPayload } from './security.types'
 import { ScanListPayloadType } from './SecurityScansTab/types'
 
 export function getClusterListMinNoAuth() {
@@ -139,20 +139,18 @@ export function updatePolicy(payload): Promise<ResponseType> {
     return post(URL, payload)
 }
 
-export function getCVEControlList(payload): Promise<ResponseType> {
-    const URL = `security/scan/cve/exposure`
+export function getCVEControlList(payload: CVEControlListPayload): Promise<ResponseType<CVEControlList>> {
+    const URL = Routes.SECURITY_SCAN_CVE_EXPOSURE
     return post(URL, payload).then((response) => {
         return {
             ...response,
             result: {
-                ...response.result,
-                offset: response.result.offset || 0,
-                size: response.result.total,
-                pageSize: response.result.size,
-                scanList: response.result.list
+                totalCount: response.result?.total ?? 0,
+                scanList: response.result?.list
                     ? response.result.list.map((cve) => {
                           return {
-                              ...cve,
+                              appName: cve.appName ?? '',
+                              envName: cve.envName ?? '',
                               policy: cve.blocked ? 'block' : 'whitelist',
                           }
                       })

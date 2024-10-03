@@ -182,7 +182,8 @@ const EnvironmentSelectorComponent = ({
                 }
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                !response.result.deleteResponse?.clusterReachable
+                !response.result.deleteResponse?.clusterReachable && 
+                appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 setShowDeleteConfirmation(false)

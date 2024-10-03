@@ -388,7 +388,6 @@ src/components/security/SecurityPolicyEdit.tsx
 src/components/security/SecurityPolicyEnvironment.tsx
 src/components/security/SecurityPolicyGlobal.tsx
 src/components/security/UpdateSeverityModal.tsx
-src/components/security/VulnerabilityExposure.tsx
 src/components/security/security.service.ts
 src/components/security/security.util.tsx
 src/components/terminal/TerminalWrapper.tsx
