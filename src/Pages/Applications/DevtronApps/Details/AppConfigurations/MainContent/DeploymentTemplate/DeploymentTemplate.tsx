@@ -1780,6 +1780,8 @@ const DeploymentTemplate = ({
                     validateApprovalState={handleValidateApprovalState}
                     handleReload={handleReload}
                     showApproveButton={isApprovalView}
+                    parsingError={currentEditorTemplateData?.parsingError}
+                    restoreLastSavedYAML={restoreLastSavedTemplate}
                 />
             )
         }
@@ -1798,6 +1800,8 @@ const DeploymentTemplate = ({
                 selectedChart={selectedChart}
                 isCiPipeline={isCiPipeline}
                 handleSave={handleTriggerSave}
+                parsingError={currentEditorTemplateData.parsingError}
+                restoreLastSavedYAML={restoreLastSavedTemplate}
             />
         )
     }

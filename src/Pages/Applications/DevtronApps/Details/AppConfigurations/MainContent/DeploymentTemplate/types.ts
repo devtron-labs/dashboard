@@ -155,6 +155,8 @@ export interface DeploymentTemplateCTAProps extends Pick<DeploymentTemplateProps
     selectedChart: DeploymentChartVersionType
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
+    parsingError: string
+    restoreLastSavedYAML: () => void
 }
 
 export interface CompareWithValuesDataStoreItemType {
