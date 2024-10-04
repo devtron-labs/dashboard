@@ -16,6 +16,7 @@ const CompareConfigView = ({
     publishedEditorTemplate,
     selectedChartVersion,
     draftChartVersion,
+    isDeleteOverrideView,
 }: CompareConfigViewProps) => (
     <div className="flexbox-col dc__overflow-scroll">
         <div className="dc__grid-half">
@@ -31,6 +32,7 @@ const CompareConfigView = ({
                         handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                         draftChartVersion={draftChartVersion || ''}
                         currentEditorChartVersion={selectedChartVersion || ''}
+                        isDeleteOverrideView={isDeleteOverrideView}
                     />
                 ) : (
                     <>

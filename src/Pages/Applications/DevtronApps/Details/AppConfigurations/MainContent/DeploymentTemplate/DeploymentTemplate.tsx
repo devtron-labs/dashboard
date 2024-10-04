@@ -173,10 +173,10 @@ const DeploymentTemplate = ({
             (configHeaderTab === ConfigHeaderTabType.DRY_RUN && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
     )
     const isCompareView = !!(
+        isProtected &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE &&
-        !showReadMe &&
-        isProtected
+        !showReadMe
     )
 
     const isApprovalPending = isDraftAvailable && draftTemplateData.latestDraft.draftState === DraftState.AwaitApproval
@@ -396,9 +396,8 @@ const DeploymentTemplate = ({
     const handleLoadScopedVariables = async () => {
         // TODO: can think about adding abort controller
         try {
-            // TODO: check if need to enhance this
             const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
-            // Fetching LHS in case of compare view
+            // Fetching LHS of compare view
             const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isApprovalView && isCompareView
 
             const [currentEditorTemplate, defaultTemplate, publishedTemplate] = await Promise.all([
@@ -1416,10 +1415,6 @@ const DeploymentTemplate = ({
                 : publishedTemplateData.editorTemplate
         }
 
-        if (isCompareView && isDeleteOverrideDraft) {
-            return ''
-        }
-
         if (isApprovalPendingOptionSelected) {
             return hideLockedKeys ? draftTemplateData.editorTemplateWithoutLockedKeys : draftTemplateData.editorTemplate
         }
@@ -1566,7 +1561,9 @@ const DeploymentTemplate = ({
             ...(window._env_.APPLICATION_METRICS_ENABLED && {
                 applicationMetrics: {
                     displayName: 'Application metrics',
-                    value: String(publishedTemplateData?.isAppMetricsEnabled),
+                    value: publishedTemplateData?.isAppMetricsEnabled
+                        ? String(publishedTemplateData.isAppMetricsEnabled)
+                        : null,
                 },
             }),
             ...(envId &&
@@ -1627,6 +1624,7 @@ const DeploymentTemplate = ({
                     publishedEditorTemplate={YAML.parse(getPublishedTemplate())}
                     selectedChartVersion={getCurrentTemplateSelectedChart().version}
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
+                    isDeleteOverrideView={isDeleteOverrideDraft}
                 />
             )
         }

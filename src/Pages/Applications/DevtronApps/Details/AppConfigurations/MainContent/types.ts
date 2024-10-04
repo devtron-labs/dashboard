@@ -222,6 +222,7 @@ export interface CompareConfigViewProps {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
     isApprovalView: boolean
+    isDeleteOverrideView: boolean
 
     currentEditorTemplate: Record<string | number, unknown>
     publishedEditorTemplate: Record<string | number, unknown>
