@@ -61,7 +61,8 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
-const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
+// const PluginsPolicy = importComponentFromFELibrary('OldPluginsPolicy')
+const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
@@ -499,11 +500,11 @@ const NavItem = ({ serverMode }) => {
 
                             {PluginsPolicy && (
                                 <NavLink
-                                    to={URLS.GLOBAL_CONFIG_PLUGINS}
-                                    key={URLS.GLOBAL_CONFIG_PLUGINS}
+                                    to={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
+                                    key={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
                                     activeClassName="active-route"
                                 >
-                                    <div className="flexbox flex-justify">Plugins</div>
+                                    <div className="flexbox flex-justify">Plugin Policy</div>
                                 </NavLink>
                             )}
 
@@ -706,7 +707,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     </Route>
                 ),
                 PluginsPolicy && (
-                    <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
+                    <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
                         <PluginsPolicy />
                     </Route>
                 ),
