@@ -40,7 +40,6 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
-    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -415,7 +414,7 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
-    selectedEnv?: Environment
+    selectedEnv?: EnvironmentWithSelectPickerType
     environmentLists?: any[]
     appReleaseTags?: string[]
     tagsEditable?: boolean
