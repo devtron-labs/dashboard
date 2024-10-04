@@ -151,10 +151,10 @@ export interface ConfigMapSecretReadyOnlyProps
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
-export interface ConfigMapSecretDeleteModalProps
-    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'id'> {
+export interface ConfigMapSecretDeleteModalProps extends Pick<ConfigMapSecretFormProps, 'componentType' | 'id'> {
     appId: number
     envId: number
+    configName: string
     openDeleteModal: CMSecretDeleteModalType
     draftData: CMSecretDraftData
     updateCMSecret: (configName?: string) => void

@@ -4,13 +4,22 @@ import { useForm } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigMapSecretUseFormProps } from './types'
 
+type SetFormStateParams =
+    | {
+          type: 'SET_DATA'
+          data: ConfigMapSecretUseFormProps
+          formState: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>['formState']
+      }
+    | {
+          type: 'RESET'
+          data?: never
+          formState?: never
+      }
+
 export interface ConfigMapSecretContextType {
     formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
     isFormDirty: boolean
-    setFormState: (
-        data: ConfigMapSecretUseFormProps,
-        formState: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>['formState'],
-    ) => void
+    setFormState: (params: SetFormStateParams) => void
 }
 
 export interface ConfigMapSecretProviderProps {
@@ -23,9 +32,14 @@ export const ConfigMapSecretProvider = ({ children }: ConfigMapSecretProviderPro
     const [isFormDirty, setIsFormDirty] = useState(false)
     const formDataRef = useRef<ConfigMapSecretUseFormProps>(null)
 
-    const setFormState: ConfigMapSecretContextType['setFormState'] = (data, formState) => {
-        formDataRef.current = data
-        setIsFormDirty(formState.isDirty)
+    const setFormState: ConfigMapSecretContextType['setFormState'] = ({ type, data, formState }) => {
+        if (type === 'SET_DATA') {
+            formDataRef.current = data
+            setIsFormDirty(formState.isDirty)
+        } else {
+            formDataRef.current = null
+            setIsFormDirty(false)
+        }
     }
 
     const contextValue = useMemo<ConfigMapSecretContextType>(

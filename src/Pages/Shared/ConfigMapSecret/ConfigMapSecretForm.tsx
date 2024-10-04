@@ -72,14 +72,20 @@ export const ConfigMapSecretForm = ({
     const isUnAuthorized = configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
+    /**
+     * * In create mode, show the prompt only if the form has unsaved changes (i.e., form is dirty).
+     * * This ensures the user is warned about losing data when navigating away during creation.
+     * * Non-create mode is being handled by the parent component.
+     */
+    const shouldPrompt = isCreateView && formState.isDirty
 
     // UPDATING FORM STATE CONTEXT
     useEffect(() => {
-        setFormState(data, formState)
+        setFormState({ type: 'SET_DATA', data, formState })
     }, [data, formState])
 
     // PROMPT FOR UNSAVED CHANGES
-    usePrompt({ shouldPrompt: formState.isDirty })
+    usePrompt({ shouldPrompt })
 
     // METHODS
     const handleDataTypeSelectorChange = (item: ConfigMapSecretDataTypeOptionType) => {
@@ -311,7 +317,7 @@ export const ConfigMapSecretForm = ({
 
     return (
         <>
-            <Prompt when={formState.isDirty} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             <form
                 className="configmap-secret flexbox-col h-100 dc__overflow-hidden"
                 onSubmit={handleSubmit(onSubmit, onError)}

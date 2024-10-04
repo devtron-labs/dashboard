@@ -22,7 +22,7 @@ export const ConfigMapSecretDeleteModal = ({
     envId,
     componentType,
     id,
-    configMapSecretData,
+    configName,
     openDeleteModal,
     draftData,
     closeDeleteModal,
@@ -41,9 +41,9 @@ export const ConfigMapSecretDeleteModal = ({
         try {
             if (isDeleteOverride) {
                 if (componentType === CMSecretComponentType.Secret) {
-                    await deleteEnvSecret(id, appId, envId, configMapSecretData.name)
+                    await deleteEnvSecret(id, appId, envId, configName)
                 } else {
-                    await deleteEnvConfigMap(id, appId, envId, configMapSecretData.name)
+                    await deleteEnvConfigMap(id, appId, envId, configName)
                 }
 
                 ToastManager.showToast({
@@ -52,9 +52,9 @@ export const ConfigMapSecretDeleteModal = ({
                 })
             } else {
                 if (componentType === CMSecretComponentType.Secret) {
-                    await deleteSecret(id, appId, configMapSecretData.name)
+                    await deleteSecret(id, appId, configName)
                 } else {
-                    await deleteConfig(id, appId, configMapSecretData.name)
+                    await deleteConfig(id, appId, configName)
                 }
 
                 ToastManager.showToast({
@@ -83,7 +83,7 @@ export const ConfigMapSecretDeleteModal = ({
                     appId={+appId}
                     envId={envId ? +envId : -1}
                     resourceType={componentType}
-                    resourceName={configMapSecretData.name}
+                    resourceName={configName}
                     prepareDataToSave={prepareDataToDeleteOverrideDraft}
                     toggleModal={closeDeleteModal}
                     latestDraft={draftData}
@@ -98,7 +98,7 @@ export const ConfigMapSecretDeleteModal = ({
                 appId={+appId}
                 envId={envId ? +envId : -1}
                 resourceType={componentType}
-                resourceName={configMapSecretData.name}
+                resourceName={configName}
                 latestDraft={draftData}
                 toggleModal={closeDeleteModal}
                 reload={updateCMSecret}
@@ -111,12 +111,12 @@ export const ConfigMapSecretDeleteModal = ({
             title={
                 isDeleteOverride
                     ? 'Delete override ?'
-                    : `Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configMapSecretData.name}' ?`
+                    : `Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configName}' ?`
             }
             description={
                 isDeleteOverride
                     ? 'Are you sure you want to delete the modified configuration. This action can’t be undone.'
-                    : `'${configMapSecretData.name}' will not be used in future deployments. Are you sure?`
+                    : `'${configName}' will not be used in future deployments. Are you sure?`
             }
             closeDelete={closeDeleteModal}
             delete={handleDelete}

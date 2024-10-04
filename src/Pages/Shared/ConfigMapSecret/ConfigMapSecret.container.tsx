@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
@@ -20,9 +20,11 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
+import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 import ConfigHeader from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigHeader'
 import ConfigToolbar from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigToolbar'
 import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
@@ -78,7 +80,7 @@ export const ConfigMapSecretContainer = ({
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
-    const { isFormDirty } = useConfigMapSecretContext()
+    const { setFormState, isFormDirty } = useConfigMapSecretContext()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
@@ -120,6 +122,14 @@ export const ConfigMapSecretContainer = ({
         cmSecretStateLabel === CM_SECRET_STATE.BASE
             ? `${envId ? 'This is an environment specific' : 'base-placeholder-get-text'} ${componentName}`
             : null
+    /**
+     * * Show the prompt only when not in create mode, as unsaved changes are already handled in ConfigMapSecretForm.
+     * * During creation, route changes (/create -> /{configName}) would trigger an unnecessary prompt, so we skip it in that case.
+     */
+    const shouldPrompt = !isCreateState && isFormDirty
+
+    // PROMPT FOR UNSAVED CHANGES
+    usePrompt({ shouldPrompt })
 
     // USE EFFECTS
     useEffect(() => {
@@ -127,6 +137,7 @@ export const ConfigMapSecretContainer = ({
 
         return () => {
             abortRef.current.abort()
+            setFormState({ type: 'RESET' })
         }
     }, [envId])
 
@@ -478,7 +489,7 @@ export const ConfigMapSecretContainer = ({
                 id={id}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
-                configMapSecretData={configMapSecretData}
+                configMapSecretData={configMapSecretData ?? inheritedConfigMapSecretData}
                 isJob={isJob}
                 isProtected={isProtected}
                 isSubmitting={isSubmitting}
@@ -524,7 +535,7 @@ export const ConfigMapSecretContainer = ({
             componentType={componentType}
             openDeleteModal={openDeleteModal}
             draftData={draftData}
-            configMapSecretData={configMapSecretData}
+            configName={name}
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
@@ -550,7 +561,7 @@ export const ConfigMapSecretContainer = ({
         }
 
         return (
-            <div className="dc__border br-4 dc__overflow-hidden flexbox-col h-100 bcn-0">
+            <div className="flexbox-col h-100">
                 <ConfigHeader
                     configHeaderTab={configHeaderTab}
                     handleTabChange={setConfigHeaderTab}
@@ -593,36 +604,39 @@ export const ConfigMapSecretContainer = ({
     }
 
     return (
-        <div
-            className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
-        >
-            <div className="h-100 bcn-0">{renderContent()}</div>
-            {openDeleteModal && renderDeleteModal()}
-            {SaveChangesModal && showDraftSaveModal && (
-                <SaveChangesModal
-                    appId={+appId}
-                    envId={envId ? +envId : -1}
-                    resourceType={componentType}
-                    resourceName={draftPayload.configData[0].name}
-                    prepareDataToSave={() => draftPayload}
-                    toggleModal={toggleSaveChangesModal}
-                    latestDraft={draftData}
-                    reload={reloadSaveChangesModal}
-                    showAsModal
-                />
-            )}
-            {DraftComments && showComments && draftData && (
-                <DraftComments
-                    draftId={draftData.draftId}
-                    draftVersionId={draftData.draftVersionId}
-                    toggleDraftComments={toggleDraftComments}
-                />
-            )}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <div className="variables-widget-position-cm-cs">
-                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
-                </div>
-            )}
-        </div>
+        <>
+            <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <div
+                className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
+            >
+                <div className="dc__border br-4 dc__overflow-hidden h-100 bcn-0">{renderContent()}</div>
+                {openDeleteModal && renderDeleteModal()}
+                {SaveChangesModal && showDraftSaveModal && (
+                    <SaveChangesModal
+                        appId={+appId}
+                        envId={envId ? +envId : -1}
+                        resourceType={componentType}
+                        resourceName={draftPayload.configData[0].name}
+                        prepareDataToSave={() => draftPayload}
+                        toggleModal={toggleSaveChangesModal}
+                        latestDraft={draftData}
+                        reload={reloadSaveChangesModal}
+                        showAsModal
+                    />
+                )}
+                {DraftComments && showComments && draftData && (
+                    <DraftComments
+                        draftId={draftData.draftId}
+                        draftVersionId={draftData.draftVersionId}
+                        toggleDraftComments={toggleDraftComments}
+                    />
+                )}
+                {window._env_.ENABLE_SCOPED_VARIABLES && (
+                    <div className="variables-widget-position-cm-cs">
+                        <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                    </div>
+                )}
+            </div>
+        </>
     )
 }

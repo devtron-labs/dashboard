@@ -170,7 +170,6 @@ export const ConfigMapSecretData = ({
 
     /**
      * Determines the key to be used for the code editor form based on the current configuration.
-     *
      * @returns The key in the `data` object corresponding to the selected mode (ESO, HashiCorp/AWS, or YAML).
      */
     const getCodeEditorFormKey = (): keyof typeof data => {
@@ -184,6 +183,16 @@ export const ConfigMapSecretData = ({
         }
         // Otherwise, default to 'yaml'.
         return 'yaml'
+    }
+
+    const getCodeEditorValue = () => {
+        if (codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE) {
+            return YAMLStringify(sampleJSONs[data.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
+        }
+
+        return isLocked
+            ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
+            : (data[getCodeEditorFormKey()] as string)
     }
 
     // RENDERERS
@@ -256,19 +265,10 @@ export const ConfigMapSecretData = ({
     const renderCodeEditor = ({ sheBangText }: { sheBangText: string }) => {
         const { onChange, onFocus } = register(getCodeEditorFormKey(), null, { isCustomComponent: true })
 
-        const yamlValue = isLocked
-            ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
-            : (data[getCodeEditorFormKey()] as string)
-
-        const codeEditorValue =
-            codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
-                ? YAMLStringify(sampleJSONs[data.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
-                : yamlValue
-
         return (
             <div className="dc__border br-4 dc__overflow-hidden">
                 <CodeEditor
-                    value={codeEditorValue}
+                    value={getCodeEditorValue()}
                     onChange={!isLocked && codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA ? onChange : noop}
                     onFocus={onFocus}
                     mode="yaml"

@@ -282,7 +282,7 @@ export const ConfigMapSecretProtected = ({
     const renderContent = () => {
         switch (selectedProtectionViewTab) {
             case ProtectConfigTabsType.PUBLISHED:
-                if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED || !Object.keys(publishedConfigMapSecretData)) {
+                if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED || !publishedConfigMapSecretData) {
                     return <NoPublishedVersionEmptyState isOverride={false} />
                 }
 
