@@ -6,17 +6,21 @@ const ToggleResolveScopedVariables = ({
     resolveScopedVariables,
     handleToggleScopedVariablesView,
     isDisabled = false,
+    showTooltip = true,
 }: ToggleResolveScopedVariablesProps) => (
-    <Tooltip alwaysShowTippyOnHover content={resolveScopedVariables ? 'Hide variables value' : 'Show variables value'}>
+    <Tooltip
+        alwaysShowTippyOnHover={showTooltip}
+        content={resolveScopedVariables ? 'Hide variables value' : 'Show variables value'}
+    >
         <div className="w-28 h-18">
             <Toggle
                 selected={resolveScopedVariables}
-                color="var(--B300)"
+                color={resolveScopedVariables ? 'var(--B300)' : 'var(--N200)'}
                 onSelect={handleToggleScopedVariablesView}
                 Icon={ICViewVariableToggle}
                 disabled={isDisabled}
                 rootClassName="dc__toggle-square-toggle"
-                iconClass="scb-5"
+                iconClass={resolveScopedVariables ? 'scb-5' : 'scn-6'}
             />
         </div>
     </Tooltip>

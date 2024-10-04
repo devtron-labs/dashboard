@@ -43,12 +43,19 @@ export interface DeploymentTemplateChartStateType {
     globalChartDetails: DeploymentChartVersionType
 }
 
-export interface DeploymentTemplateOptionsHeaderProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
+export interface DeploymentTemplateEditorDataStateType
+    extends Omit<DeploymentTemplateConfigState, 'editorTemplateWithoutLockedKeys'> {
+    parsingError: string
+    removedPatches: Operation[]
+    originalTemplateState: DeploymentTemplateConfigState
+}
+
+export interface DeploymentTemplateOptionsHeaderProps
+    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'parsingError'> {
     disableVersionSelect: boolean
     handleChangeToGUIMode: () => void
     handleChangeToYAMLMode: () => void
-    unableToParseYaml: boolean
-    canEditTemplate: boolean
     restoreLastSavedTemplate: () => void
     handleChartChange: (selectedChart: DeploymentChartVersionType) => void
     selectedChart: DeploymentChartVersionType
@@ -58,13 +65,6 @@ export interface DeploymentTemplateOptionsHeaderProps extends Pick<DeploymentTem
     showReadMe: boolean
     isGuiSupported: boolean
     areChartsLoading: boolean
-}
-
-export interface DeploymentTemplateEditorDataStateType
-    extends Omit<DeploymentTemplateConfigState, 'editorTemplateWithoutLockedKeys'> {
-    unableToParseYaml: boolean
-    removedPatches: Operation[]
-    originalTemplateState: DeploymentTemplateConfigState
 }
 
 interface DeploymentTemplateEditorHeaderBaseProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
@@ -125,6 +125,7 @@ export interface DeploymentTemplateFormProps
     hideLockedKeys: boolean
     editMode: ConfigurationType
     showReadMe: boolean
+    isGuiSupported: boolean
 }
 
 export interface DeploymentTemplateGUIViewProps
@@ -154,9 +155,6 @@ export interface DeploymentTemplateCTAProps extends Pick<DeploymentTemplateProps
     selectedChart: DeploymentChartVersionType
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
-    // FIXME: Maybe not even needed here since compare tab is removed
-    isCompareView: boolean
-    showReadMe: boolean
 }
 
 export interface CompareWithValuesDataStoreItemType {
@@ -198,7 +196,12 @@ export interface DTChartSelectorProps
     extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
         Pick<
             DeploymentTemplateOptionsHeaderProps,
-            'isUnSet' | 'selectedChart' | 'disableVersionSelect' | 'areChartsLoading'
+            | 'isUnSet'
+            | 'selectedChart'
+            | 'disableVersionSelect'
+            | 'areChartsLoading'
+            | 'parsingError'
+            | 'restoreLastSavedTemplate'
         > {
     selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number

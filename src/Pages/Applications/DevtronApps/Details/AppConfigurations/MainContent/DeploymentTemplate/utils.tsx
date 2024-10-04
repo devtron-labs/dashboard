@@ -23,6 +23,7 @@ import {
     DeploymentTemplateStateType,
     GetDeploymentTemplateInitialStateParamsType,
 } from './types'
+import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -171,8 +172,8 @@ export const getDeploymentTemplateInitialState = ({
     },
     showSaveChangesModal: false,
     popupNodeType: null,
-    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType.APPROVAL_PENDING,
-    dryRunEditorMode: DryRunEditorMode.PUBLISHED_VALUES,
+    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType.VALUES_FROM_DRAFT,
+    dryRunEditorMode: DryRunEditorMode.VALUES_FROM_DRAFT,
     showDeleteOverrideDialog: false,
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
@@ -237,7 +238,7 @@ const handleRestoreLastSavedTemplate = (state: DeploymentTemplateStateType): Dep
         ...originalTemplateData,
         editorTemplate: state.hideLockedKeys ? editorTemplate : stringifiedYAML,
         removedPatches: state.hideLockedKeys ? removedPatches : [],
-        unableToParseYaml: false,
+        parsingError: '',
         originalTemplateState: originalTemplateData,
     }
 
@@ -359,7 +360,7 @@ export const deploymentTemplateReducer = (
 
                 ...(isChartTypeChanged && {
                     editorTemplate: selectedChartTemplateDetails.editorTemplate,
-                    unableToParseYaml: false,
+                    parsingError: '',
                     // Not resetting originalTemplate since we are not changing it
                 }),
             }
@@ -422,13 +423,13 @@ export const deploymentTemplateReducer = (
             const currentEditorTemplateData: typeof state.currentEditorTemplateData = {
                 ...state.currentEditorTemplateData,
                 editorTemplate: template,
-                unableToParseYaml: false,
+                parsingError: '',
             }
 
             try {
                 YAML.parse(template)
-            } catch {
-                currentEditorTemplateData.unableToParseYaml = true
+            } catch (error) {
+                currentEditorTemplateData.parsingError = error.message || 'Unable to parse YAML'
             }
 
             return {
@@ -567,6 +568,7 @@ export const deploymentTemplateReducer = (
         case DeploymentTemplateActionType.CHANGE_COMPARE_FROM_SELECTED_OPTION:
             return {
                 ...state,
+                ...handleUnResolveScopedVariables(),
                 compareFromSelectedOptionValue: action.payload.compareFromSelectedOptionValue,
             }
 
@@ -686,4 +688,12 @@ export const deploymentTemplateReducer = (
         default:
             return state
     }
+}
+
+export const getDeploymentTemplateResourceName = (environmentName: string): string => {
+    if (environmentName) {
+        return `${environmentName}-DeploymentTemplateOverride`
+    }
+
+    return PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
 }

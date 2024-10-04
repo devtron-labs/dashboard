@@ -56,7 +56,17 @@ interface ConfigToolbarPopupConfigType {
     popupMenuNode?: ReactNode
 }
 
-export interface ConfigToolbarProps {
+type ConfigToolbarReadMeProps =
+    | {
+          showEnableReadMeButton: boolean
+          handleEnableReadmeView: () => void
+      }
+    | {
+          showEnableReadMeButton?: never
+          handleEnableReadmeView?: never
+      }
+
+export type ConfigToolbarProps = {
     configHeaderTab: ConfigHeaderTabType
     handleToggleScopedVariablesView: () => void
     resolveScopedVariables: boolean
@@ -88,10 +98,6 @@ export interface ConfigToolbarProps {
      */
     children?: ReactNode
     /**
-     * If provided, will show the button to enable the readme view
-     */
-    handleEnableReadmeView?: () => void
-    /**
      * If provided, will show popup menu on click three dots button
      * If empty/null, will not show the button
      */
@@ -107,14 +113,12 @@ export interface ConfigToolbarProps {
     isDraftPresent?: boolean
     approvalUsers: string[]
     /**
-     * Loading state fetching initial info (template, draft info, etc) to hide comments, approvals.
-     */
-    isLoadingInitialData: boolean
-    /**
      * @default - false
      * If given would disable all the actions
      */
     disableAllActions?: boolean
+    parsingError: string
+    restoreLastSavedYAML: () => void
     /**
      * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
      * @default - true
@@ -122,7 +126,7 @@ export interface ConfigToolbarProps {
      */
     isPublishedConfigPresent?: boolean
     handleClearPopupNode: () => void
-}
+} & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
     /**
@@ -170,6 +174,10 @@ export interface ToggleResolveScopedVariablesProps {
     resolveScopedVariables: boolean
     handleToggleScopedVariablesView: () => void
     isDisabled?: boolean
+    /**
+     * @default true
+     */
+    showTooltip?: boolean
 }
 
 export enum DeploymentTemplateComponentType {
@@ -220,4 +228,8 @@ export interface CompareConfigViewProps {
     draftChartVersion?: string
     selectedChartVersion?: string
     isDeleteDraft: boolean
+}
+
+export interface BaseConfigurationNavigationProps {
+    baseConfigurationURL: string
 }

@@ -24,6 +24,7 @@ import {
     SelectPickerOptionType,
     SelectPickerVariantType,
     versionComparatorBySortOrder,
+    InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
@@ -205,6 +206,8 @@ const DTChartSelector = ({
     selectChart,
     selectedChartRefId,
     areChartsLoading,
+    parsingError,
+    restoreLastSavedTemplate,
 }: DTChartSelectorProps) => {
     const filteredCharts = selectedChart
         ? charts
@@ -254,26 +257,30 @@ const DTChartSelector = ({
 
     return (
         <div className="flexbox dc__gap-8 dc__align-items-center">
-            <div className="flexbox dc__gap-8 dc__align-items-center">
-                <span className="fs-12 lh-18 fw-4 cn-7">Chart</span>
-                <ChartSelectorDropdown
-                    charts={charts}
-                    chartsMetadata={chartsMetadata}
-                    selectedChartRefId={selectedChartRefId}
-                    selectChart={selectChart}
-                    selectedChart={selectedChart}
-                    isUnSet={isUnSet}
-                    areChartsLoading={areChartsLoading}
-                />
-            </div>
+            <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedTemplate}>
+                <div className="flexbox dc__gap-8 dc__align-items-center">
+                    <span className="fs-12 lh-18 fw-4 cn-7">Chart</span>
+                    <ChartSelectorDropdown
+                        charts={charts}
+                        chartsMetadata={chartsMetadata}
+                        selectedChartRefId={selectedChartRefId}
+                        selectChart={selectChart}
+                        selectedChart={selectedChart}
+                        isUnSet={isUnSet}
+                        areChartsLoading={areChartsLoading}
+                    />
+                </div>
+            </InvalidYAMLTippyWrapper>
 
-            <div className="flexbox dc__gap-8 dc__align-items-center">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className="fs-12 fw-4 cn-7 m-0 lh-18" id="dt-chart-version-select">
-                    Version
-                </label>
-                {renderVersionSelector()}
-            </div>
+            <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedTemplate}>
+                <div className="flexbox dc__gap-8 dc__align-items-center">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label className="fs-12 fw-4 cn-7 m-0 lh-18" id="dt-chart-version-select">
+                        Version
+                    </label>
+                    {renderVersionSelector()}
+                </div>
+            </InvalidYAMLTippyWrapper>
         </div>
     )
 }

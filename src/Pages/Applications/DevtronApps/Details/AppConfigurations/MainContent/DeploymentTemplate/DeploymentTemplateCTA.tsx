@@ -9,9 +9,7 @@ const DeploymentTemplateCTA = ({
     isDisabled,
     isAppMetricsEnabled,
     showApplicationMetrics,
-    showReadMe,
     selectedChart,
-    isCompareView,
     isCiPipeline,
     handleSave,
     toggleAppMetrics,
@@ -20,8 +18,6 @@ const DeploymentTemplateCTA = ({
 
     return (
         <footer className="flexbox dc__content-space py-16 px-20 bcn-0 dc__border-top dc__align-items-center">
-            {isCompareView && <div className="w-50" />}
-
             <div
                 className={`flexbox ${showApplicationMetrics ? 'dc__content-space' : 'dc__content-end'} dc__align-items-center flex-grow-1`}
             >
@@ -32,8 +28,6 @@ const DeploymentTemplateCTA = ({
                     isDisabled={isDisabled}
                     toggleAppMetrics={toggleAppMetrics}
                     isAppMetricsEnabled={isAppMetricsEnabled}
-                    showReadMe={showReadMe}
-                    isCompareView={isCompareView}
                 />
 
                 <Button

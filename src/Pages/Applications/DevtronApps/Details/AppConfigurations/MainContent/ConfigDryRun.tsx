@@ -68,7 +68,7 @@ const ConfigDryRun = ({
     }
 
     return (
-        <div className={`${showManifest ? 'dc__grid-half h-100' : 'flexbox-col w-100 h-100'}`}>
+        <div className={`dc__overflow-scroll ${showManifest ? 'dc__grid-half h-100' : 'flexbox-col w-100 h-100'}`}>
             <div className="flexbox-col">
                 <div className="py-6 px-12 flexbox dc__content-space dc__border-bottom">
                     <div className="flexbox dc__gap-8">
