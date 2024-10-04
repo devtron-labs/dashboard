@@ -27,6 +27,8 @@ export interface ConfigHeaderProps {
      * In case of true, we show Override
      */
     isPublishedTemplateOverridden: boolean
+    parsingError: string
+    restoreLastSavedYAML: () => void
 }
 
 export interface ConfigHeaderTabProps
@@ -37,6 +39,7 @@ export interface ConfigHeaderTabProps
     tab: ConfigHeaderTabType
     activeTabIndex: number
     currentTabIndex: number
+    hasError: boolean
 }
 
 export interface ConfigHeaderTabConfigType {

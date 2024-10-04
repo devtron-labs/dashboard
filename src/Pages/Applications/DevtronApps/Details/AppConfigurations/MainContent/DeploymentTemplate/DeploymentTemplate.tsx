@@ -1888,6 +1888,8 @@ const DeploymentTemplate = ({
                     areChangesPresent={areChangesPresent}
                     isOverridable={!!envId}
                     isPublishedTemplateOverridden={publishedTemplateData?.isOverridden}
+                    parsingError={currentEditorTemplateData?.parsingError}
+                    restoreLastSavedYAML={restoreLastSavedTemplate}
                 />
 
                 {!showNoOverrideEmptyState && (

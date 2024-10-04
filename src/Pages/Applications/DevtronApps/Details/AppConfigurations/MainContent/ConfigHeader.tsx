@@ -1,4 +1,10 @@
-import { ActivityIndicator, CONFIG_HEADER_TAB_VALUES, ConfigHeaderTabType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActivityIndicator,
+    CONFIG_HEADER_TAB_VALUES,
+    ConfigHeaderTabType,
+    InvalidYAMLTippyWrapper,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ConfigHeaderProps, ConfigHeaderTabProps } from './types'
 import { getConfigHeaderTabConfig } from './utils'
 
@@ -11,6 +17,7 @@ const ConfigHeaderTab = ({
     areChangesPresent,
     isOverridable,
     isPublishedTemplateOverridden,
+    hasError,
 }: ConfigHeaderTabProps) => {
     const handleChange = () => {
         handleTabChange(tab)
@@ -29,10 +36,14 @@ const ConfigHeaderTab = ({
             onClick={handleChange}
             type="button"
             disabled={isDisabled}
-            className={`dc__transparent flexbox dc__align-items-center dc__gap-6 py-8 px-12 ${isDisabled ? 'dc__disabled' : ''} ${isActive ? 'bcn-0 scn-9 cn-9' : 'bc-n50 cn-7 scn-7 dc__border-bottom'} ${isNextTabActive ? 'dc__border-right' : ''} ${isPreviousTabActive ? 'dc__border-left' : ''} fs-12 fw-6 lh-20`}
+            className={`dc__transparent flexbox dc__align-items-center dc__gap-6 py-8 px-12 ${isDisabled && !hasError ? 'dc__disabled' : ''} ${isActive ? 'bcn-0 cn-9' : 'bc-n50 cn-7 dc__border-bottom'} ${isNextTabActive ? 'dc__border-right' : ''} ${isPreviousTabActive ? 'dc__border-left' : ''} fs-12 fw-6 lh-20`}
             role="tab"
         >
-            <Icon className="icon-dim-16 dc__no-shrink" />
+            {hasError ? (
+                <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
+            ) : (
+                <Icon className="icon-dim-16 dc__no-shrink" />
+            )}
             <span>{text}</span>
             {showUnsavedChangesIndicator && (
                 <ActivityIndicator iconSizeClass="icon-dim-8" backgroundColorClass="bcy-5" />
@@ -48,6 +59,8 @@ const ConfigHeader = ({
     areChangesPresent,
     isOverridable,
     isPublishedTemplateOverridden,
+    parsingError,
+    restoreLastSavedYAML,
 }: ConfigHeaderProps) => {
     const validTabKeys = isOverridable
         ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
@@ -57,17 +70,25 @@ const ConfigHeader = ({
     return (
         <div className="flexbox w-100 dc__align-items-center">
             {validTabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
-                <ConfigHeaderTab
+                <InvalidYAMLTippyWrapper
                     key={currentTab}
-                    handleTabChange={handleTabChange}
-                    tab={currentTab}
-                    activeTabIndex={activeTabIndex}
-                    currentTabIndex={index}
-                    isDisabled={isDisabled}
-                    areChangesPresent={areChangesPresent}
-                    isOverridable={isOverridable}
-                    isPublishedTemplateOverridden={isPublishedTemplateOverridden}
-                />
+                    parsingError={parsingError}
+                    restoreLastSavedYAML={restoreLastSavedYAML}
+                >
+                    <div>
+                        <ConfigHeaderTab
+                            handleTabChange={handleTabChange}
+                            tab={currentTab}
+                            activeTabIndex={activeTabIndex}
+                            currentTabIndex={index}
+                            isDisabled={isDisabled}
+                            areChangesPresent={areChangesPresent}
+                            isOverridable={isOverridable}
+                            isPublishedTemplateOverridden={isPublishedTemplateOverridden}
+                            hasError={!!parsingError && currentTab === ConfigHeaderTabType.VALUES}
+                        />
+                    </div>
+                </InvalidYAMLTippyWrapper>
             ))}
 
             <div
