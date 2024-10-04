@@ -21,7 +21,6 @@ import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
 import { RootBuildContext } from './ciConfigConstant'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
-import { getGitProviderIcon } from '@Components/common'
 import { getSelectStartIcon } from './utils'
 
 export default function CICreateDockerfileOption({

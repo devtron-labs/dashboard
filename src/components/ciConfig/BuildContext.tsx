@@ -17,7 +17,13 @@
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent, useEffect, useState } from 'react'
-import { CustomInput, OptionType, InfoIconTippy, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CustomInput,
+    OptionType,
+    InfoIconTippy,
+    SelectPicker,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -178,6 +184,7 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             options={sourceConfig.material}
                             value={getSelectedBuildContextGitMaterial()}
                             onChange={handleBuildContextPathChange}
+                            size={ComponentSizeType.large}
                         />
 
                         {repositoryError && <label className="form__error">{repositoryError}</label>}
@@ -199,6 +206,7 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                                 getOptionValue={(option) => `${option.value}`}
                                 value={getCheckoutPathValue(useRootBuildContextFlag)}
                                 onChange={handleBuildContextCheckoutPathChange}
+                                size={ComponentSizeType.large}
                             />
 
                             <CustomInput
