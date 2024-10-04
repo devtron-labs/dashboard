@@ -22,11 +22,10 @@ export interface ConfigHeaderProps {
      */
     isOverridable: boolean
     /**
-     * This prop holds meaning if isOverridable is true
-     * This depicts if we show No override if false,
-     * In case of true, we show Override
+     * This means that we are showing no override empty state, i.e, currently we are inheriting base config
+     * and our editable state is also not overriding the base config.
      */
-    isPublishedTemplateOverridden: boolean
+    showNoOverride: boolean
     parsingError: string
     restoreLastSavedYAML: () => void
 }
@@ -34,7 +33,7 @@ export interface ConfigHeaderProps {
 export interface ConfigHeaderTabProps
     extends Pick<
         ConfigHeaderProps,
-        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'isPublishedTemplateOverridden'
+        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'showNoOverride'
     > {
     tab: ConfigHeaderTabType
     activeTabIndex: number

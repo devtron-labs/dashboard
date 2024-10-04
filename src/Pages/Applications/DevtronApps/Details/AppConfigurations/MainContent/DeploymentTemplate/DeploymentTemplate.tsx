@@ -1891,7 +1891,7 @@ const DeploymentTemplate = ({
                     isDisabled={!!currentEditorTemplateData?.parsingError}
                     areChangesPresent={areChangesPresent}
                     isOverridable={!!envId}
-                    isPublishedTemplateOverridden={publishedTemplateData?.isOverridden}
+                    showNoOverride={showNoOverrideEmptyState}
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
                 />

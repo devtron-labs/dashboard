@@ -16,7 +16,7 @@ const ConfigHeaderTab = ({
     isDisabled,
     areChangesPresent,
     isOverridable,
-    isPublishedTemplateOverridden,
+    showNoOverride,
     hasError,
 }: ConfigHeaderTabProps) => {
     const handleChange = () => {
@@ -28,7 +28,7 @@ const ConfigHeaderTab = ({
     const isNextTabActive = activeTabIndex === currentTabIndex + 1
     const showUnsavedChangesIndicator = areChangesPresent && tab === ConfigHeaderTabType.VALUES
 
-    const { icon: Icon, text } = getConfigHeaderTabConfig(tab, isOverridable, isPublishedTemplateOverridden)
+    const { icon: Icon, text } = getConfigHeaderTabConfig(tab, isOverridable, showNoOverride)
 
     return (
         <button
@@ -58,7 +58,7 @@ const ConfigHeader = ({
     isDisabled,
     areChangesPresent,
     isOverridable,
-    isPublishedTemplateOverridden,
+    showNoOverride,
     parsingError,
     restoreLastSavedYAML,
 }: ConfigHeaderProps) => {
@@ -84,7 +84,7 @@ const ConfigHeader = ({
                             isDisabled={isDisabled}
                             areChangesPresent={areChangesPresent}
                             isOverridable={isOverridable}
-                            isPublishedTemplateOverridden={isPublishedTemplateOverridden}
+                            showNoOverride={showNoOverride}
                             hasError={!!parsingError && currentTab === ConfigHeaderTabType.VALUES}
                         />
                     </div>
