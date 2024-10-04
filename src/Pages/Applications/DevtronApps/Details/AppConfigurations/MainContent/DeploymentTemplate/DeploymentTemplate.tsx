@@ -203,6 +203,8 @@ const DeploymentTemplate = ({
           selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
         : configHeaderTab === ConfigHeaderTabType.VALUES
 
+    const isDeleteOverrideDraft = draftTemplateData?.latestDraft?.action === 3
+
     const isGuiSupported = isEditMode
 
     const baseDeploymentTemplateURL = envId
@@ -377,8 +379,6 @@ const DeploymentTemplate = ({
     }
 
     // TODO: Check all YAMLStringify for locked keys
-    // FIXME: Maybe can remove param as well
-
     const handleSetHideLockedKeys = (value: boolean) => {
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
@@ -1416,6 +1416,10 @@ const DeploymentTemplate = ({
                 : publishedTemplateData.editorTemplate
         }
 
+        if (isCompareView && isDeleteOverrideDraft) {
+            return ''
+        }
+
         if (isApprovalPendingOptionSelected) {
             return hideLockedKeys ? draftTemplateData.editorTemplateWithoutLockedKeys : draftTemplateData.editorTemplate
         }
@@ -1531,6 +1535,13 @@ const DeploymentTemplate = ({
                     value: String(templateState?.isAppMetricsEnabled),
                 },
             }),
+            ...(envId &&
+                isDeleteOverrideDraft && {
+                    isOverride: {
+                        displayName: 'Configuration',
+                        value: 'Inherit from base',
+                    },
+                }),
         }
     }
 
@@ -1558,6 +1569,13 @@ const DeploymentTemplate = ({
                     value: String(publishedTemplateData?.isAppMetricsEnabled),
                 },
             }),
+            ...(envId &&
+                isDeleteOverrideDraft && {
+                    isOverride: {
+                        displayName: 'Configuration',
+                        value: 'Overridden',
+                    },
+                }),
         }
     }
 
@@ -1609,7 +1627,6 @@ const DeploymentTemplate = ({
                     publishedEditorTemplate={YAML.parse(getPublishedTemplate())}
                     selectedChartVersion={getCurrentTemplateSelectedChart().version}
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
-                    isDeleteDraft={draftTemplateData?.latestDraft?.action === 3}
                 />
             )
         }
@@ -1652,7 +1669,6 @@ const DeploymentTemplate = ({
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
                 showReadMe={showReadMe}
-                // TODO: Show readme only in case of edit/values mode
                 readMe={currentEditorTemplateData?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}

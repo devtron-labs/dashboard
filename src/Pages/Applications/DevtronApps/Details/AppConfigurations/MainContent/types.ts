@@ -208,12 +208,14 @@ type DeploymentTemplateDiffViewConfigType =
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
           mergeStrategy: DeploymentHistorySingleValue
+          isOverride?: DeploymentHistorySingleValue
       }
     | {
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
           mergeStrategy?: never
+          isOverride?: never
       }
 
 export interface CompareConfigViewProps {
@@ -229,7 +231,6 @@ export interface CompareConfigViewProps {
     publishedEditorConfig: DeploymentTemplateDiffViewConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
-    isDeleteDraft: boolean
 }
 
 export interface BaseConfigurationNavigationProps {
