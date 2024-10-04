@@ -69,7 +69,6 @@ export default function CIConfig({
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
                 const _sourceConfig = { ...sourceConfig }
                 const sourceConfigMaterial = sourceConfig.material?.map((material: MaterialOptionType) => {
-                    console.log(material)
                     return {
                         ...material,
                         label: material?.name,
