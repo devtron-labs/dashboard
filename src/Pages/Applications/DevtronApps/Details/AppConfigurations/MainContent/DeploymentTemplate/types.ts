@@ -17,6 +17,7 @@ import {
     DryRunEditorMode,
     ConfigHeaderTabType,
     ProtectConfigTabsType,
+    DraftMetadataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface DeploymentTemplateProps {
@@ -67,65 +68,22 @@ export interface DeploymentTemplateOptionsHeaderProps
     areChartsLoading: boolean
 }
 
-interface DeploymentTemplateEditorHeaderBaseProps extends Pick<DeploymentTemplateProps, 'isUnSet'> {
-    /**
-     * Chart version of editable template
-     */
-    selectedChartVersion: string
-    isOverridden: boolean
-    handleOverride: () => void
-    showOverrideButton: boolean
-    environmentName: string
-    latestDraft: any
-    readOnly: boolean
-    showReadMe: boolean
-}
-
-interface DeploymentTemplateEditorHeaderCompareViewProps {
-    isCompareView: true
-    selectedCompareWithOption: SelectPickerOptionType
-    handleCompareWithOptionChange: (selectedOption: SelectPickerOptionType) => void
-    compareWithOptions: CompareWithTemplateGroupedSelectPickerOptionType[]
-    isApprovalView: boolean
-    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
-    handleCompareFromOptionSelection: (selectedOption: SelectPickerOptionType) => void
-    draftChartVersion: string
-    isDeleteOverrideDraftState: boolean
-}
-
-interface DeploymentTemplateEditorHeaderNonCompareViewProps {
-    isCompareView?: false
-    isApprovalView?: false
-    selectedCompareWithOption?: never
-    handleCompareWithOptionChange?: never
-    compareWithOptions?: never
-    compareFromSelectedOptionValue?: never
-    handleCompareFromOptionSelection?: never
-    draftChartVersion?: never
-    isDeleteOverrideDraftState?: never
-}
-
-export type DeploymentTemplateEditorHeaderProps = DeploymentTemplateEditorHeaderBaseProps &
-    (DeploymentTemplateEditorHeaderCompareViewProps | DeploymentTemplateEditorHeaderNonCompareViewProps)
-
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
-        Pick<DeploymentTemplateEditorHeaderProps, 'isOverridden' | 'environmentName' | 'latestDraft'> {
+    extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'> {
     editorOnChange: (value: string) => void
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     readOnly: boolean
     editedDocument: string
     uneditedDocument: string
     readMe: string
-    isPublishedValuesView: boolean
-    handleOverride: () => void
     handleChangeToYAMLMode: () => void
     hideLockedKeys: boolean
     editMode: ConfigurationType
     showReadMe: boolean
     isGuiSupported: boolean
+    latestDraft: DraftMetadataDTO
 }
 
 export interface DeploymentTemplateGUIViewProps

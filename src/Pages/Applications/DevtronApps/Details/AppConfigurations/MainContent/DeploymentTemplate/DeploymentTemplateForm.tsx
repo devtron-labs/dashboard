@@ -1,8 +1,9 @@
 import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { DeploymentTemplateFormProps } from './types'
-import DeploymentTemplateEditorHeader from './DeploymentTemplateEditorHeader'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -19,11 +20,8 @@ const DeploymentTemplateForm = ({
     uneditedDocument,
     showReadMe,
     readMe,
-    isOverridden,
     environmentName,
     latestDraft,
-    isPublishedValuesView,
-    handleOverride,
     isGuiSupported,
 }: DeploymentTemplateFormProps) => {
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
@@ -46,7 +44,45 @@ const DeploymentTemplateForm = ({
         )
     }
 
-    // TODO: re-look into css
+    const getHeadingPrefix = (): string => {
+        if (latestDraft) {
+            return 'Last saved draft'
+        }
+
+        if (environmentName) {
+            return environmentName
+        }
+
+        return DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label
+    }
+
+    const renderEditorHeader = () => {
+        if (showReadMe) {
+            return (
+                <CodeEditor.Header className="flex left p-0-imp dc__border-bottom" hideDefaultSplitHeader>
+                    <div className="flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 bcn-0">
+                        <div className="flexbox w-100 dc__gap-8 dc__align-items-center">
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
+
+                                <span className="cn-9 fs-12 fw-6 lh-20">
+                                    {getHeadingPrefix()}
+                                    {selectedChart?.version && ` (v${selectedChart.version})`}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </CodeEditor.Header>
+            )
+        }
+
+        if (isUnSet) {
+            return <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
+        }
+
+        return null
+    }
+
     return (
         <div className={`dc__overflow-scroll flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
@@ -71,19 +107,7 @@ const DeploymentTemplateForm = ({
                     noParsing
                     height="100%"
                 >
-                    <DeploymentTemplateEditorHeader
-                        showReadMe={showReadMe}
-                        isCompareView={false}
-                        readOnly={readOnly}
-                        isUnSet={isUnSet}
-                        selectedChartVersion={selectedChart?.version || ''}
-                        isOverridden={isOverridden}
-                        handleOverride={handleOverride}
-                        // Since compare view is not here, we can only pass check for isPublishedValuesView
-                        showOverrideButton={!isPublishedValuesView}
-                        environmentName={environmentName}
-                        latestDraft={latestDraft}
-                    />
+                    {renderEditorHeader()}
                 </CodeEditor>
             </div>
         </div>

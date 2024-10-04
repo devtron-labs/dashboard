@@ -664,18 +664,6 @@ const DeploymentTemplate = ({
         return currentEditorTemplateData?.schema
     }
 
-    const getIsCurrentTemplateOverridden = (): boolean => {
-        if (isInheritedView) {
-            return false
-        }
-
-        if (isPublishedValuesView && publishedTemplateData) {
-            return publishedTemplateData.isOverridden
-        }
-
-        return currentEditorTemplateData?.isOverridden
-    }
-
     const handleFetchBaseDeploymentTemplate = async (
         globalChartDetails: DeploymentChartVersionType,
         lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
@@ -1658,7 +1646,6 @@ const DeploymentTemplate = ({
                 selectedChart={getCurrentTemplateSelectedChart()}
                 guiSchema={getCurrentTemplateGUISchema()}
                 schema={getCurrentEditorSchema()}
-                isOverridden={getIsCurrentTemplateOverridden()}
                 isUnSet={isUnSet}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
                 editorOnChange={handleEditorChange}
@@ -1669,8 +1656,6 @@ const DeploymentTemplate = ({
                 readMe={currentEditorTemplateData?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
-                isPublishedValuesView={isPublishedValuesView}
-                handleOverride={handleOverride}
                 isGuiSupported={isGuiSupported}
             />
         )
