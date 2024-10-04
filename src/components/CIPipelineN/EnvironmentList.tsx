@@ -22,7 +22,7 @@ import {
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
-import { EnvironmentListType } from './types'
+import { EnvironmentListType, EnvironmentWithSelectPickerType } from './types'
 import { GroupBase } from 'react-select'
 
 export const EnvironmentList = ({
@@ -41,7 +41,7 @@ export const EnvironmentList = ({
 
     const envList = createClusterEnvGroup(environments as Environment[], 'clusterName')
 
-    const getEnvListOptions = (): GroupBase<SelectPickerOptionType<Environment>>[] =>
+    const getEnvListOptions = (): GroupBase<EnvironmentWithSelectPickerType>[] =>
         envList.reduce((acc, _elm) => {
             if (_elm.label) {
                 return [
@@ -71,11 +71,11 @@ export const EnvironmentList = ({
             ]
         }, [])
 
-    const getSelectedEnvironment = (): SelectPickerOptionType<Environment> => {
-        let _selectedEnv: SelectPickerOptionType<Environment> = {
+    const getSelectedEnvironment = (): EnvironmentWithSelectPickerType => {
+        let _selectedEnv: EnvironmentWithSelectPickerType = {
             ...selectedEnv,
             label: selectedEnv?.name,
-            value: selectedEnv, // assuming the whole object is set as value
+            value: selectedEnv?.id, // assuming the whole object is set as value
             startIcon: !isBuildStage ? <div className="dc__environment-icon" /> : null,
         }
 
@@ -96,7 +96,7 @@ export const EnvironmentList = ({
         >
             <div className={`${!isBuildStage ? 'w-250 dc__align-items-center flex left' : ''}`}>
                 {getEnvironmentSelectLabel()}
-                <SelectPicker<Environment, false>
+                <SelectPicker
                     required
                     inputId="job-pipeline-environment-dropdown"
                     name="job-pipeline-environment-dropdown"

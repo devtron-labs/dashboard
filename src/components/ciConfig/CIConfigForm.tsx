@@ -74,9 +74,9 @@ export default function CIConfigForm({
                 )
               : sourceConfig.material[0]
 
-    const getCurrentMaterial = (): SelectedGitMaterialType => {
+    const getParsedCurrentMaterial = (material?): SelectedGitMaterialType => {
         const _currentMaterial: SelectedGitMaterialType = {
-            ...currentMaterial,
+            ...(material ? material : currentMaterial),
             value: currentMaterial.checkoutPath,
             label: currentMaterial.name,
             startIcon: getGitProviderIcon(currentMaterial.url),
@@ -87,14 +87,14 @@ export default function CIConfigForm({
     const getParsedSourceConfig = (): SourceConfigType => {
         const _sourceConfig = { ...sourceConfig }
         _sourceConfig.material = _sourceConfig.material.map((_material) => {
-            return { ..._material, value: _material.checkoutPath, label: _material.name, startIcon: getGitProviderIcon(_material.url) }
+            return getParsedCurrentMaterial(_material)
         })
         return _sourceConfig
     }
 
-    const currentBuildContextGitMaterial = buildCtxGitMaterial || getCurrentMaterial()
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || getParsedCurrentMaterial()
 
-    const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(getCurrentMaterial)
+    const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(getParsedCurrentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)
     const currentRegistry =
@@ -360,7 +360,7 @@ export default function CIConfigForm({
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     selectedCIPipeline={selectedCIPipeline}
-                    currentMaterial={getCurrentMaterial()}
+                    currentMaterial={getParsedCurrentMaterial()}
                     currentBuildContextGitMaterial={currentBuildContextGitMaterial}
                     selectedMaterial={selectedMaterial}
                     selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}

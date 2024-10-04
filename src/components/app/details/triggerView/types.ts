@@ -43,6 +43,7 @@ import {
     Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { WorkflowDimensions } from './config'
@@ -222,8 +223,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
         action: any
         metadataField: string
     }
-    selectedEnv?: Environment
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
+    selectedEnv?: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     environmentLists?: any[]
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange

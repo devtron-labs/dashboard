@@ -25,10 +25,10 @@ import {
     CommonNodeAttr,
     WorkflowType,
     Material,
-    Environment,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
@@ -373,9 +373,9 @@ export interface CIPipelineSidebarType {
             postBuildStage: Map<string, VariableType>[]
         }>
     >
-    environments?: Environment[]
-    selectedEnv?: Environment
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
+    environments?: EnvironmentWithSelectPickerType[]
+    selectedEnv?: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
 }
 
 export interface TaskListType {

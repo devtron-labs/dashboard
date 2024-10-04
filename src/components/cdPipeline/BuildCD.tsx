@@ -61,7 +61,7 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
-import { GroupBase } from 'react-select'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -149,7 +149,7 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const selectEnvironment = (selection: Environment): void => {
+    const selectEnvironment = (selection: EnvironmentWithSelectPickerType): void => {
         const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
@@ -378,9 +378,10 @@ export default function BuildCD({
     const renderEnvSelector = () => {
         const envId = formData.environmentId
         const _environment = formData.environments.find((env) => env.id == envId)
-        const selectedEnv = {
-            label: _environment?.name,
-            value: _environment,
+        const selectedEnv: EnvironmentWithSelectPickerType = _environment &&{
+            ..._environment,
+            label: _environment.name,
+            value: _environment.id.toString(),
         }
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
@@ -390,18 +391,19 @@ export default function BuildCD({
             }
         }
 
-        const getEnvListOptions = (): GroupBase<SelectPickerOptionType<Environment>>[] =>
+        const getEnvListOptions = () =>
             envList.map((_elm) => ({
                 label: `Cluster: ${_elm.label}`,
                 options: _elm.options.map((_option) => ({
+                    ..._option,
                     label: _option?.name,
-                    value: _option,
+                    value: _option?.id.toString(),
                 })),
             }))
 
         return (
             <>
-                <SelectPicker<Environment, false>
+                <SelectPicker
                     label="Environment"
                     required
                     inputId="environment"
@@ -413,13 +415,13 @@ export default function BuildCD({
                     options={
                         releaseMode === ReleaseMode.MIGRATE_HELM
                             ? getEnvListOptions().filter((env) =>
-                                  env.options.filter(({ value }) => !value.isVirtualEnvironment),
+                                  env.options.filter((_env) => !_env.isVirtualEnvironment),
                               )
                             : getEnvListOptions()
                     }
                     value={selectedEnv}
-                    getOptionValue={(option) => option.value?.id as unknown as string}
-                    onChange={(selected) => selectEnvironment(selected.value)}
+                    getOptionValue={(option) => option.value as unknown as string}
+                    onChange={selectEnvironment}
                     size={ComponentSizeType.large}
                 />
                 {isEnvUsedState && (
