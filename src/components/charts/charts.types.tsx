@@ -401,3 +401,9 @@ export interface ChartHeaderFilterProps {
     isGrid: boolean
     setIsGrid: (isGrid: boolean) => void
 }
+
+export interface DeleteInstalledChartParamsType {
+    forceDelete?: true
+    partialDelete?: true
+    cascade?: false
+}

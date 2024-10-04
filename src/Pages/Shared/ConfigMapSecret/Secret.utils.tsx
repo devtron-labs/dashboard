@@ -337,10 +337,22 @@ export const hasESO = (externalType): boolean =>
 
 export const hasProperty = (externalType): boolean => externalType === 'ESO_AWSSecretsManager'
 
-export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) => {
+export const secretValidationInfoToast = ({
+    isESO,
+    esoData,
+    esoDataFrom,
+    secretStore,
+    secretStoreRef,
+}: {
+    isESO: boolean
+} & Pick<SecretState, 'esoData' | 'esoDataFrom' | 'secretStore' | 'secretStoreRef'>) => {
     let errorMessage = ''
     if (isESO) {
-        if (secretStore && secretStoreRef) {
+        if (esoDataFrom && esoData) {
+            errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE
+        } else if (!esoDataFrom && !esoData) {
+            errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_UNAVAILABLE
+        } else if (secretStore && secretStoreRef) {
             errorMessage = SECRET_TOAST_INFO.BOTH_STORE_AVAILABLE
         } else if (secretStore || secretStoreRef) {
             errorMessage = SECRET_TOAST_INFO.CHECK_KEY_SECRET_KEY
@@ -428,9 +440,17 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             secretStoreRef: json.secretStoreRef,
             refreshInterval: json.refreshInterval,
             esoData: null,
+            esoDataFrom: null,
+            template: null,
         }
         if (Array.isArray(json?.esoData)) {
             payload.esoData = json.esoData
+        }
+        if (Array.isArray(json?.esoDataFrom)) {
+            payload.esoDataFrom = json.esoDataFrom
+        }
+        if (typeof json?.template === 'object' && !Array.isArray(json.template)) {
+            payload.template = json.template
         }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
@@ -497,11 +517,15 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
     }))
     jsonForSecretDataYaml = transformSecretDataJSON(jsonForSecretDataYaml)
     const tempEsoSecretData =
-        (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
+        (configMapSecretData?.esoSecretData?.esoData || []).length === 0 &&
+        !configMapSecretData?.esoSecretData?.template &&
+        !configMapSecretData?.esoSecretData?.esoDataFrom &&
+        configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData
             : configMapSecretData?.esoSecretData
     const isEsoSecretData: boolean =
-        (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
+        (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) &&
+        (tempEsoSecretData.esoData || tempEsoSecretData.template || tempEsoSecretData.esoDataFrom)
     return {
         externalType: configMapSecretData?.externalType ?? '',
         roleARN: {
@@ -509,6 +533,8 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
             error: '',
         },
         esoData: tempEsoSecretData?.esoData,
+        template: tempEsoSecretData?.template,
+        esoDataFrom: tempEsoSecretData?.esoDataFrom,
         secretData: tempSecretData,
         secretDataYaml: YAMLStringify(jsonForSecretDataYaml),
         codeEditorRadio: CODE_EDITOR_RADIO_STATE.DATA,

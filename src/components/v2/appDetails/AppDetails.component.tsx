@@ -175,6 +175,7 @@ const AppDetailsComponent = ({
                 externalLinks={externalLinks}
                 monitoringTools={monitoringTools}
                 isExternalApp={isExternalApp}
+                isVirtualEnvironment={isVirtualEnv.current}
             />
         )
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Severity, SeverityCount, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, Severity, SeverityCount, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SecurityPolicyClusterState {
     view: string
@@ -32,35 +32,6 @@ export interface SecurityPolicyAppState {
     view: string
     appSearch: string
     appList: { id: number; name: string }[]
-}
-
-export interface VulnerabilityExposureState {
-    view: string
-    cve: string
-    searchApplied: boolean
-    searchObjectValue: string
-    form: {
-        cve: string
-    }
-    filters: {
-        environments: OptionType[]
-        clusters: OptionType[]
-    }
-    filtersApplied: {
-        environments: OptionType[]
-        clusters: OptionType[]
-    }
-    scanList: {
-        appName: string
-        envName: string
-        appId: number
-        envId: number
-        appStore: boolean
-        policy: string
-    }[]
-    offset: number
-    pageSize: number
-    size: number
 }
 
 export interface SecurityScanType {
@@ -222,6 +193,53 @@ export interface CreateVulnerabilityPolicyRequest {
 export interface FetchPolicyQueryParams {
     level: ResourceLevel
     id?: number
+}
+
+export enum VulnerabilityExposureFilterKeys {
+    environment = 'environment',
+    cluster = 'cluster',
+}
+
+export enum VulnerabilityExposureSearchParams {
+    cveName = 'cveName',
+}
+
+export interface VulnerabilityExposureUrlFiltersType
+    extends Record<VulnerabilityExposureFilterKeys, string[]>,
+        Record<VulnerabilityExposureSearchParams, string> {}
+
+export interface ExposureListContainerProps {
+    urlFilters: UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>
+}
+
+interface VulnerabilityCVE {
+    appName: string
+    envName: string
+    policy: string
+}
+
+export interface CVEControlList {
+    totalCount: number
+    scanList: VulnerabilityCVE[]
+}
+
+export interface CVEControlListPayload {
+    offset: number
+    size: number
+    cveName: string
+    appName: string
+    clusterIds: number[]
+    envIds: number[]
+}
+
+export interface ExposureListProps
+    extends Pick<
+        UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>,
+        'offset' | 'pageSize' | 'changePage' | 'changePageSize'
+    > {
+    appListResponse: ResponseType<CVEControlList>
+    areFiltersApplied: boolean
+    clearExposureListFilters: () => void
 }
 
 export interface CveNamePolicy {
