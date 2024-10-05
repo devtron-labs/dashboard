@@ -1,22 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import YAML from 'yaml'
 
 import {
     abortPreviousRequests,
-    AppEnvDeploymentConfigType,
     Button,
     ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
     ConfigDatum,
-    ConfigResourceType,
     DraftAction,
     DraftState,
-    getAppEnvDeploymentConfig,
-    getIsRequestAborted,
     noop,
+    Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    showError,
     useAsync,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -26,12 +22,13 @@ import CompareConfigView from '@Pages/Applications/DevtronApps/Details/AppConfig
 import NoPublishedVersionEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoPublishedVersionEmptyState'
 import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
+import { getConfigMapSecretConfigData } from './ConfigMapSecret.service'
 import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
-import { useConfigMapSecretContext } from './ConfigMapSecretContext'
+import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy', null, 'function')
 
@@ -48,13 +45,15 @@ export const ConfigMapSecretProtected = ({
     selectedProtectionViewTab,
     parentName,
     inheritedConfigMapSecretData,
+    resolvedFormData,
+    areScopeVariablesResolving,
     onError,
     onSubmit,
     updateCMSecret,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { email } = useUserEmail()
-    const { formDataRef } = useConfigMapSecretContext()
+    const { formDataRef } = useConfigMapSecretFormContext()
 
     // STATES
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
@@ -69,21 +68,20 @@ export const ConfigMapSecretProtected = ({
         isApprovalView && compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
 
     // ASYNC CALLS
-    const [protectedSecretDataResLoading, protectedSecretDataRes, protectedSecretDataResErr] = useAsync(
+    const [protectedSecretDataResLoading, protectedSecretDataRes] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
-                    getAppEnvDeploymentConfig(
-                        {
-                            appName,
-                            envName,
-                            configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                            resourceId: id,
-                            resourceName: publishedConfigMapSecretData.name,
-                            resourceType: ConfigResourceType.Secret,
-                        },
-                        abortControllerRef.current.signal,
-                    ),
+                    getConfigMapSecretConfigData({
+                        appName,
+                        envName,
+                        resourceId: id,
+                        name: publishedConfigMapSecretData.name,
+                        componentType,
+                        appId: null,
+                        envId: null,
+                        abortControllerRef,
+                    }),
                 abortControllerRef,
             ),
         [],
@@ -93,18 +91,11 @@ export const ConfigMapSecretProtected = ({
             !publishedConfigMapSecretData?.unAuthorized,
     )
 
-    // ERROR HANDLING
-    useEffect(() => {
-        if (protectedSecretDataResErr && !getIsRequestAborted(protectedSecretDataResErr)) {
-            showError(protectedSecretDataResErr)
-        }
-    }, [protectedSecretDataResErr])
-
     const protectedSecretData = useMemo<CMSecretConfigData>(() => {
         if (!protectedSecretDataResLoading && protectedSecretDataRes) {
-            const { data } = protectedSecretDataRes.result.secretsData
+            const { data } = protectedSecretDataRes.secretsData
             if (data.configData?.length) {
-                return { ...publishedConfigMapSecretData[0], unAuthorized: false }
+                return { ...publishedConfigMapSecretData, unAuthorized: false }
             }
 
             return null
@@ -132,7 +123,7 @@ export const ConfigMapSecretProtected = ({
         () => ({
             unAuthorized: configMapSecretData?.unAuthorized,
             ...(formDataRef.current
-                ? (getConfigMapSecretPayload(formDataRef.current) as ConfigDatum)
+                ? (getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current) as ConfigDatum)
                 : configMapSecretData),
         }),
         [configMapSecretData],
@@ -202,7 +193,7 @@ export const ConfigMapSecretProtected = ({
     // RENDERERS
     const renderFormView = () => (
         <ConfigMapSecretForm
-            configMapSecretData={currentConfigMapSecretData}
+            configMapSecretData={configMapSecretData}
             id={id}
             componentType={componentType}
             cmSecretStateLabel={
@@ -218,6 +209,8 @@ export const ConfigMapSecretProtected = ({
             onCancel={noop}
             onError={onError}
             onSubmit={onSubmit}
+            resolvedFormData={resolvedFormData}
+            areScopeVariablesResolving={areScopeVariablesResolving}
         />
     )
 
@@ -263,21 +256,24 @@ export const ConfigMapSecretProtected = ({
         )
     }
 
-    const renderCompareView = () => (
-        <div className="flexbox-col h-100">
-            <div className="flex-grow-1">
-                <CompareConfigView
-                    compareFromSelectedOptionValue={compareFromSelectedOptionValue}
-                    handleCompareFromOptionSelection={handleCompareFromOptionSelection}
-                    {...getCurrentEditorConfig()}
-                    {...getPublishedEditorConfig()}
-                    isApprovalView={isApprovalView}
-                    isDeleteDraft={false}
-                />
+    const renderCompareView = () =>
+        areScopeVariablesResolving ? (
+            <Progressing fullHeight size={48} />
+        ) : (
+            <div className="flexbox-col h-100">
+                <div className="flex-grow-1">
+                    <CompareConfigView
+                        compareFromSelectedOptionValue={compareFromSelectedOptionValue}
+                        handleCompareFromOptionSelection={handleCompareFromOptionSelection}
+                        {...getCurrentEditorConfig()}
+                        {...getPublishedEditorConfig()}
+                        isApprovalView={isApprovalView}
+                        isDeleteDraft={false}
+                    />
+                </div>
+                {renderApproveButton()}
             </div>
-            {renderApproveButton()}
-        </div>
-    )
+        )
 
     const renderContent = () => {
         switch (selectedProtectionViewTab) {
@@ -294,6 +290,7 @@ export const ConfigMapSecretProtected = ({
                     <ConfigMapSecretReadyOnly
                         componentType={componentType}
                         configMapSecretData={publishedConfigMapSecretData}
+                        areScopeVariablesResolving={areScopeVariablesResolving}
                     />
                 )
             case ProtectConfigTabsType.EDIT_DRAFT:

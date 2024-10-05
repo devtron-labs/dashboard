@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from 'react'
+
 import {
     CodeEditor,
     KeyValueConfig,
@@ -24,7 +25,12 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import { convertKeyValuePairToYAML, convertYAMLToKeyValuePair, getLockedYamlString } from './utils'
+import {
+    convertKeyValuePairToYAML,
+    convertYAMLToKeyValuePair,
+    getLockedYamlString,
+    getYAMLWithStringifiedNumbers,
+} from './utils'
 import { CMSecretExternalType, ConfigMapSecretDataProps } from './types'
 
 export const ConfigMapSecretData = ({
@@ -32,6 +38,7 @@ export const ConfigMapSecretData = ({
     isUnAuthorized,
     isESO,
     isHashiOrAWS,
+    readOnly,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
     const { data, errors, setValue, register } = useFormProps
@@ -61,7 +68,7 @@ export const ConfigMapSecretData = ({
                     value: k,
                 },
                 v: {
-                    value: v,
+                    value: v.toString(),
                 },
             },
             id,
@@ -107,6 +114,8 @@ export const ConfigMapSecretData = ({
 
             // call useForm register 'onChange' method to update the form data value
             onChange(_currentData.updatedData)
+            // Convert the current key-value data to YAML format and set it in the 'yaml' field.
+            setValue('yaml', convertKeyValuePairToYAML(_currentData.updatedData), { shouldDirty: true })
         }
 
     const keyValueHandleDelete = (onChange: (e: unknown) => void) => (rowId: string | number) => {
@@ -114,6 +123,8 @@ export const ConfigMapSecretData = ({
         const _currentData = data.currentData.filter(({ id }) => id !== rowId)
         // call useForm register 'onChange' method to update the form data value
         onChange(_currentData)
+        // Convert the current key-value data to YAML format and set it in the 'yaml' field.
+        setValue('yaml', convertKeyValuePairToYAML(_currentData), { shouldDirty: true })
     }
 
     const keyValueHandleError = (err: boolean) => {
@@ -149,17 +160,9 @@ export const ConfigMapSecretData = ({
             return
         }
 
-        // If the selected mode is YAML, convert the current key-value data to YAML format and set it in the 'yaml' field.
-        if (yamlMode === VIEW_MODE.YAML) {
-            setValue('yaml', convertKeyValuePairToYAML(data.currentData), { shouldDirty: true })
-        } else {
-            // If the selected mode is key-value pairs, convert the YAML data to key-value pairs and set it in 'currentData'.
-            setValue('currentData', convertYAMLToKeyValuePair(data.yaml), { shouldDirty: true })
-        }
-
         /*
          * We use setValue instead of the register method from useForm to avoid marking the form as dirty when switching modes. \
-         * Since the data doesn't change during mode switches, the dirty state is unnecessary.
+         * Since the data does not change during mode switches, the dirty state is unnecessary.
          * Additionally, we require the form state for data processing upon submission, so we're not using useState.
          */
         // Set 'yamlMode' true if the selected mode is YAML, otherwise return false.
@@ -190,9 +193,11 @@ export const ConfigMapSecretData = ({
             return YAMLStringify(sampleJSONs[data.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
         }
 
-        return isLocked
-            ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
-            : (data[getCodeEditorFormKey()] as string)
+        return getYAMLWithStringifiedNumbers(
+            isLocked
+                ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
+                : (data[getCodeEditorFormKey()] as string),
+        )
     }
 
     // RENDERERS
@@ -263,7 +268,15 @@ export const ConfigMapSecretData = ({
     }
 
     const renderCodeEditor = ({ sheBangText }: { sheBangText: string }) => {
-        const { onChange, onFocus } = register(getCodeEditorFormKey(), null, { isCustomComponent: true })
+        const { onChange, onFocus } = register(
+            getCodeEditorFormKey(),
+            (value: string) => {
+                // Convert the YAML data to key-value pairs and set it in 'currentData'.
+                setValue('currentData', convertYAMLToKeyValuePair(value), { shouldDirty: true })
+                return value
+            },
+            { isCustomComponent: true },
+        )
 
         return (
             <div className="dc__border br-4 dc__overflow-hidden">
@@ -275,7 +288,7 @@ export const ConfigMapSecretData = ({
                     inline
                     height={350}
                     shebang={sheBangText}
-                    readOnly={isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                    readOnly={readOnly || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
                 >
                     <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bcn-50 dc__border-bottom fs-13 lh-20">
                         {data.external ? (
@@ -317,8 +330,9 @@ export const ConfigMapSecretData = ({
         return (
             <div>
                 <KeyValueTable
+                    key={data.isResolvedData.toString()}
                     isAdditionNotAllowed={isUnAuthorized || secretMode || data.yamlMode || data.external}
-                    readOnly={isUnAuthorized || secretMode}
+                    readOnly={readOnly || isUnAuthorized || secretMode}
                     isSortable
                     config={config}
                     placeholder={{

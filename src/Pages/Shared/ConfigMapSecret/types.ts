@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
     ConfigDatum,
@@ -8,10 +8,10 @@ import {
     SelectPickerOptionType,
     useForm,
     UseFormErrorHandler,
+    UseFormErrors,
     UseFormSubmitHandler,
+    AppEnvDeploymentConfigDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { NoOverrideEmptyStateProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
@@ -65,6 +65,20 @@ export interface CMSecretDraftPayloadType {
     environmentId: number
 }
 
+export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
+    extends Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'> {
+    envId: string
+    appId: string
+    name: string
+    isJob?: IsJob
+    resourceId: number
+    abortControllerRef: MutableRefObject<AbortController>
+}
+
+export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJob extends true
+    ? CMSecretDTO
+    : AppEnvDeploymentConfigDTO
+
 // SELECT PICKER OPTION TYPE
 export type ConfigMapSecretDataTypeOptionType = SelectPickerOptionType<string>
 
@@ -95,6 +109,7 @@ export interface ConfigMapSecretUseFormProps {
     secretDataYaml: string
     esoSecretYaml: string
     hasCurrentDataErr: boolean
+    isResolvedData: boolean
 }
 
 // COMPONENT PROPS
@@ -126,14 +141,14 @@ export interface CMSecretConfigData extends ConfigDatum {
     unAuthorized: boolean
 }
 
-export interface ConfigMapSecretFormProps {
+export interface ConfigMapSecretFormProps
+    extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType'>> {
     id: number
     configMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
-    isJob?: boolean
-    componentType: CMSecretComponentType
-    isProtected: boolean
     isSubmitting: boolean
+    areScopeVariablesResolving: boolean
+    resolvedFormData: ConfigMapSecretUseFormProps
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
@@ -143,11 +158,14 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
+    readOnly: boolean
     useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
-export interface ConfigMapSecretReadyOnlyProps
-    extends Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'componentType'> {}
+export type ConfigMapSecretReadyOnlyProps = Pick<
+    ConfigMapSecretFormProps,
+    'configMapSecretData' | 'componentType' | 'areScopeVariablesResolving'
+>
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
@@ -164,52 +182,36 @@ export interface ConfigMapSecretDeleteModalProps extends Pick<ConfigMapSecretFor
 
 export type ConfigMapSecretNullStateProps =
     | {
-          envName?: never
-          configName?: never
+          componentType?: never
           componentName: string
-          componentType?: never
           nullStateType: 'DELETE'
-          handleViewInheritedConfig?: never
-          hideOverrideButton?: never
-          renderFormComponent?: never
       }
     | {
-          envName?: never
-          configName?: never
-          componentName?: never
           componentType?: never
-          nullStateType: 'DELETE_OVERRIDE' | 'NOT_OVERRIDDEN'
-          handleViewInheritedConfig?: never
-          hideOverrideButton?: never
-          renderFormComponent?: never
-      }
-    | ({
-          envName: string
-          configName: string
-          componentType: ConfigMapSecretFormProps['componentType']
           componentName?: never
-          nullStateType: 'NO_OVERRIDE'
-          renderFormComponent: (props: Pick<ConfigMapSecretFormProps, 'onCancel'>) => JSX.Element
-      } & Pick<NoOverrideEmptyStateProps, 'handleViewInheritedConfig' | 'hideOverrideButton'>)
+          nullStateType: 'DELETE_OVERRIDE' | 'NOT_OVERRIDDEN'
+      }
     | {
-          envName?: never
-          configName?: never
           componentType: ConfigMapSecretFormProps['componentType']
           componentName?: never
           nullStateType: 'NO_CM_CS'
-          handleViewInheritedConfig?: never
-          hideOverrideButton?: never
-          renderFormComponent?: never
       }
 
-export type ConfigMapSecretProtectedProps = Pick<
-    ConfigMapSecretContainerProps,
-    'componentType' | 'parentName' | 'isJob' | 'appName' | 'envName'
-> &
-    Pick<ConfigMapSecretFormProps, 'cmSecretStateLabel' | 'id' | 'onError' | 'onSubmit'> & {
+export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName' | 'appName' | 'envName'> &
+    Pick<
+        ConfigMapSecretFormProps,
+        | 'componentType'
+        | 'cmSecretStateLabel'
+        | 'isJob'
+        | 'id'
+        | 'onError'
+        | 'onSubmit'
+        | 'areScopeVariablesResolving'
+        | 'resolvedFormData'
+    > &
+    Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
         publishedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
-        updateCMSecret: (configName?: string) => void
         inheritedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
         draftData: CMSecretDraftData
         selectedProtectionViewTab: ProtectConfigTabsType
@@ -220,4 +222,30 @@ export interface CMSecretDTO {
     id: number
     appId: number
     configData: ConfigDatum[]
+}
+
+// CONTEXT TYPES
+type SetFormStateParams =
+    | {
+          type: 'SET_DATA'
+          data: ConfigMapSecretUseFormProps
+          errors: UseFormErrors<ConfigMapSecretUseFormProps>
+          isDirty: boolean
+      }
+    | {
+          type: 'RESET'
+          data?: never
+          errors?: never
+          isDirty?: never
+      }
+
+export interface ConfigMapSecretFormContextType {
+    formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
+    isFormDirty: boolean
+    isParsingError: boolean
+    setFormState: (params: SetFormStateParams) => void
+}
+
+export interface ConfigMapSecretFormProviderProps {
+    children: JSX.Element
 }

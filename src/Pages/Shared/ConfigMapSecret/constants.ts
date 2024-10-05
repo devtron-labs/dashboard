@@ -55,7 +55,6 @@ export const getCMSecretNullStateText = (
         title: 'This file is not overridden',
         subTitle: `Published override for this file will be available here`,
     },
-    NO_OVERRIDE: null,
     NO_CM_CS: null,
 })
 

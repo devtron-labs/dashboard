@@ -230,117 +230,120 @@ const validateSecretDataYaml = (secretDataYaml: string): UseFormValidation => {
     }
 }
 
-export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecretUseFormProps> = ({
-    isSecret,
-    external,
-    externalType,
-    selectedType,
-    isFilePermissionChecked,
-    volumeMountPath,
-    isSubPathChecked,
-    yaml,
-    yamlMode,
-    secretDataYaml,
-    esoSecretYaml,
-}) => {
-    const isESO = isSecret && hasESO(externalType)
-    const isHashiOrAWS = isSecret && hasHashiOrAWS(externalType)
+export const getConfigMapSecretFormValidations =
+    (resolveScopeVariables: boolean): UseFormValidations<ConfigMapSecretUseFormProps> =>
+    ({
+        isSecret,
+        external,
+        externalType,
+        selectedType,
+        isFilePermissionChecked,
+        volumeMountPath,
+        isSubPathChecked,
+        yaml,
+        yamlMode,
+        secretDataYaml,
+        esoSecretYaml,
+    }) => {
+        const isESO = isSecret && hasESO(externalType)
+        const isHashiOrAWS = isSecret && hasHashiOrAWS(externalType)
 
-    const rules = new ValidationRules()
+        const rules = new ValidationRules()
 
-    return {
-        name: {
-            required: true,
-            pattern: {
-                value: PATTERNS.CONFIGMAP_AND_SECRET_NAME,
-                message:
-                    "Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'",
+        return {
+            name: {
+                required: true,
+                pattern: {
+                    value: PATTERNS.CONFIGMAP_AND_SECRET_NAME,
+                    message:
+                        "Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'",
+                },
+                custom: {
+                    isValid: (value) => value.length <= 253,
+                    message: 'More than 253 characters are not allowed',
+                },
             },
-            custom: {
-                isValid: (value) => value.length <= 253,
-                message: 'More than 253 characters are not allowed',
-            },
-        },
-        ...(selectedType === 'volume'
-            ? {
-                  volumeMountPath: {
-                      required: true,
-                      custom: {
-                          isValid: (value) => !rules.cmVolumeMountPath(value).isValid,
-                          message: rules.cmVolumeMountPath(volumeMountPath).message,
+            ...(selectedType === 'volume'
+                ? {
+                      volumeMountPath: {
+                          required: true,
+                          custom: {
+                              isValid: (value) => !rules.cmVolumeMountPath(value).isValid,
+                              message: rules.cmVolumeMountPath(volumeMountPath).message,
+                          },
                       },
-                  },
-                  ...(isFilePermissionChecked
-                      ? {
-                            filePermission: {
-                                required: true,
-                                pattern: {
-                                    value: PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7,
-                                    message: 'This is octal number, use numbers between 0 to 7',
+                      ...(isFilePermissionChecked
+                          ? {
+                                filePermission: {
+                                    required: true,
+                                    pattern: {
+                                        value: PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7,
+                                        message: 'This is octal number, use numbers between 0 to 7',
+                                    },
+                                    custom: [
+                                        {
+                                            isValid: (value) => value.length <= 4,
+                                            message: 'More than 4 characters are not allowed',
+                                        },
+                                        {
+                                            isValid: (value) => value.startsWith('0'),
+                                            message:
+                                                '4 characters are allowed in octal format only, first character should be 0',
+                                        },
+                                        {
+                                            isValid: (value) => value.length >= 3,
+                                            message: 'Atleast 3 character are required',
+                                        },
+                                    ],
                                 },
-                                custom: [
-                                    {
-                                        isValid: (value) => value.length <= 4,
-                                        message: 'More than 4 characters are not allowed',
+                            }
+                          : {}),
+                      ...(isSubPathChecked &&
+                      ((isSecret && externalType === 'KubernetesSecret') || (!isSecret && external))
+                          ? {
+                                externalSubpathValues: {
+                                    required: true,
+                                    pattern: {
+                                        value: PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS,
+                                        message: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
                                     },
-                                    {
-                                        isValid: (value) => value.startsWith('0'),
-                                        message:
-                                            '4 characters are allowed in octal format only, first character should be 0',
-                                    },
-                                    {
-                                        isValid: (value) => value.length >= 3,
-                                        message: 'Atleast 3 character are required',
-                                    },
-                                ],
-                            },
-                        }
-                      : {}),
-                  ...(isSubPathChecked && ((isSecret && externalType === 'KubernetesSecret') || (!isSecret && external))
-                      ? {
-                            externalSubpathValues: {
-                                required: true,
-                                pattern: {
-                                    value: PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS,
-                                    message: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
                                 },
-                            },
-                        }
-                      : {}),
-              }
-            : {}),
-        ...(yamlMode
-            ? {
-                  yaml: {
-                      custom: !isESO && !isHashiOrAWS ? validateYaml(yaml) : null,
-                  },
-              }
-            : {
-                  hasCurrentDataErr: {
-                      custom: {
-                          isValid: (value) => !value,
-                          message: 'Please resolve the errors before saving.',
+                            }
+                          : {}),
+                  }
+                : {}),
+            ...(yamlMode
+                ? {
+                      yaml: {
+                          custom: !resolveScopeVariables && !isESO && !isHashiOrAWS ? validateYaml(yaml) : null,
                       },
-                  },
-                  currentData: {
-                      custom:
-                          !isESO && !isHashiOrAWS
-                              ? {
-                                    isValid: (value) => external || (value.length && !!value[0].k),
-                                    message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
-                                }
-                              : null,
-                  },
-              }),
-        ...(isSecret && isESO
-            ? {
-                  esoSecretYaml: validateEsoSecretYaml(esoSecretYaml),
-              }
-            : {}),
-        ...(isSecret && isHashiOrAWS
-            ? {
-                  secretDataYaml: validateSecretDataYaml(secretDataYaml),
-              }
-            : {}),
+                  }
+                : {
+                      hasCurrentDataErr: {
+                          custom: {
+                              isValid: (value) => !value,
+                              message: 'Please resolve the errors before saving.',
+                          },
+                      },
+                      currentData: {
+                          custom:
+                              !isESO && !isHashiOrAWS
+                                  ? {
+                                        isValid: (value) => external || (value.length && !!value[0].k),
+                                        message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
+                                    }
+                                  : null,
+                      },
+                  }),
+            ...(isSecret && isESO
+                ? {
+                      esoSecretYaml: validateEsoSecretYaml(esoSecretYaml),
+                  }
+                : {}),
+            ...(isSecret && isHashiOrAWS
+                ? {
+                      secretDataYaml: validateSecretDataYaml(secretDataYaml),
+                  }
+                : {}),
+        }
     }
-}

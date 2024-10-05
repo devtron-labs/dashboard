@@ -1,15 +1,21 @@
-import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretReadyOnlyProps } from './types'
 
-export const ConfigMapSecretReadyOnly = ({ componentType, configMapSecretData }: ConfigMapSecretReadyOnlyProps) => {
+export const ConfigMapSecretReadyOnly = ({
+    componentType,
+    configMapSecretData,
+    areScopeVariablesResolving,
+}: ConfigMapSecretReadyOnlyProps) => {
     const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
         componentType,
     })
 
-    return (
+    return areScopeVariablesResolving ? (
+        <Progressing fullHeight size={48} />
+    ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
             <div className="dc__border br-4 py-4">
                 {displayValues.configData.map(({ displayName, value }) =>

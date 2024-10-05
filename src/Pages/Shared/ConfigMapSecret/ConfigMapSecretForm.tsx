@@ -9,6 +9,7 @@ import {
     ComponentSizeType,
     CustomInput,
     getSelectPickerOptionByValue,
+    Progressing,
     RadioGroup,
     RadioGroupItem,
     SelectPicker,
@@ -19,7 +20,7 @@ import {
 
 import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 
-import { useConfigMapSecretContext } from './ConfigMapSecretContext'
+import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 import {
     CM_SECRET_COMPONENT_NAME,
     configMapDataTypeOptions,
@@ -51,9 +52,11 @@ export const ConfigMapSecretForm = ({
     onSubmit,
     onError,
     onCancel,
+    areScopeVariablesResolving,
+    resolvedFormData,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
-    const { setFormState } = useConfigMapSecretContext()
+    const { setFormState, formDataRef } = useConfigMapSecretFormContext()
 
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
@@ -62,9 +65,9 @@ export const ConfigMapSecretForm = ({
             componentType,
             cmSecretStateLabel,
         }),
-        validations: getConfigMapSecretFormValidations,
+        validations: getConfigMapSecretFormValidations(!!resolvedFormData),
     })
-    const { data, errors, formState, setValue, register, handleSubmit } = useFormProps
+    const { data, errors, formState, setValue, register, handleSubmit, reset } = useFormProps
 
     // CONSTANTS
     const isCreateView = id === null
@@ -79,10 +82,21 @@ export const ConfigMapSecretForm = ({
      */
     const shouldPrompt = isCreateView && formState.isDirty
 
+    useEffect(() => {
+        if (resolvedFormData) {
+            reset({ ...resolvedFormData, isResolvedData: true }, { keepDirty: true })
+        } else if (formDataRef.current) {
+            // RESET FORM IF DATA IS PRESENT
+            reset({ ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false }, { keepDirty: true })
+        }
+    }, [resolvedFormData])
+
     // UPDATING FORM STATE CONTEXT
     useEffect(() => {
-        setFormState({ type: 'SET_DATA', data, formState })
-    }, [data, formState])
+        if (!resolvedFormData) {
+            setFormState({ type: 'SET_DATA', data, isDirty: formState.isDirty, errors })
+        }
+    }, [data, formState.isDirty, errors, resolvedFormData])
 
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
@@ -336,14 +350,21 @@ export const ConfigMapSecretForm = ({
                     {renderMountData()}
                     {renderVolumeMountPath()}
                     {renderRollARN()}
-                    <ConfigMapSecretData
-                        isJob={isJob}
-                        componentType={componentType}
-                        isESO={isESO}
-                        isHashiOrAWS={isHashiOrAWS}
-                        isUnAuthorized={isUnAuthorized}
-                        useFormProps={useFormProps}
-                    />
+                    {areScopeVariablesResolving ? (
+                        <div className="h-300">
+                            <Progressing fullHeight size={48} />
+                        </div>
+                    ) : (
+                        <ConfigMapSecretData
+                            isJob={isJob}
+                            componentType={componentType}
+                            isESO={isESO}
+                            isHashiOrAWS={isHashiOrAWS}
+                            isUnAuthorized={isUnAuthorized}
+                            useFormProps={useFormProps}
+                            readOnly={!!resolvedFormData}
+                        />
+                    )}
                 </div>
                 {renderFormButtons()}
             </form>

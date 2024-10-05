@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
-import { get, post, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    trash,
+    ResponseType,
+    getResolvedDeploymentTemplate,
+    ValuesAndManifestFlagDTO,
+    GetResolvedDeploymentTemplateProps,
+    AppEnvDeploymentConfigType,
+    getAppEnvDeploymentConfig,
+    ConfigResourceType,
+    getIsRequestAborted,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { CMSecretDTO, CMSecretComponentType } from './types'
+import {
+    CMSecretDTO,
+    CMSecretComponentType,
+    GetConfigMapSecretConfigDataProps,
+    GetConfigMapSecretConfigDataReturnType,
+} from './types'
 
 export function updateConfig(id, appId, configData, signal?) {
     return post(
@@ -104,3 +122,56 @@ export const getCMSecret = (
     }
     return get(`${url}/${id}?name=${name}`, { signal })
 }
+
+export const getConfigMapSecretConfigData = async <IsJob extends boolean = false>({
+    isJob,
+    appName,
+    envName,
+    componentType,
+    appId,
+    envId,
+    name,
+    resourceId,
+    abortControllerRef,
+}: GetConfigMapSecretConfigDataProps<IsJob>) => {
+    try {
+        const { result } = await (isJob
+            ? getCMSecret(componentType, resourceId, appId, name, envId, abortControllerRef.current.signal)
+            : getAppEnvDeploymentConfig(
+                  {
+                      appName,
+                      envName,
+                      configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                      resourceId,
+                      resourceName: name,
+                      resourceType:
+                          componentType === CMSecretComponentType.ConfigMap
+                              ? ConfigResourceType.ConfigMap
+                              : ConfigResourceType.Secret,
+                  },
+                  abortControllerRef.current.signal,
+              ))
+
+        return result as GetConfigMapSecretConfigDataReturnType<IsJob>
+    } catch (error) {
+        if (error && !getIsRequestAborted(error)) {
+            showError(error)
+            throw error
+        }
+
+        return null
+    }
+}
+
+export const getConfigMapSecretResolvedValues = (
+    params: Required<Pick<GetResolvedDeploymentTemplateProps, 'appId' | 'envId' | 'values'>>,
+    signal?: AbortSignal,
+) =>
+    getResolvedDeploymentTemplate(
+        {
+            ...params,
+            valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+            chartRefId: null,
+        },
+        signal,
+    )

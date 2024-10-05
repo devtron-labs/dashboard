@@ -142,6 +142,17 @@ export const getLockedYamlString = (yaml: string) => {
     return YAMLStringify(keyValueArray)
 }
 
+export const getYAMLWithStringifiedNumbers = (yaml: string) => {
+    const parsedYAML = YAML.parse(yaml)
+    const jsonWithStringifiedNumbers = JSON.parse(
+        JSON.stringify(parsedYAML, (_, value) =>
+            // Check if the value is a number (but not NaN or Infinity) and return it as a string
+            typeof value === 'number' && Number.isFinite(value) ? String(value) : value,
+        ),
+    )
+    return YAMLStringify(jsonWithStringifiedNumbers)
+}
+
 export const getSecretDataFromConfigData = (
     configMapSecretData: ConfigMapSecretFormProps['configMapSecretData'],
 ): Pick<ConfigMapSecretUseFormProps, 'secretDataYaml' | 'esoSecretYaml'> => {
@@ -215,6 +226,7 @@ export const getConfigMapSecretFormInitialValues = ({
             yaml: convertKeyValuePairToYAML(currentData),
             currentData,
             hasCurrentDataErr: false,
+            isResolvedData: false,
             ...getSecretDataFromConfigData(configMapSecretData),
         }
     }
@@ -235,6 +247,7 @@ export const getConfigMapSecretFormInitialValues = ({
         yaml: '"": ""',
         currentData: [],
         hasCurrentDataErr: false,
+        isResolvedData: false,
         esoSecretYaml: '{}',
         secretDataYaml: '[]',
     }
@@ -603,7 +616,10 @@ export const getConfigMapSecretDraftAndPublishedData = ({
         }
     }
 
-    return { data, hasNotFoundErr }
+    return {
+        data,
+        hasNotFoundErr,
+    }
 }
 
 export const getConfigMapSecretInheritedData = ({
@@ -626,5 +642,43 @@ export const getConfigMapSecretInheritedData = ({
                   .configData[0],
               unAuthorized: !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin,
           }
+}
+
+export const getConfigMapSecretResolvedDataPayload = ({
+    formData,
+    inheritedConfigMapSecretData,
+    configMapSecretData,
+    draftData,
+}: {
+    formData: ConfigMapSecretUseFormProps
+    inheritedConfigMapSecretData: CMSecretConfigData
+    configMapSecretData: CMSecretConfigData
+    draftData: CMSecretDraftData
+}) => {
+    const values = {
+        formData,
+        inheritedConfigMapSecretData,
+        configMapSecretData,
+        draftData,
+    }
+
+    return JSON.stringify(values)
+}
+
+export const getConfigMapSecretResolvedData = (
+    resolvedData: string,
+): {
+    resolvedFormData: ConfigMapSecretUseFormProps
+    resolvedInheritedConfigMapSecretData: CMSecretConfigData
+    resolvedConfigMapSecretData: CMSecretConfigData
+    resolvedDraftData: CMSecretDraftData
+} => {
+    const parsedResolvedData = YAML.parse(resolvedData)
+    return {
+        resolvedFormData: parsedResolvedData.formData ?? null,
+        resolvedInheritedConfigMapSecretData: parsedResolvedData.inheritedConfigMapSecretData ?? null,
+        resolvedConfigMapSecretData: parsedResolvedData.configMapSecretData ?? null,
+        resolvedDraftData: parsedResolvedData.draftData ?? null,
+    }
 }
 // DATA UTILS ----------------------------------------------------------------

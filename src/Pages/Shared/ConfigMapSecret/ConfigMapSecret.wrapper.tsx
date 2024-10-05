@@ -17,7 +17,7 @@ import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { CMSecretComponentType, CMSecretWrapperProps } from './types'
 
 import { ConfigMapSecretContainer } from './ConfigMapSecret.container'
-import { ConfigMapSecretProvider } from './ConfigMapSecretContext'
+import { ConfigMapSecretFormProvider } from './ConfigMapSecretFormContext'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS
@@ -58,12 +58,12 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     }
 
     return (
-        <ConfigMapSecretProvider>
+        <ConfigMapSecretFormProvider>
             <ConfigMapSecretContainer
                 key={`${CM_SECRET_COMPONENT_NAME[componentType]}-${name}`}
                 appChartRef={initResult[0]?.result}
                 {...props}
             />
-        </ConfigMapSecretProvider>
+        </ConfigMapSecretFormProvider>
     )
 }
