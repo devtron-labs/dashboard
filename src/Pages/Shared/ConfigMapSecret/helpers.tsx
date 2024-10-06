@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 
-import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretExternalType, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
@@ -8,7 +8,7 @@ import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
-import { CMSecretComponentType, CMSecretExternalType } from './types'
+import { CMSecretComponentType } from './types'
 
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (

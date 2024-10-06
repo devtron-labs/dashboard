@@ -6,6 +6,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     Checkbox,
+    CMSecretExternalType,
     ComponentSizeType,
     CustomInput,
     getSelectPickerOptionByValue,
@@ -31,7 +32,6 @@ import { getConfigMapSecretFormInitialValues, hasESO, hasHashiOrAWS } from './ut
 import { getConfigMapSecretFormValidations } from './validations'
 import { renderESOInfo, renderExternalInfo, renderHashiOrAwsDeprecatedInfo } from './helpers'
 import {
-    CMSecretExternalType,
     ConfigMapSecretFormProps,
     ConfigMapSecretDataTypeOptionType,
     ConfigMapSecretUseFormProps,

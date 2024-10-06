@@ -2,6 +2,7 @@ import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
     ConfigDatum,
+    CMSecretExternalType,
     DraftAction,
     DraftMetadataDTO,
     ProtectConfigTabsType,
@@ -27,19 +28,6 @@ export enum CM_SECRET_STATE {
     OVERRIDDEN = 'OVERRIDDEN',
     ENV = 'ENV',
     UNPUBLISHED = 'UNPUBLISHED',
-}
-
-export enum CMSecretExternalType {
-    Internal = '',
-    KubernetesConfigMap = 'KubernetesConfigMap',
-    KubernetesSecret = 'KubernetesSecret',
-    AWSSecretsManager = 'AWSSecretsManager',
-    AWSSystemManager = 'AWSSystemManager',
-    HashiCorpVault = 'HashiCorpVault',
-    ESO_GoogleSecretsManager = 'ESO_GoogleSecretsManager',
-    ESO_AWSSecretsManager = 'ESO_AWSSecretsManager',
-    ESO_AzureSecretsManager = 'ESO_AzureSecretsManager',
-    ESO_HashiCorpVault = 'ESO_HashiCorpVault',
 }
 
 // PAYLOAD PROPS

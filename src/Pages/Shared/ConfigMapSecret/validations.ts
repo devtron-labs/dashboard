@@ -1,13 +1,18 @@
 import YAML from 'yaml'
 
-import { UseFormValidation, UseFormValidations, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CMSecretExternalType,
+    UseFormValidation,
+    UseFormValidations,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { PATTERNS } from '@Config/constants'
 import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
 import { getESOSecretDataFromYAML, hasESO } from './utils'
-import { CMSecretExternalType, ConfigMapSecretUseFormProps } from './types'
+import { ConfigMapSecretUseFormProps } from './types'
 
 /**
  * Validates a YAML string for proper structure and specific key/value constraints.

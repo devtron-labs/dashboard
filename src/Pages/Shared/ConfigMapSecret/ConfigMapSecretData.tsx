@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from 'react'
 
 import {
+    CMSecretExternalType,
     CodeEditor,
     KeyValueConfig,
     KeyValueTable,
@@ -31,7 +32,7 @@ import {
     getLockedYamlString,
     getYAMLWithStringifiedNumbers,
 } from './utils'
-import { CMSecretExternalType, ConfigMapSecretDataProps } from './types'
+import { ConfigMapSecretDataProps } from './types'
 
 export const ConfigMapSecretData = ({
     useFormProps,

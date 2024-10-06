@@ -1,7 +1,7 @@
 import { CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getConfigMapSecretReadOnlyValues, hasHashiOrAWS } from './utils'
-import { CMSecretExternalType, ConfigMapSecretReadyOnlyProps } from './types'
+import { ConfigMapSecretReadyOnlyProps } from './types'
 import { renderHashiOrAwsDeprecatedInfo } from './helpers'
 
 export const ConfigMapSecretReadyOnly = ({
@@ -20,8 +20,7 @@ export const ConfigMapSecretReadyOnly = ({
         <Progressing fullHeight size={48} />
     ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
-            {hasHashiOrAWS(configMapSecretData.externalType as CMSecretExternalType) &&
-                renderHashiOrAwsDeprecatedInfo()}
+            {hasHashiOrAWS(configMapSecretData.externalType) && renderHashiOrAwsDeprecatedInfo()}
             <div className="dc__border br-4 py-4">
                 {displayValues.configData.map(({ displayName, value }) =>
                     value ? (

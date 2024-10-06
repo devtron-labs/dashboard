@@ -1,8 +1,9 @@
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
+import { CMSecretExternalType } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     CMSecretComponentType,
-    CMSecretExternalType,
     CMSecretYamlData,
     ConfigMapSecretDataTypeOptionType,
     ConfigMapSecretNullStateProps,

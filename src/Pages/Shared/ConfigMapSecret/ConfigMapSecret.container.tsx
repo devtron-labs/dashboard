@@ -55,7 +55,6 @@ import {
     CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
-    CMSecretExternalType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
 } from './types'
@@ -307,9 +306,7 @@ export const ConfigMapSecretContainer = ({
         isEnvConfigLoading ||
         (id && !(configMapSecretData || inheritedConfigMapSecretData || draftData) && !notFoundErr)
     const isError = notFoundErr || configMapSecretResErr
-    const isHashiOrAWS = hasHashiOrAWS(
-        (configMapSecretData?.externalType || inheritedConfigMapSecretData?.externalType) as CMSecretExternalType,
-    )
+    const isHashiOrAWS = hasHashiOrAWS(configMapSecretData?.externalType || inheritedConfigMapSecretData?.externalType)
 
     // ERROR HANDLING
     useEffect(() => {

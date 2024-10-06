@@ -2,6 +2,7 @@ import YAML from 'yaml'
 
 import {
     AppEnvDeploymentConfigDTO,
+    CMSecretExternalType,
     decode,
     DraftAction,
     DraftMetadataDTO,
@@ -23,7 +24,6 @@ import {
     CMSecretYamlData,
     ConfigMapSecretFormProps,
     ConfigMapSecretUseFormProps,
-    CMSecretExternalType,
     CMSecretComponentType,
     CM_SECRET_STATE,
     CMSecretDraftData,
@@ -226,7 +226,7 @@ export const getConfigMapSecretFormInitialValues = ({
         return {
             name,
             isSecret,
-            externalType: (externalType as CMSecretExternalType) ?? CMSecretExternalType.Internal,
+            externalType: externalType ?? CMSecretExternalType.Internal,
             external,
             selectedType: type ?? configMapSecretMountDataMap.environment.value,
             isFilePermissionChecked: !!filePermission,
