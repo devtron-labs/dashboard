@@ -26,7 +26,6 @@ import {
     getAppEnvDeploymentConfig,
     ConfigResourceType,
     getIsRequestAborted,
-    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
@@ -154,8 +153,7 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
 
         return result as GetConfigMapSecretConfigDataReturnType<IsJob>
     } catch (error) {
-        if (error && !getIsRequestAborted(error)) {
-            showError(error)
+        if (!getIsRequestAborted(error)) {
             throw error
         }
 

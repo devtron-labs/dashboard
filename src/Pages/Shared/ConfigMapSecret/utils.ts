@@ -399,7 +399,7 @@ export const getConfigMapSecretPayload = ({
     isSubPathChecked,
 }: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
-    const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
+    const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData.filter(({ v }) => v)
     const data = _currentData.reduce((acc, curr) => {
         if (!curr.k) {
             return acc
@@ -496,7 +496,7 @@ export const getConfigMapSecretResolvedDataPayload = ({
         draftData,
     }
 
-    return JSON.stringify(values)
+    return YAMLStringify(values)
 }
 // PAYLOAD UTILS ----------------------------------------------------------------
 

@@ -12,7 +12,7 @@ import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
 import { getESOSecretDataFromYAML, hasESO } from './utils'
-import { ConfigMapSecretUseFormProps } from './types'
+import { CMSecretYamlData, ConfigMapSecretUseFormProps } from './types'
 
 /**
  * Validates a YAML string for proper structure and specific key/value constraints.
@@ -89,8 +89,11 @@ const validateYaml = (yaml: string): UseFormValidation['custom'] => {
     } catch (err) {
         // Catch any errors, and return an invalid result with a relevant message.
         return {
-            isValid: () => false, // Always return false when an error occurs.
-            message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error if applicable.
+            // Always return false when an error occurs.
+            isValid: () => false,
+            // Display a parsing error.
+            message:
+                err.name === 'YAMLParseError' ? err.message.replace(/[\s]+/g, ' ') : CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
         }
     }
 }
@@ -169,8 +172,13 @@ const validateEsoSecretYaml = (esoSecretYaml: string): UseFormValidation => {
         // Catch any errors and return an invalid result with an appropriate error message.
         return {
             custom: {
-                isValid: () => false, // Always return false when an error occurs.
-                message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error message if applicable.
+                // Always return false when an error occurs.
+                isValid: () => false,
+                // Display a parsing error message.
+                message:
+                    err.name === 'YAMLParseError'
+                        ? err.message.replace(/[\s]+/g, ' ')
+                        : CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
             },
         }
     }
@@ -272,7 +280,8 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                             },
                             currentData: {
                                 custom: {
-                                    isValid: (value) => external || (value.length && !!value[0].k),
+                                    isValid: (value: CMSecretYamlData[]) =>
+                                        value.length && !!value[0].k && !!value[0].v,
                                     message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
                                 },
                             },

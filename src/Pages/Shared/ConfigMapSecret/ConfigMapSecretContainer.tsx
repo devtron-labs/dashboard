@@ -293,11 +293,11 @@ export const ConfigMapSecretContainer = ({
         }, [resolvedScopeVariablesRes])
 
     // DATA CONSTANTS
+    const isError = notFoundErr || configMapSecretResErr
     const isLoading =
         configMapSecretResLoading ||
         isEnvConfigLoading ||
-        (id && !(configMapSecretData || inheritedConfigMapSecretData || draftData) && !notFoundErr)
-    const isError = notFoundErr || configMapSecretResErr
+        (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = hasHashiOrAWS(configMapSecretData?.externalType)
 
     // ERROR HANDLING
@@ -312,6 +312,8 @@ export const ConfigMapSecretContainer = ({
                 title: 'View-only access',
                 description: "You won't be able to make any changes",
             })
+        } else if (configMapSecretResErr) {
+            showError(configMapSecretResErr)
         }
 
         if (notFoundErr) {
