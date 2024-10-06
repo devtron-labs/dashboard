@@ -128,6 +128,7 @@ export type ConfigToolbarProps = {
      */
     isPublishedConfigPresent?: boolean
     handleClearPopupNode: () => void
+    showDeleteOverrideDraftEmptyState: boolean
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -144,6 +145,10 @@ export interface GetConfigToolbarPopupConfigProps {
      * If not provided won't show locked config data
      */
     lockedConfigData?: ConfigToolbarPopupMenuLockedConfigDataType | null
+    /**
+     * @default false
+     */
+    showDeleteOverrideDraftEmptyState?: boolean
     configHeaderTab: ConfigHeaderTabType
     isOverridden: boolean
     isPublishedValuesView: boolean

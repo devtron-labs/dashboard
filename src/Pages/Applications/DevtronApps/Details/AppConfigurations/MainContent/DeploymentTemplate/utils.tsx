@@ -13,6 +13,7 @@ import {
     ToastManager,
     logExceptionToSentry,
     ConfigToolbarPopupNodeType,
+    DeploymentTemplateConfigState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
@@ -21,9 +22,15 @@ import {
     DeploymentTemplateActionType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
+    GetCurrentEditorPayloadForScopedVariablesProps,
+    GetCurrentEditorStateProps,
     GetDeploymentTemplateInitialStateParamsType,
+    GetDryRunViewEditorStateProps,
+    GetRawEditorValueForDryRunModeProps,
+    HandleInitializeDraftDataProps,
 } from './types'
 import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
+import { DEFAULT_MERGE_STRATEGY } from '../constants'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -103,7 +110,7 @@ export const getCurrentTemplateWithLockedKeys = ({
     currentEditorTemplateData,
     wasGuiOrHideLockedKeysEdited,
 }: Pick<DeploymentTemplateStateType, 'currentEditorTemplateData' | 'wasGuiOrHideLockedKeysEdited'>): string => {
-    if (!currentEditorTemplateData.removedPatches.length || !reapplyRemovedLockedKeysToYaml) {
+    if (!currentEditorTemplateData.removedPatches?.length || !reapplyRemovedLockedKeysToYaml) {
         return currentEditorTemplateData.editorTemplate
     }
 
@@ -142,6 +149,7 @@ export const getDeploymentTemplateInitialState = ({
         charts: [],
         chartsMetadata: {},
         globalChartDetails: null,
+        latestAppChartRef: null,
     },
     publishedTemplateData: null,
     draftTemplateData: null,
@@ -265,6 +273,34 @@ export const getLockedDiffModalDocuments = (isApprovalView: boolean, state: Depl
           ),
 })
 
+const handleReApplyLockedKeys = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
+    try {
+        const updatedEditorValue = getCurrentTemplateWithLockedKeys({
+            currentEditorTemplateData: state.currentEditorTemplateData,
+            wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
+        })
+
+        const currentEditorTemplateData: typeof state.currentEditorTemplateData = {
+            ...state.currentEditorTemplateData,
+            editorTemplate: updatedEditorValue,
+            removedPatches: [],
+        }
+
+        return {
+            ...state,
+            hideLockedKeys: false,
+            currentEditorTemplateData,
+        }
+    } catch {
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: 'Something went wrong while re-applying locked keys',
+        })
+
+        return state
+    }
+}
+
 export const deploymentTemplateReducer = (
     state: DeploymentTemplateStateType,
     action: DeploymentTemplateActionState,
@@ -318,6 +354,7 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 configHeaderTab,
                 selectedProtectionViewTab,
+                compareFromSelectedOptionValue,
             } = action.payload
 
             return {
@@ -330,6 +367,7 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 configHeaderTab,
                 selectedProtectionViewTab,
+                compareFromSelectedOptionValue,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -440,15 +478,6 @@ export const deploymentTemplateReducer = (
         }
 
         case DeploymentTemplateActionType.UPDATE_HIDE_LOCKED_KEYS: {
-            if (!reapplyRemovedLockedKeysToYaml) {
-                logExceptionToSentry(
-                    new Error(
-                        `reapplyRemovedLockedKeysToYaml is not available inside ${DeploymentTemplateActionType.UPDATE_HIDE_LOCKED_KEYS} action`,
-                    ),
-                )
-                return state
-            }
-
             const { hideLockedKeys } = action.payload
 
             if (hideLockedKeys) {
@@ -471,31 +500,7 @@ export const deploymentTemplateReducer = (
                 }
             }
 
-            try {
-                const updatedEditorValue = getCurrentTemplateWithLockedKeys({
-                    currentEditorTemplateData: state.currentEditorTemplateData,
-                    wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
-                })
-
-                const currentEditorTemplateData: typeof state.currentEditorTemplateData = {
-                    ...state.currentEditorTemplateData,
-                    editorTemplate: updatedEditorValue,
-                    removedPatches: [],
-                }
-
-                return {
-                    ...state,
-                    hideLockedKeys,
-                    currentEditorTemplateData,
-                }
-            } catch {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: 'Something went wrong while parsing locked keys',
-                })
-
-                return state
-            }
+            return handleReApplyLockedKeys(state)
         }
 
         case DeploymentTemplateActionType.CHANGE_TO_GUI_MODE:
@@ -522,14 +527,14 @@ export const deploymentTemplateReducer = (
 
         case DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB:
             return {
-                ...state,
+                ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 selectedProtectionViewTab: action.payload.selectedProtectionViewTab,
             }
 
         case DeploymentTemplateActionType.UPDATE_DRY_RUN_EDITOR_MODE:
             return {
-                ...state,
+                ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 dryRunEditorMode: action.payload.dryRunEditorMode,
             }
@@ -696,4 +701,274 @@ export const getDeploymentTemplateResourceName = (environmentName: string): stri
     }
 
     return PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO
+}
+
+export const getAreTemplateChangesPresent = (state: DeploymentTemplateStateType): boolean => {
+    const { currentEditorTemplateData, wasGuiOrHideLockedKeysEdited } = state
+
+    if (!currentEditorTemplateData) {
+        return false
+    }
+
+    if (currentEditorTemplateData.parsingError) {
+        return true
+    }
+
+    // Question: In case of removed patches are not present we return currentEditorTemplateData.editorTemplate so should we make if-else of hideLockedKeys or is current implementation fine?
+    const finalEditorValue = getCurrentTemplateWithLockedKeys({
+        currentEditorTemplateData,
+        wasGuiOrHideLockedKeysEdited,
+    })
+
+    const isEditorTemplateChanged = finalEditorValue !== currentEditorTemplateData.originalTemplateState.editorTemplate
+
+    const isChartRefIdChanged =
+        currentEditorTemplateData.selectedChartRefId !==
+        currentEditorTemplateData.originalTemplateState.selectedChartRefId
+
+    const areApplicationMetricsChanged =
+        currentEditorTemplateData.isAppMetricsEnabled !==
+        currentEditorTemplateData.originalTemplateState.isAppMetricsEnabled
+
+    const isOverriddenStatusChanged =
+        currentEditorTemplateData.isOverridden !== currentEditorTemplateData.originalTemplateState.isOverridden
+
+    if (isEditorTemplateChanged || isChartRefIdChanged || areApplicationMetricsChanged || isOverriddenStatusChanged) {
+        return true
+    }
+
+    return false
+}
+
+const getDryRunViewEditorState = ({
+    state,
+    isPublishedConfigPresent,
+    isDeleteOverrideDraft,
+}: GetDryRunViewEditorStateProps): DeploymentTemplateConfigState | DeploymentTemplateEditorDataStateType | null => {
+    const {
+        dryRunEditorMode,
+        draftTemplateData,
+        publishedTemplateData,
+        currentEditorTemplateData,
+        baseDeploymentTemplateData,
+    } = state
+
+    if (!draftTemplateData?.latestDraft) {
+        return currentEditorTemplateData
+    }
+
+    if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
+        return isPublishedConfigPresent ? publishedTemplateData : null
+    }
+
+    if (isDeleteOverrideDraft) {
+        return baseDeploymentTemplateData
+    }
+
+    if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
+        return draftTemplateData
+    }
+
+    return currentEditorTemplateData
+}
+
+/**
+ * Returns template state based on the current view in case of single editor and RHS editor value in case of compare view
+ */
+export const getCurrentEditorState = ({
+    state,
+    isPublishedConfigPresent,
+    isDryRunView,
+    isDeleteOverrideDraft,
+    isInheritedView,
+    isPublishedValuesView,
+    showApprovalPendingEditorInCompareView,
+}: GetCurrentEditorStateProps): ReturnType<typeof getDryRunViewEditorState> => {
+    const { draftTemplateData, publishedTemplateData, currentEditorTemplateData, baseDeploymentTemplateData } = state
+
+    if (isDryRunView) {
+        return getDryRunViewEditorState({
+            state,
+            isPublishedConfigPresent,
+            isDeleteOverrideDraft,
+        })
+    }
+
+    if (isInheritedView) {
+        return baseDeploymentTemplateData
+    }
+
+    if (isPublishedValuesView) {
+        return isPublishedConfigPresent ? publishedTemplateData : null
+    }
+
+    if (showApprovalPendingEditorInCompareView) {
+        return isDeleteOverrideDraft ? baseDeploymentTemplateData : draftTemplateData
+    }
+
+    /*  
+        In case of compare view if we have delete override we don't show select at all so if isDeleteOverrideDraft is true, we would be
+        showing the empty state
+    */
+    if (isDeleteOverrideDraft) {
+        return null
+    }
+
+    return currentEditorTemplateData
+}
+
+/**
+ * This method returns the editor value (un-resolved and with locked keys) in case of dry run mode
+ */
+export const getRawEditorValueForDryRunMode = ({
+    state,
+    isPublishedConfigPresent,
+    isDryRunView,
+    isDeleteOverrideDraft,
+}: GetRawEditorValueForDryRunModeProps): string => {
+    if (!isDryRunView) {
+        logExceptionToSentry(new Error('getRawEditorValueForDryRunMode called in non dry run mode'))
+        return ''
+    }
+
+    // We don't have to worry about hideLockedKeys since, we are always showing locked keys in dry run mode
+    return (
+        getCurrentEditorState({
+            state,
+            isPublishedConfigPresent,
+            isDeleteOverrideDraft,
+            isDryRunView: true,
+            isInheritedView: false,
+            isPublishedValuesView: false,
+            showApprovalPendingEditorInCompareView: false,
+        })?.editorTemplate || ''
+    )
+}
+
+/**
+ * This method returns the editor value (un-resolved and with locked keys) based on the current view (In case of single editor) and RHS editor value (In case of compare view)
+ */
+export const getCurrentEditorPayloadForScopedVariables = ({
+    state,
+    isPublishedConfigPresent,
+    isDryRunView,
+    isDeleteOverrideDraft,
+    isInheritedView,
+    isPublishedValuesView,
+    showApprovalPendingEditorInCompareView,
+}: GetCurrentEditorPayloadForScopedVariablesProps): string => {
+    const { hideLockedKeys, wasGuiOrHideLockedKeysEdited } = state
+
+    const currentEditorState = getCurrentEditorState({
+        state,
+        isPublishedConfigPresent,
+        isDryRunView,
+        isDeleteOverrideDraft,
+        isInheritedView,
+        isPublishedValuesView,
+        showApprovalPendingEditorInCompareView,
+    })
+
+    if (!currentEditorState) {
+        return ''
+    }
+
+    if (hideLockedKeys && !!(currentEditorState as DeploymentTemplateEditorDataStateType).removedPatches?.length) {
+        try {
+            const templateWithLockedKeys = getCurrentTemplateWithLockedKeys({
+                currentEditorTemplateData: currentEditorState as DeploymentTemplateEditorDataStateType,
+                wasGuiOrHideLockedKeysEdited,
+            })
+            return templateWithLockedKeys
+        } catch {
+            // Do nothing
+        }
+    }
+
+    return currentEditorState.editorTemplate
+}
+
+export const handleInitializeDraftData = ({
+    latestDraft,
+    guiSchema,
+    chartRefsData,
+    lockedConfigKeys,
+    envId,
+}: HandleInitializeDraftDataProps): DeploymentTemplateStateType['draftTemplateData'] => {
+    if (!envId) {
+        const {
+            valuesOverride,
+            id,
+            refChartTemplate,
+            refChartTemplateVersion,
+            isAppMetricsEnabled,
+            chartRefId,
+            readme,
+            schema,
+        } = JSON.parse(latestDraft.data)
+
+        const stringifiedTemplate = YAMLStringify(valuesOverride, { simpleKeys: true })
+        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+            stringifiedTemplate,
+            lockedConfigKeys,
+        )
+
+        const response: DeploymentTemplateStateType['draftTemplateData'] = {
+            originalTemplate: valuesOverride,
+            schema,
+            readme,
+            guiSchema,
+            isAppMetricsEnabled,
+            chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+            editorTemplate: stringifiedTemplate,
+            latestDraft,
+            selectedChartRefId: chartRefId,
+            selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
+            editorTemplateWithoutLockedKeys,
+        }
+
+        return response
+    }
+
+    const {
+        envOverrideValues,
+        id,
+        isDraftOverriden,
+        isAppMetricsEnabled,
+        chartRefId,
+        status,
+        manualReviewed,
+        active,
+        namespace,
+        readme,
+        schema,
+    } = JSON.parse(latestDraft.data)
+    const stringifiedTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
+    const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+        stringifiedTemplate,
+        lockedConfigKeys,
+    )
+    const response: DeploymentTemplateStateType['draftTemplateData'] = {
+        originalTemplate: envOverrideValues,
+        schema,
+        readme,
+        guiSchema,
+        isAppMetricsEnabled,
+        editorTemplate: stringifiedTemplate,
+        latestDraft,
+        selectedChartRefId: chartRefId,
+        selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
+        editorTemplateWithoutLockedKeys,
+        isOverridden: isDraftOverriden,
+        environmentConfig: {
+            id,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+        },
+        mergeStrategy: DEFAULT_MERGE_STRATEGY,
+    }
+
+    return response
 }

@@ -17,8 +17,9 @@ const DeploymentTemplateOptionsHeader = ({
     isCompareView,
     isGuiSupported,
     areChartsLoading,
+    showDeleteOverrideDraftEmptyState,
 }: DeploymentTemplateOptionsHeaderProps) => {
-    if (isCompareView || showReadMe) {
+    if (isCompareView || showReadMe || showDeleteOverrideDraftEmptyState) {
         return null
     }
 

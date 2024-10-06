@@ -105,6 +105,7 @@ const ConfigToolbar = ({
     restoreLastSavedYAML,
     isPublishedConfigPresent = true,
     handleClearPopupNode,
+    showDeleteOverrideDraftEmptyState,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -251,7 +252,7 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (!envId || !isEditView) {
+        if (!envId || !isEditView || showDeleteOverrideDraftEmptyState) {
             return null
         }
 

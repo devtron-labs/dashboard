@@ -20,28 +20,45 @@ import {
     DraftMetadataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface DeploymentTemplateProps {
-    respondOnSuccess?: (redirection: boolean) => void
+type BaseDeploymentTemplateProps = {
+    /**
+     * If isUnSet is true would call this so that we re-direct users to next step
+     */
+    respondOnSuccess: (redirection: boolean) => void
     /**
      * Given in case we have'nt saved any deployment template
      * If true, would show chart type selector.
      */
-    isUnSet?: boolean
+    isUnSet: boolean
     /**
      * Something related to git-ops
      */
-    isCiPipeline?: boolean
+    isCiPipeline: boolean
+
+    environmentName?: never
+    clusterId?: never
+}
+
+type EnvOverrideDeploymentTemplateProps = {
+    environmentName: string
+    clusterId?: string
+
+    respondOnSuccess?: never
+    isUnSet?: never
+    isCiPipeline?: never
+}
+
+export type DeploymentTemplateProps = {
     isProtected: boolean
     reloadEnvironments: () => void
-    environmentName?: string
-    clusterId?: string
     fetchEnvConfig: (environmentId: number) => void
-}
+} & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)
 
 export interface DeploymentTemplateChartStateType {
     charts: DeploymentChartVersionType[]
     chartsMetadata: Record<string, ChartMetadataType>
     globalChartDetails: DeploymentChartVersionType
+    latestAppChartRef: number
 }
 
 export interface DeploymentTemplateEditorDataStateType
@@ -66,6 +83,7 @@ export interface DeploymentTemplateOptionsHeaderProps
     showReadMe: boolean
     isGuiSupported: boolean
     areChartsLoading: boolean
+    showDeleteOverrideDraftEmptyState: boolean
 }
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
@@ -321,6 +339,7 @@ export interface DeploymentTemplateStateType {
     popupNodeType: ConfigToolbarPopupNodeType
     /**
      * In case of approval pending mode, we would be showing a select to compare from, this is its selected value
+     * If the action is to delete override then we would only be showing approval pending
      */
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     /**
@@ -333,6 +352,9 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
+    /**
+     * This mode can only be activated when user is in edit mode
+     */
     showReadMe: boolean
     editMode: ConfigurationType
     configHeaderTab: ConfigHeaderTabType
@@ -352,7 +374,10 @@ export interface GetPublishedAndBaseDeploymentTemplateReturnType {
 
 export interface GetChartListReturnType
     extends SelectedChartDetailsType,
-        Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata' | 'globalChartDetails'> {}
+        Pick<
+            DeploymentTemplateChartStateType,
+            'charts' | 'chartsMetadata' | 'globalChartDetails' | 'latestAppChartRef'
+        > {}
 
 export interface HandleInitializeTemplatesWithoutDraftParamsType {
     baseDeploymentTemplateState: DeploymentTemplateStateType['baseDeploymentTemplateData']
@@ -463,7 +488,11 @@ export type DeploymentTemplateActionState =
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  'currentEditorTemplateData' | 'draftTemplateData' | 'configHeaderTab' | 'selectedProtectionViewTab'
+                  | 'currentEditorTemplateData'
+                  | 'draftTemplateData'
+                  | 'configHeaderTab'
+                  | 'selectedProtectionViewTab'
+                  | 'compareFromSelectedOptionValue'
               >
       }
     | {
@@ -530,3 +559,37 @@ export type DeploymentTemplateActionState =
               isLockConfigError: boolean
           }
       }
+
+export interface GetCurrentEditorStateProps {
+    state: DeploymentTemplateStateType
+    isPublishedConfigPresent: boolean
+    isDryRunView: boolean
+    isDeleteOverrideDraft: boolean
+    isInheritedView: boolean
+    isPublishedValuesView: boolean
+    showApprovalPendingEditorInCompareView: boolean
+}
+
+export interface GetDryRunViewEditorStateProps
+    extends Pick<GetCurrentEditorStateProps, 'state' | 'isPublishedConfigPresent' | 'isDeleteOverrideDraft'> {}
+
+export interface GetRawEditorValueForDryRunModeProps
+    extends Pick<
+        GetCurrentEditorStateProps,
+        'isPublishedConfigPresent' | 'isDryRunView' | 'isDeleteOverrideDraft' | 'state'
+    > {}
+
+export interface GetCurrentEditorPayloadForScopedVariablesProps
+    extends Pick<
+            GetCurrentEditorStateProps,
+            'isInheritedView' | 'isPublishedValuesView' | 'showApprovalPendingEditorInCompareView'
+        >,
+        GetRawEditorValueForDryRunModeProps {}
+
+export interface HandleInitializeDraftDataProps {
+    latestDraft: DraftMetadataDTO
+    guiSchema: string
+    chartRefsData: GetChartListReturnType
+    lockedConfigKeys: string[]
+    envId: string
+}

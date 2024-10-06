@@ -402,11 +402,6 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferences(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
-    const baseURL = `${Routes.CHART_REFERENCES_MIN}/${appId}`
-    return get(`${baseURL}${envId ? `/${envId}` : ''}`)
-}
-
 export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
     let envParam = ''
     if (envId) {

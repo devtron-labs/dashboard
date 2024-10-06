@@ -85,6 +85,7 @@ export const PopupMenuItem = ({ text, onClick, dataTestId, disabled, icon }: Con
 
 export const getConfigToolbarPopupConfig = ({
     lockedConfigData,
+    showDeleteOverrideDraftEmptyState = false,
     configHeaderTab,
     isOverridden,
     isPublishedValuesView,
@@ -103,7 +104,7 @@ export const getConfigToolbarPopupConfig = ({
     const firstConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
     const secondConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
 
-    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig) {
+    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig && !showDeleteOverrideDraftEmptyState) {
         const lockedKeysConfig = getToggleViewLockedKeysPopupButtonConfig(
             lockedConfigData.areLockedKeysPresent,
             lockedConfigData.hideLockedKeys,
