@@ -143,6 +143,7 @@ export const ConfigMapSecretContainer = ({
 
     // USE EFFECTS
     useEffect(
+        // Reset the form state after unmounting
         () => () => {
             setFormState({ type: 'RESET' })
         },
@@ -156,12 +157,6 @@ export const ConfigMapSecretContainer = ({
         }
     }, [envId, resolvedScopeVariables])
 
-    useEffect(() => {
-        if (restoreYAML) {
-            setRestoreYAML(false)
-        }
-    }, [restoreYAML])
-
     // ASYNC CALLS
     const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr] = useAsync(
         () =>
@@ -169,20 +164,17 @@ export const ConfigMapSecretContainer = ({
                 () =>
                     Promise.all([
                         // Fetch Published Configuration
-                        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
-                        cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-                            ? getConfigMapSecretConfigData({
-                                  appId,
-                                  appName,
-                                  envId,
-                                  envName,
-                                  componentType,
-                                  name,
-                                  resourceId: id,
-                                  isJob,
-                                  abortControllerRef,
-                              })
-                            : null,
+                        getConfigMapSecretConfigData({
+                            appId,
+                            appName,
+                            envId,
+                            envName,
+                            componentType,
+                            name,
+                            resourceId: id,
+                            isJob,
+                            abortControllerRef,
+                        }),
                         // Fetch Base Configuration (Inherited Tab Data)
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
@@ -306,7 +298,7 @@ export const ConfigMapSecretContainer = ({
         isEnvConfigLoading ||
         (id && !(configMapSecretData || inheritedConfigMapSecretData || draftData) && !notFoundErr)
     const isError = notFoundErr || configMapSecretResErr
-    const isHashiOrAWS = hasHashiOrAWS(configMapSecretData?.externalType || inheritedConfigMapSecretData?.externalType)
+    const isHashiOrAWS = hasHashiOrAWS(configMapSecretData?.externalType)
 
     // ERROR HANDLING
     useEffect(() => {
@@ -518,7 +510,7 @@ export const ConfigMapSecretContainer = ({
             isProtected,
             isPublishedValuesView: selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED,
             isPublishedConfigPresent: !!configMapSecretData,
-            unableToParseData: false,
+            unableToParseData: !!parsingError,
             isLoading: isLoading || isSubmitting,
             isDraftAvailable: !!draftData,
             handleDiscardDraft: handleOpenDiscardDraftPopup,
@@ -564,6 +556,7 @@ export const ConfigMapSecretContainer = ({
                 isJob={isJob}
                 parentName={parentName}
                 restoreYAML={restoreYAML}
+                setRestoreYAML={setRestoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
             />
@@ -572,7 +565,7 @@ export const ConfigMapSecretContainer = ({
                 id={id}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
-                configMapSecretData={configMapSecretData ?? inheritedConfigMapSecretData}
+                configMapSecretData={configMapSecretData}
                 isJob={isJob}
                 isProtected={isProtected}
                 isSubmitting={isSubmitting}
@@ -582,6 +575,7 @@ export const ConfigMapSecretContainer = ({
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 restoreYAML={restoreYAML}
+                setRestoreYAML={setRestoreYAML}
             />
         )
 
@@ -595,6 +589,7 @@ export const ConfigMapSecretContainer = ({
                 environmentName={envName}
                 handleCreateOverride={handleCreateOverride}
                 handleViewInheritedConfig={handleViewInheritedConfig}
+                // TODO: confirm with Utkarsh once
                 hideOverrideButton={configMapSecretData?.unAuthorized}
             />
         )

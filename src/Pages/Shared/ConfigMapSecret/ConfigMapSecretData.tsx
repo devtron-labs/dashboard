@@ -141,7 +141,7 @@ export const ConfigMapSecretData = ({
     const toggleYamlMode = (e: ChangeEvent<HTMLInputElement>) => {
         // The selected mode from the event (either YAML view or key-value pair view).
         const yamlMode = e.target.value
-        // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the '__NO_DATA__' error.
+        // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the 'NO_DATA_ERROR' error.
         const hasDataError =
             (errors.yaml || errors.currentData) &&
             (errors.yaml || errors.currentData) !== CONFIG_MAP_SECRET_NO_DATA_ERROR
@@ -150,7 +150,7 @@ export const ConfigMapSecretData = ({
         if (hasDataError) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'Please resolve the errors before switching editor mode.', // Error message in the toast.
+                description: 'Please resolve the errors before switching editor mode.',
             })
 
             // Return to prevent switching due to errors.
@@ -216,7 +216,7 @@ export const ConfigMapSecretData = ({
                         disabled={false}
                         initialTab={data.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
                         name="yamlMode"
-                        // Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm
+                        /** @note Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm */
                         onChange={toggleYamlMode}
                     >
                         {Object.keys(VIEW_MODE).map((key) =>
@@ -313,7 +313,7 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {errors[codeEditorFormKey] && (
+                    {codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA && errors[codeEditorFormKey] && (
                         <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
                             <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
                             <p className="m-0">{errors[codeEditorFormKey]}</p>

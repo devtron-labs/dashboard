@@ -39,8 +39,6 @@ import {
 } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
 
-import './styles.scss'
-
 export const ConfigMapSecretForm = ({
     id = null,
     configMapSecretData,
@@ -49,15 +47,18 @@ export const ConfigMapSecretForm = ({
     componentType,
     isSubmitting,
     isProtected,
-    onSubmit,
-    onError,
-    onCancel,
     areScopeVariablesResolving,
     resolvedFormData,
     restoreYAML,
+    setRestoreYAML,
+    onSubmit,
+    onError,
+    onCancel,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
     const { setFormState, formDataRef } = useConfigMapSecretFormContext()
+
+    // INITIAL FORM VALUES
     const formInitialValues = useMemo(
         () =>
             getConfigMapSecretFormInitialValues({
@@ -88,26 +89,48 @@ export const ConfigMapSecretForm = ({
      */
     const shouldPrompt = isCreateView && formState.isDirty
 
+    // USE EFFECTS
     useEffect(() => {
+        /*
+         * When resolved form data is available, we reset the form with this resolved form data.
+         * isResolvedData check determines whether the current formState contains resolved data or not.
+         * @note resolvedFormData means show scope variables is true.
+         */
         if (resolvedFormData) {
             reset({ ...resolvedFormData, isResolvedData: true }, { keepDirty: true })
         } else if (formDataRef.current) {
-            // RESET FORM IF DATA IS PRESENT
+            /*
+             * We use formDataRef (is present) to restore form values after mounting & when `resolvedFormData` is null.
+             * The form reset is triggered with the keepDirty option, which resets the form using the stored values while preserving the “dirty” state.
+             * During the reset, we also ensure that yamlMode is preserved.
+             */
             reset({ ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false }, { keepDirty: true })
         }
     }, [resolvedFormData])
 
-    // UPDATING FORM STATE CONTEXT
     useEffect(() => {
+        /*
+         * We update formDataRef whenever the form’s data state changes, \
+         * but only if resolvedFormData is null. \
+         * Since resolvedFormData represents a read-only view, it doesn’t require form updates. \
+         * Also, formDataRef is required to restore the form data state when `resolvedFormData` is null.
+         */
         if (!resolvedFormData) {
             setFormState({ type: 'SET_DATA', data, isDirty: formState.isDirty, errors })
         }
     }, [data, formState.isDirty, errors, resolvedFormData])
 
     useEffect(() => {
+        /*
+         * When the 'Restore Last Saved YAML' button is clicked, it sets the restoreYAML state to true. \
+         * This triggers a reset of the YAML to its initial state (i.e., the latest valid state). \
+         * Depending on the type of ConfigMap or Secret, we set the appropriate YAML form field accordingly. \
+         * Once the above is done, we reset restoreYAML state back to false to denote YAML has been restored to initial state.
+         */
         if (restoreYAML) {
             const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
             setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
+            setRestoreYAML(false)
         }
     }, [restoreYAML])
 
@@ -200,7 +223,7 @@ export const ConfigMapSecretForm = ({
 
     const renderSubPathCheckBoxContent = () => (
         <p data-testid={`${componentName}-sub-path-checkbox`} className="flexbox-col m-0 cn-9">
-            <span className="m-0">
+            <span>
                 <span>Set SubPath (same as</span>&nbsp;
                 <a
                     href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -385,7 +408,7 @@ export const ConfigMapSecretForm = ({
                             isHashiOrAWS={isHashiOrAWS}
                             isUnAuthorized={isUnAuthorized}
                             useFormProps={useFormProps}
-                            readOnly={!!resolvedFormData}
+                            readOnly={data.isResolvedData}
                         />
                     )}
                 </div>

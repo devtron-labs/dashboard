@@ -17,35 +17,26 @@ export const ConfigMapSecretNullState = ({
     // HOOKS
     const { path, params } = useRouteMatch()
 
-    if (nullStateType === 'NO_CM_CS') {
-        return (
-            <GenericEmptyState
-                title={CM_SECRET_EMPTY_STATE_TEXT[componentType].title}
-                subTitle={CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle}
-                image={EmptyStateImg}
-                imageType="large"
-                classname="cm-cs-empty-state"
-                isButtonAvailable
-                renderButton={() => (
-                    <Button
-                        dataTestId="cm-cs-empty-state-btn"
-                        component={ButtonComponentType.link}
-                        startIcon={<ICAdd />}
-                        text={CM_SECRET_EMPTY_STATE_TEXT[componentType].buttonText}
-                        linkProps={{
-                            to: generatePath(path, { ...params, name: 'create' }),
-                        }}
-                    />
-                )}
-            />
-        )
-    }
+    const noCMSecretPresent = nullStateType === 'NO_CM_CS'
 
     return (
         <GenericEmptyState
-            image={EmptyFolder}
+            {...getCMSecretNullStateText(componentType, componentName)[nullStateType]}
+            image={noCMSecretPresent ? EmptyStateImg : EmptyFolder}
+            classname="cm-cs-empty-state"
             imageType={ImageType.Large}
-            {...getCMSecretNullStateText(componentName)[nullStateType]}
+            isButtonAvailable={noCMSecretPresent}
+            renderButton={() => (
+                <Button
+                    dataTestId="cm-cs-empty-state-btn"
+                    component={ButtonComponentType.link}
+                    startIcon={<ICAdd />}
+                    text={CM_SECRET_EMPTY_STATE_TEXT[componentType].buttonText}
+                    linkProps={{
+                        to: generatePath(path, { ...params, name: 'create' }),
+                    }}
+                />
+            )}
         />
     )
 }

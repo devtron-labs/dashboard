@@ -142,6 +142,7 @@ export interface ConfigMapSecretFormProps
     configMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
     restoreYAML: boolean
+    setRestoreYAML: Dispatch<SetStateAction<boolean>>
     isSubmitting: boolean
     areScopeVariablesResolving: boolean
     resolvedFormData: ConfigMapSecretUseFormProps
@@ -205,6 +206,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'areScopeVariablesResolving'
         | 'resolvedFormData'
         | 'restoreYAML'
+        | 'setRestoreYAML'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -237,9 +239,25 @@ type SetFormStateParams =
       }
 
 export interface ConfigMapSecretFormContextType {
+    /**
+     * Reference to the current state of the form data.
+     * This persists the form values across renders, preventing data loss when the component unmounts.
+     */
     formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
+    /**
+     * Boolean indicating whether the form has unsaved changes.
+     * This tracks the "dirty" state of the form.
+     */
     isFormDirty: boolean
+    /**
+     * String containing any error messages related to parsing, \
+     * such as issues encountered when processing YAML.
+     */
     parsingError: string
+    /**
+     * Function to update the form state based on the provided parameters.
+     * @param params - The new form state parameters to apply.
+     */
     setFormState: (params: SetFormStateParams) => void
 }
 

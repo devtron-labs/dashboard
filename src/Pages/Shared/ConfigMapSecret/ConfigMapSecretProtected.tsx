@@ -51,6 +51,7 @@ export const ConfigMapSecretProtected = ({
     onSubmit,
     updateCMSecret,
     restoreYAML,
+    setRestoreYAML,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { email } = useUserEmail()
@@ -131,9 +132,8 @@ export const ConfigMapSecretProtected = ({
     )
 
     // METHODS
-    const handleCompareFromOptionSelection = (option: SelectPickerOptionType) => {
+    const handleCompareFromOptionSelection = (option: SelectPickerOptionType) =>
         setCompareFromSelectedOptionValue(option.value as CompareFromApprovalOptionsValuesType)
-    }
 
     const getConfigMapSecretDiffViewData = () => {
         if (draftData.action === DraftAction.Delete) {
@@ -229,6 +229,7 @@ export const ConfigMapSecretProtected = ({
             resolvedFormData={resolvedFormData}
             areScopeVariablesResolving={areScopeVariablesResolving}
             restoreYAML={restoreYAML}
+            setRestoreYAML={setRestoreYAML}
         />
     )
 

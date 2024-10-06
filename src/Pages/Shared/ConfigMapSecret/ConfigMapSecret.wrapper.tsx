@@ -16,7 +16,7 @@ import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOv
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { CMSecretComponentType, CMSecretWrapperProps } from './types'
 
-import { ConfigMapSecretContainer } from './ConfigMapSecret.container'
+import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
 import { ConfigMapSecretFormProvider } from './ConfigMapSecretFormContext'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {

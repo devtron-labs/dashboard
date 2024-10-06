@@ -477,6 +477,27 @@ export const getConfigMapSecretPayload = ({
 
     return payload
 }
+
+export const getConfigMapSecretResolvedDataPayload = ({
+    formData,
+    inheritedConfigMapSecretData,
+    configMapSecretData,
+    draftData,
+}: {
+    formData: ConfigMapSecretUseFormProps
+    inheritedConfigMapSecretData: CMSecretConfigData
+    configMapSecretData: CMSecretConfigData
+    draftData: CMSecretDraftData
+}) => {
+    const values = {
+        formData,
+        inheritedConfigMapSecretData,
+        configMapSecretData,
+        draftData,
+    }
+
+    return JSON.stringify(values)
+}
 // PAYLOAD UTILS ----------------------------------------------------------------
 
 // DATA UTILS ----------------------------------------------------------------
@@ -614,27 +635,6 @@ export const getConfigMapSecretInheritedData = ({
                   .configData[0],
               unAuthorized: !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin,
           }
-}
-
-export const getConfigMapSecretResolvedDataPayload = ({
-    formData,
-    inheritedConfigMapSecretData,
-    configMapSecretData,
-    draftData,
-}: {
-    formData: ConfigMapSecretUseFormProps
-    inheritedConfigMapSecretData: CMSecretConfigData
-    configMapSecretData: CMSecretConfigData
-    draftData: CMSecretDraftData
-}) => {
-    const values = {
-        formData,
-        inheritedConfigMapSecretData,
-        configMapSecretData,
-        draftData,
-    }
-
-    return JSON.stringify(values)
 }
 
 export const getConfigMapSecretResolvedData = (

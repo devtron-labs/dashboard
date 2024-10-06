@@ -43,6 +43,7 @@ export const CM_SECRET_EMPTY_STATE_TEXT = {
 }
 
 export const getCMSecretNullStateText = (
+    componentType: CMSecretComponentType,
     componentName: string,
 ): Record<ConfigMapSecretNullStateProps['nullStateType'], { title: string; subTitle: string }> => ({
     DELETE_OVERRIDE: {
@@ -57,7 +58,10 @@ export const getCMSecretNullStateText = (
         title: 'This file is not overridden',
         subTitle: `Published override for this file will be available here`,
     },
-    NO_CM_CS: null,
+    NO_CM_CS: {
+        title: CM_SECRET_EMPTY_STATE_TEXT[componentType].title,
+        subTitle: CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle,
+    },
 })
 
 export const configMapDataTypeOptions: ConfigMapSecretDataTypeOptionType[] = [

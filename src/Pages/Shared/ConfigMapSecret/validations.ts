@@ -255,29 +255,30 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                       : {}),
               }
             : {}),
-        ...(yamlMode
+        ...(!isESO && !mountExistingExternal
             ? {
-                  yaml: {
-                      custom: !isESO && !mountExistingExternal ? validateYaml(yaml) : null,
-                  },
-              }
-            : {
-                  hasCurrentDataErr: {
-                      custom: {
-                          isValid: (value) => !value,
-                          message: 'Please resolve the errors before saving',
-                      },
-                  },
-                  currentData: {
-                      custom:
-                          !isESO && !mountExistingExternal
-                              ? {
+                  ...(yamlMode
+                      ? {
+                            yaml: {
+                                custom: validateYaml(yaml),
+                            },
+                        }
+                      : {
+                            hasCurrentDataErr: {
+                                custom: {
+                                    isValid: (value) => !value,
+                                    message: 'Please resolve the errors before saving',
+                                },
+                            },
+                            currentData: {
+                                custom: {
                                     isValid: (value) => external || (value.length && !!value[0].k),
                                     message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
-                                }
-                              : null,
-                  },
-              }),
+                                },
+                            },
+                        }),
+              }
+            : {}),
         ...(isSecret && isESO
             ? {
                   esoSecretYaml: validateEsoSecretYaml(esoSecretYaml),
