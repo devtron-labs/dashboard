@@ -235,7 +235,9 @@ export const ConfigMapSecretForm = ({
             >
                 {renderSubPathCheckBoxContent()}
             </Checkbox>
-            {(data.externalType === CMSecretExternalType.KubernetesSecret || (!data.isSecret && data.external)) &&
+            {(isESO ||
+                data.externalType === CMSecretExternalType.KubernetesSecret ||
+                (!data.isSecret && data.external)) &&
                 data.isSubPathChecked && (
                     <div className="ml-24">
                         <CustomInput

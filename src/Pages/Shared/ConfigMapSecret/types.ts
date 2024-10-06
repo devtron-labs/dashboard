@@ -55,7 +55,17 @@ export type CMSecretPayloadType = Pick<
     | 'subPath'
     | 'esoSecretData'
     | 'filePermission'
+    | 'esoSubPath'
 >
+
+export interface ESOSecretData {
+    secretStore: Record<string, any>
+    secretStoreRef: Record<string, any>
+    refreshInterval: string
+    esoData: Record<string, any>[]
+    esoDataFrom: Record<string, any>[]
+    template: Record<string, any>
+}
 
 export interface CMSecretDraftPayloadType {
     id: number

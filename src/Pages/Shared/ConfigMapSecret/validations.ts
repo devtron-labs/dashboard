@@ -6,7 +6,7 @@ import { PATTERNS } from '@Config/constants'
 import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
-import { hasESO } from './utils'
+import { getESOSecretDataFromYAML, hasESO } from './utils'
 import { CMSecretExternalType, ConfigMapSecretUseFormProps } from './types'
 
 /**
@@ -104,51 +104,48 @@ const validateEsoSecretYaml = (esoSecretYaml: string): UseFormValidation => {
         }
 
         // Parse the YAML string into a JSON object.
-        const json = YAML.parse(esoSecretYaml)
+        const json = getESOSecretDataFromYAML(esoSecretYaml)
 
-        // If the object has no keys (i.e., it's empty), throw a no-data error.
-        if (!Object.keys(json).length) {
-            throw new Error(CONFIG_MAP_SECRET_NO_DATA_ERROR)
-        }
-
-        // Ensure the parsed result is an object before proceeding with further validation.
-        if (typeof json === 'object') {
-            // Create a payload object to hold the parsed values needed for validation.
-            const payload = {
-                secretStore: json.secretStore,
-                secretStoreRef: json.secretStoreRef,
-                refreshInterval: json.refreshInterval,
-                esoData: [], // This will hold 'esoData' if it's an array.
-            }
-
-            // If 'esoData' exists and is an array, assign it to the payload.
-            if (Array.isArray(json.esoData)) {
-                payload.esoData = json.esoData
-            }
-
-            let isValid = false
+        // Ensure the parsed result is non-null before proceeding with further validation.
+        if (json) {
+            // Validation logic:
+            // 1. Ensure only one of 'esoData' or 'esoDataFrom' is provided, not both.
+            // 2. Either 'esoData' or 'esoDataFrom' must be provided (at least one is required).
+            // 3. Ensure that exactly one of 'secretStore' or 'secretStoreRef' is provided (not both or neither).
+            let isValid =
+                !(json.esoData && json.esoDataFrom) && // Rule 1: Only one of 'esoData' or 'esoDataFrom'
+                (json.esoData || json.esoDataFrom) && // Rule 2: At least one must be present
+                !json.secretStore !== !json.secretStoreRef // Rule 3: Exactly one of 'secretStore' or 'secretStoreRef'
             let errorMessage = ''
 
-            // Validate that 'esoData' array contains valid entries (each entry should have 'secretKey' and 'key').
-            isValid = payload.esoData.reduce(
-                (_isValid, s) => {
-                    // For each entry, ensure both 'secretKey' and 'key' are present and truthy.
-                    isValid = _isValid && !!s?.secretKey && !!s.key
-                    return isValid
-                },
-                // Ensure only one of 'secretStore' or 'secretStoreRef' is provided and 'esoData' is non-empty.
-                !payload.secretStore !== !payload.secretStoreRef && !!payload.esoData?.length,
-            )
+            // Validation logic for 'esoData' array:
+            // 1. Check if 'esoData' exists and the previous validation ('isValid') passed.
+            // 2. For each entry in 'esoData', ensure both 'secretKey' and 'key' are present and truthy.
+            //    If any entry is missing either 'secretKey' or 'key', set 'isValid' to false.
+            if (json.esoData && isValid) {
+                isValid = json.esoData?.reduce(
+                    (_isValid, s) =>
+                        // Rule: Both 'secretKey' and 'key' must exist and be truthy for each entry.
+                        _isValid && !!s?.secretKey && !!s.key,
+                    isValid, // Keep track of overall validity
+                )
+            }
 
-            // Set appropriate error messages based on the presence of 'secretStore' and 'secretStoreRef'.
-            if (payload.secretStore && payload.secretStoreRef) {
-                // If both 'secretStore' and 'secretStoreRef' are provided, this is an error.
+            // Set error messages based on the provided 'secretStore', 'secretStoreRef', and 'esoData'/'esoDataFrom':
+            if (json.esoDataFrom && json.esoData) {
+                // Error: Both 'esoData' and 'esoDataFrom' are provided, which is invalid.
+                errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE
+            } else if (!json.esoDataFrom && !json.esoData) {
+                // Error: Neither 'esoData' nor 'esoDataFrom' is provided, at least one is required.
+                errorMessage = SECRET_TOAST_INFO.BOTH_ESO_DATA_AND_DATA_FROM_UNAVAILABLE
+            } else if (json.secretStore && json.secretStoreRef) {
+                // Error: Both 'secretStore' and 'secretStoreRef' are provided, only one should be.
                 errorMessage = SECRET_TOAST_INFO.BOTH_STORE_AVAILABLE
-            } else if (payload.secretStore || payload.secretStoreRef) {
-                // If only one of 'secretStore' or 'secretStoreRef' is provided, check the keys.
+            } else if (json.secretStore || json.secretStoreRef) {
+                // Valid: One of 'secretStore' or 'secretStoreRef' is provided, but ensure the keys are correct.
                 errorMessage = SECRET_TOAST_INFO.CHECK_KEY_SECRET_KEY
             } else {
-                // If neither 'secretStore' nor 'secretStoreRef' is provided, throw an error.
+                // Error: Neither 'secretStore' nor 'secretStoreRef' is provided, one is required.
                 errorMessage = SECRET_TOAST_INFO.BOTH_STORE_UNAVAILABLE
             }
 

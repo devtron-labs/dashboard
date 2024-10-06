@@ -30,6 +30,7 @@ import {
     CMSecretPayloadType,
     CMSecretConfigData,
     CMSecretDTO,
+    ESOSecretData,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -76,7 +77,7 @@ const secureValues = (data: Record<string, string>, decodeData: boolean, hideDat
     }))
 }
 
-export const processCurrentData = (
+const processCurrentData = (
     configMapSecretData: CMSecretConfigData,
     cmSecretStateLabel: CM_SECRET_STATE,
     componentType: CMSecretComponentType,
@@ -97,6 +98,23 @@ export const processCurrentData = (
     }
 
     return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
+}
+
+const processExternalSubPathValues = ({
+    subPath,
+    externalType,
+    data,
+    esoSubPath,
+}: Pick<CMSecretConfigData, 'subPath' | 'externalType' | 'data' | 'esoSubPath'>) => {
+    if (subPath) {
+        if (data && externalType === CMSecretExternalType.KubernetesSecret) {
+            return Object.keys(data).join(', ')
+        }
+        if (esoSubPath) {
+            return esoSubPath.join(', ')
+        }
+    }
+    return ''
 }
 
 export const convertYAMLToKeyValuePair = (yaml: string): CMSecretYamlData[] => {
@@ -158,12 +176,16 @@ export const getSecretDataFromConfigData = (
     }
 
     const esoSecretData: Record<string, any> =
-        (configMapSecretData.esoSecretData?.esoData || []).length === 0 && configMapSecretData.defaultESOSecretData
+        !(configMapSecretData.esoSecretData?.esoData || []).length &&
+        !configMapSecretData.esoSecretData?.template &&
+        !configMapSecretData.esoSecretData?.esoDataFrom &&
+        configMapSecretData.defaultESOSecretData
             ? configMapSecretData.defaultESOSecretData
             : configMapSecretData.esoSecretData
 
     const isEsoSecretData: boolean =
-        (esoSecretData?.secretStore || esoSecretData?.secretStoreRef) && esoSecretData.esoData
+        (esoSecretData?.secretStore || esoSecretData?.secretStoreRef) &&
+        (esoSecretData.esoData || esoSecretData.template || esoSecretData.esoDataFrom)
 
     return {
         secretDataYaml: jsonForSecretDataYaml ?? '',
@@ -193,6 +215,7 @@ export const getConfigMapSecretFormInitialValues = ({
             data,
             filePermission,
             roleARN,
+            esoSubPath,
         } = configMapSecretData
         const currentData = processCurrentData(
             configMapSecretData,
@@ -208,10 +231,7 @@ export const getConfigMapSecretFormInitialValues = ({
             selectedType: type ?? configMapSecretMountDataMap.environment.value,
             isFilePermissionChecked: !!filePermission,
             isSubPathChecked: !!subPath,
-            externalSubpathValues:
-                isSecret && subPath && externalType === CMSecretExternalType.KubernetesSecret && data
-                    ? Object.keys(data).join(',')
-                    : '',
+            externalSubpathValues: processExternalSubPathValues({ data, esoSubPath, externalType, subPath }),
             filePermission: filePermission ?? '',
             volumeMountPath: mountPath ?? defaultMountPath ?? '',
             roleARN: roleARN ?? '',
@@ -331,19 +351,31 @@ export const getConfigMapSecretReadOnlyValues = ({
 // FORM UTILS ----------------------------------------------------------------
 
 // PAYLOAD UTILS ----------------------------------------------------------------
-const getESOSecretDataFromYAML = (yaml: string) => {
+export const getESOSecretDataFromYAML = (yaml: string): ESOSecretData => {
     try {
         const json = YAML.parse(yaml)
-        const payload = {
-            secretStore: json.secretStore,
-            secretStoreRef: json.secretStoreRef,
-            refreshInterval: json.refreshInterval,
-            esoData: null,
+        if (typeof json === 'object') {
+            const payload = {
+                secretStore: json.secretStore,
+                secretStoreRef: json.secretStoreRef,
+                refreshInterval: json.refreshInterval,
+                // if null don't send these keys which is achieved by `undefined`
+                esoData: undefined,
+                esoDataFrom: undefined,
+                template: undefined,
+            }
+            if (Array.isArray(json?.esoData)) {
+                payload.esoData = json.esoData
+            }
+            if (Array.isArray(json?.esoDataFrom)) {
+                payload.esoDataFrom = json.esoDataFrom
+            }
+            if (typeof json?.template === 'object' && !Array.isArray(json.template)) {
+                payload.template = json.template
+            }
+            return payload
         }
-        if (Array.isArray(json?.esoData)) {
-            payload.esoData = json.esoData
-        }
-        return payload
+        return null
     } catch {
         return null
     }
@@ -391,6 +423,7 @@ export const getConfigMapSecretPayload = ({
         mountPath: null,
         subPath: null,
         filePermission: null,
+        esoSubPath: null,
     }
 
     if (
@@ -412,8 +445,13 @@ export const getConfigMapSecretPayload = ({
                     esoData: esoSecretData.esoData,
                     secretStoreRef: esoSecretData.secretStoreRef,
                     refreshInterval: esoSecretData.refreshInterval,
+                    esoDataFrom: esoSecretData.esoDataFrom,
+                    template: esoSecretData.template,
                 }
                 payload.roleARN = roleARN
+                if (isSubPathChecked && externalSubpathValues) {
+                    payload.esoSubPath = externalSubpathValues.replace(/\s+/g, '').split(',')
+                }
             }
         }
     }

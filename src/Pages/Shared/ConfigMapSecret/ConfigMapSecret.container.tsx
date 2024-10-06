@@ -31,7 +31,6 @@ import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppC
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
     getConfigMapSecretConfigData,
@@ -201,10 +200,7 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Draft Configuration
-                        selectedCMSecret.configState === ResourceConfigState.ApprovalPending ||
-                        (selectedCMSecret.configState === ResourceConfigState.Draft &&
-                            isProtected &&
-                            getDraftByResourceName)
+                        isProtected && getDraftByResourceName
                             ? getDraftByResourceName(
                                   appId,
                                   envId ?? -1,
