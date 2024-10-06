@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Prompt } from 'react-router-dom'
 
 import {
@@ -29,7 +29,7 @@ import {
 } from './constants'
 import { getConfigMapSecretFormInitialValues, hasESO, hasHashiOrAWS } from './utils'
 import { getConfigMapSecretFormValidations } from './validations'
-import { renderESOInfo, renderExternalInfo } from './helpers'
+import { renderESOInfo, renderExternalInfo, renderHashiOrAwsDeprecatedInfo } from './helpers'
 import {
     CMSecretExternalType,
     ConfigMapSecretFormProps,
@@ -54,18 +54,24 @@ export const ConfigMapSecretForm = ({
     onCancel,
     areScopeVariablesResolving,
     resolvedFormData,
+    restoreYAML,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
     const { setFormState, formDataRef } = useConfigMapSecretFormContext()
+    const formInitialValues = useMemo(
+        () =>
+            getConfigMapSecretFormInitialValues({
+                configMapSecretData,
+                componentType,
+                cmSecretStateLabel,
+            }),
+        [],
+    )
 
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
-        initialValues: getConfigMapSecretFormInitialValues({
-            configMapSecretData,
-            componentType,
-            cmSecretStateLabel,
-        }),
-        validations: getConfigMapSecretFormValidations(!!resolvedFormData),
+        initialValues: formInitialValues,
+        validations: getConfigMapSecretFormValidations,
     })
     const { data, errors, formState, setValue, register, handleSubmit, reset } = useFormProps
 
@@ -98,6 +104,13 @@ export const ConfigMapSecretForm = ({
         }
     }, [data, formState.isDirty, errors, resolvedFormData])
 
+    useEffect(() => {
+        if (restoreYAML) {
+            const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
+            setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
+        }
+    }, [restoreYAML])
+
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
 
@@ -114,7 +127,7 @@ export const ConfigMapSecretForm = ({
 
     // RENDERERS
     const renderDataTypeSelector = () => {
-        const dataTypeOptions = data.isSecret ? getSecretDataTypeOptions(isJob) : configMapDataTypeOptions
+        const dataTypeOptions = data.isSecret ? getSecretDataTypeOptions(isJob, isHashiOrAWS) : configMapDataTypeOptions
         const dataTypePlaceholder = data.isSecret ? 'Select Secret Type' : 'Select ConfigMap Type'
 
         return (
@@ -124,9 +137,11 @@ export const ConfigMapSecretForm = ({
                 label="Data Type"
                 placeholder={dataTypePlaceholder}
                 required
+                isDisabled={isHashiOrAWS}
                 options={dataTypeOptions}
                 size={ComponentSizeType.large}
-                {...register('externalType', handleDataTypeSelectorChange, {
+                {...register('externalType', {
+                    sanitizeFn: handleDataTypeSelectorChange,
                     isCustomComponent: true,
                 })}
                 value={getSelectPickerOptionByValue(
@@ -164,6 +179,7 @@ export const ConfigMapSecretForm = ({
             <RadioGroup
                 className="configmap-secret-form__mount-data"
                 value={data.selectedType}
+                disabled={isHashiOrAWS}
                 {...register('selectedType')}
             >
                 {Object.keys(configMapSecretMountDataMap).map((key) => (
@@ -212,8 +228,9 @@ export const ConfigMapSecretForm = ({
             <Checkbox
                 isChecked={data.isSubPathChecked}
                 onClick={stopPropagation}
+                disabled={isHashiOrAWS}
                 rootClassName={`m-0 ${data.isSubPathChecked ? 'configmap-secret-form__sub-path-checkbox' : ''}`}
-                {...register('isSubPathChecked', () => !data.isSubPathChecked)}
+                {...register('isSubPathChecked', { sanitizeFn: () => !data.isSubPathChecked })}
                 value="CHECKED"
             >
                 {renderSubPathCheckBoxContent()}
@@ -226,6 +243,7 @@ export const ConfigMapSecretForm = ({
                             value={data.externalSubpathValues}
                             tabIndex={0}
                             placeholder="Enter keys (Eg. username,configs.json)"
+                            disabled={isHashiOrAWS}
                             error={errors.externalSubpathValues}
                             noTrim
                         />
@@ -241,7 +259,8 @@ export const ConfigMapSecretForm = ({
                 onClick={stopPropagation}
                 rootClassName="m-0"
                 value="CHECKED"
-                {...register('isFilePermissionChecked', () => !data.isFilePermissionChecked)}
+                disabled={isHashiOrAWS}
+                {...register('isFilePermissionChecked', { sanitizeFn: () => !data.isFilePermissionChecked })}
             >
                 <span data-testid="configmap-file-permission-checkbox">
                     Set File Permission (same as&nbsp;
@@ -265,6 +284,7 @@ export const ConfigMapSecretForm = ({
                         tabIndex={0}
                         dataTestid="configmap-file-permission-textbox"
                         placeholder="eg. 0400 or 400"
+                        disabled={isHashiOrAWS}
                         error={errors.filePermission}
                         noTrim
                     />
@@ -282,6 +302,7 @@ export const ConfigMapSecretForm = ({
                     value={data.volumeMountPath}
                     placeholder="/directory-path"
                     helperText="Keys are mounted as files to volume"
+                    disabled={isHashiOrAWS}
                     error={errors.volumeMountPath}
                     isRequiredField
                     noTrim
@@ -303,6 +324,7 @@ export const ConfigMapSecretForm = ({
                     autoComplete="off"
                     label="Role ARN"
                     placeholder="Enter Role ARN"
+                    disabled={isHashiOrAWS}
                     error={errors.roleARN}
                     noTrim
                 />
@@ -337,6 +359,7 @@ export const ConfigMapSecretForm = ({
                 onSubmit={handleSubmit(onSubmit, onError)}
             >
                 <div className="p-16 flex-grow-1 flexbox-col dc__gap-16 dc__overflow-auto">
+                    {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
                     <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
                         {renderDataTypeSelector()}
                         {renderName()}
@@ -356,8 +379,6 @@ export const ConfigMapSecretForm = ({
                         </div>
                     ) : (
                         <ConfigMapSecretData
-                            isJob={isJob}
-                            componentType={componentType}
                             isESO={isESO}
                             isHashiOrAWS={isHashiOrAWS}
                             isUnAuthorized={isUnAuthorized}
@@ -366,7 +387,7 @@ export const ConfigMapSecretForm = ({
                         />
                     )}
                 </div>
-                {renderFormButtons()}
+                {!isHashiOrAWS && renderFormButtons()}
             </form>
         </>
     )

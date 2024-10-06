@@ -13,7 +13,7 @@ import {
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
-import { Info } from '@Components/common'
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { PATTERNS } from '@Config/constants'
 
 import {
@@ -87,8 +87,6 @@ export const ConfigMapSecretData = ({
                         acc.updatedData.push({
                             ...currentData,
                             [headerKey]: value,
-                            keyError: '',
-                            valueError: '',
                         })
                     } else {
                         // If the item is not the one we're looking for, just add it as is.
@@ -106,8 +104,6 @@ export const ConfigMapSecretData = ({
                     k: '',
                     v: '',
                     [headerKey]: value,
-                    keyError: '',
-                    valueError: '',
                     id: rowId,
                 })
             }
@@ -193,11 +189,11 @@ export const ConfigMapSecretData = ({
             return YAMLStringify(sampleJSONs[data.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
         }
 
-        return getYAMLWithStringifiedNumbers(
-            isLocked
-                ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
-                : (data[getCodeEditorFormKey()] as string),
-        )
+        const codeEditorValue = isLocked
+            ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
+            : (data[getCodeEditorFormKey()] as string)
+
+        return readOnly ? getYAMLWithStringifiedNumbers(codeEditorValue) : codeEditorValue
     }
 
     // RENDERERS
@@ -268,15 +264,17 @@ export const ConfigMapSecretData = ({
     }
 
     const renderCodeEditor = ({ sheBangText }: { sheBangText: string }) => {
-        const { onChange, onFocus } = register(
-            getCodeEditorFormKey(),
-            (value: string) => {
-                // Convert the YAML data to key-value pairs and set it in 'currentData'.
-                setValue('currentData', convertYAMLToKeyValuePair(value), { shouldDirty: true })
+        const codeEditorFormKey = getCodeEditorFormKey()
+        const { onChange, onFocus } = register(codeEditorFormKey, {
+            sanitizeFn: (value: string) => {
+                if (codeEditorFormKey === 'yaml') {
+                    // Convert the YAML data to key-value pairs and set it in 'currentData'.
+                    setValue('currentData', convertYAMLToKeyValuePair(value), { shouldDirty: true })
+                }
                 return value
             },
-            { isCustomComponent: true },
-        )
+            isCustomComponent: true,
+        })
 
         return (
             <div className="dc__border br-4 dc__overflow-hidden">
@@ -288,10 +286,12 @@ export const ConfigMapSecretData = ({
                     inline
                     height={350}
                     shebang={sheBangText}
-                    readOnly={readOnly || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                    readOnly={
+                        readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                    }
                 >
                     <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bcn-50 dc__border-bottom fs-13 lh-20">
-                        {data.external ? (
+                        {!isHashiOrAWS && data.external ? (
                             <StyledRadioGroup
                                 name="code-editor-radio"
                                 className="gui-yaml-switch"
@@ -312,10 +312,10 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {!data.external && errors.yaml && errors.yaml !== CONFIG_MAP_SECRET_NO_DATA_ERROR && (
-                        <div className="validation-error-block">
-                            <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
-                            <div>{errors.yaml}</div>
+                    {errors[codeEditorFormKey] && (
+                        <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
+                            <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
+                            <p className="m-0">{errors[codeEditorFormKey]}</p>
                         </div>
                     )}
                 </CodeEditor>
@@ -325,14 +325,14 @@ export const ConfigMapSecretData = ({
     }
 
     const renderGUIEditor = () => {
-        const { onChange } = register('currentData', null, { isCustomComponent: true })
+        const { onChange } = register('currentData', { isCustomComponent: true })
 
         return (
             <div>
                 <KeyValueTable
                     key={data.isResolvedData.toString()}
-                    isAdditionNotAllowed={isUnAuthorized || secretMode || data.yamlMode || data.external}
-                    readOnly={readOnly || isUnAuthorized || secretMode}
+                    isAdditionNotAllowed={secretMode || data.yamlMode || data.external}
+                    readOnly={readOnly || secretMode}
                     isSortable
                     config={config}
                     placeholder={{

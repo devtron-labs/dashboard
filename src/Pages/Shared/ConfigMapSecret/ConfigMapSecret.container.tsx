@@ -48,6 +48,7 @@ import {
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
+    hasHashiOrAWS,
 } from './utils'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
@@ -55,6 +56,7 @@ import {
     CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
+    CMSecretExternalType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
 } from './types'
@@ -88,7 +90,7 @@ export const ConfigMapSecretContainer = ({
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
-    const { setFormState, isFormDirty, isParsingError, formDataRef } = useConfigMapSecretFormContext()
+    const { setFormState, isFormDirty, parsingError, formDataRef } = useConfigMapSecretFormContext()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
@@ -108,6 +110,7 @@ export const ConfigMapSecretContainer = ({
     const [showDraftSaveModal, setShowDraftSaveModal] = useState(false)
     const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
     const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
+    const [restoreYAML, setRestoreYAML] = useState(false)
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -154,6 +157,12 @@ export const ConfigMapSecretContainer = ({
             abortControllerRef.current.abort()
         }
     }, [envId, resolvedScopeVariables])
+
+    useEffect(() => {
+        if (restoreYAML) {
+            setRestoreYAML(false)
+        }
+    }, [restoreYAML])
 
     // ASYNC CALLS
     const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr] = useAsync(
@@ -226,10 +235,8 @@ export const ConfigMapSecretContainer = ({
                         draftConfigData: configMapSecretRes[2]?.result,
                         configStage: selectedCMSecret.configStage,
                         cmSecretStateLabel,
-                        componentName,
                         isSecret,
                         isJob,
-                        name,
                     }).data,
                 })
 
@@ -255,10 +262,8 @@ export const ConfigMapSecretContainer = ({
                     draftConfigData: configMapSecretRes[2]?.result,
                     configStage: selectedCMSecret.configStage,
                     cmSecretStateLabel,
-                    componentName,
                     isSecret,
                     isJob,
-                    name,
                 })
 
                 if (data.draftData) {
@@ -301,13 +306,20 @@ export const ConfigMapSecretContainer = ({
         }, [resolvedScopeVariablesRes])
 
     // DATA CONSTANTS
-    const isLoading = configMapSecretResLoading || isEnvConfigLoading || !configMapSecretRes
+    const isLoading =
+        configMapSecretResLoading ||
+        isEnvConfigLoading ||
+        (id && !(configMapSecretData || inheritedConfigMapSecretData || draftData) && !notFoundErr)
     const isError = notFoundErr || configMapSecretResErr
+    const isHashiOrAWS = hasHashiOrAWS(
+        (configMapSecretData?.externalType || inheritedConfigMapSecretData?.externalType) as CMSecretExternalType,
+    )
 
     // ERROR HANDLING
     useEffect(() => {
         if (
             (!isJob && configMapSecretRes?.[0] && !(configMapSecretRes[0] as AppEnvDeploymentConfigDTO).isAppAdmin) ||
+            (!isJob && configMapSecretRes?.[1] && !(configMapSecretRes[1] as AppEnvDeploymentConfigDTO).isAppAdmin) ||
             configMapSecretResErr?.code === ERROR_STATUS_CODE.PERMISSION_DENIED
         ) {
             ToastManager.showToast({
@@ -316,7 +328,14 @@ export const ConfigMapSecretContainer = ({
                 description: "You won't be able to make any changes",
             })
         }
-    }, [configMapSecretRes, configMapSecretResErr])
+
+        if (notFoundErr) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `The ${componentName} '${name}' has been deleted`,
+            })
+        }
+    }, [configMapSecretRes, configMapSecretResErr, notFoundErr])
 
     // NO SCOPE VARIABLES PRESENT HANDLING
     useEffect(() => {
@@ -357,12 +376,15 @@ export const ConfigMapSecretContainer = ({
 
     // METHODS
     const updateCMSecret = (configName?: string) => {
+        setFormState({ type: 'RESET' })
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
             history.push(generatePath(path, { appId, envId, name: configName }))
         }
     }
+
+    const restoreLastSavedYAML = () => setRestoreYAML(true)
 
     const toggleDraftComments = () => setShowComments(!showComments)
 
@@ -386,12 +408,10 @@ export const ConfigMapSecretContainer = ({
 
     const handleNoOverrideFormCancel = () => setShowOverridableView(false)
 
-    const toggleSaveChangesModal = () => {
-        setIsSubmitting(false)
-        setShowDraftSaveModal(false)
-    }
+    const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
 
     const reloadSaveChangesModal = () => {
+        setShowDraftSaveModal(false)
         updateCMSecret(draftPayload.configData[0].name)
         setDraftPayload(null)
     }
@@ -420,19 +440,17 @@ export const ConfigMapSecretContainer = ({
                 }
             })
         }
-        showError(err)
+        if (err.code === ERROR_STATUS_CODE.PERMISSION_DENIED) {
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: 'You cannot make any changes',
+            })
+        } else {
+            showError(err)
+        }
     }
 
     const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (formData) => {
-        if (configMapSecretData?.unAuthorized) {
-            ToastManager.showToast({
-                variant: ToastVariantType.warn,
-                title: 'View-only access',
-                description: "You won't be able to make any changes",
-            })
-            return
-        }
-
         const payloadData = getConfigMapSecretPayload(resolvedScopeVariables ? formDataRef.current : formData)
 
         if (isProtected) {
@@ -484,21 +502,10 @@ export const ConfigMapSecretContainer = ({
     }
 
     const onError: ConfigMapSecretFormProps['onError'] = (errors) => {
-        if ((errors.currentData || errors.yaml) === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
+        if (errors.currentData === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
-            })
-        }
-
-        if (errors.esoSecretYaml || errors.secretDataYaml) {
-            const secretYamlErrMsg = (errors.esoSecretYaml || errors.secretDataYaml) as string
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description:
-                    secretYamlErrMsg === CONFIG_MAP_SECRET_NO_DATA_ERROR
-                        ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`
-                        : secretYamlErrMsg,
             })
         }
 
@@ -563,6 +570,7 @@ export const ConfigMapSecretContainer = ({
                 componentType={componentType}
                 isJob={isJob}
                 parentName={parentName}
+                restoreYAML={restoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
             />
@@ -580,6 +588,7 @@ export const ConfigMapSecretContainer = ({
                 onCancel={onCancel}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                restoreYAML={restoreYAML}
             />
         )
 
@@ -607,6 +616,7 @@ export const ConfigMapSecretContainer = ({
                 return (
                     <ConfigMapSecretReadyOnly
                         componentType={componentType}
+                        isJob={isJob}
                         configMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                     />
@@ -657,10 +667,13 @@ export const ConfigMapSecretContainer = ({
                     isDisabled={isLoading}
                     areChangesPresent={isFormDirty}
                     isOverridable={
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        !isHashiOrAWS &&
+                        (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN)
                     }
-                    isPublishedTemplateOverridden={cmSecretStateLabel !== CM_SECRET_STATE.INHERITED}
+                    showNoOverride={cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData}
+                    parsingError={parsingError}
+                    restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
                 />
                 <ConfigToolbar
@@ -669,7 +682,7 @@ export const ConfigMapSecretContainer = ({
                     handleMergeStrategyChange={setMergeStrategy}
                     approvalUsers={draftData?.approvers}
                     areCommentsPresent={draftData?.commentsCount > 0}
-                    disableAllActions={isLoading || isSubmitting || isParsingError}
+                    disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
                     isProtected={isProtected}
                     isDraftPresent={!!draftData}
                     isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
@@ -680,13 +693,14 @@ export const ConfigMapSecretContainer = ({
                     selectedProtectionViewTab={selectedProtectionViewTab}
                     handleProtectionViewTabChange={handleProtectionViewTabChange}
                     handleToggleCommentsView={toggleDraftComments}
-                    isLoadingInitialData={isLoading}
                     resolveScopedVariables={resolvedScopeVariables}
                     handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                     popupConfig={toolbarPopupConfig}
                     handleClearPopupNode={handleClearPopupNode}
                     handleToggleShowTemplateMergedWithPatch={noop}
                     shouldMergeTemplateWithPatches={null}
+                    parsingError={parsingError}
+                    restoreLastSavedYAML={restoreLastSavedYAML}
                 />
                 {renderConfigHeaderTabContent()}
             </div>

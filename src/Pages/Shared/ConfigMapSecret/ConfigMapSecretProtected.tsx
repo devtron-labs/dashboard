@@ -50,6 +50,7 @@ export const ConfigMapSecretProtected = ({
     onError,
     onSubmit,
     updateCMSecret,
+    restoreYAML,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { email } = useUserEmail()
@@ -135,7 +136,7 @@ export const ConfigMapSecretProtected = ({
     }
 
     const getConfigMapSecretDiffViewData = () => {
-        if (cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN && draftData.action === DraftAction.Delete) {
+        if (draftData.action === DraftAction.Delete) {
             return isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null
         }
 
@@ -147,12 +148,13 @@ export const ConfigMapSecretProtected = ({
         'currentEditorConfig' | 'currentEditorTemplate'
     > => {
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
+            isJob,
             componentType,
             configMapSecretData: getConfigMapSecretDiffViewData(),
         })
 
         return {
-            currentEditorConfig: editorConfigData.reduce(
+            currentEditorConfig: editorConfigData.reduce<Record<string, { displayName: string; value: string }>>(
                 (acc, curr) => ({
                     ...acc,
                     [curr.displayName]: {
@@ -160,7 +162,14 @@ export const ConfigMapSecretProtected = ({
                         value: curr.value,
                     },
                 }),
-                {},
+                draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? {
+                          configuration: {
+                              displayName: 'Configuration',
+                              value: 'Inherit from base',
+                          },
+                      }
+                    : {},
             ),
             currentEditorTemplate: data ? YAML.parse(data) : undefined,
         }
@@ -173,10 +182,11 @@ export const ConfigMapSecretProtected = ({
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             componentType,
             configMapSecretData: publishedConfigMapSecretData,
+            isJob,
         })
 
         return {
-            publishedEditorConfig: editorConfigData.reduce(
+            publishedEditorConfig: editorConfigData.reduce<Record<string, { displayName: string; value: string }>>(
                 (acc, curr) => ({
                     ...acc,
                     [curr.displayName]: {
@@ -184,7 +194,14 @@ export const ConfigMapSecretProtected = ({
                         value: curr.value,
                     },
                 }),
-                {},
+                draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? {
+                          configuration: {
+                              displayName: 'Configuration',
+                              value: 'Override base',
+                          },
+                      }
+                    : {},
             ),
             publishedEditorTemplate: data ? YAML.parse(data) : undefined,
         }
@@ -211,6 +228,7 @@ export const ConfigMapSecretProtected = ({
             onSubmit={onSubmit}
             resolvedFormData={resolvedFormData}
             areScopeVariablesResolving={areScopeVariablesResolving}
+            restoreYAML={restoreYAML}
         />
     )
 
@@ -256,24 +274,25 @@ export const ConfigMapSecretProtected = ({
         )
     }
 
-    const renderCompareView = () =>
-        areScopeVariablesResolving ? (
-            <Progressing fullHeight size={48} />
-        ) : (
-            <div className="flexbox-col h-100">
-                <div className="flex-grow-1">
+    const renderCompareView = () => (
+        <div className="flexbox-col h-100">
+            <div className="flex-grow-1">
+                {areScopeVariablesResolving ? (
+                    <Progressing fullHeight size={48} />
+                ) : (
                     <CompareConfigView
                         compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                         handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                         {...getCurrentEditorConfig()}
                         {...getPublishedEditorConfig()}
                         isApprovalView={isApprovalView}
-                        isDeleteDraft={false}
+                        isDeleteOverrideView={draftData.action === DraftAction.Delete}
                     />
-                </div>
-                {renderApproveButton()}
+                )}
             </div>
-        )
+            {renderApproveButton()}
+        </div>
+    )
 
     const renderContent = () => {
         switch (selectedProtectionViewTab) {
@@ -289,6 +308,7 @@ export const ConfigMapSecretProtected = ({
                 return (
                     <ConfigMapSecretReadyOnly
                         componentType={componentType}
+                        isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}
                         areScopeVariablesResolving={areScopeVariablesResolving}
                     />

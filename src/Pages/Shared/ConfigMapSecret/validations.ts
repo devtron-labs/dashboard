@@ -6,8 +6,8 @@ import { PATTERNS } from '@Config/constants'
 import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
-import { hasESO, hasHashiOrAWS, transformSecretDataJSON } from './utils'
-import { ConfigMapSecretUseFormProps } from './types'
+import { hasESO } from './utils'
+import { CMSecretExternalType, ConfigMapSecretUseFormProps } from './types'
 
 /**
  * Validates a YAML string for proper structure and specific key/value constraints.
@@ -174,176 +174,112 @@ const validateEsoSecretYaml = (esoSecretYaml: string): UseFormValidation => {
     }
 }
 
-/**
- * Validates a YAML string representing secret data configuration.
- *
- * @param secretDataYaml - The YAML string to be validated.
- * @returns Use Form Validation
- */
-const validateSecretDataYaml = (secretDataYaml: string): UseFormValidation => {
-    try {
-        // Check if the provided YAML string is empty or undefined, and throw an error if so.
-        if (!secretDataYaml) {
-            throw new Error(CONFIG_MAP_SECRET_NO_DATA_ERROR)
-        }
+export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecretUseFormProps> = ({
+    isSecret,
+    external,
+    externalType,
+    selectedType,
+    isFilePermissionChecked,
+    volumeMountPath,
+    isSubPathChecked,
+    yaml,
+    yamlMode,
+    esoSecretYaml,
+}) => {
+    const mountExistingExternal =
+        external && externalType === (isSecret ? CMSecretExternalType.KubernetesSecret : CMSecretExternalType.Internal)
+    const isESO = isSecret && hasESO(externalType)
 
-        // Parse the YAML string into a JSON object.
-        const json = YAML.parse(secretDataYaml)
+    const rules = new ValidationRules()
 
-        // Ensure the parsed result is an object before proceeding with further validation.
-        if (typeof json === 'object') {
-            // Transform the parsed JSON into the required format for secret data.
-            const secretData = transformSecretDataJSON(json)
-
-            let isValidSecretData = true
-
-            // Validate that each entry in the secretData array has both 'fileName' and 'name' properties.
-            isValidSecretData = secretData.reduce(
-                (_isValidSecretData, s) => {
-                    // Check if both 'fileName' and 'name' exist and are truthy for each entry.
-                    isValidSecretData = _isValidSecretData && !!s.fileName && !!s.name
-                    return isValidSecretData
-                },
-                // Ensure secretData array is not empty.
-                !!secretData.length,
-            )
-
-            // Return the validation result with a custom validator and a generic message.
-            return {
-                custom: {
-                    isValid: () => isValidSecretData, // Validation is successful if all checks pass.
-                    message: SECRET_TOAST_INFO.CHECK_KEY_NAME, // A generic message regarding key and name checks.
-                },
-            }
-        }
-
-        // If the parsed result is not an object, throw a yaml parse error.
-        throw new Error(CONFIG_MAP_SECRET_YAML_PARSE_ERROR)
-    } catch (err) {
-        // Catch any errors and return an invalid result with an appropriate error message.
-        return {
-            custom: {
-                isValid: () => false, // Always return false when an error occurs.
-                message: err.message.replace(/[\s]+/g, ' '), // Display a parsing error message if applicable.
+    return {
+        name: {
+            required: true,
+            pattern: {
+                value: PATTERNS.CONFIGMAP_AND_SECRET_NAME,
+                message:
+                    "Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'",
             },
-        }
+            custom: {
+                isValid: (value) => value.length <= 253,
+                message: 'More than 253 characters are not allowed',
+            },
+        },
+        ...(selectedType === 'volume'
+            ? {
+                  volumeMountPath: {
+                      required: true,
+                      custom: {
+                          isValid: (value) => !rules.cmVolumeMountPath(value).isValid,
+                          message: rules.cmVolumeMountPath(volumeMountPath).message,
+                      },
+                  },
+                  ...(isFilePermissionChecked
+                      ? {
+                            filePermission: {
+                                required: true,
+                                pattern: {
+                                    value: PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7,
+                                    message: 'This is octal number, use numbers between 0 to 7',
+                                },
+                                custom: [
+                                    {
+                                        isValid: (value) => value.length <= 4,
+                                        message: 'More than 4 characters are not allowed',
+                                    },
+                                    {
+                                        isValid: (value) => value.startsWith('0'),
+                                        message:
+                                            '4 characters are allowed in octal format only, first character should be 0',
+                                    },
+                                    {
+                                        isValid: (value) => value.length >= 3,
+                                        message: 'Atleast 3 character are required',
+                                    },
+                                ],
+                            },
+                        }
+                      : {}),
+                  ...(isSubPathChecked && ((isSecret && externalType === 'KubernetesSecret') || (!isSecret && external))
+                      ? {
+                            externalSubpathValues: {
+                                required: true,
+                                pattern: {
+                                    value: PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS,
+                                    message: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
+                                },
+                            },
+                        }
+                      : {}),
+              }
+            : {}),
+        ...(yamlMode
+            ? {
+                  yaml: {
+                      custom: !isESO && !mountExistingExternal ? validateYaml(yaml) : null,
+                  },
+              }
+            : {
+                  hasCurrentDataErr: {
+                      custom: {
+                          isValid: (value) => !value,
+                          message: 'Please resolve the errors before saving',
+                      },
+                  },
+                  currentData: {
+                      custom:
+                          !isESO && !mountExistingExternal
+                              ? {
+                                    isValid: (value) => external || (value.length && !!value[0].k),
+                                    message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
+                                }
+                              : null,
+                  },
+              }),
+        ...(isSecret && isESO
+            ? {
+                  esoSecretYaml: validateEsoSecretYaml(esoSecretYaml),
+              }
+            : {}),
     }
 }
-
-export const getConfigMapSecretFormValidations =
-    (resolveScopeVariables: boolean): UseFormValidations<ConfigMapSecretUseFormProps> =>
-    ({
-        isSecret,
-        external,
-        externalType,
-        selectedType,
-        isFilePermissionChecked,
-        volumeMountPath,
-        isSubPathChecked,
-        yaml,
-        yamlMode,
-        secretDataYaml,
-        esoSecretYaml,
-    }) => {
-        const isESO = isSecret && hasESO(externalType)
-        const isHashiOrAWS = isSecret && hasHashiOrAWS(externalType)
-
-        const rules = new ValidationRules()
-
-        return {
-            name: {
-                required: true,
-                pattern: {
-                    value: PATTERNS.CONFIGMAP_AND_SECRET_NAME,
-                    message:
-                        "Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'",
-                },
-                custom: {
-                    isValid: (value) => value.length <= 253,
-                    message: 'More than 253 characters are not allowed',
-                },
-            },
-            ...(selectedType === 'volume'
-                ? {
-                      volumeMountPath: {
-                          required: true,
-                          custom: {
-                              isValid: (value) => !rules.cmVolumeMountPath(value).isValid,
-                              message: rules.cmVolumeMountPath(volumeMountPath).message,
-                          },
-                      },
-                      ...(isFilePermissionChecked
-                          ? {
-                                filePermission: {
-                                    required: true,
-                                    pattern: {
-                                        value: PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7,
-                                        message: 'This is octal number, use numbers between 0 to 7',
-                                    },
-                                    custom: [
-                                        {
-                                            isValid: (value) => value.length <= 4,
-                                            message: 'More than 4 characters are not allowed',
-                                        },
-                                        {
-                                            isValid: (value) => value.startsWith('0'),
-                                            message:
-                                                '4 characters are allowed in octal format only, first character should be 0',
-                                        },
-                                        {
-                                            isValid: (value) => value.length >= 3,
-                                            message: 'Atleast 3 character are required',
-                                        },
-                                    ],
-                                },
-                            }
-                          : {}),
-                      ...(isSubPathChecked &&
-                      ((isSecret && externalType === 'KubernetesSecret') || (!isSecret && external))
-                          ? {
-                                externalSubpathValues: {
-                                    required: true,
-                                    pattern: {
-                                        value: PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS,
-                                        message: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
-                                    },
-                                },
-                            }
-                          : {}),
-                  }
-                : {}),
-            ...(yamlMode
-                ? {
-                      yaml: {
-                          custom: !resolveScopeVariables && !isESO && !isHashiOrAWS ? validateYaml(yaml) : null,
-                      },
-                  }
-                : {
-                      hasCurrentDataErr: {
-                          custom: {
-                              isValid: (value) => !value,
-                              message: 'Please resolve the errors before saving.',
-                          },
-                      },
-                      currentData: {
-                          custom:
-                              !isESO && !isHashiOrAWS
-                                  ? {
-                                        isValid: (value) => external || (value.length && !!value[0].k),
-                                        message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
-                                    }
-                                  : null,
-                      },
-                  }),
-            ...(isSecret && isESO
-                ? {
-                      esoSecretYaml: validateEsoSecretYaml(esoSecretYaml),
-                  }
-                : {}),
-            ...(isSecret && isHashiOrAWS
-                ? {
-                      secretDataYaml: validateSecretDataYaml(secretDataYaml),
-                  }
-                : {}),
-        }
-    }

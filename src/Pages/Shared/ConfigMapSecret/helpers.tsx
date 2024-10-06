@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
+import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
 
@@ -52,6 +53,15 @@ export const renderExternalInfo = (renderCondition: boolean, componentType: CMSe
             iconSize={20}
         />
     ) : null
+
+export const renderHashiOrAwsDeprecatedInfo = () => (
+    <InfoColourBar
+        classname="warn cn-9 fs-13 lh-20"
+        message="Kubernetes External Secret (KES) has been deprecated and will be removed in the following Devtron version. You can delete this file and create a secret using External Secret Operator (ESO)."
+        Icon={ICWarningY5}
+        iconSize={20}
+    />
+)
 
 export const renderYamlInfoText = () => (
     <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bcn-50 dc__border-top-n1">

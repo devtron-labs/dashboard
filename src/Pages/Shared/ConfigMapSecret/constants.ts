@@ -3,6 +3,7 @@ import { GroupBase, OptionsOrGroups } from 'react-select'
 import {
     CMSecretComponentType,
     CMSecretExternalType,
+    CMSecretYamlData,
     ConfigMapSecretDataTypeOptionType,
     ConfigMapSecretNullStateProps,
 } from './types'
@@ -65,15 +66,16 @@ export const configMapDataTypeOptions: ConfigMapSecretDataTypeOptionType[] = [
 
 export const getSecretDataTypeOptions = (
     isJob: boolean,
+    isHashiOrAWS: boolean,
 ):
     | ConfigMapSecretDataTypeOptionType[]
     | OptionsOrGroups<ConfigMapSecretDataTypeOptionType, GroupBase<ConfigMapSecretDataTypeOptionType>> => {
-    const unGroupedOptions = [
+    const kubernetesOptions: ConfigMapSecretDataTypeOptionType[] = [
         { value: '', label: 'Kubernetes Secret' },
         { value: CMSecretExternalType.KubernetesSecret, label: 'Mount Existing Kubernetes Secret' },
     ]
 
-    const groupedOptions = [
+    const esoOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
         {
             label: 'External Secret Operator (ESO)',
             options: [
@@ -83,6 +85,9 @@ export const getSecretDataTypeOptions = (
                 { value: CMSecretExternalType.ESO_HashiCorpVault, label: 'Hashi Corp Vault' },
             ],
         },
+    ]
+
+    const kesOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
         {
             label: 'Kubernetes External Secret (KES)',
             options: [
@@ -96,18 +101,24 @@ export const getSecretDataTypeOptions = (
                     label: 'AWS System Manager',
                     description: 'Deprecated',
                 },
-                { value: CMSecretExternalType.HashiCorpVault, label: 'Hashi Corp Vault', description: 'Deprecated' },
+                {
+                    value: CMSecretExternalType.HashiCorpVault,
+                    label: 'Hashi Corp Vault',
+                    description: 'Deprecated',
+                },
             ],
         },
     ]
 
-    return isJob ? unGroupedOptions : [...unGroupedOptions, ...groupedOptions]
+    return isJob ? kubernetesOptions : [...kubernetesOptions, ...esoOptions, ...(isHashiOrAWS ? kesOptions : [])]
 }
 
 export const configMapSecretMountDataMap = {
     environment: { title: 'Environment Variable', value: 'environment' },
     volume: { title: 'Data Volume', value: 'volume' },
 }
+
+export const CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA: CMSecretYamlData[] = [{ k: '', v: '', id: 0 }]
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -250,7 +261,7 @@ export const sampleJSONs = {
     ],
 }
 
-export const CONFIG_MAP_SECRET_NO_DATA_ERROR = '__NO_DATA__'
+export const CONFIG_MAP_SECRET_NO_DATA_ERROR = 'This is a required field'
 
 export const CONFIG_MAP_SECRET_YAML_PARSE_ERROR = 'Could not parse to valid YAML'
 

@@ -7,8 +7,6 @@ import {
     DraftMetadataDTO,
     DraftState,
     getSelectPickerOptionByValue,
-    ToastManager,
-    ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -16,6 +14,7 @@ import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.typ
 
 import {
     CODE_EDITOR_RADIO_STATE,
+    CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
     configMapDataTypeOptions,
     configMapSecretMountDataMap,
     getSecretDataTypeOptions,
@@ -73,8 +72,6 @@ const secureValues = (data: Record<string, string>, decodeData: boolean, hideDat
             typeof decodedData[k] === 'object'
                 ? hiddenData || YAMLStringify(decodedData[k])
                 : hiddenData || decodedData[k],
-        keyError: '',
-        valueError: '',
         id,
     }))
 }
@@ -84,7 +81,7 @@ export const processCurrentData = (
     cmSecretStateLabel: CM_SECRET_STATE,
     componentType: CMSecretComponentType,
 ) => {
-    if (configMapSecretData?.data) {
+    if (configMapSecretData.data) {
         return secureValues(
             configMapSecretData.data,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
@@ -98,31 +95,27 @@ export const processCurrentData = (
             componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
-    return [{ k: '', v: '', keyError: '', valueError: '' }]
+
+    return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
 }
 
 export const convertYAMLToKeyValuePair = (yaml: string): CMSecretYamlData[] => {
-    if (!yaml) {
-        return []
-    }
-
     try {
-        const obj = YAML.parse(yaml)
-        if (typeof obj === 'object') {
-            const keyValueArray: CMSecretYamlData[] = Object.keys(obj).reduce((agg, k, id) => {
-                if (!k && !obj[k]) {
-                    return agg
-                }
-                const v = obj[k] && typeof obj[k] === 'object' ? YAMLStringify(obj[k]) : obj[k].toString()
-
-                return [...agg, { k, v: v ?? '', keyError: '', valueError: '', id }]
-            }, [])
-            return keyValueArray
+        const obj = yaml && YAML.parse(yaml)
+        if (typeof obj !== 'object') {
+            throw new Error()
         }
+        const keyValueArray: CMSecretYamlData[] = Object.keys(obj).reduce((agg, k, id) => {
+            if (!k && !obj[k]) {
+                return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
+            }
+            const v = obj[k] && typeof obj[k] === 'object' ? YAMLStringify(obj[k]) : obj[k].toString()
 
-        return []
+            return [...agg, { k, v: v ?? '', id }]
+        }, [])
+        return keyValueArray
     } catch {
-        return []
+        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
     }
 }
 
@@ -158,16 +151,16 @@ export const getSecretDataFromConfigData = (
 ): Pick<ConfigMapSecretUseFormProps, 'secretDataYaml' | 'esoSecretYaml'> => {
     let jsonForSecretDataYaml: string
 
-    if (configMapSecretData?.secretData?.length) {
+    if (configMapSecretData.secretData?.length) {
         jsonForSecretDataYaml = YAMLStringify(configMapSecretData.secretData)
-    } else if (configMapSecretData?.defaultSecretData?.length) {
+    } else if (configMapSecretData.defaultSecretData?.length) {
         jsonForSecretDataYaml = YAMLStringify(configMapSecretData.defaultSecretData)
     }
 
     const esoSecretData: Record<string, any> =
-        (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
-            ? configMapSecretData?.defaultESOSecretData
-            : configMapSecretData?.esoSecretData
+        (configMapSecretData.esoSecretData?.esoData || []).length === 0 && configMapSecretData.defaultESOSecretData
+            ? configMapSecretData.defaultESOSecretData
+            : configMapSecretData.esoSecretData
 
     const isEsoSecretData: boolean =
         (esoSecretData?.secretStore || esoSecretData?.secretStoreRef) && esoSecretData.esoData
@@ -244,8 +237,8 @@ export const getConfigMapSecretFormInitialValues = ({
         volumeMountPath: '',
         roleARN: '',
         yamlMode: true,
-        yaml: '"": ""',
-        currentData: [],
+        yaml: '"": ""\n',
+        currentData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
         hasCurrentDataErr: false,
         isResolvedData: false,
         esoSecretYaml: '{}',
@@ -256,7 +249,8 @@ export const getConfigMapSecretFormInitialValues = ({
 export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
     componentType,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData'>) => {
+    isJob,
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -294,7 +288,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         dataType =
             external && externalType === ''
                 ? CMSecretExternalType.KubernetesSecret
-                : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false), externalType).label as string)
+                : (getSelectPickerOptionByValue(getSecretDataTypeOptions(isJob, true), externalType).label as string)
     }
 
     return {
@@ -314,9 +308,9 @@ export const getConfigMapSecretReadOnlyValues = ({
             {
                 displayName: 'Set Sub Path',
                 value:
-                    (configMapSecretMountDataMap[selectedType].value === 'volume' && isSubPathChecked
-                        ? 'True'
-                        : 'False') || '',
+                    (configMapSecretMountDataMap[selectedType].value === 'volume' &&
+                        (isSubPathChecked ? 'True' : 'False')) ||
+                    '',
             },
             {
                 displayName: 'External Subpath Values',
@@ -337,40 +331,6 @@ export const getConfigMapSecretReadOnlyValues = ({
 // FORM UTILS ----------------------------------------------------------------
 
 // PAYLOAD UTILS ----------------------------------------------------------------
-export const transformSecretDataJSON = (jsonObj: any[]) =>
-    jsonObj.map((j) => {
-        const temp = {
-            isBinary: null,
-            fileName: null,
-            name: null,
-            property: null,
-            value: null,
-        }
-        temp.isBinary = j.isBinary
-        if (j.key) {
-            temp.fileName = j.key
-        }
-        if (j.property) {
-            temp.property = j.property
-        }
-        if (j.name) {
-            temp.name = j.name
-        }
-        return temp
-    })
-
-const getSecretDataFromYAML = (yaml: string) => {
-    try {
-        const json = YAML.parse(yaml)
-        if (Array.isArray(json)) {
-            return transformSecretDataJSON(json)
-        }
-        return []
-    } catch {
-        return []
-    }
-}
-
 const getESOSecretDataFromYAML = (yaml: string) => {
     try {
         const json = YAML.parse(yaml)
@@ -403,12 +363,10 @@ export const getConfigMapSecretPayload = ({
     selectedType,
     isFilePermissionChecked,
     roleARN,
-    secretDataYaml,
     volumeMountPath,
     isSubPathChecked,
 }: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
-    const isHashiOrAWS = isSecret && hasHashiOrAWS(externalType)
     const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
     const data = _currentData.reduce((acc, curr) => {
         if (!curr.k) {
@@ -429,7 +387,6 @@ export const getConfigMapSecretPayload = ({
         data,
         roleARN: null,
         externalType: null,
-        secretData: null,
         esoSecretData: null,
         mountPath: null,
         subPath: null,
@@ -447,18 +404,7 @@ export const getConfigMapSecretPayload = ({
         payload.roleARN = ''
         payload.externalType = externalType
 
-        if (isHashiOrAWS) {
-            const secretData = getSecretDataFromYAML(secretDataYaml)
-            payload.secretData = secretData
-                .map((s) => ({
-                    key: s.fileName,
-                    name: s.name,
-                    isBinary: s.isBinary,
-                    property: s.property,
-                }))
-                .filter((s) => s.key || s.name || s.property)
-            payload.roleARN = roleARN
-        } else if (isESO) {
+        if (isESO) {
             const esoSecretData = getESOSecretDataFromYAML(esoSecretYaml)
             if (esoSecretData) {
                 payload.esoSecretData = {
@@ -501,8 +447,6 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     cmSecretStateLabel,
     isSecret,
     configStage,
-    name,
-    componentName,
     cmSecretConfigData,
     draftConfigData,
 }: {
@@ -510,8 +454,6 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     cmSecretStateLabel: CM_SECRET_STATE
     isSecret: boolean
     configStage: ResourceConfigStage
-    name: string
-    componentName: string
     cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO
     draftConfigData: DraftMetadataDTO
 }) => {
@@ -591,10 +533,6 @@ export const getConfigMapSecretDraftAndPublishedData = ({
                 }
                 data.configMapSecretData = configMapSecretData
             } else {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: `The ${componentName} '${name}' has been deleted`,
-                })
                 hasNotFoundErr = true
                 data.configMapSecretData = null
             }
@@ -606,10 +544,6 @@ export const getConfigMapSecretDraftAndPublishedData = ({
                     unAuthorized: !dataFromDraft.isAppAdmin,
                 }
             } else if (draftState === DraftState.Discarded) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: `The ${componentName} '${name}' has been deleted`,
-                })
                 hasNotFoundErr = true
                 data.configMapSecretData = null
             }

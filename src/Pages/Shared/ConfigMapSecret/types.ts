@@ -53,7 +53,6 @@ export type CMSecretPayloadType = Pick<
     | 'roleARN'
     | 'mountPath'
     | 'subPath'
-    | 'secretData'
     | 'esoSecretData'
     | 'filePermission'
 >
@@ -86,8 +85,6 @@ export type ConfigMapSecretDataTypeOptionType = SelectPickerOptionType<string>
 export interface CMSecretYamlData {
     k: string
     v: string
-    keyError: string
-    valueError: string
     id: string | number
 }
 
@@ -146,6 +143,7 @@ export interface ConfigMapSecretFormProps
     id: number
     configMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
+    restoreYAML: boolean
     isSubmitting: boolean
     areScopeVariablesResolving: boolean
     resolvedFormData: ConfigMapSecretUseFormProps
@@ -154,7 +152,7 @@ export interface ConfigMapSecretFormProps
     onCancel: () => void
 }
 
-export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'isJob' | 'componentType'> {
+export interface ConfigMapSecretDataProps {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
@@ -164,7 +162,7 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
 
 export type ConfigMapSecretReadyOnlyProps = Pick<
     ConfigMapSecretFormProps,
-    'configMapSecretData' | 'componentType' | 'areScopeVariablesResolving'
+    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
 >
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
@@ -208,6 +206,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'onSubmit'
         | 'areScopeVariablesResolving'
         | 'resolvedFormData'
+        | 'restoreYAML'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -242,7 +241,7 @@ type SetFormStateParams =
 export interface ConfigMapSecretFormContextType {
     formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
     isFormDirty: boolean
-    isParsingError: boolean
+    parsingError: string
     setFormState: (params: SetFormStateParams) => void
 }
 

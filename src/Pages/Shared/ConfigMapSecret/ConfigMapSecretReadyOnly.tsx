@@ -1,22 +1,27 @@
 import { CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getConfigMapSecretReadOnlyValues } from './utils'
-import { ConfigMapSecretReadyOnlyProps } from './types'
+import { getConfigMapSecretReadOnlyValues, hasHashiOrAWS } from './utils'
+import { CMSecretExternalType, ConfigMapSecretReadyOnlyProps } from './types'
+import { renderHashiOrAwsDeprecatedInfo } from './helpers'
 
 export const ConfigMapSecretReadyOnly = ({
     componentType,
+    isJob,
     configMapSecretData,
     areScopeVariablesResolving,
 }: ConfigMapSecretReadyOnlyProps) => {
     const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
         componentType,
+        isJob,
     })
 
     return areScopeVariablesResolving ? (
         <Progressing fullHeight size={48} />
     ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
+            {hasHashiOrAWS(configMapSecretData.externalType as CMSecretExternalType) &&
+                renderHashiOrAwsDeprecatedInfo()}
             <div className="dc__border br-4 py-4">
                 {displayValues.configData.map(({ displayName, value }) =>
                     value ? (
