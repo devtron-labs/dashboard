@@ -60,6 +60,7 @@ import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import {
     deploymentTemplateReducer,
     getAreTemplateChangesPresent,
+    getCompareFromEditorConfig,
     getCurrentEditorPayloadForScopedVariables,
     getCurrentEditorState,
     getDeleteProtectedOverridePayload,
@@ -67,7 +68,6 @@ import {
     getDeploymentTemplateResourceName,
     getEditorTemplateAndLockedKeys,
     getLockedDiffModalDocuments,
-    getRawEditorValueForDryRunMode,
     getUpdateBaseDeploymentTemplatePayload,
     getUpdateEnvironmentDTPayload,
     handleInitializeDraftData,
@@ -86,7 +86,7 @@ import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { CompareConfigViewProps, ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
+import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
 import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
 import NoOverrideEmptyState from '../NoOverrideEmptyState'
@@ -133,7 +133,6 @@ const DeploymentTemplate = ({
         chartDetails,
         lockedConfigKeysWithLockType,
         publishedTemplateData,
-        baseDeploymentTemplateData,
         draftTemplateData,
         resolveScopedVariables,
         isResolvingVariables,
@@ -216,9 +215,14 @@ const DeploymentTemplate = ({
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
-    const areChangesPresent: boolean = useMemo(() => getAreTemplateChangesPresent(state), [currentEditorTemplateData])
-
     const hasNoGlobalConfig = !envId && !chartDetails.latestAppChartRef
+    const shouldValidateLockChanges =
+        !!getLockConfigEligibleAndIneligibleChanges &&
+        lockedConfigKeysWithLockType.config.length > 0 &&
+        !isSuperAdmin &&
+        !hasNoGlobalConfig
+
+    const areChangesPresent: boolean = useMemo(() => getAreTemplateChangesPresent(state), [currentEditorTemplateData])
 
     usePrompt({
         shouldPrompt: areChangesPresent,
@@ -925,10 +929,7 @@ const DeploymentTemplate = ({
             action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
         })
 
-        const shouldValidateLockChanges =
-            lockedConfigKeysWithLockType.config.length > 0 && !isSuperAdmin && !hasNoGlobalConfig
-
-        if (shouldValidateLockChanges && getLockConfigEligibleAndIneligibleChanges) {
+        if (shouldValidateLockChanges) {
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                 documents: getLockedDiffModalDocuments(false, state),
                 lockedConfigKeysWithLockType,
@@ -958,12 +959,6 @@ const DeploymentTemplate = ({
      * If true, it is valid, else would show locked diff modal
      */
     const handleValidateApprovalState = (): boolean => {
-        const shouldValidateLockChanges =
-            !!getLockConfigEligibleAndIneligibleChanges &&
-            lockedConfigKeysWithLockType.config.length > 0 &&
-            !isSuperAdmin &&
-            !hasNoGlobalConfig
-
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
             // TODO: Test concurrent behavior for api validation
@@ -1030,60 +1025,34 @@ const DeploymentTemplate = ({
         })
     }
 
-    // We don't have options for locked keys here
-    const getDryRunModeEditorValue = (): string => {
-        if (resolveScopedVariables) {
-            return resolvedEditorTemplate.originalTemplateString
-        }
-
-        return getRawEditorValueForDryRunMode({
-            state,
-            isPublishedConfigPresent,
-            isDeleteOverrideDraft,
-            isDryRunView,
-        })
-    }
-
-    // TODO: Maybe can separate scoped variables and non scoped variables, and then based on that we can directly get data state
     const getCurrentEditorValue = (): string => {
-        if (isDryRunView) {
-            return getDryRunModeEditorValue()
-        }
-
         if (resolveScopedVariables) {
-            // Since editor is disabled for scoped variables we do'nt need to worry about keys changing in editor
             return hideLockedKeys
                 ? resolvedEditorTemplate.templateWithoutLockedKeys
                 : resolvedEditorTemplate.originalTemplateString
         }
 
-        if (isInheritedView) {
-            return hideLockedKeys
-                ? baseDeploymentTemplateData.editorTemplateWithoutLockedKeys
-                : baseDeploymentTemplateData.editorTemplate
+        const currentTemplateState = getCurrentEditorState({
+            state,
+            isPublishedConfigPresent,
+            isDryRunView,
+            isDeleteOverrideDraft,
+            isInheritedView,
+            isPublishedValuesView,
+            showApprovalPendingEditorInCompareView,
+        })
+
+        if (!currentTemplateState) {
+            return ''
         }
 
-        if (isPublishedValuesView) {
-            return hideLockedKeys
-                ? publishedTemplateData.editorTemplateWithoutLockedKeys
-                : publishedTemplateData.editorTemplate
+        if ((currentTemplateState as typeof currentEditorTemplateData).originalTemplateState) {
+            return currentTemplateState.editorTemplate
         }
 
-        if (showApprovalPendingEditorInCompareView) {
-            if (isDeleteOverrideDraft) {
-                return hideLockedKeys
-                    ? baseDeploymentTemplateData.editorTemplateWithoutLockedKeys
-                    : baseDeploymentTemplateData.editorTemplate
-            }
-
-            return hideLockedKeys ? draftTemplateData.editorTemplateWithoutLockedKeys : draftTemplateData.editorTemplate
-        }
-
-        if (currentEditorTemplateData) {
-            return currentEditorTemplateData.editorTemplate
-        }
-
-        return ''
+        return hideLockedKeys
+            ? (currentTemplateState as DeploymentTemplateConfigState).editorTemplateWithoutLockedKeys
+            : currentTemplateState.editorTemplate
     }
 
     /**
@@ -1098,7 +1067,7 @@ const DeploymentTemplate = ({
             return resolvedOriginalTemplate.originalTemplateString
         }
 
-        // No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
+        // Question: No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
         if (currentEditorTemplateData) {
             return YAMLStringify(currentEditorTemplateData.originalTemplate, { simpleKeys: true })
         }
@@ -1165,73 +1134,7 @@ const DeploymentTemplate = ({
         handleOverride()
     }
 
-    const getCompareFromEditorConfig = (): CompareConfigViewProps['currentEditorConfig'] => {
-        const templateState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
-
-        return {
-            ...(envId &&
-                isDeleteOverrideDraft && {
-                    isOverride: {
-                        displayName: 'Configuration',
-                        value: 'Inherit from base',
-                    },
-                }),
-            chartName: {
-                displayName: 'Chart',
-                value: templateState?.selectedChart?.name,
-            },
-            chartVersion: {
-                displayName: 'Version',
-                value: templateState?.selectedChart?.version,
-            },
-            mergeStrategy: {
-                displayName: 'Merge strategy',
-                value: templateState?.mergeStrategy,
-            },
-            ...(window._env_.APPLICATION_METRICS_ENABLED && {
-                applicationMetrics: {
-                    displayName: 'Application metrics',
-                    value: String(templateState?.isAppMetricsEnabled),
-                },
-            }),
-        }
-    }
-
-    const getPublishedEditorConfig = (): CompareConfigViewProps['publishedEditorConfig'] => {
-        if (!isPublishedConfigPresent) {
-            return {}
-        }
-
-        return {
-            ...(envId &&
-                isDeleteOverrideDraft && {
-                    isOverride: {
-                        displayName: 'Configuration',
-                        value: 'Overridden',
-                    },
-                }),
-            chartName: {
-                displayName: 'Chart',
-                value: publishedTemplateData?.selectedChart?.name,
-            },
-            chartVersion: {
-                displayName: 'Version',
-                value: publishedTemplateData?.selectedChart?.version,
-            },
-            mergeStrategy: {
-                displayName: 'Merge strategy',
-                value: publishedTemplateData?.mergeStrategy,
-            },
-            ...(window._env_.APPLICATION_METRICS_ENABLED && {
-                applicationMetrics: {
-                    displayName: 'Application metrics',
-                    value: publishedTemplateData ? String(publishedTemplateData.isAppMetricsEnabled) : null,
-                },
-            }),
-        }
-    }
-
-    const getPublishedTemplate = (): string => {
+    const getCompareViewPublishedTemplate = (): string => {
         if (!isPublishedConfigPresent) {
             return ''
         }
@@ -1282,33 +1185,16 @@ const DeploymentTemplate = ({
         })
     }
 
-    const getIsAppMetricsEnabledForDryRun = () => {
-        if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
-            return !!draftTemplateData?.isAppMetricsEnabled
-        }
-
-        if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
-            return !!publishedTemplateData?.isAppMetricsEnabled
-        }
-
-        return !!currentEditorTemplateData?.isAppMetricsEnabled
-    }
-
-    const getIsAppMetricsEnabledForCTA = () => {
-        if (isInheritedView) {
-            return !!baseDeploymentTemplateData?.isAppMetricsEnabled
-        }
-
-        if (isPublishedValuesView) {
-            return !!publishedTemplateData?.isAppMetricsEnabled
-        }
-
-        if (isDryRunView) {
-            return getIsAppMetricsEnabledForDryRun()
-        }
-
-        return !!currentEditorTemplateData?.isAppMetricsEnabled
-    }
+    const getIsAppMetricsEnabledForCTA = (): boolean =>
+        !!getCurrentEditorState({
+            state,
+            isPublishedConfigPresent,
+            isDryRunView,
+            isDeleteOverrideDraft,
+            isInheritedView,
+            isPublishedValuesView,
+            showApprovalPendingEditorInCompareView,
+        })?.isAppMetricsEnabled
 
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
@@ -1377,15 +1263,20 @@ const DeploymentTemplate = ({
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
-                    currentEditorConfig={getCompareFromEditorConfig()}
                     currentEditorTemplate={YAML.parse(getCurrentEditorValue())}
-                    publishedEditorConfig={getPublishedEditorConfig()}
-                    publishedEditorTemplate={YAML.parse(getPublishedTemplate())}
+                    publishedEditorTemplate={YAML.parse(getCompareViewPublishedTemplate())}
                     selectedChartVersion={
                         showDeleteOverrideDraftEmptyState ? '' : currentEditorTemplateData?.selectedChart?.version
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
+                    {...getCompareFromEditorConfig({
+                        envId,
+                        isDeleteOverrideDraft,
+                        isPublishedConfigPresent,
+                        showApprovalPendingEditorInCompareView,
+                        state,
+                    })}
                 />
             )
         }

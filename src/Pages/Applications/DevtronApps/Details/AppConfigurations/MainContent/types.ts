@@ -212,7 +212,7 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
-          mergeStrategy: DeploymentHistorySingleValue
+          mergeStrategy?: DeploymentHistorySingleValue
           isOverride?: DeploymentHistorySingleValue
       }
     | {

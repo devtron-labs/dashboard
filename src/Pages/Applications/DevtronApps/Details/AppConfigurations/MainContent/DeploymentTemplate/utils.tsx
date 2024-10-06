@@ -22,6 +22,7 @@ import {
     DeploymentTemplateActionType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
+    GetCompareFromEditorConfigParams,
     GetCurrentEditorPayloadForScopedVariablesProps,
     GetCurrentEditorStateProps,
     GetDeploymentTemplateInitialStateParamsType,
@@ -33,6 +34,7 @@ import {
 } from './types'
 import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
+import { CompareConfigViewProps } from '../types'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -1137,5 +1139,85 @@ export const getUpdateEnvironmentDTPayload = (
     return {
         ...baseObject,
         envOverrideValues: editorTemplateObject,
+    }
+}
+
+export const getCompareFromEditorConfig = ({
+    envId,
+    isDeleteOverrideDraft,
+    isPublishedConfigPresent,
+    showApprovalPendingEditorInCompareView,
+    state,
+}: GetCompareFromEditorConfigParams): Pick<CompareConfigViewProps, 'currentEditorConfig' | 'publishedEditorConfig'> => {
+    const { draftTemplateData, currentEditorTemplateData, publishedTemplateData } = state
+
+    const templateState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
+
+    const currentEditorConfig: CompareConfigViewProps['currentEditorConfig'] = {
+        ...(envId &&
+            isDeleteOverrideDraft && {
+                isOverride: {
+                    displayName: 'Configuration',
+                    value: 'Inherit from base',
+                },
+            }),
+        chartName: {
+            displayName: 'Chart',
+            value: templateState?.selectedChart?.name,
+        },
+        chartVersion: {
+            displayName: 'Version',
+            value: templateState?.selectedChart?.version,
+        },
+        ...(!!envId && {
+            mergeStrategy: {
+                displayName: 'Merge strategy',
+                value: templateState?.mergeStrategy,
+            },
+        }),
+        ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
+            applicationMetrics: {
+                displayName: 'Application metrics',
+                value: templateState?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+            },
+        }),
+    }
+
+    const publishedEditorConfig: CompareConfigViewProps['publishedEditorConfig'] = isPublishedConfigPresent
+        ? {
+              ...(!!envId &&
+                  isDeleteOverrideDraft && {
+                      isOverride: {
+                          displayName: 'Configuration',
+                          value: 'Overridden',
+                      },
+                  }),
+              chartName: {
+                  displayName: 'Chart',
+                  value: publishedTemplateData?.selectedChart?.name,
+              },
+              chartVersion: {
+                  displayName: 'Version',
+                  value: publishedTemplateData?.selectedChart?.version,
+              },
+              ...(!!envId && {
+                  mergeStrategy: {
+                      displayName: 'Merge strategy',
+                      value: publishedTemplateData?.mergeStrategy,
+                  },
+              }),
+              ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
+                  applicationMetrics: {
+                      displayName: 'Application metrics',
+                      value:
+                          publishedTemplateData && publishedTemplateData.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                  },
+              }),
+          }
+        : {}
+
+    return {
+        currentEditorConfig,
+        publishedEditorConfig,
     }
 }

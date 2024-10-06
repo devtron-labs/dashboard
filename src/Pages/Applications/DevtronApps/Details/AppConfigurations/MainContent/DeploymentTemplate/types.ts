@@ -620,3 +620,11 @@ export interface UpdateBaseDTPayloadType
     id?: number
     valuesOverride: Record<string, string>
 }
+
+export interface GetCompareFromEditorConfigParams {
+    envId: string
+    isDeleteOverrideDraft: boolean
+    isPublishedConfigPresent: boolean
+    showApprovalPendingEditorInCompareView: boolean
+    state: DeploymentTemplateStateType
+}
