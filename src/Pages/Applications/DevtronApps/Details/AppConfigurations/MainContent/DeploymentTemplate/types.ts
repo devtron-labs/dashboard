@@ -593,3 +593,30 @@ export interface HandleInitializeDraftDataProps {
     lockedConfigKeys: string[]
     envId: string
 }
+
+interface UpdateDTCommonPayloadType {
+    chartRefId: DeploymentChartVersionType['id']
+    isAppMetricsEnabled: boolean
+    saveEligibleChanges: boolean
+    readme?: string
+    schema?: Record<string, string>
+}
+
+export interface UpdateEnvironmentDTPayloadType
+    extends UpdateDTCommonPayloadType,
+        Partial<Pick<DeploymentTemplateEditorDataStateType, 'environmentConfig'>> {
+    environmentId: number
+    envOverrideValues: Record<string, string>
+    IsOverride: boolean
+    isDraftOverriden?: boolean
+    globalConfig?: Record<string, string>
+}
+
+export interface UpdateBaseDTPayloadType
+    extends UpdateDTCommonPayloadType,
+        Partial<Pick<DeploymentTemplateEditorDataStateType, 'chartConfig'>> {
+    appId: number
+    defaultAppOverride: Record<string, string>
+    id?: number
+    valuesOverride: Record<string, string>
+}

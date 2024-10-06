@@ -11,6 +11,7 @@ import {
     OverrideMergeStrategyType,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
+    OverrideStrategyTippyContent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -274,7 +275,7 @@ const ConfigToolbar = ({
                     <div className="flexbox dc__gap-4">
                         <InfoIconTippy
                             heading="Merge strategy"
-                            additionalContent="Merge strategy determines how environment configurations are combined with inherited configurations configurations. Choose the strategy that best suits your needs:"
+                            additionalContent={<OverrideStrategyTippyContent />}
                             documentationLink={DOCUMENTATION.HOME_PAGE}
                         />
 

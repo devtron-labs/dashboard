@@ -28,12 +28,21 @@ import {
     GetDryRunViewEditorStateProps,
     GetRawEditorValueForDryRunModeProps,
     HandleInitializeDraftDataProps,
+    UpdateBaseDTPayloadType,
+    UpdateEnvironmentDTPayloadType,
 } from './types'
 import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
+const getLockConfigEligibleAndIneligibleChanges: (props: {
+    documents: Record<'edited' | 'unedited', object>
+    lockedConfigKeysWithLockType: { config: string[]; allowed: boolean }
+}) => {
+    eligibleChanges: Record<string, any>
+    ineligibleChanges: Record<string, any>
+} = importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
 
 export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
     if (index >= paths.length) {
@@ -259,8 +268,6 @@ const handleRestoreLastSavedTemplate = (state: DeploymentTemplateStateType): Dep
     }
 }
 
-// TODO: Return type
-// TODO: Check if needs try catch
 export const getLockedDiffModalDocuments = (isApprovalView: boolean, state: DeploymentTemplateStateType) => ({
     unedited: state.publishedTemplateData.originalTemplate,
     edited: isApprovalView
@@ -971,4 +978,164 @@ export const handleInitializeDraftData = ({
     }
 
     return response
+}
+
+export const getUpdateBaseDeploymentTemplatePayload = (
+    state: DeploymentTemplateStateType,
+    appId: number,
+    skipReadmeAndSchema: boolean,
+): UpdateBaseDTPayloadType => {
+    const {
+        currentEditorTemplateData,
+        wasGuiOrHideLockedKeysEdited,
+        lockedDiffModalState: { showLockedTemplateDiffModal },
+        lockedConfigKeysWithLockType,
+    } = state
+
+    const editorTemplate = getCurrentTemplateWithLockedKeys({
+        currentEditorTemplateData,
+        wasGuiOrHideLockedKeysEdited,
+    })
+    const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
+
+    const baseRequestData = {
+        ...(currentEditorTemplateData.chartConfig.chartRefId === currentEditorTemplateData.selectedChart.id
+            ? currentEditorTemplateData.chartConfig
+            : {}),
+
+        appId: +appId,
+        chartRefId: currentEditorTemplateData.selectedChart.id,
+        // NOTE: Ideally backend should not ask for this :/
+        defaultAppOverride: currentEditorTemplateData.originalTemplate,
+        isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
+        saveEligibleChanges: showLockedTemplateDiffModal,
+
+        ...(!skipReadmeAndSchema
+            ? {
+                  id: currentEditorTemplateData.chartConfig.id,
+                  readme: currentEditorTemplateData.readme,
+                  schema: currentEditorTemplateData.schema,
+              }
+            : {}),
+    }
+
+    if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
+        // Question: In case of draft edit should we do this or approval as unedited?
+        const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
+            documents: getLockedDiffModalDocuments(false, state),
+            lockedConfigKeysWithLockType,
+        })
+
+        return {
+            ...baseRequestData,
+            valuesOverride: eligibleChanges,
+        }
+    }
+
+    return {
+        ...baseRequestData,
+        valuesOverride: editorTemplateObject,
+    }
+}
+
+export const getDeleteProtectedOverridePayload = (
+    state: DeploymentTemplateStateType,
+    envId: number,
+    skipReadmeAndSchema: boolean,
+): UpdateEnvironmentDTPayloadType => {
+    const { baseDeploymentTemplateData, chartDetails, currentEditorTemplateData } = state
+
+    return {
+        environmentId: +envId,
+        envOverrideValues: baseDeploymentTemplateData.originalTemplate,
+        chartRefId: chartDetails.globalChartDetails.id,
+        IsOverride: false,
+        isAppMetricsEnabled: baseDeploymentTemplateData.isAppMetricsEnabled,
+        saveEligibleChanges: false,
+        ...(currentEditorTemplateData.environmentConfig.id > 0
+            ? {
+                  id: currentEditorTemplateData.environmentConfig.id,
+                  status: currentEditorTemplateData.environmentConfig.status,
+                  manualReviewed: true,
+                  active: currentEditorTemplateData.environmentConfig.active,
+                  namespace: currentEditorTemplateData.environmentConfig.namespace,
+              }
+            : {}),
+        ...(!skipReadmeAndSchema
+            ? {
+                  id: currentEditorTemplateData.environmentConfig.id,
+                  globalConfig: baseDeploymentTemplateData.originalTemplate,
+                  isDraftOverriden: false,
+                  readme: baseDeploymentTemplateData.readme,
+                  schema: baseDeploymentTemplateData.schema,
+              }
+            : {}),
+    }
+}
+
+export const getUpdateEnvironmentDTPayload = (
+    state: DeploymentTemplateStateType,
+    envId: number,
+    skipReadmeAndSchema: boolean,
+): UpdateEnvironmentDTPayloadType => {
+    const {
+        currentEditorTemplateData,
+        lockedDiffModalState: { showLockedTemplateDiffModal },
+        baseDeploymentTemplateData,
+        lockedConfigKeysWithLockType,
+        wasGuiOrHideLockedKeysEdited,
+    } = state
+
+    const editorTemplate = getCurrentTemplateWithLockedKeys({
+        currentEditorTemplateData,
+        wasGuiOrHideLockedKeysEdited,
+    })
+    const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
+
+    const baseObject = {
+        environmentId: +envId,
+        chartRefId: currentEditorTemplateData.selectedChartRefId,
+        // Since this is for published here it will always be overridden
+        IsOverride: true,
+        isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
+        saveEligibleChanges: showLockedTemplateDiffModal,
+
+        ...(currentEditorTemplateData.environmentConfig.id > 0
+            ? {
+                  id: currentEditorTemplateData.environmentConfig.id,
+                  status: currentEditorTemplateData.environmentConfig.status,
+                  manualReviewed: true,
+                  active: currentEditorTemplateData.environmentConfig.active,
+                  namespace: currentEditorTemplateData.environmentConfig.namespace,
+              }
+            : {}),
+
+        // This is the data which we suppose to send for draft we are creating
+        ...(!skipReadmeAndSchema
+            ? {
+                  id: currentEditorTemplateData.environmentConfig.id,
+                  globalConfig: baseDeploymentTemplateData.originalTemplate,
+                  isDraftOverriden: currentEditorTemplateData.isOverridden,
+                  readme: currentEditorTemplateData.readme,
+                  schema: currentEditorTemplateData.schema,
+              }
+            : {}),
+    }
+
+    if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
+        const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
+            documents: getLockedDiffModalDocuments(false, state),
+            lockedConfigKeysWithLockType,
+        })
+
+        return {
+            ...baseObject,
+            envOverrideValues: eligibleChanges,
+        }
+    }
+
+    return {
+        ...baseObject,
+        envOverrideValues: editorTemplateObject,
+    }
 }

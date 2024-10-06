@@ -33,6 +33,7 @@ import {
     DEFAULT_LOCKED_KEYS_CONFIG,
     GenericEmptyState,
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -49,6 +50,8 @@ import {
     DeploymentTemplateStateType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
     HandleInitializeTemplatesWithoutDraftParamsType,
+    UpdateBaseDTPayloadType,
+    UpdateEnvironmentDTPayloadType,
 } from './types'
 import { BASE_DEPLOYMENT_TEMPLATE_ENV_ID, NO_SCOPED_VARIABLES_MESSAGE } from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
@@ -59,12 +62,14 @@ import {
     getAreTemplateChangesPresent,
     getCurrentEditorPayloadForScopedVariables,
     getCurrentEditorState,
-    getCurrentTemplateWithLockedKeys,
+    getDeleteProtectedOverridePayload,
     getDeploymentTemplateInitialState,
     getDeploymentTemplateResourceName,
     getEditorTemplateAndLockedKeys,
     getLockedDiffModalDocuments,
     getRawEditorValueForDryRunMode,
+    getUpdateBaseDeploymentTemplatePayload,
+    getUpdateEnvironmentDTPayload,
     handleInitializeDraftData,
 } from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
@@ -135,7 +140,6 @@ const DeploymentTemplate = ({
         resolvedEditorTemplate,
         resolvedOriginalTemplate,
         showDraftComments,
-        wasGuiOrHideLockedKeysEdited,
         hideLockedKeys,
         editMode,
         configHeaderTab,
@@ -818,146 +822,33 @@ const DeploymentTemplate = ({
         await handleInitialDataLoad()
     }
 
-    // TODO: Return type
     /**
-     * Suggestion: Can break method for envId and non-envId
+     *
      * @param skipReadmeAndSchema - true only while doing handleSave
      */
-    const prepareDataToSave = (skipReadmeAndSchema: boolean = false, fromDeleteOverride: boolean = false) => {
-        const editorTemplate = getCurrentTemplateWithLockedKeys({
-            currentEditorTemplateData,
-            wasGuiOrHideLockedKeysEdited,
-        })
-        const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
-
+    const prepareDataToSave = (
+        skipReadmeAndSchema: boolean = false,
+        fromDeleteOverride: boolean = false,
+    ): UpdateBaseDTPayloadType | UpdateEnvironmentDTPayloadType => {
         if (!envId) {
-            const baseRequestData = {
-                ...(currentEditorTemplateData.chartConfig.chartRefId === currentEditorTemplateData.selectedChart.id
-                    ? currentEditorTemplateData.chartConfig
-                    : {}),
-
-                appId: +appId,
-                chartRefId: currentEditorTemplateData.selectedChart.id,
-                // TODO: Ideally backend should not ask for this :/
-                defaultAppOverride: currentEditorTemplateData.originalTemplate,
-                isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
-                saveEligibleChanges: showLockedTemplateDiffModal,
-
-                ...(!skipReadmeAndSchema
-                    ? {
-                          id: currentEditorTemplateData.chartConfig.id,
-                          readme: currentEditorTemplateData.readme,
-                          schema: currentEditorTemplateData.schema,
-                      }
-                    : {}),
-            }
-
-            if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
-                // FIXME: In case of draft edit should we do this or approval as unedited?
-                const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                    documents: getLockedDiffModalDocuments(false, state),
-                    lockedConfigKeysWithLockType,
-                })
-
-                return {
-                    ...baseRequestData,
-                    valuesOverride: eligibleChanges,
-                }
-            }
-
-            return {
-                ...baseRequestData,
-                valuesOverride: editorTemplateObject,
-            }
+            return getUpdateBaseDeploymentTemplatePayload(state, +appId, skipReadmeAndSchema)
         }
 
         // NOTE: We don't handle lock keys in case of deletion of override
         if (fromDeleteOverride) {
-            // NOTE: This is basic handling, sending wrong isAppMetricsEnabled
-            return {
-                environmentId: +envId,
-                envOverrideValues: baseDeploymentTemplateData.originalTemplate,
-                chartRefId: chartDetails.globalChartDetails.id,
-                IsOverride: false,
-                isAppMetricsEnabled: baseDeploymentTemplateData.isAppMetricsEnabled,
-                saveEligibleChanges: false,
-                // FIXME: Check again with old service
-                ...(currentEditorTemplateData.environmentConfig.id > 0
-                    ? {
-                          id: currentEditorTemplateData.environmentConfig.id,
-                          status: currentEditorTemplateData.environmentConfig.status,
-                          manualReviewed: true,
-                          active: currentEditorTemplateData.environmentConfig.active,
-                          namespace: currentEditorTemplateData.environmentConfig.namespace,
-                      }
-                    : {}),
-                ...(!skipReadmeAndSchema
-                    ? {
-                          id: currentEditorTemplateData.environmentConfig.id,
-                          globalConfig: baseDeploymentTemplateData.originalTemplate,
-                          isDraftOverriden: false,
-                          readme: baseDeploymentTemplateData.readme,
-                          schema: baseDeploymentTemplateData.schema,
-                      }
-                    : {}),
-            }
+            return getDeleteProtectedOverridePayload(state, +envId, skipReadmeAndSchema)
         }
 
-        const baseObject = {
-            environmentId: +envId,
-            chartRefId: currentEditorTemplateData.selectedChartRefId,
-            // Since this is for published here it will always be overridden
-            IsOverride: true,
-            isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
-            saveEligibleChanges: showLockedTemplateDiffModal,
-
-            ...(currentEditorTemplateData.environmentConfig.id > 0
-                ? {
-                      id: currentEditorTemplateData.environmentConfig.id,
-                      status: currentEditorTemplateData.environmentConfig.status,
-                      manualReviewed: true,
-                      active: currentEditorTemplateData.environmentConfig.active,
-                      namespace: currentEditorTemplateData.environmentConfig.namespace,
-                  }
-                : {}),
-
-            // This is the data which we suppose to send for draft we are creating
-            ...(!skipReadmeAndSchema
-                ? {
-                      id: currentEditorTemplateData.environmentConfig.id,
-                      globalConfig: baseDeploymentTemplateData.originalTemplate,
-                      isDraftOverriden: currentEditorTemplateData.isOverridden,
-                      readme: currentEditorTemplateData.readme,
-                      schema: currentEditorTemplateData.schema,
-                  }
-                : {}),
-        }
-
-        if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
-            const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments(false, state),
-                lockedConfigKeysWithLockType,
-            })
-
-            return {
-                ...baseObject,
-                envOverrideValues: eligibleChanges,
-            }
-        }
-
-        return {
-            ...baseObject,
-            envOverrideValues: editorTemplateObject,
-        }
+        return getUpdateEnvironmentDTPayload(state, +envId, skipReadmeAndSchema)
     }
 
-    // FIXME: BTW This is a hack ideally BE should not even take data for this, they should only need action
+    // NOTE: This is a hack ideally BE should not even take data for this, they should only need action
     const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave(false, true)
 
     const getSaveAPIService = (): ((
         payload: ReturnType<typeof prepareDataToSave>,
         abortSignal?: AbortSignal,
-    ) => Promise<any>) => {
+    ) => Promise<ResponseType<any>>) => {
         if (!envId) {
             return currentEditorTemplateData.chartConfig.id
                 ? updateBaseDeploymentTemplate
@@ -1070,7 +961,9 @@ const DeploymentTemplate = ({
         const shouldValidateLockChanges =
             !!getLockConfigEligibleAndIneligibleChanges &&
             lockedConfigKeysWithLockType.config.length > 0 &&
-            !isSuperAdmin
+            !isSuperAdmin &&
+            !hasNoGlobalConfig
+
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
             // TODO: Test concurrent behavior for api validation
@@ -1231,7 +1124,6 @@ const DeploymentTemplate = ({
         })
     }
 
-    // TODO: Check if can break this method
     const handleOverride = () => {
         if (!envId) {
             logExceptionToSentry(new Error('Trying to access override without envId in DeploymentTemplate'))
@@ -1253,7 +1145,6 @@ const DeploymentTemplate = ({
             return
         }
 
-        // TODO: Check if can be removed
         if (currentEditorTemplateData.isOverridden) {
             dispatch({
                 type: DeploymentTemplateActionType.DELETE_LOCAL_OVERRIDE,
@@ -1356,6 +1247,100 @@ const DeploymentTemplate = ({
             : publishedTemplateData.editorTemplate
     }
 
+    // NOTE: Need to implement when we have support for merge patches
+    const getShouldShowMergePatchesButton = (): boolean => false
+
+    const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: 'clicked-merge-strategy-dropdown',
+        })
+
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY,
+            payload: {
+                mergeStrategy,
+            },
+        })
+    }
+
+    const handleOpenDiscardDraftPopup = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_DISCARD_DRAFT_POPUP,
+        })
+    }
+
+    const handleShowEditHistory = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EDIT_HISTORY,
+        })
+    }
+
+    const handleClearPopupNode = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.CLEAR_POPUP_NODE,
+        })
+    }
+
+    const getIsAppMetricsEnabledForDryRun = () => {
+        if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
+            return !!draftTemplateData?.isAppMetricsEnabled
+        }
+
+        if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
+            return !!publishedTemplateData?.isAppMetricsEnabled
+        }
+
+        return !!currentEditorTemplateData?.isAppMetricsEnabled
+    }
+
+    const getIsAppMetricsEnabledForCTA = () => {
+        if (isInheritedView) {
+            return !!baseDeploymentTemplateData?.isAppMetricsEnabled
+        }
+
+        if (isPublishedValuesView) {
+            return !!publishedTemplateData?.isAppMetricsEnabled
+        }
+
+        if (isDryRunView) {
+            return getIsAppMetricsEnabledForDryRun()
+        }
+
+        return !!currentEditorTemplateData?.isAppMetricsEnabled
+    }
+
+    const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
+        menuConfig: getConfigToolbarPopupConfig({
+            lockedConfigData: {
+                areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
+                hideLockedKeys,
+                handleSetHideLockedKeys,
+            },
+            configHeaderTab,
+            isOverridden: currentEditorTemplateData?.isOverridden,
+            isPublishedValuesView,
+            isPublishedConfigPresent,
+            handleDeleteOverride: handleOverride,
+            unableToParseData: !!currentEditorTemplateData?.parsingError,
+            isLoading: isResolvingVariables || isSaving || isLoadingChangedChartDetails,
+            isDraftAvailable,
+            handleDiscardDraft: handleOpenDiscardDraftPopup,
+            handleShowEditHistory,
+            showDeleteOverrideDraftEmptyState,
+        }),
+        popupNodeType,
+        popupMenuNode: ProtectionViewToolbarPopupNode ? (
+            <ProtectionViewToolbarPopupNode
+                popupNodeType={popupNodeType}
+                handleClearPopupNode={handleClearPopupNode}
+                draftId={draftTemplateData?.latestDraft?.draftId}
+                draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                handleReload={handleReload}
+            />
+        ) : null,
+    }
+
     const renderEditorComponent = () => {
         if (isResolvingVariables || isLoadingChangedChartDetails) {
             return (
@@ -1451,69 +1436,6 @@ const DeploymentTemplate = ({
         )
     }
 
-    // NOTE: Need to implement when we have support for merge patches
-    const getShouldShowMergePatchesButton = (): boolean => false
-
-    const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
-        ReactGA.event({
-            category: 'devtronapp-configuration-dt',
-            action: 'clicked-merge-strategy-dropdown',
-        })
-
-        dispatch({
-            type: DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY,
-            payload: {
-                mergeStrategy,
-            },
-        })
-    }
-
-    const handleOpenDiscardDraftPopup = () => {
-        dispatch({
-            type: DeploymentTemplateActionType.SHOW_DISCARD_DRAFT_POPUP,
-        })
-    }
-
-    const handleShowEditHistory = () => {
-        dispatch({
-            type: DeploymentTemplateActionType.SHOW_EDIT_HISTORY,
-        })
-    }
-
-    const handleClearPopupNode = () => {
-        dispatch({
-            type: DeploymentTemplateActionType.CLEAR_POPUP_NODE,
-        })
-    }
-
-    const getIsAppMetricsEnabledForDryRun = () => {
-        if (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING) {
-            return !!draftTemplateData?.isAppMetricsEnabled
-        }
-
-        if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
-            return !!publishedTemplateData?.isAppMetricsEnabled
-        }
-
-        return !!currentEditorTemplateData?.isAppMetricsEnabled
-    }
-
-    const getIsAppMetricsEnabledForCTA = () => {
-        if (isInheritedView) {
-            return !!baseDeploymentTemplateData?.isAppMetricsEnabled
-        }
-
-        if (isPublishedValuesView) {
-            return !!publishedTemplateData?.isAppMetricsEnabled
-        }
-
-        if (isDryRunView) {
-            return getIsAppMetricsEnabledForDryRun()
-        }
-
-        return !!currentEditorTemplateData?.isAppMetricsEnabled
-    }
-
     const renderCTA = () => {
         const selectedChart = getCurrentTemplateSelectedChart()
         const shouldRenderCTA =
@@ -1604,37 +1526,6 @@ const DeploymentTemplate = ({
             {isInheritedView ? renderInheritedViewFooter() : renderCTA()}
         </div>
     )
-
-    const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
-        menuConfig: getConfigToolbarPopupConfig({
-            lockedConfigData: {
-                areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
-                hideLockedKeys,
-                handleSetHideLockedKeys,
-            },
-            configHeaderTab,
-            isOverridden: currentEditorTemplateData?.isOverridden,
-            isPublishedValuesView,
-            isPublishedConfigPresent,
-            handleDeleteOverride: handleOverride,
-            unableToParseData: !!currentEditorTemplateData?.parsingError,
-            isLoading: isResolvingVariables || isSaving || isLoadingChangedChartDetails,
-            isDraftAvailable,
-            handleDiscardDraft: handleOpenDiscardDraftPopup,
-            handleShowEditHistory,
-            showDeleteOverrideDraftEmptyState,
-        }),
-        popupNodeType,
-        popupMenuNode: ProtectionViewToolbarPopupNode ? (
-            <ProtectionViewToolbarPopupNode
-                popupNodeType={popupNodeType}
-                handleClearPopupNode={handleClearPopupNode}
-                draftId={draftTemplateData?.latestDraft?.draftId}
-                draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                handleReload={handleReload}
-            />
-        ) : null,
-    }
 
     const renderHeader = () => {
         if (showReadMe) {
