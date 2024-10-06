@@ -191,7 +191,7 @@ export const getDeploymentTemplateInitialState = ({
     },
     showSaveChangesModal: false,
     popupNodeType: null,
-    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType.VALUES_FROM_DRAFT,
+    compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType.APPROVAL_PENDING,
     dryRunEditorMode: DryRunEditorMode.VALUES_FROM_DRAFT,
     showDeleteOverrideDialog: false,
     showDeleteDraftOverrideDialog: false,

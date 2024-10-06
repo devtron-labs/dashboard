@@ -221,7 +221,6 @@ const DTChartSelector = ({
 
     const options: SelectPickerOptionType[] = filteredCharts.map((chart) => ({
         label: chart.version,
-        // Need to confirm once this is truthful
         value: chart.id,
     }))
 

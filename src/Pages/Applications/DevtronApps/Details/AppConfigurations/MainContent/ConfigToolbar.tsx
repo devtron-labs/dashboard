@@ -153,7 +153,6 @@ const ConfigToolbar = ({
 
         return (
             <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                {/* Internally handles right border */}
                 {ProtectionViewTabGroup && (
                     <>
                         <ProtectionViewTabGroup
