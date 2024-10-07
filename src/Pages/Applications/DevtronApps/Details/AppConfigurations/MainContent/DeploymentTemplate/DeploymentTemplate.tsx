@@ -135,6 +135,7 @@ const DeploymentTemplate = ({
         lockedConfigKeysWithLockType,
         publishedTemplateData,
         draftTemplateData,
+        baseDeploymentTemplateData,
         resolveScopedVariables,
         isResolvingVariables,
         resolvedEditorTemplate,
@@ -206,6 +207,8 @@ const DeploymentTemplate = ({
      * 2. In case of override - Published config is the one that is overridden from base config (Inherited) and is not always present
      */
     const isPublishedConfigPresent = !(envId && !publishedTemplateData?.isOverridden)
+
+    const showNoPublishedVersionEmptyState = isPublishedValuesView && !isPublishedConfigPresent
 
     const isEditMode = isProtected
         ? configHeaderTab === ConfigHeaderTabType.VALUES &&
@@ -296,7 +299,7 @@ const DeploymentTemplate = ({
              */
             const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
             // Fetching LHS of compare view
-            const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isApprovalView && isCompareView
+            const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isCompareView
 
             const [currentEditorTemplate, originalTemplate, publishedTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
@@ -1311,7 +1314,7 @@ const DeploymentTemplate = ({
             )
         }
 
-        if (isPublishedValuesView && !isPublishedConfigPresent) {
+        if (showNoPublishedVersionEmptyState) {
             return <NoPublishedVersionEmptyState />
         }
 
@@ -1343,7 +1346,7 @@ const DeploymentTemplate = ({
         const shouldRenderCTA =
             isEditMode || isApprovalView || (isDryRunView && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT)
 
-        if (!selectedChart || showNoOverrideEmptyState || showDeleteOverrideDraftEmptyState || !shouldRenderCTA) {
+        if (!selectedChart || showNoOverrideTab || showDeleteOverrideDraftEmptyState || !shouldRenderCTA) {
             return null
         }
 
@@ -1376,6 +1379,7 @@ const DeploymentTemplate = ({
                     showApproveButton={isApprovalView}
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
+                    isDryRunView={isDryRunView}
                 />
             )
         }
@@ -1396,19 +1400,30 @@ const DeploymentTemplate = ({
                 handleSave={handleTriggerSave}
                 parsingError={currentEditorTemplateData.parsingError}
                 restoreLastSavedYAML={restoreLastSavedTemplate}
+                isDryRunView={isDryRunView}
             />
         )
     }
 
-    const renderInheritedViewFooter = () => (
-        <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
-            <ICInfoOutlineGrey className="flex icon-dim-16 p-2 dc__no-shrink" />
-            <div className="flexbox">
-                <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">Application metrics is not enabled in</span>&nbsp;
-                <BaseConfigurationNavigation baseConfigurationURL={baseDeploymentTemplateURL} />
+    const renderInheritedViewFooter = () => {
+        if (!window._env_.APPLICATION_METRICS_ENABLED) {
+            return null
+        }
+
+        return (
+            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
+                <ICInfoOutlineGrey className="flex icon-dim-16 p-2 dc__no-shrink" />
+                <div className="flexbox">
+                    <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">
+                        Application metrics is {!baseDeploymentTemplateData?.isAppMetricsEnabled ? 'not' : ''} enabled
+                        in
+                    </span>
+                    &nbsp;
+                    <BaseConfigurationNavigation baseConfigurationURL={baseDeploymentTemplateURL} />
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 
     const renderValuesView = () => (
         <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
@@ -1487,30 +1502,32 @@ const DeploymentTemplate = ({
                         showEnableReadMeButton={isEditMode}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
                     >
-                        <DeploymentTemplateOptionsHeader
-                            disableVersionSelect={
-                                isPublishedValuesView ||
-                                isInheritedView ||
-                                isResolvingVariables ||
-                                isSaving ||
-                                isLoadingChangedChartDetails ||
-                                !!currentEditorTemplateData?.parsingError
-                            }
-                            editMode={editMode}
-                            showReadMe={showReadMe}
-                            isUnSet={isUnSet}
-                            isCompareView={isCompareView}
-                            handleChangeToGUIMode={handleChangeToGUIMode}
-                            handleChangeToYAMLMode={handleChangeToYAMLMode}
-                            parsingError={currentEditorTemplateData?.parsingError}
-                            restoreLastSavedTemplate={restoreLastSavedTemplate}
-                            handleChartChange={handleChartChange}
-                            chartDetails={chartDetails}
-                            selectedChart={getCurrentTemplateSelectedChart()}
-                            isGuiSupported={isGuiSupported}
-                            areChartsLoading={false}
-                            showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
-                        />
+                        {!showNoPublishedVersionEmptyState && (
+                            <DeploymentTemplateOptionsHeader
+                                disableVersionSelect={
+                                    isPublishedValuesView ||
+                                    isInheritedView ||
+                                    isResolvingVariables ||
+                                    isSaving ||
+                                    isLoadingChangedChartDetails ||
+                                    !!currentEditorTemplateData?.parsingError
+                                }
+                                editMode={editMode}
+                                showReadMe={showReadMe}
+                                isUnSet={isUnSet}
+                                isCompareView={isCompareView}
+                                handleChangeToGUIMode={handleChangeToGUIMode}
+                                handleChangeToYAMLMode={handleChangeToYAMLMode}
+                                parsingError={currentEditorTemplateData?.parsingError}
+                                restoreLastSavedTemplate={restoreLastSavedTemplate}
+                                handleChartChange={handleChartChange}
+                                chartDetails={chartDetails}
+                                selectedChart={getCurrentTemplateSelectedChart()}
+                                isGuiSupported={isGuiSupported}
+                                areChartsLoading={false}
+                                showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                            />
+                        )}
                     </ConfigToolbar>
                 )}
             </>

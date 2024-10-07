@@ -226,6 +226,7 @@ export interface DeploymentTemplateCTAProps
     handleSave: (e: SyntheticEvent) => void
     toggleAppMetrics: () => void
     restoreLastSavedYAML: () => void
+    isDryRunView: boolean
 }
 
 export interface DeleteOverrideDialogProps {

@@ -124,12 +124,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (
-        getDeleteDraftPopupButtonConfig &&
-        !isPublishedValuesView &&
-        isDraftAvailable &&
-        configHeaderTab === ConfigHeaderTabType.VALUES
-    ) {
+    if (getDeleteDraftPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         const deleteDraftConfig = getDeleteDraftPopupButtonConfig(handleDiscardDraft, isLoading)
         if (deleteDraftConfig) {
             secondConfigSegment.push(deleteDraftConfig)
