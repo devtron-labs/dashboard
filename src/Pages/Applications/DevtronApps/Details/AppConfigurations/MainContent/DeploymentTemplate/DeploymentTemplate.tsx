@@ -214,7 +214,7 @@ const DeploymentTemplate = ({
           selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
         : configHeaderTab === ConfigHeaderTabType.VALUES
 
-    const isGuiSupported = isEditMode
+    const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
@@ -296,7 +296,7 @@ const DeploymentTemplate = ({
             /**
              * This is used to fetch the unedited document to show gui view
              */
-            const shouldFetchOriginalTemplate: boolean = !!isGuiSupported && !showDeleteOverrideDraftEmptyState
+            const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
             // Fetching LHS of compare view
             const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isCompareView
 
