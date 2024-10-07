@@ -75,20 +75,20 @@ export default function CIConfigForm({
               : sourceConfig.material[0]
 
     const getParsedCurrentMaterial = (material?): SelectedGitMaterialType => {
-        const _currentMaterial: SelectedGitMaterialType = {
-            ...(material ? material : currentMaterial),
-            value: currentMaterial.checkoutPath,
-            label: currentMaterial.name,
-            startIcon: getGitProviderIcon(currentMaterial.url),
+        const _currentMaterial = {
+            ...material,
+            name: material?.name || currentMaterial.name,
+            url: material?.url || currentMaterial.url,
+            value: material?.checkoutPath || currentMaterial.checkoutPath,
+            label: material?.name || currentMaterial.name,
+            startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
         }
         return _currentMaterial
     }
 
     const getParsedSourceConfig = (): SourceConfigType => {
         const _sourceConfig = { ...sourceConfig }
-        _sourceConfig.material = _sourceConfig.material.map((_material) => {
-            return getParsedCurrentMaterial(_material)
-        })
+        _sourceConfig.material = _sourceConfig.material.map(getParsedCurrentMaterial)
         return _sourceConfig
     }
 

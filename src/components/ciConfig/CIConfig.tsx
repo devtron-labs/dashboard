@@ -71,9 +71,9 @@ export default function CIConfig({
                 const sourceConfigMaterial = sourceConfig.material?.map((material: MaterialOptionType) => {
                     return {
                         ...material,
-                        label: material?.name,
-                        value: material?.id,
-                        startIcon: getGitProviderIcon(material.url),
+                        label: material?.name || '',
+                        value: material?.id || '',
+                        startIcon: getGitProviderIcon(material.url) || '',
                     }
                 })
                 _sourceConfig.material = sourceConfigMaterial
