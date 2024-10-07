@@ -296,7 +296,7 @@ const DeploymentTemplate = ({
             /**
              * This is used to fetch the unedited document to show gui view
              */
-            const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
+            const shouldFetchOriginalTemplate: boolean = !!isGuiSupported && !showDeleteOverrideDraftEmptyState
             // Fetching LHS of compare view
             const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isCompareView
 
