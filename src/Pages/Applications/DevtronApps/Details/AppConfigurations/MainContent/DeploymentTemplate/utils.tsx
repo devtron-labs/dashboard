@@ -80,7 +80,7 @@ export const applyCompareDiffOfTempFormDataOnOriginalData = (
 }
 
 export const addGUISchemaIfAbsent = (response: ResponseType, chartName: string) => {
-    if (response && response.result && !response.result.guiSchema) {
+    if (response?.result && !response.result.guiSchema) {
         return {
             ...response,
             result: {
@@ -1208,8 +1208,7 @@ export const getCompareFromEditorConfig = ({
               ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
                   applicationMetrics: {
                       displayName: 'Application metrics',
-                      value:
-                          publishedTemplateData && publishedTemplateData.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                      value: publishedTemplateData?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
                   },
               }),
           }
