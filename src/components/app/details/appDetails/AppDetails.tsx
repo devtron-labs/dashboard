@@ -34,7 +34,6 @@ import {
     ReleaseMode,
     ToastVariantType,
     ToastManager,
-    handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
