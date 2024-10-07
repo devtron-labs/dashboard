@@ -11,6 +11,7 @@ import {
     OverrideMergeStrategyType,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
+    OverrideStrategyTippyContent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -104,8 +105,8 @@ const ConfigToolbar = ({
     parsingError = '',
     restoreLastSavedYAML,
     isPublishedConfigPresent = true,
-    handleClearPopupNode,
     headerMessage,
+    showDeleteOverrideDraftEmptyState,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -156,44 +157,77 @@ const ConfigToolbar = ({
                             <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
                         </div>
                     )}
-                {isProtected && isDraftPresent && (
-                    <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                        {/* Internally handles right border */}
-                        {ProtectionViewTabGroup && (
-                            <>
-                                <ProtectionViewTabGroup
-                                    selectedTab={selectedProtectionViewTab}
-                                    handleProtectionViewTabChange={handleProtectionViewTabChange}
-                                    isApprovalPending={isApprovalPending}
-                                    isDisabled={isDisabled}
-                                    parsingError={parsingError}
-                                    restoreLastSavedYAML={restoreLastSavedYAML}
-                                />
-
-                                <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                            </>
-                        )}
-
-                        {/* Data should always be valid in case we are in approval view */}
-                        {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                            <InvalidYAMLTippyWrapper
+                <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                    {ProtectionViewTabGroup && (
+                        <>
+                            <ProtectionViewTabGroup
+                                selectedTab={selectedProtectionViewTab}
+                                handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                isApprovalPending={isApprovalPending}
+                                isDisabled={isDisabled}
                                 parsingError={parsingError}
                                 restoreLastSavedYAML={restoreLastSavedYAML}
-                            >
-                                <div>
-                                    <MergePatchWithTemplateCheckbox
-                                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                        handleToggleShowTemplateMergedWithPatch={
-                                            handleToggleShowTemplateMergedWithPatch
-                                        }
-                                        // Will remove this check if merging is happening on ui
+                            />
+
+                            <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                        </>
+                    )}
+
+                    {/* Data should always be valid in case we are in approval view */}
+                    {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                        <InvalidYAMLTippyWrapper
+                            parsingError={parsingError}
+                            restoreLastSavedYAML={restoreLastSavedYAML}
+                        >
+                            <div>
+                                <MergePatchWithTemplateCheckbox
+                                    shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                    handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
+                                    // Will remove this check if merging is happening on ui
+                                    isDisabled={isDisabled}
+                                />
+                            </div>
+                        </InvalidYAMLTippyWrapper>
+                    )}
+                    {isProtected && isDraftPresent && (
+                        <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                            {/* Internally handles right border */}
+                            {ProtectionViewTabGroup && (
+                                <>
+                                    <ProtectionViewTabGroup
+                                        selectedTab={selectedProtectionViewTab}
+                                        handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                        isApprovalPending={isApprovalPending}
                                         isDisabled={isDisabled}
+                                        parsingError={parsingError}
+                                        restoreLastSavedYAML={restoreLastSavedYAML}
                                     />
-                                </div>
-                            </InvalidYAMLTippyWrapper>
-                        )}
-                    </div>
-                )}
+
+                                    <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                                </>
+                            )}
+
+                            {/* Data should always be valid in case we are in approval view */}
+                            {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                                <InvalidYAMLTippyWrapper
+                                    parsingError={parsingError}
+                                    restoreLastSavedYAML={restoreLastSavedYAML}
+                                >
+                                    <div>
+                                        <MergePatchWithTemplateCheckbox
+                                            shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                            handleToggleShowTemplateMergedWithPatch={
+                                                handleToggleShowTemplateMergedWithPatch
+                                            }
+                                            // Will remove this check if merging is happening on ui
+                                            isDisabled={isDisabled}
+                                        />
+                                    </div>
+                                </InvalidYAMLTippyWrapper>
+                            )}
+                        </div>
+                    )}
+                </div>
             </>
         )
     }
@@ -265,7 +299,7 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (!envId || !isEditView) {
+        if (!envId || !isEditView || showDeleteOverrideDraftEmptyState) {
             return null
         }
 
@@ -287,7 +321,7 @@ const ConfigToolbar = ({
                     <div className="flexbox dc__gap-4">
                         <InfoIconTippy
                             heading="Merge strategy"
-                            additionalContent="Merge strategy determines how environment configurations are combined with inherited configurations configurations. Choose the strategy that best suits your needs:"
+                            additionalContent={<OverrideStrategyTippyContent />}
                             documentationLink={DOCUMENTATION.HOME_PAGE}
                         />
 
@@ -300,13 +334,54 @@ const ConfigToolbar = ({
         )
     }
 
-    const handlePopupMenuToggle = (isOpen: boolean) => {
-        if (!isOpen) {
-            handleClearPopupNode()
-        }
-    }
-
     const popupConfigGroups = Object.keys(popupConfig?.menuConfig ?? {})
+
+    const renderPopupMenu = () => {
+        if (!popupConfigGroups.length) {
+            return null
+        }
+
+        if (popupConfig.popupNodeType) {
+            return popupConfig.popupMenuNode
+        }
+
+        return (
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
+                    <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
+                </PopupMenu.Button>
+
+                <PopupMenu.Body
+                    rootClassName={
+                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                    }
+                >
+                    <div className="flexbox-col dc__gap-4">
+                        {popupConfigGroups.map((groupName, index) => {
+                            const groupItems = popupConfig.menuConfig[groupName] ?? []
+
+                            return (
+                                <Fragment key={groupName}>
+                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
+
+                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
+                                        <PopupMenuItem
+                                            key={text}
+                                            text={text}
+                                            onClick={onClick}
+                                            dataTestId={dataTestId}
+                                            disabled={disabled}
+                                            icon={icon}
+                                        />
+                                    ))}
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
+    }
 
     return (
         <div
@@ -326,51 +401,7 @@ const ConfigToolbar = ({
 
                     {renderReadmeAndScopedVariablesBlock()}
 
-                    {!!popupConfigGroups.length && (
-                        <PopupMenu onToggleCallback={handlePopupMenuToggle} autoClose>
-                            <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
-                                <ICMore
-                                    className="icon-dim-16 fcn-6 dc__flip-90"
-                                    data-testid="config-more-options-popup"
-                                />
-                            </PopupMenu.Button>
-
-                            <PopupMenu.Body
-                                rootClassName={
-                                    popupConfig.popupNodeType
-                                        ? ''
-                                        : 'dc__border mt-8 pt-4 pb-4 w-200 dc__gap-4 flexbox-col'
-                                }
-                            >
-                                {popupConfig.popupNodeType ? (
-                                    popupConfig.popupMenuNode
-                                ) : (
-                                    <div className="flexbox-col dc__gap-4">
-                                        {popupConfigGroups.map((groupName, index) => {
-                                            const groupItems = popupConfig.menuConfig[groupName] ?? []
-
-                                            return (
-                                                <Fragment key={groupName}>
-                                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
-
-                                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
-                                                        <PopupMenuItem
-                                                            key={text}
-                                                            text={text}
-                                                            onClick={onClick}
-                                                            dataTestId={dataTestId}
-                                                            disabled={disabled}
-                                                            icon={icon}
-                                                        />
-                                                    ))}
-                                                </Fragment>
-                                            )
-                                        })}
-                                    </div>
-                                )}
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                    )}
+                    {renderPopupMenu()}
                 </div>
             )}
         </div>

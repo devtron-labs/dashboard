@@ -128,8 +128,8 @@ export type ConfigToolbarProps = {
      * If false we will hide all the action in toolbar.
      */
     isPublishedConfigPresent?: boolean
-    handleClearPopupNode: () => void
     headerMessage?: string
+    showDeleteOverrideDraftEmptyState: boolean
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -146,6 +146,10 @@ export interface GetConfigToolbarPopupConfigProps {
      * If not provided won't show locked config data
      */
     lockedConfigData?: ConfigToolbarPopupMenuLockedConfigDataType | null
+    /**
+     * @default false
+     */
+    showDeleteOverrideDraftEmptyState?: boolean
     configHeaderTab: ConfigHeaderTabType
     isOverridden: boolean
     isPublishedValuesView: boolean
@@ -213,7 +217,7 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
-          mergeStrategy: DeploymentHistorySingleValue
+          mergeStrategy?: DeploymentHistorySingleValue
           isOverride?: DeploymentHistorySingleValue
       }
     | {
@@ -238,6 +242,10 @@ export interface CompareConfigViewProps {
     publishedEditorConfig: DeploymentTemplateDiffViewConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
+    /**
+     * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
+     */
+    editorKey?: string
 }
 
 export interface BaseConfigurationNavigationProps {

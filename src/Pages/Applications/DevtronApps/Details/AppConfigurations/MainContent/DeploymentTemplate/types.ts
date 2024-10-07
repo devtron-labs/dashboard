@@ -1,14 +1,10 @@
 import { SyntheticEvent } from 'react'
-import { GroupBase } from 'react-select'
 import { Operation } from 'fast-json-patch'
 import {
     ConfigKeysWithLockType,
     DeploymentChartVersionType,
     ChartMetadataType,
     DeploymentTemplateConfigState,
-    TemplateListType,
-    SelectPickerOptionType,
-    TemplateListDTO,
     SelectedChartDetailsType,
     CompareFromApprovalOptionsValuesType,
     ConfigurationType,
@@ -20,28 +16,45 @@ import {
     DraftMetadataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface DeploymentTemplateProps {
-    respondOnSuccess?: (redirection: boolean) => void
+type BaseDeploymentTemplateProps = {
+    /**
+     * If isUnSet is true would call this so that we re-direct users to next step
+     */
+    respondOnSuccess: (redirection: boolean) => void
     /**
      * Given in case we have'nt saved any deployment template
      * If true, would show chart type selector.
      */
-    isUnSet?: boolean
+    isUnSet: boolean
     /**
      * Something related to git-ops
      */
-    isCiPipeline?: boolean
+    isCiPipeline: boolean
+
+    environmentName?: never
+    clusterId?: never
+}
+
+type EnvOverrideDeploymentTemplateProps = {
+    environmentName: string
+    clusterId?: string
+
+    respondOnSuccess?: never
+    isUnSet?: never
+    isCiPipeline?: never
+}
+
+export type DeploymentTemplateProps = {
     isProtected: boolean
     reloadEnvironments: () => void
-    environmentName?: string
-    clusterId?: string
     fetchEnvConfig: (environmentId: number) => void
-}
+} & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)
 
 export interface DeploymentTemplateChartStateType {
     charts: DeploymentChartVersionType[]
     chartsMetadata: Record<string, ChartMetadataType>
     globalChartDetails: DeploymentChartVersionType
+    latestAppChartRef: number
 }
 
 export interface DeploymentTemplateEditorDataStateType
@@ -49,201 +62,6 @@ export interface DeploymentTemplateEditorDataStateType
     parsingError: string
     removedPatches: Operation[]
     originalTemplateState: DeploymentTemplateConfigState
-}
-
-export interface DeploymentTemplateOptionsHeaderProps
-    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
-        Pick<DeploymentTemplateEditorDataStateType, 'parsingError'> {
-    disableVersionSelect: boolean
-    handleChangeToGUIMode: () => void
-    handleChangeToYAMLMode: () => void
-    restoreLastSavedTemplate: () => void
-    handleChartChange: (selectedChart: DeploymentChartVersionType) => void
-    selectedChart: DeploymentChartVersionType
-    chartDetails: DeploymentTemplateChartStateType
-    isCompareView: boolean
-    editMode: ConfigurationType
-    showReadMe: boolean
-    isGuiSupported: boolean
-    areChartsLoading: boolean
-}
-
-// Can derive editMode from url as well, just wanted the typing to be more explicit
-export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'> {
-    editorOnChange: (value: string) => void
-    lockedConfigKeysWithLockType: ConfigKeysWithLockType
-    readOnly: boolean
-    editedDocument: string
-    uneditedDocument: string
-    readMe: string
-    handleChangeToYAMLMode: () => void
-    hideLockedKeys: boolean
-    editMode: ConfigurationType
-    showReadMe: boolean
-    isGuiSupported: boolean
-    latestDraft: DraftMetadataDTO
-}
-
-export interface DeploymentTemplateGUIViewProps
-    extends Pick<
-        DeploymentTemplateFormProps,
-        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'uneditedDocument' | 'editedDocument'
-    > {
-    value: string
-    readOnly: boolean
-    isUnSet: boolean
-    handleChangeToYAMLMode: () => void
-    guiSchema: string
-    selectedChart: DeploymentChartVersionType
-    rootClassName?: string
-}
-
-export interface ResolvedEditorTemplateType {
-    originalTemplateString: string
-    templateWithoutLockedKeys: string
-}
-
-export interface DeploymentTemplateCTAProps extends Pick<DeploymentTemplateProps, 'isCiPipeline'> {
-    isLoading: boolean
-    isDisabled: boolean
-    showApplicationMetrics: boolean
-    isAppMetricsEnabled: boolean
-    selectedChart: DeploymentChartVersionType
-    handleSave: (e: SyntheticEvent) => void
-    toggleAppMetrics: () => void
-    parsingError: string
-    restoreLastSavedYAML: () => void
-}
-
-export interface CompareWithValuesDataStoreItemType {
-    id: number
-    originalTemplate: string
-    resolvedTemplate: string
-    originalTemplateWithoutLockedKeys: string
-    resolvedTemplateWithoutLockedKeys: string
-}
-
-export type CompareWithOptionGroupKindType =
-    | TemplateListType.DefaultVersions
-    | TemplateListType.DeployedOnSelfEnvironment
-    | TemplateListType.PublishedOnEnvironments
-
-export interface CompareWithTemplateGroupedSelectPickerOptionType extends GroupBase<SelectPickerOptionType> {}
-
-export interface TemplateListItemType extends TemplateListDTO {
-    /**
-     * This ID is generated at UI, not from the server. DO NOT USE THIS FOR COMMUNICATION WITH SERVER
-     */
-    id: number
-}
-
-export interface HandleFetchDeploymentTemplateReturnType {
-    globalTemplate: string
-    templateConfig: Omit<DeploymentTemplateConfigState, keyof SelectedChartDetailsType>
-}
-
-export interface DeleteOverrideDialogProps {
-    environmentConfigId: number
-    handleReload: () => void
-    handleClose: () => void
-    handleProtectionError: () => void
-    reloadEnvironments: () => void
-}
-
-export interface DTChartSelectorProps
-    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
-        Pick<
-            DeploymentTemplateOptionsHeaderProps,
-            | 'isUnSet'
-            | 'selectedChart'
-            | 'disableVersionSelect'
-            | 'areChartsLoading'
-            | 'parsingError'
-            | 'restoreLastSavedTemplate'
-        > {
-    selectChart: (selectedChart: DeploymentChartVersionType) => void
-    selectedChartRefId: number
-}
-
-export interface ChartSelectorDropdownProps
-    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'>,
-        Pick<DTChartSelectorProps, 'areChartsLoading'> {
-    selectedChartRefId: number
-    selectedChart: DeploymentChartVersionType
-    selectChart: (
-        selectedChart: DeploymentChartVersionType,
-    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
-}
-
-interface EnvironmentConfigDTO {
-    IsOverride: boolean
-    active: boolean
-    chartRefId: number
-    clusterId: number
-    description: string
-    envOverrideValues: Record<string, string>
-    environmentId: number
-    environmentName: string
-    id: number
-    isAppMetricsEnabled: boolean | null
-    isBasicViewLocked: boolean
-    latest: boolean
-    manualReviewed: boolean
-    namespace: string
-    saveEligibleChanges: boolean
-    status: number
-}
-
-export interface EnvironmentOverrideDeploymentTemplateDTO {
-    IsOverride: boolean
-    appMetrics: boolean
-    chartRefId: number
-    environmentConfig: EnvironmentConfigDTO
-    globalChartRefId: number
-    /**
-     * Base deployment template
-     */
-    globalConfig: Record<string, string>
-    guiSchema: string
-    namespace: string
-    readme: string
-    schema: Record<string, string>
-}
-
-interface DeploymentTemplateGlobalConfigDTO {
-    appId: number
-    chartRefId: number
-    // TODO: Look into this, why it is there
-    chartRepositoryId: number
-    // TODO: Look into this, why it is there
-    currentViewEditor: string
-    /**
-     * Base deployment template
-     */
-    defaultAppOverride: Record<string, string>
-    id: number
-    isAppMetricsEnabled: boolean
-    isBasicViewLocked: boolean
-    latest: boolean
-    readme: string
-    refChartTemplate: string
-    refChartTemplateVersion: string
-    /**
-     * Might be irrelevant
-     */
-    saveEligibleChanges: boolean
-    /**
-     * Schema to feed into the Code editor
-     */
-    schema: Record<string, string>
-}
-
-export interface DeploymentTemplateConfigDTO {
-    globalConfig: DeploymentTemplateGlobalConfigDTO
-    guiSchema: string
 }
 
 export interface DeploymentTemplateStateType {
@@ -321,6 +139,7 @@ export interface DeploymentTemplateStateType {
     popupNodeType: ConfigToolbarPopupNodeType
     /**
      * In case of approval pending mode, we would be showing a select to compare from, this is its selected value
+     * If the action is to delete override then we would only be showing approval pending
      */
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     /**
@@ -333,11 +152,187 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
+    /**
+     * This mode can only be activated when user is in edit mode
+     */
     showReadMe: boolean
     editMode: ConfigurationType
     configHeaderTab: ConfigHeaderTabType
     shouldMergeTemplateWithPatches: boolean
     selectedProtectionViewTab: ProtectConfigTabsType
+}
+
+export interface DeploymentTemplateOptionsHeaderProps
+    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
+        Pick<DeploymentTemplateStateType, 'showReadMe' | 'editMode' | 'chartDetails'> {
+    disableVersionSelect: boolean
+    handleChangeToGUIMode: () => void
+    handleChangeToYAMLMode: () => void
+    restoreLastSavedTemplate: () => void
+    handleChartChange: (selectedChart: DeploymentChartVersionType) => void
+    isCompareView: boolean
+    isGuiSupported: boolean
+    areChartsLoading: boolean
+    showDeleteOverrideDraftEmptyState: boolean
+}
+
+// Can derive editMode from url as well, just wanted the typing to be more explicit
+export interface DeploymentTemplateFormProps
+    extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
+        Pick<
+            DeploymentTemplateStateType,
+            'showReadMe' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'editMode'
+        > {
+    editorOnChange: (value: string) => void
+    readOnly: boolean
+    editedDocument: string
+    uneditedDocument: string
+    readMe: string
+    handleChangeToYAMLMode: () => void
+    isGuiSupported: boolean
+}
+
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<
+            DeploymentTemplateFormProps,
+            | 'editorOnChange'
+            | 'lockedConfigKeysWithLockType'
+            | 'hideLockedKeys'
+            | 'uneditedDocument'
+            | 'editedDocument'
+            | 'isUnSet'
+        >,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart'> {
+    value: string
+    readOnly: boolean
+    handleChangeToYAMLMode: () => void
+    rootClassName?: string
+}
+
+export interface ResolvedEditorTemplateType {
+    originalTemplateString: string
+    templateWithoutLockedKeys: string
+}
+
+export interface DeploymentTemplateCTAProps
+    extends Pick<DeploymentTemplateProps, 'isCiPipeline'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart' | 'isAppMetricsEnabled'> {
+    isLoading: boolean
+    isDisabled: boolean
+    showApplicationMetrics: boolean
+    handleSave: (e: SyntheticEvent) => void
+    toggleAppMetrics: () => void
+    restoreLastSavedYAML: () => void
+    isDryRunView: boolean
+}
+
+export interface DeleteOverrideDialogProps {
+    environmentConfigId: number
+    handleReload: () => void
+    handleClose: () => void
+    handleProtectionError: () => void
+    reloadEnvironments: () => void
+}
+
+export interface DTChartSelectorProps
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+        Pick<
+            DeploymentTemplateOptionsHeaderProps,
+            | 'isUnSet'
+            | 'selectedChart'
+            | 'disableVersionSelect'
+            | 'areChartsLoading'
+            | 'parsingError'
+            | 'restoreLastSavedTemplate'
+        > {
+    selectChart: (selectedChart: DeploymentChartVersionType) => void
+    selectedChartRefId: number
+}
+
+export interface ChartSelectorDropdownProps
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+        Pick<DeploymentTemplateProps, 'isUnSet'>,
+        Pick<DTChartSelectorProps, 'areChartsLoading'>,
+        Pick<DeploymentTemplateConfigState, 'selectedChart'> {
+    selectedChartRefId: number
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+}
+
+interface EnvironmentConfigDTO {
+    IsOverride: boolean
+    active: boolean
+    chartRefId: number
+    clusterId: number
+    description: string
+    envOverrideValues: Record<string, string>
+    environmentId: number
+    environmentName: string
+    id: number
+    isAppMetricsEnabled: boolean | null
+    isBasicViewLocked: boolean
+    latest: boolean
+    manualReviewed: boolean
+    namespace: string
+    saveEligibleChanges: boolean
+    status: number
+}
+
+export interface EnvironmentOverrideDeploymentTemplateDTO {
+    IsOverride: boolean
+    appMetrics: boolean
+    chartRefId: number
+    environmentConfig: EnvironmentConfigDTO
+    globalChartRefId: number
+    /**
+     * Base deployment template
+     */
+    globalConfig: Record<string, string>
+    guiSchema: string
+    namespace: string
+    readme: string
+    schema: Record<string, string>
+}
+
+interface DeploymentTemplateGlobalConfigDTO {
+    appId: number
+    chartRefId: number
+    /**
+     * FIXME: Not consumed at UI
+     */
+    chartRepositoryId: number
+    /**
+     * FIXME: Not consumed at UI
+     */
+    currentViewEditor: string
+    /**
+     * Base deployment template
+     */
+    defaultAppOverride: Record<string, string>
+    id: number
+    isAppMetricsEnabled: boolean
+    isBasicViewLocked: boolean
+    latest: boolean
+    readme: string
+    refChartTemplate: string
+    refChartTemplateVersion: string
+    /**
+     * Might be irrelevant
+     */
+    saveEligibleChanges: boolean
+    /**
+     * Schema to feed into the Code editor
+     */
+    schema: Record<string, string>
+}
+
+export interface DeploymentTemplateConfigDTO {
+    globalConfig: DeploymentTemplateGlobalConfigDTO
+    guiSchema: string
 }
 
 export interface GetDeploymentTemplateInitialStateParamsType {
@@ -352,7 +347,10 @@ export interface GetPublishedAndBaseDeploymentTemplateReturnType {
 
 export interface GetChartListReturnType
     extends SelectedChartDetailsType,
-        Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata' | 'globalChartDetails'> {}
+        Pick<
+            DeploymentTemplateChartStateType,
+            'charts' | 'chartsMetadata' | 'globalChartDetails' | 'latestAppChartRef'
+        > {}
 
 export interface HandleInitializeTemplatesWithoutDraftParamsType {
     baseDeploymentTemplateState: DeploymentTemplateStateType['baseDeploymentTemplateData']
@@ -530,3 +528,72 @@ export type DeploymentTemplateActionState =
               isLockConfigError: boolean
           }
       }
+
+export interface GetCurrentEditorStateProps {
+    state: DeploymentTemplateStateType
+    isPublishedConfigPresent: boolean
+    isDryRunView: boolean
+    isDeleteOverrideDraft: boolean
+    isInheritedView: boolean
+    isPublishedValuesView: boolean
+    showApprovalPendingEditorInCompareView: boolean
+}
+
+export interface GetDryRunViewEditorStateProps
+    extends Pick<GetCurrentEditorStateProps, 'state' | 'isPublishedConfigPresent' | 'isDeleteOverrideDraft'> {}
+
+export interface GetRawEditorValueForDryRunModeProps
+    extends Pick<
+        GetCurrentEditorStateProps,
+        'isPublishedConfigPresent' | 'isDryRunView' | 'isDeleteOverrideDraft' | 'state'
+    > {}
+
+export interface GetCurrentEditorPayloadForScopedVariablesProps
+    extends Pick<
+            GetCurrentEditorStateProps,
+            'isInheritedView' | 'isPublishedValuesView' | 'showApprovalPendingEditorInCompareView'
+        >,
+        GetRawEditorValueForDryRunModeProps {}
+
+export interface HandleInitializeDraftDataProps {
+    latestDraft: DraftMetadataDTO
+    guiSchema: string
+    chartRefsData: GetChartListReturnType
+    lockedConfigKeys: string[]
+    envId: string
+}
+
+interface UpdateDTCommonPayloadType {
+    chartRefId: DeploymentChartVersionType['id']
+    isAppMetricsEnabled: boolean
+    saveEligibleChanges: boolean
+    readme?: string
+    schema?: Record<string, string>
+}
+
+export interface UpdateEnvironmentDTPayloadType
+    extends UpdateDTCommonPayloadType,
+        Partial<Pick<DeploymentTemplateEditorDataStateType, 'environmentConfig'>> {
+    environmentId: number
+    envOverrideValues: Record<string, string>
+    IsOverride: boolean
+    isDraftOverriden?: boolean
+    globalConfig?: Record<string, string>
+}
+
+export interface UpdateBaseDTPayloadType
+    extends UpdateDTCommonPayloadType,
+        Partial<Pick<DeploymentTemplateEditorDataStateType, 'chartConfig'>> {
+    appId: number
+    defaultAppOverride: Record<string, string>
+    id?: number
+    valuesOverride: Record<string, string>
+}
+
+export interface GetCompareFromEditorConfigParams {
+    envId: string
+    isDeleteOverrideDraft: boolean
+    isPublishedConfigPresent: boolean
+    showApprovalPendingEditorInCompareView: boolean
+    state: DeploymentTemplateStateType
+}

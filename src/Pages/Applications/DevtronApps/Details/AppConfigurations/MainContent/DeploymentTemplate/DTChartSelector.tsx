@@ -44,7 +44,7 @@ const ChartSelectorDropdown = ({
     isUnSet,
     areChartsLoading,
 }: ChartSelectorDropdownProps) => {
-    const [popupOpen, togglePopup] = useState(false)
+    const [popupOpen, setPopupOpen] = useState(false)
     const [selectedChartTypeTab, setSelectedChartTypeTab] = useState(
         selectedChart?.userUploaded ? CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS : CHART_TYPE_TAB_KEYS.DEVTRON_CHART,
     )
@@ -87,7 +87,7 @@ const ChartSelectorDropdown = ({
     }
 
     const setPopupState = (isOpen: boolean): void => {
-        togglePopup(isOpen)
+        setPopupOpen(isOpen)
     }
 
     if (areChartsLoading) {
@@ -221,7 +221,6 @@ const DTChartSelector = ({
 
     const options: SelectPickerOptionType[] = filteredCharts.map((chart) => ({
         label: chart.version,
-        // Need to confirm once this is truthful
         value: chart.id,
     }))
 

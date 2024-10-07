@@ -1,6 +1,7 @@
 import { Routes } from '@Config/constants'
-import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentTemplateConfigDTO, EnvironmentOverrideDeploymentTemplateDTO } from './types'
+import { BaseURLParams, get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { getChartReferencesForAppAndEnv } from '@Services/service'
+import { DeploymentTemplateConfigDTO, EnvironmentOverrideDeploymentTemplateDTO, GetChartListReturnType } from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
 export const updateBaseDeploymentTemplate = (request, abortSignal) => {
@@ -53,4 +54,30 @@ export async function getBaseDeploymentTemplate(
         signal: abortSignal,
     })
     return addGUISchemaIfAbsent(response, chartName)
+}
+
+export const getChartList = async ({
+    appId,
+    envId,
+}: Pick<BaseURLParams, 'appId' | 'envId'>): Promise<GetChartListReturnType> => {
+    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId)
+
+    const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
+    // Adding another layer of security
+    const envChartRef = envId ? latestEnvChartRef : null
+
+    const selectedChartId: number = envChartRef || latestAppChartRef || latestChartRef
+    const chart = chartRefs?.find((chartRef) => chartRef.id === selectedChartId) ?? chartRefs?.[0]
+
+    const globalChartRefId = latestAppChartRef || latestChartRef
+    const selectedGlobalChart = chartRefs?.find((chartRef) => chartRef.id === globalChartRefId) ?? chartRefs?.[0]
+
+    return {
+        charts: chartRefs || [],
+        chartsMetadata: chartMetadata || {},
+        selectedChartRefId: selectedChartId,
+        selectedChart: chart,
+        globalChartDetails: selectedGlobalChart,
+        latestAppChartRef,
+    }
 }

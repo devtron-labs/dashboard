@@ -677,6 +677,11 @@ export const ConfigMapSecretContainer = ({
                     isDraftPresent={!!draftData}
                     isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
                     isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
+                    showDeleteOverrideDraftEmptyState={
+                        draftData.action === DraftAction.Delete &&
+                        configHeaderTab === ConfigHeaderTabType.VALUES &&
+                        selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
+                    }
                     showMergePatchesButton={false}
                     baseConfigurationURL={baseConfigurationURL}
                     headerMessage={headerMessage}
@@ -686,7 +691,6 @@ export const ConfigMapSecretContainer = ({
                     resolveScopedVariables={resolvedScopeVariables}
                     handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                     popupConfig={toolbarPopupConfig}
-                    handleClearPopupNode={handleClearPopupNode}
                     handleToggleShowTemplateMergedWithPatch={noop}
                     shouldMergeTemplateWithPatches={null}
                     parsingError={parsingError}

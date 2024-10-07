@@ -276,7 +276,6 @@ export function processWorkflow(
                         if (getIsManualApprovalConfigured(cdPipeline.userApprovalConfig)) {
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
-                                // TODO: Should be sanitized
                                 [cdPipeline.id]: cdPipeline.userApprovalConfig,
                             }
                         }
@@ -719,7 +718,6 @@ function cdPipelineToNode(
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
-        // TODO: Should be sanitized
         userApprovalConfig: cdPipeline.userApprovalConfig,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,

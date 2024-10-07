@@ -16,7 +16,7 @@ const BaseConfigurationNavigation = ({ baseConfigurationURL }: BaseConfiguration
             target: '_blank',
             rel: 'noreferrer noopener',
         }}
-        text="Base Configurations"
+        text="Base Configuration"
         variant={ButtonVariantType.text}
         style={ButtonStyleType.neutral}
         size={ComponentSizeType.xs}
