@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom'
 import {
+    abortPreviousRequests,
     APIResponseHandler,
     BaseURLParams,
     CodeEditor,
     DryRunEditorMode,
     getDeploymentManifest,
+    getIsRequestAborted,
     MODES,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -32,20 +34,32 @@ const ConfigDryRun = ({
     isDraftPresent,
     isPublishedConfigPresent,
     isApprovalPending,
+    manifestAbortController,
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
+    const getDeploymentManifestWrapper = async () =>
+        abortPreviousRequests(
+            () =>
+                getDeploymentManifest(
+                    {
+                        appId: +appId,
+                        envId: envId ? +envId : null,
+                        chartRefId,
+                        values: editorTemplate,
+                    },
+                    manifestAbortController.current.signal,
+                ),
+            manifestAbortController,
+        )
+
     const [isManifestLoading, manifestResponse, manifestError, reloadManifest] = useAsync(
-        () =>
-            getDeploymentManifest({
-                appId: +appId,
-                envId: envId ? +envId : null,
-                chartRefId,
-                values: editorTemplate,
-            }),
+        getDeploymentManifestWrapper,
         [appId, envId, chartRefId, editorTemplate, showManifest, isLoading],
         !!showManifest && !isLoading && !!editorTemplate,
     )
+
+    const isManifestLoadingOrAborted = isManifestLoading || !!getIsRequestAborted(manifestError)
 
     const renderEditorBody = () => {
         if (isDraftPresent && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES && !isPublishedConfigPresent) {
@@ -99,7 +113,7 @@ const ConfigDryRun = ({
                     </div>
 
                     <APIResponseHandler
-                        isLoading={isManifestLoading}
+                        isLoading={isManifestLoadingOrAborted}
                         error={manifestError}
                         genericSectionErrorProps={{
                             reload: reloadManifest,

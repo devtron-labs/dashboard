@@ -10,7 +10,7 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
@@ -160,7 +160,17 @@ export interface GetConfigToolbarPopupConfigProps {
     handleShowEditHistory: () => void
 }
 
-export interface ConfigDryRunProps {
+type ConfigDryRunManifestProps =
+    | {
+          showManifest: true
+          manifestAbortController: MutableRefObject<AbortController>
+      }
+    | {
+          showManifest?: never
+          manifestAbortController?: never
+      }
+
+export type ConfigDryRunProps = {
     isLoading: boolean
     handleToggleResolveScopedVariables: () => void
     resolveScopedVariables: boolean
@@ -174,7 +184,7 @@ export interface ConfigDryRunProps {
     isDraftPresent: boolean
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
-}
+} & ConfigDryRunManifestProps
 
 export interface ToggleResolveScopedVariablesProps {
     resolveScopedVariables: boolean

@@ -1,4 +1,4 @@
-import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer } from 'react'
+import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
     BaseURLParams,
@@ -162,6 +162,7 @@ const DeploymentTemplate = ({
         resolvedPublishedTemplate,
     } = state
 
+    const manifestAbortController = useRef<AbortController>(new AbortController())
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
@@ -1311,6 +1312,7 @@ const DeploymentTemplate = ({
                     isDraftPresent={isDraftAvailable}
                     isApprovalPending={isApprovalPending}
                     isPublishedConfigPresent={isPublishedConfigPresent}
+                    manifestAbortController={manifestAbortController}
                 />
             )
         }
