@@ -105,7 +105,6 @@ const ConfigToolbar = ({
     parsingError = '',
     restoreLastSavedYAML,
     isPublishedConfigPresent = true,
-    handleClearPopupNode,
     showDeleteOverrideDraftEmptyState,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
@@ -287,13 +286,54 @@ const ConfigToolbar = ({
         )
     }
 
-    const handlePopupMenuToggle = (isOpen: boolean) => {
-        if (!isOpen) {
-            handleClearPopupNode()
-        }
-    }
-
     const popupConfigGroups = Object.keys(popupConfig?.menuConfig ?? {})
+
+    const renderPopupMenu = () => {
+        if (!popupConfigGroups.length) {
+            return null
+        }
+
+        if (popupConfig.popupNodeType) {
+            return popupConfig.popupMenuNode
+        }
+
+        return (
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
+                    <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
+                </PopupMenu.Button>
+
+                <PopupMenu.Body
+                    rootClassName={
+                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                    }
+                >
+                    <div className="flexbox-col dc__gap-4">
+                        {popupConfigGroups.map((groupName, index) => {
+                            const groupItems = popupConfig.menuConfig[groupName] ?? []
+
+                            return (
+                                <Fragment key={groupName}>
+                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
+
+                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
+                                        <PopupMenuItem
+                                            key={text}
+                                            text={text}
+                                            onClick={onClick}
+                                            dataTestId={dataTestId}
+                                            disabled={disabled}
+                                            icon={icon}
+                                        />
+                                    ))}
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
+    }
 
     return (
         <div
@@ -313,51 +353,7 @@ const ConfigToolbar = ({
 
                     {renderReadmeAndScopedVariablesBlock()}
 
-                    {!!popupConfigGroups.length && (
-                        <PopupMenu onToggleCallback={handlePopupMenuToggle} autoClose>
-                            <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
-                                <ICMore
-                                    className="icon-dim-16 fcn-6 dc__flip-90"
-                                    data-testid="config-more-options-popup"
-                                />
-                            </PopupMenu.Button>
-
-                            <PopupMenu.Body
-                                rootClassName={
-                                    popupConfig.popupNodeType
-                                        ? ''
-                                        : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
-                                }
-                            >
-                                {popupConfig.popupNodeType ? (
-                                    popupConfig.popupMenuNode
-                                ) : (
-                                    <div className="flexbox-col dc__gap-4">
-                                        {popupConfigGroups.map((groupName, index) => {
-                                            const groupItems = popupConfig.menuConfig[groupName] ?? []
-
-                                            return (
-                                                <Fragment key={groupName}>
-                                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
-
-                                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
-                                                        <PopupMenuItem
-                                                            key={text}
-                                                            text={text}
-                                                            onClick={onClick}
-                                                            dataTestId={dataTestId}
-                                                            disabled={disabled}
-                                                            icon={icon}
-                                                        />
-                                                    ))}
-                                                </Fragment>
-                                            )
-                                        })}
-                                    </div>
-                                )}
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                    )}
+                    {renderPopupMenu()}
                 </div>
             )}
         </div>

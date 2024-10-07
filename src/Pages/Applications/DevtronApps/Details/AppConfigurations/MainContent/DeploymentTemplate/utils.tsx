@@ -363,7 +363,6 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 configHeaderTab,
                 selectedProtectionViewTab,
-                compareFromSelectedOptionValue,
             } = action.payload
 
             return {
@@ -376,7 +375,6 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 configHeaderTab,
                 selectedProtectionViewTab,
-                compareFromSelectedOptionValue,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -693,6 +691,7 @@ export const deploymentTemplateReducer = (
         case DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL:
             return {
                 ...state,
+                showSaveChangesModal: false,
                 lockedDiffModalState: {
                     showLockedTemplateDiffModal: false,
                     showLockedDiffForApproval: false,

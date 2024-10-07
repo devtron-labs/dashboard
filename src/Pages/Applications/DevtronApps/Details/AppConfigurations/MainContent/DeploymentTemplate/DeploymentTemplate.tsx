@@ -43,6 +43,7 @@ import { URLS } from '@Config/routes'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import noArtifact from '@Images/no-artifact@2x.png'
 import {
     DeploymentTemplateActionState,
     DeploymentTemplateActionType,
@@ -756,10 +757,6 @@ const DeploymentTemplate = ({
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
                         : ProtectConfigTabsType.EDIT_DRAFT,
-                compareFromSelectedOptionValue:
-                    draftTemplateState.latestDraft?.action === 3
-                        ? CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
-                        : CompareFromApprovalOptionsValuesType.VALUES_FROM_DRAFT,
             },
         })
     }
@@ -944,6 +941,18 @@ const DeploymentTemplate = ({
             }
         }
 
+        if (isProtected) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
+            })
+
+            return
+        }
+
+        await handleSaveTemplate()
+    }
+
+    const handleTriggerSaveFromLockedModal = async () => {
         if (isProtected) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
@@ -1239,6 +1248,7 @@ const DeploymentTemplate = ({
         if (showDeleteOverrideDraftEmptyState) {
             return (
                 <GenericEmptyState
+                    image={noArtifact}
                     title="This file is not overridden"
                     // TODO: This message seems wrong connect with product once
                     subTitle="Published override for this file will be available here"
@@ -1270,6 +1280,7 @@ const DeploymentTemplate = ({
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
+                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}`}
                     {...getCompareFromEditorConfig({
                         envId,
                         isDeleteOverrideDraft,
@@ -1472,7 +1483,6 @@ const DeploymentTemplate = ({
                         isDraftPresent={isDraftAvailable}
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}
                         isPublishedConfigPresent={isPublishedConfigPresent}
-                        handleClearPopupNode={handleClearPopupNode}
                         restoreLastSavedYAML={restoreLastSavedTemplate}
                         showEnableReadMeButton={isEditMode}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
@@ -1555,9 +1565,8 @@ const DeploymentTemplate = ({
                     <DeploymentTemplateLockedDiff
                         closeModal={handleCloseLockedDiffModal}
                         showLockedDiffForApproval={showLockedDiffForApproval}
-                        onSave={handleSaveTemplate}
+                        onSave={handleTriggerSaveFromLockedModal}
                         isSaving={isSaving}
-                        // TODO: Should not do this on runtime.
                         documents={getLockedDiffModalDocuments(isApprovalView, state)}
                         appId={appId}
                         envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}

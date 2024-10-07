@@ -460,11 +460,7 @@ export type DeploymentTemplateActionState =
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  | 'currentEditorTemplateData'
-                  | 'draftTemplateData'
-                  | 'configHeaderTab'
-                  | 'selectedProtectionViewTab'
-                  | 'compareFromSelectedOptionValue'
+                  'currentEditorTemplateData' | 'draftTemplateData' | 'configHeaderTab' | 'selectedProtectionViewTab'
               >
       }
     | {

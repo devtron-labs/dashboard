@@ -127,7 +127,6 @@ export type ConfigToolbarProps = {
      * If false we will hide all the action in toolbar.
      */
     isPublishedConfigPresent?: boolean
-    handleClearPopupNode: () => void
     showDeleteOverrideDraftEmptyState: boolean
 } & ConfigToolbarReadMeProps
 
@@ -237,6 +236,10 @@ export interface CompareConfigViewProps {
     publishedEditorConfig: DeploymentTemplateDiffViewConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
+    /**
+     * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
+     */
+    editorKey?: string
 }
 
 export interface BaseConfigurationNavigationProps {
