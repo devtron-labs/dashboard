@@ -134,7 +134,7 @@ const ConfigToolbar = ({
     )
 
     const showProtectedTabs =
-        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && ProtectionViewTabGroup
+        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && !!ProtectionViewTabGroup
 
     const getLHSActionNodes = (): JSX.Element => {
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
@@ -149,85 +149,87 @@ const ConfigToolbar = ({
 
         return (
             <>
-                {headerMessage &&
-                    configHeaderTab === ConfigHeaderTabType.VALUES &&
-                    !(isProtected && isDraftPresent) && (
-                        <div className="flexbox dc__align-items-center dc__gap-6">
-                            <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
-                        </div>
-                    )}
-                <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                    {ProtectionViewTabGroup && (
-                        <>
-                            <ProtectionViewTabGroup
-                                selectedTab={selectedProtectionViewTab}
-                                handleProtectionViewTabChange={handleProtectionViewTabChange}
-                                isApprovalPending={isApprovalPending}
-                                isDisabled={isDisabled}
-                                parsingError={parsingError}
-                                restoreLastSavedYAML={restoreLastSavedYAML}
-                            />
-
-                            <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                        </>
-                    )}
-
-                    {/* Data should always be valid in case we are in approval view */}
-                    {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                        <InvalidYAMLTippyWrapper
-                            parsingError={parsingError}
-                            restoreLastSavedYAML={restoreLastSavedYAML}
-                        >
-                            <div>
-                                <MergePatchWithTemplateCheckbox
-                                    shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                    handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                                    // Will remove this check if merging is happening on ui
+                {headerMessage && configHeaderTab === ConfigHeaderTabType.VALUES && !showProtectedTabs && (
+                    <div className="flexbox dc__align-items-center dc__gap-6">
+                        <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                        <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
+                    </div>
+                )}
+                {showProtectedTabs && (
+                    <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                        {ProtectionViewTabGroup && (
+                            <>
+                                <ProtectionViewTabGroup
+                                    selectedTab={selectedProtectionViewTab}
+                                    handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                    isApprovalPending={isApprovalPending}
                                     isDisabled={isDisabled}
-                                />
-                            </div>
-                        </InvalidYAMLTippyWrapper>
-                    )}
-                    {isProtected && isDraftPresent && (
-                        <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                            {/* Internally handles right border */}
-                            {ProtectionViewTabGroup && (
-                                <>
-                                    <ProtectionViewTabGroup
-                                        selectedTab={selectedProtectionViewTab}
-                                        handleProtectionViewTabChange={handleProtectionViewTabChange}
-                                        isApprovalPending={isApprovalPending}
-                                        isDisabled={isDisabled}
-                                        parsingError={parsingError}
-                                        restoreLastSavedYAML={restoreLastSavedYAML}
-                                    />
-
-                                    <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                                </>
-                            )}
-
-                            {/* Data should always be valid in case we are in approval view */}
-                            {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                                <InvalidYAMLTippyWrapper
                                     parsingError={parsingError}
                                     restoreLastSavedYAML={restoreLastSavedYAML}
-                                >
-                                    <div>
-                                        <MergePatchWithTemplateCheckbox
-                                            shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                            handleToggleShowTemplateMergedWithPatch={
-                                                handleToggleShowTemplateMergedWithPatch
-                                            }
-                                            // Will remove this check if merging is happening on ui
+                                />
+
+                                <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                            </>
+                        )}
+
+                        {/* Data should always be valid in case we are in approval view */}
+                        {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                            <InvalidYAMLTippyWrapper
+                                parsingError={parsingError}
+                                restoreLastSavedYAML={restoreLastSavedYAML}
+                            >
+                                <div>
+                                    <MergePatchWithTemplateCheckbox
+                                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                        handleToggleShowTemplateMergedWithPatch={
+                                            handleToggleShowTemplateMergedWithPatch
+                                        }
+                                        // Will remove this check if merging is happening on ui
+                                        isDisabled={isDisabled}
+                                    />
+                                </div>
+                            </InvalidYAMLTippyWrapper>
+                        )}
+                        {isProtected && isDraftPresent && (
+                            <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                                {/* Internally handles right border */}
+                                {ProtectionViewTabGroup && (
+                                    <>
+                                        <ProtectionViewTabGroup
+                                            selectedTab={selectedProtectionViewTab}
+                                            handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                            isApprovalPending={isApprovalPending}
                                             isDisabled={isDisabled}
+                                            parsingError={parsingError}
+                                            restoreLastSavedYAML={restoreLastSavedYAML}
                                         />
-                                    </div>
-                                </InvalidYAMLTippyWrapper>
-                            )}
-                        </div>
-                    )}
-                </div>
+
+                                        <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                                    </>
+                                )}
+
+                                {/* Data should always be valid in case we are in approval view */}
+                                {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                                    <InvalidYAMLTippyWrapper
+                                        parsingError={parsingError}
+                                        restoreLastSavedYAML={restoreLastSavedYAML}
+                                    >
+                                        <div>
+                                            <MergePatchWithTemplateCheckbox
+                                                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                                handleToggleShowTemplateMergedWithPatch={
+                                                    handleToggleShowTemplateMergedWithPatch
+                                                }
+                                                // Will remove this check if merging is happening on ui
+                                                isDisabled={isDisabled}
+                                            />
+                                        </div>
+                                    </InvalidYAMLTippyWrapper>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
             </>
         )
     }
