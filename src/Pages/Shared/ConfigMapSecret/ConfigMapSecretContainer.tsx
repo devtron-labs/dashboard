@@ -678,7 +678,7 @@ export const ConfigMapSecretContainer = ({
                     isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
                     isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
                     showDeleteOverrideDraftEmptyState={
-                        draftData.action === DraftAction.Delete &&
+                        draftData?.action === DraftAction.Delete &&
                         configHeaderTab === ConfigHeaderTabType.VALUES &&
                         selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
                     }

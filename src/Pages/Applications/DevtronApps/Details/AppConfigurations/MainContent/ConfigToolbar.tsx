@@ -190,44 +190,6 @@ const ConfigToolbar = ({
                                 </div>
                             </InvalidYAMLTippyWrapper>
                         )}
-                        {isProtected && isDraftPresent && (
-                            <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                                {/* Internally handles right border */}
-                                {ProtectionViewTabGroup && (
-                                    <>
-                                        <ProtectionViewTabGroup
-                                            selectedTab={selectedProtectionViewTab}
-                                            handleProtectionViewTabChange={handleProtectionViewTabChange}
-                                            isApprovalPending={isApprovalPending}
-                                            isDisabled={isDisabled}
-                                            parsingError={parsingError}
-                                            restoreLastSavedYAML={restoreLastSavedYAML}
-                                        />
-
-                                        <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                                    </>
-                                )}
-
-                                {/* Data should always be valid in case we are in approval view */}
-                                {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                                    <InvalidYAMLTippyWrapper
-                                        parsingError={parsingError}
-                                        restoreLastSavedYAML={restoreLastSavedYAML}
-                                    >
-                                        <div>
-                                            <MergePatchWithTemplateCheckbox
-                                                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                                handleToggleShowTemplateMergedWithPatch={
-                                                    handleToggleShowTemplateMergedWithPatch
-                                                }
-                                                // Will remove this check if merging is happening on ui
-                                                isDisabled={isDisabled}
-                                            />
-                                        </div>
-                                    </InvalidYAMLTippyWrapper>
-                                )}
-                            </div>
-                        )}
                     </div>
                 )}
             </>
