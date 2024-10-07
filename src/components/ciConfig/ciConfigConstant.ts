@@ -61,44 +61,6 @@ export const CI_BUILDPACK_OPTION_TEXTS = {
     Version: 'Version',
 }
 
-export const LANGUAGE_SELECT_STYLES = {
-    control: (base, state) => ({
-        ...base,
-        minHeight: '36px',
-        boxShadow: 'none',
-        backgroundColor: 'var(--N50)',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-        cursor: 'pointer',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: '0',
-        minWidth: '226px',
-    }),
-}
-
-export const VERSION_SELECT_STYLES = {
-    control: (base, state) => ({
-        ...base,
-        minHeight: '36px',
-        boxShadow: 'none',
-        backgroundColor: 'var(--N50)',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-        cursor: 'pointer',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        small: {
-            display: 'none',
-        },
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: '0',
-        minWidth: '226px',
-    }),
-}
-
 export const BUILDER_SELECT_STYLES = {
     control: (base, state) => ({
         ...base,

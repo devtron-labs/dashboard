@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { OptionType, PluginDetailType, StepType, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    PluginDetailType,
+    StepType,
+    PipelineFormType,
+    Environment,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ExtendedOptionType } from '@Components/app/types'
 
 export enum DockerArgsAction {
@@ -94,4 +101,13 @@ export interface InputPluginSelectionType {
     noBackDrop?: boolean
     placeholder: string
     selectedVariableIndex: number
+}
+
+export interface EnvironmentWithSelectPickerType extends Environment, SelectPickerOptionType {}
+export interface EnvironmentListType {
+    isBuildStage?: boolean
+    environments: EnvironmentWithSelectPickerType[]
+    selectedEnv: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
+    isBorderLess?: boolean
 }

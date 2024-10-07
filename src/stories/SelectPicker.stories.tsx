@@ -203,9 +203,7 @@ export const CreatableMultiSelect: Story = {
     args: {
         ...Default.args,
         isMulti: true,
-        multiSelectProps: {
-            isCreatable: true,
-        },
+        isCreatable: true,
     },
 }
 

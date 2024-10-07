@@ -75,7 +75,7 @@ export const swap = (array: any[], indexA: number, indexB: number) => {
 
 export const getGitProviderIcon = (gitUrl: string): JSX.Element => {
     let IconComponent: React.ElementType = Git // Using React.ElementType for any JSX component
-
+    if(!gitUrl) return null
     if (gitUrl.includes('gitlab')) {
         IconComponent = GitLab
     } else if (gitUrl.includes('github')) {

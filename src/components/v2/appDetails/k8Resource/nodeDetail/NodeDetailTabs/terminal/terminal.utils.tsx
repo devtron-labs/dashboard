@@ -60,7 +60,7 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     iconClassName="icon-dim-16 fcn-6"
                 />
             )}
-            <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
+            <div className="cn-6">{selectData.title}</div>
             <div>
                 <CreatableSelect
                     placeholder={selectData.placeholder}
@@ -126,7 +126,7 @@ const connectionButton = (connectData: ConnectionButtonType) => {
             content={connectData.connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
         >
             {connectData.connectTerminal ? (
-                <span className="flex mr-8">
+                <span className="flex">
                     <Disconnect
                         className="icon-dim-16 mr-4 cursor"
                         data-testid="node-details-terminal-disconnect"
@@ -134,7 +134,7 @@ const connectionButton = (connectData: ConnectionButtonType) => {
                     />
                 </span>
             ) : (
-                <span className="flex mr-8">
+                <span className="flex">
                     <Connect
                         className="icon-dim-16 mr-4 cursor"
                         data-testid="node-details-terminal-connect"
@@ -195,7 +195,7 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             <Tippy
                 className="default-tt cursor"
                 arrow={false}
@@ -203,11 +203,11 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
                 content={switchProps.toggleButton ? 'Disconnect from pod' : 'Reconnect to pod'}
             >
                 {switchProps.toggleButton ? (
-                    <span className="mr-8 flex" data-testid="disconnect-button">
+                    <span className="flex" data-testid="disconnect-button">
                         <Stop className="icon-dim-16 fcr-5 mr-4 cursor" onClick={switchProps.stopTerminalConnection} />
                     </span>
                 ) : (
-                    <span className="mr-8 flex" data-testid="play-button">
+                    <span className="flex" data-testid="play-button">
                         <Play className="icon-dim-16 fcg-5 mr-4 cursor" onClick={switchProps.resumePodConnection} />
                     </span>
                 )}
@@ -222,7 +222,7 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     }
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-            <div className="flex mr-8" data-testid={clearProps.dataTestId}>
+            <div className="flex" data-testid={clearProps.dataTestId}>
                 <Abort className="icon-dim-16 mr-4 fcn-6 cursor" onClick={clearProps.setTerminalCleared} />
             </div>
         </Tippy>
@@ -235,7 +235,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Debug mode"
@@ -247,7 +247,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                 />
             )}
             <span>Debug Mode</span>
-            <span className="toggle-icon-dim ml-8">
+            <span className="toggle-icon-dim">
                 <Toggle onSelect={selectData.onToggle} dataTestId="toggle-debug-mode" selected={selectData.isEnabled} />
             </span>
         </>
@@ -314,7 +314,7 @@ const manifestEditButtons = ({
 
     return (
         <>
-            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
                 <span
