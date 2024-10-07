@@ -194,9 +194,8 @@ const DeploymentTemplate = ({
 
     const showNoOverrideEmptyState = showNoOverrideTab && configHeaderTab === ConfigHeaderTabType.VALUES
     // TODO: After CM/CS Merge strategy is implemented, we can re-use enum
-    const isDeleteOverrideDraft = draftTemplateData?.latestDraft?.action === 3
+    const isDeleteOverrideDraft = !!envId && draftTemplateData?.latestDraft?.action === 3
     const showDeleteOverrideDraftEmptyState =
-        !!envId &&
         isDeleteOverrideDraft &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
@@ -1344,7 +1343,9 @@ const DeploymentTemplate = ({
     const renderCTA = () => {
         const selectedChart = getCurrentTemplateSelectedChart()
         const shouldRenderCTA =
-            isEditMode || isApprovalView || (isDryRunView && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT)
+            isEditMode ||
+            isApprovalView ||
+            (isDryRunView && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT && !isDeleteOverrideDraft)
 
         if (!selectedChart || showNoOverrideTab || showDeleteOverrideDraftEmptyState || !shouldRenderCTA) {
             return null
