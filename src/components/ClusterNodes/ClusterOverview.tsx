@@ -207,9 +207,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                     })
                 }
             }
-            if (_errorList.length > 0) {
-                setClusterErrorList(_errorList)
-            }
+            setClusterErrorList(_errorList)
         } else {
             setErrorCode(clusterCapacityResponse.reason['code'])
         }
