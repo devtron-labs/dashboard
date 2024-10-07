@@ -145,7 +145,6 @@ export default function CIConfigForm({
         ),
     )
 
-    console.log(sourceConfig,' selectedMaterial', selectedMaterial)
     useEffect(() => {
         initBuildArgs()
     }, [])
