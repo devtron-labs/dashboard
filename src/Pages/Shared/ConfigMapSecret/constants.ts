@@ -10,8 +10,8 @@ import {
 } from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
-    [CMSecretComponentType.ConfigMap]: 'configmap',
-    [CMSecretComponentType.Secret]: 'secret',
+    [CMSecretComponentType.ConfigMap]: 'ConfigMap',
+    [CMSecretComponentType.Secret]: 'Secret',
 }
 
 export const EXTERNAL_INFO_TEXT = {

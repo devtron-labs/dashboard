@@ -9,11 +9,13 @@ export const ConfigMapSecretReadyOnly = ({
     isJob,
     configMapSecretData,
     areScopeVariablesResolving,
+    isApprover,
 }: ConfigMapSecretReadyOnlyProps) => {
     const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
         componentType,
         isJob,
+        isApprover,
     })
 
     return areScopeVariablesResolving ? (

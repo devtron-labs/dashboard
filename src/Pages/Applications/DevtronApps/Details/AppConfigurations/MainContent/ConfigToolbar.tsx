@@ -140,7 +140,7 @@ const ConfigToolbar = ({
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-6">
-                    <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                    <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
                     <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
                     <BaseConfigurationNavigation baseConfigurationURL={baseConfigurationURL} />
                 </div>
@@ -151,7 +151,7 @@ const ConfigToolbar = ({
             <>
                 {headerMessage && configHeaderTab === ConfigHeaderTabType.VALUES && !showProtectedTabs && (
                     <div className="flexbox dc__align-items-center dc__gap-6">
-                        <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                        <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
                         <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
                     </div>
                 )}
@@ -317,7 +317,7 @@ const ConfigToolbar = ({
 
                 <PopupMenu.Body
                     rootClassName={
-                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 w-200 mt-8 dc__gap-4 flexbox-col'
                     }
                 >
                     <div className="flexbox-col dc__gap-4">

@@ -44,6 +44,7 @@ export const ConfigMapSecretForm = ({
     configMapSecretData,
     cmSecretStateLabel,
     isJob,
+    isDraft,
     componentType,
     isSubmitting,
     isProtected,
@@ -51,6 +52,7 @@ export const ConfigMapSecretForm = ({
     resolvedFormData,
     restoreYAML,
     setRestoreYAML,
+    isApprover,
     onSubmit,
     onError,
     onCancel,
@@ -65,6 +67,7 @@ export const ConfigMapSecretForm = ({
                 configMapSecretData,
                 componentType,
                 cmSecretStateLabel,
+                isApprover,
             }),
         [],
     )
@@ -79,9 +82,10 @@ export const ConfigMapSecretForm = ({
     // CONSTANTS
     const isCreateView = id === null
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
-    const isUnAuthorized = configMapSecretData?.unAuthorized
+    const isUnAuthorized = !isApprover && configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
+    const isFormDisabled = isHashiOrAWS || data.isResolvedData
     /**
      * * In create mode, show the prompt only if the form has unsaved changes (i.e., form is dirty).
      * * This ensures the user is warned about losing data when navigating away during creation.
@@ -160,7 +164,7 @@ export const ConfigMapSecretForm = ({
                 label="Data Type"
                 placeholder={dataTypePlaceholder}
                 required
-                isDisabled={isHashiOrAWS}
+                isDisabled={isFormDisabled}
                 options={dataTypeOptions}
                 size={ComponentSizeType.large}
                 {...register('externalType', {
@@ -202,7 +206,7 @@ export const ConfigMapSecretForm = ({
             <RadioGroup
                 className="configmap-secret-form__mount-data"
                 value={data.selectedType}
-                disabled={isHashiOrAWS}
+                disabled={isFormDisabled}
                 {...register('selectedType')}
             >
                 {Object.keys(configMapSecretMountDataMap).map((key) => (
@@ -251,7 +255,7 @@ export const ConfigMapSecretForm = ({
             <Checkbox
                 isChecked={data.isSubPathChecked}
                 onClick={stopPropagation}
-                disabled={isHashiOrAWS}
+                disabled={isFormDisabled}
                 rootClassName={`m-0 ${data.isSubPathChecked ? 'configmap-secret-form__sub-path-checkbox' : ''}`}
                 {...register('isSubPathChecked', { sanitizeFn: () => !data.isSubPathChecked })}
                 value="CHECKED"
@@ -268,7 +272,7 @@ export const ConfigMapSecretForm = ({
                             value={data.externalSubpathValues}
                             tabIndex={0}
                             placeholder="Enter keys (Eg. username,configs.json)"
-                            disabled={isHashiOrAWS}
+                            disabled={isFormDisabled}
                             error={errors.externalSubpathValues}
                             noTrim
                         />
@@ -284,7 +288,7 @@ export const ConfigMapSecretForm = ({
                 onClick={stopPropagation}
                 rootClassName="m-0"
                 value="CHECKED"
-                disabled={isHashiOrAWS}
+                disabled={isFormDisabled}
                 {...register('isFilePermissionChecked', { sanitizeFn: () => !data.isFilePermissionChecked })}
             >
                 <span data-testid="configmap-file-permission-checkbox">
@@ -309,7 +313,7 @@ export const ConfigMapSecretForm = ({
                         tabIndex={0}
                         dataTestid="configmap-file-permission-textbox"
                         placeholder="eg. 0400 or 400"
-                        disabled={isHashiOrAWS}
+                        disabled={isFormDisabled}
                         error={errors.filePermission}
                         noTrim
                     />
@@ -327,7 +331,7 @@ export const ConfigMapSecretForm = ({
                     value={data.volumeMountPath}
                     placeholder="/directory-path"
                     helperText="Keys are mounted as files to volume"
-                    disabled={isHashiOrAWS}
+                    disabled={isFormDisabled}
                     error={errors.volumeMountPath}
                     isRequiredField
                     noTrim
@@ -349,7 +353,7 @@ export const ConfigMapSecretForm = ({
                     autoComplete="off"
                     label="Role ARN"
                     placeholder="Enter Role ARN"
-                    disabled={isHashiOrAWS}
+                    disabled={isFormDisabled}
                     error={errors.roleARN}
                     noTrim
                 />
@@ -357,61 +361,62 @@ export const ConfigMapSecretForm = ({
         )
 
     const renderFormButtons = () => (
-        <div className="py-12 px-16 dc__border-top-n1 flex right dc__gap-12">
-            {(isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
+        <div className="py-12 px-16 dc__border-top-n1">
+            <div className="flex right dc__gap-12 dc__mxw-1200">
+                {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
+                    <Button
+                        dataTestId="cm-secret-form-cancel-btn"
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        onClick={onCancel}
+                        disabled={areScopeVariablesResolving}
+                    />
+                )}
                 <Button
-                    dataTestId="cm-secret-form-cancel-btn"
-                    text="Cancel"
-                    variant={ButtonVariantType.secondary}
-                    style={ButtonStyleType.neutral}
-                    onClick={onCancel}
+                    dataTestId="cm-secret-form-submit-btn"
+                    text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    onClick={handleSubmit(onSubmit, onError)}
+                    isLoading={isSubmitting}
+                    disabled={isSubmitting || areScopeVariablesResolving}
                 />
-            )}
-            <Button
-                dataTestId="cm-secret-form-submit-btn"
-                text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
-                buttonProps={{ type: 'submit' }}
-                isLoading={isSubmitting}
-            />
+            </div>
         </div>
     )
 
     return (
         <>
             <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
-            <form
-                className="configmap-secret flexbox-col h-100 dc__overflow-hidden"
-                onSubmit={handleSubmit(onSubmit, onError)}
-            >
-                <div className="p-16 flex-grow-1 flexbox-col dc__gap-16 dc__overflow-auto">
-                    {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
-                    <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
-                        {renderDataTypeSelector()}
-                        {renderName()}
-                    </div>
-                    {renderESOInfo(isESO)}
-                    {renderExternalInfo(
-                        data.externalType === CMSecretExternalType.KubernetesSecret ||
-                            (!data.isSecret && data.external),
-                        componentType,
-                    )}
-                    {renderMountData()}
-                    {renderVolumeMountPath()}
-                    {renderRollARN()}
-                    {areScopeVariablesResolving ? (
-                        <div className="h-300">
-                            <Progressing fullHeight size={48} />
+            <form className="configmap-secret flexbox-col h-100 dc__overflow-hidden">
+                {areScopeVariablesResolving ? (
+                    <Progressing fullHeight size={48} />
+                ) : (
+                    <div className="p-16 flex-grow-1 dc__overflow-auto">
+                        <div className="flexbox-col dc__gap-16 dc__mxw-1200">
+                            {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
+                            <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
+                                {renderDataTypeSelector()}
+                                {renderName()}
+                            </div>
+                            {renderESOInfo(isESO)}
+                            {renderExternalInfo(
+                                data.externalType === CMSecretExternalType.KubernetesSecret ||
+                                    (!data.isSecret && data.external),
+                                componentType,
+                            )}
+                            {renderMountData()}
+                            {renderVolumeMountPath()}
+                            {renderRollARN()}
+                            <ConfigMapSecretData
+                                isESO={isESO}
+                                isHashiOrAWS={isHashiOrAWS}
+                                isUnAuthorized={isUnAuthorized}
+                                useFormProps={useFormProps}
+                                readOnly={isFormDisabled}
+                            />
                         </div>
-                    ) : (
-                        <ConfigMapSecretData
-                            isESO={isESO}
-                            isHashiOrAWS={isHashiOrAWS}
-                            isUnAuthorized={isUnAuthorized}
-                            useFormProps={useFormProps}
-                            readOnly={data.isResolvedData}
-                        />
-                    )}
-                </div>
+                    </div>
+                )}
                 {!isHashiOrAWS && renderFormButtons()}
             </form>
         </>

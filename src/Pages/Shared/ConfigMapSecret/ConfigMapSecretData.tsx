@@ -1,8 +1,12 @@
 import { ChangeEvent, useState } from 'react'
 
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CMSecretExternalType,
     CodeEditor,
+    ComponentSizeType,
     KeyValueConfig,
     KeyValueTable,
     noop,
@@ -240,24 +244,16 @@ export const ConfigMapSecretData = ({
             !data.external &&
             !isUnAuthorized && (
                 <>
-                    <button
-                        type="button"
-                        className={`dc__unset-button-styles edit flex cursor cn-7 fw-6 dc__gap-6 ${isDisabled ? 'cursor-not-allowed dc__opacity-0_5' : ''}`}
+                    <Button
+                        dataTestId="toggle-show-hide-button"
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.small}
                         onClick={toggleSecretMode}
                         disabled={isDisabled}
-                    >
-                        {secretMode ? (
-                            <>
-                                <ICPencil className="icon-dim-16 scn-7" />
-                                Show/Edit values
-                            </>
-                        ) : (
-                            <>
-                                <HideIcon className="icon-dim-16 scn-7" />
-                                Hide values
-                            </>
-                        )}
-                    </button>
+                        text={secretMode ? ' Show/Edit values' : 'Hide values'}
+                        startIcon={secretMode ? <ICPencil /> : <HideIcon />}
+                    />
                     {showDivider && <div className="dc__divider" />}
                 </>
             )

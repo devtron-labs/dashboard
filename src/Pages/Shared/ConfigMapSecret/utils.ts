@@ -64,7 +64,7 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean) => {
+const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean): CMSecretYamlData[] => {
     const decodedData = decodeData ? decode(data) : data
     const hiddenData = hideData && Array(8).fill('*').join('')
     return Object.keys(decodedData).map((k, id) => ({
@@ -77,23 +77,24 @@ const secureValues = (data: Record<string, string>, decodeData: boolean, hideDat
     }))
 }
 
-const processCurrentData = (
-    configMapSecretData: CMSecretConfigData,
-    cmSecretStateLabel: CM_SECRET_STATE,
-    componentType: CMSecretComponentType,
-) => {
+const processCurrentData = ({
+    configMapSecretData,
+    cmSecretStateLabel,
+    componentType,
+    isApprover,
+}: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel' | 'componentType' | 'isApprover'>) => {
     if (configMapSecretData.data) {
         return secureValues(
             configMapSecretData.data,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
-            componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
+            !isApprover && componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
-            componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
+            !isApprover && componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
 
@@ -197,9 +198,10 @@ export const getConfigMapSecretFormInitialValues = ({
     configMapSecretData,
     cmSecretStateLabel,
     componentType,
+    isApprover,
 }: Pick<
     ConfigMapSecretFormProps,
-    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'
+    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData' | 'isApprover'
 >): ConfigMapSecretUseFormProps => {
     const isSecret = componentType === CMSecretComponentType.Secret
 
@@ -217,11 +219,12 @@ export const getConfigMapSecretFormInitialValues = ({
             roleARN,
             esoSubPath,
         } = configMapSecretData
-        const currentData = processCurrentData(
+        const currentData = processCurrentData({
             configMapSecretData,
             cmSecretStateLabel,
             componentType,
-        ) as CMSecretYamlData[]
+            isApprover,
+        })
 
         return {
             name,
@@ -270,7 +273,8 @@ export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
     componentType,
     isJob,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob'>) => {
+    isApprover,
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob' | 'isApprover'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -295,6 +299,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         configMapSecretData,
         cmSecretStateLabel: CM_SECRET_STATE.INHERITED,
         componentType,
+        isApprover,
     })
 
     let dataType = ''

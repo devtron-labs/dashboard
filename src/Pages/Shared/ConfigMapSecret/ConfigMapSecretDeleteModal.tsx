@@ -12,7 +12,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 
 import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfig } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
-import { CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
+import { CM_SECRET_STATE, CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
 
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
@@ -21,6 +21,7 @@ export const ConfigMapSecretDeleteModal = ({
     appId,
     envId,
     componentType,
+    cmSecretStateLabel,
     id,
     configName,
     openDeleteModal,
@@ -48,7 +49,10 @@ export const ConfigMapSecretDeleteModal = ({
 
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
-                    description: 'Restored to global.',
+                    description:
+                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                            ? 'Restored to global.'
+                            : 'Successfully Deleted',
                 })
             } else {
                 if (componentType === CMSecretComponentType.Secret) {

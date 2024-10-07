@@ -52,6 +52,7 @@ export const ConfigMapSecretProtected = ({
     updateCMSecret,
     restoreYAML,
     setRestoreYAML,
+    isApprover,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { email } = useUserEmail()
@@ -151,6 +152,7 @@ export const ConfigMapSecretProtected = ({
             isJob,
             componentType,
             configMapSecretData: getConfigMapSecretDiffViewData(),
+            isApprover,
         })
 
         return {
@@ -183,6 +185,7 @@ export const ConfigMapSecretProtected = ({
             componentType,
             configMapSecretData: publishedConfigMapSecretData,
             isJob,
+            isApprover,
         })
 
         return {
@@ -222,6 +225,7 @@ export const ConfigMapSecretProtected = ({
             }
             isJob={isJob}
             isProtected
+            isDraft
             isSubmitting={false}
             onCancel={noop}
             onError={onError}
@@ -230,6 +234,7 @@ export const ConfigMapSecretProtected = ({
             areScopeVariablesResolving={areScopeVariablesResolving}
             restoreYAML={restoreYAML}
             setRestoreYAML={setRestoreYAML}
+            isApprover={isApprover}
         />
     )
 
@@ -242,7 +247,7 @@ export const ConfigMapSecretProtected = ({
 
         return (
             <div className="py-12 px-16 dc__border-top-n1 flex right dc__gap-12">
-                {hasAccess && draftData.canApprove ? (
+                {isApprover ? (
                     <ApproveRequestTippy
                         draftId={draftData.draftId}
                         draftVersionId={draftData.draftVersionId}
@@ -276,8 +281,8 @@ export const ConfigMapSecretProtected = ({
     }
 
     const renderCompareView = () => (
-        <div className="flexbox-col h-100">
-            <div className="flex-grow-1">
+        <div className="flexbox-col h-100 dc__overflow-hidden">
+            <div className="flex-grow-1 dc__overflow-auto">
                 {areScopeVariablesResolving ? (
                     <Progressing fullHeight size={48} />
                 ) : (
@@ -312,6 +317,7 @@ export const ConfigMapSecretProtected = ({
                         isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}
                         areScopeVariablesResolving={areScopeVariablesResolving}
+                        isApprover={isApprover}
                     />
                 )
             case ProtectConfigTabsType.EDIT_DRAFT:
