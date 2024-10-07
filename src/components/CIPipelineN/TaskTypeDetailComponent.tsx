@@ -41,7 +41,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import CreatableSelect from 'react-select/creatable'
 import { containerImageSelectStyles } from './ciPipeline.utils'
-import { ValueContainer } from '@Components/app/details/appDetails/utils'
+import { ValueContainerImage as ValueContainer } from '@Components/app/details/appDetails/utils'
 
 export const TaskTypeDetailComponent = () => {
     const {
