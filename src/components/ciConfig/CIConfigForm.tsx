@@ -79,9 +79,10 @@ export default function CIConfigForm({
             ...material,
             name: material?.name || currentMaterial.name,
             url: material?.url || currentMaterial.url,
-            value: material?.checkoutPath || currentMaterial.checkoutPath,
+            value: material?.id || currentMaterial.id,
             label: material?.name || currentMaterial.name,
             startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
+            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath
         }
         return _currentMaterial
     }
@@ -144,6 +145,7 @@ export default function CIConfigForm({
         ),
     )
 
+    console.log(sourceConfig,' selectedMaterial', selectedMaterial)
     useEffect(() => {
         initBuildArgs()
     }, [])
@@ -230,6 +232,7 @@ export default function CIConfigForm({
                 buildContext: buildContext.value,
             }
         }
+        console.log('_ciBuildConfig', _ciBuildConfig)
 
         const requestBody = {
             id: ciConfig?.id ?? null,
