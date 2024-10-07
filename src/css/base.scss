@@ -3971,6 +3971,14 @@ textarea,
     overflow-x: scroll;
 }
 
+.dc__overflow-initial {
+    overflow: initial;
+
+    &--imp {
+        overflow: initial !important;
+    }
+}
+
 .dc__no-svg-fill {
     path {
         fill: none !important;
@@ -4713,12 +4721,6 @@ textarea::placeholder {
     &__no-border {
         &:last-child {
             border: none;
-        }
-    }
-
-    .dc__transition {
-        &--transform {
-            transition: transform 0.3s;
         }
     }
 }

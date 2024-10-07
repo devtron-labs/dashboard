@@ -15,6 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
+import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
@@ -27,34 +28,34 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
     return releaseStatus ? (
         <div
             data-testid="helm-config-apply-status-card"
-            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-250"
+            className="app-details-info-card flex left bcn-0 br-8 mr-12 w-200"
         >
-            <div className="app-details-info-card__top-container flex">
+            <div className="app-details-info-card__top-container flexbox dc__gap-12">
                 <div className="app-details-info-card__top-container__content">
-                    <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5">Config apply status</div>
+                    <div className="app-details-info-card__top-container__content__title-wrapper dc__gap-4">
+                        <p className="m-0 fs-12 lh-20 fw-4 cn-7">Config apply status</p>
                         <Tippy
                             className="default-tt cursor"
                             arrow={false}
                             content="Whether or not your last helm install was successful"
                         >
-                            <div className="flex">
-                                <QuestionIcon className="cursor icon-dim-16 ml-4" />
+                            <div className="flex cursor">
+                                <QuestionIcon className="icon-dim-16" />
                             </div>
                         </Tippy>
                     </div>
-                    <div className={`f-${releaseStatus.status.toLowerCase()} dc__capitalize fw-6 fs-13 lh-20`}>
+                    <p className={`f-${releaseStatus.status.toLowerCase()} m-0 dc__capitalize fw-6 fs-13 lh-20`}>
                         {releaseStatus.status}
-                    </div>
+                    </p>
                 </div>
                 <div className="flex br-4">
-                    <figure className={`${releaseStatus.status.toLowerCase()} ml-8 icon-dim-24`} />
+                    <figure className={`${releaseStatus.status.toLowerCase()} icon-dim-24`} />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">
-                <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                    {releaseStatus.message}
-                </div>
+                <Tooltip interactive content={releaseStatus.message} placement="bottom">
+                    <p className="dc__truncate m-0 fs-12 lh-18 fw-4 cn-9">{releaseStatus.message}</p>
+                </Tooltip>
             </div>
         </div>
     ) : null

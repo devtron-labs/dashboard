@@ -182,7 +182,8 @@ const EnvironmentSelectorComponent = ({
                 }
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
-                !response.result.deleteResponse?.clusterReachable
+                !response.result.deleteResponse?.clusterReachable && 
+                appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 setShowDeleteConfirmation(false)
@@ -316,7 +317,7 @@ const EnvironmentSelectorComponent = ({
                             placement="top"
                             content={`Deployed using ${getDeployedUsing()}`}
                         >
-                            <div className="flex">
+                            <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
                                 <DeploymentTypeIcon
                                     deploymentAppType={appDetails.deploymentAppType}
                                     appType={appDetails.appType}
@@ -416,7 +417,7 @@ const EnvironmentSelectorComponent = ({
                 <TriggerUrlModal
                     installedAppId={params.appId}
                     isExternalApp={isExternalApp}
-                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : '' }
+                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : ''}
                     envId={params.envId}
                     close={closeUrlInfo}
                     appType={appDetails.appType}

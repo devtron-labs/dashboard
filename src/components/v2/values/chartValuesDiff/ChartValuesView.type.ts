@@ -94,7 +94,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
     environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
-    invalidaEnvironment: boolean
+    invalidEnvironment: boolean
     isVirtualEnvironmentOnSelector?: boolean
     isVirtualEnvironment?: boolean
 }

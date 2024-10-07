@@ -38,13 +38,13 @@ function DeploymentTypeIcon({
             return <VirtualEnvHelpTippy isVirtualIcon />
         }
         if (deploymentAppType === DeploymentAppTypes.GITOPS || appType === AppType.EXTERNAL_ARGO_APP) {
-            return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
+            return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32" />
         }
         if (appType === AppType.EXTERNAL_FLUX_APP) {
-            return <FluxCD data-testid="flux-cd-app-logo" className="icon-dim-32 ml-16" />
+            return <FluxCD data-testid="flux-cd-app-logo" className="icon-dim-32" />
         }
         if (deploymentAppType === DeploymentAppTypes.HELM) {
-            return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+            return <Helm data-testid="helm-app-logo" className="icon-dim-32" />
         }
         return null
     }
