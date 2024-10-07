@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 
 import {
     abortPreviousRequests,
@@ -123,6 +124,9 @@ export const ConfigMapSecretContainer = ({
     const id = selectedCMSecret?.id
     const isCreateState = name === 'create' && !id
     const isEmptyState = !name && !envConfigData.length
+
+    // GA EVENT CATEGORY (BASED ON CM/SECRET)
+    const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
 
     // COMPONENT PROP CONSTANTS
     const baseConfigurationURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${isSecret ? URLS.APP_CS_CONFIG : URLS.APP_CM_CONFIG}/${name}`
@@ -377,6 +381,14 @@ export const ConfigMapSecretContainer = ({
 
     const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
 
+    const handleDeleteOverride = () => {
+        handleDelete()
+        ReactGA.event({
+            category: gaEventCategory,
+            action: 'clicked-delete-override',
+        })
+    }
+
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
     const handleOpenDiscardDraftPopup = () => setPopupNodeType(ConfigToolbarPopupNodeType.DISCARD_DRAFT)
@@ -387,13 +399,41 @@ export const ConfigMapSecretContainer = ({
 
     const handleViewInheritedConfig = () => setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
 
-    const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => setSelectedProtectionViewTab(tab)
+    const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
+        setSelectedProtectionViewTab(tab)
+        if (tab === ProtectConfigTabsType.COMPARE) {
+            ReactGA.event({
+                category: gaEventCategory,
+                action: 'clicked-compare',
+            })
+        }
+    }
 
-    const handleToggleScopedVariablesView = () => setResolvedScopeVariables(!resolvedScopeVariables)
+    const handleToggleScopedVariablesView = () => {
+        ReactGA.event({
+            category: gaEventCategory,
+            action: resolvedScopeVariables ? 'clicked-unresolve-scoped-variable' : 'clicked-resolve-scoped-variable',
+        })
+        setResolvedScopeVariables(!resolvedScopeVariables)
+    }
 
-    const handleCreateOverride = () => setShowOverridableView(true)
+    const handleCreateOverride = () => {
+        setShowOverridableView(true)
+        ReactGA.event({
+            category: gaEventCategory,
+            action: 'clicked-create-override-button',
+        })
+    }
 
     const handleNoOverrideFormCancel = () => setShowOverridableView(false)
+
+    const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
+        setMergeStrategy(strategy)
+        ReactGA.event({
+            category: gaEventCategory,
+            action: 'clicked-merge-strategy-dropdown',
+        })
+    }
 
     const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
 
@@ -518,7 +558,7 @@ export const ConfigMapSecretContainer = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             handleDelete,
-            handleDeleteOverride: handleDelete,
+            handleDeleteOverride,
             isDeletable:
                 cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
                 cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
@@ -669,7 +709,7 @@ export const ConfigMapSecretContainer = ({
                 <ConfigToolbar
                     configHeaderTab={configHeaderTab}
                     mergeStrategy={mergeStrategy}
-                    handleMergeStrategyChange={setMergeStrategy}
+                    handleMergeStrategyChange={handleMergeStrategyChange}
                     approvalUsers={draftData?.approvers}
                     areCommentsPresent={draftData?.commentsCount > 0}
                     disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
