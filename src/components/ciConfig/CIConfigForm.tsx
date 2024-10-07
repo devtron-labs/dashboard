@@ -231,7 +231,6 @@ export default function CIConfigForm({
                 buildContext: buildContext.value,
             }
         }
-        console.log('_ciBuildConfig', _ciBuildConfig)
 
         const requestBody = {
             id: ciConfig?.id ?? null,
