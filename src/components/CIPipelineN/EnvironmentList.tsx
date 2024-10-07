@@ -14,79 +14,99 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import ReactSelect, { components } from 'react-select'
-import { Environment } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    Environment,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
-import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
-import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
-import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { EnvironmentListType, EnvironmentWithSelectPickerType } from './types'
+import { GroupBase } from 'react-select'
 
 export const EnvironmentList = ({
     isBuildStage,
     environments,
     selectedEnv,
     setSelectedEnv,
-}: {
-    isBuildStage?: boolean
-    environments: any[]
-    selectedEnv: Environment
-    setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>>
-}) => {
-    const selectEnvironment = (selection: Environment) => {
-        const _selectedEnv = environments.find((env) => env.id == selection.id)
+    isBorderLess = false,
+}: EnvironmentListType) => {
+    const selectEnvironment = (selection) => {
+        const _selectedEnv = { ...selection }
+        _selectedEnv.label = _selectedEnv.name
+        _selectedEnv.value = _selectedEnv.id.toString()
         setSelectedEnv(_selectedEnv)
     }
 
-    const envList = createClusterEnvGroup(environments, 'clusterName')
+    const envList = createClusterEnvGroup(environments as Environment[], 'clusterName')
 
-    const environmentListControl = (props): JSX.Element => {
-        return (
-            <components.Control {...props}>
-                {!isBuildStage && <div className="dc__environment-icon ml-10" />}
-                {props.children}
-            </components.Control>
-        )
+    const getEnvListOptions = (): GroupBase<EnvironmentWithSelectPickerType>[] =>
+        envList.reduce((acc, _elm) => {
+            if (_elm.label) {
+                return [
+                    ...acc,
+                    {
+                        label: `Cluster: ${_elm.label}`,
+                        options: _elm.options.map((_option) => ({
+                            ..._option,
+                            label: _option?.name,
+                            value: _option?.id.toString(),
+                            description: _option?.description,
+                        })),
+                    },
+                ]
+            }
+
+            return [
+                ...acc,
+                ..._elm?.options?.map((_option) => {
+                    return {
+                        ..._option,
+                        label: _option?.name,
+                        value: _option?.id.toString(),
+                        description: _option?.description,
+                    }
+                }),
+            ]
+        }, [])
+
+    const getSelectedEnvironment = (): EnvironmentWithSelectPickerType => {
+        let _selectedEnv: EnvironmentWithSelectPickerType = {
+            ...selectedEnv,
+            label: selectedEnv?.name,
+            value: selectedEnv?.id, // assuming the whole object is set as value
+            startIcon: !isBuildStage ? <div className="dc__environment-icon" /> : null,
+        }
+
+        return _selectedEnv
     }
 
-    const envOption = (props): JSX.Element => {
-        return (
-            <components.Option {...props}>
-                <div>{props.data.name}</div>
-                {props.data.name === DEFAULT_ENV && <span className="fs-12 cn-7 pt-2">{props.data.description}</span>}
-            </components.Option>
-        )
+    const getEnvironmentSelectLabel = (): JSX.Element => {
+        if (isBuildStage) {
+            return <span>Execute tasks in environment</span>
+        } else {
+            return <span className="flex p-8 dc__align-start dc__border-right mr-10">Execute job in</span>
+        }
     }
 
     return (
         <div
             className={`${isBuildStage ? 'sidebar-action-container sidebar-action-container-border' : 'flex h-36 dc__align-items-center br-4 dc__border'}`}
         >
-            {isBuildStage ? (
-                <span>Execute tasks in environment</span>
-            ) : (
-                <div className="flex p-8 dc__align-start dc__border-right">Execute job in</div>
-            )}
-            <div className={`${!isBuildStage ? 'w-200 dc__align-items-center' : ''}`}>
-                <ReactSelect
-                    menuPlacement="auto"
-                    closeMenuOnScroll
+            <div className={`${!isBuildStage ? 'w-250 dc__align-items-center flex left' : ''}`}>
+                {getEnvironmentSelectLabel()}
+                <SelectPicker
+                    required
+                    inputId="job-pipeline-environment-dropdown"
+                    name="job-pipeline-environment-dropdown"
                     classNamePrefix="job-pipeline-environment-dropdown"
                     placeholder="Select Environment"
-                    options={envList}
-                    value={selectedEnv}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    isMulti={false}
+                    options={getEnvListOptions()}
+                    value={getSelectedEnvironment()}
                     onChange={selectEnvironment}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        GroupHeading: groupHeading,
-                        Control: environmentListControl,
-                        Option: envOption,
-                    }}
-                    styles={isBuildStage ? buildStageStyles : triggerStageStyles}
+                    size={ComponentSizeType.large}
+                    variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
                 />
             </div>
         </div>
