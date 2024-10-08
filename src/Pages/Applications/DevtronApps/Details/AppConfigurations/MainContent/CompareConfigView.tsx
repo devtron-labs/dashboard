@@ -18,8 +18,9 @@ const CompareConfigView = ({
     draftChartVersion,
     isDeleteOverrideView,
     editorKey = `${compareFromSelectedOptionValue || 'compare'}-draft-editor-key`,
+    className = '',
 }: CompareConfigViewProps) => (
-    <div className="flexbox-col">
+    <div className={`flexbox-col ${className ?? ''}`}>
         <div className="dc__grid-half bcn-0 dc__position-sticky dc__top-0 dc__zi-10">
             <div className="dc__border-right px-12 py-6 flexbox dc__gap-8 dc__border-bottom dc__align-items-center">
                 <ICCheck className="scn-9 icon-dim-16 dc__no-shrink" />

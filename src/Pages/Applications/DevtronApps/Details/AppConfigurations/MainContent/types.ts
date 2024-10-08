@@ -246,6 +246,7 @@ export interface CompareConfigViewProps {
      * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
      */
     editorKey?: string
+    className?: string
 }
 
 export interface BaseConfigurationNavigationProps {
