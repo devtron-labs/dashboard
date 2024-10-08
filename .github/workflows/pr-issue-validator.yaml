@@ -59,9 +59,6 @@ jobs:
           # Check if PR_BODY matches the provided pattern using Bash's =~ regex operator
           if [[ "$PR_BODY" =~ $pattern ]]; then
             echo "matched for this pattern $pattern"
-
-            # # If there is a match, Bash populates the BASH_REMATCH array with the results. stores the entire matched portion of the string
-            # issue_num=$(echo "${BASH_REMATCH[0]}" | grep -oE "[0-9]+" | tr -d '\r\n')
             
             issue_num=$(echo "$PR_BODY" | grep -oE "$pattern" | grep -oE "[0-9]+")
 
@@ -107,7 +104,7 @@ jobs:
             --header "authorization: Bearer ${{ secrets.GH_PR_VALIDATOR_TOKEN }}" \
             "$issue_api_url" | jq '.state'|tr -d \")
           # Check if the issue is still open.
-          if [[ "$issue_status" -eq open ]]; then
+          if [[ "$issue_status" == open ]]; then
             echo "Issue #$issue_num is opened."
             # Remove the 'Issue-verification-failed' label (if present) and add 'Ready-to-Review'.
             gh pr edit $PRNUM --remove-label "PR:Issue-verification-failed"
