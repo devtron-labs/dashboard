@@ -1131,7 +1131,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    setSelectedEnv = (_selectedEnv: Environment) => {
+    setSelectedEnv = (_selectedEnv) => {
         this.setState({ selectedEnv: _selectedEnv })
     }
 

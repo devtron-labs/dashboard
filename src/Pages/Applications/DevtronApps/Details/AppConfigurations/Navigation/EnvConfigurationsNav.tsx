@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
 
-import { CollapsibleList, CollapsibleListConfig, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CollapsibleList,
+    CollapsibleListConfig,
+    EnvResourceType,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
@@ -16,7 +22,6 @@ import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.typ
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
-import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
 
 const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
@@ -59,15 +64,26 @@ export const EnvConfigurationsNav = ({
     // CONSTANTS
     const { isLoading, config } = envConfig
     /** Current Environment Data. */
-    const environmentData =
-        environments.find((environment) => environment.id === +params[paramToCheck]) ||
-        (showBaseConfigurations
-            ? {
-                  name: BASE_CONFIGURATIONS.name,
-                  id: BASE_CONFIGURATIONS.id,
-                  isProtected: isBaseConfigProtected,
-              }
-            : null)
+    const _environmentData =
+        environments && environments.find((environment) => environment.id === +params[paramToCheck])
+    const selectedNavEnvironmentOptions = {
+        ..._environmentData,
+        label: _environmentData?.name || BASE_CONFIGURATIONS.name,
+        value: _environmentData?.id || BASE_CONFIGURATIONS.id,
+        isProtected: _environmentData?.isProtected,
+    }
+
+    const selectedEnvironmentWithBaseConfiguration = showBaseConfigurations
+        ? {
+              label: BASE_CONFIGURATIONS.name,
+              value: BASE_CONFIGURATIONS.id,
+              endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
+              isProtected: isBaseConfigProtected,
+          }
+        : null
+
+    const environmentData = selectedNavEnvironmentOptions || selectedEnvironmentWithBaseConfiguration
+
     const resourceType = resourceTypeBasedOnPath(pathname)
     const isCreate = pathname.includes('/create')
 
@@ -81,7 +97,7 @@ export const EnvConfigurationsNav = ({
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
+                    href: getNavigationPath(path, params, environmentData.value, resourceType, 'create', paramToCheck),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                 },
@@ -156,7 +172,7 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
+        history.push(getNavigationPath(path, params, environmentData.value, _resourceType, 'create', paramToCheck))
     }
 
     /** Collapsible List Config. */
@@ -220,26 +236,33 @@ export const EnvConfigurationsNav = ({
     ]
 
     // REACT SELECT PROPS
-    const envOptions = [
+    const getSelectOptions = () =>
+        [...environments].map((env) => ({
+            label: env.name,
+            value: env.id,
+            endIcon: env.isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
+        }))
+
+    const envOptions: SelectPickerOptionType[] = [
         ...(showBaseConfigurations
             ? [
                   {
-                      name: BASE_CONFIGURATIONS.name,
-                      id: BASE_CONFIGURATIONS.id,
-                      isProtected: isBaseConfigProtected,
+                      label: BASE_CONFIGURATIONS.name,
+                      value: BASE_CONFIGURATIONS.id,
+                      endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
                   },
               ]
             : []),
-        ...environments,
+        ...getSelectOptions(),
     ]
 
-    const onEnvSelect = ({ id }: typeof environmentData) => {
-        if (environmentData.id === id) {
+    const onEnvSelect = (_selectedEnv) => {
+        if (environmentData.value === _selectedEnv.value) {
             return
         }
 
         const name = pathname.split(`${resourceType}/`)[1]
-        history.push(getNavigationPath(path, params, id, resourceType, name, paramToCheck))
+        history.push(getNavigationPath(path, params, _selectedEnv.value, resourceType, name, paramToCheck))
     }
 
     const renderEnvSelector = () => (
@@ -249,28 +272,23 @@ export const EnvConfigurationsNav = ({
                     <ICBack className="icon-dim-16" />
                 </div>
             </NavLink>
-            <ReactSelect<typeof environmentData>
+            <SelectPicker
+                inputId="env-config-selector"
                 classNamePrefix="env-config-selector"
                 isClearable={false}
                 value={environmentData}
                 options={envOptions}
-                getOptionLabel={(option) => `${option.name}`}
-                getOptionValue={(option) => `${option.id}`}
-                styles={envSelectStyles}
-                components={{
-                    IndicatorSeparator: null,
-                    Option: EnvSelectOption,
-                    DropdownIndicator: EnvSelectDropdownIndicator,
-                }}
+                getOptionLabel={(option) => `${option.label}`}
+                getOptionValue={(option) => `${option.value}`}
                 onChange={onEnvSelect}
                 placeholder="Select Environment"
+                variant={SelectPickerVariantType.BORDER_LESS}
             />
-            {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
         </div>
     )
 
     const renderCompareWithBtn = () => {
-        const { name: compareTo } = environmentData
+        const { label: compareTo } = environmentData
 
         // Determine base path based on pathname
         const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)

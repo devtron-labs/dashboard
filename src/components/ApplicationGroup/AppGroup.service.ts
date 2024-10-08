@@ -197,7 +197,7 @@ export const getEnvAppList = (
     signal?: AbortSignal,
 ): Promise<EnvAppType> => {
     const options = signal ? { signal } : null
-    const { searchKey = '', cluster = [], offset = 0, pageSize = 20 } = filterConfig ?? {}
+    const { searchKey = '', cluster = [], offset, pageSize } = filterConfig ?? {}
     const params: GetEnvAppListParamsType = {
         envName: searchKey,
         clusterIds: cluster?.join(),
