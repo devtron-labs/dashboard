@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     Checkbox,
@@ -25,6 +25,7 @@ import {
     ScriptType,
     CustomInput,
     ClipboardButton,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
@@ -39,9 +40,6 @@ import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import CreatableSelect from 'react-select/creatable'
-import { containerImageSelectStyles } from './ciPipeline.utils'
-import { ValueContainerImage as ValueContainer } from '@Components/app/details/appDetails/utils'
 
 export const TaskTypeDetailComponent = () => {
     const {
@@ -240,26 +238,17 @@ export const TaskTypeDetailComponent = () => {
                     />
 
                     <div className="dc__position-rel">
-                        <CreatableSelect
-                            tabIndex={1}
+                        <SelectPicker
+                            inputId="containerImage"
                             value={selectedContainerImage}
                             options={containerImageOptions}
                             placeholder="Select container image or input value"
                             onChange={handleContainerImageSelector}
-                            styles={containerImageSelectStyles}
                             classNamePrefix="select"
-                            components={{
-                                MenuList: menuList,
-                                Option,
-                                IndicatorSeparator: null,
-                                ValueContainer,
-                            }}
-                            noOptionsMessage={(): string => {
-                                return 'No matching options'
-                            }}
                             onBlur={handleCreatableBlur}
-                            isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
+                            isCreatable
+                            renderMenuListFooter={renderMenuListFooter}
                         />
                         {selectedContainerImage?.label && (
                             <div className="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20">
