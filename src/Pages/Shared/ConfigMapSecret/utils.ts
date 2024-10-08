@@ -404,7 +404,7 @@ export const getConfigMapSecretPayload = ({
     isSubPathChecked,
 }: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
-    const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData.filter(({ v }) => v)
+    const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
     const data = _currentData.reduce((acc, curr) => {
         if (!curr.k) {
             return acc

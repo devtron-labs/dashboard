@@ -193,7 +193,7 @@ export const ConfigMapSecretContainer = ({
                                   envName: '',
                                   componentType,
                                   name,
-                                  resourceId: null,
+                                  resourceId: isJob ? id : null,
                                   isJob,
                                   abortControllerRef,
                               })

@@ -280,8 +280,7 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                             },
                             currentData: {
                                 custom: {
-                                    isValid: (value: CMSecretYamlData[]) =>
-                                        value.length && !!value[0].k && !!value[0].v,
+                                    isValid: (value: CMSecretYamlData[]) => !!value.filter(({ k }) => !!k).length,
                                     message: CONFIG_MAP_SECRET_NO_DATA_ERROR,
                                 },
                             },

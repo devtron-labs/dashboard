@@ -246,7 +246,7 @@ export const ConfigMapSecretProtected = ({
         const hasAccess = hasApproverAccess(email, draftData.approvers)
 
         return (
-            <div className="py-12 px-16 dc__border-top-n1 flex right dc__gap-12">
+            <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12">
                 {isApprover ? (
                     <ApproveRequestTippy
                         draftId={draftData.draftId}

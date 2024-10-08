@@ -362,7 +362,14 @@ export const ConfigMapSecretForm = ({
 
     const renderFormButtons = () => (
         <div className="py-12 px-16 dc__border-top-n1">
-            <div className="flex right dc__gap-12 dc__mxw-1200">
+            <div className="flex left dc__gap-12 dc__mxw-1200">
+                <Button
+                    dataTestId="cm-secret-form-submit-btn"
+                    text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    onClick={handleSubmit(onSubmit, onError)}
+                    isLoading={isSubmitting}
+                    disabled={isSubmitting || areScopeVariablesResolving}
+                />
                 {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
                     <Button
                         dataTestId="cm-secret-form-cancel-btn"
@@ -373,13 +380,6 @@ export const ConfigMapSecretForm = ({
                         disabled={areScopeVariablesResolving}
                     />
                 )}
-                <Button
-                    dataTestId="cm-secret-form-submit-btn"
-                    text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
-                    onClick={handleSubmit(onSubmit, onError)}
-                    isLoading={isSubmitting}
-                    disabled={isSubmitting || areScopeVariablesResolving}
-                />
             </div>
         </div>
     )
