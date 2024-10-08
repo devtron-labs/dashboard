@@ -338,6 +338,7 @@ export default function BuildCD({
         form.selectedRegistry = { ...selectedRegistry,
             value: selectedRegistry.id,
             label: selectedRegistry.id,
+            startIcon: <div className={`dc__registry-icon ${selectedRegistry.registryType}`} />
         } as RegistryPayloadWithSelectType
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
@@ -593,7 +594,6 @@ export default function BuildCD({
     }
 
     const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
-        console.log(formData, 'form')
         const _form = structuredClone(formData)
         const _formDataErrorObj = structuredClone(formDataErrorObj)
 
@@ -792,7 +792,7 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-                {
+                {isAdvanced &&
                     getBuildCDManualApproval &&
                     getBuildCDManualApproval(
                         formData.userApprovalConfig,
