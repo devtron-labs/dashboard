@@ -1,4 +1,4 @@
-import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer } from 'react'
+import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
     BaseURLParams,
@@ -162,6 +162,7 @@ const DeploymentTemplate = ({
         resolvedPublishedTemplate,
     } = state
 
+    const manifestAbortController = useRef<AbortController>(new AbortController())
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
@@ -199,6 +200,8 @@ const DeploymentTemplate = ({
         isDeleteOverrideDraft &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
+
+    const isLoadingSideEffects = isResolvingVariables || isSaving || isLoadingChangedChartDetails
 
     /**
      * There are two cases:
@@ -860,7 +863,8 @@ const DeploymentTemplate = ({
 
         return currentEditorTemplateData.environmentConfig && currentEditorTemplateData.environmentConfig.id > 0
             ? updateEnvDeploymentTemplate
-            : (payload, abortSignal) => createEnvDeploymentTemplate(+appId, +envId, payload, abortSignal)
+            : (payload, abortSignal) =>
+                  createEnvDeploymentTemplate(+appId, +envId, payload as UpdateEnvironmentDTPayloadType, abortSignal)
     }
 
     const getSuccessToastMessage = (): string => {
@@ -1220,7 +1224,7 @@ const DeploymentTemplate = ({
             isPublishedConfigPresent,
             handleDeleteOverride: handleOverride,
             unableToParseData: !!currentEditorTemplateData?.parsingError,
-            isLoading: isResolvingVariables || isSaving || isLoadingChangedChartDetails,
+            isLoading: isLoadingSideEffects,
             isDraftAvailable,
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
@@ -1299,7 +1303,7 @@ const DeploymentTemplate = ({
             return (
                 <ConfigDryRun
                     showManifest
-                    isLoading={isResolvingVariables || isSaving || isLoadingChangedChartDetails}
+                    isLoading={isLoadingSideEffects}
                     handleToggleResolveScopedVariables={handleToggleResolveScopedVariables}
                     resolveScopedVariables={resolveScopedVariables}
                     editorTemplate={getCurrentEditorValue()}
@@ -1310,6 +1314,7 @@ const DeploymentTemplate = ({
                     isDraftPresent={isDraftAvailable}
                     isApprovalPending={isApprovalPending}
                     isPublishedConfigPresent={isPublishedConfigPresent}
+                    manifestAbortController={manifestAbortController}
                 />
             )
         }
@@ -1360,8 +1365,7 @@ const DeploymentTemplate = ({
 
         const isAppMetricsEnabled = getIsAppMetricsEnabledForCTA()
 
-        const isLoading = isResolvingVariables || isSaving || isLoadingChangedChartDetails
-        const isDisabled = isLoading || resolveScopedVariables || !!currentEditorTemplateData.parsingError
+        const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
 
         if (isProtected && ProtectedDeploymentTemplateCTA) {
             return (
@@ -1370,7 +1374,7 @@ const DeploymentTemplate = ({
                     isAppMetricsEnabled={isAppMetricsEnabled}
                     showApplicationMetrics={showApplicationMetrics}
                     toggleAppMetrics={handleAppMetricsToggle}
-                    isLoading={isLoading}
+                    isLoading={isLoadingSideEffects}
                     selectedChart={selectedChart}
                     isDisabled={isDisabled}
                     latestDraft={draftTemplateData?.latestDraft}
@@ -1392,7 +1396,7 @@ const DeploymentTemplate = ({
 
         return (
             <DeploymentTemplateCTA
-                isLoading={isLoading}
+                isLoading={isLoadingSideEffects}
                 isDisabled={isDisabled}
                 isAppMetricsEnabled={isAppMetricsEnabled}
                 showApplicationMetrics={showApplicationMetrics}
@@ -1492,7 +1496,7 @@ const DeploymentTemplate = ({
                         popupConfig={toolbarPopupConfig}
                         handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                         resolveScopedVariables={resolveScopedVariables}
-                        disableAllActions={isResolvingVariables || isSaving || isLoadingChangedChartDetails}
+                        disableAllActions={isLoadingSideEffects}
                         parsingError={currentEditorTemplateData?.parsingError}
                         configHeaderTab={configHeaderTab}
                         isProtected={isProtected}
@@ -1507,11 +1511,10 @@ const DeploymentTemplate = ({
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader
                                 disableVersionSelect={
+                                    resolveScopedVariables ||
                                     isPublishedValuesView ||
                                     isInheritedView ||
-                                    isResolvingVariables ||
-                                    isSaving ||
-                                    isLoadingChangedChartDetails ||
+                                    isLoadingSideEffects ||
                                     !!currentEditorTemplateData?.parsingError
                                 }
                                 editMode={editMode}
@@ -1588,7 +1591,7 @@ const DeploymentTemplate = ({
                         isSaving={isSaving}
                         documents={getLockedDiffModalDocuments(isApprovalView, state)}
                         appId={appId}
-                        envId={envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
                     />
                 )}
 

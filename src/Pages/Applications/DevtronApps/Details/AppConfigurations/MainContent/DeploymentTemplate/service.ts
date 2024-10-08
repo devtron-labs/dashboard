@@ -1,30 +1,41 @@
 import { Routes } from '@Config/constants'
 import { BaseURLParams, get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
-import { DeploymentTemplateConfigDTO, EnvironmentOverrideDeploymentTemplateDTO, GetChartListReturnType } from './types'
+import {
+    DeploymentTemplateConfigDTO,
+    EnvironmentOverrideDeploymentTemplateDTO,
+    GetChartListReturnType,
+    UpdateBaseDTPayloadType,
+    UpdateEnvironmentDTPayloadType,
+} from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
-export const updateBaseDeploymentTemplate = (request, abortSignal) => {
+export const updateBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`
     return post(URL, request, {
         signal: abortSignal,
     })
 }
 
-export const createBaseDeploymentTemplate = (request, abortSignal) => {
+export const createBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
     return post(URL, request, {
         signal: abortSignal,
     })
 }
 
-export function updateEnvDeploymentTemplate(payload, abortSignal) {
+export function updateEnvDeploymentTemplate(payload: UpdateEnvironmentDTPayloadType, abortSignal: AbortSignal) {
     return put('app/env', payload, {
         signal: abortSignal,
     })
 }
 
-export function createEnvDeploymentTemplate(appId, envId, payload, abortSignal) {
+export function createEnvDeploymentTemplate(
+    appId: number,
+    envId: number,
+    payload: UpdateEnvironmentDTPayloadType,
+    abortSignal: AbortSignal,
+) {
     return post(`app/env/${appId}/${envId}`, payload, {
         signal: abortSignal,
     })
