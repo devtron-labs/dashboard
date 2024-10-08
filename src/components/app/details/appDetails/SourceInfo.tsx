@@ -51,6 +51,7 @@ import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/e
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
+const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -72,6 +73,7 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
+    setShowConfigDriftModal,
 }: SourceInfoType) => {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -169,6 +171,16 @@ export const SourceInfo = ({
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
+                )}
+                {appDetails?.resourceTree && ConfigSyncStatusButton && (
+                    <div className="pl-8">
+                        <ConfigSyncStatusButton
+                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                            appId={appDetails?.appId}
+                            envId={envId}
+                            setShowConfigDriftModal={setShowConfigDriftModal}
+                        />
+                    </div>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">

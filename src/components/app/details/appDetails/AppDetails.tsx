@@ -116,7 +116,7 @@ import { renderCIListHeader } from '../cdDetails/utils'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -278,6 +278,7 @@ export const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
+    const [showConfigDriftModal, setShowConfigDriftModal] = useState<boolean>(false)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
@@ -295,7 +296,6 @@ export const Details: React.FC<DetailsType> = ({
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
-
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -430,7 +430,11 @@ export const Details: React.FC<DetailsType> = ({
 
                 const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
 
-                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType, isIsolatedEnv, isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null)
+                _getDeploymentStatusDetail(
+                    appDetailsRef.current.deploymentAppType,
+                    isIsolatedEnv,
+                    isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
+                )
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
@@ -475,7 +479,11 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isIsolatedEnv: boolean, triggerIdToFetch?: number) {
+    function _getDeploymentStatusDetail(
+        deploymentAppType: DeploymentAppTypes,
+        isIsolatedEnv: boolean,
+        triggerIdToFetch?: number,
+    ) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
         // triggerIdToFetch represents the wfrId to fetch for any specific deployment
@@ -815,6 +823,13 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
+            {showConfigDriftModal && ConfigDriftModal && (
+                <ConfigDriftModal
+                    appId={params.appId}
+                    envId={params.envId}
+                    setShowConfigDriftModal={setShowConfigDriftModal}
+                />
+            )}
         </>
     )
 }
