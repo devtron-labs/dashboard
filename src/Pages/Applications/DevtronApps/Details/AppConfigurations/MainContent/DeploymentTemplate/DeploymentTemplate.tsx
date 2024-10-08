@@ -863,7 +863,8 @@ const DeploymentTemplate = ({
 
         return currentEditorTemplateData.environmentConfig && currentEditorTemplateData.environmentConfig.id > 0
             ? updateEnvDeploymentTemplate
-            : (payload, abortSignal) => createEnvDeploymentTemplate(+appId, +envId, payload, abortSignal)
+            : (payload, abortSignal) =>
+                  createEnvDeploymentTemplate(+appId, +envId, payload as UpdateEnvironmentDTPayloadType, abortSignal)
     }
 
     const getSuccessToastMessage = (): string => {
