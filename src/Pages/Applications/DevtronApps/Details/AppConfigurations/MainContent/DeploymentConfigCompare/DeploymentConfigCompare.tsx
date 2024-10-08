@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -11,12 +11,9 @@ import {
     SortingOrder,
     AppEnvDeploymentConfigType,
     getDefaultVersionAndPreviousDeploymentOptions,
-    getDeploymentTemplateValues,
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
     EnvResourceType,
-    abortPreviousRequests,
-    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getChartReferencesForAppAndEnv } from '@Services/service'
@@ -44,12 +41,7 @@ import {
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
 } from './utils'
-import {
-    getConfigDiffData,
-    getDeploymentTemplateData,
-    getDeploymentTemplateResolvedData,
-    getManifestData,
-} from './service.utils'
+import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -67,9 +59,6 @@ export const DeploymentConfigCompare = ({
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
-
-    // REFS
-    const deploymentTemplateResolvedDataAbortControllerRef = useRef(new AbortController())
 
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
@@ -245,56 +234,15 @@ export const DeploymentConfigCompare = ({
             : !!configType && !!compareWithConfigType,
     )
 
-    const [
-        deploymentTemplateResolvedDataLoader,
-        deploymentTemplateResolvedData,
-        deploymentTemplateResolvedDataErr,
-        reloadDeploymentTemplateResolvedData,
-    ] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        getDeploymentTemplateResolvedData({
-                            appName,
-                            envName,
-                            type,
-                            compareName: compareTo,
-                            values: getDeploymentTemplateValues(comparisonData[0].result?.deploymentTemplate),
-                            signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                        }),
-                        getDeploymentTemplateResolvedData({
-                            type,
-                            appName,
-                            envName,
-                            compareName: compareWith,
-                            values: getDeploymentTemplateValues(comparisonData[1].result?.deploymentTemplate),
-                            signal: deploymentTemplateResolvedDataAbortControllerRef.current?.signal,
-                        }),
-                    ]),
-                deploymentTemplateResolvedDataAbortControllerRef,
-            ),
-        [convertVariables, comparisonData],
-        convertVariables && !!comparisonData,
-    )
-
     const reload = () => {
         setConvertVariables(false)
         reloadOptions()
         reloadComparisonData()
-        reloadDeploymentTemplateResolvedData()
     }
 
     // Generate the deployment configuration list for the environments using comparison data
     const appEnvDeploymentConfigList = useMemo(() => {
-        const isDeploymentTemplateLoaded = !deploymentTemplateResolvedDataLoader && deploymentTemplateResolvedData
-        const isComparisonDataLoaded = !comparisonDataLoader && comparisonData
-
-        const shouldLoadData = convertVariables
-            ? isComparisonDataLoaded && isDeploymentTemplateLoaded
-            : isComparisonDataLoaded
-
-        if (shouldLoadData) {
+        if (!comparisonDataLoader && comparisonData) {
             const [{ result: currentList }, { result: compareList }] = comparisonData
 
             const configData = getAppEnvDeploymentConfigList({
@@ -303,25 +251,12 @@ export const DeploymentConfigCompare = ({
                 getNavItemHref,
                 isManifestView,
                 convertVariables,
-                ...(convertVariables
-                    ? {
-                          currentDeploymentTemplateResolvedData: deploymentTemplateResolvedData[0].result,
-                          compareDeploymentTemplateResolvedData: deploymentTemplateResolvedData[1].result,
-                      }
-                    : {}),
             })
             return configData
         }
 
         return null
-    }, [
-        comparisonDataLoader,
-        comparisonData,
-        isManifestView,
-        convertVariables,
-        deploymentTemplateResolvedDataLoader,
-        deploymentTemplateResolvedData,
-    ])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -539,18 +474,15 @@ export const DeploymentConfigCompare = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
-    const isLoading = comparisonDataLoader || optionsLoader || deploymentTemplateResolvedDataLoader
-    const isError =
-        comparisonDataErr ||
-        optionsErr ||
-        (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
+    const isLoading = comparisonDataLoader || optionsLoader
+    const isError = comparisonDataErr || optionsErr
 
     return (
         <DeploymentConfigDiff
             isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
                 error: isError && !isLoading,
-                code: comparisonDataErr?.code || optionsErr?.code || deploymentTemplateResolvedDataErr?.code,
+                code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}
             {...appEnvDeploymentConfigList}

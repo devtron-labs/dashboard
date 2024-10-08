@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -13,8 +13,6 @@ import {
     useUrlFilters,
     DeploymentWithConfigType,
     EnvResourceType,
-    abortPreviousRequests,
-    getIsRequestAborted,
     DeploymentConfigDiffState,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -31,7 +29,6 @@ import {
     getPipelineDeploymentConfigSelectorOptions,
     parseCompareWithSearchParams,
 } from './utils'
-import { getDeploymentTemplateResolvedData } from './service.utils'
 
 export const usePipelineDeploymentConfig = ({
     appId,
@@ -48,9 +45,6 @@ export const usePipelineDeploymentConfig = ({
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
-
-    // REFS
-    const deploymentTemplateResolvedDataAbortControllerRef = useRef(new AbortController())
 
     // SEARCH PARAMS & SORTING
     const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
@@ -122,40 +116,6 @@ export const usePipelineDeploymentConfig = ({
     const specificDeploymentConfig = pipelineDeploymentConfigRes?.[2]?.result ?? null
     const isLastDeployedConfigAvailable = pipelineDeploymentConfigRes?.[0] !== null
 
-    const [
-        deploymentTemplateResolvedDataLoader,
-        deploymentTemplateResolvedData,
-        deploymentTemplateResolvedDataErr,
-        reloadDeploymentTemplateResolvedData,
-    ] = useAsync(
-        () =>
-            abortPreviousRequests(() => {
-                const compareData = getComparisonDataBasedOnDeploy({
-                    deploy,
-                    latestDeploymentConfig,
-                    specificDeploymentConfig,
-                    recentDeploymentConfig,
-                })
-
-                return Promise.all([
-                    getDeploymentTemplateResolvedData({
-                        appName,
-                        envName,
-                        data: compareData,
-                        abortControllerRef: deploymentTemplateResolvedDataAbortControllerRef,
-                    }),
-                    getDeploymentTemplateResolvedData({
-                        appName,
-                        envName,
-                        data: recentDeploymentConfig,
-                        abortControllerRef: deploymentTemplateResolvedDataAbortControllerRef,
-                    }),
-                ])
-            }, deploymentTemplateResolvedDataAbortControllerRef),
-        [convertVariables, pipelineDeploymentConfigRes],
-        convertVariables && !!pipelineDeploymentConfigRes,
-    )
-
     useEffect(() => {
         if (!isLastDeployedConfigAvailable && deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
             updateSearchParams({ deploy: DeploymentWithConfigType.LAST_SAVED_CONFIG })
@@ -193,11 +153,7 @@ export const usePipelineDeploymentConfig = ({
         `${generatePath(path, params)}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
     const pipelineDeploymentConfig = useMemo(() => {
-        if (
-            convertVariables
-                ? !deploymentTemplateResolvedDataLoader && deploymentTemplateResolvedData
-                : !pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes
-        ) {
+        if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
             const compareData = getComparisonDataBasedOnDeploy({
                 deploy,
                 latestDeploymentConfig,
@@ -220,29 +176,15 @@ export const usePipelineDeploymentConfig = ({
                 },
                 getNavItemHref,
                 convertVariables,
-                ...(convertVariables
-                    ? {
-                          currentDeploymentTemplateResolvedData: deploymentTemplateResolvedData[0].result,
-                          compareDeploymentTemplateResolvedData: deploymentTemplateResolvedData[1].result,
-                      }
-                    : {}),
             })
         }
 
         return null
-    }, [
-        pipelineDeploymentConfigLoading,
-        pipelineDeploymentConfigRes,
-        deploy,
-        mode,
-        convertVariables,
-        deploymentTemplateResolvedData,
-    ])
+    }, [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, deploy, mode, convertVariables])
 
     const reload = () => {
         reloadPreviousDeployments()
         reloadPipelineDeploymentConfig()
-        reloadDeploymentTemplateResolvedData()
     }
 
     // DEPLOYMENT CONFIG SELECTOR PROPS
@@ -296,22 +238,15 @@ export const usePipelineDeploymentConfig = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
-    const isLoading =
-        previousDeploymentsLoader || pipelineDeploymentConfigLoading || deploymentTemplateResolvedDataLoader
-    const isError =
-        previousDeploymentsErr ||
-        pipelineDeploymentConfigErr ||
-        (deploymentTemplateResolvedDataErr && !getIsRequestAborted(deploymentTemplateResolvedDataErr))
+    const isLoading = previousDeploymentsLoader || pipelineDeploymentConfigLoading
+    const isError = previousDeploymentsErr || pipelineDeploymentConfigErr
 
     return {
         pipelineDeploymentConfigLoading: isLoading || (!isError && !pipelineDeploymentConfig),
         pipelineDeploymentConfig,
         errorConfig: {
             error: isError && !isLoading,
-            code:
-                previousDeploymentsErr?.code ||
-                pipelineDeploymentConfigErr?.code ||
-                deploymentTemplateResolvedDataErr?.code,
+            code: previousDeploymentsErr?.code || pipelineDeploymentConfigErr?.code,
             reload,
         },
         deploymentConfigSelectorProps,

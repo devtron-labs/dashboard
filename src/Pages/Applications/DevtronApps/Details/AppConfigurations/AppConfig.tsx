@@ -292,9 +292,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     useEffect(() => {
-        if (state.redirectionUrl && location.pathname === match.url) {
-            history.replace(state.redirectionUrl)
-        } else if (appConfigData) {
+        if (appConfigData) {
             // SET APP CONFIG DATA IN STATE
             const [configStatusRes, workflowRes, { updatedEnvs, configProtections, isBaseConfigProtectionEnabled }] =
                 appConfigData

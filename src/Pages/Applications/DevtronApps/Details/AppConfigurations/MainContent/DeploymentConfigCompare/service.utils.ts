@@ -8,12 +8,7 @@ import {
 
 import { getDeploymentManisfest } from '@Components/deploymentConfig/service'
 
-import {
-    GetConfigDiffDataProps,
-    GetDeploymentTemplateDataProps,
-    GetDeploymentTemplateResolvedDataProps,
-    GetManifestDataProps,
-} from '../../AppConfig.types'
+import { GetConfigDiffDataProps, GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
 import { getAppAndEnvIds } from './utils'
 
 export const getConfigDiffData = ({
@@ -41,33 +36,6 @@ export const getConfigDiffData = ({
             identifierId,
             pipelineId,
         },
-    })
-
-export const getDeploymentTemplateResolvedData = ({
-    type,
-    appName,
-    envName,
-    compareName,
-    values,
-    signal,
-}: GetDeploymentTemplateResolvedDataProps) =>
-    getAppEnvDeploymentConfig({
-        params: {
-            configArea: 'ResolveData',
-            ...(type === 'app'
-                ? {
-                      appName,
-                      envName: compareName || '',
-                  }
-                : {
-                      appName: compareName || '',
-                      envName,
-                  }),
-        },
-        payload: {
-            values,
-        },
-        signal,
     })
 
 export const getDeploymentTemplateData = ({
