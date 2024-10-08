@@ -25,8 +25,9 @@ import {
     PopupMenu,
     Progressing,
     getEnvironmentListMinPublic,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactSelect, { ValueContainerProps, components } from 'react-select'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
 import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
@@ -71,7 +72,10 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         const requestBody = { envId: envOverride.environmentId, appId }
         deleteJobEnvironment(requestBody)
             .then(() => {
-                toast.success('Deleted Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted Successfully',
+                })
                 reload()
                 setDeleteView(false)
             })
@@ -290,7 +294,10 @@ const EnvironmentOverrideRouter = () => {
             setEnvironmentView(!addEnvironment)
             const requestBody = { envId: selection.id, appId }
             await addJobEnvironment(requestBody)
-            toast.success('Saved Successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
+            })
             reloadEnvData()
         } catch (error) {
             showError(error)

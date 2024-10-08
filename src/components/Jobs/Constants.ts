@@ -14,30 +14,7 @@
  * limitations under the License.
  */
 
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-
-export const _multiSelectStyles = {
-    ...multiSelectStyles,
-    control: (base) => ({
-        ...base,
-        cursor: 'pointer',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: 'auto',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: '0px',
-        maxHeight: '180px',
-    }),
-}
-
-export const JobCreationType = {
-    Blank: 'BLANK',
-    Existing: 'EXISTING',
-}
+import { JobListStatus, JobListStatusDTO, JobsMasterFilters } from './Types'
 
 export const JobListViewType = {
     LOADING: 'LOADING',
@@ -63,37 +40,16 @@ export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJobButtonLabel: 'Create Job',
 }
 
-export const JobsFilterTypeText = {
-    PROJECT: 'team',
-    APP_STATUS: 'appStatus',
-    StatusText: 'Status',
-    SearchStatus: 'Search job status',
-    ProjectText: 'Projects',
-    SearchProject: 'Search Project',
-    ENVIRONMENT: 'environment',
-    EnvironmentText: 'Environments',
-    SearchEnvironment: 'Search Environment',
+export const INITIAL_EMPTY_MASTER_FILTERS: JobsMasterFilters = {
+    status: [],
+    projects: [],
+    environments: [],
 }
 
-export const JobsStatusConstants = {
-    APP_STATUS: {
-        noSpaceLower: 'appStatus',
-        normalText: 'App status',
-    },
-    PROJECT: {
-        pluralLower: 'projects',
-        lowerCase: 'project',
-    },
-    ENVIRONMENT: {
-        pluralLower: 'environments',
-        lowerCase: 'environment',
-    },
-}
-
-export const JOB_STATUS = {
-    Starting: 'Starting',
-    Running: 'Running',
-    Succeeded: 'Succeeded',
-    Cancelled: 'CANCELLED',
-    Failed: 'Failed',
-}
+export const JOB_STATUS_OPTIONS = [
+    { label: JobListStatus.SUCCEEDED, value: JobListStatusDTO.SUCCEEDED },
+    { label: JobListStatus.STARTING, value: JobListStatusDTO.STARTING },
+    { label: JobListStatus.RUNNING, value: JobListStatusDTO.RUNNING },
+    { label: JobListStatus.CANCELLED, value: JobListStatusDTO.CANCELLED },
+    { label: JobListStatus.FAILED, value: JobListStatusDTO.FAILED },
+]

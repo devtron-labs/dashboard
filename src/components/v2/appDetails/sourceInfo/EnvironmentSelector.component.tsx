@@ -23,11 +23,12 @@ import {
     ForceDeleteDialog,
     ServerErrors,
     DeploymentAppTypes,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
 import { useSharedState } from '../../utils/useSharedState'
@@ -172,7 +173,10 @@ const EnvironmentSelectorComponent = ({
                 setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 showForceDeleteDialog(false)
-                toast.success('Deletion initiated successfully.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deletion initiated successfully.',
+                })
                 if (typeof _init === 'function') {
                     _init()
                 }

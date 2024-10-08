@@ -160,7 +160,7 @@ export default function ConfigureLinkAction({
                         placeholder="Link name"
                         value={link.name}
                         onChange={onNameChange}
-                        handleOnBlur={validateAndUpdateLinksData}
+                        onBlur={validateAndUpdateLinksData}
                         data-testid="external-link-name-input"
                         error={link.invalidName && CONFIGURE_LINK_NO_NAME}
                     />

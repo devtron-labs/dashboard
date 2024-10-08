@@ -22,3 +22,8 @@ export interface PodPopupProps {
     toggleShowDeleteConfirmation: () => void
     handleShowVulnerabilityModal: () => void
 }
+
+export interface NodePodStatus {
+    running: number
+    all: number
+}

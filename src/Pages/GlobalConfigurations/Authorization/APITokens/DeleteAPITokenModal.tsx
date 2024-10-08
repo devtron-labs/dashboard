@@ -16,8 +16,7 @@
 
 import { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DeleteDialog, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({
@@ -42,7 +41,10 @@ const DeleteAPITokenModal = ({
             const { result } = await deleteGeneratedAPIToken(tokenData.id)
 
             if (result) {
-                toast.success('Deleted successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted successfully',
+                })
                 reload()
 
                 if (isEditView) {

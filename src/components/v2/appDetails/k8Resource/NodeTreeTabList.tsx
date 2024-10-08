@@ -99,7 +99,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                         className={`${
                             tab.name !== AppDetailsTabs.k8s_Resources && tab.name !== AppDetailsTabs.log_analyzer
                                 ? 'mr-8'
-                                : 'ml-8 dc__capitalize '
+                                : 'ml-6 dc__capitalize '
                         } fs-12 `}
                     >
                         {tab.name}
@@ -116,7 +116,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
     return (
         <div
             data-testid="resource-tree-wrapper"
-            className="resource-tree-wrapper flexbox pl-20 pr-20 dc__position-sticky dc__zi-10"
+            className="resource-tree-wrapper flexbox px-12 dc__position-sticky dc__zi-10"
             style={{ outline: 'none', top: '77px' }}
             tabIndex={0}
             ref={tabRef}

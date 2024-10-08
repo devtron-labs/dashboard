@@ -140,12 +140,3 @@ export const renderAdditionalErrorInfo = (
         )
     )
 }
-
-export const renderToastMessage = (title: string, description: string) => {
-    return (
-        <>
-            {title}
-            {!!description && <p className="m-0 cr-5">{description}</p>}
-        </>
-    )
-}

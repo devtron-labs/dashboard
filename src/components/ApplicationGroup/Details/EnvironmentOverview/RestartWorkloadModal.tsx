@@ -76,10 +76,13 @@ export const RestartWorkloadModal = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
+
     const { searchParams } = useSearchString()
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
+
+    const isCurrentSelected = !Array.isArray(selectedAppDetailsList)
 
     usePrompt({ shouldPrompt: statusModalLoading })
 
@@ -112,10 +115,9 @@ export const RestartWorkloadModal = ({
         history.push({ search: new URLSearchParams(newParams).toString() })
     }
 
-    const getPodsToRotate = async () => {
+    const getPodsToRotate = async (selectedAppIds: number[]) => {
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
-        const selectedAppIds = selectedAppDetailsList.map((appDetail) => appDetail.appId)
 
         return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
@@ -168,12 +170,25 @@ export const RestartWorkloadModal = ({
             })
     }
 
+    const getInitialState = async () => {
+        const selectedAppIds = (isCurrentSelected ? [selectedAppDetailsList] : selectedAppDetailsList).map(
+            (appDetail) => appDetail.appId,
+        )
+        if (selectedAppIds.length > 0) {
+            await getPodsToRotate(selectedAppIds)
+        } else {
+            const newParams = { ...searchParams }
+            delete newParams.modal
+            history.push({ search: new URLSearchParams(newParams).toString() })
+        }
+    }
+
     useEffect(() => {
         if (!location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getPodsToRotate()
+        getInitialState()
     }, [location])
 
     const toggleWorkloadCollapse = (appId: number) => {
@@ -415,7 +430,7 @@ export const RestartWorkloadModal = ({
             return (
                 <div className="drawer-section__empty flex">
                     <GenericEmptyState
-                        title={`Fetching workload for ${selectedAppDetailsList.length} Applications`}
+                        title={`Fetching workload for ${isCurrentSelected ? selectedAppDetailsList.application : `${selectedAppDetailsList.length} Applications`}`}
                         subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                         SvgImage={MechanicalIcon}
                     />
@@ -492,12 +507,35 @@ export const RestartWorkloadModal = ({
     }
 
     const postRestartPodBatchFunction = (payload) => () =>
-        postRestartWorkloadRotatePods(payload).then((response) => {
-            if (response.result) {
-                // showing the status modal in case batch promise resolved
-                updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
-            }
-        })
+        postRestartWorkloadRotatePods(payload)
+            .then((response) => {
+                if (response.result) {
+                    // showing the status modal in case batch promise resolved
+                    updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
+                }
+            })
+            .catch((serverError) => {
+                if (serverError.code === 409) {
+                    serverError.errors.map(({ userMessage }) => {
+                        const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
+                        const _resources: ResourcesMetaDataMap = _bulkRotatePodsMap[payload.appId].resources
+
+                        // Iterate through the Map and update errorResponse
+                        Object.keys(_resources).forEach((kindName) => {
+                            _resources[kindName].containsError = true
+                            _resources[kindName].errorResponse = userMessage
+                        })
+
+                        _bulkRotatePodsMap[payload.appId].failedCount = Object.keys(_resources).length
+                        _bulkRotatePodsMap[payload.appId].errorResponse = userMessage
+                        _bulkRotatePodsMap[payload.appId].resources = _resources
+                        // Updating the state with the modified map
+                        setBulkRotatePodsMap(_bulkRotatePodsMap)
+
+                        return null
+                    })
+                }
+            })
 
     const createFunctionCallsFromRestartPodMap = () => {
         // default case for restart workload for all apps

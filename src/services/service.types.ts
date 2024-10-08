@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, DeploymentStrategy, ResponseType, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentStrategy,
+    EnvListMinDTO,
+    ResponseType,
+    SeverityCount,
+    Teams,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -106,6 +113,7 @@ export interface LastExecutionMinResponseType {
         lastExecution: string
         imageScanDeployInfoId: number
         severityCount: SeverityCount
+        scanned: boolean
     }
 }
 
@@ -144,6 +152,7 @@ export interface Cluster {
     errorInConnecting?: string
     isVirtualCluster?: boolean
 }
+
 export interface LoginCountType extends ResponseType {
     result?: LoginCount
 }
@@ -172,4 +181,10 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface ClusterEnvTeams {
+    clusters: Cluster[]
+    environments: EnvListMinDTO[]
+    teams: Teams[]
 }

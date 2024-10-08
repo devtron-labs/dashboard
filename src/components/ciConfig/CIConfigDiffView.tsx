@@ -26,10 +26,11 @@ import {
     WorkflowNodeType,
     CommonNodeAttr,
     WorkflowType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -135,7 +136,10 @@ export default function CIConfigDiffView({
 
     const getCIPipelineModalURL = ({ ciNode, workflowId }: GetCIPipelineModalURLType): string => {
         if (!ciNode) {
-            toast.error('Invalid Pipeline')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Pipeline',
+            })
             return
         }
 
@@ -240,19 +244,28 @@ export default function CIConfigDiffView({
 
                     if (response) {
                         setShowDeleteDialog(false)
-                        toast.success('Deleted successfully!')
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: 'Deleted successfully!',
+                        })
                         reload(true)
                         return
                     }
                 }
-                toast.error('Unable to delete override! Please try again after sometime.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Unable to delete override! Please try again after sometime.',
+                })
             } catch (e) {
                 showError(e)
             } finally {
                 setDeleteInProgress(false)
             }
         } else {
-            toast.error('Unable to delete override! Please try again after sometime.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Unable to delete override! Please try again after sometime.',
+            })
         }
     }
 

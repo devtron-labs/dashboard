@@ -28,7 +28,7 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { OrderBy, SortBy } from '../../app/list/types'
-import { Job, JobListViewProps } from '../Types'
+import { Job, JobListViewProps, JobsListSortableKeys } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
@@ -39,6 +39,8 @@ import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 export default function JobListView(props: JobListViewProps) {
     const history = useHistory()
     const location = useLocation()
+
+    const handleJobNameSorting = () => props.handleSorting(JobsListSortableKeys.APP_NAME)
 
     const expandEnv = (event): void => {
         event.stopPropagation()
@@ -55,11 +57,6 @@ export default function JobListView(props: JobListViewProps) {
 
     const closeExpandedRow = (event): void => {
         props.closeExpandedRow(event.currentTarget.dataset.key)
-    }
-
-    const sortByAppName = (e) => {
-        e.preventDefault()
-        props.sort('appNameSort')
     }
 
     const toggleAllExpandRow = () => {
@@ -161,7 +158,7 @@ export default function JobListView(props: JobListViewProps) {
                     <div className="app-list__cell">
                         <button
                             className="app-list__cell-header flex"
-                            onClick={sortByAppName}
+                            onClick={handleJobNameSorting}
                             data-testid="job-name-header"
                         >
                             {JOB_LIST_HEADERS.Name}
@@ -203,7 +200,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="flex dc__content-space px-20 dc__border-top"
+                    rootClassName="flex dc__content-space px-20 bcn-0"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}
@@ -229,7 +226,7 @@ export default function JobListView(props: JobListViewProps) {
         return (
             <JobsEmptyState
                 view={props.view}
-                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearAll}
+                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearFilters}
             />
         )
     }

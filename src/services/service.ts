@@ -23,9 +23,11 @@ import {
     TeamList,
     trash,
     LastExecutionResponseType,
-    DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    getUrlWithSearchParams,
+    ROUTES,
+    SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -40,11 +42,13 @@ import {
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
+    ClusterEnvTeams,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
+import { getProjectList } from '@Components/project/service'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -168,9 +172,49 @@ export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): 
     return get(url)
 }
 
-export function getAppFilters() {
-    return get(`${Routes.APP_FILTER_LIST}?auth=false`)
+export const getCommonAppFilters = async (
+    serverMode: SERVER_MODE,
+): Promise<
+    | {
+          isFullMode: true
+          appListFilters: Awaited<ReturnType<typeof getAppFilters>>
+          projectList?: never
+          clusterList?: never
+      }
+    | {
+          isFullMode: false
+          appListFilters?: never
+          projectList?: Awaited<ReturnType<typeof getProjectList>>
+          clusterList?: Awaited<ReturnType<typeof getClusterListMinWithoutAuth>>
+      }
+> => {
+    if (serverMode === SERVER_MODE.FULL) {
+        const response = await Promise.all([getAppFilters()])
+        return {
+            isFullMode: true,
+            appListFilters: response[0],
+        }
+    }
+    const response = await Promise.all([
+        getProjectList(),
+        getClusterListMinWithoutAuth(),
+    ])
+    return {
+        isFullMode: false,
+        clusterList: response[1],
+        projectList: response[0],
+    }
 }
+
+export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> =>
+    get(getUrlWithSearchParams(Routes.APP_FILTER_LIST, { auth: false })).then((response) => ({
+        ...response,
+        result: {
+            clusters: response.result?.Clusters ?? [],
+            environments: response.result?.Environments ?? [],
+            teams: response.result?.Teams ?? [],
+        },
+    }))
 
 /**
  * @deprecated Use getEnvironmentListMinPublic form common lib instead
@@ -264,11 +308,6 @@ export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVeri
     return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
-function getLastExecution(queryString: number | string): Promise<ResponseType> {
-    const URL = `security/scan/executionDetail?${queryString}`
-    return get(URL)
-}
-
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     const vulnerabilities = response.result.vulnerabilities || []
     const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
@@ -301,55 +340,13 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
     }
 }
 
-export function getLastExecutionByImage(image: string): Promise<LastExecutionResponseType> {
-    const queryString = `image=${image}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByArtifactId(
-    appId: string | number,
-    artifact: string | number,
+export function getLastExecutionByAppArtifactId(
+    artifactId: string | number,
+    appId?: string | number,
 ): Promise<LastExecutionResponseType> {
-    const queryString = `artifactId=${artifact}&appId=${appId}`
-    return getLastExecution(queryString).then((response) => {
+    const url = getUrlWithSearchParams(ROUTES.SECURITY_SCAN_EXECUTION_DETAILS, { appId, artifactId })
+    return get(url).then((response) => {
         return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByImageScanDeploy(
-    imageScanDeployInfoId: string | number,
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `imageScanDeployInfoId=${imageScanDeployInfoId}&appId=${appId}&envId=${envId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionMinByAppAndEnv(
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionMinResponseType> {
-    const URL = `security/scan/executionDetail/min?appId=${appId}&envId=${envId}`
-    return get(URL).then((response) => {
-        return {
-            code: response.code,
-            status: response.status,
-            result: {
-                lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
-                imageScanDeployInfoId: response.result.imageScanDeployInfoId,
-                severityCount: {
-                    critical: response.result.severityCount.critical,
-                    high: response.result.severityCount.high,
-                    medium: response.result.severityCount.medium,
-                    low: response.result.severityCount.low,
-                    unknown: response.result.severityCount.unknown,
-                },
-            },
-        }
     })
 }
 

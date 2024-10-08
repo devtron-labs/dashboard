@@ -30,9 +30,10 @@ import {
     RuntimeParamsListItemType,
     ModuleNameMap,
     SourceTypeMap,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -215,7 +216,10 @@ const BulkCITrigger = ({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
+            })
             return
         }
 
@@ -294,7 +298,10 @@ const BulkCITrigger = ({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
+            })
             return
         }
 
