@@ -715,12 +715,6 @@ export const ConfigMapSecretForm = React.memo(
             return null
         }
 
-        const trimConfigMapName = (): void => {
-            dispatch({
-                type: ConfigMapActionTypes.setConfigName,
-                payload: { ...state.configName, value: state.configName.value.trim() },
-            })
-        }
         const renderRollARN = (): JSX.Element => {
             if (isHashiOrAWS || isESO) {
                 return (
@@ -953,7 +947,6 @@ export const ConfigMapSecretForm = React.memo(
                     value={state.configName.value}
                     autoFocus
                     onChange={onConfigNameChange}
-                    onBlur={trimConfigMapName}
                     placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
                     isRequiredField
                     disabled={!!configMapSecretData?.name}

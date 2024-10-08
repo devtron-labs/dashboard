@@ -48,7 +48,7 @@ const TargetPlatformSelector = ({
         }
     }
 
-    const handleCreateNewOption: SelectPickerProps<string, true>['multiSelectProps']['onCreateOption'] = (
+    const handleCreateNewOption: SelectPickerProps<string, boolean>['onCreateOption'] = (
         inputValue,
     ): void => {
         const _selectedTargetPlatforms = [
@@ -118,10 +118,8 @@ const TargetPlatformSelector = ({
                 <SelectPicker
                     value={selectedTargetPlatforms}
                     isMulti
-                    multiSelectProps={{
-                        isCreatable: true,
-                        onCreateOption: handleCreateNewOption,
-                    }}
+                    isCreatable
+                    onCreateOption={handleCreateNewOption}
                     name="targetPlatform"
                     placeholder="Type to select or create"
                     options={TARGET_PLATFORM_LIST}
