@@ -24,7 +24,6 @@ import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { groupStyle } from '../../common/ReactSelect.utils'
 
 export const getCompareValuesSelectStyles = () => ({
     control: (base) => ({
@@ -176,23 +175,6 @@ export const getAndUpdateSchemaValue = (
             schemaJson,
         },
     })
-}
-
-export const envGroupStyle = {
-    ...groupStyle(),
-    control: (base) => ({
-        ...base,
-        border: '1px solid #d6dbdf',
-        background: 'var(--N50)',
-        minHeight: '32px',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        color: 'var(--N400)',
-        padding: '0 8px',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
 }
 
 export const updateYamlDocument = (

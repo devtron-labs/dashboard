@@ -17,11 +17,11 @@
 import React, { useState, useEffect } from 'react'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { sortObjectArrayAlphabetically } from '../common'
+import { getGitProviderIcon, sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
 import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { CIConfigProps } from './types'
+import { CIConfigProps, MaterialOptionType } from './types'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
 
@@ -53,6 +53,7 @@ export default function CIConfig({
         }
     }, [])
 
+
     async function initialise() {
         try {
             setLoading(true)
@@ -66,7 +67,17 @@ export default function CIConfig({
             sourceConfig &&
                 Array.isArray(sourceConfig.material) &&
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
-            setSourceConfig(sourceConfig)
+                const _sourceConfig = { ...sourceConfig }
+                const sourceConfigMaterial = sourceConfig.material?.map((material: MaterialOptionType) => {
+                    return {
+                        ...material,
+                        label: material?.name || '',
+                        value: material?.id || '',
+                        startIcon: getGitProviderIcon(material.url) || '',
+                    }
+                })
+                _sourceConfig.material = sourceConfigMaterial
+                setSourceConfig(_sourceConfig)
             setCIConfig(ciConfig)
 
             if (setParentState) {

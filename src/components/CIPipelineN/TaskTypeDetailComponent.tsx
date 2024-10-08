@@ -26,7 +26,6 @@ import {
     CustomInput,
     ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import OutputDirectoryPath from './OutputDirectoryPath'
@@ -37,11 +36,12 @@ import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
-import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import CreatableSelect from 'react-select/creatable'
+import { containerImageSelectStyles } from './ciPipeline.utils'
+import { ValueContainerImage as ValueContainer } from '@Components/app/details/appDetails/utils'
 
 export const TaskTypeDetailComponent = () => {
     const {
@@ -221,6 +221,12 @@ export const TaskTypeDetailComponent = () => {
             </components.MenuList>
         )
     }
+
+    const renderMenuListFooter = () => (
+        <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+            Type to enter a custom value. Press Enter to accept.
+        </div>
+    )
 
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail

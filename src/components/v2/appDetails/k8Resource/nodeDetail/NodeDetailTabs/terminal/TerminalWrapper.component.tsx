@@ -32,7 +32,7 @@ export default function TerminalWrapper({
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
-            <div className="flex left w-100">
+            <div className="flex left w-100 dc__gap-10 dc__zi-13">
                 {selectionListData.firstRow.map((ele) => {
                     return terminalStripTypeData(ele)
                 })}
@@ -77,7 +77,7 @@ export default function TerminalWrapper({
         <div className={className} data-testid={dataTestId}>
             <div className="flex bcn-0 pl-20 h-32 terminal-action-strip dc__zi-11">{firstStrip()}</div>
             {selectionListData.secondRow && (
-                <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip">{secondStrip()}</div>
+                <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip dc__gap-12">{secondStrip()}</div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())

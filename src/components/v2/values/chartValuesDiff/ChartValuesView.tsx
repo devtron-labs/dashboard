@@ -1626,7 +1626,7 @@ const ChartValuesView = ({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
-                    <div className="chart-values-view__details dc__border-right dc__overflow-scroll">
+                    <div className="flexbox-col dc__gap-12 chart-values-view__details dc__border-right dc__overflow-scroll">
                         {isCreateValueView && (
                             <ValueNameInput
                                 valueName={valueName}
@@ -1698,7 +1698,7 @@ const ChartValuesView = ({
                                 selectedEnvironment={commonState.selectedEnvironment}
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
-                                invalidaEnvironment={commonState.invalidaEnvironment}
+                                invalidEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
