@@ -205,9 +205,9 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                         errorType: _nodeError,
                         filterText: clusterCapacityResponse.value.result.nodeErrors[_nodeError],
                     })
-                    setClusterErrorList(_errorList)
                 }
             }
+            setClusterErrorList(_errorList)
         } else {
             setErrorCode(clusterCapacityResponse.reason['code'])
         }
@@ -259,7 +259,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
             return
         }
         return (
-            <div className="mb-16 dc__border br-4 pt-12">
+            <div className="mb-16 dc__border br-4 pt-12 bcn-0">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">

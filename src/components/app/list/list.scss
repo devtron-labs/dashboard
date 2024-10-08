@@ -28,6 +28,7 @@
     z-index: var(--page-header-index);
 }
 
+// TODO (Arun): Remove unused css after filter clean up
 .app-list-filters.filters .filter {
     min-width: unset;
     flex-basis: unset;

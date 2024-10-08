@@ -194,6 +194,7 @@ export interface useFilterOptionsProps
         | 'isExternalFlux'
     > {}
 
-export interface GetDevtronHelmAppListParamsType extends Pick<HelmAppListProps, 'clusterIdsCsv'> {
+export interface GetDevtronHelmAppListParamsType {
     appStatuses: string
+    clusterIds: string
 }

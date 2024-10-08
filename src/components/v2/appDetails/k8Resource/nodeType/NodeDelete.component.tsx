@@ -221,6 +221,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                     isLoading={resourceScanLoading}
                     error={resourceScanError}
                     responseData={resourceScanResponse?.result}
+                    hidePolicy
                 />
             )}
             {renderDeleteResourcePopup()}

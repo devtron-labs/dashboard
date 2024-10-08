@@ -20,6 +20,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
+import { useMainContext, LogResizeButton, IS_PLATFORM_MAC_OS } from '@devtron-labs/devtron-fe-common-lib'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
@@ -27,7 +28,6 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
-import { useMainContext, LogResizeButton } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
 
 export default function TerminalView({
@@ -295,11 +295,11 @@ export default function TerminalView({
                 data-testid="terminal-editor-container"
                 className={`mt-8 mb-4 terminal-component ${
                     fullScreenView ? 'terminal-component--fullscreen' : ''
-                } ml-20 ${!isResourceBrowserView && !fullScreenView ? 'terminal-component__zoom--bottom-41' : ''}`}
+                } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
             >
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton
-                    shortcutCombo={['Control', 'Shift', 'F']}
+                    shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
                     showOnlyWhenPathIncludesLogs={false}
                     fullScreenView={fullScreenView}
                     setFullScreenView={handleToggleFullscreen}

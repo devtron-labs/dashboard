@@ -36,7 +36,7 @@ import { createNewResource } from '../ResourceBrowser.service'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clusterId }) => {
-    const { setRegisterShortcut } = useRegisterShortcut()
+    const { setDisableShortcuts } = useRegisterShortcut()
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
@@ -77,10 +77,10 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }, [outsideClickHandler])
 
     useEffect(() => {
-        setRegisterShortcut(false)
+        setDisableShortcuts(true)
 
         return () => {
-            setRegisterShortcut(true)
+            setDisableShortcuts(false)
         }
     }, [])
 

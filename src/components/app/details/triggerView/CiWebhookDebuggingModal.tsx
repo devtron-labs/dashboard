@@ -171,7 +171,7 @@ export default function CiWebhookModal({
                             >
                                 <div>
                                     Received at{' '}
-                                    <button className="dc__transparent filter-icon">
+                                    <button className="dc__transparent fs-12 dc__align-right">
                                         <i className="fa fa-caret-down" />
                                     </button>
                                 </div>

@@ -260,12 +260,12 @@ export default function EnvironmentOverview({
     }
 
     const openHibernateModalPopup = () => {
-        setIsDeploymentLoading(true)
+        setIsDeploymentLoading(!!processDeploymentWindowAppGroupOverviewMap)
         setOpenedHibernateModalType(MODAL_TYPE.HIBERNATE)
     }
 
     const openUnHibernateModalPopup = () => {
-        setIsDeploymentLoading(true)
+        setIsDeploymentLoading(!!processDeploymentWindowAppGroupOverviewMap)
         setOpenedHibernateModalType(MODAL_TYPE.UNHIBERNATE)
     }
 

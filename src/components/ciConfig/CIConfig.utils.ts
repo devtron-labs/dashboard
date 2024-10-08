@@ -182,7 +182,7 @@ export const initCurrentCIBuildConfig = (
                 dockerfileContent: '',
                 buildContext: buildContextValue,
             },
-            gitMaterialId: selectedMaterial?.id,
+            gitMaterialId: selectedMaterial?.value,
             buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
             useRootBuildContext,
         }
@@ -196,7 +196,7 @@ export const initCurrentCIBuildConfig = (
                 dockerfileContent: '',
                 buildContext: buildContextValue,
             },
-            gitMaterialId: selectedMaterial?.id,
+            gitMaterialId: selectedMaterial?.value,
             buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
             useRootBuildContext,
         }
@@ -209,7 +209,7 @@ export const initCurrentCIBuildConfig = (
             dockerfileContent: '',
             buildContext: buildContextValue,
         },
-        gitMaterialId: selectedMaterial?.id,
+        gitMaterialId: selectedMaterial?.value,
         buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         useRootBuildContext,
     }
