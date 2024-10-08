@@ -34,10 +34,11 @@ import {
     ReleaseMode,
     ToastVariantType,
     ToastManager,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import Select, { components } from 'react-select'
+import Select from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
@@ -894,26 +895,25 @@ export const EnvSelector = ({
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {
+            const Option = {
+                label: env.environmentName,
+                value: env.environmentId,
+                description: env.description,
+            }
             const key = env.isVirtualEnvironment ? 'Isolated environments' : ''
             const found = acc.find((item) => item.label === key)
 
             if (found) {
-                found.options.push({
-                    label: env.environmentName,
-                    value: env.environmentId,
-                    description: env.description,
-                })
+                found.options.push(Option)
             } else {
-                acc.push({
-                    label: key,
-                    options: [
-                        {
-                            label: env.environmentName,
-                            value: env.environmentId,
-                            description: env.description,
-                        },
-                    ],
-                })
+                if (key.length > 0) {
+                    acc.push({
+                        label: key,
+                        options: [Option],
+                    })
+                } else {
+                    acc.push(Option)
+                }
             }
 
             return acc
@@ -943,23 +943,15 @@ export const EnvSelector = ({
                 </div>
             </div>
             <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
-                <Select
+                <SelectPicker
+                    inputId='app-environment-select'    
                     placeholder="Select Environment"
                     options={groupList}
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                        GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
-                        DropdownIndicator: components.DropdownIndicator,
-                        ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
-                    }}
-                    styles={envSelectorStyle}
                     isSearchable
                     classNamePrefix="app-environment-select"
-                    formatOptionLabel={formatOptionLabel}
                 />
             </div>
         </>
