@@ -20,6 +20,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
+import { IS_PLATFORM_MAC_OS } from '@devtron-labs/devtron-fe-common-lib'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
@@ -299,7 +300,7 @@ export default function TerminalView({
             >
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton
-                    shortcutCombo={['Control', 'Shift', 'F']}
+                    shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
                     showOnlyWhenPathIncludesLogs={false}
                     fullScreenView={fullScreenView}
                     setFullScreenView={handleToggleFullscreen}
