@@ -124,6 +124,7 @@
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
+        "relative-deps": "^1.0.7",
         "sass": "^1.69.7",
         "storybook": "^8.2.9",
         "ts-jest": "29.2.5",
@@ -157,5 +158,9 @@
             "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
+    },
+    "relativeDependencies": {
+        "@devtron-labs/devtron-fe-common-lib": "../devtron-fe-common-lib",
+        "@devtron-labs/devtron-fe-lib": "../devtron-fe-lib"
     }
 }
