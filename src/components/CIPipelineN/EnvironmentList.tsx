@@ -96,18 +96,20 @@ export const EnvironmentList = ({
         >
             <div className={`${!isBuildStage ? 'w-250 dc__align-items-center flex left' : ''}`}>
                 {getEnvironmentSelectLabel()}
-                <SelectPicker
-                    required
-                    inputId="job-pipeline-environment-dropdown"
-                    name="job-pipeline-environment-dropdown"
-                    classNamePrefix="job-pipeline-environment-dropdown"
-                    placeholder="Select Environment"
-                    options={getEnvListOptions()}
-                    value={getSelectedEnvironment()}
-                    onChange={selectEnvironment}
-                    size={ComponentSizeType.large}
-                    variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
-                />
+                <div className="dc__no-shrink">
+                    <SelectPicker
+                        required
+                        inputId="job-pipeline-environment-dropdown"
+                        name="job-pipeline-environment-dropdown"
+                        classNamePrefix="job-pipeline-environment-dropdown"
+                        placeholder="Select Environment"
+                        options={getEnvListOptions()}
+                        value={getSelectedEnvironment()}
+                        onChange={selectEnvironment}
+                        size={ComponentSizeType.large}
+                        variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
+                    />
+                </div>
             </div>
         </div>
     )
