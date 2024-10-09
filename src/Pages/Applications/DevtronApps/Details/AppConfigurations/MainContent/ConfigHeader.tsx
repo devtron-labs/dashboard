@@ -61,42 +61,44 @@ const ConfigHeader = ({
     showNoOverride,
     parsingError,
     restoreLastSavedYAML,
-    hideDryRunTab,
+    hideDryRunTab = false,
 }: ConfigHeaderProps) => {
     const validTabKeys = isOverridable
         ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
         : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE
-    const activeTabIndex = validTabKeys.indexOf(configHeaderTab)
+
+    const filteredTabKeys = validTabKeys.filter(
+        (currentTab: ConfigHeaderTabType) => !hideDryRunTab || currentTab !== ConfigHeaderTabType.DRY_RUN,
+    )
+
+    const activeTabIndex = filteredTabKeys.indexOf(configHeaderTab)
 
     return (
         <div className="flexbox w-100 dc__align-items-center">
-            {validTabKeys.map(
-                (currentTab: ConfigHeaderTabType, index: number) =>
-                    (!hideDryRunTab || currentTab !== ConfigHeaderTabType.DRY_RUN) && (
-                        <InvalidYAMLTippyWrapper
-                            key={currentTab}
-                            parsingError={parsingError}
-                            restoreLastSavedYAML={restoreLastSavedYAML}
-                        >
-                            <div>
-                                <ConfigHeaderTab
-                                    handleTabChange={handleTabChange}
-                                    tab={currentTab}
-                                    activeTabIndex={activeTabIndex}
-                                    currentTabIndex={index}
-                                    isDisabled={isDisabled}
-                                    areChangesPresent={areChangesPresent}
-                                    isOverridable={isOverridable}
-                                    showNoOverride={showNoOverride}
-                                    hasError={!!parsingError && currentTab === ConfigHeaderTabType.VALUES}
-                                />
-                            </div>
-                        </InvalidYAMLTippyWrapper>
-                    ),
-            )}
+            {filteredTabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
+                <InvalidYAMLTippyWrapper
+                    key={currentTab}
+                    parsingError={parsingError}
+                    restoreLastSavedYAML={restoreLastSavedYAML}
+                >
+                    <div>
+                        <ConfigHeaderTab
+                            handleTabChange={handleTabChange}
+                            tab={currentTab}
+                            activeTabIndex={activeTabIndex}
+                            currentTabIndex={index}
+                            isDisabled={isDisabled}
+                            areChangesPresent={areChangesPresent}
+                            isOverridable={isOverridable}
+                            showNoOverride={showNoOverride}
+                            hasError={!!parsingError && currentTab === ConfigHeaderTabType.VALUES}
+                        />
+                    </div>
+                </InvalidYAMLTippyWrapper>
+            ))}
 
             <div
-                className={`flex-grow-1 bc-n50 dc__border-bottom h-100 ${activeTabIndex >= 0 && activeTabIndex === validTabKeys.length - 1 ? 'dc__border-left' : ''}`}
+                className={`flex-grow-1 bc-n50 dc__border-bottom h-100 ${activeTabIndex >= 0 && activeTabIndex === filteredTabKeys.length - 1 ? 'dc__border-left' : ''}`}
             />
         </div>
     )
