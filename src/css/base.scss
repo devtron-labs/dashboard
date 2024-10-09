@@ -2096,10 +2096,6 @@ button.anchor {
     &--n7 {
         border-bottom: solid 1px var(--N700);
     }
-
-    &--y2 {
-        border-bottom: solid 1px var(--Y200);
-    }
 }
 
 .dc__border-bottom-dashed {
@@ -4944,4 +4940,17 @@ textarea::placeholder {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+// Beware to change any alignment as this will cause height diff in DeploymentTemplateGUIView.tsx
+.code-editor__warning {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
 }

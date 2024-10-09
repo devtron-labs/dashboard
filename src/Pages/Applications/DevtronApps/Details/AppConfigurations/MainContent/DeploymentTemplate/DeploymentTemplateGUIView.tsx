@@ -162,7 +162,7 @@ const DeploymentTemplateGUIView = ({
     return (
         <>
             {isUnSet && (
-                <div className="flexbox dc__gap-8 fs-12 fw-4 cn-9 py-8 px-16 dc__border-bottom--y2 bcy-1 dc__align-items-center lh-16">
+                <div className="flexbox dc__gap-8 dc__align-items-center code-editor__warning">
                     <ICWarningY5 className="icon-dim-16" />
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
