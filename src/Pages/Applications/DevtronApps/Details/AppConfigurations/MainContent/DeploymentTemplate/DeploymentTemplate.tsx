@@ -1456,16 +1456,18 @@ const DeploymentTemplate = ({
     const renderHeader = () => {
         if (showReadMe) {
             return (
-                <div className="flexbox dc__gap-8 px-12 py-6 dc__border-bottom">
+                <div className="flexbox dc__align-items-center dc__gap-8 px-12 py-6 dc__border-bottom">
                     <Button
-                        text="Readme"
-                        startIcon={<ICClose />}
+                        icon={<ICClose />}
                         onClick={handleDisableReadmeView}
                         dataTestId="close-readme-view-btn"
                         size={ComponentSizeType.xs}
                         style={ButtonStyleType.negativeGrey}
-                        variant={ButtonVariantType.text}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Close Readme"
+                        showAriaLabelInTippy={false}
                     />
+                    <span className="cn-9 fs-13 fw-6 lh-20">Readme</span>
                 </div>
             )
         }
