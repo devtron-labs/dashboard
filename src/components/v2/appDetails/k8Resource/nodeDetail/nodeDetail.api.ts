@@ -55,7 +55,7 @@ export const getManifestResource = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
-    if (getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP) {
+    if (getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP && !isResourceBrowserView) {
         return getDesiredAndLiveManifest(requestData)
     }
     return post(Routes.MANIFEST, requestData, { signal })
