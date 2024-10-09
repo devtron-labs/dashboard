@@ -85,7 +85,7 @@ const ManifestComponent = ({
     const [error, setError] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
     const [manifest, setManifest] = useState('')
-    const [normalizedLiveState, setNormalizedLiveManifest] = useState<string>('')
+    const [normalizedLiveManifest, setNormalizedLiveManifest] = useState<string>('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
 
@@ -112,6 +112,7 @@ const ManifestComponent = ({
         setDesiredManifest(manifestViewRef.current.data.desiredManifest)
         setManifest(manifestViewRef.current.data.manifest)
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
+        setNormalizedLiveManifest(manifestViewRef.current.data.normalizedLiveManifest)
 
         if (showManifestCompareView) {
             setActiveManifestEditorData(manifestViewRef.current.data.manifest)
@@ -135,11 +136,12 @@ const ManifestComponent = ({
                 manifest,
                 activeManifestEditorData,
                 modifiedManifest,
+                normalizedLiveManifest,
             },
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id])
+    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, normalizedLiveManifest, id])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -201,11 +203,11 @@ const ManifestComponent = ({
                             response[0]?.result?.manifestResponse?.manifest || response[0]?.result?.liveState || '',
                         )
                         setDesiredManifest(
-                            JSON.stringify(
-                                response[0]?.result?.predictedLiveState || response[1]?.result?.manifest || '',
-                            ),
+                            JSON.stringify(response[0]?.result?.predictedLiveState) ||
+                                response[1]?.result?.manifest ||
+                                '',
                         )
-                        setNormalizedLiveManifest(JSON.stringify(response[0]?.result?.normalizedLiveState))
+                        setNormalizedLiveManifest(JSON.stringify(response[0]?.result?.normalizedLiveState) || '')
 
                         if (_manifest) {
                             setManifest(_manifest)
@@ -499,7 +501,7 @@ const ManifestComponent = ({
                             height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
                             value={
                                 appDetails?.appType === AppType.DEVTRON_APP && showManifestCompareView
-                                    ? normalizedLiveState
+                                    ? normalizedLiveManifest
                                     : trimedManifestEditorData
                             } // In case of devtron apps we compare normalized values
                             mode={MODES.YAML}
@@ -528,17 +530,21 @@ const ManifestComponent = ({
                                     {renderShowDecodedValueCheckbox()}
                                 </CodeEditor.Information>
                             )}
-                            {!loading && !error && 'hasDrift' in _selectedResource && _selectedResource.hasDrift && !showManifestCompareView && (
-                                <div className="flexbox bcy-8 cn-0 px-20 py-4 dc__gap-8">
-                                    <span>Out of sync from desired manifest.</span>
-                                    <button
-                                        className="dc__unset-button-styles dc__underline"
-                                        onClick={handleDesiredManifestOpen}
-                                    >
-                                        Check configuration drift
-                                    </button>
-                                </div>
-                            )}
+                            {!loading &&
+                                !error &&
+                                'hasDrift' in _selectedResource &&
+                                _selectedResource.hasDrift &&
+                                !showManifestCompareView && (
+                                    <div className="flexbox bcy-8 cn-0 px-20 py-4 dc__gap-8">
+                                        <span>Out of sync from desired manifest.</span>
+                                        <button
+                                            className="dc__unset-button-styles dc__underline"
+                                            onClick={handleDesiredManifestOpen}
+                                        >
+                                            Check configuration drift
+                                        </button>
+                                    </div>
+                                )}
                             {showManifestCompareView && (
                                 <CodeEditor.Header hideDefaultSplitHeader className="p-0">
                                     <div className="dc__split-header">

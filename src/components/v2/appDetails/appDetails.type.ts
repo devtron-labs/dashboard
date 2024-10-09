@@ -471,6 +471,7 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
+        normalizedLiveManifest: string
     }
     id: string
 }

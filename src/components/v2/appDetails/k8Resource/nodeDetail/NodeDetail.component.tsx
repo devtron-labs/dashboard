@@ -158,6 +158,7 @@ const NodeDetailComponent = ({
             manifest: '',
             activeManifestEditorData: '',
             modifiedManifest: '',
+            normalizedLiveManifest: '',
         },
         id: '',
     })
