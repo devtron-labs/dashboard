@@ -6,6 +6,7 @@ import {
     SelectPickerOptionType,
     SelectPickerVariantType,
     DOCUMENTATION_HOME_PAGE,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
@@ -35,6 +36,8 @@ const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisab
                 options={MERGE_STRATEGY_OPTIONS}
                 isDisabled={isDisabled}
                 variant={SelectPickerVariantType.BORDER_LESS}
+                isSearchable={false}
+                size={ComponentSizeType.small}
             />
         </div>
     )
