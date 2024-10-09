@@ -295,7 +295,8 @@ export const ConfigMapSecretContainer = ({
         isEnvConfigLoading ||
         (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
-    const showConfigToolbar = cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || draftData || hideNoOverrideEmptyState
+    const showConfigToolbar =
+        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || !!draftData || hideNoOverrideEmptyState
 
     // ERROR HANDLING
     useEffect(() => {
@@ -585,13 +586,11 @@ export const ConfigMapSecretContainer = ({
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
         isProtected && draftData ? (
             <ConfigMapSecretProtected
-                appName={appName}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentName={componentName}
                 publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
                 draftData={resolvedDraftData ?? draftData}
                 inheritedConfigMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
-                envName={envName}
                 id={id}
                 onError={onError}
                 onSubmit={onSubmit}

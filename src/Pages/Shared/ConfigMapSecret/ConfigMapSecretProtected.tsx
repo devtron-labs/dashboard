@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import YAML from 'yaml'
 
 import {
-    abortPreviousRequests,
     Button,
     ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
@@ -12,7 +11,6 @@ import {
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    useAsync,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -21,9 +19,8 @@ import CompareConfigView from '@Pages/Applications/DevtronApps/Details/AppConfig
 import NoPublishedVersionEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoPublishedVersionEmptyState'
 import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
-import { getConfigMapSecretConfigData } from './ConfigMapSecret.service'
-import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
-import { getConfigMapSecretDataFromFormData, getConfigMapSecretReadOnlyValues } from './utils'
+import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
+import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
@@ -32,8 +29,6 @@ import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy', null, 'function')
 
 export const ConfigMapSecretProtected = ({
-    appName,
-    envName,
     id,
     draftData,
     componentType,
@@ -60,73 +55,30 @@ export const ConfigMapSecretProtected = ({
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
         useState<CompareFromApprovalOptionsValuesType>(CompareFromApprovalOptionsValuesType.APPROVAL_PENDING)
 
-    // REFS
-    const abortControllerRef = useRef<AbortController>(new AbortController())
-
     // CONSTANTS
     const isApprovalView =
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE && draftData.draftState === DraftState.AwaitApproval
     const isApprovalPendingOptionSelected =
         isApprovalView && compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
 
-    // ASYNC CALLS
-    const [protectedSecretDataResLoading, protectedSecretDataRes] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    getConfigMapSecretConfigData({
-                        appName,
-                        envName,
-                        resourceId: id,
-                        name: publishedConfigMapSecretData.name,
-                        componentType,
-                        appId: null,
-                        envId: null,
-                        abortControllerRef,
-                    }),
-                abortControllerRef,
-            ),
-        [],
-        draftData.action === DraftAction.Delete &&
-            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
-            componentType === CMSecretComponentType.Secret &&
-            !publishedConfigMapSecretData?.unAuthorized,
+    // DATA
+    const configMapSecretData = useMemo<CMSecretConfigData>(
+        () => ({ ...JSON.parse(draftData.data).configData?.[0], unAuthorized: !draftData.isAppAdmin }),
+        [draftData],
     )
-
-    const protectedSecretData = useMemo<CMSecretConfigData>(() => {
-        if (!protectedSecretDataResLoading && protectedSecretDataRes) {
-            const { data } = protectedSecretDataRes.secretsData
-            if (data.configData?.length) {
-                return { ...publishedConfigMapSecretData, unAuthorized: false }
-            }
-
-            return null
-        }
-
-        return null
-    }, [protectedSecretDataResLoading, protectedSecretDataRes])
-
-    const configMapSecretData = useMemo<CMSecretConfigData>(() => {
-        if (
-            selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED &&
-            cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED
-        ) {
-            return null
-        }
-
-        return draftData.action === DraftAction.Delete &&
-            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
-            componentType === CMSecretComponentType.Secret
-            ? protectedSecretData
-            : { ...JSON.parse(draftData.data).configData?.[0], unAuthorized: !draftData.isAppAdmin }
-    }, [selectedProtectionViewTab, draftData, cmSecretStateLabel, publishedConfigMapSecretData, protectedSecretData])
 
     const currentConfigMapSecretData = useMemo(
         () =>
             resolvedFormData ?? formDataRef.current
-                ? getConfigMapSecretDataFromFormData(resolvedFormData ?? formDataRef.current, configMapSecretData)
+                ? {
+                      ...configMapSecretData,
+                      ...getConfigMapSecretPayload({
+                          ...(resolvedFormData ?? formDataRef.current),
+                          skipEncode: configMapSecretData?.unAuthorized,
+                      }),
+                  }
                 : configMapSecretData,
-        [configMapSecretData],
+        [configMapSecretData, resolvedFormData],
     )
 
     // METHODS
@@ -240,7 +192,7 @@ export const ConfigMapSecretProtected = ({
         const hasAccess = hasApproverAccess(email, draftData.approvers)
 
         return (
-            <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12">
+            <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
                 {draftData.canApprove && hasAccess ? (
                     <ApproveRequestTippy
                         draftId={draftData.draftId}

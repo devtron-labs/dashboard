@@ -83,7 +83,7 @@ export const ConfigMapSecretForm = ({
     const isUnAuthorized = configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
-    const isFormDisabled = isHashiOrAWS || data.isResolvedData
+    const isFormDisabled = isHashiOrAWS || data.isResolvedData || (data.isSecret && isUnAuthorized)
     /**
      * * In create mode, show the prompt only if the form has unsaved changes (i.e., form is dirty).
      * * This ensures the user is warned about losing data when navigating away during creation.
@@ -365,7 +365,7 @@ export const ConfigMapSecretForm = ({
                     text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
                     onClick={handleSubmit(onSubmit, onError)}
                     isLoading={isSubmitting}
-                    disabled={isSubmitting || areScopeVariablesResolving}
+                    disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
                 />
                 {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
                     <Button

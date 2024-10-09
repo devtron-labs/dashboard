@@ -195,7 +195,7 @@ export type ConfigMapSecretNullStateProps =
           nullStateType: 'NO_CM_CS'
       }
 
-export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName' | 'appName' | 'envName'> &
+export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName'> &
     Pick<
         ConfigMapSecretFormProps,
         | 'componentType'
