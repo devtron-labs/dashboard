@@ -20,6 +20,9 @@ import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type
 import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType } from './nodeDetail.type'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
 import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const getDesiredAndLiveManifest = importComponentFromFELibrary('getDesiredAndLiveManifest', null, 'function')
 
 export const getAppId = ({ clusterId, namespace, appName, templateType }: AppDetailsAppIdentifierProps) => {
     if (templateType) {
@@ -52,6 +55,9 @@ export const getManifestResource = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
+    if (getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP) {
+        return getDesiredAndLiveManifest(requestData)
+    }
     return post(Routes.MANIFEST, requestData, { signal })
 }
 

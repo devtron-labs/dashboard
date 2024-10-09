@@ -22,7 +22,13 @@ import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES } from '../../../../../config'
 import { AppStatusDetailType } from '../../appDetails.type'
 import { STATUS_SORTING_ORDER } from './constants'
-import { Drawer, AppStatusDetailsChart, ErrorBar, aggregateNodes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Drawer,
+    AppStatusDetailsChart,
+    ErrorBar,
+    aggregateNodes,
+    stopPropagation,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusDetailModal = ({
     close,
@@ -31,6 +37,7 @@ const AppStatusDetailModal = ({
     appStatus,
     appStatusText,
     showFooter,
+    showConfigDriftInfo = false,
 }: AppStatusDetailType) => {
     const _appDetails = IndexStore.getAppDetails()
 
@@ -122,7 +129,11 @@ const AppStatusDetailModal = ({
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree?.status.toUpperCase()]}
                         </div>
                     )}
-                    <AppStatusDetailsChart showFooter={showFooter} />
+                    <AppStatusDetailsChart
+                        showFooter={showFooter}
+                        onClose={close}
+                        showConfigDriftInfo={showConfigDriftInfo}
+                    />
                 </div>
             </div>
         </Drawer>

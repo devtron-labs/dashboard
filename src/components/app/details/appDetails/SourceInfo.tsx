@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -40,7 +40,6 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -73,7 +72,6 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
-    setShowConfigDriftModal,
 }: SourceInfoType) => {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -178,7 +176,6 @@ export const SourceInfo = ({
                             areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
                             appId={appDetails?.appId}
                             envId={envId}
-                            setShowConfigDriftModal={setShowConfigDriftModal}
                         />
                     </div>
                 )}

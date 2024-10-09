@@ -433,6 +433,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
+    showConfigDriftInfo?: boolean
 }
 
 export interface StatusFilterButtonType {

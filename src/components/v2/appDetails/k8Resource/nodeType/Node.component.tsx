@@ -423,16 +423,24 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
-                                    <span
-                                        data-testid="node-resource-status"
-                                        className={`app-summary__status-name f-${(
-                                            node?.status ||
-                                            node?.health?.status ||
-                                            ''
-                                        ).toLowerCase()}`}
-                                    >
-                                        {getNodeStatus(node)}
-                                    </span>
+                                    {(node?.info || node?.health?.status || node?.status) && (
+                                        <span
+                                            data-testid="node-resource-status"
+                                            className={`app-summary__status-name f-${(
+                                                node?.status ||
+                                                node?.health?.status ||
+                                                ''
+                                            ).toLowerCase()}`}
+                                        >
+                                            {getNodeStatus(node)}
+                                        </span>
+                                    )}
+                                    {node.hasDrift && (
+                                        <>
+                                            {node?.health?.status && <span className="dc__bullet mw-4" />}
+                                            <span className="cy-7">Config drift detected</span>
+                                        </>
+                                    )}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
