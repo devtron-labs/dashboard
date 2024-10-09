@@ -34,7 +34,6 @@ import { CHART_TYPE_TAB_KEYS, CHART_TYPE_TAB, CHART_DOCUMENTATION_LINK } from '.
 
 const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
 
-// NOTE: Have migrated directly
 const ChartSelectorDropdown = ({
     charts,
     chartsMetadata,
@@ -196,7 +195,6 @@ const ChartSelectorDropdown = ({
     )
 }
 
-// Mostly migrated just changed react-select to SelectPicker
 const DTChartSelector = ({
     isUnSet,
     disableVersionSelect,

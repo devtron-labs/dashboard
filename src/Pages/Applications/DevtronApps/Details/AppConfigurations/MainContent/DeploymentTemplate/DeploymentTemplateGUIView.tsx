@@ -24,6 +24,8 @@ import {
     joinObjects,
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
+    Button,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -37,14 +39,12 @@ import { makeObjectFromJsonPathArray } from './utils'
 export const getRenderActionButton =
     ({ handleChangeToYAMLMode }: Pick<DeploymentTemplateGUIViewProps, 'handleChangeToYAMLMode'>) =>
     () => (
-        <button
-            type="button"
-            className="dc__unset-button-styles"
+        <Button
+            dataTestId="base-deployment-template-switchtoadvanced-button"
+            text="Switch to Advanced"
             onClick={handleChangeToYAMLMode}
-            data-testid="base-deployment-template-switchtoadvanced-button"
-        >
-            <span className="cb-5 cursor fw-6">Switch to Advanced</span>
-        </button>
+            variant={ButtonVariantType.text}
+        />
     )
 
 const DeploymentTemplateGUIView = ({
@@ -170,11 +170,10 @@ const DeploymentTemplateGUIView = ({
 
             <div className={guiContainerClassName}>{renderContent()}</div>
 
-            {/* In case of readOnly makes no sense */}
             {!state.error && (
                 <InfoColourBar
                     message="To modify additional configurations"
-                    classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
+                    classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
                     Icon={Help}
                     iconClass="fcv-5 icon-dim-20"
                     renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}

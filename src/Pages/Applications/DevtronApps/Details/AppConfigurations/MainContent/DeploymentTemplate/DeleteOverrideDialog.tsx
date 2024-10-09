@@ -1,16 +1,13 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
+    API_STATUS_CODES,
     BaseURLParams,
-    Button,
-    ButtonStyleType,
-    ButtonVariantType,
-    ConfirmationDialog,
+    DeleteDialog,
     showError,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import warningIcon from '@Images/warning-medium.svg'
 import { DeleteOverrideDialogProps } from './types'
 import { deleteOverrideDeploymentTemplate } from './service'
 
@@ -36,7 +33,7 @@ const DeleteOverrideDialog = ({
             handleReload()
         } catch (error) {
             showError(error)
-            if (error.code === 423) {
+            if (error.code === API_STATUS_CODES.LOCKED) {
                 handleProtectionError()
                 reloadEnvironments()
             }
@@ -46,33 +43,14 @@ const DeleteOverrideDialog = ({
     }
 
     return (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warningIcon} />
-            <ConfirmationDialog.Body
-                title="This action will cause permanent removal."
-                subtitle="This action will cause all overrides to erase and app level configuration will be applied"
-            />
-            <ConfirmationDialog.ButtonGroup>
-                <button
-                    data-testid="cancel-changes-button"
-                    type="button"
-                    className="cta cancel"
-                    onClick={handleClose}
-                    disabled={isDeletingOverride}
-                >
-                    Cancel
-                </button>
-
-                <Button
-                    dataTestId="confirm-changes-button"
-                    variant={ButtonVariantType.primary}
-                    onClick={handleDelete}
-                    style={ButtonStyleType.negative}
-                    isLoading={isDeletingOverride}
-                    text="Confirm"
-                />
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <DeleteDialog
+            title="This action will cause permanent removal."
+            description="This action will cause all overrides to erase and app level configuration will be applied"
+            delete={handleDelete}
+            closeDelete={handleClose}
+            apiCallInProgress={isDeletingOverride}
+            disabled={isDeletingOverride}
+        />
     )
 }
 

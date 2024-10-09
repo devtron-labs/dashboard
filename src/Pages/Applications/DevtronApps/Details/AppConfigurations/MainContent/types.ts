@@ -216,7 +216,7 @@ export type NoOverrideEmptyStateProps = {
     handleViewInheritedConfig: () => void
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
-type DeploymentTemplateDiffViewConfigType =
+export type DeploymentTemplateDiffViewConfigType =
     | {
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue

@@ -1,10 +1,20 @@
-import { ConfigHeaderTabType, ConfigToolbarPopupMenuConfigType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConfigHeaderTabType,
+    ConfigToolbarPopupMenuConfigType,
+    DeploymentTemplateHistoryType,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigHeaderTabConfigType, ConfigToolbarProps, GetConfigToolbarPopupConfigProps } from './types'
+import {
+    ConfigHeaderTabConfigType,
+    ConfigToolbarProps,
+    DeploymentTemplateDiffViewConfigType,
+    GetConfigToolbarPopupConfigProps,
+} from './types'
 
 const getToggleViewLockedKeysPopupButtonConfig = importComponentFromFELibrary(
     'getToggleViewLockedKeysPopupButtonConfig',
@@ -104,7 +114,7 @@ export const getConfigToolbarPopupConfig = ({
     const firstConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
     const secondConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
 
-    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig && !showDeleteOverrideDraftEmptyState) {
+    if (getToggleViewLockedKeysPopupButtonConfig && lockedConfigData && !showDeleteOverrideDraftEmptyState) {
         const lockedKeysConfig = getToggleViewLockedKeysPopupButtonConfig(
             lockedConfigData.areLockedKeysPresent,
             lockedConfigData.hideLockedKeys,
@@ -117,7 +127,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (getEditHistoryPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         const activityHistoryConfig = getEditHistoryPopupButtonConfig(handleShowEditHistory, isLoading)
         if (activityHistoryConfig) {
             firstConfigSegment.push(activityHistoryConfig)
@@ -146,3 +156,17 @@ export const getConfigToolbarPopupConfig = ({
         ...(secondConfigSegment.length && { secondConfigSegment }),
     }
 }
+
+export const getCompareViewHistoryDiffConfigProps = (
+    showDisplayName: boolean,
+    editorTemplate: Record<string | number, unknown>,
+    editorConfig: DeploymentTemplateDiffViewConfigType,
+):
+    | DeploymentTemplateHistoryType['baseTemplateConfiguration']
+    | DeploymentTemplateHistoryType['currentConfiguration'] => ({
+    codeEditorValue: {
+        displayName: showDisplayName ? 'Data' : '',
+        ...(editorTemplate && { value: JSON.stringify(editorTemplate) }),
+    },
+    values: editorConfig,
+})
