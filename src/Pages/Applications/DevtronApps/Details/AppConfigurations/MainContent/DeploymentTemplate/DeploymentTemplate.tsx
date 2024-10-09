@@ -159,6 +159,7 @@ const DeploymentTemplate = ({
         isLoadingInitialData,
         initialLoadError,
         resolvedPublishedTemplate,
+        areCommentsPresent,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -397,6 +398,15 @@ const DeploymentTemplate = ({
     const handleToggleDraftComments = () => {
         dispatch({
             type: DeploymentTemplateActionType.TOGGLE_DRAFT_COMMENTS,
+        })
+    }
+
+    const handleUpdateAreCommentsPresent = (value: boolean) => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT,
+            payload: {
+                areCommentsPresent: value,
+            },
         })
     }
 
@@ -1491,7 +1501,7 @@ const DeploymentTemplate = ({
                         selectedProtectionViewTab={selectedProtectionViewTab}
                         handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
                         handleToggleCommentsView={handleToggleDraftComments}
-                        areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
+                        areCommentsPresent={areCommentsPresent}
                         showMergePatchesButton={getShouldShowMergePatchesButton()}
                         shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
@@ -1630,6 +1640,7 @@ const DeploymentTemplate = ({
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         toggleDraftComments={handleToggleDraftComments}
+                        handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
                     />
                 )}
             </div>

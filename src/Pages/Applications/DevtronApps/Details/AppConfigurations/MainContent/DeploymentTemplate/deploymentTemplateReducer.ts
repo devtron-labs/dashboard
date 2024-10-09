@@ -75,6 +75,7 @@ export enum DeploymentTemplateActionType {
     SHOW_PROTECTED_SAVE_MODAL = 'SHOW_PROTECTED_SAVE_MODAL',
     CLOSE_SAVE_CHANGES_MODAL = 'CLOSE_SAVE_CHANGES_MODAL',
     CLOSE_LOCKED_DIFF_MODAL = 'CLOSE_LOCKED_DIFF_MODAL',
+    UPDATE_ARE_COMMENTS_PRESENT = 'UPDATE_ARE_COMMENTS_PRESENT',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -197,6 +198,10 @@ export type DeploymentTemplateActionState =
               isLockConfigError: boolean
           }
       }
+    | {
+          type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT
+          payload: Pick<DeploymentTemplateStateType, 'areCommentsPresent'>
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
@@ -248,6 +253,7 @@ export const getDeploymentTemplateInitialState = ({
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
+    areCommentsPresent: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -412,6 +418,7 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab,
+                areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -733,6 +740,12 @@ export const deploymentTemplateReducer = (
                     showLockedTemplateDiffModal: false,
                     showLockedDiffForApproval: false,
                 },
+            }
+
+        case DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT:
+            return {
+                ...state,
+                areCommentsPresent: action.payload.areCommentsPresent,
             }
 
         default:
