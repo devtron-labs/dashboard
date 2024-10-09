@@ -262,7 +262,7 @@ export const DeploymentConfigCompare = ({
 
             if (isManifestComparison) {
                 const [{ result: currentList }, { result: compareList }] = manifestData
-                return getAppEnvDeploymentConfigList<true>({
+                return getAppEnvDeploymentConfigList({
                     currentList,
                     compareList,
                     getNavItemHref,

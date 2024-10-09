@@ -222,7 +222,7 @@ export type NoOverrideEmptyStateProps = {
     hideOverrideButton?: boolean
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
-type CompareConfigDiffViewConfigType =
+export type CompareConfigDiffViewConfigType =
     | {
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue

@@ -3,6 +3,7 @@ import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
 import { DeploymentHistoryDiffView } from '@devtron-labs/devtron-fe-common-lib'
 import { CompareConfigViewProps } from './types'
+import { getCompareViewHistoryDiffConfigProps } from './utils'
 
 const CompareFromApprovalSelector = importComponentFromFELibrary('CompareFromApprovalSelector', null, 'function')
 
@@ -28,7 +29,7 @@ const CompareConfigView = ({
             </div>
 
             <div className="px-12 py-6 dc__gap-8 dc__border-bottom flexbox dc__align-items-center">
-                {isApprovalView && CompareFromApprovalSelector ? (
+                {CompareFromApprovalSelector && isApprovalView ? (
                     <CompareFromApprovalSelector
                         selectedOptionValue={compareFromSelectedOptionValue}
                         handleCompareFromOptionSelection={handleCompareFromOptionSelection}
@@ -47,20 +48,16 @@ const CompareConfigView = ({
 
         <DeploymentHistoryDiffView
             key={editorKey}
-            currentConfiguration={{
-                codeEditorValue: {
-                    displayName: 'Data',
-                    ...(publishedEditorTemplate && { value: JSON.stringify(publishedEditorTemplate) }),
-                },
-                values: publishedEditorConfig,
-            }}
-            baseTemplateConfiguration={{
-                codeEditorValue: {
-                    displayName: '',
-                    ...(currentEditorTemplate && { value: JSON.stringify(currentEditorTemplate) }),
-                },
-                values: currentEditorConfig,
-            }}
+            currentConfiguration={getCompareViewHistoryDiffConfigProps(
+                true,
+                publishedEditorTemplate,
+                publishedEditorConfig,
+            )}
+            baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
+                false,
+                currentEditorTemplate,
+                currentEditorConfig,
+            )}
             previousConfigAvailable
         />
     </div>
