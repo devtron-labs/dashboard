@@ -126,7 +126,7 @@ const DeploymentTemplate = ({
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
         deploymentTemplateReducer,
-        getDeploymentTemplateInitialState({ isSuperAdmin, isEnvView: !!envId }),
+        getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
     const {
@@ -656,6 +656,7 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
+                envId,
             },
         })
     }
@@ -761,7 +762,6 @@ const DeploymentTemplate = ({
                     removedPatches: [],
                     originalTemplateState: draftTemplateState,
                 },
-                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab:
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
@@ -823,7 +823,6 @@ const DeploymentTemplate = ({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {
                 isSuperAdmin,
-                isEnvView: !!envId,
             },
         })
 

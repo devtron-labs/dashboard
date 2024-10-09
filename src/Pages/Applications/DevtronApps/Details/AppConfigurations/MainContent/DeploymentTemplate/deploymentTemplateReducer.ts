@@ -1,7 +1,8 @@
 import YAML from 'yaml'
 import {
+    BaseURLParams,
     CompareFromApprovalOptionsValuesType,
-    CONFIG_HEADER_TAB_VALUES,
+    ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     ConfigurationType,
     DEFAULT_LOCKED_KEYS_CONFIG,
@@ -29,7 +30,6 @@ interface InitializeStateBasePayloadType
 
 interface GetDeploymentTemplateInitialStateParamsType {
     isSuperAdmin: boolean
-    isEnvView: boolean
 }
 
 export enum DeploymentTemplateActionType {
@@ -121,14 +121,16 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT
-          payload: InitializeStateBasePayloadType & Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'>
+          payload: InitializeStateBasePayloadType &
+              Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'> &
+              Pick<BaseURLParams, 'envId'>
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  'currentEditorTemplateData' | 'draftTemplateData' | 'configHeaderTab' | 'selectedProtectionViewTab'
+                  'currentEditorTemplateData' | 'draftTemplateData' | 'selectedProtectionViewTab'
               >
       }
     | {
@@ -198,7 +200,6 @@ export type DeploymentTemplateActionState =
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
-    isEnvView,
 }: GetDeploymentTemplateInitialStateParamsType): DeploymentTemplateStateType => ({
     isLoadingInitialData: true,
     initialLoadError: null,
@@ -243,9 +244,7 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
     editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
-    configHeaderTab: isEnvView
-        ? CONFIG_HEADER_TAB_VALUES.OVERRIDE[0]
-        : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE[0],
+    configHeaderTab: ConfigHeaderTabType.VALUES,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
@@ -373,6 +372,7 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                envId,
             } = action.payload
 
             return {
@@ -382,6 +382,10 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                configHeaderTab:
+                    envId && !publishedTemplateData.isOverridden
+                        ? ConfigHeaderTabType.INHERITED
+                        : ConfigHeaderTabType.VALUES,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -395,7 +399,6 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab,
                 selectedProtectionViewTab,
             } = action.payload
 
@@ -407,7 +410,7 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab,
+                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab,
                 isLoadingInitialData: false,
                 initialLoadError: null,

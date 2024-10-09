@@ -112,7 +112,7 @@ const ChartSelectorDropdown = ({
                     />
                 </span>
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="dc__overflow-scroll mh-350 w-400 dc__border br-4">
+            <PopupMenu.Body rootClassName="dc__overflow-scroll mxh-350 w-400 dc__border br-4">
                 <>
                     {customCharts.length > 0 && (
                         <div
@@ -158,7 +158,7 @@ const ChartSelectorDropdown = ({
                             >
                                 <div>
                                     <span
-                                        className={`fs-13 fw-6 ${
+                                        className={`fs-13 fw-6 dc__word-break ${
                                             chart.name === selectedChart?.name ? ' cb-5' : 'cn-9'
                                         }`}
                                     >
@@ -169,7 +169,7 @@ const ChartSelectorDropdown = ({
                                     )}
                                 </div>
                                 {(chartsMetadata?.[chart.name]?.chartDescription || chart.description) && (
-                                    <div className="fs-12 fw-4 cn-7 lh-18 mt-4">
+                                    <div className="fs-12 fw-4 cn-7 lh-18 mt-4 dc__word-break">
                                         {chartsMetadata?.[chart.name]?.chartDescription ||
                                             chart.description.substring(0, 250)}
                                         &nbsp;

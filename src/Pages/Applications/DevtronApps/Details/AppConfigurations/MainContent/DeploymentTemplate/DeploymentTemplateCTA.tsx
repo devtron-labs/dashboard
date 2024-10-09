@@ -1,6 +1,7 @@
 import {
     BaseURLParams,
     Button,
+    ComponentSizeType,
     DTApplicationMetricsFormField,
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,7 +51,7 @@ const DeploymentTemplateCTA = ({
     }
 
     return (
-        <footer className="flexbox dc__content-space py-16 px-20 bcn-0 dc__border-top dc__align-items-center">
+        <footer className="flexbox dc__content-space p-12 bcn-0 dc__border-top dc__align-items-center">
             <div
                 className={`flexbox ${showApplicationMetrics ? 'dc__content-space' : 'dc__content-end'} dc__align-items-center flex-grow-1`}
             >
@@ -75,6 +76,7 @@ const DeploymentTemplateCTA = ({
                                     />
                                 ) : null
                             }
+                            size={ComponentSizeType.medium}
                         />
                     </div>
                 </InvalidYAMLTippyWrapper>
