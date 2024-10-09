@@ -21,7 +21,6 @@ import {
     ToastVariantType,
     useAsync,
     usePrompt,
-    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -31,7 +30,7 @@ import ConfigHeader from '@Pages/Applications/DevtronApps/Details/AppConfigurati
 import ConfigToolbar from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigToolbar'
 import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { FloatingVariablesSuggestions, hasApproverAccess, importComponentFromFELibrary } from '@Components/common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import {
@@ -90,7 +89,6 @@ export const ConfigMapSecretContainer = ({
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const { setFormState, isFormDirty, parsingError, formDataRef } = useConfigMapSecretFormContext()
-    const { email } = useUserEmail()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
@@ -297,11 +295,7 @@ export const ConfigMapSecretContainer = ({
         isEnvConfigLoading ||
         (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
-    const isApprover =
-        draftData &&
-        draftData.canApprove &&
-        draftData.draftState === DraftState.AwaitApproval &&
-        hasApproverAccess(email, draftData.approvers)
+    const showConfigToolbar = cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || draftData || hideNoOverrideEmptyState
 
     // ERROR HANDLING
     useEffect(() => {
@@ -610,7 +604,6 @@ export const ConfigMapSecretContainer = ({
                 setRestoreYAML={setRestoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                isApprover={isApprover}
             />
         ) : (
             <ConfigMapSecretForm
@@ -628,7 +621,6 @@ export const ConfigMapSecretContainer = ({
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 restoreYAML={restoreYAML}
                 setRestoreYAML={setRestoreYAML}
-                isApprover={isApprover}
             />
         )
 
@@ -659,7 +651,6 @@ export const ConfigMapSecretContainer = ({
                         isJob={isJob}
                         configMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                        isApprover={isApprover}
                     />
                 )
             default:
@@ -718,36 +709,39 @@ export const ConfigMapSecretContainer = ({
                     restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
                 />
-                <ConfigToolbar
-                    configHeaderTab={configHeaderTab}
-                    mergeStrategy={mergeStrategy}
-                    handleMergeStrategyChange={handleMergeStrategyChange}
-                    approvalUsers={draftData?.approvers}
-                    areCommentsPresent={draftData?.commentsCount > 0}
-                    disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
-                    isProtected={isProtected}
-                    isDraftPresent={!!draftData}
-                    isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
-                    isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
-                    showDeleteOverrideDraftEmptyState={
-                        draftData?.action === DraftAction.Delete &&
-                        configHeaderTab === ConfigHeaderTabType.VALUES &&
-                        selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-                    }
-                    showMergePatchesButton={false}
-                    baseConfigurationURL={baseConfigurationURL}
-                    headerMessage={headerMessage}
-                    selectedProtectionViewTab={selectedProtectionViewTab}
-                    handleProtectionViewTabChange={handleProtectionViewTabChange}
-                    handleToggleCommentsView={toggleDraftComments}
-                    resolveScopedVariables={resolvedScopeVariables}
-                    handleToggleScopedVariablesView={handleToggleScopedVariablesView}
-                    popupConfig={toolbarPopupConfig}
-                    handleToggleShowTemplateMergedWithPatch={noop}
-                    shouldMergeTemplateWithPatches={null}
-                    parsingError={parsingError}
-                    restoreLastSavedYAML={restoreLastSavedYAML}
-                />
+                {showConfigToolbar && (
+                    <ConfigToolbar
+                        configHeaderTab={configHeaderTab}
+                        mergeStrategy={mergeStrategy}
+                        handleMergeStrategyChange={handleMergeStrategyChange}
+                        approvalUsers={draftData?.approvers}
+                        areCommentsPresent={draftData?.commentsCount > 0}
+                        disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
+                        isProtected={isProtected}
+                        isDraftPresent={!!draftData}
+                        isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
+                        isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
+                        showDeleteOverrideDraftEmptyState={
+                            isCreateState ||
+                            (draftData?.action === DraftAction.Delete &&
+                                configHeaderTab === ConfigHeaderTabType.VALUES &&
+                                selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
+                        }
+                        showMergePatchesButton={false}
+                        baseConfigurationURL={baseConfigurationURL}
+                        headerMessage={headerMessage}
+                        selectedProtectionViewTab={selectedProtectionViewTab}
+                        handleProtectionViewTabChange={handleProtectionViewTabChange}
+                        handleToggleCommentsView={toggleDraftComments}
+                        resolveScopedVariables={resolvedScopeVariables}
+                        handleToggleScopedVariablesView={handleToggleScopedVariablesView}
+                        popupConfig={toolbarPopupConfig}
+                        handleToggleShowTemplateMergedWithPatch={noop}
+                        shouldMergeTemplateWithPatches={null}
+                        parsingError={parsingError}
+                        restoreLastSavedYAML={restoreLastSavedYAML}
+                    />
+                )}
                 {renderConfigHeaderTabContent()}
             </div>
         )

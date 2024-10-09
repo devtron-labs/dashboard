@@ -6,7 +6,6 @@ import {
     Button,
     ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
-    ConfigDatum,
     DraftAction,
     DraftState,
     noop,
@@ -24,7 +23,7 @@ import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/
 
 import { getConfigMapSecretConfigData } from './ConfigMapSecret.service'
 import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
-import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
+import { getConfigMapSecretDataFromFormData, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
@@ -52,7 +51,6 @@ export const ConfigMapSecretProtected = ({
     updateCMSecret,
     restoreYAML,
     setRestoreYAML,
-    isApprover,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { email } = useUserEmail()
@@ -124,12 +122,10 @@ export const ConfigMapSecretProtected = ({
     }, [selectedProtectionViewTab, draftData, cmSecretStateLabel, publishedConfigMapSecretData, protectedSecretData])
 
     const currentConfigMapSecretData = useMemo(
-        () => ({
-            unAuthorized: configMapSecretData?.unAuthorized,
-            ...(formDataRef.current
-                ? (getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current) as ConfigDatum)
-                : configMapSecretData),
-        }),
+        () =>
+            resolvedFormData ?? formDataRef.current
+                ? getConfigMapSecretDataFromFormData(resolvedFormData ?? formDataRef.current, configMapSecretData)
+                : configMapSecretData,
         [configMapSecretData],
     )
 
@@ -153,7 +149,6 @@ export const ConfigMapSecretProtected = ({
             isJob,
             componentType,
             configMapSecretData: getConfigMapSecretDiffViewData(),
-            isApprover,
         })
 
         return {
@@ -186,7 +181,6 @@ export const ConfigMapSecretProtected = ({
             componentType,
             configMapSecretData: publishedConfigMapSecretData,
             isJob,
-            isApprover,
         })
 
         return {
@@ -235,7 +229,6 @@ export const ConfigMapSecretProtected = ({
             areScopeVariablesResolving={areScopeVariablesResolving}
             restoreYAML={restoreYAML}
             setRestoreYAML={setRestoreYAML}
-            isApprover={isApprover}
         />
     )
 
@@ -248,7 +241,7 @@ export const ConfigMapSecretProtected = ({
 
         return (
             <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12">
-                {isApprover ? (
+                {draftData.canApprove && hasAccess ? (
                     <ApproveRequestTippy
                         draftId={draftData.draftId}
                         draftVersionId={draftData.draftVersionId}
@@ -318,7 +311,6 @@ export const ConfigMapSecretProtected = ({
                         isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}
                         areScopeVariablesResolving={areScopeVariablesResolving}
-                        isApprover={isApprover}
                     />
                 )
             case ProtectConfigTabsType.EDIT_DRAFT:
