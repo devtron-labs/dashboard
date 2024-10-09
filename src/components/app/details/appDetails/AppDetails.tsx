@@ -781,7 +781,9 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
+            {detailedStatus && (
+                <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} showConfigDriftInfo />
+            )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
@@ -953,7 +955,7 @@ export const EnvSelector = ({
             </div>
             <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <SelectPicker
-                    inputId='app-environment-select'    
+                    inputId="app-environment-select"
                     placeholder="Select Environment"
                     options={groupList}
                     value={envId ? { value: +envId, label: environmentName } : null}
