@@ -10,7 +10,7 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
@@ -22,21 +22,23 @@ export interface ConfigHeaderProps {
      */
     isOverridable: boolean
     /**
-     * This prop holds meaning if isOverridable is true
-     * This depicts if we show No override if false,
-     * In case of true, we show Override
+     * This means that we are showing no override empty state, i.e, currently we are inheriting base config
+     * and our editable state is also not overriding the base config.
      */
-    isPublishedTemplateOverridden: boolean
+    showNoOverride: boolean
+    parsingError: string
+    restoreLastSavedYAML: () => void
 }
 
 export interface ConfigHeaderTabProps
     extends Pick<
         ConfigHeaderProps,
-        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'isPublishedTemplateOverridden'
+        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'showNoOverride'
     > {
     tab: ConfigHeaderTabType
     activeTabIndex: number
     currentTabIndex: number
+    hasError: boolean
 }
 
 export interface ConfigHeaderTabConfigType {
@@ -56,7 +58,17 @@ interface ConfigToolbarPopupConfigType {
     popupMenuNode?: ReactNode
 }
 
-export interface ConfigToolbarProps {
+type ConfigToolbarReadMeProps =
+    | {
+          showEnableReadMeButton: boolean
+          handleEnableReadmeView: () => void
+      }
+    | {
+          showEnableReadMeButton?: never
+          handleEnableReadmeView?: never
+      }
+
+export type ConfigToolbarProps = {
     configHeaderTab: ConfigHeaderTabType
     handleToggleScopedVariablesView: () => void
     resolveScopedVariables: boolean
@@ -88,10 +100,6 @@ export interface ConfigToolbarProps {
      */
     children?: ReactNode
     /**
-     * If provided, will show the button to enable the readme view
-     */
-    handleEnableReadmeView?: () => void
-    /**
      * If provided, will show popup menu on click three dots button
      * If empty/null, will not show the button
      */
@@ -107,22 +115,20 @@ export interface ConfigToolbarProps {
     isDraftPresent?: boolean
     approvalUsers: string[]
     /**
-     * Loading state fetching initial info (template, draft info, etc) to hide comments, approvals.
-     */
-    isLoadingInitialData: boolean
-    /**
      * @default - false
      * If given would disable all the actions
      */
     disableAllActions?: boolean
+    parsingError: string
+    restoreLastSavedYAML: () => void
     /**
      * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
      * @default - true
      * If false we will hide all the action in toolbar.
      */
     isPublishedConfigPresent?: boolean
-    handleClearPopupNode: () => void
-}
+    showDeleteOverrideDraftEmptyState: boolean
+} & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
     /**
@@ -138,6 +144,10 @@ export interface GetConfigToolbarPopupConfigProps {
      * If not provided won't show locked config data
      */
     lockedConfigData?: ConfigToolbarPopupMenuLockedConfigDataType | null
+    /**
+     * @default false
+     */
+    showDeleteOverrideDraftEmptyState?: boolean
     configHeaderTab: ConfigHeaderTabType
     isOverridden: boolean
     isPublishedValuesView: boolean
@@ -150,7 +160,17 @@ export interface GetConfigToolbarPopupConfigProps {
     handleShowEditHistory: () => void
 }
 
-export interface ConfigDryRunProps {
+type ConfigDryRunManifestProps =
+    | {
+          showManifest: true
+          manifestAbortController: MutableRefObject<AbortController>
+      }
+    | {
+          showManifest?: never
+          manifestAbortController?: never
+      }
+
+export type ConfigDryRunProps = {
     isLoading: boolean
     handleToggleResolveScopedVariables: () => void
     resolveScopedVariables: boolean
@@ -164,12 +184,16 @@ export interface ConfigDryRunProps {
     isDraftPresent: boolean
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
-}
+} & ConfigDryRunManifestProps
 
 export interface ToggleResolveScopedVariablesProps {
     resolveScopedVariables: boolean
     handleToggleScopedVariablesView: () => void
     isDisabled?: boolean
+    /**
+     * @default true
+     */
+    showTooltip?: boolean
 }
 
 export enum DeploymentTemplateComponentType {
@@ -197,19 +221,22 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
-          mergeStrategy: DeploymentHistorySingleValue
+          mergeStrategy?: DeploymentHistorySingleValue
+          isOverride?: DeploymentHistorySingleValue
       }
     | {
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
           mergeStrategy?: never
+          isOverride?: never
       }
 
 export interface CompareConfigViewProps {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
     isApprovalView: boolean
+    isDeleteOverrideView: boolean
 
     currentEditorTemplate: Record<string | number, unknown>
     publishedEditorTemplate: Record<string | number, unknown>
@@ -219,5 +246,12 @@ export interface CompareConfigViewProps {
     publishedEditorConfig: DeploymentTemplateDiffViewConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
-    isDeleteDraft: boolean
+    /**
+     * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
+     */
+    editorKey?: string
+}
+
+export interface BaseConfigurationNavigationProps {
+    baseConfigurationURL: string
 }

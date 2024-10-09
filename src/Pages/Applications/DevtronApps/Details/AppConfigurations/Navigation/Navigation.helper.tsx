@@ -94,6 +94,7 @@ const getIcon = (configState: ResourceConfigState, isProtected: boolean): Collap
                 content: configState === ResourceConfigState.ApprovalPending ? 'Approval pending' : 'Draft',
                 placement: 'right',
                 arrow: false,
+                className: 'default-tt',
             },
             props: {
                 className: configState === ResourceConfigState.Draft ? 'scn-6' : '',

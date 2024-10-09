@@ -58,6 +58,19 @@ export const processCurrentData = (
     return [{ k: '', v: '', keyError: '', valueError: '' }]
 }
 
+const getExternalSubPathValues = (configMapSecretData: CMSecretConfigData) => {
+    const externalSubPathValues = {
+        value: configMapSecretData?.data ? Object.keys(configMapSecretData.data).join(',') : '',
+        error: '',
+    }
+
+    if (!externalSubPathValues.value && configMapSecretData?.esoSubPath) {
+        externalSubPathValues.value = configMapSecretData.esoSubPath.join(', ')
+    }
+
+    return externalSubPathValues
+}
+
 export const initState = (
     configMapSecretData,
     componentType: CMSecretComponentType,
@@ -65,6 +78,7 @@ export const initState = (
 ): ConfigMapState | ConfigMapSecretState => {
     const secretInitState =
         componentType === CMSecretComponentType.Secret ? getSecretInitState(configMapSecretData) : {}
+
     const initialState = {
         isFormDirty: false,
         loading: false,
@@ -87,10 +101,7 @@ export const initState = (
         selectedType: configMapSecretData?.type ?? 'environment',
         volumeMountPath: { value: configMapSecretData?.mountPath ?? configMapSecretData?.defaultMountPath, error: '' },
         isSubPathChecked: !!configMapSecretData?.subPath,
-        externalSubpathValues: {
-            value: configMapSecretData?.data ? Object.keys(configMapSecretData?.data).join(',') : '',
-            error: '',
-        },
+        externalSubpathValues: getExternalSubPathValues(configMapSecretData),
         isFilePermissionChecked: !!configMapSecretData?.filePermission,
         configName: {
             value: configMapSecretData?.name ?? '',

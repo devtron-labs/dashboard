@@ -1,4 +1,9 @@
-import { BaseURLParams, Button, DTApplicationMetricsFormField } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseURLParams,
+    Button,
+    DTApplicationMetricsFormField,
+    InvalidYAMLTippyWrapper,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { DeploymentTemplateCTAProps } from './types'
@@ -9,49 +14,70 @@ const DeploymentTemplateCTA = ({
     isDisabled,
     isAppMetricsEnabled,
     showApplicationMetrics,
-    showReadMe,
     selectedChart,
-    isCompareView,
     isCiPipeline,
     handleSave,
     toggleAppMetrics,
+    parsingError,
+    restoreLastSavedYAML,
+    isDryRunView,
 }: DeploymentTemplateCTAProps) => {
     const { envId } = useParams<BaseURLParams>()
 
+    const renderAppMetrics = () => {
+        if (isDryRunView) {
+            return (
+                <DTApplicationMetricsFormField
+                    isAppMetricsEnabled={isAppMetricsEnabled}
+                    showApplicationMetrics={showApplicationMetrics}
+                    onlyShowCurrentStatus
+                />
+            )
+        }
+
+        return (
+            <DTApplicationMetricsFormField
+                showApplicationMetrics={showApplicationMetrics}
+                isLoading={isLoading}
+                selectedChart={selectedChart}
+                isDisabled={isDisabled}
+                toggleAppMetrics={toggleAppMetrics}
+                isAppMetricsEnabled={isAppMetricsEnabled}
+                parsingError={parsingError}
+                restoreLastSavedYAML={restoreLastSavedYAML}
+            />
+        )
+    }
+
     return (
         <footer className="flexbox dc__content-space py-16 px-20 bcn-0 dc__border-top dc__align-items-center">
-            {isCompareView && <div className="w-50" />}
-
             <div
                 className={`flexbox ${showApplicationMetrics ? 'dc__content-space' : 'dc__content-end'} dc__align-items-center flex-grow-1`}
             >
-                <DTApplicationMetricsFormField
-                    showApplicationMetrics={showApplicationMetrics}
-                    isLoading={isLoading}
-                    selectedChart={selectedChart}
-                    isDisabled={isDisabled}
-                    toggleAppMetrics={toggleAppMetrics}
-                    isAppMetricsEnabled={isAppMetricsEnabled}
-                    showReadMe={showReadMe}
-                    isCompareView={isCompareView}
-                />
+                {renderAppMetrics()}
 
-                <Button
-                    dataTestId={
-                        !envId && !isCiPipeline
-                            ? 'base-deployment-template-save-and-next-button'
-                            : 'base-deployment-template-save-changes-button'
-                    }
-                    disabled={isDisabled}
-                    onClick={handleSave}
-                    isLoading={isLoading}
-                    text={!envId && !isCiPipeline ? 'Save & Next' : 'Save changes'}
-                    startIcon={
-                        !envId && !isCiPipeline ? (
-                            <ICArrowRight className={`icon-dim-16 dc__no-shrink ${isDisabled ? 'scn-4' : 'scn-0'}`} />
-                        ) : null
-                    }
-                />
+                <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                    <div>
+                        <Button
+                            dataTestId={
+                                !envId && !isCiPipeline
+                                    ? 'base-deployment-template-save-and-next-button'
+                                    : 'base-deployment-template-save-changes-button'
+                            }
+                            disabled={isDisabled}
+                            onClick={handleSave}
+                            isLoading={isLoading}
+                            text={!envId && !isCiPipeline ? 'Save & Next' : 'Save changes'}
+                            startIcon={
+                                !envId && !isCiPipeline ? (
+                                    <ICArrowRight
+                                        className={`icon-dim-16 dc__no-shrink ${isDisabled ? 'scn-4' : 'scn-0'}`}
+                                    />
+                                ) : null
+                            }
+                        />
+                    </div>
+                </InvalidYAMLTippyWrapper>
             </div>
         </footer>
     )

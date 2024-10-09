@@ -16,7 +16,8 @@ const CompareConfigView = ({
     publishedEditorTemplate,
     selectedChartVersion,
     draftChartVersion,
-    isDeleteDraft,
+    isDeleteOverrideView,
+    editorKey = `${compareFromSelectedOptionValue || 'compare'}-draft-editor-key`,
 }: CompareConfigViewProps) => (
     <div className="flexbox-col dc__overflow-scroll">
         <div className="dc__grid-half">
@@ -32,6 +33,7 @@ const CompareConfigView = ({
                         handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                         draftChartVersion={draftChartVersion || ''}
                         currentEditorChartVersion={selectedChartVersion || ''}
+                        isDeleteOverrideView={isDeleteOverrideView}
                     />
                 ) : (
                     <>
@@ -43,22 +45,21 @@ const CompareConfigView = ({
         </div>
 
         <DeploymentHistoryDiffView
-            key={compareFromSelectedOptionValue || 'unsaved-draft'}
+            key={editorKey}
             currentConfiguration={{
                 codeEditorValue: {
                     displayName: 'Data',
-                    value: JSON.stringify(publishedEditorTemplate),
+                    ...(publishedEditorTemplate && { value: JSON.stringify(publishedEditorTemplate) }),
                 },
                 values: publishedEditorConfig,
             }}
             baseTemplateConfiguration={{
                 codeEditorValue: {
                     displayName: '',
-                    value: JSON.stringify(currentEditorTemplate),
+                    ...(currentEditorTemplate && { value: JSON.stringify(currentEditorTemplate) }),
                 },
                 values: currentEditorConfig,
             }}
-            isDeleteDraft={isDeleteDraft}
             previousConfigAvailable
         />
     </div>

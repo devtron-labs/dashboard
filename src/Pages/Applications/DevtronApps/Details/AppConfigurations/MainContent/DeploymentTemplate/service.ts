@@ -1,29 +1,41 @@
 import { Routes } from '@Config/constants'
-import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentTemplateConfigDTO, EnvironmentOverrideDeploymentTemplateDTO } from './types'
+import { BaseURLParams, get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { getChartReferencesForAppAndEnv } from '@Services/service'
+import {
+    DeploymentTemplateConfigDTO,
+    EnvironmentOverrideDeploymentTemplateDTO,
+    GetChartListReturnType,
+    UpdateBaseDTPayloadType,
+    UpdateEnvironmentDTPayloadType,
+} from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
-export const updateBaseDeploymentTemplate = (request, abortSignal) => {
+export const updateBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`
     return post(URL, request, {
         signal: abortSignal,
     })
 }
 
-export const createBaseDeploymentTemplate = (request, abortSignal) => {
+export const createBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
     return post(URL, request, {
         signal: abortSignal,
     })
 }
 
-export function updateEnvDeploymentTemplate(payload, abortSignal) {
+export function updateEnvDeploymentTemplate(payload: UpdateEnvironmentDTPayloadType, abortSignal: AbortSignal) {
     return put('app/env', payload, {
         signal: abortSignal,
     })
 }
 
-export function createEnvDeploymentTemplate(appId, envId, payload, abortSignal) {
+export function createEnvDeploymentTemplate(
+    appId: number,
+    envId: number,
+    payload: UpdateEnvironmentDTPayloadType,
+    abortSignal: AbortSignal,
+) {
     return post(`app/env/${appId}/${envId}`, payload, {
         signal: abortSignal,
     })
@@ -53,4 +65,30 @@ export async function getBaseDeploymentTemplate(
         signal: abortSignal,
     })
     return addGUISchemaIfAbsent(response, chartName)
+}
+
+export const getChartList = async ({
+    appId,
+    envId,
+}: Pick<BaseURLParams, 'appId' | 'envId'>): Promise<GetChartListReturnType> => {
+    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId)
+
+    const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
+    // Adding another layer of security
+    const envChartRef = envId ? latestEnvChartRef : null
+
+    const selectedChartId: number = envChartRef || latestAppChartRef || latestChartRef
+    const chart = chartRefs?.find((chartRef) => chartRef.id === selectedChartId) ?? chartRefs?.[0]
+
+    const globalChartRefId = latestAppChartRef || latestChartRef
+    const selectedGlobalChart = chartRefs?.find((chartRef) => chartRef.id === globalChartRefId) ?? chartRefs?.[0]
+
+    return {
+        charts: chartRefs || [],
+        chartsMetadata: chartMetadata || {},
+        selectedChartRefId: selectedChartId,
+        selectedChart: chart,
+        globalChartDetails: selectedGlobalChart,
+        latestAppChartRef,
+    }
 }

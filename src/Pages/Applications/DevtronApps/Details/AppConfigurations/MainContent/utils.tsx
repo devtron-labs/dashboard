@@ -26,21 +26,21 @@ const getEditHistoryPopupButtonConfig = importComponentFromFELibrary(
 
 const getValuesViewTabText = (
     isOverridable: Parameters<typeof getConfigHeaderTabConfig>[1],
-    isPublishedTemplateOverridden: Parameters<typeof getConfigHeaderTabConfig>[2],
+    showNoOverride: Parameters<typeof getConfigHeaderTabConfig>[2],
 ) => {
     if (!isOverridable) {
         return 'Configuration'
     }
-    if (isPublishedTemplateOverridden) {
-        return 'Override'
+    if (showNoOverride) {
+        return 'No override'
     }
-    return 'No override'
+    return 'Override'
 }
 
 export const getConfigHeaderTabConfig = (
     tab: ConfigHeaderTabType,
     isOverridable: boolean,
-    isPublishedTemplateOverridden: boolean,
+    showNoOverride: boolean,
 ): ConfigHeaderTabConfigType => {
     switch (tab) {
         case ConfigHeaderTabType.DRY_RUN:
@@ -51,7 +51,7 @@ export const getConfigHeaderTabConfig = (
 
         case ConfigHeaderTabType.VALUES:
             return {
-                text: getValuesViewTabText(isOverridable, isPublishedTemplateOverridden),
+                text: getValuesViewTabText(isOverridable, showNoOverride),
                 icon: ICFileCode,
             }
 
@@ -85,6 +85,7 @@ export const PopupMenuItem = ({ text, onClick, dataTestId, disabled, icon }: Con
 
 export const getConfigToolbarPopupConfig = ({
     lockedConfigData,
+    showDeleteOverrideDraftEmptyState = false,
     configHeaderTab,
     isOverridden,
     isPublishedValuesView,
@@ -103,7 +104,7 @@ export const getConfigToolbarPopupConfig = ({
     const firstConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
     const secondConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
 
-    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig) {
+    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig && !showDeleteOverrideDraftEmptyState) {
         const lockedKeysConfig = getToggleViewLockedKeysPopupButtonConfig(
             lockedConfigData.areLockedKeysPresent,
             lockedConfigData.hideLockedKeys,
@@ -123,12 +124,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (
-        getDeleteDraftPopupButtonConfig &&
-        !isPublishedValuesView &&
-        isDraftAvailable &&
-        configHeaderTab === ConfigHeaderTabType.VALUES
-    ) {
+    if (getDeleteDraftPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         const deleteDraftConfig = getDeleteDraftPopupButtonConfig(handleDiscardDraft, isLoading)
         if (deleteDraftConfig) {
             secondConfigSegment.push(deleteDraftConfig)

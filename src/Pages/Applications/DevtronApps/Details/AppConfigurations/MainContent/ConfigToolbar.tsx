@@ -10,15 +10,19 @@ import {
     InfoIconTippy,
     OverrideMergeStrategyType,
     ComponentSizeType,
+    InvalidYAMLTippyWrapper,
+    OverrideStrategyTippyContent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import { DOCUMENTATION } from '@Config/constants'
 import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import { ConfigToolbarProps } from './types'
 import { PopupMenuItem } from './utils'
+import BaseConfigurationNavigation from './BaseConfigurationNavigation'
 
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')
@@ -82,7 +86,9 @@ const ConfigToolbar = ({
     mergeStrategy,
     handleMergeStrategyChange,
 
+    showEnableReadMeButton,
     handleEnableReadmeView,
+
     children,
 
     popupConfig,
@@ -95,13 +101,14 @@ const ConfigToolbar = ({
     isApprovalPending,
     isDraftPresent,
     approvalUsers,
-    isLoadingInitialData,
-    // TODO: Will have to segregate cases where all actions are disabled
     disableAllActions = false,
+    parsingError = '',
+    restoreLastSavedYAML,
     isPublishedConfigPresent = true,
-    handleClearPopupNode,
+    showDeleteOverrideDraftEmptyState,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
+    const isDisabled = disableAllActions || !!parsingError
 
     if (configHeaderTab === ConfigHeaderTabType.DRY_RUN) {
         return null
@@ -134,14 +141,7 @@ const ConfigToolbar = ({
                 <div className="flexbox dc__align-items-center dc__gap-6">
                     <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
                     <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
-                    <Link
-                        to={baseConfigurationURL}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="anchor dc__border-bottom--n1"
-                    >
-                        Base Configurations
-                    </Link>
+                    <BaseConfigurationNavigation baseConfigurationURL={baseConfigurationURL} />
                 </div>
             )
         }
@@ -152,14 +152,15 @@ const ConfigToolbar = ({
 
         return (
             <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                {/* Internally handles right border */}
                 {ProtectionViewTabGroup && (
                     <>
                         <ProtectionViewTabGroup
                             selectedTab={selectedProtectionViewTab}
                             handleProtectionViewTabChange={handleProtectionViewTabChange}
                             isApprovalPending={isApprovalPending}
-                            isDisabled={disableAllActions}
+                            isDisabled={isDisabled}
+                            parsingError={parsingError}
+                            restoreLastSavedYAML={restoreLastSavedYAML}
                         />
 
                         <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
@@ -168,21 +169,24 @@ const ConfigToolbar = ({
 
                 {/* Data should always be valid in case we are in approval view */}
                 {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                    <MergePatchWithTemplateCheckbox
-                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                        handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                        // Will remove this check if merging is happening on ui
-                        isDisabled={disableAllActions}
-                    />
+                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                        <div>
+                            <MergePatchWithTemplateCheckbox
+                                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
+                                // Will remove this check if merging is happening on ui
+                                isDisabled={isDisabled}
+                            />
+                        </div>
+                    </InvalidYAMLTippyWrapper>
                 )}
             </div>
         )
     }
 
     const renderProtectedConfigActions = () => {
-        const shouldRenderApproverInfoTippy =
-            !!isDraftPresent && isApprovalPending && ConfigApproversInfoTippy && !isLoadingInitialData
-        const shouldRenderCommentsView = !!isDraftPresent && !isLoadingInitialData
+        const shouldRenderApproverInfoTippy = !!isDraftPresent && isApprovalPending && ConfigApproversInfoTippy
+        const shouldRenderCommentsView = !!isDraftPresent
         const hasNothingToRender = !shouldRenderApproverInfoTippy && !shouldRenderCommentsView
 
         if (!isProtected || hasNothingToRender) {
@@ -203,9 +207,8 @@ const ConfigToolbar = ({
     }
 
     const renderReadmeAndScopedVariablesBlock = () => {
-        const shouldRenderReadmeButton = !!handleEnableReadmeView
-        const shouldRenderScopedVariables = window._env_.ENABLE_SCOPED_VARIABLES && !isLoadingInitialData
-        const hasNothingToRender = !shouldRenderReadmeButton && !shouldRenderScopedVariables
+        const shouldRenderScopedVariables = window._env_.ENABLE_SCOPED_VARIABLES
+        const hasNothingToRender = !showEnableReadMeButton && !shouldRenderScopedVariables
 
         if (hasNothingToRender) {
             return null
@@ -213,32 +216,42 @@ const ConfigToolbar = ({
 
         return (
             <>
-                {shouldRenderReadmeButton && (
-                    <Button
-                        onClick={handleEnableReadmeView}
-                        disabled={disableAllActions}
-                        dataTestId="config-readme-button"
-                        ariaLabel="Show Readme view"
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        icon={<ICBookOpen className="scn-7" />}
-                        size={ComponentSizeType.xs}
-                    />
+                {showEnableReadMeButton && (
+                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                        <div>
+                            <Button
+                                onClick={handleEnableReadmeView}
+                                disabled={isDisabled}
+                                dataTestId="config-readme-button"
+                                ariaLabel="Show Readme view"
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.neutral}
+                                icon={<ICBookOpen className="scn-7" />}
+                                size={ComponentSizeType.xs}
+                                showAriaLabelInTippy={false}
+                            />
+                        </div>
+                    </InvalidYAMLTippyWrapper>
                 )}
 
                 {shouldRenderScopedVariables && (
-                    <ToggleResolveScopedVariables
-                        resolveScopedVariables={resolveScopedVariables}
-                        handleToggleScopedVariablesView={handleToggleScopedVariablesView}
-                        isDisabled={disableAllActions}
-                    />
+                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                        <div>
+                            <ToggleResolveScopedVariables
+                                resolveScopedVariables={resolveScopedVariables}
+                                handleToggleScopedVariablesView={handleToggleScopedVariablesView}
+                                isDisabled={isDisabled}
+                                showTooltip={!parsingError}
+                            />
+                        </div>
+                    </InvalidYAMLTippyWrapper>
                 )}
             </>
         )
     }
 
     const renderSelectMergeStrategy = () => {
-        if (!envId || !isEditView) {
+        if (!envId || !isEditView || showDeleteOverrideDraftEmptyState) {
             return null
         }
 
@@ -247,17 +260,21 @@ const ConfigToolbar = ({
                 {!!children && <div className="dc__border-right-n1 h-16" />}
 
                 {SelectMergeStrategy ? (
-                    <SelectMergeStrategy
-                        mergeStrategy={mergeStrategy}
-                        handleMergeStrategyChange={handleMergeStrategyChange}
-                        isDisabled={disableAllActions}
-                    />
+                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                        <div>
+                            <SelectMergeStrategy
+                                mergeStrategy={mergeStrategy}
+                                handleMergeStrategyChange={handleMergeStrategyChange}
+                                isDisabled={isDisabled}
+                            />
+                        </div>
+                    </InvalidYAMLTippyWrapper>
                 ) : (
                     <div className="flexbox dc__gap-4">
                         <InfoIconTippy
                             heading="Merge strategy"
-                            // TODO: Replace with actual content and docLink
-                            additionalContent="Merge strategy determines how environment configurations are combined with inherited configurations configurations. Choose the strategy that best suits your needs:"
+                            additionalContent={<OverrideStrategyTippyContent />}
+                            documentationLink={DOCUMENTATION.HOME_PAGE}
                         />
 
                         <span className="cn-7 fs-12 fw-4 lh-16">Merge strategy</span>
@@ -269,13 +286,54 @@ const ConfigToolbar = ({
         )
     }
 
-    const handlePopupMenuToggle = (isOpen: boolean) => {
-        if (!isOpen) {
-            handleClearPopupNode()
-        }
-    }
-
     const popupConfigGroups = Object.keys(popupConfig?.menuConfig ?? {})
+
+    const renderPopupMenu = () => {
+        if (!popupConfigGroups.length) {
+            return null
+        }
+
+        if (popupConfig.popupNodeType) {
+            return popupConfig.popupMenuNode
+        }
+
+        return (
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
+                    <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
+                </PopupMenu.Button>
+
+                <PopupMenu.Body
+                    rootClassName={
+                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                    }
+                >
+                    <div className="flexbox-col dc__gap-4">
+                        {popupConfigGroups.map((groupName, index) => {
+                            const groupItems = popupConfig.menuConfig[groupName] ?? []
+
+                            return (
+                                <Fragment key={groupName}>
+                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
+
+                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
+                                        <PopupMenuItem
+                                            key={text}
+                                            text={text}
+                                            onClick={onClick}
+                                            dataTestId={dataTestId}
+                                            disabled={disabled}
+                                            icon={icon}
+                                        />
+                                    ))}
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
+    }
 
     return (
         <div
@@ -295,51 +353,7 @@ const ConfigToolbar = ({
 
                     {renderReadmeAndScopedVariablesBlock()}
 
-                    {!!popupConfigGroups.length && (
-                        <PopupMenu onToggleCallback={handlePopupMenuToggle} autoClose>
-                            <PopupMenu.Button rootClassName="flex dc__no-shrink" disabled={disableAllActions} isKebab>
-                                <ICMore
-                                    className="icon-dim-16 fcn-6 dc__flip-90"
-                                    data-testid="config-more-options-popup"
-                                />
-                            </PopupMenu.Button>
-
-                            <PopupMenu.Body
-                                rootClassName={
-                                    popupConfig.popupNodeType
-                                        ? ''
-                                        : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
-                                }
-                            >
-                                {popupConfig.popupNodeType ? (
-                                    popupConfig.popupMenuNode
-                                ) : (
-                                    <div className="flexbox-col dc__gap-4">
-                                        {popupConfigGroups.map((groupName, index) => {
-                                            const groupItems = popupConfig.menuConfig[groupName] ?? []
-
-                                            return (
-                                                <Fragment key={groupName}>
-                                                    {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
-
-                                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
-                                                        <PopupMenuItem
-                                                            key={text}
-                                                            text={text}
-                                                            onClick={onClick}
-                                                            dataTestId={dataTestId}
-                                                            disabled={disabled}
-                                                            icon={icon}
-                                                        />
-                                                    ))}
-                                                </Fragment>
-                                            )
-                                        })}
-                                    </div>
-                                )}
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                    )}
+                    {renderPopupMenu()}
                 </div>
             )}
         </div>

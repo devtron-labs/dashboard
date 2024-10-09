@@ -27,6 +27,7 @@ import {
     DeploymentNodeType,
     RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
+    HelmReleaseStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -90,9 +91,14 @@ export interface CDModalProps {
     parentEnvironmentName: string
     ciPipelineId?: number
     isRedirectedFromAppDetails?: boolean
+    deploymentUserActionState?: ACTION_STATE
 }
 
 export interface AppDetails extends CDModalProps {
+    appStoreChartId: number
+    appStoreChartName: string
+    appStoreAppVersion: string
+    appStoreAppName: string
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
@@ -187,6 +193,10 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
+    releaseStatus?: HelmReleaseStatus
+    // lastSnapshotTime and wfrId are only available for isolated
+    lastSnapshotTime?: string
+    wfrId?: number
 }
 
 interface Node {
