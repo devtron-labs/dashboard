@@ -64,71 +64,6 @@ export interface DeploymentTemplateEditorDataStateType
     originalTemplateState: DeploymentTemplateConfigState
 }
 
-export enum NodeEntityType {
-    ARRAY = 'ARRAY',
-    OBJECT = 'OBJECT',
-    LEAF = 'LEAF',
-}
-
-export type NodeType =
-    | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType
-          selectionStatus: 'all-selected' | 'some-selected' | 'none-selected'
-          isChecked?: never
-          children: Array<NodeType>
-      }
-    | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType.LEAF
-          isChecked: boolean
-          selectionStatus?: never
-          children?: never
-      }
-
-export type GUIViewModelType = {
-    schema: object
-    json: object
-    totalCheckedCount: number
-    root: NodeType
-    updateNodeForPath: (path: string) => void
-    getUncheckedNodes: () => string[]
-}
-
-export type ViewErrorType = Record<'title' | 'subTitle', string>
-
-export type GUIViewCheckboxProps = {
-    node: NodeType
-    updateNodeForPath: (path: string) => void
-}
-
-export type TraversalType = {
-    node: NodeType
-    wf: (node: NodeType, data: unknown) => void
-    data: unknown
-}
-
-export interface GUIViewProps
-    extends Pick<
-        DeploymentTemplateFormProps,
-        | 'editorOnChange'
-        | 'lockedConfigKeysWithLockType'
-        | 'hideLockedKeys'
-        | 'uneditedDocument'
-        | 'editedDocument'
-        | 'isUnSet'
-        | 'selectedChart'
-    > {
-    value: string
-    readOnly: boolean
-    handleChangeToYAMLMode: () => void
-    guiSchema: string
-}
-
 export interface DeploymentTemplateStateType {
     isLoadingInitialData: boolean
     initialLoadError: ServerErrors
@@ -245,7 +180,7 @@ export interface DeploymentTemplateOptionsHeaderProps
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
     extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
         Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
         Pick<
             DeploymentTemplateStateType,

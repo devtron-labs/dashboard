@@ -1,4 +1,4 @@
-import { DeploymentChartVersionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentChartVersionType, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateFormProps } from '../types'
 
 export enum NodeEntityType {
@@ -7,33 +7,40 @@ export enum NodeEntityType {
     LEAF = 'LEAF',
 }
 
-export type NodeType =
+export type NodeType = {
+    key: string
+    title: string
+    path: string
+    type: NodeEntityType
+    fieldType: RJSFFormSchema['type']
+} & (
     | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType
           selectionStatus: 'all-selected' | 'some-selected' | 'none-selected'
           isChecked?: never
           children: Array<NodeType>
       }
     | {
-          key: string
-          title: string
-          path: string
-          type: NodeEntityType.LEAF
           isChecked: boolean
           selectionStatus?: never
           children?: never
       }
+)
+
+export type TraversalType = {
+    node: NodeType
+    wf: (node: NodeType, data: unknown) => void
+    data: unknown
+}
 
 export type GUIViewModelType = {
     schema: object
     json: object
     totalCheckedCount: number
     root: NodeType
-    updateNodeForPath: (path: string) => void
+    updateNodeForPath: (data: UpdateNodeForPathDataType) => void
     getUncheckedNodes: () => string[]
+    postOrder: (props: TraversalType) => void
+    inOrder: (props: TraversalType) => void
 }
 
 export type ViewErrorType = Record<'title' | 'subTitle', string>
@@ -43,16 +50,15 @@ export type GUIViewCheckboxProps = {
     updateNodeForPath: (path: string) => void
 }
 
-export type traversalType = {
-    node: NodeType
-    wf: (node: NodeType, data: unknown) => void
-    data: unknown
-}
-
 export interface GUIViewProps
     extends Pick<
         DeploymentTemplateFormProps,
-        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'uneditedDocument' | 'editedDocument'
+        | 'editorOnChange'
+        | 'lockedConfigKeysWithLockType'
+        | 'hideLockedKeys'
+        | 'uneditedDocument'
+        | 'editedDocument'
+        | 'mergeStrategy'
     > {
     value: string
     readOnly: boolean
@@ -60,4 +66,9 @@ export interface GUIViewProps
     handleChangeToYAMLMode: () => void
     guiSchema: string
     selectedChart: DeploymentChartVersionType
+}
+
+export type UpdateNodeForPathDataType = {
+    path: string
+    json: object
 }

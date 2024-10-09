@@ -25,6 +25,7 @@ import {
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
     convertJSONPointerToJSONPath,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -49,6 +50,7 @@ const GUIView = ({
     handleChangeToYAMLMode,
     guiSchema,
     selectedChart,
+    mergeStrategy,
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
     const [uncheckedPathsList, setUncheckedPathsList] = useState([])
@@ -57,14 +59,20 @@ const GUIView = ({
     useEffect(() => {
         try {
             setFormData(YAML.parse(value))
-            if (!modelRef.current) {
+            if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current) {
                 modelRef.current = new GUIViewModel(guiSchema, value)
                 setUncheckedPathsList(modelRef.current.getUncheckedNodes())
             }
         } catch {
             handleChangeToYAMLMode()
         }
-    }, [value, guiSchema])
+
+        return () => {
+            if (mergeStrategy !== OverrideMergeStrategyType.PATCH) {
+                modelRef.current = null
+            }
+        }
+    }, [value, guiSchema, mergeStrategy])
 
     const state = useMemo(() => {
         try {
@@ -78,7 +86,7 @@ const GUIView = ({
                 )
             }
 
-            if (!modelRef.current?.totalCheckedCount) {
+            if (modelRef.current && !modelRef.current?.totalCheckedCount) {
                 throw new ViewError(
                     'All fields are unselected',
                     'Select fields from the side pane that you wish to be displayed here',
@@ -96,10 +104,12 @@ const GUIView = ({
                     ]),
                 }
             }
+
             // Note: if the locked keys are not resolved from the following json(s)
             // then the logic to hide them will not work
             const parsedUneditedDocument = YAML.parse(uneditedDocument)
             const parsedEditedDocument = YAML.parse(editedDocument)
+
             // NOTE: suppose we lock ingress.hosts[1].host, and the locked key's path is
             // resolved from either of the above json(s) then host field from all array entries
             // will be hidden not just the host field at index 1 (limitation)
@@ -140,8 +150,9 @@ const GUIView = ({
 
     const updateNodeForPath = (path: string) => {
         if (modelRef.current) {
-            modelRef.current.updateNodeForPath(path)
+            const newFormData = modelRef.current.updateNodeForPath({ path, json: formData })
             setUncheckedPathsList(modelRef.current.getUncheckedNodes())
+            editorOnChange?.(YAML.stringify(newFormData))
         }
     }
 
@@ -166,6 +177,7 @@ const GUIView = ({
             <div className="dc__overflow-scroll">
                 <RJSFForm
                     schema={state.guiSchema}
+                    className={!modelRef.current ? 'dc__mxw-960' : ''}
                     formData={formData || {}}
                     onChange={handleFormChange}
                     uiSchema={state.uiSchema}
@@ -191,7 +203,7 @@ const GUIView = ({
             <div
                 className="dc__grid dc__overflow-hidden flex-grow-1"
                 style={{
-                    gridTemplateColumns: '1fr 350px',
+                    gridTemplateColumns: modelRef.current ? '1fr 350px' : '1fr',
                 }}
             >
                 {renderForm()}

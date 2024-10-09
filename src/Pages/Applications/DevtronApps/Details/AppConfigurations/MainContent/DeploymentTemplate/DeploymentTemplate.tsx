@@ -34,6 +34,7 @@ import {
     GenericEmptyState,
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
     ResponseType,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -1341,6 +1342,7 @@ const DeploymentTemplate = ({
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
+                mergeStrategy={currentEditorTemplateData?.mergeStrategy ?? OverrideMergeStrategyType.REPLACE}
             />
         )
     }

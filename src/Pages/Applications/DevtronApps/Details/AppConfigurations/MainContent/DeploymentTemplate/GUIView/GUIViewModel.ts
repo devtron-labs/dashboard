@@ -1,7 +1,8 @@
 import { JSONPath } from 'jsonpath-plus'
 import YAML from 'yaml'
-import { convertJSONPointerToJSONPath, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeEntityType, NodeType, TraversalType } from '../types'
+import { applyOperation, Operation } from 'fast-json-patch'
+import { convertJSONPointerToJSONPath, noop, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeEntityType, NodeType, TraversalType, UpdateNodeForPathDataType } from './types'
 
 export function ViewError(title: string, subTitle: string) {
     this.title = title
@@ -85,6 +86,7 @@ function _constructTree(key: string, path: string, json: RJSFFormSchema): NodeTy
             key,
             selectionStatus,
             type: isArray ? NodeEntityType.ARRAY : NodeEntityType.OBJECT,
+            fieldType: json.type,
             title: json.title ?? key,
             path,
             children,
@@ -100,6 +102,7 @@ function _constructTree(key: string, path: string, json: RJSFFormSchema): NodeTy
     return {
         key,
         type: NodeEntityType.LEAF,
+        fieldType: json.type,
         isChecked,
         title: json.title,
         path,
@@ -148,8 +151,63 @@ function postOrder(props: TraversalType) {
     wf(node, props.data)
 }
 
-function updateNodeWherePathMatches(node: NodeType, data: string) {
-    if (node.path === data) {
+const getOperationPathForAddOperation = (path: string) => {
+    const lastWildcardLocation = path.lastIndexOf('*')
+    const firstPart = path.slice(0, lastWildcardLocation + 1)
+    const lastPart = path.slice(lastWildcardLocation + 1)
+    return { firstPart, lastPart }
+}
+
+function applyJsonPatchOperationAndMutateJson(json: object, op: Operation) {
+    try {
+        let paths: Array<string> = []
+
+        if (op.op === 'add') {
+            const { firstPart, lastPart } = getOperationPathForAddOperation(op.path)
+            paths = JSONPath({
+                json,
+                path: convertJSONPointerToJSONPath(firstPart),
+                resultType: 'pointer',
+            }).map((path: string) => `${path}${lastPart}`)
+        } else {
+            paths = JSONPath({
+                json,
+                path: convertJSONPointerToJSONPath(op.path),
+                resultType: 'pointer',
+            })
+        }
+
+        if (!Array.isArray(paths)) {
+            return
+        }
+
+        paths.forEach((path) => applyOperation(json, { ...op, path }, true, true))
+    } catch {
+        noop()
+    }
+}
+
+function getNullValueFromType(type: NodeType['fieldType']) {
+    switch (type) {
+        case 'number':
+        case 'integer':
+            return 0
+        case 'string':
+            return ''
+        case 'boolean':
+            return false
+        case 'object':
+            return {}
+        case 'array':
+            return []
+        case 'null':
+        default:
+            return null
+    }
+}
+
+function updateNodeWherePathMatches(node: NodeType, { path, json }: UpdateNodeForPathDataType) {
+    if (node.path === path) {
         if (node.type !== NodeEntityType.LEAF) {
             throw new Error('None leaf is being updated!')
         }
@@ -158,8 +216,14 @@ function updateNodeWherePathMatches(node: NodeType, data: string) {
 
         if (node.isChecked) {
             this.totalCheckedCount += 1
+            applyJsonPatchOperationAndMutateJson(json, {
+                op: 'add',
+                path: node.path,
+                value: getNullValueFromType(node.fieldType),
+            })
         } else {
             this.totalCheckedCount -= 1
+            applyJsonPatchOperationAndMutateJson(json, { op: 'remove', path: node.path })
         }
     }
 
@@ -181,8 +245,10 @@ GUIViewModel.prototype.getUncheckedNodes = function getUncheckedNodes(): string[
     return list
 }
 
-GUIViewModel.prototype.updateNodeForPath = function updateNodeForPath(path: string) {
-    postOrder({ node: this.root, wf: updateNodeWherePathMatches.bind(this), data: path })
+GUIViewModel.prototype.updateNodeForPath = function updateNodeForPath({ path, json }: UpdateNodeForPathDataType) {
+    const clone = structuredClone(json)
+    postOrder({ node: this.root, wf: updateNodeWherePathMatches.bind(this), data: { path, json: clone } })
+    return clone
 }
 
 GUIViewModel.prototype.inOrder = inOrder

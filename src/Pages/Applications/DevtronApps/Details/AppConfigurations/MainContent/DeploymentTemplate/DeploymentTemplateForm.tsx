@@ -23,6 +23,7 @@ const DeploymentTemplateForm = ({
     environmentName,
     latestDraft,
     isGuiSupported,
+    mergeStrategy,
 }: DeploymentTemplateFormProps) => {
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
@@ -39,6 +40,7 @@ const DeploymentTemplateForm = ({
                 selectedChart={selectedChart}
                 guiSchema={guiSchema}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
+                mergeStrategy={mergeStrategy}
             />
         )
     }
