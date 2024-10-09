@@ -1222,7 +1222,7 @@ const DeploymentTemplate = ({
                 handleSetHideLockedKeys,
             },
             configHeaderTab,
-            isOverridden: currentEditorTemplateData?.isOverridden,
+            isOverridden: publishedTemplateData?.isOverridden,
             isPublishedValuesView,
             isPublishedConfigPresent,
             handleDeleteOverride: handleOverride,
