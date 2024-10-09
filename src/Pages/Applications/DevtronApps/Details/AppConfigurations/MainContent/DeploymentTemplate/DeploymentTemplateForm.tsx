@@ -2,7 +2,7 @@ import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-l
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { DeploymentTemplateFormProps } from './types'
-import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import { GUIView as DeploymentTemplateGUIView } from './GUIView'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 
 const DeploymentTemplateForm = ({
@@ -39,7 +39,6 @@ const DeploymentTemplateForm = ({
                 selectedChart={selectedChart}
                 guiSchema={guiSchema}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
-                rootClassName="flexbox-col flex-grow-1"
             />
         )
     }
