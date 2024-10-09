@@ -950,7 +950,7 @@ export const EnvSelector = ({
                     ENV
                 </div>
             </div>
-            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-11">
                 <SelectPicker
                     inputId="app-environment-select"
                     placeholder="Select Environment"
