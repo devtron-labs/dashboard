@@ -823,7 +823,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            <ConfigDriftModalRoute path={path} />
+            {ConfigDriftModalRoute && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
