@@ -7,26 +7,22 @@ import {
     ProtectConfigTabsType,
     PopupMenu,
     BaseURLParams,
-    InfoIconTippy,
-    OverrideMergeStrategyType,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
-    OverrideStrategyTippyContent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import { DOCUMENTATION } from '@Config/constants'
-import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
-import { ConfigToolbarProps } from './types'
-import { PopupMenuItem } from './utils'
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
+import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
+import { PopupMenuItem } from './utils'
+import { ConfigToolbarProps } from './types'
+import SelectMergeStrategy from './SelectMergeStrategy'
 
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')
-const SelectMergeStrategy = importComponentFromFELibrary('SelectMergeStrategy', null, 'function')
 const ConfigApproversInfoTippy = importComponentFromFELibrary('ConfigApproversInfoTippy', null, 'function')
 const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
     'ProtectConfigShowCommentsButton',
@@ -270,30 +266,15 @@ const ConfigToolbar = ({
         return (
             <>
                 {!!children && <div className="dc__border-right-n1 h-16" />}
-
-                {SelectMergeStrategy ? (
-                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
-                        <div>
-                            <SelectMergeStrategy
-                                mergeStrategy={mergeStrategy}
-                                handleMergeStrategyChange={handleMergeStrategyChange}
-                                isDisabled={isDisabled}
-                            />
-                        </div>
-                    </InvalidYAMLTippyWrapper>
-                ) : (
-                    <div className="flexbox dc__gap-4">
-                        <InfoIconTippy
-                            heading="Merge strategy"
-                            additionalContent={<OverrideStrategyTippyContent />}
-                            documentationLink={DOCUMENTATION.HOME_PAGE}
+                <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                    <div>
+                        <SelectMergeStrategy
+                            mergeStrategy={mergeStrategy}
+                            handleMergeStrategyChange={handleMergeStrategyChange}
+                            isDisabled={isDisabled}
                         />
-
-                        <span className="cn-7 fs-12 fw-4 lh-16">Merge strategy</span>
-                        {/* TODO: can make a constant for label text from enum */}
-                        <span className="cn-9 fs-12 fw-6 lh-20">{OverrideMergeStrategyType.REPLACE}</span>
                     </div>
-                )}
+                </InvalidYAMLTippyWrapper>
             </>
         )
     }
@@ -349,7 +330,7 @@ const ConfigToolbar = ({
 
     return (
         <div
-            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 ${!showProtectedTabs ? 'py-6' : ''}`}
+            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
         >
             <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
                 {getLHSActionNodes()}

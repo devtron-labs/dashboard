@@ -95,7 +95,7 @@ const ChartSelectorDropdown = ({
 
     if (!isUnSet) {
         return (
-            <span className="fs-13 fw-6 cn-9 flex" data-testid="select-chart-type-dropdown">
+            <span className="fs-13 fw-6 cn-9 dc__truncate dc__mxw-150" data-testid="select-chart-type-dropdown">
                 {selectedChart?.name}
             </span>
         )
@@ -104,13 +104,15 @@ const ChartSelectorDropdown = ({
     return (
         <PopupMenu onToggleCallback={setPopupState} autoClose>
             <PopupMenu.Button isKebab dataTestId="select-chart-type-dropdown">
-                <span className="fs-13 fw-6 cn-9 flex pointer">
-                    {selectedChart?.name || 'Select Chart'}
+                <div className="flex pointer">
+                    <span className="fs-13 fw-6 cn-9 dc__truncate dc__mxw-150">
+                        {selectedChart?.name || 'Select Chart'}
+                    </span>
                     <Dropdown
                         className="icon-dim-20 ml-2 rotate fcn-9 pointer"
                         style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }}
                     />
-                </span>
+                </div>
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName="dc__overflow-scroll mxh-350 w-400 dc__border br-4">
                 <>

@@ -289,3 +289,9 @@ export interface BaseConfigurationNavigationProps {
 export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
 }
+
+export interface SelectMergeStrategyProps {
+    mergeStrategy: OverrideMergeStrategyType
+    handleMergeStrategyChange: (value: OverrideMergeStrategyType) => void
+    isDisabled: boolean
+}
