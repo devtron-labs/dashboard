@@ -20,10 +20,8 @@ export const ConfigMapSecretFormProvider = ({ children }: ConfigMapSecretFormPro
         if (type === 'SET_DATA') {
             formDataRef.current = data
             setIsFormDirty(isDirty)
-            const yamlError = formDataRef.current.external ? errors.esoSecretYaml : errors.yaml
-            setParsingError(
-                yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR && typeof yamlError === 'string' ? yamlError : '',
-            )
+            const yamlError = (formDataRef.current.external ? errors.esoSecretYaml : errors.yaml)?.[0]
+            setParsingError(yamlError && yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR ? yamlError : '')
         } else {
             formDataRef.current = null
             setIsFormDirty(false)

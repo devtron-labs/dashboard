@@ -148,7 +148,7 @@ export const ConfigMapSecretData = ({
         // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the 'NO_DATA_ERROR' error.
         const hasDataError =
             (errors.yaml || errors.currentData) &&
-            (errors.yaml || errors.currentData) !== CONFIG_MAP_SECRET_NO_DATA_ERROR
+            (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_NO_DATA_ERROR
 
         // If there are validation errors, show a toast notification and return the current mode without switching.
         if (hasDataError) {

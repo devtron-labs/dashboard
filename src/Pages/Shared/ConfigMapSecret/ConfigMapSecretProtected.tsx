@@ -165,14 +165,14 @@ export const ConfigMapSecretProtected = ({
                         value: curr.value,
                     },
                 }),
-                draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? {
-                          isOverride: {
+                          configuration: {
                               displayName: 'Configuration',
                               value: 'Inherit from base',
                           },
                       }
-                    : {},
+                    : {}) as CompareConfigViewProps['currentEditorConfig'],
             ),
             currentEditorTemplate: data ? YAML.parse(data) : undefined,
         }
@@ -198,14 +198,14 @@ export const ConfigMapSecretProtected = ({
                         value: curr.value,
                     },
                 }),
-                draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? {
-                          isOverride: {
+                          configuration: {
                               displayName: 'Configuration',
                               value: 'Override base',
                           },
                       }
-                    : {},
+                    : {}) as CompareConfigViewProps['publishedEditorConfig'],
             ),
             publishedEditorTemplate: data ? YAML.parse(data) : undefined,
         }

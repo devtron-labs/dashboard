@@ -10,9 +10,9 @@ import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import {
+    CompareConfigViewEditorConfigType,
     ConfigHeaderTabConfigType,
     ConfigToolbarProps,
-    CompareConfigDiffViewConfigType,
     GetConfigToolbarPopupConfigProps,
 } from './types'
 
@@ -173,7 +173,7 @@ export const getConfigToolbarPopupConfig = ({
 export const getCompareViewHistoryDiffConfigProps = (
     showDisplayName: boolean,
     editorTemplate: Record<string | number, unknown>,
-    editorConfig: CompareConfigDiffViewConfigType,
+    editorConfig: CompareConfigViewEditorConfigType,
 ):
     | DeploymentTemplateHistoryType['baseTemplateConfiguration']
     | DeploymentTemplateHistoryType['currentConfiguration'] => ({

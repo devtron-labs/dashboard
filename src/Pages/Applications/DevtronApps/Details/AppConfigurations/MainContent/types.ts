@@ -222,7 +222,18 @@ export type NoOverrideEmptyStateProps = {
     hideOverrideButton?: boolean
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
-export type CompareConfigDiffViewConfigType =
+type CMSecretDiffViewConfigType = {
+    configuration?: DeploymentHistorySingleValue
+    dataType: DeploymentHistorySingleValue
+    mountDataAs: DeploymentHistorySingleValue
+    volumeMountPath: DeploymentHistorySingleValue
+    setSubPath: DeploymentHistorySingleValue
+    externalSubpathValues: DeploymentHistorySingleValue
+    filePermission: DeploymentHistorySingleValue
+    roleARN: DeploymentHistorySingleValue
+}
+
+type DeploymentTemplateDiffViewConfigType =
     | {
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
@@ -242,15 +253,10 @@ export type CompareConfigDiffViewConfigType =
           chartName?: never
           chartVersion?: never
           mergeStrategy?: never
-          isOverride?: DeploymentHistorySingleValue
-          dataType?: DeploymentHistorySingleValue
-          mountDataAs?: DeploymentHistorySingleValue
-          volumeMountPath?: DeploymentHistorySingleValue
-          setSubPath?: DeploymentHistorySingleValue
-          externalSubpathValues?: DeploymentHistorySingleValue
-          filePermission?: DeploymentHistorySingleValue
-          roleARN?: DeploymentHistorySingleValue
+          isOverride?: never
       }
+
+export type CompareConfigViewEditorConfigType = DeploymentTemplateDiffViewConfigType | CMSecretDiffViewConfigType
 
 export interface CompareConfigViewProps {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
@@ -260,8 +266,8 @@ export interface CompareConfigViewProps {
 
     currentEditorTemplate: Record<string | number, unknown>
     publishedEditorTemplate: Record<string | number, unknown>
-    currentEditorConfig: CompareConfigDiffViewConfigType
-    publishedEditorConfig: CompareConfigDiffViewConfigType
+    currentEditorConfig: CompareConfigViewEditorConfigType
+    publishedEditorConfig: CompareConfigViewEditorConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
     /**

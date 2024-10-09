@@ -538,17 +538,17 @@ export const ConfigMapSecretContainer = ({
     }
 
     const onError: ConfigMapSecretFormProps['onError'] = (errors) => {
-        if (errors.currentData === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
+        if (errors.currentData?.[0] === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
             })
         }
 
-        if (typeof errors.hasCurrentDataErr === 'string') {
+        if (errors.hasCurrentDataErr?.[0]) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: errors.hasCurrentDataErr,
+                description: errors.hasCurrentDataErr[0],
             })
         }
     }
