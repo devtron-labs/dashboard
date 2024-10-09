@@ -61,7 +61,6 @@
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
-        "build-cluster": "relative-deps && NODE_OPTIONS=--max_old_space_size=4096 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false vite build",
         "build-k8s-app": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false VITE_K8S_CLIENT=true vite build",
@@ -125,7 +124,6 @@
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
-        "relative-deps": "^1.0.7",
         "sass": "^1.69.7",
         "storybook": "^8.2.9",
         "ts-jest": "29.2.5",
@@ -140,7 +138,8 @@
         "workbox-routing": "7.1.0",
         "workbox-strategies": "7.1.0",
         "workbox-window": "7.1.0",
-        "worker-loader": "3.0.8"
+        "worker-loader": "3.0.8",
+        "yalc": "^1.0.0-pre.53"
     },
     "jest": {
         "collectCoverageFrom": [
@@ -159,9 +158,5 @@
             "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
-    },
-    "relativeDependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "../devtron-fe-common-lib",
-        "@devtron-labs/devtron-fe-lib": "../devtron-fe-lib"
     }
 }
