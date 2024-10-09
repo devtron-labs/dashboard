@@ -1,7 +1,8 @@
 import YAML from 'yaml'
 import {
+    BaseURLParams,
     CompareFromApprovalOptionsValuesType,
-    CONFIG_HEADER_TAB_VALUES,
+    ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     ConfigurationType,
     DEFAULT_LOCKED_KEYS_CONFIG,
@@ -29,7 +30,6 @@ interface InitializeStateBasePayloadType
 
 interface GetDeploymentTemplateInitialStateParamsType {
     isSuperAdmin: boolean
-    isEnvView: boolean
 }
 
 export enum DeploymentTemplateActionType {
@@ -75,6 +75,7 @@ export enum DeploymentTemplateActionType {
     SHOW_PROTECTED_SAVE_MODAL = 'SHOW_PROTECTED_SAVE_MODAL',
     CLOSE_SAVE_CHANGES_MODAL = 'CLOSE_SAVE_CHANGES_MODAL',
     CLOSE_LOCKED_DIFF_MODAL = 'CLOSE_LOCKED_DIFF_MODAL',
+    UPDATE_ARE_COMMENTS_PRESENT = 'UPDATE_ARE_COMMENTS_PRESENT',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -121,14 +122,16 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT
-          payload: InitializeStateBasePayloadType & Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'>
+          payload: InitializeStateBasePayloadType &
+              Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'> &
+              Pick<BaseURLParams, 'envId'>
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  'currentEditorTemplateData' | 'draftTemplateData' | 'configHeaderTab' | 'selectedProtectionViewTab'
+                  'currentEditorTemplateData' | 'draftTemplateData' | 'selectedProtectionViewTab'
               >
       }
     | {
@@ -195,10 +198,13 @@ export type DeploymentTemplateActionState =
               isLockConfigError: boolean
           }
       }
+    | {
+          type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT
+          payload: Pick<DeploymentTemplateStateType, 'areCommentsPresent'>
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
-    isEnvView,
 }: GetDeploymentTemplateInitialStateParamsType): DeploymentTemplateStateType => ({
     isLoadingInitialData: true,
     initialLoadError: null,
@@ -243,12 +249,11 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
     editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
-    configHeaderTab: isEnvView
-        ? CONFIG_HEADER_TAB_VALUES.OVERRIDE[0]
-        : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE[0],
+    configHeaderTab: ConfigHeaderTabType.VALUES,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
+    areCommentsPresent: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -373,6 +378,7 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                envId,
             } = action.payload
 
             return {
@@ -382,6 +388,10 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                configHeaderTab:
+                    envId && !publishedTemplateData.isOverridden
+                        ? ConfigHeaderTabType.INHERITED
+                        : ConfigHeaderTabType.VALUES,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -395,7 +405,6 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab,
                 selectedProtectionViewTab,
             } = action.payload
 
@@ -407,8 +416,9 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab,
+                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab,
+                areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -730,6 +740,12 @@ export const deploymentTemplateReducer = (
                     showLockedTemplateDiffModal: false,
                     showLockedDiffForApproval: false,
                 },
+            }
+
+        case DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT:
+            return {
+                ...state,
+                areCommentsPresent: action.payload.areCommentsPresent,
             }
 
         default:

@@ -2958,6 +2958,10 @@ textarea,
     min-width: 84px;
 }
 
+.mw-120 {
+    min-width: 120px;
+}
+
 .mw-140 {
     min-width: 140px;
 }
@@ -4940,4 +4944,16 @@ textarea::placeholder {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+.code-editor__warning {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
 }
