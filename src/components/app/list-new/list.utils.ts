@@ -148,7 +148,7 @@ export const useFilterOptions = ({
         () =>
             clusterGroupedEnvOptions?.map((clusterItem) => ({
                 label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
-                options: clusterItem.options,
+                options: clusterItem.options.sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
             })) ?? [],
         [clusterGroupedEnvOptions],
     )
@@ -162,10 +162,12 @@ export const useFilterOptions = ({
     }
 
     const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
-        handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
-            label: clusterItem.cluster_name,
-            value: String(clusterItem.id),
-        }))
+        handleVirtualClusterFiltering(clusterList)
+            .map((clusterItem) => ({
+                label: clusterItem.cluster_name,
+                value: String(clusterItem.id),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(
         () =>
