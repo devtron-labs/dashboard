@@ -188,6 +188,10 @@ function applyJsonPatchOperationAndMutateJson(json: object, op: Operation) {
 }
 
 function getNullValueFromType(type: NodeType['fieldType']) {
+    if (type && Array.isArray(type) && type.length > 0) {
+        return getNullValueFromType(type[0])
+    }
+
     switch (type) {
         case 'number':
         case 'integer':
