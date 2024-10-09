@@ -46,7 +46,9 @@ const ConfigHeaderTab = ({
             {hasError ? (
                 <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
             ) : (
-                <Icon className={`icon-dim-16 dc__no-shrink ${isActive ? 'scn-9' : 'scn-7'}`} />
+                <Icon
+                    className={`icon-dim-16 dc__no-shrink ${isActive ? 'scn-9' : 'scn-7'} config-header__tab--icon`}
+                />
             )}
             <span>{text}</span>
             {showUnsavedChangesIndicator && (

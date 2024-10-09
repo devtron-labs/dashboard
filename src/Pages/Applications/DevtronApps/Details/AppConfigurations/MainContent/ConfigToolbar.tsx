@@ -292,13 +292,19 @@ const ConfigToolbar = ({
 
         return (
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
+                <PopupMenu.Button
+                    rootClassName="flex dc__no-shrink icon-dim-20 p-0 dc__no-background dc__no-border dc__outline-none-imp dc__tab-focus dc__hover-n50"
+                    isKebab
+                    dataTestId="config-more-options-popup"
+                >
                     <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
                 </PopupMenu.Button>
 
                 <PopupMenu.Body
                     rootClassName={
-                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 w-200 mt-8 dc__gap-4 flexbox-col'
+                        popupConfig.popupNodeType
+                            ? ''
+                            : 'br-4 py-4 dc__overflow-hidden dc__border dc__box-shadow--menu mt-8 mw-120'
                     }
                 >
                     <div className="flexbox-col dc__gap-4">
@@ -309,7 +315,7 @@ const ConfigToolbar = ({
                                 <Fragment key={groupName}>
                                     {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
 
-                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
+                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
                                         <PopupMenuItem
                                             key={text}
                                             text={text}
@@ -317,6 +323,7 @@ const ConfigToolbar = ({
                                             dataTestId={dataTestId}
                                             disabled={disabled}
                                             icon={icon}
+                                            variant={variant}
                                         />
                                     ))}
                                 </Fragment>
