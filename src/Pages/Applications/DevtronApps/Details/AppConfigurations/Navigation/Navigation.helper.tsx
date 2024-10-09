@@ -13,7 +13,6 @@ import {
     CustomNavItemsType,
     EnvConfigRouteParams,
     EnvConfigType,
-    EnvironmentOptionType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
 } from '../AppConfig.types'
@@ -86,7 +85,10 @@ export const getNavigationPath = (
  * @param configState - The state of the resource configuration.
  * @returns An object containing the icon, props and tooltipProps if conditions are met, otherwise null.
  */
-const getIcon = (configState: ResourceConfigState, isProtected: boolean): CollapsibleListItem['iconConfig'] => {
+const getIcon = (
+    configState: ResourceConfigState,
+    isProtected: boolean,
+): CollapsibleListItem<'navLink'>['iconConfig'] => {
     if (isProtected && configState !== ResourceConfigState.Published && configState !== ResourceConfigState.Unnamed) {
         return {
             Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICEditFile,
@@ -115,7 +117,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    { id, isProtected }: EnvironmentOptionType,
+    { value: id, isProtected },
     paramToCheck: 'appId' | 'envId' = 'envId',
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem
