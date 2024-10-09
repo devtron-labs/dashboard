@@ -103,7 +103,8 @@ export interface InputPluginSelectionType {
     selectedVariableIndex: number
 }
 
-export interface EnvironmentWithSelectPickerType extends Environment, SelectPickerOptionType {}
+export type EnvironmentWithSelectPickerType = Environment & SelectPickerOptionType
+
 export interface EnvironmentListType {
     isBuildStage?: boolean
     environments: EnvironmentWithSelectPickerType[]

@@ -96,7 +96,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
 
-    const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
         if (result?.[0]?.['value']?.result?.length) {
@@ -229,6 +228,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
     })
 
+    const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
+
     const renderDetail = (): JSX.Element => {
         if (triggerHistory.size > 0 || fetchTriggerIdData) {
             const deploymentAppType = pipelineList.find(
@@ -246,8 +247,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         triggerHistory={triggerHistory}
                         setTriggerHistory={setTriggerHistory}
                         setFullScreenView={setFullScreenView}
-                        setDeploymentHistoryList={setDeploymentHistoryList}
-                        deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
                         appReleaseTags={appReleaseTags}
@@ -264,6 +263,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                         scrollToTop={scrollToTop}
                         scrollToBottom={scrollToBottom}
+                        appName={selectedApp?.appName}
                     />
                 </Route>
             )
@@ -276,7 +276,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 />
             )
         }
-        const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
         return (
             <EmptyView
                 title={APP_GROUP_CD_DETAILS.noDeployment.title}
@@ -302,7 +301,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll h-100" ref={scrollableRef}>
                     {renderDetail()}
                 </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />

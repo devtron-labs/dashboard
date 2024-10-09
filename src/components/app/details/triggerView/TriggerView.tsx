@@ -1247,7 +1247,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
-                        className={`modal-body--cd-material h-100 contains-diff-view ${
+                        className={`modal-body--cd-material h-100 flexbox-col contains-diff-view ${
                             material.length > 0 ? '' : 'no-material'
                         }`}
                         onClick={stopPropagation}

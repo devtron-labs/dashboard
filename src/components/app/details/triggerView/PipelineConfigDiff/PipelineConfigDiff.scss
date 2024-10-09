@@ -1,0 +1,15 @@
+.pipeline-config-diff-tile {
+    svg {
+        &.config-diff-found-icon {
+            path {
+                &:last-of-type {
+                    fill: var(--R500);
+                }
+            }
+
+            path:nth-of-type(2) {
+                fill: var(--N0);
+            }
+        }
+    }
+}

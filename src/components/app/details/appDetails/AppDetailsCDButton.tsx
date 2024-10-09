@@ -113,7 +113,7 @@ const AppDetailsCDButton = ({
     const renderCDModal = () =>
         (mode === URL_PARAM_MODE_TYPE.LIST || mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
             <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
+                <div className="modal-body--cd-material h-100 contains-diff-view flexbox-col" onClick={stopPropagation}>
                     <CDMaterial
                         materialType={MATERIAL_TYPE.inputMaterialList}
                         appId={appId}

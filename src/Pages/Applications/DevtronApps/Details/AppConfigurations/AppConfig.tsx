@@ -292,8 +292,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     useEffect(() => {
-        // SET APP CONFIG DATA IN STATE
         if (appConfigData) {
+            // SET APP CONFIG DATA IN STATE
             const [configStatusRes, workflowRes, { updatedEnvs, configProtections, isBaseConfigProtectionEnabled }] =
                 appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
