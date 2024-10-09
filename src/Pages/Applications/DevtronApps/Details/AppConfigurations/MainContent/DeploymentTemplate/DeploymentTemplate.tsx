@@ -576,7 +576,6 @@ const DeploymentTemplate = ({
             return handleFetchGlobalDeploymentTemplate(chartInfo, lockedConfigKeys)
         }
 
-        // Question: Can chartInfo be null?
         const {
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
         } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
