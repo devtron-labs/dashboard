@@ -30,7 +30,7 @@ import {
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
-import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { DeploymentTemplateGUIViewProps } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
@@ -162,8 +162,8 @@ const DeploymentTemplateGUIView = ({
     return (
         <>
             {isUnSet && (
-                <div className="bcy-1 fs-12 fw-4 cn-9 en-2 bw-1 dc__no-left-border dc__no-right-border flexbox pt-8 pr-16 pb-8 pl-16 h-32 lh-16">
-                    <WarningIcon className="warning-icon-y7 icon-dim-16 mr-8" />
+                <div className="flexbox dc__gap-8 fs-12 fw-4 cn-9 py-8 px-16 dc__border-bottom--y2 bcy-1 dc__align-items-center lh-16">
+                    <ICWarningY5 className="icon-dim-16" />
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
             )}

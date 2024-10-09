@@ -69,7 +69,7 @@ const DeploymentTemplateCTA = ({
                             onClick={handleSave}
                             isLoading={isLoading}
                             text={!envId && !isCiPipeline ? 'Save & Next' : 'Save changes'}
-                            startIcon={
+                            endIcon={
                                 !envId && !isCiPipeline ? (
                                     <ICArrowRight
                                         className={`icon-dim-16 dc__no-shrink ${isDisabled ? 'scn-4' : 'scn-0'}`}
