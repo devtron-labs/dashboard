@@ -170,7 +170,8 @@ export const ConfigMapSecretData = ({
         setValue('yamlMode', yamlMode === VIEW_MODE.YAML)
     }
 
-    const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) => setCodeEditorRadio(e.target.value)
+    const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) =>
+        setCodeEditorRadio(e.target.value as CODE_EDITOR_RADIO_STATE)
 
     /**
      * Determines the key to be used for the code editor form based on the current configuration.

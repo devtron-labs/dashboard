@@ -389,7 +389,7 @@ export const ConfigMapSecretForm = ({
             <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             <form className="configmap-secret flexbox-col h-100 dc__overflow-hidden">
                 {areScopeVariablesResolving ? (
-                    <Progressing fullHeight size={48} />
+                    <Progressing fullHeight pageLoader />
                 ) : (
                     <div className="p-16 flex-grow-1 dc__overflow-auto">
                         <div className="flexbox-col dc__gap-16 dc__mxw-1200">

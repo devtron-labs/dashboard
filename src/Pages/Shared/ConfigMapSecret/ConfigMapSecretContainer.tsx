@@ -39,7 +39,7 @@ import {
     getConfigMapSecretResolvedValues,
     overRideConfigMap,
     overRideSecret,
-    updateConfig,
+    updateConfigMap,
     updateSecret,
 } from './ConfigMapSecret.service'
 import {
@@ -80,7 +80,6 @@ export const ConfigMapSecretContainer = ({
     isJob = false,
     clusterId,
     envConfig,
-    isOverrideView,
     isProtected,
     fetchEnvConfig,
     onErrorRedirectURL,
@@ -106,7 +105,7 @@ export const ConfigMapSecretContainer = ({
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
     const [showComments, setShowComments] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [showOverridableView, setShowOverridableView] = useState(false)
+    const [hideNoOverrideEmptyState, setHideNoOverrideEmptyState] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
     const [showDraftSaveModal, setShowDraftSaveModal] = useState(false)
     const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
@@ -121,7 +120,7 @@ export const ConfigMapSecretContainer = ({
     const envConfigData = config?.[isSecret ? EnvConfigObjectKey.Secret : EnvConfigObjectKey.ConfigMap] || []
 
     const selectedCMSecret = useMemo(() => envConfigData.find((data) => data.name === name), [envConfig, name])
-    const cmSecretStateLabel = getConfigMapSecretStateLabel(selectedCMSecret?.configStage, isOverrideView)
+    const cmSecretStateLabel = getConfigMapSecretStateLabel(selectedCMSecret?.configStage, !!envId)
 
     const id = selectedCMSecret?.id
     const isCreateState = name === 'create' && !id
@@ -163,8 +162,8 @@ export const ConfigMapSecretContainer = ({
         }
     }, [envId, resolvedScopeVariables])
 
-    // ASYNC CALLS
-    const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr] = useAsync(
+    // ASYNC CALL - CONFIGMAP/SECRET DATA
+    const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr, reloadConfigMapSecret] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
@@ -172,9 +171,9 @@ export const ConfigMapSecretContainer = ({
                         // Fetch Published Configuration
                         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
                             ? getConfigMapSecretConfigData({
-                                  appId,
+                                  appId: +appId,
                                   appName,
-                                  envId,
+                                  envId: envId ? +envId : null,
                                   envName,
                                   componentType,
                                   name,
@@ -187,7 +186,7 @@ export const ConfigMapSecretContainer = ({
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                             ? getConfigMapSecretConfigData({
-                                  appId,
+                                  appId: +appId,
                                   appName,
                                   envId: null,
                                   envName: '',
@@ -215,40 +214,7 @@ export const ConfigMapSecretContainer = ({
         !isEnvConfigLoading && !!selectedCMSecret && !isCreateState,
     )
 
-    const [resolvedScopeVariablesResLoading, resolvedScopeVariablesRes] = useAsync(
-        () =>
-            abortPreviousRequests(() => {
-                const values = getConfigMapSecretResolvedDataPayload({
-                    formData: formDataRef.current,
-                    inheritedConfigMapSecretData: getConfigMapSecretInheritedData({
-                        cmSecretConfigData: configMapSecretRes[1],
-                        isJob,
-                        isSecret,
-                    }),
-                    ...getConfigMapSecretDraftAndPublishedData({
-                        cmSecretConfigData: configMapSecretRes[0],
-                        draftConfigData: configMapSecretRes[2]?.result,
-                        configStage: selectedCMSecret.configStage,
-                        cmSecretStateLabel,
-                        isSecret,
-                        isJob,
-                    }).data,
-                })
-
-                return getConfigMapSecretResolvedValues(
-                    {
-                        appId: +appId,
-                        envId: envId ? +envId : null,
-                        values,
-                    },
-                    abortControllerRef.current.signal,
-                )
-            }, abortControllerRef),
-        [resolvedScopeVariables],
-        resolvedScopeVariables,
-    )
-
-    // API DATA
+    // CONFIGMAP/SECRET DATA
     const { configMapSecretData, inheritedConfigMapSecretData, draftData, notFoundErr } = useMemo(() => {
         if (!configMapSecretResLoading && configMapSecretRes) {
             // RESET FORM STATE FROM AFTER DATA LOAD
@@ -285,6 +251,31 @@ export const ConfigMapSecretContainer = ({
         return { configMapSecretData: null, draftData: null, inheritedConfigMapSecretData: null, notFoundErr: null }
     }, [configMapSecretResLoading, configMapSecretRes])
 
+    // ASYNC CALL - CONFIGMAP/SECRET RESOLVED DATA
+    const [resolvedScopeVariablesResLoading, resolvedScopeVariablesRes, reloadResolvedScopeVariablesResErr] = useAsync(
+        () =>
+            abortPreviousRequests(() => {
+                const values = getConfigMapSecretResolvedDataPayload({
+                    formData: formDataRef.current,
+                    inheritedConfigMapSecretData,
+                    configMapSecretData,
+                    draftData,
+                })
+
+                return getConfigMapSecretResolvedValues(
+                    {
+                        appId: +appId,
+                        envId: envId ? +envId : null,
+                        values,
+                    },
+                    abortControllerRef.current.signal,
+                )
+            }, abortControllerRef),
+        [resolvedScopeVariables],
+        resolvedScopeVariables,
+    )
+
+    // RESOLVED CONFIGMAP/SECRET DATA
     const { resolvedFormData, resolvedInheritedConfigMapSecretData, resolvedConfigMapSecretData, resolvedDraftData } =
         useMemo(() => {
             if (resolvedScopeVariablesRes?.areVariablesPresent) {
@@ -334,7 +325,11 @@ export const ConfigMapSecretContainer = ({
                 description: `The ${componentName} '${name}' has been deleted`,
             })
         }
-    }, [configMapSecretRes, configMapSecretResErr, notFoundErr])
+
+        if (reloadResolvedScopeVariablesResErr) {
+            setResolvedScopeVariables(false)
+        }
+    }, [configMapSecretRes, configMapSecretResErr, notFoundErr, reloadResolvedScopeVariablesResErr])
 
     // NO SCOPE VARIABLES PRESENT HANDLING
     useEffect(() => {
@@ -426,14 +421,14 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleCreateOverride = () => {
-        setShowOverridableView(true)
+        setHideNoOverrideEmptyState(true)
         ReactGA.event({
             category: gaEventCategory,
             action: 'clicked-create-override-button',
         })
     }
 
-    const handleNoOverrideFormCancel = () => setShowOverridableView(false)
+    const handleNoOverrideFormCancel = () => setHideNoOverrideEmptyState(false)
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
         setMergeStrategy(strategy)
@@ -502,19 +497,26 @@ export const ConfigMapSecretContainer = ({
         try {
             setIsSubmitting(true)
             let toastTitle = ''
+
             if (!envId) {
-                if (isSecret) {
-                    await updateSecret(id, +appId, payloadData, abortControllerRef.current.signal)
-                } else {
-                    await updateConfig(id, +appId, payloadData, abortControllerRef.current.signal)
+                const updateConfigMapSecretParams = {
+                    id,
+                    appId: +appId,
+                    payload: payloadData,
+                    signal: abortControllerRef.current.signal,
                 }
+
+                await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
                 toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
             } else {
-                if (isSecret) {
-                    await overRideSecret(+appId, +envId, [payloadData], abortControllerRef.current.signal)
-                } else {
-                    await overRideConfigMap(+appId, +envId, [payloadData], abortControllerRef.current.signal)
+                const overrideConfigMapSecretParams = {
+                    appId: +appId,
+                    envId: +envId,
+                    payload: payloadData,
+                    signal: abortControllerRef.current.signal,
                 }
+
+                await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
                 toastTitle = 'Overridden'
             }
             ToastManager.showToast({
@@ -631,7 +633,7 @@ export const ConfigMapSecretContainer = ({
         )
 
     const renderNoOverrideForm = () =>
-        showOverridableView ? (
+        hideNoOverrideEmptyState ? (
             renderForm({ onCancel: handleNoOverrideFormCancel })
         ) : (
             <NoOverrideEmptyState
@@ -687,7 +689,7 @@ export const ConfigMapSecretContainer = ({
         }
 
         if (isLoading) {
-            return <Progressing fullHeight size={48} />
+            return <Progressing fullHeight pageLoader />
         }
 
         if (isError && !isLoading) {
@@ -695,6 +697,7 @@ export const ConfigMapSecretContainer = ({
                 <ErrorScreenManager
                     code={notFoundErr ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}
                     redirectURL={onErrorRedirectURL}
+                    reload={reloadConfigMapSecret}
                 />
             )
         }

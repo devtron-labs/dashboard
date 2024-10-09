@@ -125,7 +125,10 @@ export const configMapSecretMountDataMap = {
 
 export const CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA: CMSecretYamlData[] = [{ k: '', v: '', id: 0 }]
 
-export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
+export enum CODE_EDITOR_RADIO_STATE {
+    DATA = 'data',
+    SAMPLE = 'sample',
+}
 
 export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 

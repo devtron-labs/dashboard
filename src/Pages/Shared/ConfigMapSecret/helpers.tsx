@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { CMSecretExternalType, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
+import { ReactComponent as InfoIconN7 } from '@Icons/info-filled-n7.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
@@ -13,26 +14,26 @@ import { CMSecretComponentType } from './types'
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (
         <InfoColourBar
-            classname="info_bar cn-9 lh-20"
+            classname="info_bar"
             message={
-                <div className="fs-13 fw-4 lh-18">
-                    <NavLink
+                <p className="m-0 cn-9 fs-13 fw-4 lh-20">
+                    <Link
                         to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
-                        className="dc__link"
+                        className="anchor"
                         target="_blank"
                     >
                         External Secrets Operator
-                    </NavLink>
-                    &nbsp;should be installed in the target cluster.&nbsp;
+                    </Link>
+                    &nbsp;<span>should be installed in the target cluster.</span>&nbsp;
                     <a
-                        className="dc__link"
+                        className="anchor"
                         href={DOCUMENTATION.EXTERNAL_SECRET}
                         rel="noreferrer noopener"
                         target="_blank"
                     >
                         Learn more
                     </a>
-                </div>
+                </p>
             }
             Icon={InfoIcon}
             iconSize={20}
@@ -42,11 +43,11 @@ export const renderESOInfo = (isESO: boolean) =>
 export const renderExternalInfo = (renderCondition: boolean, componentType: CMSecretComponentType) =>
     renderCondition ? (
         <InfoColourBar
-            classname="info_bar cn-9 lh-20"
+            classname="info_bar"
             message={
                 <div className="flex column left">
-                    <div className="dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</div>
-                    <div className="dc__info-subtitle">{EXTERNAL_INFO_TEXT[componentType].infoText}</div>
+                    <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
+                    <p className="m-0 lh-20 dc__info-subtitle">{EXTERNAL_INFO_TEXT[componentType].infoText}</p>
                 </div>
             }
             Icon={InfoIcon}
@@ -65,7 +66,7 @@ export const renderHashiOrAwsDeprecatedInfo = () => (
 
 export const renderYamlInfoText = () => (
     <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bcn-50 dc__border-top-n1">
-        <InfoIcon className="icon-dim-16" />
+        <InfoIconN7 className="icon-dim-16 dc__no-shrink" />
         <span>
             GUI Recommended for multi-line data. Boolean and numeric values must be wrapped in double quotes Eg.
             &quot;true&quot;, &quot;123&quot;

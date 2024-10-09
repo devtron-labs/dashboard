@@ -19,7 +19,7 @@ export const ConfigMapSecretReadyOnly = ({
     })
 
     return areScopeVariablesResolving ? (
-        <Progressing fullHeight size={48} />
+        <Progressing fullHeight pageLoader />
     ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
             {hasHashiOrAWS(configMapSecretData.externalType) && renderHashiOrAwsDeprecatedInfo()}

@@ -148,7 +148,7 @@ export const getConfigToolbarPopupConfig = ({
         secondConfigSegment.push({
             text: `Delete${isProtected ? '...' : ''}`,
             onClick: handleDelete,
-            dataTestId: 'delete',
+            dataTestId: 'delete-config-map-secret',
             disabled: isLoading,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
         })

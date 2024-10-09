@@ -222,20 +222,34 @@ export type NoOverrideEmptyStateProps = {
     hideOverrideButton?: boolean
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
-type DeploymentTemplateDiffViewConfigType =
+type CompareConfigDiffViewConfigType =
     | {
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
           mergeStrategy?: DeploymentHistorySingleValue
           isOverride?: DeploymentHistorySingleValue
+          dataType?: never
+          mountDataAs?: never
+          volumeMountPath?: never
+          setSubPath?: never
+          externalSubpathValues?: never
+          filePermission?: never
+          roleARN?: never
       }
     | {
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
           mergeStrategy?: never
-          isOverride?: never
+          isOverride?: DeploymentHistorySingleValue
+          dataType?: DeploymentHistorySingleValue
+          mountDataAs?: DeploymentHistorySingleValue
+          volumeMountPath?: DeploymentHistorySingleValue
+          setSubPath?: DeploymentHistorySingleValue
+          externalSubpathValues?: DeploymentHistorySingleValue
+          filePermission?: DeploymentHistorySingleValue
+          roleARN?: DeploymentHistorySingleValue
       }
 
 export interface CompareConfigViewProps {
@@ -246,10 +260,8 @@ export interface CompareConfigViewProps {
 
     currentEditorTemplate: Record<string | number, unknown>
     publishedEditorTemplate: Record<string | number, unknown>
-
-    // For CM/CS Please add required typing using | operator
-    currentEditorConfig: DeploymentTemplateDiffViewConfigType
-    publishedEditorConfig: DeploymentTemplateDiffViewConfigType
+    currentEditorConfig: CompareConfigDiffViewConfigType
+    publishedEditorConfig: CompareConfigDiffViewConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
     /**
@@ -261,4 +273,8 @@ export interface CompareConfigViewProps {
 
 export interface BaseConfigurationNavigationProps {
     baseConfigurationURL: string
+}
+
+export interface NoPublishedVersionEmptyStateProps {
+    isOverride?: boolean
 }

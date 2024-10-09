@@ -4,6 +4,7 @@ import {
     AppEnvDeploymentConfigDTO,
     CMSecretExternalType,
     decode,
+    DEFAULT_SECRET_PLACEHOLDER,
     DraftAction,
     DraftMetadataDTO,
     DraftState,
@@ -66,7 +67,7 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // FORM UTILS ----------------------------------------------------------------
 const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean): CMSecretYamlData[] => {
     const decodedData = decodeData ? decode(data) : data
-    const hiddenData = hideData && Array(8).fill('*').join('')
+    const hiddenData = hideData && DEFAULT_SECRET_PLACEHOLDER
     return Object.keys(decodedData).map((k, id) => ({
         k,
         v:
@@ -90,7 +91,7 @@ const processCurrentData = ({
             !isApprover && componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
         )
     }
-    if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
+    if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
@@ -148,7 +149,7 @@ export const getLockedYamlString = (yaml: string) => {
             return agg
         }
 
-        return { ...agg, [k]: Array(8).fill('*').join('') }
+        return { ...agg, [k]: DEFAULT_SECRET_PLACEHOLDER }
     }, obj)
 
     return YAMLStringify(keyValueArray)
@@ -165,24 +166,30 @@ export const getYAMLWithStringifiedNumbers = (yaml: string) => {
     return YAMLStringify(jsonWithStringifiedNumbers)
 }
 
-export const getSecretDataFromConfigData = (
-    configMapSecretData: ConfigMapSecretFormProps['configMapSecretData'],
-): Pick<ConfigMapSecretUseFormProps, 'secretDataYaml' | 'esoSecretYaml'> => {
+const getSecretDataFromConfigData = ({
+    secretData,
+    defaultSecretData,
+    esoSecretData: baseEsoSecretData,
+    defaultESOSecretData,
+}: ConfigMapSecretFormProps['configMapSecretData']): Pick<
+    ConfigMapSecretUseFormProps,
+    'secretDataYaml' | 'esoSecretYaml'
+> => {
     let jsonForSecretDataYaml: string
 
-    if (configMapSecretData.secretData?.length) {
-        jsonForSecretDataYaml = YAMLStringify(configMapSecretData.secretData)
-    } else if (configMapSecretData.defaultSecretData?.length) {
-        jsonForSecretDataYaml = YAMLStringify(configMapSecretData.defaultSecretData)
+    if (secretData?.length) {
+        jsonForSecretDataYaml = YAMLStringify(secretData)
+    } else if (defaultSecretData?.length) {
+        jsonForSecretDataYaml = YAMLStringify(defaultSecretData)
     }
 
     const esoSecretData: Record<string, any> =
-        !(configMapSecretData.esoSecretData?.esoData || []).length &&
-        !configMapSecretData.esoSecretData?.template &&
-        !configMapSecretData.esoSecretData?.esoDataFrom &&
-        configMapSecretData.defaultESOSecretData
-            ? configMapSecretData.defaultESOSecretData
-            : configMapSecretData.esoSecretData
+        !(baseEsoSecretData?.esoData || []).length &&
+        !baseEsoSecretData?.template &&
+        !baseEsoSecretData?.esoDataFrom &&
+        defaultESOSecretData
+            ? defaultESOSecretData
+            : baseEsoSecretData
 
     const isEsoSecretData: boolean =
         (esoSecretData?.secretStore || esoSecretData?.secretStoreRef) &&
@@ -513,9 +520,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     configStage,
     cmSecretConfigData,
     draftConfigData,
-}: {
-    isJob: boolean
-    cmSecretStateLabel: CM_SECRET_STATE
+}: Pick<ConfigMapSecretFormProps, 'cmSecretStateLabel' | 'isJob'> & {
     isSecret: boolean
     configStage: ResourceConfigStage
     cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO

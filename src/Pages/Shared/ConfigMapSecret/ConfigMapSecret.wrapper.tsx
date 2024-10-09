@@ -30,7 +30,7 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
-    const [initLoading, initResult, initError] = useAsync(
+    const [initLoading, initResult, initError, reload] = useAsync(
         () => abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId), abortControllerRef),
         [componentType],
     )
@@ -50,11 +50,11 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     }, [initResult, initError])
 
     if (parentState === ComponentStates.loading || initLoading || !!getIsRequestAborted(initError)) {
-        return <Progressing fullHeight size={48} />
+        return <Progressing fullHeight pageLoader />
     }
 
     if (initError) {
-        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} />
+        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} reload={reload} />
     }
 
     return (

@@ -64,8 +64,8 @@ export interface CMSecretDraftPayloadType {
 
 export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
     extends Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'> {
-    envId: string
-    appId: string
+    envId: number
+    appId: number
     name: string
     isJob?: IsJob
     resourceId: number
@@ -121,7 +121,6 @@ export interface CMSecretWrapperProps
     parentName?: string
     parentState?: ComponentStates
     setParentState?: Dispatch<SetStateAction<ComponentStates>>
-    isOverrideView?: boolean
     clusterId?: string
     isProtected?: boolean
     envName: string
@@ -220,13 +219,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         selectedProtectionViewTab: ProtectConfigTabsType
     }
 
-// DTO
-export interface CMSecretDTO {
-    id: number
-    appId: number
-    configData: ConfigDatum[]
-}
-
 // CONTEXT TYPES
 type SetFormStateParams =
     | {
@@ -267,4 +259,38 @@ export interface ConfigMapSecretFormContextType {
 
 export interface ConfigMapSecretFormProviderProps {
     children: JSX.Element
+}
+
+// DTO
+export interface CMSecretDTO {
+    id: number
+    appId: number
+    configData: ConfigDatum[]
+}
+
+// API CALLS PROPS
+export interface ConfigMapSecretCommonAPIProps {
+    id: number
+    appId: number
+    envId: number
+    name: string
+    payload: CMSecretPayloadType
+    signal?: AbortSignal
+}
+
+export interface UpdateConfigMapSecretProps
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {}
+
+export interface DeleteConfigMapSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'> {}
+
+export interface DeleteEnvConfigMapSecretProps
+    extends DeleteConfigMapSecretProps,
+        Pick<ConfigMapSecretCommonAPIProps, 'envId'> {}
+
+export interface OverrideConfigMapSecretProps
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'> {}
+
+export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {
+    componentType: CMSecretComponentType
+    envId?: number
 }

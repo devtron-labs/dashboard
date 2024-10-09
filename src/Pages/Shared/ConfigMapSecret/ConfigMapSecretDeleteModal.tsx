@@ -10,7 +10,7 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfig } from './ConfigMapSecret.service'
+import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfigMap } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { CM_SECRET_STATE, CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
 
@@ -35,17 +35,15 @@ export const ConfigMapSecretDeleteModal = ({
 
     // CONSTANTS
     const isDeleteOverride = !!envId
+    const isSecret = componentType === CMSecretComponentType.Secret
 
     // METHODS
     const handleDelete = async () => {
         setIsDeleting(true)
         try {
             if (isDeleteOverride) {
-                if (componentType === CMSecretComponentType.Secret) {
-                    await deleteEnvSecret(id, appId, envId, configName)
-                } else {
-                    await deleteEnvConfigMap(id, appId, envId, configName)
-                }
+                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
+                await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
 
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
@@ -55,11 +53,8 @@ export const ConfigMapSecretDeleteModal = ({
                             : 'Successfully Deleted',
                 })
             } else {
-                if (componentType === CMSecretComponentType.Secret) {
-                    await deleteSecret(id, appId, configName)
-                } else {
-                    await deleteConfig(id, appId, configName)
-                }
+                const deleteConfigMapSecretParams = { id, appId, name: configName }
+                await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
 
                 ToastManager.showToast({
                     variant: ToastVariantType.success,

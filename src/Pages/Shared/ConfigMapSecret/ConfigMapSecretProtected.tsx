@@ -66,7 +66,8 @@ export const ConfigMapSecretProtected = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // CONSTANTS
-    const isApprovalView = draftData.draftState === DraftState.AwaitApproval
+    const isApprovalView =
+        selectedProtectionViewTab === ProtectConfigTabsType.COMPARE && draftData.draftState === DraftState.AwaitApproval
     const isApprovalPendingOptionSelected =
         isApprovalView && compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
 
@@ -156,7 +157,7 @@ export const ConfigMapSecretProtected = ({
         })
 
         return {
-            currentEditorConfig: editorConfigData.reduce<Record<string, { displayName: string; value: string }>>(
+            currentEditorConfig: editorConfigData.reduce<CompareConfigViewProps['currentEditorConfig']>(
                 (acc, curr) => ({
                     ...acc,
                     [curr.displayName]: {
@@ -166,7 +167,7 @@ export const ConfigMapSecretProtected = ({
                 }),
                 draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? {
-                          configuration: {
+                          isOverride: {
                               displayName: 'Configuration',
                               value: 'Inherit from base',
                           },
@@ -189,7 +190,7 @@ export const ConfigMapSecretProtected = ({
         })
 
         return {
-            publishedEditorConfig: editorConfigData.reduce<Record<string, { displayName: string; value: string }>>(
+            publishedEditorConfig: editorConfigData.reduce<CompareConfigViewProps['publishedEditorConfig']>(
                 (acc, curr) => ({
                     ...acc,
                     [curr.displayName]: {
@@ -199,7 +200,7 @@ export const ConfigMapSecretProtected = ({
                 }),
                 draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? {
-                          configuration: {
+                          isOverride: {
                               displayName: 'Configuration',
                               value: 'Override base',
                           },
@@ -284,7 +285,7 @@ export const ConfigMapSecretProtected = ({
         <div className="flexbox-col h-100 dc__overflow-hidden">
             <div className="flex-grow-1 dc__overflow-auto">
                 {areScopeVariablesResolving ? (
-                    <Progressing fullHeight size={48} />
+                    <Progressing fullHeight pageLoader />
                 ) : (
                     <CompareConfigView
                         compareFromSelectedOptionValue={compareFromSelectedOptionValue}

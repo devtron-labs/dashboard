@@ -35,80 +35,77 @@ import {
     CMSecretComponentType,
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,
+    UpdateConfigMapSecretProps,
+    DeleteConfigMapSecretProps,
+    DeleteEnvConfigMapSecretProps,
+    OverrideConfigMapSecretProps,
+    GetCMSecretProps,
 } from './types'
 
-export function updateConfig(id, appId, configData, signal?) {
-    return post(
+export const updateConfigMap = ({ id, appId, payload, signal }: UpdateConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_CONFIG_MAP}`,
         {
             ...(id && { id }),
             appId,
-            configData: [configData],
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function deleteConfig(id, appId, name) {
-    return trash(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}/${id}?name=${name}`)
-}
+export const deleteConfigMap = ({ id, appId, name }: DeleteConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}/${id}?name=${name}`)
 
-export function deleteEnvConfigMap(id, appId, envId, name) {
-    return trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
-}
+export const deleteEnvConfigMap = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
 
-export function overRideConfigMap(appId, environmentId, configData, signal?) {
-    return post(
+export const overRideConfigMap = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_ENV_CONFIG_MAP}`,
         {
             appId,
-            environmentId,
-            configData,
+            environmentId: envId,
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function updateSecret(id, appId, configData, signal?) {
-    return post(
+export const updateSecret = ({ id, appId, payload, signal }: UpdateConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_SECRET}`,
         {
             ...(id && { id }),
             appId,
-            configData: [configData],
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function deleteSecret(id, appId, name) {
-    return trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
-}
+export const deleteSecret = ({ id, appId, name }: DeleteConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
 
-export function deleteEnvSecret(id, appId, envId, name) {
-    return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
-}
+export const deleteEnvSecret = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 
-export function overRideSecret(appId, environmentId, configData, signal?) {
-    return post(
+export const overRideSecret = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_ENV_SECRET}`,
         {
             appId,
-            environmentId,
-            configData,
+            environmentId: envId,
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export const getCMSecret = (
-    componentType: CMSecretComponentType,
+export const getCMSecret = ({
+    componentType,
     id,
     appId,
+    envId,
     name,
-    envId?,
-    signal?,
-): Promise<ResponseType<CMSecretDTO>> => {
+    signal,
+}: GetCMSecretProps): Promise<ResponseType<CMSecretDTO>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -135,7 +132,14 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
 }: GetConfigMapSecretConfigDataProps<IsJob>) => {
     try {
         const { result } = await (isJob
-            ? getCMSecret(componentType, resourceId, appId, name, envId, abortControllerRef.current.signal)
+            ? getCMSecret({
+                  componentType,
+                  id: resourceId,
+                  appId,
+                  name,
+                  envId,
+                  signal: abortControllerRef.current.signal,
+              })
             : getAppEnvDeploymentConfig(
                   {
                       appName,
