@@ -34,7 +34,7 @@ import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
-const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
+const DeploymentTemplate = lazy(() => import('./DeploymentTemplate/DeploymentTemplate'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
@@ -202,13 +202,13 @@ const AppComposeRouter = () => {
             )}
             {isUnlocked.deploymentTemplate && (
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                    <DeploymentConfig
+                    <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
-                        environments={environments}
                         isProtected={isBaseConfigProtected}
                         reloadEnvironments={reloadEnvironments}
+                        fetchEnvConfig={fetchEnvConfig}
                     />
                 </Route>
             )}

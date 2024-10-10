@@ -30,9 +30,9 @@ import {
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
-import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { DeploymentTemplate } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'
@@ -143,19 +143,19 @@ const EnvironmentOverride = ({
         return ''
     }
 
+    const clusterId = environmentsMap.get(+params.envId)?.clusterId?.toString()
+
     return (
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                        <DeploymentTemplateOverride
+                        <DeploymentTemplate
                             key={`deployment-${params.appId}-${params.envId}`}
-                            parentState={viewState}
-                            setParentState={setViewState}
-                            environments={environments}
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            clusterId={clusterId}
                             fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
@@ -166,7 +166,7 @@ const EnvironmentOverride = ({
                             parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
-                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            clusterId={clusterId}
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={onErrorRedirectURL}

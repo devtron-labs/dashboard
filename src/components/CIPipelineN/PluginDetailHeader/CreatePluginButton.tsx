@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import ReactGA from 'react-ga4'
 import Tippy from '@tippyjs/react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
@@ -11,6 +12,11 @@ const CreatePluginButton = () => {
     const [openCreatePluginModal, setOpenCreatePluginModal] = useState<boolean>(false)
 
     const handleOpenCreatePluginModal = () => {
+        ReactGA.event({
+            category: 'devtronapp-configuration-pipeline',
+            action: 'save-as-plugin',
+        })
+
         // Before opening the modal we will check if the given task is valid, if not would just showError
         const clonedFormErrorObj = structuredClone(formDataErrorObj)
         validateTask(

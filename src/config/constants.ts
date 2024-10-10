@@ -64,7 +64,6 @@ export const Routes = {
     LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
     LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
-    DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
     DEPLOYMENT_OPTIONS: 'app/template/list',
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
@@ -348,7 +347,6 @@ export const DOCUMENTATION = {
     APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow`,
     APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template`,
     APP_EPHEMERAL_CONTAINER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/app-details/ephemeral-containers`,
-    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/app-details/app-metrics`,
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/overview#manage-tags`,
     APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/rollout-deployment`,
@@ -591,11 +589,6 @@ export const RegistryTypeName = {
 export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
-}
-
-export const ConfigurationType = {
-    GUI: 'GUI',
-    YAML: 'YAML',
 }
 
 export const BuildStageVariable = {
@@ -930,6 +923,9 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,
     PERMISSION_DENIED: 403,
@@ -960,3 +956,9 @@ export enum DEFAULT_CONTAINER_NAME {
 }
 
 export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] = 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
+
+export const EDITOR_VIEW = {
+    UNDEFINED: 'UNDEFINED',
+    BASIC: 'BASIC',
+    ADVANCED: 'ADVANCED',
+}
