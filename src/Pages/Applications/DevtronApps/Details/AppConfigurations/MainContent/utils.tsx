@@ -77,15 +77,6 @@ export const getConfigHeaderTabConfig = (
     }
 }
 
-const getPopupMenuItemClassName = (variant: ConfigToolbarPopupMenuConfigType['variant']) => {
-    switch (variant) {
-        case 'negative':
-            return 'cr-5'
-        default:
-            return 'cn-9'
-    }
-}
-
 export const PopupMenuItem = ({
     text,
     onClick,
@@ -95,7 +86,7 @@ export const PopupMenuItem = ({
     variant,
 }: ConfigToolbarPopupMenuConfigType) => (
     <button
-        className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${getPopupMenuItemClassName(variant)} ${disabled ? 'dc__disabled' : ''}`}
+        className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
         onClick={onClick}
         data-testid={dataTestId}
         disabled={disabled}
