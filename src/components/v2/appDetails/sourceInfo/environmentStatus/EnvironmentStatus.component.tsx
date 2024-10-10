@@ -202,7 +202,7 @@ const EnvironmentStatusComponent = ({
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
-                    {isScanV2Enabled && <SecurityVulnerabilityCard cardLoading={cardLoading} installedAppId={appDetails?.installedAppId} />}
+                    {isScanV2Enabled && appDetails?.appType === AppType.DEVTRON_HELM_CHART && <SecurityVulnerabilityCard cardLoading={cardLoading} installedAppId={appDetails?.installedAppId} />}
                 </div>
             )}
             {showAppStatusDetail && (

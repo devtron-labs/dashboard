@@ -48,7 +48,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     FloatingVariablesSuggestions,
     getPluginIdsFromBuildStage,
@@ -582,6 +582,9 @@ export default function CDPipeline({
                 }
             }
         }
+        const _dockerRegistries: RegistryPayloadType = dockerRegistries.find(
+            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+        )
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -624,9 +627,11 @@ export default function CDPipeline({
             pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                 ? GeneratedHelmPush.PUSH
                 : GeneratedHelmPush.DO_NOT_PUSH
-        form.selectedRegistry = dockerRegistries.find(
-            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
-        )
+        form.selectedRegistry = {
+            ..._dockerRegistries,
+            value: _dockerRegistries?.id,
+            label: _dockerRegistries?.id,
+        }
     }
 
     const responseCode = () => {
