@@ -77,10 +77,16 @@ export const getConfigHeaderTabConfig = (
     }
 }
 
-// TODO: Ask for button variant
-export const PopupMenuItem = ({ text, onClick, dataTestId, disabled, icon }: ConfigToolbarPopupMenuConfigType) => (
+export const PopupMenuItem = ({
+    text,
+    onClick,
+    dataTestId,
+    disabled,
+    icon,
+    variant,
+}: ConfigToolbarPopupMenuConfigType) => (
     <button
-        className={`dc__transparent py-6 px-8 flexbox dc__gap-8 dc__align-items-center dc__hover-n50 ${disabled ? 'dc__disabled' : ''}`}
+        className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
         onClick={onClick}
         data-testid={dataTestId}
         disabled={disabled}
@@ -151,6 +157,7 @@ export const getConfigToolbarPopupConfig = ({
             dataTestId: 'delete-override',
             disabled: isLoading,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+            variant: 'negative',
         })
     }
 
@@ -161,6 +168,7 @@ export const getConfigToolbarPopupConfig = ({
             dataTestId: 'delete-config-map-secret',
             disabled: isLoading,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+            variant: 'negative',
         })
     }
 
