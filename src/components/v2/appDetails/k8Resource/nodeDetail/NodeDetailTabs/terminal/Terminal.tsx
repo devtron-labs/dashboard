@@ -295,7 +295,7 @@ export default function TerminalView({
                 data-testid="terminal-editor-container"
                 className={`mt-8 mb-4 terminal-component ${
                     fullScreenView ? 'terminal-component--fullscreen' : ''
-                } ml-20 ${!isResourceBrowserView && !fullScreenView ? 'terminal-component__zoom--bottom-41' : ''}`}
+                } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
             >
                 <CopyToast showCopyToast={popupText} />
                 <LogResizeButton

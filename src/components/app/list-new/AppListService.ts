@@ -41,7 +41,7 @@ export const getDevtronInstalledHelmApps = (
 ): Promise<HelmAppListResponse> => {
     const baseUrl = Routes.CHART_INSTALLED
     const params: GetDevtronHelmAppListParamsType = {
-        clusterIdsCsv,
+        clusterIds: clusterIdsCsv,
         appStatuses,
     }
     const url = getUrlWithSearchParams(baseUrl, params)

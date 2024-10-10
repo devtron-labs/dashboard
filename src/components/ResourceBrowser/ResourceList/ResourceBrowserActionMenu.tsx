@@ -195,6 +195,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                     isLoading={resourceScanLoading}
                     error={resourceScanError}
                     responseData={resourceScanResponse?.result}
+                    hidePolicy
                 />
             )}
         </>
