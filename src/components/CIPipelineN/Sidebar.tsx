@@ -18,7 +18,6 @@ import { useContext, useEffect, useState } from 'react'
 import {
     RadioGroup,
     RadioGroupItem,
-    Option,
     CHECKBOX_VALUE,
     PipelineFormType,
     SelectPicker,

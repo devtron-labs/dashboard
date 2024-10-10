@@ -105,7 +105,9 @@ const HelmAppList = ({
         let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
         if (searchKey) {
             const searchLowerCase = searchKey.toLowerCase()
-            filteredHelmAppList = filteredHelmAppList.filter((app) => app.appName.includes(searchLowerCase))
+            filteredHelmAppList = filteredHelmAppList.filter(
+                (app) => app.appName.includes(searchLowerCase) || app.chartName.includes(searchLowerCase),
+            )
         }
         if (project.length) {
             const projectMap = new Map<string, true>(project.map((projectId) => [projectId, true]))
