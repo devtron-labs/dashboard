@@ -914,14 +914,10 @@ export const EnvSelector = ({
             if (found) {
                 found.options.push(Option)
             } else {
-                if (key.length > 0) {
-                    acc.push({
-                        label: key,
-                        options: [Option],
-                    })
-                } else {
-                    acc.push(Option)
-                }
+                acc.push({
+                    label: key,
+                    options: [Option],
+                })
             }
 
             return acc
