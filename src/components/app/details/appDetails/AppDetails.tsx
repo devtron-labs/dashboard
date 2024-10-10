@@ -782,7 +782,11 @@ export const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
             {detailedStatus && (
-                <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} showConfigDriftInfo />
+                <AppStatusDetailModal
+                    close={hideAppDetailsStatus}
+                    showAppStatusMessage={false}
+                    showConfigDriftInfo={!!ConfigDriftModalRoute}
+                />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
@@ -825,7 +829,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {ConfigDriftModalRoute && <ConfigDriftModalRoute path={path} />}
+            {ConfigDriftModalRoute && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }

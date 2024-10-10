@@ -145,10 +145,9 @@ export const SourceInfo = ({
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = getIsApprovalConfigured()
-        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
-            appDetails.resourceTree.lastSnapshotTime,
-            true,
-        ) : ''
+        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
+            ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
+            : ''
 
         return (
             <div className="flex left w-100">
@@ -170,11 +169,11 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {appDetails?.resourceTree && ConfigSyncStatusButton && (
+                {appDetails?.resourceTree && !isIsolatedEnv && ConfigSyncStatusButton && (
                     <div className="pl-8">
                         <ConfigSyncStatusButton
                             areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                            appId={appDetails?.appId}
+                            appId={appDetails.appId}
                             envId={envId}
                         />
                     </div>
@@ -302,15 +301,15 @@ export const SourceInfo = ({
                   environment && (
                       <div className="flex left w-100">
                           {status && (
-                            <AppStatusCard
-                                // TODO: Fix and remove
-                                // @ts-ignore
-                                appDetails={appDetails}
-                                status={status}
-                                cardLoading={cardLoading}
-                                setDetailed={setDetailed}
-                                message={message}
-                            />
+                              <AppStatusCard
+                                  // TODO: Fix and remove
+                                  // @ts-ignore
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
                           )}
                           {!helmMigratedAppNotTriggered && (
                               <>
@@ -337,8 +336,7 @@ export const SourceInfo = ({
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}
                                       hideDetails={
-                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM ||
-                                          isIsolatedEnv
+                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
                                       refetchDeploymentStatus={refetchDeploymentStatus}

@@ -54,6 +54,9 @@ import {
     SAVE_DATA_VALIDATION_ERROR_MSG,
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 
 const ManifestComponent = ({
     selectedTab,
@@ -141,7 +144,16 @@ const ManifestComponent = ({
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, normalizedLiveManifest, id])
+    }, [
+        error,
+        secretViewAccess,
+        desiredManifest,
+        activeManifestEditorData,
+        manifest,
+        modifiedManifest,
+        normalizedLiveManifest,
+        id,
+    ])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -200,7 +212,7 @@ const ManifestComponent = ({
                     .then((response) => {
                         setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
                         const _manifest = JSON.stringify(
-                            response[0]?.result?.manifestResponse?.manifest || response[0]?.result?.liveState || '',
+                            response[0]?.result?.liveState || response[0]?.result?.manifestResponse?.manifest || '',
                         )
                         setDesiredManifest(
                             JSON.stringify(response[0]?.result?.predictedLiveState) ||
@@ -534,17 +546,9 @@ const ManifestComponent = ({
                                 !error &&
                                 'hasDrift' in _selectedResource &&
                                 _selectedResource.hasDrift &&
-                                !showManifestCompareView && (
-                                    <div className="flexbox bcy-8 cn-0 px-20 py-4 dc__gap-8">
-                                        <span>Out of sync from desired manifest.</span>
-                                        <button
-                                            className="dc__unset-button-styles dc__underline"
-                                            onClick={handleDesiredManifestOpen}
-                                        >
-                                            Check configuration drift
-                                        </button>
-                                    </div>
-                                )}
+                                !showManifestCompareView &&
+                                renderOutOfSyncWarning &&
+                                renderOutOfSyncWarning(handleDesiredManifestOpen)}
                             {showManifestCompareView && (
                                 <CodeEditor.Header hideDefaultSplitHeader className="p-0">
                                     <div className="dc__split-header">

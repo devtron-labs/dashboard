@@ -48,6 +48,7 @@ import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
+const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
 
 const NodeComponent = ({
     handleFocusTabs,
@@ -286,6 +287,7 @@ const NodeComponent = ({
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+            const nodeStatus = getNodeStatus(node)
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -418,7 +420,7 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
-                                    {(node?.info || node?.health?.status || node?.status) && (
+                                    {nodeStatus && (
                                         <span
                                             data-testid="node-resource-status"
                                             className={`app-summary__status-name f-${(
@@ -427,15 +429,10 @@ const NodeComponent = ({
                                                 ''
                                             ).toLowerCase()}`}
                                         >
-                                            {getNodeStatus(node)}
+                                            {nodeStatus}
                                         </span>
                                     )}
-                                    {node.hasDrift && (
-                                        <>
-                                            {node?.health?.status && <span className="dc__bullet mw-4" />}
-                                            <span className="cy-7">Config drift detected</span>
-                                        </>
-                                    )}
+                                    {renderConfigDriftDetectedText && renderConfigDriftDetectedText(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />

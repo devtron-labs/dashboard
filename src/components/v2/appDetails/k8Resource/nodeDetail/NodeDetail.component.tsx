@@ -130,7 +130,8 @@ const NodeDetailComponent = ({
 
     const showDesiredAndCompareManifest =
         !isResourceBrowserView &&
-        (appDetails.appType === AppType.EXTERNAL_HELM_CHART || (appDetails.appType === AppType.DEVTRON_APP && isFELibAvailable)) &&
+        (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (appDetails.appType === AppType.DEVTRON_APP && isFELibAvailable)) &&
         !currentResource?.['parentRefs']?.length
 
     const isResourceMissing =
@@ -442,7 +443,7 @@ const NodeDetailComponent = ({
                 className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
-                    <div data-testid="app-resource-container-header" className="flex left">
+                    <div data-testid="app-resource-containor-header" className="flex left">
                         {tabs &&
                             tabs.length > 0 &&
                             tabs.map((tab: string, index: number) => {

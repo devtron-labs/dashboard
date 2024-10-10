@@ -148,7 +148,7 @@ export const useFilterOptions = ({
         () =>
             clusterGroupedEnvOptions?.map((clusterItem) => ({
                 label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
-                options: clusterItem.options.sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
+                options: clusterItem.options?.sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
             })) ?? [],
         [clusterGroupedEnvOptions],
     )
