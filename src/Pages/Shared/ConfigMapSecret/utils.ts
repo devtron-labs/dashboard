@@ -488,14 +488,6 @@ export const getConfigMapSecretPayload = ({
     return payload
 }
 
-export const getConfigMapSecretDataFromFormData = (
-    formData: ConfigMapSecretUseFormProps,
-    configMapSecretData: CMSecretConfigData,
-): CMSecretConfigData => ({
-    ...configMapSecretData,
-    ...getConfigMapSecretPayload({ ...formData, skipEncode: true }),
-})
-
 export const getConfigMapSecretResolvedDataPayload = ({
     formData,
     inheritedConfigMapSecretData,
