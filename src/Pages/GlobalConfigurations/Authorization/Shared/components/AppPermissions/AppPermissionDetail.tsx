@@ -15,8 +15,8 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
-import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
 import { getPermissionDetailRowClass } from './utils'

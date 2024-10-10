@@ -31,8 +31,8 @@ import {
     ComponentSizeType,
     ToastVariantType,
     ToastManager,
+    ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -44,12 +44,11 @@ import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
-import { Option } from '../../v2/common/ReactSelect.utils'
 import {
     getUserRole,
     createOrUpdateUser,
 } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,

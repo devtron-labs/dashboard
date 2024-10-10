@@ -24,8 +24,9 @@ import {
     UserRoleGroup,
     UserGroupType,
     UserGroupDTO,
+    ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
+import { SERVER_MODE } from '../../../config'
 import { ActionTypes, EntityTypes, PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
@@ -258,6 +259,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatu
         value: string
         configApprover?: boolean
         artifactPromoter?: boolean
+        terminalExec?: boolean
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     workflow?: OptionType[]
