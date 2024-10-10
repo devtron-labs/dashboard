@@ -1,6 +1,7 @@
 import {
     BaseURLParams,
     Button,
+    ComponentSizeType,
     DTApplicationMetricsFormField,
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,7 +51,7 @@ const DeploymentTemplateCTA = ({
     }
 
     return (
-        <footer className="flexbox dc__content-space py-16 px-20 bcn-0 dc__border-top dc__align-items-center">
+        <footer className="flexbox dc__content-space p-12 bcn-0 dc__border-top dc__align-items-center">
             <div
                 className={`flexbox ${showApplicationMetrics ? 'dc__content-space' : 'dc__content-end'} dc__align-items-center flex-grow-1`}
             >
@@ -68,13 +69,14 @@ const DeploymentTemplateCTA = ({
                             onClick={handleSave}
                             isLoading={isLoading}
                             text={!envId && !isCiPipeline ? 'Save & Next' : 'Save changes'}
-                            startIcon={
+                            endIcon={
                                 !envId && !isCiPipeline ? (
                                     <ICArrowRight
                                         className={`icon-dim-16 dc__no-shrink ${isDisabled ? 'scn-4' : 'scn-0'}`}
                                     />
                                 ) : null
                             }
+                            size={ComponentSizeType.medium}
                         />
                     </div>
                 </InvalidYAMLTippyWrapper>

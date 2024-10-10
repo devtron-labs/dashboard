@@ -160,6 +160,12 @@ export interface DeploymentTemplateStateType {
     configHeaderTab: ConfigHeaderTabType
     shouldMergeTemplateWithPatches: boolean
     selectedProtectionViewTab: ProtectConfigTabsType
+    /**
+     * This state is present in case we have a draft available
+     * We will be initialize it with count coming from draft
+     * Will send handler in DraftComment which onchange would update this state
+     */
+    areCommentsPresent: boolean
 }
 
 export interface DeploymentTemplateOptionsHeaderProps

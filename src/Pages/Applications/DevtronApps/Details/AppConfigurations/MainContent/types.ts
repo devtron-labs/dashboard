@@ -28,6 +28,11 @@ export interface ConfigHeaderProps {
     showNoOverride: boolean
     parsingError: string
     restoreLastSavedYAML: () => void
+    /**
+     * This prop hides the dry run tab in the header
+     * This prop is meant to be removed after patch merge strategy is introduced
+     * @default - false
+     */
     hideDryRunTab?: boolean
 }
 
@@ -283,4 +288,10 @@ export interface BaseConfigurationNavigationProps {
 
 export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
+}
+
+export interface SelectMergeStrategyProps {
+    mergeStrategy: OverrideMergeStrategyType
+    handleMergeStrategyChange: (value: OverrideMergeStrategyType) => void
+    isDisabled: boolean
 }

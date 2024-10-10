@@ -13,8 +13,6 @@ const BaseConfigurationNavigation = ({ baseConfigurationURL }: BaseConfiguration
         component={ButtonComponentType.link}
         linkProps={{
             to: baseConfigurationURL,
-            target: '_blank',
-            rel: 'noreferrer noopener',
         }}
         text="Base Configuration"
         variant={ButtonVariantType.text}

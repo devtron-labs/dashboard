@@ -126,7 +126,7 @@ const DeploymentTemplate = ({
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
         deploymentTemplateReducer,
-        getDeploymentTemplateInitialState({ isSuperAdmin, isEnvView: !!envId }),
+        getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
     const {
@@ -159,6 +159,7 @@ const DeploymentTemplate = ({
         isLoadingInitialData,
         initialLoadError,
         resolvedPublishedTemplate,
+        areCommentsPresent,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -397,6 +398,15 @@ const DeploymentTemplate = ({
     const handleToggleDraftComments = () => {
         dispatch({
             type: DeploymentTemplateActionType.TOGGLE_DRAFT_COMMENTS,
+        })
+    }
+
+    const handleUpdateAreCommentsPresent = (value: boolean) => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT,
+            payload: {
+                areCommentsPresent: value,
+            },
         })
     }
 
@@ -656,6 +666,7 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
+                envId,
             },
         })
     }
@@ -761,7 +772,6 @@ const DeploymentTemplate = ({
                     removedPatches: [],
                     originalTemplateState: draftTemplateState,
                 },
-                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab:
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
@@ -823,7 +833,6 @@ const DeploymentTemplate = ({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {
                 isSuperAdmin,
-                isEnvView: !!envId,
             },
         })
 
@@ -1223,7 +1232,7 @@ const DeploymentTemplate = ({
                 handleSetHideLockedKeys,
             },
             configHeaderTab,
-            isOverridden: currentEditorTemplateData?.isOverridden,
+            isOverridden: publishedTemplateData?.isOverridden,
             isPublishedValuesView,
             isPublishedConfigPresent,
             handleDeleteOverride: handleOverride,
@@ -1457,16 +1466,18 @@ const DeploymentTemplate = ({
     const renderHeader = () => {
         if (showReadMe) {
             return (
-                <div className="flexbox dc__gap-8 px-12 py-6 dc__border-bottom">
+                <div className="flexbox dc__align-items-center dc__gap-8 px-12 py-6 dc__border-bottom">
                     <Button
-                        text="Readme"
-                        startIcon={<ICClose />}
+                        icon={<ICClose />}
                         onClick={handleDisableReadmeView}
                         dataTestId="close-readme-view-btn"
                         size={ComponentSizeType.xs}
                         style={ButtonStyleType.negativeGrey}
-                        variant={ButtonVariantType.text}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Close Readme"
+                        showAriaLabelInTippy={false}
                     />
+                    <span className="cn-9 fs-13 fw-6 lh-20">Readme</span>
                 </div>
             )
         }
@@ -1490,7 +1501,7 @@ const DeploymentTemplate = ({
                         selectedProtectionViewTab={selectedProtectionViewTab}
                         handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
                         handleToggleCommentsView={handleToggleDraftComments}
-                        areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
+                        areCommentsPresent={areCommentsPresent}
                         showMergePatchesButton={getShouldShowMergePatchesButton()}
                         shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
@@ -1629,6 +1640,7 @@ const DeploymentTemplate = ({
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         toggleDraftComments={handleToggleDraftComments}
+                        handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
                     />
                 )}
             </div>

@@ -44,12 +44,13 @@ const DeleteOverrideDialog = ({
 
     return (
         <DeleteDialog
-            title="This action will cause permanent removal."
+            title="Delete override"
             description="This action will cause all overrides to erase and app level configuration will be applied"
             delete={handleDelete}
             closeDelete={handleClose}
             apiCallInProgress={isDeletingOverride}
             disabled={isDeletingOverride}
+            deletePostfix=" Override"
         />
     )
 }
