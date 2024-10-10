@@ -1,4 +1,4 @@
-import { CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getConfigMapSecretReadOnlyValues, hasHashiOrAWS } from './utils'
 import { ConfigMapSecretReadyOnlyProps } from './types'
@@ -9,13 +9,11 @@ export const ConfigMapSecretReadyOnly = ({
     isJob,
     configMapSecretData,
     areScopeVariablesResolving,
-    isApprover,
 }: ConfigMapSecretReadyOnlyProps) => {
     const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
         componentType,
         isJob,
-        isApprover,
     })
 
     return areScopeVariablesResolving ? (
@@ -35,8 +33,9 @@ export const ConfigMapSecretReadyOnly = ({
             </div>
             {displayValues.data && (
                 <div className="dc__border br-4 dc__overflow-hidden">
-                    <div className="px-16 py-6 dc__border-bottom">
+                    <div className="px-16 py-6 dc__border-bottom flex dc__content-space">
                         <p className="m-0 fs-13 lh-20 fw-6 cn-9">Data</p>
+                        <ClipboardButton content={displayValues.data} />
                     </div>
                     <CodeEditor value={displayValues.data} mode="yaml" inline height={350} readOnly />
                 </div>

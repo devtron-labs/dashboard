@@ -62,6 +62,12 @@
             grid-template-columns: 1fr 300px;
         }
     }
+
+    &__approval-tippy {
+        .tippy-box {
+            top: 55px;
+        }
+    }
 }
 
 .variables-widget-position-cm-cs {

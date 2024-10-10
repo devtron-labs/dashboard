@@ -146,7 +146,6 @@ export interface ConfigMapSecretFormProps
     areScopeVariablesResolving: boolean
     resolvedFormData: ConfigMapSecretUseFormProps
     isDraft?: boolean
-    isApprover: boolean
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
@@ -162,7 +161,7 @@ export interface ConfigMapSecretDataProps {
 
 export type ConfigMapSecretReadyOnlyProps = Pick<
     ConfigMapSecretFormProps,
-    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving' | 'isApprover'
+    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
 >
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
@@ -196,7 +195,7 @@ export type ConfigMapSecretNullStateProps =
           nullStateType: 'NO_CM_CS'
       }
 
-export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName' | 'appName' | 'envName'> &
+export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName'> &
     Pick<
         ConfigMapSecretFormProps,
         | 'componentType'
@@ -209,7 +208,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'resolvedFormData'
         | 'restoreYAML'
         | 'setRestoreYAML'
-        | 'isApprover'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string

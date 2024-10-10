@@ -66,7 +66,7 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 
 // FORM UTILS ----------------------------------------------------------------
 const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean): CMSecretYamlData[] => {
-    const decodedData = decodeData ? decode(data) : data
+    const decodedData = !hideData && decodeData ? decode(data) : data
     const hiddenData = hideData && DEFAULT_SECRET_PLACEHOLDER
     return Object.keys(decodedData).map((k, id) => ({
         k,
@@ -81,21 +81,22 @@ const secureValues = (data: Record<string, string>, decodeData: boolean, hideDat
 const processCurrentData = ({
     configMapSecretData,
     cmSecretStateLabel,
-    componentType,
-    isApprover,
-}: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel' | 'componentType' | 'isApprover'>) => {
+    isSecret,
+}: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel'> & {
+    isSecret: boolean
+}) => {
     if (configMapSecretData.data) {
         return secureValues(
             configMapSecretData.data,
-            componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
-            !isApprover && componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
+            isSecret && configMapSecretData.externalType === '',
+            isSecret && configMapSecretData.unAuthorized,
         )
     }
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
-            componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
-            !isApprover && componentType === CMSecretComponentType.Secret && configMapSecretData.unAuthorized,
+            isSecret && configMapSecretData.externalType === '',
+            isSecret && configMapSecretData.unAuthorized,
         )
     }
 
@@ -103,18 +104,16 @@ const processCurrentData = ({
 }
 
 const processExternalSubPathValues = ({
-    subPath,
-    externalType,
     data,
     esoSubPath,
-}: Pick<CMSecretConfigData, 'subPath' | 'externalType' | 'data' | 'esoSubPath'>) => {
-    if (subPath) {
-        if (data && externalType === CMSecretExternalType.KubernetesSecret) {
-            return Object.keys(data).join(', ')
-        }
-        if (esoSubPath) {
-            return esoSubPath.join(', ')
-        }
+    external,
+    subPath,
+}: Pick<CMSecretConfigData, 'data' | 'esoSubPath' | 'subPath' | 'external'>) => {
+    if (subPath && external && data) {
+        return Object.keys(data).join(', ')
+    }
+    if (esoSubPath) {
+        return esoSubPath.join(', ')
     }
     return ''
 }
@@ -205,10 +204,9 @@ export const getConfigMapSecretFormInitialValues = ({
     configMapSecretData,
     cmSecretStateLabel,
     componentType,
-    isApprover,
 }: Pick<
     ConfigMapSecretFormProps,
-    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData' | 'isApprover'
+    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'
 >): ConfigMapSecretUseFormProps => {
     const isSecret = componentType === CMSecretComponentType.Secret
 
@@ -229,8 +227,7 @@ export const getConfigMapSecretFormInitialValues = ({
         const currentData = processCurrentData({
             configMapSecretData,
             cmSecretStateLabel,
-            componentType,
-            isApprover,
+            isSecret,
         })
 
         return {
@@ -241,7 +238,7 @@ export const getConfigMapSecretFormInitialValues = ({
             selectedType: type ?? configMapSecretMountDataMap.environment.value,
             isFilePermissionChecked: !!filePermission,
             isSubPathChecked: !!subPath,
-            externalSubpathValues: processExternalSubPathValues({ data, esoSubPath, externalType, subPath }),
+            externalSubpathValues: processExternalSubPathValues({ data, external, subPath, esoSubPath }),
             filePermission: filePermission ?? '',
             volumeMountPath: mountPath ?? defaultMountPath ?? '',
             roleARN: roleARN ?? '',
@@ -280,8 +277,7 @@ export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
     componentType,
     isJob,
-    isApprover,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob' | 'isApprover'>) => {
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -302,15 +298,17 @@ export const getConfigMapSecretReadOnlyValues = ({
         volumeMountPath,
         yaml,
         currentData,
+        isSecret,
     } = getConfigMapSecretFormInitialValues({
         configMapSecretData,
         cmSecretStateLabel: CM_SECRET_STATE.INHERITED,
         componentType,
-        isApprover,
     })
+    const mountExistingExternal =
+        external && externalType === (isSecret ? CMSecretExternalType.KubernetesSecret : CMSecretExternalType.Internal)
 
     let dataType = ''
-    if (componentType === CMSecretComponentType.ConfigMap) {
+    if (!isSecret) {
         dataType = configMapDataTypeOptions.find(({ value }) =>
             external && externalType === ''
                 ? value === CMSecretExternalType.KubernetesConfigMap
@@ -345,7 +343,7 @@ export const getConfigMapSecretReadOnlyValues = ({
                     '',
             },
             {
-                displayName: 'External Subpath Values',
+                displayName: 'Subpath Values',
                 value: externalSubpathValues,
             },
             {
@@ -357,7 +355,7 @@ export const getConfigMapSecretReadOnlyValues = ({
                 value: roleARN,
             },
         ],
-        data: (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml,
+        data: !mountExistingExternal ? (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml : null,
     }
 }
 // FORM UTILS ----------------------------------------------------------------

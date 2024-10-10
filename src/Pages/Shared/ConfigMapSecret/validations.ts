@@ -220,7 +220,7 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                   volumeMountPath: {
                       required: true,
                       custom: {
-                          isValid: (value) => !rules.cmVolumeMountPath(value).isValid,
+                          isValid: (value) => rules.cmVolumeMountPath(value).isValid,
                           message: rules.cmVolumeMountPath(volumeMountPath).message,
                       },
                   },

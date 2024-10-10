@@ -97,7 +97,7 @@ const getIcon = (configState: ResourceConfigState, isProtected: boolean): Collap
                 className: 'default-tt',
             },
             props: {
-                className: configState === ResourceConfigState.Draft ? 'scn-6' : '',
+                className: `p-2 ${configState === ResourceConfigState.Draft ? 'scn-6' : ''}`,
             },
         }
     }

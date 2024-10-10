@@ -34,23 +34,20 @@ export const ConfigMapSecretDeleteModal = ({
     const [isDeleting, setIsDeleting] = useState(false)
 
     // CONSTANTS
-    const isDeleteOverride = !!envId
+    const isDeleteOverride = cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
     const isSecret = componentType === CMSecretComponentType.Secret
 
     // METHODS
     const handleDelete = async () => {
         setIsDeleting(true)
         try {
-            if (isDeleteOverride) {
+            if (envId) {
                 const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
                 await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
 
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
-                    description:
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                            ? 'Restored to global.'
-                            : 'Successfully Deleted',
+                    description: isDeleteOverride ? 'Restored to global.' : 'Successfully Deleted',
                 })
             } else {
                 const deleteConfigMapSecretParams = { id, appId, name: configName }
@@ -118,6 +115,7 @@ export const ConfigMapSecretDeleteModal = ({
                     : `'${configName}' will not be used in future deployments. Are you sure?`
             }
             closeDelete={closeDeleteModal}
+            buttonPrimaryText={`Delete ${isDeleteOverride ? 'override' : ''}`}
             delete={handleDelete}
             apiCallInProgress={isDeleting}
         />
