@@ -108,6 +108,7 @@ export const ConfigMapSecretContainer = ({
     const [showDraftSaveModal, setShowDraftSaveModal] = useState(false)
     const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
     const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
+    const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [restoreYAML, setRestoreYAML] = useState(false)
 
     // CONSTANTS
@@ -228,6 +229,7 @@ export const ConfigMapSecretContainer = ({
             })
 
             if (data.draftData) {
+                setAreCommentsPresent(data.draftData.commentsCount > 0)
                 setSelectedProtectionViewTab(
                     data.draftData.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
@@ -714,7 +716,7 @@ export const ConfigMapSecretContainer = ({
                         mergeStrategy={mergeStrategy}
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         approvalUsers={draftData?.approvers}
-                        areCommentsPresent={draftData?.commentsCount > 0}
+                        areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
                         isProtected={isProtected}
                         isDraftPresent={!!draftData}
@@ -772,6 +774,7 @@ export const ConfigMapSecretContainer = ({
                         draftId={draftData.draftId}
                         draftVersionId={draftData.draftVersionId}
                         toggleDraftComments={toggleDraftComments}
+                        handleUpdateAreCommentsPresent={setAreCommentsPresent}
                     />
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
