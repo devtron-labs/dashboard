@@ -14,79 +14,98 @@
  * limitations under the License.
  */
 
-import { get, post, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    trash,
+    ResponseType,
+    getResolvedDeploymentTemplate,
+    ValuesAndManifestFlagDTO,
+    GetResolvedDeploymentTemplateProps,
+    AppEnvDeploymentConfigType,
+    getAppEnvDeploymentConfig,
+    ConfigResourceType,
+    getIsRequestAborted,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
-import { getEnvironmentConfigs, getEnvironmentSecrets } from '@Services/service'
-import { CMSecret, CMSecretComponentType } from './ConfigMapSecret.types'
 
-export function updateConfig(id, appId, configData, signal?) {
-    return post(
+import {
+    CMSecretDTO,
+    CMSecretComponentType,
+    GetConfigMapSecretConfigDataProps,
+    GetConfigMapSecretConfigDataReturnType,
+    UpdateConfigMapSecretProps,
+    DeleteConfigMapSecretProps,
+    DeleteEnvConfigMapSecretProps,
+    OverrideConfigMapSecretProps,
+    GetCMSecretProps,
+} from './types'
+
+export const updateConfigMap = ({ id, appId, payload, signal }: UpdateConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_CONFIG_MAP}`,
         {
             ...(id && { id }),
             appId,
-            configData: [configData],
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function deleteConfig(id, appId, name) {
-    return trash(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}/${id}?name=${name}`)
-}
+export const deleteConfigMap = ({ id, appId, name }: DeleteConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}/${id}?name=${name}`)
 
-export function deleteEnvConfigMap(id, appId, envId, name) {
-    return trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
-}
+export const deleteEnvConfigMap = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
 
-export function overRideConfigMap(appId, environmentId, configData, signal?) {
-    return post(
+export const overRideConfigMap = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_ENV_CONFIG_MAP}`,
         {
             appId,
-            environmentId,
-            configData,
+            environmentId: envId,
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function getConfigMapList(appId, envId?, signal?) {
-    if (envId) {
-        return getEnvironmentConfigs(appId, envId, { signal })
-    }
-    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
-}
-
-export function updateSecret(id, appId, configData, signal?) {
-    return post(
+export const updateSecret = ({ id, appId, payload, signal }: UpdateConfigMapSecretProps) =>
+    post(
         `${Routes.APP_CREATE_SECRET}`,
         {
             ...(id && { id }),
             appId,
-            configData: [configData],
+            configData: [payload],
         },
         { signal },
     )
-}
 
-export function deleteSecret(id, appId, name) {
-    return trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
-}
+export const deleteSecret = ({ id, appId, name }: DeleteConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
 
-export function deleteEnvSecret(id, appId, envId, name) {
-    return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
-}
+export const deleteEnvSecret = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
+    trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 
-export const getCMSecret = (
-    componentType: CMSecretComponentType,
+export const overRideSecret = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
+    post(
+        `${Routes.APP_CREATE_ENV_SECRET}`,
+        {
+            appId,
+            environmentId: envId,
+            configData: [payload],
+        },
+        { signal },
+    )
+
+export const getCMSecret = ({
+    componentType,
     id,
     appId,
+    envId,
     name,
-    envId?,
-    signal?,
-): Promise<ResponseType<CMSecret>> => {
+    signal,
+}: GetCMSecretProps): Promise<ResponseType<CMSecretDTO>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -100,21 +119,61 @@ export const getCMSecret = (
     return get(`${url}/${id}?name=${name}`, { signal })
 }
 
-export function getSecretList(appId, envId?, signal?) {
-    if (envId) {
-        return getEnvironmentSecrets(appId, envId)
+export const getConfigMapSecretConfigData = async <IsJob extends boolean = false>({
+    isJob,
+    appName,
+    envName,
+    componentType,
+    appId,
+    envId,
+    name,
+    resourceId,
+    abortControllerRef,
+}: GetConfigMapSecretConfigDataProps<IsJob>) => {
+    try {
+        const { result } = await (isJob
+            ? getCMSecret({
+                  componentType,
+                  id: resourceId,
+                  appId,
+                  name,
+                  envId,
+                  signal: abortControllerRef.current.signal,
+              })
+            : getAppEnvDeploymentConfig(
+                  {
+                      appName,
+                      envName,
+                      configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                      resourceId,
+                      resourceName: name,
+                      resourceType:
+                          componentType === CMSecretComponentType.ConfigMap
+                              ? ConfigResourceType.ConfigMap
+                              : ConfigResourceType.Secret,
+                  },
+                  abortControllerRef.current.signal,
+              ))
+
+        return result as GetConfigMapSecretConfigDataReturnType<IsJob>
+    } catch (error) {
+        if (!getIsRequestAborted(error)) {
+            throw error
+        }
+
+        return null
     }
-    return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
 }
 
-export function overRideSecret(appId, environmentId, configData, signal?) {
-    return post(
-        `${Routes.APP_CREATE_ENV_SECRET}`,
+export const getConfigMapSecretResolvedValues = (
+    params: Required<Pick<GetResolvedDeploymentTemplateProps, 'appId' | 'envId' | 'values'>>,
+    signal?: AbortSignal,
+) =>
+    getResolvedDeploymentTemplate(
         {
-            appId,
-            environmentId,
-            configData,
+            ...params,
+            valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
+            chartRefId: null,
         },
-        { signal },
+        signal,
     )
-}

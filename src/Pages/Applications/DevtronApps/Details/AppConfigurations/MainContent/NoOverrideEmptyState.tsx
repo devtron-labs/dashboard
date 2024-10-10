@@ -7,7 +7,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import cmCsEmptyState from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { NoOverrideEmptyStateProps } from './types'
 
 import './NoOverrideEmptyState.scss'
@@ -44,6 +44,7 @@ const NoOverrideEmptyState = ({
     componentType,
     configName,
     environmentName,
+    hideOverrideButton,
     handleCreateOverride,
     handleViewInheritedConfig,
 }: NoOverrideEmptyStateProps) => (
@@ -53,7 +54,7 @@ const NoOverrideEmptyState = ({
             title={getNoOverrideEmptyStateTitle({ componentType, environmentName, configName })}
             subTitle="Override configurations for this environment and set a merge strategy. The merge strategy determines how overrides are combined with inherited configurations."
             imageType={ImageType.Large}
-            isButtonAvailable
+            isButtonAvailable={!hideOverrideButton}
             renderButton={renderCreateOverrideButton({ handleCreateOverride })}
         >
             <Button

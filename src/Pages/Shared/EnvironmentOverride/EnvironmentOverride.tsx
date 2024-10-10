@@ -31,7 +31,7 @@ import {
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
@@ -161,7 +161,6 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
-                            isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -178,7 +177,6 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
-                            isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
