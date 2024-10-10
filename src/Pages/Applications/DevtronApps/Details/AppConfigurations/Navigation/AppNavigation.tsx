@@ -118,7 +118,10 @@ export const AppNavigation = () => {
     return (
         <Switch>
             <Route
-                path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')}|${URLS.APP_ENV_OVERRIDE_CONFIG})/:envId(\\d+)?`}
+                path={[
+                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})/:envId(\\d+)?`,
+                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/:resourceType`,
+                ]}
             >
                 {({ match }) => (
                     <EnvConfigurationsNav
@@ -136,6 +139,7 @@ export const AppNavigation = () => {
                         goBackURL={getValidBackURL()}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
+                        isJob={isJobView}
                     />
                 )}
             </Route>

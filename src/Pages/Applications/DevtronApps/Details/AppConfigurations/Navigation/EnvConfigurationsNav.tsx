@@ -35,6 +35,7 @@ const ShimmerText = ({ width }: { width: string }) => (
 )
 
 export const EnvConfigurationsNav = ({
+    isJob,
     showBaseConfigurations,
     showDeploymentTemplate,
     envConfig,
@@ -45,6 +46,7 @@ export const EnvConfigurationsNav = ({
     paramToCheck = 'envId',
     showComparison,
     isCMSecretLocked,
+    hideEnvSelector,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -90,7 +92,7 @@ export const EnvConfigurationsNav = ({
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
+                    href: getNavigationPath(path, params, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                 },
@@ -109,7 +111,7 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
+            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
     }, [isLoading, config, pathname])
@@ -165,7 +167,7 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
+        history.push(getNavigationPath(path, params, _resourceType, 'create'))
     }
 
     /** Collapsible List Config. */
@@ -236,7 +238,7 @@ export const EnvConfigurationsNav = ({
     const envOptions: OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>> = [
         ...baseEnvOption,
         {
-            label: 'Environments',
+            label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
             options: environments.map(({ name, id, isProtected }) => ({
                 label: name,
                 value: id,
@@ -251,7 +253,12 @@ export const EnvConfigurationsNav = ({
         }
 
         const name = pathname.split(`${resourceType}/`)[1]
-        history.push(getNavigationPath(path, params, value, resourceType, name, paramToCheck))
+        const basePath =
+            paramToCheck === 'envId' ? `${isJob ? URLS.JOB : URLS.APP}/${appId}` : `${URLS.APPLICATION_GROUP}/${envId}`
+        const envOrAppId =
+            value > -1 && (paramToCheck === 'envId' ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${value}` : `/${value}`)
+
+        history.push(`${basePath}/${URLS.APP_CONFIG}${envOrAppId || ''}/${resourceType}${name ? `/${name}` : ''}`)
     }
 
     const renderEnvSelector = () => (
@@ -305,10 +312,10 @@ export const EnvConfigurationsNav = ({
     }
 
     return (
-        <>
-            {renderEnvSelector()}
+        <div className="flexbox-col h-100 dc__overflow-hidden">
+            {!hideEnvSelector && renderEnvSelector()}
             {showComparison && CompareWithButton && renderCompareWithBtn()}
-            <div className="mw-none p-8">
+            <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
@@ -327,6 +334,6 @@ export const EnvConfigurationsNav = ({
                     </>
                 )}
             </div>
-        </>
+        </div>
     )
 }

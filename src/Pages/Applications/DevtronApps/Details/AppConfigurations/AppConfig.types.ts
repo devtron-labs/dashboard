@@ -224,10 +224,12 @@ export interface EnvConfigurationsNavProps {
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
+    isJob?: boolean
     showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
     isCMSecretLocked?: boolean
+    hideEnvSelector?: boolean
 }
 
 export interface EnvConfigRouteParams {
