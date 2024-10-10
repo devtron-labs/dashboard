@@ -407,8 +407,7 @@ export const getConfigMapSecretPayload = ({
     roleARN,
     volumeMountPath,
     isSubPathChecked,
-    skipEncode,
-}: ConfigMapSecretUseFormProps & { skipEncode?: boolean }) => {
+}: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
     const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
     const data = _currentData.reduce((acc, curr) => {
@@ -419,7 +418,7 @@ export const getConfigMapSecretPayload = ({
 
         return {
             ...acc,
-            [curr.k]: isSecret && externalType === '' && !skipEncode ? btoa(value) : value,
+            [curr.k]: isSecret && externalType === '' ? btoa(value) : value,
         }
     }, {})
 
