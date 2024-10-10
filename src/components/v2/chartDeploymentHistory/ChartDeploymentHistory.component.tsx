@@ -116,7 +116,7 @@ const ChartDeploymentHistory = ({
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && isScanV2Enabled && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            (ChartSecurityTab && isScanV2Enabled && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -632,7 +632,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div className="trigger-details pb-20">
-                <div className="flex dc__content-space trigger-details__summary">
+                <div className="flex dc__content-space trigger-details__summary py-10 px-20">
                     <div className="flex left py-10 px-20 dc__gap-8">
                         <Rocket className="scn-6 icon-dim-20" />
                         <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
