@@ -18,7 +18,6 @@ import React, { Fragment, useEffect, useRef, useState, useMemo } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import DOMPurify from 'dompurify'
 import {
     highlightSearchText,
@@ -46,9 +45,8 @@ const Sidebar = ({
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     isOpen,
-    shortcut,
-}: SidebarType & IWithShortcut) => {
-    const { registerShortcut } = useRegisterShortcut()
+}: SidebarType) => {
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
     const { clusterId, namespace, nodeType } = useParams<URLParams>()
@@ -78,26 +76,26 @@ const Sidebar = ({
         })
     }, [searchText])
 
-    const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        switch (e.key) {
-            case 'k':
-                searchInputRef.current?.focus()
-                break
+    const handleInputShortcut = (e?: React.KeyboardEvent<HTMLDivElement> | KeyboardEvent) => {
+        switch (e?.key) {
             case 'Escape':
             case 'Esc':
                 searchInputRef.current?.blur()
                 break
             default:
+                searchInputRef.current?.focus()
         }
     }
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
-            shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
+        if (isOpen) {
+            registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
         }
 
-        return () => shortcut.unregisterShortcut(['k'])
-    }, [registerShortcut, isOpen])
+        return () => {
+            unregisterShortcut(['K'])
+        }
+    }, [isOpen])
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
@@ -421,4 +419,4 @@ const Sidebar = ({
     )
 }
 
-export default withShortcut(Sidebar)
+export default Sidebar

@@ -22,7 +22,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import { ShortcutProvider } from 'react-keybind'
 import App from './App'
-import { ToastManagerContainer, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -161,11 +161,11 @@ ReactDOM.render(
         {window.top === window.self ? (
             <>
                 <BrowserRouter basename={window.__BASE_URL__}>
-                    <ShortcutProvider>
+                    <UseRegisterShortcutProvider>
                         <UserEmailProvider>
                             <App />
                         </UserEmailProvider>
-                    </ShortcutProvider>
+                    </UseRegisterShortcutProvider>
                 </BrowserRouter>
                 <ToastManagerContainer />
             </>
