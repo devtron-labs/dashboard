@@ -95,21 +95,19 @@ export const EnvironmentList = ({
             className={`${isBuildStage ? 'sidebar-action-container sidebar-action-container-border' : 'flex h-36 dc__align-items-center br-4 dc__border'}`}
         >
             <div className={`${!isBuildStage ? 'w-250 dc__align-items-center flex left' : ''}`}>
-                {getEnvironmentSelectLabel()}
-                <div className="dc__no-shrink">
-                    <SelectPicker
-                        required
-                        inputId="job-pipeline-environment-dropdown"
-                        name="job-pipeline-environment-dropdown"
-                        classNamePrefix="job-pipeline-environment-dropdown"
-                        placeholder="Select Environment"
-                        options={getEnvListOptions()}
-                        value={getSelectedEnvironment()}
-                        onChange={selectEnvironment}
-                        size={ComponentSizeType.large}
-                        variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
-                    />
-                </div>
+                <div className="dc__no-shrink">{getEnvironmentSelectLabel()}</div>
+                <SelectPicker
+                    required
+                    inputId="job-pipeline-environment-dropdown"
+                    name="job-pipeline-environment-dropdown"
+                    classNamePrefix="job-pipeline-environment-dropdown"
+                    placeholder="Select Environment"
+                    options={getEnvListOptions()}
+                    value={getSelectedEnvironment()}
+                    onChange={selectEnvironment}
+                    size={ComponentSizeType.large}
+                    variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
+                />
             </div>
         </div>
     )
