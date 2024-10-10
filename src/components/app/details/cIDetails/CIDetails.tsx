@@ -570,7 +570,6 @@ const HistoryLogs = ({
                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
                 downloadArtifactUrl={downloadArtifactUrl}
                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                isJobView={isJobView}
                 isJobCI={isJobCI}
                 imageComment={triggerDetails.imageComment}
                 imageReleaseTags={triggerDetails.imageReleaseTags}
@@ -579,7 +578,6 @@ const HistoryLogs = ({
                 tagsEditable={tagsEditable}
                 appReleaseTagNames={appReleaseTags}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                type={HistoryComponentType.CI}
                 rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
             />
@@ -620,7 +618,6 @@ const HistoryLogs = ({
                                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                 downloadArtifactUrl={downloadArtifactUrl}
                                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                                isJobView={isJobView}
                                 isJobCI={isJobCI}
                                 imageComment={triggerDetails.imageComment}
                                 imageReleaseTags={triggerDetails.imageReleaseTags}
@@ -629,7 +626,6 @@ const HistoryLogs = ({
                                 tagsEditable={tagsEditable}
                                 appReleaseTagNames={appReleaseTags}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                type={HistoryComponentType.CI}
                                 renderCIListHeader={renderCIListHeader}
                             />
                         </div>

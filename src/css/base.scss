@@ -3971,6 +3971,14 @@ textarea,
     overflow-x: scroll;
 }
 
+.dc__overflow-initial {
+    overflow: initial;
+
+    &--imp {
+        overflow: initial !important;
+    }
+}
+
 .dc__no-svg-fill {
     path {
         fill: none !important;
@@ -4411,6 +4419,10 @@ textarea::placeholder {
     z-index: 5;
 }
 
+.dc__zi-6 {
+    z-index: 6;
+}
+
 .dc__zi-10 {
     z-index: 10;
 }
@@ -4717,12 +4729,6 @@ textarea::placeholder {
     &__no-border {
         &:last-child {
             border: none;
-        }
-    }
-
-    .dc__transition {
-        &--transform {
-            transition: transform 0.3s;
         }
     }
 }

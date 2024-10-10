@@ -34,10 +34,11 @@ import {
     ReleaseMode,
     ToastVariantType,
     ToastManager,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import Select, { components } from 'react-select'
+import Select from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
@@ -355,6 +356,7 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    // This is called only when timeline modal is open
     const getDeploymentDetailStepsData = useCallback(
         (showTimeline?: boolean): void => {
             const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
@@ -405,7 +407,7 @@ export const Details: React.FC<DetailsType> = ({
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
-            .then((response) => {
+            .then(async (response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
                 if (
@@ -424,23 +426,32 @@ export const Details: React.FC<DetailsType> = ({
                 }
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
-                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
                 }
                 pollResourceTreeRef.current = true
+
+                if (pollResourceTreeRef.current) {
+                    // Need to wait for the resource tree to check if the env is isolated or not
+                    await fetchResourceTree()
+                }
+
+                const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
+
+                _getDeploymentStatusDetail(
+                    appDetailsRef.current.deploymentAppType,
+                    isIsolatedEnv,
+                    isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
+                )
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingDetails(false)
             })
-        if (pollResourceTreeRef.current) {
-            fetchResourceTree()
-        }
     }
 
-    const fetchResourceTree = () => {
+    const fetchResourceTree = () =>
         fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
@@ -467,15 +478,20 @@ export const Details: React.FC<DetailsType> = ({
             .finally(() => {
                 setLoadingResourceTree(false)
             })
-    }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
+    function _getDeploymentStatusDetail(
+        deploymentAppType: DeploymentAppTypes,
+        isIsolatedEnv: boolean,
+        triggerIdToFetch?: number,
+    ) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
+        // triggerIdToFetch represents the wfrId to fetch for any specific deployment
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, triggerIdToFetch?.toString())
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppTypes.HELM) {
+                    // Timelines are not applicable for helm deployments and air gapped envs
+                    if (deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
@@ -616,7 +632,7 @@ export const Details: React.FC<DetailsType> = ({
     const environmentName = environmentsMap[+envId]
 
     const renderAppDetails = (): JSX.Element => {
-        if (isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
+        if (!appDetails.resourceTree && isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={environmentName} />
         }
         return (
@@ -626,6 +642,7 @@ export const Details: React.FC<DetailsType> = ({
                 monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp
                 isDeploymentBlocked={isDeploymentBlocked}
+                isVirtualEnvironment={isVirtualEnvRef.current}
             />
         )
     }
@@ -886,25 +903,20 @@ export const EnvSelector = ({
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {
+            const Option = {
+                label: env.environmentName,
+                value: env.environmentId,
+                description: env.description,
+            }
             const key = env.isVirtualEnvironment ? 'Isolated environments' : ''
             const found = acc.find((item) => item.label === key)
 
             if (found) {
-                found.options.push({
-                    label: env.environmentName,
-                    value: env.environmentId,
-                    description: env.description,
-                })
+                found.options.push(Option)
             } else {
                 acc.push({
                     label: key,
-                    options: [
-                        {
-                            label: env.environmentName,
-                            value: env.environmentId,
-                            description: env.description,
-                        },
-                    ],
+                    options: [Option],
                 })
             }
 
@@ -934,24 +946,16 @@ export const EnvSelector = ({
                     ENV
                 </div>
             </div>
-            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
-                <Select
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-11">
+                <SelectPicker
+                    inputId="app-environment-select"
                     placeholder="Select Environment"
                     options={groupList}
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                        GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
-                        DropdownIndicator: components.DropdownIndicator,
-                        ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
-                    }}
-                    styles={envSelectorStyle}
                     isSearchable
                     classNamePrefix="app-environment-select"
-                    formatOptionLabel={formatOptionLabel}
                 />
             </div>
         </>

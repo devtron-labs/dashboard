@@ -1574,10 +1574,10 @@ const CDMaterial = ({
                         (isMaterialInfoAvailable || mat.appliedFilters?.length) &&
                         hideSourceInfo && (
                             <ImageCardAccordion
+                                environmentId={envId}
                                 isSecurityModuleInstalled={state.isSecurityModuleInstalled}
                                 artifactId={+mat.id}
                                 applicationId={appId}
-                                environmentId={envId}
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}

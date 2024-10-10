@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    put,
+    trash,
+    sortCallback,
+    ResponseType,
+    getUrlWithSearchParams,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
 import { getAPIOptionsWithTriggerTimeout, handleUTCTime } from '../common'
-import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
+import {
+    ChartValuesType,
+    ChartGroup,
+    HelmTemplateChartRequest,
+    HelmProjectUpdatePayload,
+    DeleteInstalledChartParamsType,
+} from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
 
 interface RootObject {
@@ -57,13 +71,20 @@ export function deleteInstalledChart(
     isGitops?: boolean,
     deleteAction?: DELETE_ACTION,
 ) {
-    let URL: string = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
+    const baseUrl: string = `app-store/deployment/application/delete/${installedAppId}`
+    let params: DeleteInstalledChartParamsType = {}
     if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
-        URL += `&force=true`
-    } else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
-        URL += `&cascade=false`
+        params = {
+            forceDelete: true,
+        }
+    } else if (isGitops) {
+        params['partialDelete'] = true
+        if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
+            params['cascade'] = false
+        }
     }
-    return trash(URL)
+    const url = getUrlWithSearchParams(baseUrl, params)
+    return trash(url)
 }
 
 export function getChartValuesTemplateList(chartId: number | string): Promise<SavedValueListResponse> {

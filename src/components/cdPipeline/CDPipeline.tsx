@@ -48,7 +48,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     FloatingVariablesSuggestions,
     getPluginIdsFromBuildStage,
@@ -582,6 +582,9 @@ export default function CDPipeline({
                 }
             }
         }
+        const _dockerRegistries: RegistryPayloadType = dockerRegistries.find(
+            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+        )
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -624,9 +627,11 @@ export default function CDPipeline({
             pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                 ? GeneratedHelmPush.PUSH
                 : GeneratedHelmPush.DO_NOT_PUSH
-        form.selectedRegistry = dockerRegistries.find(
-            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
-        )
+        form.selectedRegistry = {
+            ..._dockerRegistries,
+            value: _dockerRegistries?.id,
+            label: _dockerRegistries?.id,
+        }
     }
 
     const responseCode = () => {
@@ -663,9 +668,11 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            ...(getUserApprovalConfigPayload ? {
-                userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig)
-            }: {}),
+            ...(getUserApprovalConfigPayload
+                ? {
+                      userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig),
+                  }
+                : {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -1031,8 +1038,10 @@ export default function CDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                // 422 is for deployment window
-                if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
+                //For now we are removing check for error code 422 which is of deployment window, 
+                // so in that case force delete modal would be shown.
+                // This should be done at BE and when done we will revert our changes
+                if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {

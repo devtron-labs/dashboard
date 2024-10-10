@@ -16,9 +16,7 @@
 
 import { components } from 'react-select'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as CheckSelected } from '../../assets/icons/ic-checkbox-selected.svg'
-import { ReactComponent as CheckNotSelected } from '../../assets/icons/ic-checkbox-unselected.svg'
-import { VulnerabilityAction } from './security.types'
+import { VulnerabilityExposureFilterKeys, VulnerabilityExposureSearchParams } from './security.types'
 
 export const styles = {
     control: (base, state) => ({
@@ -82,46 +80,8 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export const ValueContainer = (props) => {
-    if (!props.hasValue) {
-        return <components.ValueContainer {...props} />
-    }
-
-    return (
-        <components.ValueContainer {...props}>
-            <p style={{ margin: '0px' }}>
-                {props?.selectProps?.name}
-                <span className="badge">{props.getValue()?.length}</span>
-            </p>
-        </components.ValueContainer>
-    )
-}
-
-export const Option = (props) => {
-    return (
-        <components.Option {...props}>
-            <p className="m-0 dc__ellipsis-right dc__lowercase">
-                {props.isSelected ? (
-                    <CheckSelected className="icon-dim-24 dc__vertical-align-middle mr-5" />
-                ) : (
-                    <CheckNotSelected className="icon-dim-24 dc__vertical-align-middle mr-5" />
-                )}
-                {props.label}
-            </p>
-        </components.Option>
-    )
-}
-
-export const MultiValue = (props) => {
-    return <components.MultiValue {...props} />
-}
-
-export const MultiValueContainer = (props) => {
-    return <components.MultiValueContainer {...props} />
-}
-
-export const SEVERITY_POLICY_OPTIONS = [
-    { label: 'BLOCK', value: VulnerabilityAction.block },
-    { label: 'ALLOW', value: VulnerabilityAction.allow },
-    { label: 'INHERIT', value: VulnerabilityAction.inherit },
-]
+export const parseVulnerabilityExposureSearchParams = (searchParams: URLSearchParams) => ({
+    [VulnerabilityExposureFilterKeys.cluster]: searchParams.getAll(VulnerabilityExposureFilterKeys.cluster),
+    [VulnerabilityExposureFilterKeys.environment]: searchParams.getAll(VulnerabilityExposureFilterKeys.environment),
+    [VulnerabilityExposureSearchParams.cveName]: searchParams.get(VulnerabilityExposureSearchParams.cveName) ?? '',
+})
