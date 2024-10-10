@@ -19,7 +19,7 @@ import CompareConfigView from '@Pages/Applications/DevtronApps/Details/AppConfig
 import NoPublishedVersionEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoPublishedVersionEmptyState'
 import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
 
-import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
+import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
@@ -69,16 +69,14 @@ export const ConfigMapSecretProtected = ({
 
     const currentConfigMapSecretData = useMemo(
         () =>
-            resolvedFormData ?? formDataRef.current
+            (componentType === CMSecretComponentType.ConfigMap || !configMapSecretData?.unAuthorized) &&
+            (resolvedFormData ?? formDataRef.current)
                 ? {
                       ...configMapSecretData,
-                      ...getConfigMapSecretPayload({
-                          ...(resolvedFormData ?? formDataRef.current),
-                          skipEncode: configMapSecretData?.unAuthorized,
-                      }),
+                      ...getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current),
                   }
                 : configMapSecretData,
-        [configMapSecretData, resolvedFormData],
+        [configMapSecretData, formDataRef.current, resolvedFormData],
     )
 
     // METHODS
