@@ -180,6 +180,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 environments={this.props.environmentLists}
                 selectedEnv={this.props.selectedEnv}
                 setSelectedEnv={this.props.setSelectedEnv}
+                isBorderLess
             />
         )
     }
@@ -307,7 +308,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
-
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )

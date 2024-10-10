@@ -13,9 +13,9 @@ import {
     CustomNavItemsType,
     EnvConfigRouteParams,
     EnvConfigType,
-    EnvironmentOptionType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
+    EnvironmentOptionType,
 } from '../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 
