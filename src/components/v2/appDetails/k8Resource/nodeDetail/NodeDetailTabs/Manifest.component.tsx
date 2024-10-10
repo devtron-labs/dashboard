@@ -54,6 +54,9 @@ import {
     SAVE_DATA_VALIDATION_ERROR_MSG,
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 
 const ManifestComponent = ({
     selectedTab,
@@ -85,6 +88,7 @@ const ManifestComponent = ({
     const [error, setError] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
     const [manifest, setManifest] = useState('')
+    const [normalizedLiveManifest, setNormalizedLiveManifest] = useState<string>('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
 
@@ -111,6 +115,7 @@ const ManifestComponent = ({
         setDesiredManifest(manifestViewRef.current.data.desiredManifest)
         setManifest(manifestViewRef.current.data.manifest)
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
+        setNormalizedLiveManifest(manifestViewRef.current.data.normalizedLiveManifest)
 
         if (showManifestCompareView) {
             setActiveManifestEditorData(manifestViewRef.current.data.manifest)
@@ -118,6 +123,12 @@ const ManifestComponent = ({
             setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
         }
     }
+
+    const _selectedResource = isResourceBrowserView
+        ? selectedResource
+        : appDetails.resourceTree.nodes.filter(
+              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+          )[0]
 
     useEffectAfterMount(() => {
         manifestViewRef.current = {
@@ -128,11 +139,21 @@ const ManifestComponent = ({
                 manifest,
                 activeManifestEditorData,
                 modifiedManifest,
+                normalizedLiveManifest,
             },
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id])
+    }, [
+        error,
+        secretViewAccess,
+        desiredManifest,
+        activeManifestEditorData,
+        manifest,
+        modifiedManifest,
+        normalizedLiveManifest,
+        id,
+    ])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -141,11 +162,6 @@ const ManifestComponent = ({
             return () => {}
         }
         const abortController = new AbortController()
-        const _selectedResource = isResourceBrowserView
-            ? selectedResource
-            : appDetails.resourceTree.nodes.filter(
-                  (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
-              )[0]
         setShowInfoText(
             _selectedResource &&
                 !_selectedResource.group &&
@@ -195,8 +211,15 @@ const ManifestComponent = ({
                 ])
                     .then((response) => {
                         setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
-                        const _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
-                        setDesiredManifest(response[1]?.result?.manifest || '')
+                        const _manifest = JSON.stringify(
+                            response[0]?.result?.liveState || response[0]?.result?.manifestResponse?.manifest || '',
+                        )
+                        setDesiredManifest(
+                            JSON.stringify(response[0]?.result?.predictedLiveState) ||
+                                response[1]?.result?.manifest ||
+                                '',
+                        )
+                        setNormalizedLiveManifest(JSON.stringify(response[0]?.result?.normalizedLiveState) || '')
 
                         if (_manifest) {
                             setManifest(_manifest)
@@ -410,6 +433,7 @@ const ManifestComponent = ({
     }
 
     const handleDesiredManifestClose = () => setShowManifestCompareView(false)
+    const handleDesiredManifestOpen = () => setShowManifestCompareView(true)
 
     const renderShowDecodedValueCheckbox = () => {
         const jsonManifestData = YAML.parse(trimedManifestEditorData)
@@ -487,7 +511,11 @@ const ManifestComponent = ({
                             diffView={showManifestCompareView}
                             theme="vs-dark--dt"
                             height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
-                            value={trimedManifestEditorData}
+                            value={
+                                appDetails?.appType === AppType.DEVTRON_APP && showManifestCompareView
+                                    ? normalizedLiveManifest
+                                    : trimedManifestEditorData
+                            } // In case of devtron apps we compare normalized values
                             mode={MODES.YAML}
                             readOnly={showManifestCompareView || !isEditMode}
                             onChange={handleEditorValueChange}
@@ -514,6 +542,13 @@ const ManifestComponent = ({
                                     {renderShowDecodedValueCheckbox()}
                                 </CodeEditor.Information>
                             )}
+                            {!loading &&
+                                !error &&
+                                'hasDrift' in _selectedResource &&
+                                _selectedResource.hasDrift &&
+                                !showManifestCompareView &&
+                                renderOutOfSyncWarning &&
+                                renderOutOfSyncWarning(handleDesiredManifestOpen)}
                             {showManifestCompareView && (
                                 <CodeEditor.Header hideDefaultSplitHeader className="p-0">
                                     <div className="dc__split-header">

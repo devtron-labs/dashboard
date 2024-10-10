@@ -116,7 +116,7 @@ import { renderCIListHeader } from '../cdDetails/utils'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
+const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -269,6 +269,7 @@ export const Details: React.FC<DetailsType> = ({
     deploymentUserActionState,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
+    const { path } = useRouteMatch()
     const location = useLocation()
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
@@ -295,7 +296,6 @@ export const Details: React.FC<DetailsType> = ({
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
-
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -430,7 +430,11 @@ export const Details: React.FC<DetailsType> = ({
 
                 const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
 
-                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType, isIsolatedEnv, isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null)
+                _getDeploymentStatusDetail(
+                    appDetailsRef.current.deploymentAppType,
+                    isIsolatedEnv,
+                    isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
+                )
 
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
@@ -475,7 +479,11 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes, isIsolatedEnv: boolean, triggerIdToFetch?: number) {
+    function _getDeploymentStatusDetail(
+        deploymentAppType: DeploymentAppTypes,
+        isIsolatedEnv: boolean,
+        triggerIdToFetch?: number,
+    ) {
         const shouldFetchTimeline = shouldFetchTimelineRef.current
 
         // triggerIdToFetch represents the wfrId to fetch for any specific deployment
@@ -773,7 +781,13 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
+            {detailedStatus && (
+                <AppStatusDetailModal
+                    close={hideAppDetailsStatus}
+                    showAppStatusMessage={false}
+                    showConfigDriftInfo={!!ConfigDriftModalRoute}
+                />
+            )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
@@ -815,6 +829,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
+            {ConfigDriftModalRoute && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
@@ -944,7 +959,7 @@ export const EnvSelector = ({
             </div>
             <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <SelectPicker
-                    inputId='app-environment-select'    
+                    inputId="app-environment-select"
                     placeholder="Select Environment"
                     options={groupList}
                     value={envId ? { value: +envId, label: environmentName } : null}
