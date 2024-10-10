@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError, ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
-import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
