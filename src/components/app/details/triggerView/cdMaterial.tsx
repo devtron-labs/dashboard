@@ -283,6 +283,8 @@ const CDMaterial = ({
         canReviewConfig,
         scopeVariablesConfig,
         urlFilters,
+        lastDeploymentWfrId,
+        errorConfig,
     } = usePipelineDeploymentConfig({
         appId,
         envId,
@@ -920,14 +922,8 @@ const CDMaterial = ({
         }
 
         if (state.isRollbackTrigger || state.isSelectImageTrigger) {
-            handleDeployment(
-                stageType,
-                appId,
-                Number(getCDArtifactId()),
-                e,
-                state.selectedConfigToDeploy.value,
-                getWfrId(state.selectedMaterial, material),
-            )
+            const wfrId = state.isRollbackTrigger ? getWfrId(state.selectedMaterial, material) : lastDeploymentWfrId
+            handleDeployment(stageType, appId, Number(getCDArtifactId()), e, state.selectedConfigToDeploy.value, wfrId)
             return
         }
 
@@ -1652,6 +1648,8 @@ const CDMaterial = ({
                             noLastDeploymentConfig={noLastDeploymentConfig}
                             canReviewConfig={canReviewConfig()}
                             urlFilters={urlFilters}
+                            showConfigNotAvailableTooltip={disableDeployButton}
+                            renderConfigNotAvailableTooltip={renderTippyContent}
                         />
                     )}
                 <ConditionalWrap
@@ -1697,6 +1695,7 @@ const CDMaterial = ({
             <PipelineConfigDiff
                 {...pipelineDeploymentConfig}
                 isLoading={pipelineDeploymentConfigLoading}
+                errorConfig={errorConfig}
                 deploymentConfigSelectorProps={deploymentConfigSelectorProps}
                 scopeVariablesConfig={scopeVariablesConfig}
                 urlFilters={urlFilters}

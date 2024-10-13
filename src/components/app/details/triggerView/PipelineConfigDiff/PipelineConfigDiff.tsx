@@ -55,6 +55,7 @@ export const PipelineConfigDiff = ({
             sortingConfig={sortingConfig}
             scopeVariablesConfig={scopeVariablesConfig}
             renderedInDrawer
+            showDetailedDiffState
         />
     )
 }

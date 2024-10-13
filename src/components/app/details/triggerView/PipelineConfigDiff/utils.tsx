@@ -4,6 +4,8 @@ import {
     AppEnvDeploymentConfigDTO,
     DeploymentWithConfigType,
     EnvResourceType,
+    ERROR_STATUS_CODE,
+    ResponseType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -107,3 +109,11 @@ export const parseCompareWithSearchParams =
             [PipelineConfigDiffQueryParams.MODE]: searchParams.get(PipelineConfigDiffQueryParams.MODE),
         }
     }
+
+export const getPipelineDeploymentConfigFromPromiseSettled = (
+    res: PromiseSettledResult<ResponseType<AppEnvDeploymentConfigDTO>>,
+) => (res.status === 'fulfilled' ? res.value?.result ?? null : null)
+
+export const getPipelineDeploymentConfigErrFromPromiseSettled = (
+    res: PromiseSettledResult<ResponseType<AppEnvDeploymentConfigDTO>>,
+) => (res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null)

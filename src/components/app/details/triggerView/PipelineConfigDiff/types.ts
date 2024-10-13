@@ -18,7 +18,7 @@ export interface UsePipelineDeploymentConfigProps {
 
 export type PipelineConfigDiffProps = Pick<
     DeploymentConfigDiffProps,
-    'configList' | 'collapsibleNavList' | 'navList' | 'scopeVariablesConfig'
+    'configList' | 'collapsibleNavList' | 'navList' | 'scopeVariablesConfig' | 'errorConfig'
 > & {
     isLoading?: boolean
     deploymentConfigSelectorProps: SelectPickerProps
@@ -31,6 +31,8 @@ export interface PipelineConfigDiffStatusTileProps
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
     canReviewConfig: boolean
+    showConfigNotAvailableTooltip: boolean
+    renderConfigNotAvailableTooltip: () => JSX.Element
 }
 
 export interface PipelineConfigDiffQueryParamsType {

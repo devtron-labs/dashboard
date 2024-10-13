@@ -15,6 +15,7 @@ import {
     EnvResourceType,
     DeploymentConfigDiffState,
     ComponentSizeType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getOptions } from '@Components/deploymentConfig/service'
@@ -26,6 +27,8 @@ import {
 } from './types'
 import {
     getComparisonDataBasedOnDeploy,
+    getPipelineDeploymentConfigErrFromPromiseSettled,
+    getPipelineDeploymentConfigFromPromiseSettled,
     getPipelineDeploymentConfigSelectorOptions,
     parseCompareWithSearchParams,
 } from './utils'
@@ -52,6 +55,7 @@ export const usePipelineDeploymentConfig = ({
     })
     const { deploy, mode, updateSearchParams, handleSorting } = urlFilters
 
+    // FETCH PREVIOUS DEPLOYMENTS
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
         useAsync(
             () =>
@@ -62,17 +66,13 @@ export const usePipelineDeploymentConfig = ({
             !!appId && !!envId,
         )
 
-    // ASYNC CALLS
-    const [
-        pipelineDeploymentConfigLoading,
-        pipelineDeploymentConfigRes,
-        pipelineDeploymentConfigErr,
-        reloadPipelineDeploymentConfig,
-    ] = useAsync(
-        async () => {
-            const isLastDeployedConfigAvailable = previousDeployments.length !== 0
+    const isLastDeployedConfigAvailable = previousDeployments?.length !== 0
+    const lastDeploymentWfrId = previousDeployments?.[0]?.wfrId ?? null
 
-            return Promise.all([
+    // FETCH PIPELINE DEPLOYMENT CONFIG
+    const [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, , reloadPipelineDeploymentConfig] = useAsync(
+        async () =>
+            Promise.allSettled([
                 isLastDeployedConfigAvailable
                     ? getAppEnvDeploymentConfig({
                           params: {
@@ -104,17 +104,39 @@ export const usePipelineDeploymentConfig = ({
                           },
                       })
                     : null,
-            ])
-        },
-        [isRollbackTriggerSelected, wfrId],
+            ]),
+        [isRollbackTriggerSelected && wfrId],
         !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
     )
 
     // CONSTANTS
-    const recentDeploymentConfig = pipelineDeploymentConfigRes?.[0]?.result ?? null
-    const latestDeploymentConfig = pipelineDeploymentConfigRes?.[1]?.result ?? null
-    const specificDeploymentConfig = pipelineDeploymentConfigRes?.[2]?.result ?? null
-    const isLastDeployedConfigAvailable = pipelineDeploymentConfigRes?.[0] !== null
+    const { recentDeploymentConfig, latestDeploymentConfig, specificDeploymentConfig } = useMemo(() => {
+        if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
+            return {
+                recentDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[0]),
+                latestDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[1]),
+                specificDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[2]),
+            }
+        }
+
+        return {
+            recentDeploymentConfig: null,
+            latestDeploymentConfig: null,
+            specificDeploymentConfig: null,
+        }
+    }, [pipelineDeploymentConfigRes, pipelineDeploymentConfigLoading])
+
+    const pipelineDeploymentConfigErr = useMemo(() => {
+        if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
+            return (
+                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[0]) ||
+                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[1]) ||
+                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[2])
+            )
+        }
+
+        return null
+    }, [pipelineDeploymentConfigRes, pipelineDeploymentConfigLoading])
 
     useEffect(() => {
         if (!isLastDeployedConfigAvailable && deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
@@ -122,12 +144,17 @@ export const usePipelineDeploymentConfig = ({
         }
     }, [isLastDeployedConfigAvailable])
 
+    useEffect(() => {
+        if (previousDeploymentsErr || pipelineDeploymentConfigErr) {
+            showError(previousDeploymentsErr || pipelineDeploymentConfigErr)
+        }
+    }, [previousDeploymentsErr, pipelineDeploymentConfigErr])
+
     // METHODS
     const isConfigPresent = () => {
         const hasSpecificConfig =
             deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
             !!specificDeploymentConfig?.deploymentTemplate
-
         const hasLastSavedConfig =
             deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG && !!latestDeploymentConfig?.deploymentTemplate
 
@@ -145,7 +172,6 @@ export const usePipelineDeploymentConfig = ({
     const canDeployWithConfig = () => {
         const canDeployLatest =
             deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && !!recentDeploymentConfig?.deploymentTemplate
-
         return canDeployLatest || isConfigPresent()
     }
 
@@ -188,12 +214,13 @@ export const usePipelineDeploymentConfig = ({
     }
 
     // DEPLOYMENT CONFIG SELECTOR PROPS
-    const isConfigAvailable = ({ value }: SelectPickerOptionType) =>
+    const isConfigAvailable = (configType: DeploymentWithConfigType) =>
         !(
-            (value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+            (configType === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
                 !specificDeploymentConfig?.deploymentTemplate) ||
-            (value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && !recentDeploymentConfig?.deploymentTemplate) ||
-            (value === DeploymentWithConfigType.LAST_SAVED_CONFIG && !latestDeploymentConfig?.deploymentTemplate)
+            (configType === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+                !recentDeploymentConfig?.deploymentTemplate) ||
+            (configType === DeploymentWithConfigType.LAST_SAVED_CONFIG && !latestDeploymentConfig?.deploymentTemplate)
         )
 
     const onDeploymentConfigChange = ({ value }: SelectPickerOptionType) => {
@@ -203,7 +230,7 @@ export const usePipelineDeploymentConfig = ({
         })
     }
 
-    const isOptionDisabled = (option: SelectPickerOptionType) => !isConfigAvailable(option)
+    const isOptionDisabled = ({ value }: SelectPickerOptionType<DeploymentWithConfigType>) => !isConfigAvailable(value)
 
     const deploymentConfigSelectorOptions = getPipelineDeploymentConfigSelectorOptions(
         isLastDeployedConfigAvailable,
@@ -230,7 +257,7 @@ export const usePipelineDeploymentConfig = ({
         ),
         onChange: onDeploymentConfigChange,
         isOptionDisabled,
-        menuSize: ComponentSizeType.medium,
+        menuSize: ComponentSizeType.large,
     }
 
     const scopeVariablesConfig = {
@@ -259,5 +286,6 @@ export const usePipelineDeploymentConfig = ({
         canDeployWithConfig,
         scopeVariablesConfig,
         urlFilters,
+        lastDeploymentWfrId,
     }
 }
