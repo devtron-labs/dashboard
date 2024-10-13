@@ -3,7 +3,6 @@ import { OptionsOrGroups, GroupBase } from 'react-select'
 import {
     AppEnvDeploymentConfigDTO,
     DeploymentWithConfigType,
-    EnvResourceType,
     ERROR_STATUS_CODE,
     ResponseType,
     SelectPickerOptionType,
@@ -100,12 +99,6 @@ export const parseCompareWithSearchParams =
 
         return {
             [PipelineConfigDiffQueryParams.DEPLOY]: deploy as DeploymentWithConfigType,
-            [PipelineConfigDiffQueryParams.RESOURCE_NAME]: searchParams.get(
-                PipelineConfigDiffQueryParams.RESOURCE_NAME,
-            ),
-            [PipelineConfigDiffQueryParams.RESOURCE_TYPE]: searchParams.get(
-                PipelineConfigDiffQueryParams.RESOURCE_TYPE,
-            ) as EnvResourceType,
             [PipelineConfigDiffQueryParams.MODE]: searchParams.get(PipelineConfigDiffQueryParams.MODE),
         }
     }

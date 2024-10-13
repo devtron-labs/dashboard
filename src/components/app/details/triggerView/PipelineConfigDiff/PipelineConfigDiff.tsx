@@ -1,4 +1,8 @@
+import { useLocation } from 'react-router-dom'
+
 import { DeploymentConfigDiff, DeploymentConfigDiffProps, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
 
 import { PipelineConfigDiffProps } from './types'
 
@@ -8,8 +12,15 @@ export const PipelineConfigDiff = ({
     urlFilters,
     ...props
 }: PipelineConfigDiffProps) => {
+    // HOOKS
+    const { pathname } = useLocation()
+
     // SEARCH PARAMS & SORTING
-    const { resourceName, resourceType, sortBy, sortOrder, handleSorting } = urlFilters
+    const { sortBy, sortOrder, handleSorting } = urlFilters
+
+    // Extracting resourceType and resourceName from the pathname.
+    // No route parameters are used here; they are only appended when the diff is opened.
+    const [resourceType, resourceName] = pathname.split(`${URLS.APP_TRIGGER}/`)[1].split('/')
 
     // METHODS
     const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')

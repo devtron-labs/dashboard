@@ -1,7 +1,6 @@
 import {
     DeploymentConfigDiffProps,
     DeploymentWithConfigType,
-    EnvResourceType,
     SelectPickerProps,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -37,14 +36,10 @@ export interface PipelineConfigDiffStatusTileProps
 
 export interface PipelineConfigDiffQueryParamsType {
     deploy: DeploymentWithConfigType
-    resourceType: EnvResourceType
-    resourceName?: string
     mode: string
 }
 
 export enum PipelineConfigDiffQueryParams {
     DEPLOY = 'deploy',
-    RESOURCE_TYPE = 'resourceType',
-    RESOURCE_NAME = 'resourceName',
     MODE = 'mode',
 }
