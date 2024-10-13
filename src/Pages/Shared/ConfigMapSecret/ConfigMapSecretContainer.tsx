@@ -4,6 +4,7 @@ import ReactGA from 'react-ga4'
 
 import {
     abortPreviousRequests,
+    API_STATUS_CODES,
     AppEnvDeploymentConfigDTO,
     ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
@@ -25,10 +26,7 @@ import {
 
 import { URLS } from '@Config/routes'
 import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
-import NoOverrideEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoOverrideEmptyState'
-import ConfigHeader from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigHeader'
-import ConfigToolbar from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigToolbar'
-import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
+import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
@@ -56,6 +54,7 @@ import {
     CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
+    CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
 } from './types'
@@ -216,9 +215,6 @@ export const ConfigMapSecretContainer = ({
     // CONFIGMAP/SECRET DATA
     const { configMapSecretData, inheritedConfigMapSecretData, draftData, notFoundErr } = useMemo(() => {
         if (!configMapSecretResLoading && configMapSecretRes) {
-            // RESET FORM STATE FROM AFTER DATA LOAD
-            setFormState({ type: 'RESET' })
-
             const { data, hasNotFoundErr } = getConfigMapSecretDraftAndPublishedData({
                 cmSecretConfigData: configMapSecretRes[0],
                 draftConfigData: configMapSecretRes[2]?.result,
@@ -227,15 +223,6 @@ export const ConfigMapSecretContainer = ({
                 isSecret,
                 isJob,
             })
-
-            if (data.draftData) {
-                setAreCommentsPresent(data.draftData.commentsCount > 0)
-                setSelectedProtectionViewTab(
-                    data.draftData.draftState === DraftState.AwaitApproval
-                        ? ProtectConfigTabsType.COMPARE
-                        : ProtectConfigTabsType.EDIT_DRAFT,
-                )
-            }
 
             return {
                 ...data,
@@ -297,8 +284,31 @@ export const ConfigMapSecretContainer = ({
         isEnvConfigLoading ||
         (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
-    const showConfigToolbar =
-        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || !!draftData || hideNoOverrideEmptyState
+    const hideConfigToolbar =
+        cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        !hideNoOverrideEmptyState &&
+        !draftData
+
+    // RESET FORM STATE FROM AFTER DATA LOAD
+    useEffect(() => {
+        if (!configMapSecretResLoading && configMapSecretRes) {
+            // might be redundant
+            setFormState({ type: 'RESET' })
+        }
+    }, [configMapSecretResLoading, configMapSecretRes])
+
+    // SET DRAFT DATA BASED STATES
+    useEffect(() => {
+        if (draftData) {
+            setAreCommentsPresent(draftData.commentsCount > 0)
+            setSelectedProtectionViewTab(
+                draftData.draftState === DraftState.AwaitApproval
+                    ? ProtectConfigTabsType.COMPARE
+                    : ProtectConfigTabsType.EDIT_DRAFT,
+            )
+        }
+    }, [draftData])
 
     // ERROR HANDLING
     useEffect(() => {
@@ -367,6 +377,7 @@ export const ConfigMapSecretContainer = ({
 
     // METHODS
     const updateCMSecret = (configName?: string) => {
+        setFormState({ type: 'RESET' })
         setResolvedScopeVariables(false)
         fetchEnvConfig(+envId || -1)
 
@@ -443,14 +454,10 @@ export const ConfigMapSecretContainer = ({
         setDraftPayload(null)
     }
 
-    const handleError = (
-        actionType: DraftAction,
-        err: any,
-        payloadData?: ReturnType<typeof getConfigMapSecretPayload>,
-    ) => {
+    const handleError = (actionType: DraftAction, err: any, payloadData?: CMSecretPayloadType) => {
         if (err instanceof ServerErrors && Array.isArray(err.errors)) {
             err.errors.forEach((error) => {
-                if (error.code === 423) {
+                if (error.code === API_STATUS_CODES.LOCKED) {
                     if (actionType === DraftAction.Delete) {
                         setOpenDeleteModal('protectedDeleteModal')
                     } else {
@@ -710,7 +717,7 @@ export const ConfigMapSecretContainer = ({
                     restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
                 />
-                {showConfigToolbar && (
+                {!hideConfigToolbar && (
                     <ConfigToolbar
                         configHeaderTab={configHeaderTab}
                         mergeStrategy={mergeStrategy}

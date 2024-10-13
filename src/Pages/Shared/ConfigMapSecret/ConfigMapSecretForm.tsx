@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { Prompt } from 'react-router-dom'
 
 import {
@@ -60,15 +60,11 @@ export const ConfigMapSecretForm = ({
     const { setFormState, formDataRef } = useConfigMapSecretFormContext()
 
     // INITIAL FORM VALUES
-    const formInitialValues = useMemo(
-        () =>
-            getConfigMapSecretFormInitialValues({
-                configMapSecretData,
-                componentType,
-                cmSecretStateLabel,
-            }),
-        [],
-    )
+    const formInitialValues = getConfigMapSecretFormInitialValues({
+        configMapSecretData,
+        componentType,
+        cmSecretStateLabel,
+    })
 
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
