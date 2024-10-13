@@ -57,8 +57,24 @@ export const renderExternalInfo = (renderCondition: boolean, componentType: CMSe
 
 export const renderHashiOrAwsDeprecatedInfo = () => (
     <InfoColourBar
-        classname="warn cn-9 fs-13 lh-20"
-        message="Kubernetes External Secret (KES) has been deprecated and will be removed in the following Devtron version. You can delete this file and create a secret using External Secret Operator (ESO)."
+        classname="warn"
+        message={
+            <p className="m-0 cn-9 fs-13 lh-20">
+                <span>
+                    Kubernetes External Secret (KES) has been deprecated and will be removed in the next Devtron
+                    version. You can delete this file and create a secret using
+                </span>
+                &nbsp;
+                <a
+                    className="anchor"
+                    href="https://github.com/external-secrets/external-secrets"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    External Secret Operator (ESO).
+                </a>
+            </p>
+        }
         Icon={ICWarningY5}
         iconSize={20}
     />

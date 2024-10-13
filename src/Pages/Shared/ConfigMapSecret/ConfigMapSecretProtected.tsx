@@ -5,6 +5,7 @@ import {
     Button,
     ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
+    ComponentSizeType,
     DraftAction,
     DraftState,
     noop,
@@ -202,6 +203,7 @@ export const ConfigMapSecretProtected = ({
                         <Button
                             dataTestId="cm-secret-approve-btn"
                             text="Approve Changes"
+                            size={ComponentSizeType.medium}
                             style={ButtonStyleType.positive}
                         />
                     </ApproveRequestTippy>
@@ -209,6 +211,7 @@ export const ConfigMapSecretProtected = ({
                     <Button
                         dataTestId="cm-secret-approve-btn"
                         text="Approve Changes"
+                        size={ComponentSizeType.medium}
                         style={ButtonStyleType.positive}
                         disabled
                         showTooltip

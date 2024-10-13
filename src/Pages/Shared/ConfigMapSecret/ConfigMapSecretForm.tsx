@@ -363,6 +363,7 @@ export const ConfigMapSecretForm = ({
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
                     text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    size={ComponentSizeType.medium}
                     onClick={handleSubmit(onSubmit, onError)}
                     isLoading={isSubmitting}
                     disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
@@ -373,6 +374,7 @@ export const ConfigMapSecretForm = ({
                         text="Cancel"
                         variant={ButtonVariantType.secondary}
                         style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.medium}
                         onClick={onCancel}
                         disabled={areScopeVariablesResolving}
                     />
