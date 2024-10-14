@@ -87,6 +87,7 @@ const DirectPermission = ({
     const primaryActionRoleIndex = getPrimaryRoleIndex(multiRole, [
         CONFIG_APPROVER_ACTION.value,
         ARTIFACT_PROMOTER_ACTION.value,
+        TERMINAL_EXEC_ACTION.value,
     ])
 
     const primaryActionRole = {
