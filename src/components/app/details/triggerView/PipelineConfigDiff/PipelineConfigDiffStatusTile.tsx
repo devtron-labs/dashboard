@@ -77,8 +77,8 @@ export const PipelineConfigDiffStatusTile = ({
                 <div>
                     <button
                         type="button"
-                        className={`dc__transparent dc__border-left flex dc__gap-12 px-16 py-7 ${!_canReviewConfig || isLoading ? 'cursor-not-allowed' : 'dc__hover-n100'}`}
-                        disabled={isLoading || !_canReviewConfig}
+                        className={`dc__transparent dc__border-left flex dc__gap-12 px-16 py-7 ${!canReviewConfig || isLoading ? 'cursor-not-allowed' : 'dc__hover-n100'}`}
+                        disabled={isLoading || !canReviewConfig}
                         onClick={onClick}
                     >
                         {!lastDeployedOptionSelected &&
