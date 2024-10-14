@@ -44,6 +44,11 @@ import {
     TabProps,
     ToastVariantType,
     ToastManager,
+    MandatoryPluginDataType,
+    PluginDetailPayloadType,
+    ProcessPluginDataParamsType,
+    ProcessPluginDataReturnType,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -99,9 +104,16 @@ import {
     gitOpsRepoNotConfiguredWithEnforcedEnv,
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
-import { CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> = importComponentFromFELibrary(
+    'processPluginData',
+    null,
+    'function',
+)
+const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
+const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
     null,
@@ -258,6 +270,17 @@ export default function CDPipeline({
     )
     const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
+    const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+
+    const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
+        const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
+        if (mandatoryPluginData?.pluginData.length) {
+            for (const plugin of mandatoryPluginData.pluginData) {
+                _mandatoryPluginsMap[plugin.parentPluginId] = plugin
+            }
+        }
+        return _mandatoryPluginsMap
+    }, [mandatoryPluginData])
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -283,15 +306,66 @@ export default function CDPipeline({
         setAvailableTags(tags)
     }
 
-    useEffect(() => {
-        getInit()
-    }, [])
+    const handlePopulatePluginDataStore: BuildCDProps['handlePopulatePluginDataStore'] = async (form) => {
+        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
+        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
+        const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
 
-    useEffect(() => {
-        if (formData.environmentId) {
-            getConfigMapSecrets()
+        if (processPluginData && prepareFormData) {
+            await getMandatoryPluginData(form, uniquePluginIds)
+            return
         }
-    }, [formData.environmentId])
+
+        if (uniquePluginIds.length === 0) {
+            return
+        }
+
+        const {
+            pluginStore: { parentPluginStore, pluginVersionStore },
+        } = await getPluginsDetail({
+            appId: +appId,
+            pluginIds: uniquePluginIds,
+            shouldShowError: false,
+        })
+
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+    }
+
+    // TODO: Seems like weird error state here need to fix it and check if allSettled can be used?
+    const getEnvCDPipelineName = (form) => {
+        Promise.all([
+            getCDPipelineNameSuggestion(appId),
+            getEnvironmentListMinPublic(true),
+            handlePopulatePluginDataStore(form),
+        ])
+            .then(([cpPipelineName, envList]) => {
+                form.name = cpPipelineName.result
+                let list = envList.result || []
+                list = list.map((env) => {
+                    return {
+                        id: env.id,
+                        clusterId: env.cluster_id,
+                        clusterName: env.cluster_name,
+                        name: env.environment_name,
+                        namespace: env.namespace || '',
+                        active: false,
+                        isClusterCdActive: env.isClusterCdActive,
+                        description: env.description,
+                        isVirtualEnvironment: env.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
+                    }
+                })
+                sortObjectArrayAlphabetically(list, 'name')
+                form.environments = list
+                setFormData(form)
+                setPageState(ViewType.FORM)
+                setIsAdvanced(false)
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
 
     const getInit = () => {
         Promise.all([
@@ -344,39 +418,18 @@ export default function CDPipeline({
             })
     }
 
+    useEffect(() => {
+        getInit()
+    }, [])
+
+    useEffect(() => {
+        if (formData.environmentId) {
+            getConfigMapSecrets()
+        }
+    }, [formData.environmentId])
+
     const handleShowGitOpsRepoConfiguredWarning = () => {
         setGitOpsRepoConfiguredWarning({ show: false, text: '' })
-    }
-
-    const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
-            .then(([cpPipelineName, envList]) => {
-                form.name = cpPipelineName.result
-                let list = envList.result || []
-                list = list.map((env) => {
-                    return {
-                        id: env.id,
-                        clusterId: env.cluster_id,
-                        clusterName: env.cluster_name,
-                        name: env.environment_name,
-                        namespace: env.namespace || '',
-                        active: false,
-                        isClusterCdActive: env.isClusterCdActive,
-                        description: env.description,
-                        isVirtualEnvironment: env.isVirtualEnvironment,
-                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
-                    }
-                })
-                sortObjectArrayAlphabetically(list, 'name')
-                form.environments = list
-                setFormData(form)
-                setPageState(ViewType.FORM)
-                setIsAdvanced(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
     }
 
     const calculateLastStepDetail = (
@@ -407,23 +460,35 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
-        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
-        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
-        const pluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
-        if (pluginIds.length === 0) {
-            return
+    const getMandatoryPluginData = async (
+        form: PipelineFormType,
+        requiredPluginIds: PluginDetailPayloadType['pluginId'] = [],
+    ) => {
+        if (!processPluginData || !prepareFormData) {
+            {
+                return
+            }
         }
 
         const {
-            pluginStore: { parentPluginStore, pluginVersionStore },
-        } = await getPluginsDetail({
+            mandatoryPluginData: processedPluginData,
+            pluginDataStore: updatedPluginDataStore,
+        }: ProcessPluginDataReturnType = await processPluginData({
+            formData: form as any,
+            pluginDataStoreState: pluginDataStore,
             appId: +appId,
-            pluginIds,
-            shouldShowError: false,
+            cdPipelineId: +cdPipelineId,
+            envName: form.environmentName,
+            requiredPluginIds,
+            resourceKind: ResourceKindType.cdPipeline,
         })
 
-        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+        setMandatoryPluginData(processedPluginData)
+        // The method itself adds over existing plugins, so no need to worry about of overriding
+        handlePluginDataStoreUpdate(updatedPluginDataStore)
+        setFormData((prevForm) =>
+            prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
+        )
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
@@ -801,7 +866,7 @@ export default function CDPipeline({
         stageName: string,
         _formData: PipelineFormType,
         formDataErrorObject?,
-        _clonedPluginDataStore?: typeof pluginDataStore,
+        clonedPluginDataStore: typeof pluginDataStore = pluginDataStore,
     ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
@@ -836,6 +901,12 @@ export default function CDPipeline({
                 }
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
+            }
+
+            if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
+                setMandatoryPluginData(
+                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
+                )
             }
 
             _formDataErrorObj[stageName].isValid = isStageValid
@@ -1039,7 +1110,7 @@ export default function CDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                //For now we are removing check for error code 422 which is of deployment window, 
+                //For now we are removing check for error code 422 which is of deployment window,
                 // so in that case force delete modal would be shown.
                 // This should be done at BE and when done we will revert our changes
                 if (!force && error.code != 403 && error.code != 412) {
@@ -1249,6 +1320,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
+                                    handlePopulatePluginDataStore={handlePopulatePluginDataStore}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

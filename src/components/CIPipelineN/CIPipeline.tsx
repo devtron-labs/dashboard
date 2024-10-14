@@ -45,6 +45,7 @@ import {
     ToastVariantType,
     ToastManager,
     ProcessPluginDataParamsType,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -53,14 +54,7 @@ import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import {
-    BuildStageVariable,
-    BuildTabText,
-    JobPipelineTabText,
-    TriggerType,
-    URLS,
-    ViewType,
-} from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -83,7 +77,11 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '..
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from './types'
 
-const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> = importComponentFromFELibrary('processPluginData', null, 'function')
+const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> = importComponentFromFELibrary(
+    'processPluginData',
+    null,
+    'function',
+)
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 export default function CIPipeline({
@@ -271,7 +269,9 @@ export default function CIPipeline({
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
                     if (!material.isRegex || material.value) {
-                        const parsedBranchName = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE ? `[${material.value}]` : material.value
+                        const parsedBranchName = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
+                            ? `[${material.value}]`
+                            : material.value
                         branchName += `${branchName ? ',' : ''}${parsedBranchName}`
                     }
                 }
@@ -288,7 +288,8 @@ export default function CIPipeline({
                     ciPipelineId: +ciPipelineId,
                     branchName,
                     requiredPluginIds,
-            })
+                    resourceKind: ResourceKindType.ciPipeline,
+                })
 
                 setMandatoryPluginData(processedPluginData)
                 handlePluginDataStoreUpdate(updatedPluginDataStore)
@@ -727,10 +728,10 @@ export default function CIPipeline({
         )
             .then((response) => {
                 if (response) {
-                     ToastManager.showToast({
-                         variant: ToastVariantType.success,
-                         description: msg,
-                     })
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: msg,
+                    })
                     setApiInProgress(false)
                     handleClose()
                     getWorkflows()
