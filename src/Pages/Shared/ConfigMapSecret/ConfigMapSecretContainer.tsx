@@ -405,6 +405,7 @@ export const ConfigMapSecretContainer = ({
     const updateCMSecret = (configName?: string) => {
         setFormState({ type: 'RESET' })
         setResolvedScopeVariables(false)
+        setHideNoOverrideEmptyState(false)
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
@@ -738,7 +739,7 @@ export const ConfigMapSecretContainer = ({
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     }
-                    showNoOverride={cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData}
+                    showNoOverride={!hideNoOverrideEmptyState && !draftData}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
