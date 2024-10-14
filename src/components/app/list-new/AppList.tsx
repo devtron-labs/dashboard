@@ -101,6 +101,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     // on page load
     useEffect(() => {
+        setCurrentTab(getCurrentTabName(params.appType))
         // set search data
         const searchQuery = location.search
         const queryParams = queryString.parse(searchQuery)
