@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,14 +35,16 @@ const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
-    const {
-        path,
-        params: { appId, envId },
-    } = useRouteMatch<{ envId: string; appId: string }>()
+    const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
+    const { appId, envId } = params
     const { pathname } = useLocation()
+    const { push } = useHistory()
 
     // STATES
     const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
+
+    // CONSTANTS
+    const isAppNotPresentInEnv = envAppList.length && appId && !envAppList.some(({ id }) => id === +appId)
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -82,7 +84,13 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         }
     }, [initDataResults])
 
-    if (loading || !envAppList.length) {
+    useEffect(() => {
+        if (isAppNotPresentInEnv) {
+            push(generatePath(path, { ...params, appId: null }))
+        }
+    }, [isAppNotPresentInEnv])
+
+    if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />

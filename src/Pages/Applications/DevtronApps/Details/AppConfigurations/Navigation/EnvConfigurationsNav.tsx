@@ -99,6 +99,14 @@ export const EnvConfigurationsNav = ({
     }
 
     useEffect(() => {
+        if (environmentData.id === BASE_CONFIGURATIONS.id && envId) {
+            // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
+            const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
+            history.push(`${basePath}${resourcePath}`)
+        }
+    }, [environmentData, envId])
+
+    useEffect(() => {
         // Fetch the env configuration
         fetchEnvConfig(+(envId || BASE_CONFIGURATIONS.id))
 
@@ -236,7 +244,7 @@ export const EnvConfigurationsNav = ({
     const envOptions: OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>> = [
         ...baseEnvOption,
         {
-            label: 'Environments',
+            label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
             options: environments.map(({ name, id, isProtected }) => ({
                 label: name,
                 value: id,
