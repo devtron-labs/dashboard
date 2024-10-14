@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getCommonSelectStyle } from '@devtron-labs/devtron-fe-common-lib'
+import { getCommonSelectStyle, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../config'
 import { APIRoleFilter } from './types'
 import { getDefaultStatusAndTimeout } from './libUtils'
@@ -33,16 +33,6 @@ export const PERMISSION_TYPE_LABEL_MAP: Record<PermissionType, string> = {
     [PermissionType.SPECIFIC]: 'Specific permissions',
     [PermissionType.SUPER_ADMIN]: 'Super admin permission',
 } as const
-
-export enum EntityTypes {
-    CHART_GROUP = 'chart-group',
-    DIRECT = 'apps',
-    JOB = 'jobs',
-    DOCKER = 'docker',
-    GIT = 'git',
-    CLUSTER = 'cluster',
-    NOTIFICATION = 'notification',
-}
 
 export enum ActionTypes {
     MANAGER = 'manager',

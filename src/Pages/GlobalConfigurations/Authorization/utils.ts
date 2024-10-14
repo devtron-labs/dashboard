@@ -25,16 +25,17 @@ import {
     UserStatusDto,
     ACCESS_TYPE_MAP,
     ZERO_TIME_STRING,
+    EntityTypes,
+    CustomRoleAndMeta,
+    CustomRoles,
+    MetaPossibleRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import {
     APIRoleFilter,
     APIRoleFilterDto,
     CreateUserPermissionPayloadParams,
-    CustomRoleAndMeta,
-    CustomRoles,
     DirectPermissionsRoleFilter,
-    MetaPossibleRoles,
     PermissionGroup,
     PermissionGroupDto,
     User,
@@ -47,7 +48,6 @@ import {
     CONFIG_APPROVER_ACTION,
     ARTIFACT_PROMOTER_ACTION,
     ActionTypes,
-    EntityTypes,
     PermissionType,
     ViewChartGroupPermission,
     TERMINAL_EXEC_ACTION,

@@ -32,6 +32,7 @@ import {
     ToastVariantType,
     ToastManager,
     ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -63,7 +64,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { ActionTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,

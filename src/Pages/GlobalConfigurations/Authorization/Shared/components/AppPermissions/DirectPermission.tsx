@@ -24,6 +24,7 @@ import {
     LoadingIndicator,
     ReactSelectInputAction,
     ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -36,7 +37,6 @@ import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import {
     CONFIG_APPROVER_ACTION,
     authorizationSelectStyles,
-    EntityTypes,
     ARTIFACT_PROMOTER_ACTION,
     TERMINAL_EXEC_ACTION,
 } from '../../../constants'
@@ -225,6 +225,7 @@ const DirectPermission = ({
                         }}
                         formatOptionLabel={formatOptionLabel}
                         accessType={permission.accessType}
+                        customRoles={customRoles}
                     />
                 )}
         </components.MenuList>
