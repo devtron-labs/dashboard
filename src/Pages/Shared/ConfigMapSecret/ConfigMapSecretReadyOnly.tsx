@@ -20,7 +20,7 @@ export const ConfigMapSecretReadyOnly = ({
         <Progressing fullHeight pageLoader />
     ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12">
-            {hasHashiOrAWS(configMapSecretData.externalType) && renderHashiOrAwsDeprecatedInfo()}
+            {hasHashiOrAWS(configMapSecretData?.externalType) && renderHashiOrAwsDeprecatedInfo()}
             <div className="dc__border br-4 py-4">
                 {displayValues.configData.map(({ displayName, value }) =>
                     value ? (

@@ -5,9 +5,9 @@ import {
     CMSecretExternalType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
-    DraftAction,
     DraftMetadataDTO,
     DraftState,
+    ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -513,129 +513,83 @@ export const getConfigMapSecretResolvedDataPayload = ({
 // DATA UTILS ----------------------------------------------------------------
 export const getConfigMapSecretDraftAndPublishedData = ({
     isJob,
-    cmSecretStateLabel,
     isSecret,
-    configStage,
-    cmSecretConfigData,
-    draftConfigData,
-}: Pick<ConfigMapSecretFormProps, 'cmSecretStateLabel' | 'isJob'> & {
+    cmSecretConfigDataRes,
+    draftConfigDataRes,
+}: Pick<ConfigMapSecretFormProps, 'isJob'> & {
     isSecret: boolean
-    configStage: ResourceConfigStage
-    cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO
-    draftConfigData: DraftMetadataDTO
+    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
+    draftConfigDataRes: PromiseSettledResult<DraftMetadataDTO>
 }) => {
-    const data: {
-        configMapSecretData: CMSecretConfigData
-        draftData: CMSecretDraftData
-    } = { configMapSecretData: null, draftData: null }
-
-    let hasNotFoundErr = false
+    let configMapSecretData: CMSecretConfigData = null
+    let draftData: CMSecretDraftData = null
 
     // DRAFT DATA PROCESSING
-    let draftId: number
-    let draftState: DraftState
-    if (
-        draftConfigData &&
-        (draftConfigData.draftState === DraftState.Init || draftConfigData.draftState === DraftState.AwaitApproval)
-    ) {
-        data.draftData = {
-            ...draftConfigData,
-            unAuthorized: !draftConfigData.isAppAdmin,
+    if (draftConfigDataRes.status === 'fulfilled') {
+        const draftConfigData = draftConfigDataRes.value
+
+        if (
+            draftConfigData &&
+            (draftConfigData.draftState === DraftState.Init || draftConfigData.draftState === DraftState.AwaitApproval)
+        ) {
+            draftData = {
+                ...draftConfigData,
+                unAuthorized: !draftConfigData.isAppAdmin,
+            }
         }
-        draftId = draftConfigData.draftId
-        draftState = draftConfigData.draftState
     }
 
     // MAIN DATA PROCESSING
-    if (cmSecretConfigData) {
-        let configMapSecretData: CMSecretConfigData
-        const configData = isJob
-            ? (cmSecretConfigData as CMSecretDTO).configData
-            : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
-                  .configData
+    if (cmSecretConfigDataRes.status === 'fulfilled') {
+        const cmSecretConfigData = cmSecretConfigDataRes.value
 
-        // Since, jobs can only be created by super-admin users, modify this once API support is available.
-        const unAuthorized = isJob ? false : !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin
+        if (cmSecretConfigData) {
+            const configData = isJob
+                ? (cmSecretConfigData as CMSecretDTO).configData
+                : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
+                      .configData
 
-        if (configData?.length) {
-            configMapSecretData = {
-                ...configData[0],
-                unAuthorized,
-                ...(draftId && draftState
-                    ? {
-                          draftId,
-                          draftState,
-                      }
-                    : {}),
-            }
-        }
+            // Since, jobs can only be created by super-admin users, modify this once API support is available.
+            const unAuthorized = isJob ? false : !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin
 
-        if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) {
             if (configData?.length) {
-                const result: CMSecretConfigData = {
+                configMapSecretData = {
                     ...configData[0],
                     unAuthorized,
                 }
-
-                result.overridden = configStage === ResourceConfigStage.Overridden
-
-                if (isSecret && data.draftData) {
-                    if (
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
-                        draftState === DraftState.Published &&
-                        data.draftData.action === DraftAction.Update
-                    ) {
-                        result.overridden = true
-                    } else if (
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
-                        draftState === DraftState.Published &&
-                        data.draftData.action === DraftAction.Delete
-                    ) {
-                        result.overridden = false
-                    }
-                }
-
-                configMapSecretData = {
-                    ...result,
-                }
-                data.configMapSecretData = configMapSecretData
-            } else {
-                hasNotFoundErr = true
-                data.configMapSecretData = null
             }
-        } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED && data.draftData) {
-            if (draftState === DraftState.Published) {
-                const dataFromDraft = JSON.parse(data.draftData.data).configData[0]
-                data.configMapSecretData = {
-                    ...dataFromDraft,
-                    unAuthorized: !dataFromDraft.isAppAdmin,
+        } else if (draftConfigDataRes.status === 'fulfilled') {
+            const draftConfigData = draftConfigDataRes.value
+
+            if (draftConfigData && draftConfigData.draftState === DraftState.Published) {
+                configMapSecretData = {
+                    ...JSON.parse(draftConfigData.data).configData[0],
+                    unAuthorized: !draftConfigData.isAppAdmin,
                 }
-            } else if (draftState === DraftState.Discarded) {
-                hasNotFoundErr = true
-                data.configMapSecretData = null
             }
         }
     }
 
-    return {
-        data,
-        hasNotFoundErr,
-    }
+    return { configMapSecretData, draftData }
 }
 
 export const getConfigMapSecretInheritedData = ({
-    cmSecretConfigData,
+    cmSecretConfigDataRes,
     isJob,
     isSecret,
 }: {
-    cmSecretConfigData: CMSecretDTO | AppEnvDeploymentConfigDTO
+    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
     isJob: boolean
     isSecret: boolean
 }): CMSecretConfigData => {
-    if (!cmSecretConfigData) {
+    if (
+        (cmSecretConfigDataRes.status === 'fulfilled' && !cmSecretConfigDataRes.value) ||
+        cmSecretConfigDataRes.status === 'rejected'
+    ) {
         return null
     }
 
+    const cmSecretConfigData = cmSecretConfigDataRes.value
     return isJob
         ? { ...(cmSecretConfigData as CMSecretDTO).configData[0], unAuthorized: false }
         : {
@@ -661,4 +615,7 @@ export const getConfigMapSecretResolvedData = (
         resolvedDraftData: parsedResolvedData.draftData ?? null,
     }
 }
+
+export const getConfigMapSecretPromiseSettledError = <T extends unknown>(res: PromiseSettledResult<T>) =>
+    res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
 // DATA UTILS ----------------------------------------------------------------
