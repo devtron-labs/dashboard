@@ -159,16 +159,14 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <>
-                <BrowserRouter basename={window.__BASE_URL__}>
-                    <ShortcutProvider>
-                        <UserEmailProvider>
-                            <App />
-                        </UserEmailProvider>
-                    </ShortcutProvider>
-                </BrowserRouter>
+            <BrowserRouter basename={window.__BASE_URL__}>
+                <ShortcutProvider>
+                    <UserEmailProvider>
+                        <App />
+                    </UserEmailProvider>
+                </ShortcutProvider>
                 <ToastManagerContainer />
-            </>
+            </BrowserRouter>
         ) : null}
     </React.StrictMode>,
     root,
