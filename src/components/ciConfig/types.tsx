@@ -20,7 +20,6 @@ import {
     CIBuildConfigType,
     CIBuildType,
     DockerConfigOverrideType,
-    MandatoryPluginDataType,
     VariableType,
     CommonNodeAttr,
     WorkflowType,
@@ -366,7 +365,6 @@ export interface TargetPlatformSelectorType {
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
-    mandatoryPluginData?: MandatoryPluginDataType
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

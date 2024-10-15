@@ -26,6 +26,7 @@ import {
     PluginDataStoreType,
     ValidationResponseType,
     PipelineFormType,
+    MandatoryPluginDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
@@ -320,6 +321,7 @@ export interface PipelineContext {
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
+    mandatoryPluginData: MandatoryPluginDataType
 }
 
 export interface SourceTypeCardProps {

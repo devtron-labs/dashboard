@@ -786,8 +786,8 @@ export default function CIPipeline({
         }
     }
 
-    const contextValue = useMemo(() => {
-        return {
+    const contextValue = useMemo(
+        () => ({
             formData,
             setFormData,
             loadingState,
@@ -812,20 +812,22 @@ export default function CIPipeline({
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
-        }
-    }, [
-        formData,
-        activeStageName,
-        loadingState,
-        formDataErrorObj,
-        inputVariablesListFromPrevStep,
-        selectedTaskIndex,
-        pageState,
-        globalVariables,
-        pluginDataStore,
-        availableTags,
-        mandatoryPluginData,
-    ])
+            mandatoryPluginData,
+        }),
+        [
+            formData,
+            activeStageName,
+            loadingState,
+            formDataErrorObj,
+            inputVariablesListFromPrevStep,
+            selectedTaskIndex,
+            pageState,
+            globalVariables,
+            pluginDataStore,
+            availableTags,
+            mandatoryPluginData,
+        ],
+    )
 
     const renderCIPipelineModalContent = () => {
         if (pageState === ViewType.ERROR) {
@@ -862,7 +864,6 @@ export default function CIPipeline({
                                 <Sidebar
                                     isJobView={isJobView}
                                     isJobCI={isJobCI}
-                                    mandatoryPluginData={mandatoryPluginData}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                     environments={environments}
                                     selectedEnv={selectedEnv}

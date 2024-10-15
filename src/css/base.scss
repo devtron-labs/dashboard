@@ -4084,6 +4084,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {

@@ -40,7 +40,6 @@ const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarn
 export const Sidebar = ({
     isJobView,
     isJobCI,
-    mandatoryPluginData,
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -59,7 +58,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
-        pluginDataStore,
+        mandatoryPluginData,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)

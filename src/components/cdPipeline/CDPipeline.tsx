@@ -1246,6 +1246,7 @@ export default function CDPipeline({
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
+            mandatoryPluginData,
         }
     }, [
         formData,
@@ -1299,7 +1300,6 @@ export default function CDPipeline({
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
-                                    mandatoryPluginData={mandatoryPluginData}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                 />
                             </div>
