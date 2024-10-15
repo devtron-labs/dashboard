@@ -27,8 +27,14 @@ export const PipelineConfigDiffStatusTile = ({
         <span
             className={`dc__border-radius-24 flex dc__gap-4 py-3 px-12 fs-12 fw-6 lh-20 cn-0 ${hasDiff ? 'bcr-5' : 'bcg-5'}`}
         >
-            {hasDiff && <ICWarning className="icon-dim-16 config-diff-found-icon" />}
-            {hasDiff ? 'Config diff' : 'No config diff'}
+            {hasDiff ? (
+                <>
+                    <ICWarning className="icon-dim-16 config-diff-found-icon" />
+                    <span>Config diff</span>
+                </>
+            ) : (
+                <span>No config diff</span>
+            )}
         </span>
     )
 
