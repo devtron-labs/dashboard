@@ -63,6 +63,7 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
+import { Configurations } from '@Pages/Releases/Detail'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -92,6 +93,11 @@ const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', nu
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
+const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
+    'SoftwareDistributionHubRenderProvider',
+    null,
+    'function',
+)
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -452,7 +458,13 @@ export default function NavigationRoutes() {
                                                               getModuleInfo,
                                                           }}
                                                       >
-                                                          <SoftwareDistributionHub />
+                                                          <SoftwareDistributionHubRenderProvider
+                                                              renderers={{
+                                                                  renderConfigurations: Configurations,
+                                                              }}
+                                                          >
+                                                              <SoftwareDistributionHub />
+                                                          </SoftwareDistributionHubRenderProvider>
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
@@ -564,10 +576,7 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
     return (
         <ErrorBoundary>
             <Switch>
-                <Route
-                    path={`${path}/:appType`}
-                    render={() => <NewAppList isArgoInstalled={isArgoInstalled} />}
-                />
+                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
                 <Route exact path="">
                     <RedirectToAppList />
                 </Route>

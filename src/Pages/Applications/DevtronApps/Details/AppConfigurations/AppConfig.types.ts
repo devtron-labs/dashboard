@@ -224,10 +224,19 @@ export interface EnvConfigurationsNavProps {
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
+    /**
+     * The base URL to be appended before the Compare View route.
+     * Compare View route structure: `compareWithURL/URLS.APP_ENV_CONFIG_COMPARE/:compareTo?/:resourceType/:resourceName?`
+     *
+     * @note This can represent either a route path or a complete link(route params resolved).
+     */
+    compareWithURL: string
+    isJob?: boolean
     showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
     isCMSecretLocked?: boolean
+    hideEnvSelector?: boolean
 }
 
 export interface EnvConfigRouteParams {

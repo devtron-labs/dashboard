@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
+import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
@@ -35,6 +35,7 @@ const ShimmerText = ({ width }: { width: string }) => (
 )
 
 export const EnvConfigurationsNav = ({
+    isJob,
     showBaseConfigurations,
     showDeploymentTemplate,
     envConfig,
@@ -45,6 +46,8 @@ export const EnvConfigurationsNav = ({
     paramToCheck = 'envId',
     showComparison,
     isCMSecretLocked,
+    hideEnvSelector,
+    compareWithURL,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -90,7 +93,7 @@ export const EnvConfigurationsNav = ({
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
+                    href: getNavigationPath(path, params, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                 },
@@ -117,7 +120,7 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
+            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
     }, [isLoading, config, pathname])
@@ -173,7 +176,7 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
+        history.push(getNavigationPath(path, params, _resourceType, 'create'))
     }
 
     /** Collapsible List Config. */
@@ -259,7 +262,12 @@ export const EnvConfigurationsNav = ({
         }
 
         const name = pathname.split(`${resourceType}/`)[1]
-        history.push(getNavigationPath(path, params, value, resourceType, name, paramToCheck))
+        const basePath =
+            paramToCheck === 'envId' ? `${isJob ? URLS.JOB : URLS.APP}/${appId}` : `${URLS.APPLICATION_GROUP}/${envId}`
+        const envOrAppId =
+            value > -1 && (paramToCheck === 'envId' ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${value}` : `/${value}`)
+
+        history.push(`${basePath}/${URLS.APP_CONFIG}${envOrAppId || ''}/${resourceType}${name ? `/${name}` : ''}`)
     }
 
     const renderEnvSelector = () => (
@@ -289,34 +297,30 @@ export const EnvConfigurationsNav = ({
     const renderCompareWithBtn = () => {
         const { name: compareTo } = environmentData
 
-        // Determine base path based on pathname
-        const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)
-        const basePath = isOverrideConfig
-            ? pathname.split(URLS.APP_ENV_OVERRIDE_CONFIG)[0]
-            : `${pathname.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+        // Determine resourceName based on pathname
+        const resourceName = pathname.split(`/${resourceType}/`)[1]
 
-        // Determine comparePath based on paramToCheck
-        let comparePath = ''
-        if (paramToCheck === 'envId') {
-            comparePath = isOverrideConfig
-                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
-                : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
-        } else if (paramToCheck === 'appId') {
-            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
-        }
+        // CompareView Path
+        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`
+        const compareWithHref = generatePath(compareViewPath, {
+            ...params,
+            compareTo: compareTo !== BASE_CONFIGURATIONS.name ? compareTo : null,
+            resourceType,
+            resourceName: resourceName ?? null,
+        })
 
         return (
             <div className="p-8">
-                <CompareWithButton href={comparePath} />
+                <CompareWithButton href={compareWithHref} />
             </div>
         )
     }
 
     return (
-        <>
-            {renderEnvSelector()}
+        <div className="flexbox-col h-100 dc__overflow-hidden">
+            {!hideEnvSelector && renderEnvSelector()}
             {showComparison && CompareWithButton && renderCompareWithBtn()}
-            <div className="mw-none p-8">
+            <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
@@ -335,6 +339,6 @@ export const EnvConfigurationsNav = ({
                     </>
                 )}
             </div>
-        </>
+        </div>
     )
 }
