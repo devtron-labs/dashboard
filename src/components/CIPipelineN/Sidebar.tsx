@@ -88,6 +88,8 @@ export const Sidebar = ({
 
     const showMandatoryWarning = (): boolean => {
         return (
+            !!MandatoryPluginWarning &&
+            !isJobCard &&
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
@@ -311,7 +313,7 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                    {showMandatoryWarning() && (
                         <MandatoryPluginWarning
                             stage={activeStageName}
                             mandatoryPluginData={mandatoryPluginData}
@@ -319,7 +321,6 @@ export const Sidebar = ({
                             setFormData={setFormData}
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
-                            pluginDataStore={pluginDataStore}
                             handleApplyPlugin={handleApplyPlugin}
                         />
                     )}

@@ -24,7 +24,6 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
-    MandatoryPluginDetailType,
     ValidationResponseType,
     PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -247,6 +246,11 @@ export interface PipelineFormDataErrorType {
     userApprovalConfig?: ValidationResponseType
 }
 
+interface HandleValidateMandatoryPluginsParamsType {
+    newFormData?: PipelineFormType
+    newPluginDataStore?: PluginDataStoreType
+}
+
 export interface PipelineContext {
     formData: PipelineFormType
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
@@ -315,10 +319,7 @@ export interface PipelineContext {
      * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
-    /**
-     * Would be available only for CI pipeline
-     */
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
 }
 
 export interface SourceTypeCardProps {

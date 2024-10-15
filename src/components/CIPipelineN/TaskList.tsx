@@ -31,11 +31,8 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { TaskListType } from '../ciConfig/types'
-import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
-const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const TaskList = ({
     withWarning,
     setInputVariablesListFromPrevStep,
@@ -44,7 +41,6 @@ export const TaskList = ({
     const {
         formData,
         setFormData,
-        isCdPipeline,
         addNewTask,
         activeStageName,
         selectedTaskIndex,
@@ -54,8 +50,7 @@ export const TaskList = ({
         setFormDataErrorObj,
         validateTask,
         validateStage,
-        pluginDataStore,
-        mandatoryPluginsMap = {},
+        handleValidateMandatoryPlugins,
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -102,25 +97,8 @@ export const TaskList = ({
         const taskIndex = +e.currentTarget.dataset.index
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        const _taskDetail = newList.splice(taskIndex, 1)
-        let isMandatoryMissing = false
-        if (_taskDetail[0].isMandatory) {
-            isMandatoryMissing = true
-            const deletedTaskPluginId = _taskDetail[0].pluginRefStepDetail.pluginId
-            const deletedTaskParentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
-
-            for (const task of newList) {
-                const currentTaskPluginId = task.pluginRefStepDetail?.pluginId
-                const currentTaskParentPluginId =
-                    pluginDataStore.pluginVersionStore[currentTaskPluginId]?.parentPluginId
-
-                if (currentTaskParentPluginId === deletedTaskParentPluginId) {
-                    task.isMandatory = true
-                    isMandatoryMissing = false
-                    break
-                }
-            }
-        }
+        newList.splice(taskIndex, 1)
+    
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
         const newListIndex = newListLength > 1 ? newListLength - 1 : 0
@@ -139,11 +117,10 @@ export const TaskList = ({
         newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
 
-        if (isMandatoryMissing) {
-            validateStage(activeStageName, _formData, _formDataErrorObj)
-        } else {
-            setFormDataErrorObj(_formDataErrorObj)
-        }
+        setFormDataErrorObj(_formDataErrorObj)
+        handleValidateMandatoryPlugins({
+            newFormData: _formData,
+        })
     }
 
     const moveTaskToOtherStage = (e): void => {
@@ -153,30 +130,9 @@ export const TaskList = ({
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
-        let isMandatoryMissing = false
+
         if (_taskDetail[0].pluginRefStepDetail) {
             const pluginId = _taskDetail[0].pluginRefStepDetail.pluginId
-            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
-            const isPluginRequired =
-                !isJobView &&
-                isRequired &&
-                !isCdPipeline &&
-                isRequired(_formData, mandatoryPluginsMap, moveToStage, parentPluginId, pluginDataStore, true)
-            if (_taskDetail[0].isMandatory && !isPluginRequired) {
-                isMandatoryMissing = true
-                for (const task of newList) {
-                    const taskParentPluginId =
-                        pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
-                    if (!!parentPluginId && !!taskParentPluginId && taskParentPluginId === parentPluginId) {
-                        task.isMandatory = true
-                        isMandatoryMissing = false
-                        break
-                    }
-                }
-                _taskDetail[0].isMandatory = false
-            } else {
-                _taskDetail[0].isMandatory = isPluginRequired
-            }
 
             _taskDetail[0].pluginRefStepDetail = {
                 id: 0,
@@ -212,12 +168,13 @@ export const TaskList = ({
         } else {
             setFormData(_formData)
         }
-        if (isMandatoryMissing) {
-            validateStage(activeStageName, _formData, _formDataErrorObj)
-        } else {
-            validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
-            setFormDataErrorObj(_formDataErrorObj)
-        }
+
+        // FIXME: During review re-check should'nt it be from _formData?
+        validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+        setFormDataErrorObj(_formDataErrorObj)
+        handleValidateMandatoryPlugins({
+            newFormData: _formData,
+        })
     }
 
     const clearDependentPostVariables = (
@@ -330,7 +287,6 @@ export const TaskList = ({
                             <Drag className="dc__grabbable icon-dim-20 p-2 dc__no-shrink" onMouseDown={() => setDragAllowed(true)} />
                             <div className={`flex left dc__gap-6 dc__content-space w-100`}>
                                 <TaskTitle taskDetail={taskDetail} />
-                                {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
@@ -374,20 +330,6 @@ export const TaskList = ({
                                             )}
                                         </div>
                                     )}
-                                    {!isJobView &&
-                                        !isCdPipeline &&
-                                        taskDetail.isMandatory &&
-                                        MandatoryPluginMenuOptionTippy && (
-                                            <MandatoryPluginMenuOptionTippy
-                                                pluginDetail={
-                                                    mandatoryPluginsMap[
-                                                        pluginDataStore.pluginVersionStore[
-                                                            taskDetail.pluginRefStepDetail.pluginId
-                                                        ].parentPluginId
-                                                    ]
-                                                }
-                                            />
-                                        )}
                                 </PopupMenu.Body>
                             </PopupMenu>
                         </div>

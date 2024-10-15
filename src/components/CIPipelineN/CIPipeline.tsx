@@ -83,7 +83,6 @@ const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> =
     'function',
 )
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
-const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 export default function CIPipeline({
     appName,
     connectCDPipelines,
@@ -209,16 +208,6 @@ export default function CIPipeline({
 
     const selectedBranchRef = useRef(null)
 
-    const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
-        const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
-        if (mandatoryPluginData?.pluginData.length) {
-            for (const plugin of mandatoryPluginData.pluginData) {
-                _mandatoryPluginsMap[plugin.parentPluginId] = plugin
-            }
-        }
-        return _mandatoryPluginsMap
-    }, [mandatoryPluginData])
-
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
         const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
 
@@ -254,7 +243,7 @@ export default function CIPipeline({
         }
     }
 
-    const areMandatoryPluginPossible = !isJobCard && processPluginData && prepareFormData
+    const areMandatoryPluginPossible = !isJobCard && processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
@@ -293,9 +282,6 @@ export default function CIPipeline({
 
                 setMandatoryPluginData(processedPluginData)
                 handlePluginDataStoreUpdate(updatedPluginDataStore)
-                setFormData((prevForm) =>
-                    prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
-                )
             }
         }
     }
@@ -416,6 +402,17 @@ export default function CIPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
+    const handleValidateMandatoryPlugins: PipelineContext['handleValidateMandatoryPlugins'] = ({
+        newFormData = formData,
+        newPluginDataStore = pluginDataStore,
+    }) => {
+        if (!validatePlugins || !mandatoryPluginData?.pluginData?.length) {
+            return
+        }
+
+        setMandatoryPluginData(validatePlugins(newFormData, mandatoryPluginData.pluginData, newPluginDataStore))
+    }
+
     const validateStage = (
         stageName: string,
         _formData: PipelineFormType,
@@ -457,11 +454,10 @@ export default function CIPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
-            if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(
-                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
-                )
-            }
+            handleValidateMandatoryPlugins({
+                newFormData: _formData,
+                newPluginDataStore: clonedPluginDataStore,
+            })
             _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
@@ -815,7 +811,7 @@ export default function CIPipeline({
             handleUpdateAvailableTags,
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
-            mandatoryPluginsMap,
+            handleValidateMandatoryPlugins,
         }
     }, [
         formData,
@@ -828,7 +824,7 @@ export default function CIPipeline({
         globalVariables,
         pluginDataStore,
         availableTags,
-        mandatoryPluginsMap,
+        mandatoryPluginData,
     ])
 
     const renderCIPipelineModalContent = () => {

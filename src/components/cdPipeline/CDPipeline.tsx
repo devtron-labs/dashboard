@@ -114,7 +114,6 @@ const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> =
     'function',
 )
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
-const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
     null,
@@ -273,16 +272,6 @@ export default function CDPipeline({
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
 
-    const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
-        const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
-        if (mandatoryPluginData?.pluginData.length) {
-            for (const plugin of mandatoryPluginData.pluginData) {
-                _mandatoryPluginsMap[plugin.parentPluginId] = plugin
-            }
-        }
-        return _mandatoryPluginsMap
-    }, [mandatoryPluginData])
-
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
     ) => {
@@ -312,7 +301,7 @@ export default function CDPipeline({
         const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
 
-        if (processPluginData && prepareFormData) {
+        if (processPluginData) {
             await getMandatoryPluginData(form, uniquePluginIds)
             return
         }
@@ -465,10 +454,8 @@ export default function CDPipeline({
         form: PipelineFormType,
         requiredPluginIds: PluginDetailPayloadType['pluginId'] = [],
     ) => {
-        if (!processPluginData || !prepareFormData) {
-            {
-                return
-            }
+        if (!processPluginData) {
+            return
         }
 
         const {
@@ -487,9 +474,6 @@ export default function CDPipeline({
         setMandatoryPluginData(processedPluginData)
         // The method itself adds over existing plugins, so no need to worry about of overriding
         handlePluginDataStoreUpdate(updatedPluginDataStore)
-        setFormData((prevForm) =>
-            prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
-        )
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
@@ -863,10 +847,21 @@ export default function CDPipeline({
         setFormData(_form)
     }
 
+    const handleValidateMandatoryPlugins: PipelineContext['handleValidateMandatoryPlugins'] = ({
+        newFormData = formData,
+        newPluginDataStore = pluginDataStore,
+    }) => {
+        if (!validatePlugins || !mandatoryPluginData?.pluginData?.length) {
+            return
+        }
+
+        setMandatoryPluginData(validatePlugins(newFormData, mandatoryPluginData.pluginData, newPluginDataStore))
+    }
+
     const validateStage = (
         stageName: string,
         _formData: PipelineFormType,
-        formDataErrorObject?,
+        formDataErrorObject?: typeof formDataErrorObj,
         clonedPluginDataStore: typeof pluginDataStore = pluginDataStore,
     ): void => {
         const _formDataErrorObj = {
@@ -904,11 +899,10 @@ export default function CDPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
 
-            if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(
-                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
-                )
-            }
+            handleValidateMandatoryPlugins({
+                newFormData: _formData,
+                newPluginDataStore: clonedPluginDataStore,
+            })
 
             _formDataErrorObj[stageName].isValid = isStageValid
         }
@@ -1251,7 +1245,7 @@ export default function CDPipeline({
             handleUpdateAvailableTags,
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
-            mandatoryPluginsMap,
+            handleValidateMandatoryPlugins,
         }
     }, [
         formData,
@@ -1265,7 +1259,7 @@ export default function CDPipeline({
         isVirtualEnvironment,
         pluginDataStore,
         availableTags,
-        mandatoryPluginsMap,
+        mandatoryPluginData,
     ])
 
     const renderCDPipelineBody = () => {
