@@ -616,6 +616,6 @@ export const getConfigMapSecretResolvedData = (
     }
 }
 
-export const getConfigMapSecretPromiseSettledError = <T extends unknown>(res: PromiseSettledResult<T>) =>
+export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
 // DATA UTILS ----------------------------------------------------------------

@@ -41,9 +41,9 @@ import {
 } from './ConfigMapSecret.service'
 import {
     getConfigMapSecretDraftAndPublishedData,
+    getConfigMapSecretError,
     getConfigMapSecretInheritedData,
     getConfigMapSecretPayload,
-    getConfigMapSecretPromiseSettledError,
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
@@ -249,9 +249,9 @@ export const ConfigMapSecretContainer = ({
     const configMapSecretResErr = useMemo(
         () =>
             !configMapSecretResLoading && configMapSecretRes
-                ? getConfigMapSecretPromiseSettledError(configMapSecretRes[0]) ||
-                  getConfigMapSecretPromiseSettledError(configMapSecretRes[1]) ||
-                  getConfigMapSecretPromiseSettledError(configMapSecretRes[2])
+                ? getConfigMapSecretError(configMapSecretRes[0]) ||
+                  getConfigMapSecretError(configMapSecretRes[1]) ||
+                  getConfigMapSecretError(configMapSecretRes[2])
                 : null,
         [configMapSecretResLoading, configMapSecretRes],
     )
