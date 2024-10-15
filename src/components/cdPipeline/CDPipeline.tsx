@@ -1185,7 +1185,7 @@ export default function CDPipeline({
                         Advanced options
                         {mandatoryPluginData &&
                             (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                                <ICWarning className="icon-dim-16 warning-icon-y7-imp" />
+                                <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
                             )}
                     </button>
                 )
