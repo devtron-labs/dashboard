@@ -84,6 +84,7 @@ export const ConfigMapSecretContainer = ({
     envName,
     appName,
     parentName,
+    appChartRef,
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
@@ -639,6 +640,7 @@ export const ConfigMapSecretContainer = ({
                 setRestoreYAML={setRestoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                appChartRef={appChartRef}
             />
         ) : (
             <ConfigMapSecretForm
@@ -656,6 +658,7 @@ export const ConfigMapSecretContainer = ({
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 restoreYAML={restoreYAML}
                 setRestoreYAML={setRestoreYAML}
+                appChartRef={appChartRef}
             />
         )
 

@@ -30,38 +30,38 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
-    const [initLoading, initResult, initError, reload] = useAsync(
+    const [appChartRefLoading, appChartRefRes, appChartRefErr, reload] = useAsync(
         () => abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId), abortControllerRef),
         [componentType],
     )
 
     useEffect(() => {
-        if (initResult) {
+        if (appChartRefRes) {
             setParentState?.(ComponentStates.loaded)
         }
-        if (initError && !getIsRequestAborted(initError)) {
+        if (appChartRefErr && !getIsRequestAborted(appChartRefErr)) {
             setParentState?.(ComponentStates.failed)
-            showError(initError)
+            showError(appChartRefErr)
         }
 
         return () => {
             setParentState?.(ComponentStates.loading)
         }
-    }, [initResult, initError])
+    }, [appChartRefRes, appChartRefErr])
 
-    if (parentState === ComponentStates.loading || initLoading || !!getIsRequestAborted(initError)) {
+    if (parentState === ComponentStates.loading || appChartRefLoading || getIsRequestAborted(appChartRefErr)) {
         return <Progressing fullHeight pageLoader />
     }
 
-    if (initError) {
-        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} reload={reload} />
+    if (appChartRefErr) {
+        return <ErrorScreenManager code={appChartRefErr.code} redirectURL={onErrorRedirectURL} reload={reload} />
     }
 
     return (
         <ConfigMapSecretFormProvider>
             <ConfigMapSecretContainer
                 key={`${CM_SECRET_COMPONENT_NAME[componentType]}-${name}`}
-                appChartRef={initResult[0]?.result}
+                appChartRef={appChartRefRes?.result}
                 {...props}
             />
         </ConfigMapSecretFormProvider>
