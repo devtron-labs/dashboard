@@ -52,6 +52,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
@@ -1143,13 +1144,17 @@ export default function CDPipeline({
     }
 
     const getNavLink = (toLink: string, stageName: string): TabProps => {
-        const showAlert = !formDataErrorObj[stageName].isValid
+        const showWarning =
+            mandatoryPluginData &&
+            ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
 
         return {
             id: `${CDDeploymentTabText[stageName]}-tab`,
             label: CDDeploymentTabText[stageName],
             tabType: 'navLink',
-            showError: showAlert,
+            showError: !formDataErrorObj[stageName].isValid,
+            showWarning,
             props: {
                 to: `${toLink}?${urlParams}`,
                 replace: true,
@@ -1180,10 +1185,14 @@ export default function CDPipeline({
                     <button
                         type="button"
                         data-testid="create-build-pipeline-advanced-options-button"
-                        className="cta cta--workflow cancel mr-16 flex"
+                        className="cta cta--workflow cancel mr-16 flex dc__gap-6"
                         onClick={handleAdvanceClick}
                     >
                         Advanced options
+                        {mandatoryPluginData &&
+                            (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                                <ICWarning className="icon-dim-16 warning-icon-y7-imp" />
+                            )}
                     </button>
                 )
             )
@@ -1242,6 +1251,7 @@ export default function CDPipeline({
             handleUpdateAvailableTags,
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
+            mandatoryPluginsMap,
         }
     }, [
         formData,
@@ -1255,6 +1265,7 @@ export default function CDPipeline({
         isVirtualEnvironment,
         pluginDataStore,
         availableTags,
+        mandatoryPluginsMap,
     ])
 
     const renderCDPipelineBody = () => {
@@ -1293,7 +1304,10 @@ export default function CDPipeline({
                     >
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep} />
+                                <Sidebar
+                                    mandatoryPluginData={mandatoryPluginData}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                />
                             </div>
                         )}
                         <Switch>
