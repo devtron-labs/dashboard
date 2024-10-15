@@ -177,7 +177,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                     />
                 </div>
                 <div className="flexbox-col flex-grow-1">
-                    <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20">
+                    <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20 dc__zi-5">
                         <SearchBar
                             containerClassName="w-250"
                             inputProps={{
