@@ -330,6 +330,10 @@ const TerminalComponent = ({
                 containerName: selectedContainerName.value,
                 appDetails,
             },
+            {
+                type: TerminalWrapperType.UPLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: false,
+            }
         ],
         tabSwitcher: {
             terminalData: {
