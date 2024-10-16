@@ -721,7 +721,7 @@ export const ConfigMapSecretContainer = ({
             return <Progressing fullHeight pageLoader />
         }
 
-        if (isError && !isLoading) {
+        if (isError) {
             return (
                 <ErrorScreenManager
                     code={configHasBeenDeleted ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}

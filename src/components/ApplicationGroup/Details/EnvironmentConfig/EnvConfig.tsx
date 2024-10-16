@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
@@ -38,13 +38,16 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
     const { appId, envId } = params
     const { pathname } = useLocation()
-    const { push } = useHistory()
+    const { replace } = useHistory()
 
     // STATES
     const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
 
     // CONSTANTS
-    const isAppNotPresentInEnv = envAppList.length && appId && !envAppList.some(({ id }) => id === +appId)
+    const isAppNotPresentInEnv = useMemo(
+        () => envAppList.length && appId && !envAppList.some(({ id }) => id === +appId),
+        [envAppList, appId],
+    )
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -85,8 +88,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     }, [initDataResults])
 
     useEffect(() => {
+        // If the app is unavailable in the current environment, redirect to the app selection page
         if (isAppNotPresentInEnv) {
-            push(generatePath(path, { ...params, appId: null }))
+            replace(generatePath(path, { ...params, appId: null }))
         }
     }, [isAppNotPresentInEnv])
 
