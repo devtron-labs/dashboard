@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     AppType,
     getPodsRootParentNameAndStatus,
@@ -50,6 +50,7 @@ export const K8ResourceComponent = ({
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
+    const currentNode = useParams<{ nodeType: string }>().nodeType
     const currentFilter = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
@@ -58,11 +59,15 @@ export const K8ResourceComponent = ({
     }, [])
 
     // nodes according to current filter
-    const currentFilteredNodes = nodes.filter(
-        (node) =>
-            currentFilter === ALL_RESOURCE_KIND_FILTER ||
-            node.health?.status.toLowerCase() === currentFilter ||
-            (currentFilter === NodeFilters.drifted && node.hasDrift),
+    const currentFilteredNodes = useMemo(
+        () =>
+            nodes.filter(
+                (node) =>
+                    currentFilter === ALL_RESOURCE_KIND_FILTER ||
+                    node.health?.status.toLowerCase() === currentFilter ||
+                    (currentFilter === NodeFilters.drifted && node.hasDrift),
+            ),
+        [currentFilter],
     )
 
     useEffect(() => {
@@ -108,20 +113,17 @@ export const K8ResourceComponent = ({
             return
         }
         // current selected node exist in new selected filter or not
-        const selectedFilterNodeExists = currentFilteredNodes.some(
+        const nextFilterNodes = nodes.filter(
             (node) =>
                 node.health?.status.toLowerCase() === selectedFilter ||
                 (selectedFilter === NodeFilters.drifted && node.hasDrift),
         )
+        const selectedNodeExists = nextFilterNodes.some((node) => node.kind.toLowerCase() === currentNode)
 
-        if (!selectedFilterNodeExists) {
-            const newNode = nodes.filter(
-                (node) =>
-                    node.health?.status.toLowerCase() === selectedFilter ||
-                    (selectedFilter === NodeFilters.drifted && node.hasDrift),
-            )
+        if (!selectedNodeExists) {
+            const newNode = nextFilterNodes?.[0]
             history.push({
-                pathname: getRedirectPathname(newNode?.[0], selectedFilter),
+                pathname: getRedirectPathname(newNode, selectedFilter),
                 search: `${searchParams}`,
             })
         } else {

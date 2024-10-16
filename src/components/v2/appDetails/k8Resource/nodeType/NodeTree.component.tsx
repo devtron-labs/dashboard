@@ -40,12 +40,17 @@ const NodeTreeComponent = ({
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     )
+    const [nodes] = useSharedState(
+        IndexStore.getAppDetailsNodes(),
+        IndexStore.getAppDetailsNodesObservable(),
+    )
     const _arr = url.split(URLS.APP_DETAILS_K8)
     const k8URL = _arr[0] + URLS.APP_DETAILS_K8
 
     // This is used to re-render in case of click node update
     const [reRender, setReRender] = useState(false)
-    const _treeNodes = getTreeNodesWithChild(filteredNodes)
+    const _filteredTreeNodes = getTreeNodesWithChild(filteredNodes)
+    const treeNodes = getTreeNodesWithChild(nodes)
     const getPNodeName = (_string: string): AggregationKeys => {
         return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType)
     }
@@ -53,7 +58,7 @@ const NodeTreeComponent = ({
         if (e) {
             e.stopPropagation()
         }
-        const _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents, isDevtronApp)
+        const _clickedNodes = generateSelectedNodes(clickedNodes, treeNodes, _node, parents, isDevtronApp)
         registerNodeClick(_clickedNodes)
         setReRender(!reRender)
     }
@@ -70,13 +75,13 @@ const NodeTreeComponent = ({
             }
         } else {
             history.replace({
-                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes, isDevtronApp),
+                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
                 search: location.search,
             })
         }
     }, [url])
 
-    let tempNodes = _treeNodes
+    let tempNodes = _filteredTreeNodes
     while (tempNodes.length > 0) {
         tempNodes = tempNodes.flatMap((_tn) => {
             _tn.isSelected = clickedNodes.has(_tn.name.toLowerCase())
@@ -139,7 +144,7 @@ const NodeTreeComponent = ({
         })
     }
 
-    return <>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</>
+    return <>{_filteredTreeNodes && _filteredTreeNodes.length > 0 && makeNodeTree(_filteredTreeNodes, [], isDevtronApp)}</>
 }
 
 export function generateSelectedNodes(
