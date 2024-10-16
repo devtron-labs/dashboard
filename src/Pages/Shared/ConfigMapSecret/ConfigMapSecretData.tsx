@@ -73,7 +73,7 @@ export const ConfigMapSecretData = ({
                     value: k,
                 },
                 v: {
-                    value: v.toString(),
+                    value: typeof v === 'object' ? YAMLStringify(v) : v.toString(),
                 },
             },
             id,
