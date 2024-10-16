@@ -52,7 +52,6 @@ export const ConfigMapSecretForm = ({
     resolvedFormData,
     restoreYAML,
     setRestoreYAML,
-    isApprover,
     onSubmit,
     onError,
     onCancel,
@@ -67,7 +66,6 @@ export const ConfigMapSecretForm = ({
                 configMapSecretData,
                 componentType,
                 cmSecretStateLabel,
-                isApprover,
             }),
         [],
     )
@@ -82,10 +80,10 @@ export const ConfigMapSecretForm = ({
     // CONSTANTS
     const isCreateView = id === null
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
-    const isUnAuthorized = !isApprover && configMapSecretData?.unAuthorized
+    const isUnAuthorized = configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
-    const isFormDisabled = isHashiOrAWS || data.isResolvedData
+    const isFormDisabled = isHashiOrAWS || data.isResolvedData || (data.isSecret && isUnAuthorized)
     /**
      * * In create mode, show the prompt only if the form has unsaved changes (i.e., form is dirty).
      * * This ensures the user is warned about losing data when navigating away during creation.
@@ -226,7 +224,7 @@ export const ConfigMapSecretForm = ({
     )
 
     const renderSubPathCheckBoxContent = () => (
-        <p data-testid={`${componentName}-sub-path-checkbox`} className="flexbox-col m-0 cn-9">
+        <p data-testid={`${componentName}-sub-path-checkbox`} className="flexbox-col m-0 cn-9 fs-13">
             <span>
                 <span>Set SubPath (same as</span>&nbsp;
                 <a
@@ -243,7 +241,7 @@ export const ConfigMapSecretForm = ({
             {data.isSubPathChecked && (
                 <span className="cn-7 fs-12 lh-18">
                     {data.external
-                        ? 'Please provide keys of config map to be mounted'
+                        ? `Please provide keys of ${componentName} to be mounted`
                         : 'Keys will be used as filename for subpath'}
                 </span>
             )}
@@ -251,7 +249,7 @@ export const ConfigMapSecretForm = ({
     )
 
     const renderSubPath = () => (
-        <div className="flexbox-col dc__gap-8 dc__w-fit-content">
+        <div className="flexbox-col dc__gap-8">
             <Checkbox
                 isChecked={data.isSubPathChecked}
                 onClick={stopPropagation}
@@ -282,8 +280,9 @@ export const ConfigMapSecretForm = ({
     )
 
     const renderFilePermission = () => (
-        <div className="flexbox-col dc__gap-8 dc__w-fit-content">
+        <div className="flexbox-col dc__gap-8">
             <Checkbox
+                dataTestId="configmap-file-permission-checkbox"
                 isChecked={data.isFilePermissionChecked}
                 onClick={stopPropagation}
                 rootClassName="m-0"
@@ -291,7 +290,7 @@ export const ConfigMapSecretForm = ({
                 disabled={isFormDisabled}
                 {...register('isFilePermissionChecked', { sanitizeFn: () => !data.isFilePermissionChecked })}
             >
-                <span data-testid="configmap-file-permission-checkbox">
+                <span className="fs-13">
                     Set File Permission (same as&nbsp;
                     <a
                         href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
@@ -336,10 +335,8 @@ export const ConfigMapSecretForm = ({
                     isRequiredField
                     noTrim
                 />
-                <div className="flexbox-col dc__gap-12">
-                    {renderSubPath()}
-                    {renderFilePermission()}
-                </div>
+                {renderSubPath()}
+                {renderFilePermission()}
             </>
         )
 
@@ -368,7 +365,7 @@ export const ConfigMapSecretForm = ({
                     text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
                     onClick={handleSubmit(onSubmit, onError)}
                     isLoading={isSubmitting}
-                    disabled={isSubmitting || areScopeVariablesResolving}
+                    disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
                 />
                 {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
                     <Button
