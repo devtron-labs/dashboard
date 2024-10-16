@@ -35,7 +35,6 @@ const ShimmerText = ({ width }: { width: string }) => (
 )
 
 export const EnvConfigurationsNav = ({
-    isJob,
     showBaseConfigurations,
     showDeploymentTemplate,
     envConfig,
@@ -53,7 +52,7 @@ export const EnvConfigurationsNav = ({
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId, appId } = params
+    const { envId } = params
 
     // STATES
     const [expandedIds, setExpandedIds] =
@@ -257,17 +256,32 @@ export const EnvConfigurationsNav = ({
     ]
 
     const onEnvSelect = ({ value }: SelectPickerOptionType<number>) => {
+        // Exit early if the selected environment is the current one
         if (environmentData.id === value) {
             return
         }
 
-        const name = pathname.split(`${resourceType}/`)[1]
-        const basePath =
-            paramToCheck === 'envId' ? `${isJob ? URLS.JOB : URLS.APP}/${appId}` : `${URLS.APPLICATION_GROUP}/${envId}`
-        const envOrAppId =
-            value > -1 && (paramToCheck === 'envId' ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${value}` : `/${value}`)
+        // Extract the resource name from the current pathname based on resourceType
+        const resourceName = pathname.split(`${resourceType}/`)[1]
 
-        history.push(`${basePath}/${URLS.APP_CONFIG}${envOrAppId || ''}/${resourceType}${name ? `/${name}` : ''}`)
+        // Truncate the path to the base application configuration path
+        const truncatedPath = `${path.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+
+        // Build the new app path, conditionally adding the environment override config when switching to environment
+        const appPath = `${truncatedPath}${
+            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : ''
+        }/:resourceType(${Object.values(EnvResourceType).join('|')})` // Dynamically set valid resource types
+
+        // Generate the final path
+        // if application/job (paramToCheck = envId), use `appPath`
+        // otherwise applicationGroups (paramToCheck = 'appId'), use `path`
+        const generatedPath = `${generatePath(paramToCheck === 'envId' ? appPath : path, {
+            ...params,
+            [paramToCheck]: value,
+        })}${resourceName ? `/${resourceName}` : ''}`
+
+        // Navigate to the generated path
+        history.push(generatedPath)
     }
 
     const renderEnvSelector = () => (
@@ -297,13 +311,15 @@ export const EnvConfigurationsNav = ({
     const renderCompareWithBtn = () => {
         const { name: compareTo } = environmentData
 
-        // Determine resourceName based on pathname
+        // Extract the resource name from the current pathname based on resourceType
         const resourceName = pathname.split(`/${resourceType}/`)[1]
 
-        // CompareView Path
+        // Construct the compare view path with dynamic route parameters for comparison
         const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`
+
         const compareWithHref = generatePath(compareViewPath, {
             ...params,
+            // Only set compareTo if it's not the base configuration
             compareTo: compareTo !== BASE_CONFIGURATIONS.name ? compareTo : null,
             resourceType,
             resourceName: resourceName ?? null,

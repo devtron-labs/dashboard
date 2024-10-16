@@ -9,7 +9,8 @@ import { ConfigMapSecretWrapper, CMSecretComponentType } from '@Pages/Shared/Con
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
-import { EnvironmentOptionType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+
+import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
 
@@ -31,12 +32,13 @@ export const Configurations = () => {
     const { appId, envId } = params
 
     // CONTEXTS
-    const context = useReleaseConfigurationContext()
-    const environments = context.environments as EnvironmentOptionType[]
-    const applications = context.applications as any[]
-    const reloadEnvironments = context.reloadEnvironments as () => void
-    const isAppListLoading = context.isAppListLoading as boolean
-    const isEnvListLoading = context.isEnvListLoading as boolean
+    const {
+        environments,
+        applications,
+        reloadEnvironments,
+        isAppListLoading,
+        isEnvListLoading,
+    }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
     // ASYNC CALLS
     const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(

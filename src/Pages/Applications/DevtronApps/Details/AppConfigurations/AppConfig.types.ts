@@ -231,7 +231,6 @@ export interface EnvConfigurationsNavProps {
      * @note This can represent either a route path or a complete link(route params resolved).
      */
     compareWithURL: string
-    isJob?: boolean
     showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean

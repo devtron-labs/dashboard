@@ -44,6 +44,7 @@ import {
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
+import { Configurations } from '@Pages/Releases/Detail'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
@@ -63,7 +64,6 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
-import { Configurations } from '@Pages/Releases/Detail'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {

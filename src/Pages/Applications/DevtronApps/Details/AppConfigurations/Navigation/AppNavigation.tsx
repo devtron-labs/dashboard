@@ -149,7 +149,6 @@ export const AppNavigation = () => {
                         compareWithURL={path}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
-                        isJob={isJobView}
                     />
                 )}
             </Route>
