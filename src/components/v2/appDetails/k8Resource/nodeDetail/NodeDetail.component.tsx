@@ -22,6 +22,10 @@ import {
     CHECKBOX_VALUE,
     OptionType,
     DeploymentAppTypes,
+    TabGroup,
+    TabProps,
+    ComponentSizeType,
+    capitalizeFirstLetter,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -437,44 +441,25 @@ const NodeDetailComponent = ({
         </>
     )
 
+    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => {
+        return {
+            id: `${idx}resourceTreeTab`,
+            label: capitalizeFirstLetter(tab),
+            tabType: 'navLink',
+            props: {
+                to: `${url}/${tab.toLowerCase()}`,
+                ['data-testid']: `${tab.toLowerCase()}-nav-link`,
+            }
+        }
+    })
+
     return (
         <>
             <div
                 className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
-                    <div data-testid="app-resource-containor-header" className="flex left">
-                        {tabs &&
-                            tabs.length > 0 &&
-                            tabs.map((tab: string, index: number) => {
-                                return (
-                                    <div
-                                        key={`${index}resourceTreeTab`}
-                                        className={`${
-                                            tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                ? 'default-tab-row cb-5'
-                                                : 'cn-7'
-                                        } py-6 px-8 top`}
-                                    >
-                                        <NavLink
-                                            to={`${url}/${tab.toLowerCase()}`}
-                                            className=" dc__no-decor flex left cursor"
-                                        >
-                                            <span
-                                                data-testid={`${tab.toLowerCase()}-nav-link`}
-                                                className={`${
-                                                    tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                        ? 'cb-5'
-                                                        : 'cn-9'
-                                                } default-tab-cell`}
-                                            >
-                                                {tab.toLowerCase()}
-                                            </span>
-                                        </NavLink>
-                                    </div>
-                                )
-                            })}
-                    </div>
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />

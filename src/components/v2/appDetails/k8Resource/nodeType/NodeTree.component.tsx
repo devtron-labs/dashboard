@@ -59,7 +59,7 @@ const NodeTreeComponent = ({
     }
 
     useEffect(() => {
-        const _urlArray = window.location.href.split(`${URLS.APP_DETAILS_K8}/`)
+        const _urlArray = window.location.pathname.split(`${URLS.APP_DETAILS_K8}/`)
         if (_urlArray?.length === 2) {
             const [_kind, _ignore, _name] = _urlArray[1].split('/')
             const parent = getPNodeName(_kind)
@@ -108,7 +108,7 @@ const NodeTreeComponent = ({
                         </button>
                     ) : (
                         <NavLink
-                            to={`${k8URL}/${parents.includes('pod') ? 'pod/group/' : ''}${treeNode.name.toLowerCase()}`}
+                            to={`${k8URL}/${parents.includes('pod') ? 'pod/group/' : ''}${treeNode.name.toLowerCase()}${location.search}`}
                             className={`dc__no-decor br-4 fs-13 lh-20 pointer w-100 fw-4 flex left py-6 px-8 ${
                                 treeNode.isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '
                             }`}

@@ -15,20 +15,27 @@
  */
 
 import { useEffect } from 'react'
-
-import { StatusFilterButtonComponent, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
-
+import { useHistory, useLocation } from 'react-router-dom'
+import {
+    AppType,
+    getPodsRootParentNameAndStatus,
+    Node,
+    NodeFilters,
+    StatusFilterButtonComponent,
+    useMainContext,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as K8ResourceIcon } from '@Icons/ic-object.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
-
+import { URLS } from '@Config/routes'
 import IndexStore from '../index.store'
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
-
 import './k8resources.scss'
+import { ALL_RESOURCE_KIND_FILTER } from './Constants'
 
 export const K8ResourceComponent = ({
     clickedNodes,
@@ -41,11 +48,86 @@ export const K8ResourceComponent = ({
     isDeploymentBlocked,
     isExternalApp,
 }: K8ResourceComponentProps) => {
+    const history = useHistory()
+    const location = useLocation()
+    const currentFilter = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
     }, [])
+
+    // nodes according to current filter
+    const currentFilteredNodes = nodes.filter(
+        (node) =>
+            currentFilter === ALL_RESOURCE_KIND_FILTER ||
+            node.health?.status.toLowerCase() === currentFilter ||
+            (currentFilter === NodeFilters.drifted && node.hasDrift),
+    )
+
+    useEffect(() => {
+        // When nodes change and a filter is not present anymore redirect to All
+        if (currentFilter === ALL_RESOURCE_KIND_FILTER) {
+            return
+        }
+        if (!currentFilteredNodes.length) {
+            history.push({ pathname: location.pathname, search: `filterType=${ALL_RESOURCE_KIND_FILTER}` })
+        }
+    }, [nodes])
+
+    const getPodNameForSelectedFilter = (selectedFilter: string) => {
+        const podParents = getPodsRootParentNameAndStatus(nodes)
+        const selectNode = podParents.find((parent) => parent[1].toLowerCase() === selectedFilter)?.[0]
+        return selectNode?.split('/')?.[2]
+    }
+
+    const appDetails = IndexStore.getAppDetails()
+    IndexStore.updateFilterType(currentFilter.toUpperCase())
+
+    const getRedirectPathname = (newNode: Node, selectedFilter: string) => {
+        const nodeKind = newNode.kind.toLowerCase()
+        const newKind = nodeKind === 'pod' ? `pod/group/${getPodNameForSelectedFilter(selectedFilter)}` : nodeKind
+        switch (appDetails.appType) {
+            case AppType.DEVTRON_HELM_CHART:
+                return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appDetails.installedAppId}/env/${appDetails.environmentId}/details/${URLS.APP_DETAILS_K8}/${newKind}`
+            case AppType.EXTERNAL_HELM_CHART:
+                return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/details/${URLS.APP_DETAILS_K8}/${newKind}`
+            case AppType.EXTERNAL_ARGO_APP:
+                return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${appDetails.clusterId}/${appDetails.appName}/${appDetails.namespace}/details/${URLS.APP_DETAILS_K8}/${newKind}`
+            case AppType.EXTERNAL_FLUX_APP:
+                return `${URLS.APP}/${URLS.EXTERNAL_FLUX_APP}/${appDetails.clusterId}/${appDetails.appName}/${appDetails.namespace}/${appDetails.fluxTemplateType}/details/${URLS.APP_DETAILS_K8}/${newKind}`
+            default:
+                return `${URLS.APP}/${appDetails.appId}/details/${appDetails.environmentId}/${URLS.APP_DETAILS_K8}/${nodeKind}`
+        }
+    }
+
+    const handleFilterClick = (selectedFilter: string) => {
+        const searchParams = new URLSearchParams([['filterType', selectedFilter]])
+        if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
+            history.push({ search: `${searchParams}` })
+            return
+        }
+        // current selected node exist in new selected filter or not
+        const selectedFilterNodeExists = currentFilteredNodes.some(
+            (node) =>
+                node.health?.status.toLowerCase() === selectedFilter ||
+                (selectedFilter === NodeFilters.drifted && node.hasDrift),
+        )
+
+        if (!selectedFilterNodeExists) {
+            const newNode = nodes.filter(
+                (node) =>
+                    node.health?.status.toLowerCase() === selectedFilter ||
+                    (selectedFilter === NodeFilters.drifted && node.hasDrift),
+            )
+            history.push({
+                pathname: getRedirectPathname(newNode?.[0], selectedFilter),
+                search: `${searchParams}`,
+            })
+        } else {
+            history.push({ search: `${searchParams}` })
+        }
+    }
 
     return (
         <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
@@ -59,7 +141,11 @@ export const K8ResourceComponent = ({
                         data-testid="k8-resources-node-tree"
                     >
                         <div className="flexbox mb-8 px-12">
-                            <StatusFilterButtonComponent nodes={nodes} />
+                            <StatusFilterButtonComponent
+                                nodes={nodes}
+                                selectedTab={currentFilter}
+                                handleFilterClick={handleFilterClick}
+                            />
                         </div>
                         <NodeTreeComponent
                             clickedNodes={clickedNodes}
