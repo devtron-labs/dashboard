@@ -1,7 +1,12 @@
 import { useMemo } from 'react'
 import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
-import { EnvResourceType, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentHistoryBaseParamsType,
+    EnvResourceType,
+    GenericEmptyState,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -28,7 +33,7 @@ const renderNullState = () => (
 
 export const Configurations = () => {
     // HOOKS
-    const { path, params } = useRouteMatch<{ appId: string; envId: string }>()
+    const { path, params } = useRouteMatch<Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'>>()
     const { appId, envId } = params
 
     // CONTEXTS
