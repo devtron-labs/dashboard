@@ -29,10 +29,10 @@ import {
     handleUTCTime,
     createGitCommitUrl,
     CIMaterialType,
-    Environment,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    BlockedStateData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -92,7 +92,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
@@ -702,17 +702,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       this.props.match.params.appId,
                       getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
                   )
-                : { result: null },
+                : null,
             getRuntimeParams?.(ciNodeId) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that
-                if (resp[1].result) {
+                if (resp[1]) {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.pluginBlockState = processConsequenceData(resp[1].result)
-                                node.isTriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1])
+                                node.isTriggerBlocked = resp[1].isCITriggerBlocked
                                 return node
                             }
                             return node

@@ -32,6 +32,8 @@ import {
     SourceTypeMap,
     ToastManager,
     ToastVariantType,
+    BlockedStateData,
+    PromiseAllStatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -65,7 +67,11 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 import { BULK_ERROR_MESSAGES } from './constants'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
@@ -237,7 +243,10 @@ const BulkCITrigger = ({
                     (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
                     material.value !== '--'
                 ) {
-                    branchNames += `${branchNames ? ',' : ''}${material.value}`
+                    const branchValue = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
+                        ? `[${material.value}]`
+                        : material.value
+                    branchNames += `${branchNames ? ',' : ''}${branchValue}`
                 }
             }
             return !branchNames
@@ -249,11 +258,17 @@ const BulkCITrigger = ({
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
-                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                const responses = await ApiQueuingWithBatch<BlockedStateData>(
+                    policyPromiseFunctionList,
+                    httpProtocol,
+                    true,
+                )
                 responses.forEach((res, index) => {
-                    policyListMap[appList[index]?.appId] = res.value?.['result']
-                        ? processConsequenceData(res.value['result'])
-                        : null
+                    if (res.status === PromiseAllStatusType.FULFILLED) {
+                        policyListMap[appList[index]?.appId] = res.value
+                            ? processConsequenceData(res.value)
+                            : null
+                    }
                 })
                 setAppPolicy(policyListMap)
             } catch (error) {

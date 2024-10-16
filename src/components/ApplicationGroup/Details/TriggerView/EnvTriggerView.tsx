@@ -46,6 +46,7 @@ import {
     preventBodyScroll,
     ToastManager,
     ToastVariantType,
+    BlockedStateData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -124,7 +125,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'processDeploymentWindowStateAppGroup',
@@ -874,18 +875,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                       _appID,
                       getBranchValues(ciNodeId, filteredWorkflows, filteredCIPipelines.get(_appID)),
                   )
-                : { result: null },
+                : null,
             getRuntimeParams ? getRuntimeParams(ciNodeId) : null,
         ])
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList
                 // it's already being set inside the same function
-                if (resp[1].result) {
+                if (resp[1]) {
                     const workflows = [...filteredWorkflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.pluginBlockState = processConsequenceData(resp[1].result)
-                                node.isTriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1])
+                                node.isTriggerBlocked = resp[1].isCITriggerBlocked
                                 return node
                             }
                             return node
