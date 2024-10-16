@@ -4,8 +4,6 @@ import {
     getGuiSchemaFromChartName,
     ResponseType,
     YAMLStringify,
-    ToastVariantType,
-    ToastManager,
     logExceptionToSentry,
     DeploymentTemplateConfigState,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -108,7 +106,9 @@ export const getCurrentTemplateWithLockedKeys = ({
     currentEditorTemplateData,
     wasGuiOrHideLockedKeysEdited,
 }: Pick<DeploymentTemplateStateType, 'currentEditorTemplateData' | 'wasGuiOrHideLockedKeysEdited'>): string => {
-    if (!currentEditorTemplateData.removedPatches?.length || !reapplyRemovedLockedKeysToYaml) {
+    const removedPatches = structuredClone(currentEditorTemplateData.removedPatches || [])
+
+    if (!removedPatches.length || !reapplyRemovedLockedKeysToYaml) {
         return currentEditorTemplateData.editorTemplate
     }
 
@@ -116,10 +116,7 @@ export const getCurrentTemplateWithLockedKeys = ({
         const originalDocument = currentEditorTemplateData.originalTemplate
         const parsedDocument = YAML.parse(currentEditorTemplateData.editorTemplate)
 
-        const updatedEditorObject = reapplyRemovedLockedKeysToYaml(
-            parsedDocument,
-            currentEditorTemplateData.removedPatches,
-        )
+        const updatedEditorObject = reapplyRemovedLockedKeysToYaml(parsedDocument, removedPatches)
 
         if (wasGuiOrHideLockedKeysEdited) {
             return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
@@ -128,10 +125,7 @@ export const getCurrentTemplateWithLockedKeys = ({
         }
         return YAMLStringify(updatedEditorObject, { simpleKeys: true })
     } catch {
-        ToastManager.showToast({
-            variant: ToastVariantType.error,
-            description: 'Something went wrong while parsing locked keys',
-        })
+        // Do nothing
     }
 
     return currentEditorTemplateData.editorTemplate

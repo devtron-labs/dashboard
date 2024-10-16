@@ -150,7 +150,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !showDeleteOverrideDraftEmptyState) {
         secondConfigSegment.push({
             text: 'Delete override',
             onClick: handleDeleteOverride,

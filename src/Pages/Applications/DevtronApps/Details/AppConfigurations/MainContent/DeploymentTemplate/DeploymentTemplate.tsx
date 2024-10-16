@@ -160,6 +160,7 @@ const DeploymentTemplate = ({
         initialLoadError,
         resolvedPublishedTemplate,
         areCommentsPresent,
+        wasGuiOrHideLockedKeysEdited,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -234,7 +235,10 @@ const DeploymentTemplate = ({
         ? currentEditorTemplateData?.environmentConfig?.id > 0
         : !!currentEditorTemplateData?.chartConfig?.id
 
-    const areChangesPresent: boolean = useMemo(() => getAreTemplateChangesPresent(state), [currentEditorTemplateData])
+    const areChangesPresent: boolean = useMemo(
+        () => getAreTemplateChangesPresent(state),
+        [currentEditorTemplateData, wasGuiOrHideLockedKeysEdited],
+    )
 
     usePrompt({
         shouldPrompt: areChangesPresent,
