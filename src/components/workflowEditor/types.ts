@@ -27,10 +27,11 @@ import {
     ValidationResponseType,
     PipelineFormType,
     MandatoryPluginDataType,
+    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
@@ -150,7 +151,9 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
+export interface CDNodeProps
+    extends Pick<WorkflowProps, 'handleDisplayLoader'>,
+        Pick<CommonNodeAttr, 'showPluginWarning'> {
     id: string
     deploymentStrategy: string
     triggerType: string

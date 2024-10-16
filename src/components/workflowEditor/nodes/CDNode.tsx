@@ -27,6 +27,7 @@ import {
     ToastVariantType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as ICDelete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { CDNodeProps, CDNodeState } from '../types'
@@ -277,6 +278,24 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
     }
 
+    renderNodeIcon = () => {
+        if (this.props.showPluginWarning) {
+            return (
+                <ICWarning className="icon-dim-18 warning-icon-y7 mr-12 dc__no-shrink" />
+            )
+        }
+
+        return (
+            <div
+                className={`workflow-node__icon-common dc__no-shrink pt-12 pb-12 mr-12 ${
+                    this.props.isVirtualEnvironment
+                        ? 'workflow-node__CD-rocket-icon'
+                        : 'workflow-node__CD-icon dc__flip'
+                }`}
+            />
+        )
+    }
+
     renderCardContent() {
         const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
@@ -309,14 +328,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
 
-                            {/* TODO: Look into these css later */}
-                            <div
-                                className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
-                                    this.props.isVirtualEnvironment
-                                        ? 'workflow-node__CD-rocket-icon'
-                                        : 'workflow-node__CD-icon dc__flip'
-                                }`}
-                            />
+                            {this.renderNodeIcon()}
 
                             {selectedNodeKey !== currentNodeKey && (
                                 <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">

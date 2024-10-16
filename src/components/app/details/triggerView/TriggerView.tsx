@@ -711,8 +711,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.ciBlockState = processConsequenceData(resp[1].result)
-                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1].result)
+                                node.isTriggerBlocked = resp[1].result.isCITriggerBlocked
                                 return node
                             }
                             return node
@@ -1203,8 +1203,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isCacheAvailable={nd?.storageConfigured}
                             appId={this.props.match.params.appId}
                             isJobView={this.props.isJobView}
-                            isCITriggerBlocked={nd?.isCITriggerBlocked}
-                            ciBlockState={nd?.ciBlockState}
+                            isCITriggerBlocked={nd?.isTriggerBlocked}
+                            ciBlockState={nd?.pluginBlockState}
                             selectedEnv={this.state.selectedEnv}
                             setSelectedEnv={this.setSelectedEnv}
                             environmentLists={this.state.environmentLists}

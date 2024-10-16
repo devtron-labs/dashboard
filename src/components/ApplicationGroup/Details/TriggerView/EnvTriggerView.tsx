@@ -884,8 +884,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     const workflows = [...filteredWorkflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.ciBlockState = processConsequenceData(resp[1].result)
-                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1].result)
+                                node.isTriggerBlocked = resp[1].result.isCITriggerBlocked
                                 return node
                             }
                             return node
@@ -1994,8 +1994,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isCacheAvailable={nd?.storageConfigured}
                             fromAppGrouping
                             appId={_appID?.toString()}
-                            isCITriggerBlocked={nd?.isCITriggerBlocked}
-                            ciBlockState={nd?.ciBlockState}
+                            isCITriggerBlocked={nd?.isTriggerBlocked}
+                            ciBlockState={nd?.pluginBlockState}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
                             handleRuntimeParamChange={handleRuntimeParamChange}

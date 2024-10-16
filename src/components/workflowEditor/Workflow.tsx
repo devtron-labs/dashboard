@@ -135,6 +135,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 width: WorkflowCreate.cDNodeSizes.nodeWidth,
                 x: 580,
                 y: 25,
+                showPluginWarning: false,
+                isTriggerBlocked: false,
+                pluginBlockState: null,
             })
         }
 
@@ -478,6 +481,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppCreated={node.deploymentAppCreated}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 handleDisplayLoader={this.props.handleDisplayLoader}
+                showPluginWarning={node.showPluginWarning}
             />
         )
     }
