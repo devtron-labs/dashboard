@@ -1019,12 +1019,13 @@ const DeploymentTemplate = ({
         })
 
         try {
-            const selectedChartTemplateDetails = await handleFetchGlobalDeploymentTemplate(selectedChart)
+            const selectedChartTemplateDetails = await handleFetchDeploymentTemplate(selectedChart)
             dispatch({
                 type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
                 payload: {
                     selectedChart,
                     selectedChartTemplateDetails,
+                    isEnvView: !!envId,
                 },
             })
         } catch (error) {
