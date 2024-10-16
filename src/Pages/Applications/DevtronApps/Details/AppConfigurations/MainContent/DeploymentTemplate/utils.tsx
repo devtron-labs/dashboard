@@ -162,7 +162,6 @@ export const getAreTemplateChangesPresent = (state: DeploymentTemplateStateType)
         return true
     }
 
-    // Question: In case of removed patches are not present we return currentEditorTemplateData.editorTemplate so should we make if-else of hideLockedKeys or is current implementation fine?
     const finalEditorValue = getCurrentTemplateWithLockedKeys({
         currentEditorTemplateData,
         wasGuiOrHideLockedKeysEdited,
