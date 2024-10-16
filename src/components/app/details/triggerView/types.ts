@@ -295,7 +295,9 @@ export interface TriggerCDNodeState {
     gitOpsRepoWarningCondition: boolean
 }
 
-export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
+export interface TriggerPrePostCDNodeProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<CommonNodeAttr, 'isTriggerBlocked'> {
     x: number
     y: number
     height: number

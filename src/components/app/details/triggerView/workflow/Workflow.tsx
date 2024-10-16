@@ -296,6 +296,7 @@ export class Workflow extends Component<WorkflowProps> {
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
                 deploymentAppType={node.deploymentAppType}
                 isDeploymentBlocked={node.isDeploymentBlocked}
+                isTriggerBlocked={node.isTriggerBlocked}
             />
         )
     }
