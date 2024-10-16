@@ -1246,6 +1246,8 @@ const DeploymentTemplate = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             showDeleteOverrideDraftEmptyState,
+            isProtected,
+            isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (

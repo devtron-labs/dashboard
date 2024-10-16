@@ -168,6 +168,7 @@ export interface GetConfigToolbarPopupConfigProps {
     handleShowEditHistory: () => void
     isProtected?: boolean
     isDeletable?: boolean
+    isDeleteOverrideDraftPresent?: boolean
 }
 
 type ConfigDryRunManifestProps =
