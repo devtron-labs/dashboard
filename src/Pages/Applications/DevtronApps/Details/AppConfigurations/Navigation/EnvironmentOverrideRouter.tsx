@@ -225,7 +225,7 @@ const EnvironmentOverrideRouter = () => {
             const list = []
             envListMinRes?.forEach((env) => {
                 if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
-                    list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
+                    list.push({ ...env, value: env.id, clusterName: env.cluster_name, label: env.environment_name })
                 }
             })
             setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))

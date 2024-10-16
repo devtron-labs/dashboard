@@ -408,7 +408,7 @@ export const Details: React.FC<DetailsType> = ({
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
-            .then((response) => {
+            .then(async (response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
                 if (
@@ -428,6 +428,16 @@ export const Details: React.FC<DetailsType> = ({
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
 
+                if (fetchExternalLinks && response.result?.clusterId) {
+                    getExternalLinksAndTools(response.result.clusterId)
+                }
+                pollResourceTreeRef.current = true
+
+                if (pollResourceTreeRef.current) {
+                    // Need to wait for the resource tree to check if the env is isolated or not
+                    await fetchResourceTree()
+                }
+
                 const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
 
                 _getDeploymentStatusDetail(
@@ -435,22 +445,14 @@ export const Details: React.FC<DetailsType> = ({
                     isIsolatedEnv,
                     isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
                 )
-
-                if (fetchExternalLinks && response.result?.clusterId) {
-                    getExternalLinksAndTools(response.result.clusterId)
-                }
-                pollResourceTreeRef.current = true
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingDetails(false)
             })
-        if (pollResourceTreeRef.current) {
-            fetchResourceTree()
-        }
     }
 
-    const fetchResourceTree = () => {
+    const fetchResourceTree = () =>
         fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
@@ -477,7 +479,6 @@ export const Details: React.FC<DetailsType> = ({
             .finally(() => {
                 setLoadingResourceTree(false)
             })
-    }
 
     function _getDeploymentStatusDetail(
         deploymentAppType: DeploymentAppTypes,
@@ -921,14 +922,10 @@ export const EnvSelector = ({
             if (found) {
                 found.options.push(Option)
             } else {
-                if (key.length > 0) {
-                    acc.push({
-                        label: key,
-                        options: [Option],
-                    })
-                } else {
-                    acc.push(Option)
-                }
+                acc.push({
+                    label: key,
+                    options: [Option],
+                })
             }
 
             return acc
@@ -957,7 +954,7 @@ export const EnvSelector = ({
                     ENV
                 </div>
             </div>
-            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-11">
                 <SelectPicker
                     inputId="app-environment-select"
                     placeholder="Select Environment"
