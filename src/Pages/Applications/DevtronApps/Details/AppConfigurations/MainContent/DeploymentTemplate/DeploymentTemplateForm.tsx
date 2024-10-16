@@ -86,7 +86,7 @@ const DeploymentTemplateForm = ({
     return (
         <div className={`dc__overflow-scroll flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
-                <div className="flexbox-col dc__border-right dc__border-bottom dc__overflow-scroll">
+                <div className="flexbox-col dc__border-right dc__overflow-scroll">
                     <div className="flexbox dc__gap-8 bcn-0 px-12 py-6 dc__border-bottom flex left py-6">
                         <ICBookOpen className="icon-dim-16 dc__no-shrink scn-9" />
                         <span className="fs-12 fw-6 cn-9 lh-20">{`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}</span>
