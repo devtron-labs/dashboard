@@ -173,7 +173,7 @@ const DeploymentTemplateGUIView = ({
             {!state.error && (
                 <InfoColourBar
                     message="To modify additional configurations"
-                    classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
+                    classname="dc__content-start ev-2 bw-1 dc__no-border-radius dc__no-bottom-border dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
                     Icon={Help}
                     iconClass="fcv-5 icon-dim-20"
                     renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}

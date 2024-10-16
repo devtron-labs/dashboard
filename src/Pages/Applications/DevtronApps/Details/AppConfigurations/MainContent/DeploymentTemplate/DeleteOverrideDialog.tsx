@@ -45,7 +45,7 @@ const DeleteOverrideDialog = ({
     return (
         <DeleteDialog
             title="Delete override"
-            description="This action will cause all overrides to erase and app level configuration will be applied"
+            description="This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated."
             delete={handleDelete}
             closeDelete={handleClose}
             apiCallInProgress={isDeletingOverride}
