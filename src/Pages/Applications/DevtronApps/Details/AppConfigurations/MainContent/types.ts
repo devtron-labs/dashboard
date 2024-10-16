@@ -9,7 +9,7 @@ import {
     ProtectConfigTabsType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 
 export interface ConfigHeaderProps {
@@ -28,6 +28,7 @@ export interface ConfigHeaderProps {
     showNoOverride: boolean
     parsingError: string
     restoreLastSavedYAML: () => void
+    hideDryRunTab?: boolean
 }
 
 export interface ConfigHeaderTabProps
@@ -127,6 +128,7 @@ export type ConfigToolbarProps = {
      * If false we will hide all the action in toolbar.
      */
     isPublishedConfigPresent?: boolean
+    headerMessage?: string
     showDeleteOverrideDraftEmptyState: boolean
 } & ConfigToolbarReadMeProps
 
@@ -153,11 +155,14 @@ export interface GetConfigToolbarPopupConfigProps {
     isPublishedValuesView: boolean
     isPublishedConfigPresent: boolean
     handleDeleteOverride: () => void
+    handleDelete?: () => void
     handleDiscardDraft: () => void
     unableToParseData: boolean
     isLoading: boolean
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
+    isProtected?: boolean
+    isDeletable?: boolean
 }
 
 type ConfigDryRunManifestProps =
@@ -214,15 +219,34 @@ export type NoOverrideEmptyStateProps = {
     environmentName: string
     handleCreateOverride: () => void
     handleViewInheritedConfig: () => void
+    hideOverrideButton?: boolean
 } & (NoOverrideEmptyStateCMCSProps | NoOverrideEmptyStateDeploymentTemplateProps)
 
-export type DeploymentTemplateDiffViewConfigType =
+type CMSecretDiffViewConfigType = {
+    configuration?: DeploymentHistorySingleValue
+    dataType: DeploymentHistorySingleValue
+    mountDataAs: DeploymentHistorySingleValue
+    volumeMountPath: DeploymentHistorySingleValue
+    setSubPath: DeploymentHistorySingleValue
+    externalSubpathValues: DeploymentHistorySingleValue
+    filePermission: DeploymentHistorySingleValue
+    roleARN: DeploymentHistorySingleValue
+}
+
+type DeploymentTemplateDiffViewConfigType =
     | {
           applicationMetrics?: DeploymentHistorySingleValue
           chartName: DeploymentHistorySingleValue
           chartVersion: DeploymentHistorySingleValue
           mergeStrategy?: DeploymentHistorySingleValue
           isOverride?: DeploymentHistorySingleValue
+          dataType?: never
+          mountDataAs?: never
+          volumeMountPath?: never
+          setSubPath?: never
+          externalSubpathValues?: never
+          filePermission?: never
+          roleARN?: never
       }
     | {
           applicationMetrics?: never
@@ -232,6 +256,8 @@ export type DeploymentTemplateDiffViewConfigType =
           isOverride?: never
       }
 
+export type CompareConfigViewEditorConfigType = DeploymentTemplateDiffViewConfigType | CMSecretDiffViewConfigType
+
 export interface CompareConfigViewProps {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
@@ -240,18 +266,21 @@ export interface CompareConfigViewProps {
 
     currentEditorTemplate: Record<string | number, unknown>
     publishedEditorTemplate: Record<string | number, unknown>
-
-    // For CM/CS Please add required typing using | operator
-    currentEditorConfig: DeploymentTemplateDiffViewConfigType
-    publishedEditorConfig: DeploymentTemplateDiffViewConfigType
+    currentEditorConfig: CompareConfigViewEditorConfigType
+    publishedEditorConfig: CompareConfigViewEditorConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
     /**
      * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
      */
     editorKey?: string
+    className?: string
 }
 
 export interface BaseConfigurationNavigationProps {
     baseConfigurationURL: string
+}
+
+export interface NoPublishedVersionEmptyStateProps {
+    isOverride?: boolean
 }

@@ -10,9 +10,9 @@ import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import {
+    CompareConfigViewEditorConfigType,
     ConfigHeaderTabConfigType,
     ConfigToolbarProps,
-    DeploymentTemplateDiffViewConfigType,
     GetConfigToolbarPopupConfigProps,
 } from './types'
 
@@ -101,11 +101,14 @@ export const getConfigToolbarPopupConfig = ({
     isPublishedValuesView,
     isPublishedConfigPresent,
     handleDeleteOverride,
+    handleDelete,
     handleDiscardDraft,
     unableToParseData,
     isLoading,
     isDraftAvailable,
     handleShowEditHistory,
+    isProtected = false,
+    isDeletable = false,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -151,6 +154,16 @@ export const getConfigToolbarPopupConfig = ({
         })
     }
 
+    if (isDeletable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+        secondConfigSegment.push({
+            text: `Delete${isProtected ? '...' : ''}`,
+            onClick: handleDelete,
+            dataTestId: 'delete-config-map-secret',
+            disabled: isLoading,
+            icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+        })
+    }
+
     return {
         ...(firstConfigSegment.length && { firstConfigSegment }),
         ...(secondConfigSegment.length && { secondConfigSegment }),
@@ -160,7 +173,7 @@ export const getConfigToolbarPopupConfig = ({
 export const getCompareViewHistoryDiffConfigProps = (
     showDisplayName: boolean,
     editorTemplate: Record<string | number, unknown>,
-    editorConfig: DeploymentTemplateDiffViewConfigType,
+    editorConfig: CompareConfigViewEditorConfigType,
 ):
     | DeploymentTemplateHistoryType['baseTemplateConfiguration']
     | DeploymentTemplateHistoryType['currentConfiguration'] => ({
