@@ -742,7 +742,9 @@ export const ConfigMapSecretContainer = ({
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     }
-                    showNoOverride={!hideNoOverrideEmptyState && !draftData}
+                    showNoOverride={
+                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !hideNoOverrideEmptyState && !draftData
+                    }
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
