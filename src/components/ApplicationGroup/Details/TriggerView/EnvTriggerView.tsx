@@ -2114,24 +2114,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         doesWorkflowContainsWebhook,
         ciNodeId,
     }: RenderCDMaterialContentProps) => {
-        if (node?.showPluginWarning && node?.isTriggerBlocked) {
-            return (
-                <>
-                    {this.renderCDModalHeader()}
-                    <MissingPluginBlockState
-                        configurePluginURL={getCDPipelineURL(
-                            String(appId),
-                            workflowId,
-                            doesWorkflowContainsWebhook ? '0' : ciNodeId,
-                            doesWorkflowContainsWebhook,
-                            node.id,
-                            true,
-                        )}
-                        nodeType={node.type}
-                    />
-                </>
-            )
-        }
+        const configurePluginURL = getCDPipelineURL(
+            String(appId),
+            workflowId,
+            doesWorkflowContainsWebhook ? '0' : ciNodeId,
+            doesWorkflowContainsWebhook,
+            node.id,
+            true,
+        )
 
         return (
             <CDMaterial
@@ -2150,6 +2140,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 ciPipelineId={node?.connectingCiPipelineId}
                 deploymentAppType={node?.deploymentAppType}
                 selectedAppName={selectedAppName}
+                showPluginWarningBeforeTrigger={node?.showPluginWarning}
+                consequence={node?.pluginBlockState}
+                configurePluginURL={configurePluginURL}
+                isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
             />
         )
     }

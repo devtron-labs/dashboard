@@ -102,7 +102,6 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -1249,7 +1248,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDModalHeader = () => (
-        <div className="trigger-modal__header flex right">
+        <div className="trigger-modal__header flexbox dc__content-space">
             <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
                 <CloseIcon />
             </button>
@@ -1258,29 +1257,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderCDMaterialContent = () => {
         const node: CommonNodeAttr = this.getCDNode()
-
-        if (node?.showPluginWarning && node?.isTriggerBlocked) {
-            const selectedWorkflow = this.state.workflows.find((wf) => +wf.id === +this.state.workflowId)
-            const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
-            const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
-
-            return (
-                <>
-                    {this.renderCDModalHeader()}
-                    <MissingPluginBlockState
-                        configurePluginURL={getCDPipelineURL(
-                            this.props.match.params.appId,
-                            this.state.workflowId.toString(),
-                            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
-                            doesWorkflowContainsWebhook,
-                            node.id,
-                            true,
-                        )}
-                        nodeType={node.type}
-                    />
-                </>
-            )
-        }
+        const selectedWorkflow = this.state.workflows.find((wf) => +wf.id === +this.state.workflowId)
+        const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
+        const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
+        const configurePluginURL = getCDPipelineURL(
+            this.props.match.params.appId,
+            this.state.workflowId.toString(),
+            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+            doesWorkflowContainsWebhook,
+            node.id,
+            true,
+        )
 
         return (
             <CDMaterial
@@ -1298,6 +1285,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 ciPipelineId={node.connectingCiPipelineId}
                 isSaveLoading={this.state.isSaveLoading}
                 deploymentAppType={node?.deploymentAppType}
+                showPluginWarningBeforeTrigger={node?.showPluginWarning}
+                consequence={node?.pluginBlockState}
+                configurePluginURL={configurePluginURL}
+                isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
             />
         )
     }

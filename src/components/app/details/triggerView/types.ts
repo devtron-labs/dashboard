@@ -41,6 +41,7 @@ import {
     CDMaterialSidebarType,
     CiPipeline,
     CdPipeline,
+    ConsequenceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -65,6 +66,20 @@ type CDMaterialBulkRuntimeParams =
           handleBulkRuntimeParamChange?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
+      }
+
+type CDMaterialPluginWarningProps =
+    | {
+          showPluginWarningBeforeTrigger: boolean
+          isTriggerBlockedDueToPlugin?: boolean
+          consequence?: ConsequenceType
+          configurePluginURL?: string
+      }
+    | {
+          showPluginWarningBeforeTrigger?: never
+          consequence?: never
+          configurePluginURL?: never
+          isTriggerBlockedDueToPlugin?: never
       }
 
 export type CDMaterialProps = {
@@ -135,7 +150,8 @@ export type CDMaterialProps = {
      * To be consumed through variable called appName
      */
     selectedAppName?: string
-} & CDMaterialBulkRuntimeParams
+} & CDMaterialBulkRuntimeParams &
+    CDMaterialPluginWarningProps
 
 export interface ConfigToDeployOptionType {
     label: string
