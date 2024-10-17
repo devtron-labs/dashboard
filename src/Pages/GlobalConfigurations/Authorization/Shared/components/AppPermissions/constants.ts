@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, authorizationSelectStyles, EntityTypes } from '../../../constants'
+import { ACCESS_TYPE_MAP, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { ActionTypes, authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
