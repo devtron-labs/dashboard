@@ -39,7 +39,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.state = {
             material: {
                 gitProvider: undefined,
-                url: '',
+                url: window._env_.SAMPLE_APP_REPO_URL || '',
                 checkoutPath: '',
                 active: true,
                 fetchSubmodules: false,
