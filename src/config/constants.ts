@@ -471,12 +471,6 @@ export enum SERVER_MODE {
 
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
-export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = 'devtron-app', // devtron app work flow
-    HELM_APPS = 'helm-app', // helm app work flow
-    JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
-}
-
 export enum APP_TYPE {
     HELM_CHART = 'helm-chart',
     DEVTRON_APPS = 'app',
