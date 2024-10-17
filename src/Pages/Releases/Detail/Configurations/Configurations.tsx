@@ -5,6 +5,7 @@ import {
     DeploymentHistoryBaseParamsType,
     EnvResourceType,
     GenericEmptyState,
+    Progressing,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -161,17 +162,19 @@ export const Configurations = () => {
     )
 
     return (
-        <Switch>
-            {showConfig ? renderCompareView() : null}
-            <Route>
-                <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                    <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
-                        <ConfigurationsAppEnvSelector />
-                        {showConfig ? renderConfigSideNav() : null}
+        <div className="h-100 dc__overflow-auto">
+            <Switch>
+                {!showConfig ? <Progressing pageLoader fullHeight /> : renderCompareView()}
+                <Route>
+                    <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
+                        <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
+                            <ConfigurationsAppEnvSelector />
+                            {showConfig ? renderConfigSideNav() : null}
+                        </div>
+                        {showConfig ? renderConfig() : renderNullState()}
                     </div>
-                    {showConfig ? renderConfig() : renderNullState()}
-                </div>
-            </Route>
-        </Switch>
+                </Route>
+            </Switch>
+        </div>
     )
 }
