@@ -169,7 +169,7 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {appDetails?.resourceTree && !isIsolatedEnv && ConfigSyncStatusButton && (
+                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
                     <div className="pl-8">
                         <ConfigSyncStatusButton
                             areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
