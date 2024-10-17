@@ -278,7 +278,7 @@ export const ClusterEnvironmentDrawer = ({
                                         type="radio"
                                         checked={data.isProduction}
                                         value="true"
-                                        {...register('isProduction', (value) => value === 'true')}
+                                        {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
                                     />
                                     <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
                                 </label>
@@ -289,7 +289,7 @@ export const ClusterEnvironmentDrawer = ({
                                         type="radio"
                                         checked={!data.isProduction}
                                         value="false"
-                                        {...register('isProduction', (value) => value === 'true')}
+                                        {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
                                     />
                                     <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
                                 </label>

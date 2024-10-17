@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
-import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,14 +35,10 @@ const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
-    const {
-        path,
-        params: { appId, envId },
-    } = useRouteMatch<{ envId: string; appId: string }>()
+    const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
+    const { appId, envId } = params
     const { pathname } = useLocation()
-
-    // STATES
-    const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
+    const { replace } = useHistory()
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -65,7 +61,8 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         isLoading: envConfigLoading,
     }
 
-    useEffect(() => {
+    // CONSTANTS
+    const envAppList = useMemo<ConfigAppList[]>(() => {
         if (
             initDataResults?.[0].status === 'fulfilled' &&
             initDataResults?.[1].status === 'fulfilled' &&
@@ -78,11 +75,25 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
             }))
 
             _appList.sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(_appList)
+            return _appList
         }
+
+        return []
     }, [initDataResults])
 
-    if (loading || !envAppList.length) {
+    const isAppNotPresentInEnv = useMemo(
+        () => envAppList.length && appId && !envAppList.some(({ id }) => id === +appId),
+        [envAppList, appId],
+    )
+
+    useEffect(() => {
+        // If the app is unavailable in the current environment, redirect to the app selection page
+        if (isAppNotPresentInEnv) {
+            replace(generatePath(path, { ...params, appId: null }))
+        }
+    }, [isAppNotPresentInEnv])
+
+    if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />

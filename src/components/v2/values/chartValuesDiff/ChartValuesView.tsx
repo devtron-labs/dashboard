@@ -35,6 +35,7 @@ import {
     getIsRequestAborted,
     deepEqual,
     useDownload,
+    ConfigurationType,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -63,7 +64,6 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import {
-    ConfigurationType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
@@ -137,7 +137,7 @@ import {
     EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/Secret.utils'
+import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'

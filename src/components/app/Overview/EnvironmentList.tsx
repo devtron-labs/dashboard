@@ -31,6 +31,7 @@ import {
     ArtifactInfoModalProps,
     ImageChipCell,
     RegistryType,
+    AppEnvironment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
@@ -41,7 +42,6 @@ import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-envir
 import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { getAppOtherEnvironment } from '@Services/service'
-import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { StatusConstants } from '../list-new/Constants'

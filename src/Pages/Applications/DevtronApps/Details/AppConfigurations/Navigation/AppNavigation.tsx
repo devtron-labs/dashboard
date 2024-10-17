@@ -17,7 +17,16 @@
 
 import { ReactNode } from 'react'
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
-import { ConditionalWrap, EnvResourceType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ConditionalWrap,
+    EnvResourceType,
+    TippyCustomized,
+    TippyTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
@@ -194,15 +203,16 @@ export const AppNavigation = () => {
                         return <EnvironmentOverrideRouter key={item.stage} />
                     })}
                     {isJobView && <div className="h-100" />}
-                    <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0 dc__align-self-end">
-                        <button
-                            data-testid="delete-job-app-button"
-                            type="button"
-                            className="flex cta delete mt-8 w-100 h-36"
+                    <div className="dc__align-self-end">
+                        <Button
+                            dataTestId="delete-job-app-button"
+                            variant={ButtonVariantType.secondary}
+                            size={ComponentSizeType.medium}
+                            style={ButtonStyleType.negative}
                             onClick={deleteApp}
-                        >
-                            Delete {isJobView ? 'Job' : 'Application'}
-                        </button>
+                            text={`Delete ${isJobView ? 'Job' : 'Application'}`}
+                            fullWidth
+                        />
                     </div>
                 </>
             </Route>

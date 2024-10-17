@@ -18,7 +18,7 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getOptions } from '@Components/deploymentConfig/service'
+import { getTemplateOptions } from '@Services/service'
 
 import {
     PipelineConfigDiffQueryParams,
@@ -59,7 +59,7 @@ export const usePipelineDeploymentConfig = ({
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
         useAsync(
             () =>
-                getOptions(appId, envId).then(
+                getTemplateOptions(appId, envId).then(
                     ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
                 ),
             [envId],

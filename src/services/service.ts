@@ -25,6 +25,7 @@ import {
     LastExecutionResponseType,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    TemplateListDTO,
     getUrlWithSearchParams,
     ROUTES,
     SERVER_MODE,
@@ -42,6 +43,7 @@ import {
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
+    MinChartRefDTO,
     ClusterEnvTeams,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
@@ -400,27 +402,7 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferences(appId: number): Promise<ResponseType> {
-    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`
-    return get(URL)
-}
-
-export function getAppChartRef(appId: number): Promise<ResponseType> {
-    return getChartReferences(appId).then((response) => {
-        const {
-            result: { chartRefs, latestAppChartRef },
-        } = response
-        const selectedChartId = latestAppChartRef
-        const chart = chartRefs?.find((chart) => selectedChartId === chart.id)
-        return {
-            code: response.code,
-            status: response.status,
-            result: chart,
-        }
-    })
-}
-
-export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
+export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
     let envParam = ''
     if (envId) {
         envParam = `/${envId}`
@@ -516,3 +498,7 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`
     return post(URL, request)
 }
+
+export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> => (
+    get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
+)

@@ -17,6 +17,9 @@
 import {
     DeploymentAppTypes,
     DeploymentStrategy,
+    AppEnvironment,
+    DeploymentChartVersionType,
+    ChartMetadataType,
     EnvListMinDTO,
     ResponseType,
     SeverityCount,
@@ -73,26 +76,6 @@ export interface ProjectFilteredApps extends ResponseType {
             name: string
         }[]
     }[]
-}
-
-export interface AppEnvironment {
-    environmentId: number
-    environmentName: string
-    appMetrics: boolean
-    infraMetrics: boolean
-    prod: boolean
-    chartRefId?: number
-    lastDeployed?: string
-    lastDeployedBy?: string
-    lastDeployedImage?: string
-    appStatus?: string
-    deploymentAppDeleteRequest?: boolean
-    isVirtualEnvironment?: boolean
-    isProtected?: boolean
-    pipelineId?: number
-    latestCdWorkflowRunnerId?: number
-    commits?: string[]
-    ciArtifactId?: number
 }
 
 export interface AppIdWorkflowNamesMapping {
@@ -170,6 +153,14 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface MinChartRefDTO {
+    chartMetadata: Record<string, ChartMetadataType>
+    chartRefs: DeploymentChartVersionType[]
+    latestAppChartRef: number
+    latestChartRef: number
+    latestEnvChartRef?: number
 }
 
 export interface ClusterEnvTeams {

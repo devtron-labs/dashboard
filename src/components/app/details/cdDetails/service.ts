@@ -96,7 +96,10 @@ export const prepareConfigMapAndSecretData = (
         if (rawData['type'] === 'volume') {
             typeValue = 'Data Volume'
             if (rawData['mountPath'] || rawData['defaultMountPath']) {
-                secretValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] ?? rawData['defaultMountPath'] }
+                secretValues['mountPath'] = {
+                    displayName: 'Volume mount path',
+                    value: rawData['mountPath'] || rawData['defaultMountPath'],
+                }
             }
             if (rawData['subPath']) {
                 secretValues['subPath'] = { displayName: 'Set SubPath', value: 'Yes' }

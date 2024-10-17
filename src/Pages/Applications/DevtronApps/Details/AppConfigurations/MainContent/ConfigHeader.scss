@@ -1,0 +1,11 @@
+.config-header {
+    &__tab:hover {
+        color: var(--B500) !important;
+
+        .config-header__tab--icon {
+            path {
+                stroke: var(--B500) !important;
+            }
+        }
+    }
+}

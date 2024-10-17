@@ -15,10 +15,9 @@
  */
 
 import React from 'react'
-
+import { AppEnvironment } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DOCUMENTATION, URLS } from '../../../config'
-import { AppEnvironment } from '../../../services/service.types'
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
 
 export enum ComponentStates {
@@ -67,13 +66,6 @@ export interface CommonEnvironmentOverridesProps {
     isJobView?: boolean
 }
 
-export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
-    environments: AppEnvironment[]
-    environmentName: string
-    isProtected: boolean
-    reloadEnvironments: () => void
-    fetchEnvConfig: (envId: number) => void
-}
 export interface ListComponentType {
     name: string
     type: string
