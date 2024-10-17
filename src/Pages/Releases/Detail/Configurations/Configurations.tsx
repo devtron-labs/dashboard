@@ -91,7 +91,7 @@ export const Configurations = () => {
                 <div className="deployment-template dc__overflow-auto dc__position-rel">
                     <DeploymentTemplate
                         fetchEnvConfig={fetchEnvConfig}
-                        isProtected
+                        isProtected={selectedEnv.isProtected}
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
