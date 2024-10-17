@@ -126,8 +126,9 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                           envId,
                           abortControllerRef.current.signal,
                       )
-                    : getAppEnvDeploymentConfig(
-                          {
+                    : getAppEnvDeploymentConfig({
+                          params: {
+                              configArea: 'AppConfiguration',
                               appName,
                               envName,
                               configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
@@ -142,8 +143,8 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                                       ? ConfigResourceType.ConfigMap
                                       : ConfigResourceType.Secret,
                           },
-                          abortControllerRef.current.signal,
-                      ),
+                          signal: abortControllerRef.current.signal,
+                      }),
             ])
         }, abortControllerRef)
             .then(([draftDataRes, cmSecretDataRes]) => {

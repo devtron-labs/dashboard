@@ -25,9 +25,11 @@ import {
     TabGroup,
     useAsync,
     useMainContext,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EntityTypes, ActionTypes } from '../../../constants'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
+import { ActionTypes } from '../../../constants'
+import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'

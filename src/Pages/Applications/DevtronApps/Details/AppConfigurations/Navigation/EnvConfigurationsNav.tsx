@@ -52,9 +52,7 @@ export const EnvConfigurationsNav = ({
 
     // STATES
     const [expandedIds, setExpandedIds] =
-        useState<
-            Record<Exclude<EnvResourceType, EnvResourceType.DeploymentTemplate | EnvResourceType.Manifest>, boolean>
-        >()
+        useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
