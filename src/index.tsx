@@ -153,6 +153,7 @@ if (!window || !window._env_) {
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_CONFIG_DRIFT_ENABLE: false,
     }
 }
 

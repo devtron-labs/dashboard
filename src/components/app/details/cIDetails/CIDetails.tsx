@@ -41,13 +41,10 @@ import {
     ModuleNameMap,
     EMPTY_STATE_STATUS,
     SecuritySummaryCard,
-    SeverityCount,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     SCAN_TOOL_ID_TRIVY,
     ErrorScreenManager,
-    getTotalSeverityCount,
-    getSeverityCountFromSummary,
     parseExecutionDetailResponse,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
