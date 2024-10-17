@@ -46,20 +46,22 @@ const CompareConfigView = ({
             </div>
         </div>
 
-        <DeploymentHistoryDiffView
-            key={editorKey}
-            currentConfiguration={getCompareViewHistoryDiffConfigProps(
-                true,
-                publishedEditorTemplate,
-                publishedEditorConfig,
-            )}
-            baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
-                false,
-                currentEditorTemplate,
-                currentEditorConfig,
-            )}
-            previousConfigAvailable
-        />
+        <div className="p-16">
+            <DeploymentHistoryDiffView
+                key={editorKey}
+                currentConfiguration={getCompareViewHistoryDiffConfigProps(
+                    true,
+                    publishedEditorTemplate,
+                    publishedEditorConfig,
+                )}
+                baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
+                    false,
+                    currentEditorTemplate,
+                    currentEditorConfig,
+                )}
+                previousConfigAvailable
+            />
+        </div>
     </div>
 )
 

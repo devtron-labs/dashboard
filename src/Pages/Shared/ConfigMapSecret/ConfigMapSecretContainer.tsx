@@ -389,6 +389,7 @@ export const ConfigMapSecretContainer = ({
     const redirectURLToValidPage = () => {
         history.replace(
             generatePath(path, {
+                ...params,
                 appId,
                 envId,
                 name: envConfigData.length ? envConfigData[envConfigData.length - 1].name : null,
@@ -410,7 +411,7 @@ export const ConfigMapSecretContainer = ({
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
-            history.push(generatePath(path, { appId, envId, name: configName }))
+            history.push(generatePath(path, { ...params, appId, envId, name: configName }))
         }
     }
 

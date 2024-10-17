@@ -6,7 +6,6 @@ import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
-import { URLS } from '@Config/routes'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
@@ -15,9 +14,7 @@ import {
     EnvConfigType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
-    EnvironmentOptionType,
 } from '../AppConfig.types'
-import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 
 const renderNavItemIcon = (isLocked: boolean, isProtected: boolean, dataTestId: string) => {
     if (isLocked) {
@@ -57,28 +54,14 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
  * @param params - URL parameters
  * @param resourceType - The type of resource.
  * @param href - An optional href to append to the path.
- * @param paramToCheck -  The parameter to check in the URL.
  * @returns The generated URL path.
  */
 export const getNavigationPath = (
     basePath: string,
     params: EnvConfigRouteParams,
-    id: number,
     resourceType: EnvResourceType,
     href?: string,
-    paramToCheck: 'appId' | 'envId' = 'envId',
-) => {
-    const additionalPath = href ? `/${href}` : ''
-    const isEnvIdChanged = paramToCheck === 'envId'
-    const isBaseEnv = id === BASE_CONFIGURATIONS.id
-    const _resourceType = isEnvIdChanged && !isBaseEnv ? URLS.APP_ENV_OVERRIDE_CONFIG : resourceType
-
-    return `${generatePath(basePath, {
-        ...params,
-        resourceType: _resourceType,
-        [paramToCheck]: !isBaseEnv ? id : null,
-    })}${isEnvIdChanged && !isBaseEnv ? `/${resourceType}${additionalPath}` : `${additionalPath}`}`
-}
+) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}`
 
 /**
  * Returns an object containing the appropriate icon, icon properties and tooltip properties based on the resource configuration state.
@@ -116,8 +99,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    { id, isProtected }: EnvironmentOptionType,
-    paramToCheck: 'appId' | 'envId' = 'envId',
+    isProtected: boolean,
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem
     configmaps: ExtendedCollapsibleListItem[]
@@ -132,14 +114,7 @@ export const getEnvConfiguration = (
                           configState: envConfig[curr].configState,
                           title: 'Deployment Template',
                           subtitle: SUBTITLE[envConfig[curr].configStage],
-                          href: getNavigationPath(
-                              basePath,
-                              params,
-                              id,
-                              EnvResourceType.DeploymentTemplate,
-                              '',
-                              paramToCheck,
-                          ),
+                          href: getNavigationPath(basePath, params, EnvResourceType.DeploymentTemplate),
                           iconConfig: getIcon(envConfig[curr].configState, isProtected),
                       }
                     : envConfig[curr].map(({ configState, name, configStage }) => ({
@@ -148,12 +123,10 @@ export const getEnvConfiguration = (
                           href: getNavigationPath(
                               basePath,
                               params,
-                              id,
                               curr === EnvConfigObjectKey.ConfigMap
                                   ? EnvResourceType.ConfigMap
                                   : EnvResourceType.Secret,
                               name,
-                              paramToCheck,
                           ),
                           iconConfig: getIcon(configState, isProtected),
                           subtitle: SUBTITLE[configStage],
