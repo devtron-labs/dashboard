@@ -40,7 +40,6 @@ const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarn
 export const Sidebar = ({
     isJobView,
     isJobCI,
-    mandatoryPluginData,
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -59,7 +58,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
-        pluginDataStore,
+        mandatoryPluginData,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -88,6 +87,8 @@ export const Sidebar = ({
 
     const showMandatoryWarning = (): boolean => {
         return (
+            !!MandatoryPluginWarning &&
+            !isJobCard &&
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
@@ -311,7 +312,7 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                    {showMandatoryWarning() && (
                         <MandatoryPluginWarning
                             stage={activeStageName}
                             mandatoryPluginData={mandatoryPluginData}
@@ -319,7 +320,6 @@ export const Sidebar = ({
                             setFormData={setFormData}
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
-                            pluginDataStore={pluginDataStore}
                             handleApplyPlugin={handleApplyPlugin}
                         />
                     )}

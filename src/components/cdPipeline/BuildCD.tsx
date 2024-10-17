@@ -33,7 +33,7 @@ import {
     ToastVariantType,
     ToastManager,
     ComponentSizeType,
-    SelectPickerOptionType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -62,6 +62,7 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { BuildCDProps } from './types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -89,7 +90,8 @@ export default function BuildCD({
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
     releaseMode,
-}) {
+    handlePopulatePluginDataStore,
+}: BuildCDProps) {
     const {
         formData,
         setFormData,
@@ -149,7 +151,7 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const selectEnvironment = (selection: EnvironmentWithSelectPickerType): void => {
+    const selectEnvironment = async (selection: EnvironmentWithSelectPickerType) => {
         const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
@@ -195,8 +197,6 @@ export default function BuildCD({
             _form.isDigestEnforcedForEnv = _form.environments.find(
                 (env) => env.id == selection.id,
             )?.isDigestEnforcedForEnv
-            setFormDataErrorObj(_formDataErrorObj)
-            setFormData(_form)
         } else {
             const list = _form.environments.map((item) => {
                 return {
@@ -207,11 +207,20 @@ export default function BuildCD({
             _form.environmentId = 0
             _form.namespace = ''
             _form.environments = list
-            setIsVirtualEnvironment(false)
             _formDataErrorObj.envNameError = validationRules.environment(_form.environmentId)
-            setFormData(_form)
-            setFormDataErrorObj(_formDataErrorObj)
+            setIsVirtualEnvironment(false)
         }
+        
+        try {
+            await handlePopulatePluginDataStore(_form)
+        } catch (error) {
+            showError(error)
+            return
+        }
+
+
+        setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderPipelineNameInput = () => {

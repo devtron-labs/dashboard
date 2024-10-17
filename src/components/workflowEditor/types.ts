@@ -24,13 +24,14 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
-    MandatoryPluginDetailType,
     ValidationResponseType,
     PipelineFormType,
+    MandatoryPluginDataType,
+    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
@@ -150,7 +151,9 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
+export interface CDNodeProps
+    extends Pick<WorkflowProps, 'handleDisplayLoader'>,
+        Pick<CommonNodeAttr, 'showPluginWarning'> {
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -181,9 +184,10 @@ export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> 
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
     isDeploymentBlocked?: boolean
+    isReadonlyView: boolean
 }
 
-export interface WebhookNodeProps {
+export interface WebhookNodeProps extends Pick<CDNodeProps, 'isReadonlyView'> {
     x: number
     y: number
     width: number
@@ -245,6 +249,11 @@ export interface PipelineFormDataErrorType {
         isValid: boolean
     }
     userApprovalConfig?: ValidationResponseType
+}
+
+interface HandleValidateMandatoryPluginsParamsType {
+    newFormData?: PipelineFormType
+    newPluginDataStore?: PluginDataStoreType
 }
 
 export interface PipelineContext {
@@ -315,10 +324,8 @@ export interface PipelineContext {
      * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
-    /**
-     * Would be available only for CI pipeline
-     */
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
+    mandatoryPluginData: MandatoryPluginDataType
 }
 
 export interface SourceTypeCardProps {

@@ -34,6 +34,7 @@ export const WebhookNode = ({
     handleSelectedNodeChange,
     selectedNode,
     isLastNode,
+    isReadonlyView,
 }: WebhookNodeProps) => {
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
@@ -75,7 +76,7 @@ export const WebhookNode = ({
 
                         <Webhook className="icon-dim-20 mr-12" />
 
-                        {toggleCDMenu && selectedNodeKey !== currentNodeKey && (
+                        {!isReadonlyView && toggleCDMenu && selectedNodeKey !== currentNodeKey && (
                             <ToggleCDSelectButton
                                 addNewPipelineBlocked={addNewPipelineBlocked}
                                 onClickAddNode={addNewCD}

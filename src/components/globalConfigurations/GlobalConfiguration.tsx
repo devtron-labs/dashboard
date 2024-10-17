@@ -46,6 +46,7 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
+import { OfflinePipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -717,7 +718,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
                     ? PluginsPolicy && (
                           <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                              <PluginsPolicy />
+                              <PluginsPolicy OfflinePipelineModalAppView={OfflinePipelineModalAppView} />
                           </Route>
                       )
                     : PluginsPolicyV1 && (

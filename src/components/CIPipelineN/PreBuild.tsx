@@ -34,10 +34,8 @@ import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
-import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const {
         formData,
@@ -50,13 +48,12 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
         formDataErrorObj,
         setFormDataErrorObj,
         calculateLastStepDetail,
-        validateStage,
         pageState,
         pluginDataStore,
         handlePluginDataStoreUpdate,
         availableTags,
         handleUpdateAvailableTags,
-        mandatoryPluginsMap = {},
+        handleValidateMandatoryPlugins,
     } = useContext(pipelineContext)
 
     useEffect(() => {
@@ -83,7 +80,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     ): void {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
-        let isPluginRequired = false
+
         _form[activeStageName].steps[selectedTaskIndex].stepType = pluginType
         if (pluginType === PluginType.INLINE) {
             _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
@@ -107,15 +104,8 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId].parentPluginId
-            isPluginRequired =
-                !isJobView &&
-                isRequired &&
-                !isCdPipeline &&
-                isRequired(formData, mandatoryPluginsMap, activeStageName, parentPluginId, pluginDataStore, false)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
-            _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId,
@@ -132,11 +122,11 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
             }
         }
         setFormData(_form)
-        if (isPluginRequired) {
-            validateStage(activeStageName, _form, _formDataErrorObj)
-        } else {
-            setFormDataErrorObj(_formDataErrorObj)
-        }
+        setFormDataErrorObj(_formDataErrorObj)
+
+        handleValidateMandatoryPlugins({
+            newFormData: _form,
+        })
     }
 
     const handlePluginSelection = (parentPluginId: number) => {
