@@ -16,47 +16,12 @@
 
 import React, { useState, useEffect } from 'react'
 import { components } from 'react-select'
-import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
-import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { SidebarChildButtonPropsType } from '../Types'
-
-export const ResourceValueContainerWithIcon = (props) => {
-    const { selectProps } = props
-    return (
-        <components.ValueContainer {...props}>
-            {selectProps.value ? (
-                <>
-                    <div className="flex left dc__position-abs w-100">
-                        <span className="icon-dim-20">
-                            {selectProps.placeholder.includes('Cluster') ? (
-                                <ClusterIcon className="icon-dim-20 scn-6" />
-                            ) : (
-                                <NamespaceIcon className="icon-dim-20 fcn-6" />
-                            )}
-                        </span>
-                        {!selectProps.inputValue && (
-                            <>
-                                {selectProps.value.label ? (
-                                    <span className="cn-9 dc__ellipsis-right ml-8">{selectProps.value.label}</span>
-                                ) : (
-                                    <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
-                                )}
-                            </>
-                        )}
-                    </div>
-                    {React.cloneElement(props.children[1])}
-                </>
-            ) : (
-                <>{props.children}</>
-            )}
-        </components.ValueContainer>
-    )
-}
 
 export const KindSearchValueContainer = (props) => {
     const { selectProps } = props
