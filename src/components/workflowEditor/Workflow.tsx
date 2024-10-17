@@ -94,6 +94,7 @@ export interface WorkflowProps
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
     handleDisplayLoader?: () => void
+    isOffendingPipelineView?: boolean
 }
 
 interface WorkflowState {
@@ -322,6 +323,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
+                isReadonlyView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -402,6 +404,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                isReadonlyView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -431,6 +434,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 id={node.id}
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
+                readOnly={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -478,6 +482,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppCreated={node.deploymentAppCreated}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 handleDisplayLoader={this.props.handleDisplayLoader}
+                isReadonlyView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -530,7 +535,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             const isSelectedEdge = selectedNodeKey === currentNodeIdentifier
             const addCDButtons = isSelectedEdge ? [AddCDPositions.RIGHT] : []
 
-            if (ApprovalNodeEdge) {
+            if (!this.props.isOffendingPipelineView && ApprovalNodeEdge) {
                 // The props that will be helpful are showAddCD
                 return (
                     <ApprovalNodeEdge
@@ -588,7 +593,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
 
             const leftTooltipContent = this.getAddCDButtonTooltipContent(startNode)
-            if (ApprovalNodeEdge) {
+            if (!this.props.isOffendingPipelineView && ApprovalNodeEdge) {
                 edgeList.push(
                     <ApprovalNodeEdge
                         key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
@@ -728,11 +733,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
 
         // If no node is present in workflow then disable change CI button
-        const isChangeCIEnabled = nodesWithBufferHeight.length > 0
+        const isChangeCIEnabled = !this.props.isOffendingPipelineView && nodesWithBufferHeight.length > 0
 
         return (
             <ConditionalWrap
-                condition={this.props.showWebhookTippy}
+                condition={!this.props.isOffendingPipelineView && this.props.showWebhookTippy}
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
@@ -772,7 +777,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         data-testid="workflow-header"
                     >
                         <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
-                        {!configDiffView && (
+                        {!this.props.isOffendingPipelineView && !configDiffView && (
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
 
@@ -829,7 +834,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             </div>
                         )}
                     </div>
-                    {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
+                    {!this.props.isOffendingPipelineView && isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div
                         className={
                             configDiffView
@@ -850,7 +855,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 {this.renderNodes({ nodesWithBufferHeight })}
                             </svg>
                         )}
-                        {!configDiffView && (
+                        {!this.props.isOffendingPipelineView && !configDiffView && (
                             <PipelineSelect
                                 workflowId={this.props.id}
                                 showMenu={this.state.showCIMenu}

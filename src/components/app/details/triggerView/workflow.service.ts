@@ -75,13 +75,14 @@ export const getCreateWorkflows = (
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
-const getInitialWorkflows = (
+export const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
     filteredEnvIds?: string,
+    shouldCheckDeploymentWindow: boolean = true
 ): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
@@ -93,7 +94,7 @@ const getInitialWorkflows = (
     if (useAppWfViewAPI) {
         return Promise.all([
             getWorkflowViewList(id, filteredEnvIds),
-            getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+            shouldCheckDeploymentWindow && getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
         ]).then((response) => {
             const workflows = {
                 appId: id,
