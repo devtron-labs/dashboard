@@ -2112,7 +2112,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
-                        className={`modal-body--cd-material h-100 contains-diff-view ${
+                        className={`modal-body--cd-material h-100 contains-diff-view flexbox-col ${
                             material.length > 0 ? '' : 'no-material'
                         }`}
                         onClick={stopPropagation}

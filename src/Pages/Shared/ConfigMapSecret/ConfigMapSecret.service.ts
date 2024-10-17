@@ -144,8 +144,8 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
                   envId,
                   signal: abortControllerRef.current.signal,
               })
-            : getAppEnvDeploymentConfig(
-                  {
+            : getAppEnvDeploymentConfig({
+                  params: {
                       appName,
                       envName,
                       configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
@@ -156,8 +156,8 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
                               ? ConfigResourceType.ConfigMap
                               : ConfigResourceType.Secret,
                   },
-                  abortControllerRef.current.signal,
-              ))
+                  signal: abortControllerRef.current.signal,
+              }))
 
         return result as GetConfigMapSecretConfigDataReturnType<IsJob>
     } catch (error) {

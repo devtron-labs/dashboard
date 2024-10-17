@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
@@ -16,6 +16,7 @@ import {
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
@@ -56,9 +57,8 @@ export const EnvConfigurationsNav = ({
 
     // STATES
     const [expandedIds, setExpandedIds] =
-        useState<
-            Record<Exclude<EnvResourceType, EnvResourceType.DeploymentTemplate | EnvResourceType.Manifest>, boolean>
-        >()
+        useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
+
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
@@ -284,6 +284,12 @@ export const EnvConfigurationsNav = ({
         history.push(generatedPath)
     }
 
+    const handleDeploymentTemplateNavLinkOnClick = (e: MouseEvent<HTMLAnchorElement>) => {
+        if (pathname === updatedEnvConfig.deploymentTemplate.href) {
+            e.preventDefault()
+        }
+    }
+
     const renderEnvSelector = () => (
         <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
             <NavLink to={goBackURL}>
@@ -333,7 +339,7 @@ export const EnvConfigurationsNav = ({
     }
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-hidden">
+        <nav className="flexbox-col h-100 dc__overflow-hidden">
             {!hideEnvSelector && renderEnvSelector()}
             {showComparison && CompareWithButton && renderCompareWithBtn()}
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
@@ -344,10 +350,14 @@ export const EnvConfigurationsNav = ({
                         {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
                             <NavLink
                                 data-testid="env-deployment-template"
-                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
+                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
                                 to={updatedEnvConfig.deploymentTemplate.href}
+                                onClick={handleDeploymentTemplateNavLinkOnClick}
                             >
-                                <span className="dc__truncate">{updatedEnvConfig.deploymentTemplate.title}</span>
+                                <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
+                                <span className="dc__truncate flex-grow-1">
+                                    {updatedEnvConfig.deploymentTemplate.title}
+                                </span>
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}
@@ -355,6 +365,6 @@ export const EnvConfigurationsNav = ({
                     </>
                 )}
             </div>
-        </div>
+        </nav>
     )
 }

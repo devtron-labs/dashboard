@@ -35,6 +35,7 @@ export const ConfigMapSecretProtected = ({
     publishedConfigMapSecretData,
     cmSecretStateLabel,
     isJob,
+    appChartRef,
     selectedProtectionViewTab,
     parentName,
     inheritedConfigMapSecretData,
@@ -168,6 +169,7 @@ export const ConfigMapSecretProtected = ({
                     : cmSecretStateLabel
             }
             isJob={isJob}
+            appChartRef={appChartRef}
             isProtected
             isDraft
             isSubmitting={false}
@@ -189,7 +191,7 @@ export const ConfigMapSecretProtected = ({
         const hasAccess = hasApproverAccess(email, draftData.approvers)
 
         return (
-            <div className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
+            <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
                 {draftData.canApprove && hasAccess ? (
                     <ApproveRequestTippy
                         draftId={draftData.draftId}
@@ -221,7 +223,7 @@ export const ConfigMapSecretProtected = ({
                         }}
                     />
                 )}
-            </div>
+            </footer>
         )
     }
 

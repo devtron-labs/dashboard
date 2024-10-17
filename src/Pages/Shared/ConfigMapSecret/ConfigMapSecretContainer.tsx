@@ -41,9 +41,9 @@ import {
 } from './ConfigMapSecret.service'
 import {
     getConfigMapSecretDraftAndPublishedData,
+    getConfigMapSecretError,
     getConfigMapSecretInheritedData,
     getConfigMapSecretPayload,
-    getConfigMapSecretPromiseSettledError,
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
@@ -84,6 +84,7 @@ export const ConfigMapSecretContainer = ({
     envName,
     appName,
     parentName,
+    appChartRef,
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
@@ -248,9 +249,9 @@ export const ConfigMapSecretContainer = ({
     const configMapSecretResErr = useMemo(
         () =>
             !configMapSecretResLoading && configMapSecretRes
-                ? getConfigMapSecretPromiseSettledError(configMapSecretRes[0]) ||
-                  getConfigMapSecretPromiseSettledError(configMapSecretRes[1]) ||
-                  getConfigMapSecretPromiseSettledError(configMapSecretRes[2])
+                ? getConfigMapSecretError(configMapSecretRes[0]) ||
+                  getConfigMapSecretError(configMapSecretRes[1]) ||
+                  getConfigMapSecretError(configMapSecretRes[2])
                 : null,
         [configMapSecretResLoading, configMapSecretRes],
     )
@@ -464,7 +465,10 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const handleNoOverrideFormCancel = () => setHideNoOverrideEmptyState(false)
+    const handleNoOverrideFormCancel = () => {
+        setFormState({ type: 'RESET' })
+        setHideNoOverrideEmptyState(false)
+    }
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
         setMergeStrategy(strategy)
@@ -606,6 +610,7 @@ export const ConfigMapSecretContainer = ({
                 cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN &&
                 draftData?.action !== DraftAction.Delete &&
                 !isCreateState,
+            isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -640,6 +645,7 @@ export const ConfigMapSecretContainer = ({
                 setRestoreYAML={setRestoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                appChartRef={appChartRef}
             />
         ) : (
             <ConfigMapSecretForm
@@ -657,6 +663,7 @@ export const ConfigMapSecretContainer = ({
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 restoreYAML={restoreYAML}
                 setRestoreYAML={setRestoreYAML}
+                appChartRef={appChartRef}
             />
         )
 
@@ -719,7 +726,7 @@ export const ConfigMapSecretContainer = ({
             return <Progressing fullHeight pageLoader />
         }
 
-        if (isError && !isLoading) {
+        if (isError) {
             return (
                 <ErrorScreenManager
                     code={configHasBeenDeleted ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}

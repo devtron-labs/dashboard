@@ -80,6 +80,21 @@ export const renderHashiOrAwsDeprecatedInfo = () => (
     />
 )
 
+export const renderChartVersionBelow3090NotSupportedText = () => (
+    <span className="fs-12 fw-4">
+        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
+        <span className="cn-7">Learn more about</span>&nbsp;
+        <a
+            className="dc__link"
+            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+            rel="noreferrer noopener"
+            target="_blank"
+        >
+            Deployment Template &gt; Chart Version
+        </a>
+    </span>
+)
+
 export const renderYamlInfoText = () => (
     <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bcn-50 dc__border-top-n1">
         <InfoIconN7 className="icon-dim-16 dc__no-shrink" />

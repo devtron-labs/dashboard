@@ -111,7 +111,7 @@ export const ConfigMapSecretDeleteModal = ({
             }
             description={
                 isDeleteOverride
-                    ? 'Are you sure you want to delete the modified configuration. This action can’t be undone.'
+                    ? 'This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated.'
                     : `'${configName}' will not be used in future deployments. Are you sure?`
             }
             closeDelete={closeDeleteModal}

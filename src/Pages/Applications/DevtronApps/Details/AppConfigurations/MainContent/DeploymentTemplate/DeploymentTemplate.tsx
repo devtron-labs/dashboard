@@ -44,7 +44,7 @@ import { URLS } from '@Config/routes'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import noArtifact from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
 import {
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
@@ -160,6 +160,7 @@ const DeploymentTemplate = ({
         initialLoadError,
         resolvedPublishedTemplate,
         areCommentsPresent,
+        wasGuiOrHideLockedKeysEdited,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -173,7 +174,7 @@ const DeploymentTemplate = ({
         isDraftAvailable &&
         ((configHeaderTab === ConfigHeaderTabType.VALUES &&
             selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED) ||
-            (configHeaderTab === ConfigHeaderTabType.DRY_RUN && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
+            (isDryRunView && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
     )
     const isCompareView = !!(
         isProtected &&
@@ -212,10 +213,9 @@ const DeploymentTemplate = ({
 
     const showNoPublishedVersionEmptyState = isPublishedValuesView && !isPublishedConfigPresent
 
-    const isEditMode = isProtected
-        ? configHeaderTab === ConfigHeaderTabType.VALUES &&
-          selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-        : configHeaderTab === ConfigHeaderTabType.VALUES
+    const isEditMode =
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        (!isProtected || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
@@ -234,7 +234,10 @@ const DeploymentTemplate = ({
         ? currentEditorTemplateData?.environmentConfig?.id > 0
         : !!currentEditorTemplateData?.chartConfig?.id
 
-    const areChangesPresent: boolean = useMemo(() => getAreTemplateChangesPresent(state), [currentEditorTemplateData])
+    const areChangesPresent: boolean = useMemo(
+        () => getAreTemplateChangesPresent(state),
+        [currentEditorTemplateData, wasGuiOrHideLockedKeysEdited],
+    )
 
     usePrompt({
         shouldPrompt: areChangesPresent,
@@ -345,9 +348,9 @@ const DeploymentTemplate = ({
                     : structuredClone(GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE),
             ])
 
-            const areNoVariablesPresent = shouldFetchPublishedTemplate
-                ? !publishedTemplate.areVariablesPresent && !currentEditorTemplate.areVariablesPresent
-                : !currentEditorTemplate.areVariablesPresent
+            const areNoVariablesPresent =
+                !currentEditorTemplate.areVariablesPresent &&
+                (!shouldFetchPublishedTemplate || !publishedTemplate.areVariablesPresent)
 
             if (areNoVariablesPresent) {
                 ToastManager.showToast({
@@ -1019,12 +1022,13 @@ const DeploymentTemplate = ({
         })
 
         try {
-            const selectedChartTemplateDetails = await handleFetchGlobalDeploymentTemplate(selectedChart)
+            const selectedChartTemplateDetails = await handleFetchDeploymentTemplate(selectedChart)
             dispatch({
                 type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
                 payload: {
                     selectedChart,
                     selectedChartTemplateDetails,
+                    isEnvView: !!envId,
                 },
             })
         } catch (error) {
@@ -1242,6 +1246,8 @@ const DeploymentTemplate = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             showDeleteOverrideDraftEmptyState,
+            isProtected,
+            isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1267,10 +1273,9 @@ const DeploymentTemplate = ({
         if (showDeleteOverrideDraftEmptyState) {
             return (
                 <GenericEmptyState
-                    image={noArtifact}
-                    title="This file is not overridden"
-                    // TODO: This message seems wrong connect with product once
-                    subTitle="Published override for this file will be available here"
+                    image={deleteOverrideEmptyStateImage}
+                    title="Delete override requested"
+                    subTitle="This override will be deleted on approval"
                 />
             )
         }

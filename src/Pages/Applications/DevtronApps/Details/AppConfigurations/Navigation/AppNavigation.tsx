@@ -207,15 +207,17 @@ export const AppNavigation = () => {
                         return <EnvironmentOverrideRouter key={item.stage} />
                     })}
                     {isJobView && <div className="h-100" />}
-                    <Button
-                        dataTestId="delete-job-app-button"
-                        variant={ButtonVariantType.secondary}
-                        size={ComponentSizeType.medium}
-                        style={ButtonStyleType.negative}
-                        onClick={deleteApp}
-                        text={`Delete ${isJobView ? 'Job' : 'Application'}`}
-                        fullWidth
-                    />
+                    <div className="dc__align-self-end">
+                        <Button
+                            dataTestId="delete-job-app-button"
+                            variant={ButtonVariantType.secondary}
+                            size={ComponentSizeType.medium}
+                            style={ButtonStyleType.negative}
+                            onClick={deleteApp}
+                            text={`Delete ${isJobView ? 'Job' : 'Application'}`}
+                            fullWidth
+                        />
+                    </div>
                 </>
             </Route>
         </Switch>

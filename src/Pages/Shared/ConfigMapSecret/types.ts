@@ -136,7 +136,7 @@ export interface CMSecretConfigData extends ConfigDatum {
 }
 
 export interface ConfigMapSecretFormProps
-    extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType'>> {
+    extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType' | 'appChartRef'>> {
     id: number
     configMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
@@ -208,6 +208,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'resolvedFormData'
         | 'restoreYAML'
         | 'setRestoreYAML'
+        | 'appChartRef'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string

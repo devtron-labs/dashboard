@@ -231,12 +231,11 @@ const ConfigToolbar = ({
                                 onClick={handleEnableReadmeView}
                                 disabled={isDisabled}
                                 dataTestId="config-readme-button"
-                                ariaLabel="Show Readme view"
+                                ariaLabel="View Readme"
                                 variant={ButtonVariantType.borderLess}
                                 style={ButtonStyleType.neutral}
                                 icon={<ICBookOpen className="scn-7" />}
                                 size={ComponentSizeType.xs}
-                                showAriaLabelInTippy={false}
                             />
                         </div>
                     </InvalidYAMLTippyWrapper>
@@ -315,17 +314,19 @@ const ConfigToolbar = ({
                                 <Fragment key={groupName}>
                                     {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
 
-                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
-                                        <PopupMenuItem
-                                            key={text}
-                                            text={text}
-                                            onClick={onClick}
-                                            dataTestId={dataTestId}
-                                            disabled={disabled}
-                                            icon={icon}
-                                            variant={variant}
-                                        />
-                                    ))}
+                                    <div className="flexbox-col">
+                                        {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
+                                            <PopupMenuItem
+                                                key={text}
+                                                text={text}
+                                                onClick={onClick}
+                                                dataTestId={dataTestId}
+                                                disabled={disabled}
+                                                icon={icon}
+                                                variant={variant}
+                                            />
+                                        ))}
+                                    </div>
                                 </Fragment>
                             )
                         })}

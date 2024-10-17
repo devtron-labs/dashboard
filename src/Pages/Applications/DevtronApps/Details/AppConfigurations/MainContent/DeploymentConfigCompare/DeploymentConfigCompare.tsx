@@ -57,6 +57,9 @@ export const DeploymentConfigCompare = ({
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
 
+    // STATES
+    const [convertVariables, setConvertVariables] = useState(false)
+
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
 
@@ -251,6 +254,7 @@ export const DeploymentConfigCompare = ({
     )
 
     const reload = () => {
+        setConvertVariables(false)
         reloadOptions()
         reloadComparisonData()
     }
@@ -275,12 +279,13 @@ export const DeploymentConfigCompare = ({
                 currentList,
                 compareList,
                 getNavItemHref,
-                sortOrder,
+                isManifestView,
+                convertVariables,
             })
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, sortOrder, isManifestView])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -467,6 +472,9 @@ export const DeploymentConfigCompare = ({
     const onTabClick = (tab: string) => {
         setSelectedTab(tab)
         const _isManifestView = tab === deploymentConfigDiffTabs.MANIFEST
+        if (_isManifestView) {
+            setConvertVariables(false)
+        }
         push(
             generatePath(path, {
                 ...params,
@@ -490,11 +498,20 @@ export const DeploymentConfigCompare = ({
         sortOrder,
     }
 
+    const scopeVariablesConfig: DeploymentConfigDiffProps['scopeVariablesConfig'] = {
+        convertVariables,
+        onConvertVariablesClick: () => setConvertVariables(!convertVariables),
+    }
+
+    // DATA CONSTANTS
+    const isLoading = comparisonDataLoader || optionsLoader
+    const isError = !!(comparisonDataErr || optionsErr)
+
     return (
         <DeploymentConfigDiff
-            isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
+            isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
-                error: (comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader),
+                error: !isLoading && isError,
                 code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}
@@ -506,6 +523,7 @@ export const DeploymentConfigCompare = ({
             navHelpText={getNavHelpText()}
             tabConfig={tabConfig}
             sortingConfig={!isManifestView ? sortingConfig : null}
+            scopeVariablesConfig={!isManifestView ? scopeVariablesConfig : null}
         />
     )
 }
