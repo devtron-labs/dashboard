@@ -44,6 +44,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { AppContextType } from '@Components/common'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { WorkflowDimensions } from './config'
@@ -379,6 +380,7 @@ export interface TriggerViewRouterProps {
 export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
+    appContext: AppContextType
 }
 
 export interface WebhookPayloadDataResponse {

@@ -74,7 +74,7 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
+import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
@@ -123,9 +123,14 @@ import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
+import { RenderCDMaterialContentProps } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'processDeploymentWindowStateAppGroup',
@@ -133,6 +138,7 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -855,10 +861,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
+        let _appName
         for (const _wf of filteredWorkflows) {
             const nd = _wf.nodes.find((node) => +node.id == +ciNodeId && node.type === 'CI')
             if (nd) {
                 _appID = _wf.appId
+                _appName = _wf.name
                 break
             }
         }
@@ -874,6 +882,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                       ciNodeId,
                       _appID,
                       getBranchValues(ciNodeId, filteredWorkflows, filteredCIPipelines.get(_appID)),
+                      _appName,
                   )
                 : null,
             getRuntimeParams ? getRuntimeParams(ciNodeId) : null,
@@ -2089,11 +2098,69 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const renderCDModalHeader = () => (
+        <div className="trigger-modal__header flex right">
+            <button type="button" className="dc__transparent" onClick={closeCDModal}>
+                <CloseIcon />
+            </button>
+        </div>
+    )
+
+    const renderCDMaterialContent = ({
+        node,
+        appId,
+        workflowId,
+        selectedAppName,
+        doesWorkflowContainsWebhook,
+        ciNodeId,
+    }: RenderCDMaterialContentProps) => {
+        if (node?.showPluginWarning && node?.isTriggerBlocked) {
+            return (
+                <>
+                    {this.renderCDModalHeader()}
+                    <MissingPluginBlockState
+                        configurePluginURL={getCDPipelineURL(
+                            String(appId),
+                            workflowId,
+                            doesWorkflowContainsWebhook ? '0' : ciNodeId,
+                            doesWorkflowContainsWebhook,
+                            node.id,
+                            true,
+                        )}
+                        nodeType={node.type}
+                    />
+                </>
+            )
+        }
+
+        return (
+            <CDMaterial
+                materialType={materialType}
+                appId={appId}
+                envId={node?.environmentId}
+                pipelineId={selectedCDNode?.id}
+                stageType={DeploymentNodeType[selectedCDNode?.type]}
+                envName={node?.environmentName}
+                closeCDModal={closeCDModal}
+                triggerType={node?.triggerType}
+                isVirtualEnvironment={isVirtualEnv}
+                parentEnvironmentName={node?.parentEnvironmentName}
+                // Wont need it and it might be isCDLoading
+                isLoading={isCILoading}
+                ciPipelineId={node?.connectingCiPipelineId}
+                deploymentAppType={node?.deploymentAppType}
+                selectedAppName={selectedAppName}
+            />
+        )
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
         if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
             let selectedAppName: string
+            let workflowId: string
+            let selectedCINode: CommonNodeAttr
 
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
@@ -2101,6 +2168,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                     })
                     if (node) {
+                        selectedCINode = _wf.nodes.find(
+                            (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                        )
+                        workflowId = _wf.id
                         _appID = _wf.appId
                         selectedAppName = _wf.name
                         break
@@ -2119,33 +2190,20 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     >
                         {isCDLoading ? (
                             <>
-                                <div className="trigger-modal__header flex right">
-                                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
+                                {renderCDModalHeader()}
                                 <div style={{ height: 'calc(100% - 55px)' }}>
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
                         ) : (
-                            <CDMaterial
-                                materialType={materialType}
-                                appId={_appID}
-                                envId={node?.environmentId}
-                                pipelineId={selectedCDNode?.id}
-                                stageType={DeploymentNodeType[selectedCDNode?.type]}
-                                envName={node?.environmentName}
-                                closeCDModal={closeCDModal}
-                                triggerType={node?.triggerType}
-                                isVirtualEnvironment={isVirtualEnv}
-                                parentEnvironmentName={node?.parentEnvironmentName}
-                                // Wont need it and it might be isCDLoading
-                                isLoading={isCILoading}
-                                ciPipelineId={node?.connectingCiPipelineId}
-                                deploymentAppType={node?.deploymentAppType}
-                                selectedAppName={selectedAppName}
-                            />
+                            renderCDMaterialContent({
+                                node,
+                                appId: _appID,
+                                selectedAppName,
+                                workflowId,
+                                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
+                                ciNodeId: selectedCINode?.id,
+                            })
                         )}
                     </div>
                 </VisibleModal>

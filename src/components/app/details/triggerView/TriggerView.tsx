@@ -49,6 +49,7 @@ import {
     importComponentFromFELibrary,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
+    withAppContext,
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
@@ -707,6 +708,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       ciNodeId,
                       this.props.match.params.appId,
                       getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
+                      this.props.appContext.currentAppName,
                   )
                 : null,
             getRuntimeParams?.(ciNodeId) ?? null,
@@ -1246,21 +1248,37 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as CommonNodeAttr)
     }
 
+    renderCDModalHeader = () => (
+        <div className="trigger-modal__header flex right">
+            <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
+                <CloseIcon />
+            </button>
+        </div>
+    )
+
     renderCDMaterialContent = () => {
         const node: CommonNodeAttr = this.getCDNode()
 
         if (node?.showPluginWarning && node?.isTriggerBlocked) {
+            const selectedWorkflow = this.state.workflows.find((wf) => +wf.id === +this.state.workflowId)
+            const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
+            const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
+
             return (
-                <MissingPluginBlockState
-                    configurePluginURL={getCDPipelineURL(
-                        this.props.match.params.appId,
-                        this.state.workflowId.toString(),
-                        this.getCINode()?.id,
-                        false,
-                        node.id,
-                    )}
-                    nodeType={node.type}
-                />
+                <>
+                    {this.renderCDModalHeader()}
+                    <MissingPluginBlockState
+                        configurePluginURL={getCDPipelineURL(
+                            this.props.match.params.appId,
+                            this.state.workflowId.toString(),
+                            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+                            doesWorkflowContainsWebhook,
+                            node.id,
+                            true,
+                        )}
+                        nodeType={node.type}
+                    />
+                </>
             )
         }
 
@@ -1299,11 +1317,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     >
                         {this.state.isLoading ? (
                             <>
-                                <div className="trigger-modal__header flex right">
-                                    <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
+                                {this.renderCDModalHeader()}
                                 <div style={{ height: 'calc(100% - 55px)' }}>
                                     <Progressing pageLoader size={32} />
                                 </div>
@@ -1471,4 +1485,4 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 }
 
-export default withRouter(TriggerView)
+export default withRouter(withAppContext(TriggerView))

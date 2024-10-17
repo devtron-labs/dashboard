@@ -22,10 +22,18 @@ export function getCDPipelineURL(
     ciPipelineId: string,
     isWebhookParent: boolean,
     cdPipelineId: string = null,
+    shouldComputeCompleteURL: boolean = false,
 ) {
-    return `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
+    const prefix = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
+    const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
+
+    if (shouldComputeCompleteURL) {
+        return `${prefix}${suffix}`
+    }
+
+    return suffix
 }
 
 export function getCIPipelineURL(

@@ -274,6 +274,7 @@ export default function CIPipeline({
                     formData: _formData as any,
                     pluginDataStoreState: pluginDataStore,
                     appId: +appId,
+                    appName,
                     ciPipelineId: +ciPipelineId,
                     branchName,
                     requiredPluginIds,

@@ -465,7 +465,7 @@ export default function CDPipeline({
             formData: form as any,
             pluginDataStoreState: pluginDataStore,
             appId: +appId,
-            cdPipelineId: +cdPipelineId,
+            appName,
             envName: form.environmentName,
             requiredPluginIds,
             resourceKind: ResourceKindType.cdPipeline,
