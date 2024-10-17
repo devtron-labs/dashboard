@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { Prompt } from 'react-router-dom'
 
 import {
@@ -19,7 +19,8 @@ import {
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
+import { ROLLOUT_DEPLOYMENT, UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
+import { isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
 
 import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 import {
@@ -30,7 +31,12 @@ import {
 } from './constants'
 import { getConfigMapSecretFormInitialValues, hasESO, hasHashiOrAWS } from './utils'
 import { getConfigMapSecretFormValidations } from './validations'
-import { renderESOInfo, renderExternalInfo, renderHashiOrAwsDeprecatedInfo } from './helpers'
+import {
+    renderChartVersionBelow3090NotSupportedText,
+    renderESOInfo,
+    renderExternalInfo,
+    renderHashiOrAwsDeprecatedInfo,
+} from './helpers'
 import {
     ConfigMapSecretFormProps,
     ConfigMapSecretDataTypeOptionType,
@@ -44,6 +50,7 @@ export const ConfigMapSecretForm = ({
     configMapSecretData,
     cmSecretStateLabel,
     isJob,
+    appChartRef,
     isDraft,
     componentType,
     isSubmitting,
@@ -60,15 +67,11 @@ export const ConfigMapSecretForm = ({
     const { setFormState, formDataRef } = useConfigMapSecretFormContext()
 
     // INITIAL FORM VALUES
-    const formInitialValues = useMemo(
-        () =>
-            getConfigMapSecretFormInitialValues({
-                configMapSecretData,
-                componentType,
-                cmSecretStateLabel,
-            }),
-        [],
-    )
+    const formInitialValues = getConfigMapSecretFormInitialValues({
+        configMapSecretData,
+        componentType,
+        cmSecretStateLabel,
+    })
 
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
@@ -84,6 +87,11 @@ export const ConfigMapSecretForm = ({
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
     const isFormDisabled = isHashiOrAWS || data.isResolvedData || (data.isSecret && isUnAuthorized)
+    const isChartVersion309OrBelow =
+        appChartRef &&
+        appChartRef.name === ROLLOUT_DEPLOYMENT &&
+        isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
+        isChartRef3090OrBelow(appChartRef.id)
     /**
      * * In create mode, show the prompt only if the form has unsaved changes (i.e., form is dirty).
      * * This ensures the user is warned about losing data when navigating away during creation.
@@ -245,6 +253,7 @@ export const ConfigMapSecretForm = ({
                         : 'Keys will be used as filename for subpath'}
                 </span>
             )}
+            {isChartVersion309OrBelow && renderChartVersionBelow3090NotSupportedText()}
         </p>
     )
 
@@ -253,8 +262,8 @@ export const ConfigMapSecretForm = ({
             <Checkbox
                 isChecked={data.isSubPathChecked}
                 onClick={stopPropagation}
-                disabled={isFormDisabled}
-                rootClassName={`m-0 ${data.isSubPathChecked ? 'configmap-secret-form__sub-path-checkbox' : ''}`}
+                disabled={isFormDisabled || isChartVersion309OrBelow}
+                rootClassName={`m-0 ${data.isSubPathChecked || isChartVersion309OrBelow ? 'configmap-secret-form__checkbox' : ''}`}
                 {...register('isSubPathChecked', { sanitizeFn: () => !data.isSubPathChecked })}
                 value="CHECKED"
             >
@@ -282,15 +291,15 @@ export const ConfigMapSecretForm = ({
     const renderFilePermission = () => (
         <div className="flexbox-col dc__gap-8">
             <Checkbox
-                dataTestId="configmap-file-permission-checkbox"
+                dataTestId={`${componentName}-file-permission-checkbox`}
                 isChecked={data.isFilePermissionChecked}
                 onClick={stopPropagation}
-                rootClassName="m-0"
+                rootClassName={`m-0 ${isChartVersion309OrBelow ? 'configmap-secret-form__checkbox' : ''}`}
                 value="CHECKED"
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || isChartVersion309OrBelow}
                 {...register('isFilePermissionChecked', { sanitizeFn: () => !data.isFilePermissionChecked })}
             >
-                <span className="fs-13">
+                <span className="cn-9 fs-13">
                     Set File Permission (same as&nbsp;
                     <a
                         href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
@@ -301,6 +310,8 @@ export const ConfigMapSecretForm = ({
                         defaultMode
                     </a>
                     &nbsp;for secrets in kubernetes)
+                    <br />
+                    {isChartVersion309OrBelow ? renderChartVersionBelow3090NotSupportedText() : null}
                 </span>
             </Checkbox>
             {data.isFilePermissionChecked && (
@@ -312,7 +323,7 @@ export const ConfigMapSecretForm = ({
                         tabIndex={0}
                         dataTestid="configmap-file-permission-textbox"
                         placeholder="eg. 0400 or 400"
-                        disabled={isFormDisabled}
+                        disabled={isFormDisabled || isChartVersion309OrBelow}
                         error={errors.filePermission}
                         noTrim
                     />
@@ -363,6 +374,7 @@ export const ConfigMapSecretForm = ({
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
                     text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    size={ComponentSizeType.medium}
                     onClick={handleSubmit(onSubmit, onError)}
                     isLoading={isSubmitting}
                     disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
@@ -373,6 +385,7 @@ export const ConfigMapSecretForm = ({
                         text="Cancel"
                         variant={ButtonVariantType.secondary}
                         style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.medium}
                         onClick={onCancel}
                         disabled={areScopeVariablesResolving}
                     />

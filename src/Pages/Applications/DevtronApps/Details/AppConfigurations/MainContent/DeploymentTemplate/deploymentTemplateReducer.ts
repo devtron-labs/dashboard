@@ -139,6 +139,7 @@ export type DeploymentTemplateActionState =
           payload: {
               selectedChart: DeploymentChartVersionType
               selectedChartTemplateDetails: DeploymentTemplateConfigState
+              isEnvView: boolean
           }
       }
     | {
@@ -431,7 +432,7 @@ export const deploymentTemplateReducer = (
             }
 
         case DeploymentTemplateActionType.CHART_CHANGE_SUCCESS: {
-            const { selectedChart, selectedChartTemplateDetails } = action.payload
+            const { selectedChart, selectedChartTemplateDetails, isEnvView } = action.payload
             const { id, name, isAppMetricsSupported } = selectedChart
 
             // We will retain editor values in all cases except when chart type is changed
@@ -446,6 +447,14 @@ export const deploymentTemplateReducer = (
                 schema: selectedChartTemplateDetails.schema,
                 readme: selectedChartTemplateDetails.readme,
                 guiSchema: selectedChartTemplateDetails.guiSchema,
+
+                ...(isEnvView
+                    ? {
+                          environmentConfig: selectedChartTemplateDetails.environmentConfig,
+                      }
+                    : {
+                          chartConfig: selectedChartTemplateDetails.chartConfig,
+                      }),
 
                 ...(isChartTypeChanged && {
                     editorTemplate: selectedChartTemplateDetails.editorTemplate,

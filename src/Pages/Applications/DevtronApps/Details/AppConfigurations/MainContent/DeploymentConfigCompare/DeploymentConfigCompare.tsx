@@ -490,11 +490,15 @@ export const DeploymentConfigCompare = ({
         sortOrder,
     }
 
+    // DATA CONSTANTS
+    const isLoading = comparisonDataLoader || optionsLoader
+    const isError = !!(comparisonDataErr || optionsErr)
+
     return (
         <DeploymentConfigDiff
-            isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
+            isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
-                error: (comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader),
+                error: !isLoading && isError,
                 code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}

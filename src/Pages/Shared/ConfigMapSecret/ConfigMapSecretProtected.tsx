@@ -5,6 +5,7 @@ import {
     Button,
     ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
+    ComponentSizeType,
     DraftAction,
     DraftState,
     noop,
@@ -15,9 +16,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { hasApproverAccess, importComponentFromFELibrary } from '@Components/common'
-import CompareConfigView from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/CompareConfigView'
-import NoPublishedVersionEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoPublishedVersionEmptyState'
-import { CompareConfigViewProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
+import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 
 import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
@@ -36,6 +35,7 @@ export const ConfigMapSecretProtected = ({
     publishedConfigMapSecretData,
     cmSecretStateLabel,
     isJob,
+    appChartRef,
     selectedProtectionViewTab,
     parentName,
     inheritedConfigMapSecretData,
@@ -169,6 +169,7 @@ export const ConfigMapSecretProtected = ({
                     : cmSecretStateLabel
             }
             isJob={isJob}
+            appChartRef={appChartRef}
             isProtected
             isDraft
             isSubmitting={false}
@@ -202,6 +203,7 @@ export const ConfigMapSecretProtected = ({
                         <Button
                             dataTestId="cm-secret-approve-btn"
                             text="Approve Changes"
+                            size={ComponentSizeType.medium}
                             style={ButtonStyleType.positive}
                         />
                     </ApproveRequestTippy>
@@ -209,6 +211,7 @@ export const ConfigMapSecretProtected = ({
                     <Button
                         dataTestId="cm-secret-approve-btn"
                         text="Approve Changes"
+                        size={ComponentSizeType.medium}
                         style={ButtonStyleType.positive}
                         disabled
                         showTooltip

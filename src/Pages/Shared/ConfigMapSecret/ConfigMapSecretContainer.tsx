@@ -4,7 +4,7 @@ import ReactGA from 'react-ga4'
 
 import {
     abortPreviousRequests,
-    AppEnvDeploymentConfigDTO,
+    API_STATUS_CODES,
     ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     DraftAction,
@@ -25,16 +25,14 @@ import {
 
 import { URLS } from '@Config/routes'
 import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
-import NoOverrideEmptyState from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/NoOverrideEmptyState'
-import ConfigHeader from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigHeader'
-import ConfigToolbar from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/ConfigToolbar'
-import { ConfigToolbarProps } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/types'
+import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import {
     getConfigMapSecretConfigData,
+    getConfigMapSecretConfigDraftData,
     getConfigMapSecretResolvedValues,
     overRideConfigMap,
     overRideSecret,
@@ -43,6 +41,7 @@ import {
 } from './ConfigMapSecret.service'
 import {
     getConfigMapSecretDraftAndPublishedData,
+    getConfigMapSecretError,
     getConfigMapSecretInheritedData,
     getConfigMapSecretPayload,
     getConfigMapSecretResolvedData,
@@ -56,6 +55,7 @@ import {
     CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
+    CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
 } from './types'
@@ -69,7 +69,6 @@ import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 
 import './styles.scss'
 
-const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -85,6 +84,7 @@ export const ConfigMapSecretContainer = ({
     envName,
     appName,
     parentName,
+    appChartRef,
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
@@ -162,11 +162,11 @@ export const ConfigMapSecretContainer = ({
     }, [envId, resolvedScopeVariables])
 
     // ASYNC CALL - CONFIGMAP/SECRET DATA
-    const [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr, reloadConfigMapSecret] = useAsync(
+    const [configMapSecretResLoading, configMapSecretRes, , reloadConfigMapSecret] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
-                    Promise.all([
+                    Promise.allSettled([
                         // Fetch Published Configuration
                         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
                             ? getConfigMapSecretConfigData({
@@ -197,14 +197,14 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Draft Configuration
-                        isProtected && getDraftByResourceName
-                            ? getDraftByResourceName(
-                                  appId,
-                                  envId ?? -1,
+                        isProtected
+                            ? getConfigMapSecretConfigDraftData({
+                                  appId: +appId,
+                                  envId: envId ? +envId : -1,
                                   componentType,
                                   name,
-                                  abortControllerRef.current.signal,
-                              )
+                                  abortControllerRef,
+                              })
                             : null,
                     ]),
                 abortControllerRef,
@@ -214,42 +214,47 @@ export const ConfigMapSecretContainer = ({
     )
 
     // CONFIGMAP/SECRET DATA
-    const { configMapSecretData, inheritedConfigMapSecretData, draftData, notFoundErr } = useMemo(() => {
+    const { configMapSecretData, inheritedConfigMapSecretData, draftData } = useMemo(() => {
         if (!configMapSecretResLoading && configMapSecretRes) {
-            // RESET FORM STATE FROM AFTER DATA LOAD
-            setFormState({ type: 'RESET' })
-
-            const { data, hasNotFoundErr } = getConfigMapSecretDraftAndPublishedData({
-                cmSecretConfigData: configMapSecretRes[0],
-                draftConfigData: configMapSecretRes[2]?.result,
-                configStage: selectedCMSecret.configStage,
-                cmSecretStateLabel,
+            const data = getConfigMapSecretDraftAndPublishedData({
+                cmSecretConfigDataRes: configMapSecretRes[0],
+                draftConfigDataRes: configMapSecretRes[2],
                 isSecret,
                 isJob,
             })
 
-            if (data.draftData) {
-                setAreCommentsPresent(data.draftData.commentsCount > 0)
-                setSelectedProtectionViewTab(
-                    data.draftData.draftState === DraftState.AwaitApproval
-                        ? ProtectConfigTabsType.COMPARE
-                        : ProtectConfigTabsType.EDIT_DRAFT,
-                )
-            }
-
             return {
                 ...data,
                 inheritedConfigMapSecretData: getConfigMapSecretInheritedData({
-                    cmSecretConfigData: configMapSecretRes[1],
+                    cmSecretConfigDataRes: configMapSecretRes[1],
                     isJob,
                     isSecret,
                 }),
-                notFoundErr: hasNotFoundErr,
             }
         }
 
-        return { configMapSecretData: null, draftData: null, inheritedConfigMapSecretData: null, notFoundErr: null }
+        return { configMapSecretData: null, draftData: null, inheritedConfigMapSecretData: null }
     }, [configMapSecretResLoading, configMapSecretRes])
+
+    // CONFIGMAP/SECRET DELETED
+    const configHasBeenDeleted = useMemo(
+        () =>
+            !configMapSecretResLoading && configMapSecretRes
+                ? !configMapSecretData && !inheritedConfigMapSecretData && !draftData
+                : null,
+        [configMapSecretResLoading, configMapSecretRes],
+    )
+
+    // CONFIGMAP/SECRET ERROR
+    const configMapSecretResErr = useMemo(
+        () =>
+            !configMapSecretResLoading && configMapSecretRes
+                ? getConfigMapSecretError(configMapSecretRes[0]) ||
+                  getConfigMapSecretError(configMapSecretRes[1]) ||
+                  getConfigMapSecretError(configMapSecretRes[2])
+                : null,
+        [configMapSecretResLoading, configMapSecretRes],
+    )
 
     // ASYNC CALL - CONFIGMAP/SECRET RESOLVED DATA
     const [resolvedScopeVariablesResLoading, resolvedScopeVariablesRes, reloadResolvedScopeVariablesResErr] = useAsync(
@@ -291,20 +296,45 @@ export const ConfigMapSecretContainer = ({
         }, [resolvedScopeVariablesRes])
 
     // DATA CONSTANTS
-    const isError = notFoundErr || configMapSecretResErr
+    const isError = configHasBeenDeleted || configMapSecretResErr
     const isLoading =
         configMapSecretResLoading ||
         isEnvConfigLoading ||
         (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
-    const showConfigToolbar =
-        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED || !!draftData || hideNoOverrideEmptyState
+    const hideConfigToolbar =
+        cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        !hideNoOverrideEmptyState &&
+        !draftData
+
+    // RESET FORM STATE FROM AFTER DATA LOAD
+    useEffect(() => {
+        if (!configMapSecretResLoading && configMapSecretRes) {
+            // might be redundant
+            setFormState({ type: 'RESET' })
+        }
+    }, [configMapSecretResLoading, configMapSecretRes])
+
+    // SET DRAFT DATA BASED STATES
+    useEffect(() => {
+        if (draftData) {
+            setAreCommentsPresent(draftData.commentsCount > 0)
+            setSelectedProtectionViewTab(
+                draftData.draftState === DraftState.AwaitApproval
+                    ? ProtectConfigTabsType.COMPARE
+                    : ProtectConfigTabsType.EDIT_DRAFT,
+            )
+        }
+    }, [draftData])
 
     // ERROR HANDLING
     useEffect(() => {
         if (
-            (!isJob && configMapSecretRes?.[0] && !(configMapSecretRes[0] as AppEnvDeploymentConfigDTO).isAppAdmin) ||
-            (!isJob && configMapSecretRes?.[1] && !(configMapSecretRes[1] as AppEnvDeploymentConfigDTO).isAppAdmin) ||
+            (!isJob &&
+                (configMapSecretData?.unAuthorized ||
+                    inheritedConfigMapSecretData?.unAuthorized ||
+                    draftData?.unAuthorized)) ||
             configMapSecretResErr?.code === ERROR_STATUS_CODE.PERMISSION_DENIED
         ) {
             ToastManager.showToast({
@@ -316,7 +346,7 @@ export const ConfigMapSecretContainer = ({
             showError(configMapSecretResErr)
         }
 
-        if (notFoundErr) {
+        if (configHasBeenDeleted) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: `The ${componentName} '${name}' has been deleted`,
@@ -326,7 +356,14 @@ export const ConfigMapSecretContainer = ({
         if (reloadResolvedScopeVariablesResErr) {
             setResolvedScopeVariables(false)
         }
-    }, [configMapSecretRes, configMapSecretResErr, notFoundErr, reloadResolvedScopeVariablesResErr])
+    }, [
+        configMapSecretData,
+        inheritedConfigMapSecretData,
+        draftData,
+        configMapSecretResErr,
+        configHasBeenDeleted,
+        reloadResolvedScopeVariablesResErr,
+    ])
 
     // NO SCOPE VARIABLES PRESENT HANDLING
     useEffect(() => {
@@ -367,7 +404,9 @@ export const ConfigMapSecretContainer = ({
 
     // METHODS
     const updateCMSecret = (configName?: string) => {
+        setFormState({ type: 'RESET' })
         setResolvedScopeVariables(false)
+        setHideNoOverrideEmptyState(false)
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
@@ -443,14 +482,10 @@ export const ConfigMapSecretContainer = ({
         setDraftPayload(null)
     }
 
-    const handleError = (
-        actionType: DraftAction,
-        err: any,
-        payloadData?: ReturnType<typeof getConfigMapSecretPayload>,
-    ) => {
+    const handleError = (actionType: DraftAction, err: any, payloadData?: CMSecretPayloadType) => {
         if (err instanceof ServerErrors && Array.isArray(err.errors)) {
             err.errors.forEach((error) => {
-                if (error.code === 423) {
+                if (error.code === API_STATUS_CODES.LOCKED) {
                     if (actionType === DraftAction.Delete) {
                         setOpenDeleteModal('protectedDeleteModal')
                     } else {
@@ -605,6 +640,7 @@ export const ConfigMapSecretContainer = ({
                 setRestoreYAML={setRestoreYAML}
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                appChartRef={appChartRef}
             />
         ) : (
             <ConfigMapSecretForm
@@ -622,6 +658,7 @@ export const ConfigMapSecretContainer = ({
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 restoreYAML={restoreYAML}
                 setRestoreYAML={setRestoreYAML}
+                appChartRef={appChartRef}
             />
         )
 
@@ -684,10 +721,10 @@ export const ConfigMapSecretContainer = ({
             return <Progressing fullHeight pageLoader />
         }
 
-        if (isError && !isLoading) {
+        if (isError) {
             return (
                 <ErrorScreenManager
-                    code={notFoundErr ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}
+                    code={configHasBeenDeleted ? ERROR_STATUS_CODE.NOT_FOUND : configMapSecretResErr?.code}
                     redirectURL={onErrorRedirectURL}
                     reload={reloadConfigMapSecret}
                 />
@@ -705,12 +742,14 @@ export const ConfigMapSecretContainer = ({
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     }
-                    showNoOverride={cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData}
+                    showNoOverride={
+                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !hideNoOverrideEmptyState && !draftData
+                    }
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
                     hideDryRunTab
                 />
-                {showConfigToolbar && (
+                {!hideConfigToolbar && (
                     <ConfigToolbar
                         configHeaderTab={configHeaderTab}
                         mergeStrategy={mergeStrategy}

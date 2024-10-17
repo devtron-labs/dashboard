@@ -57,11 +57,42 @@ export const renderExternalInfo = (renderCondition: boolean, componentType: CMSe
 
 export const renderHashiOrAwsDeprecatedInfo = () => (
     <InfoColourBar
-        classname="warn cn-9 fs-13 lh-20"
-        message="Kubernetes External Secret (KES) has been deprecated and will be removed in the following Devtron version. You can delete this file and create a secret using External Secret Operator (ESO)."
+        classname="warn"
+        message={
+            <p className="m-0 cn-9 fs-13 lh-20">
+                <span>
+                    Kubernetes External Secret (KES) has been deprecated and will be removed in the next Devtron
+                    version. You can delete this file and create a secret using
+                </span>
+                &nbsp;
+                <a
+                    className="anchor"
+                    href="https://github.com/external-secrets/external-secrets"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    External Secret Operator (ESO).
+                </a>
+            </p>
+        }
         Icon={ICWarningY5}
         iconSize={20}
     />
+)
+
+export const renderChartVersionBelow3090NotSupportedText = () => (
+    <span className="fs-12 fw-4">
+        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
+        <span className="cn-7">Learn more about</span>&nbsp;
+        <a
+            className="dc__link"
+            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+            rel="noreferrer noopener"
+            target="_blank"
+        >
+            Deployment Template &gt; Chart Version
+        </a>
+    </span>
 )
 
 export const renderYamlInfoText = () => (

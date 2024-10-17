@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
@@ -16,6 +16,7 @@ import {
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
@@ -97,6 +98,14 @@ export const EnvConfigurationsNav = ({
             ],
         }
     }
+
+    useEffect(() => {
+        if (environmentData.id === BASE_CONFIGURATIONS.id && envId) {
+            // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
+            const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
+            history.push(`${basePath}${resourcePath}`)
+        }
+    }, [environmentData, envId])
 
     useEffect(() => {
         // Fetch the env configuration
@@ -236,7 +245,7 @@ export const EnvConfigurationsNav = ({
     const envOptions: OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>> = [
         ...baseEnvOption,
         {
-            label: 'Environments',
+            label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
             options: environments.map(({ name, id, isProtected }) => ({
                 label: name,
                 value: id,
@@ -252,6 +261,12 @@ export const EnvConfigurationsNav = ({
 
         const name = pathname.split(`${resourceType}/`)[1]
         history.push(getNavigationPath(path, params, value, resourceType, name, paramToCheck))
+    }
+
+    const handleDeploymentTemplateNavLinkOnClick = (e: MouseEvent<HTMLAnchorElement>) => {
+        if (pathname === updatedEnvConfig.deploymentTemplate.href) {
+            e.preventDefault()
+        }
     }
 
     const renderEnvSelector = () => (
@@ -316,10 +331,14 @@ export const EnvConfigurationsNav = ({
                         {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
                             <NavLink
                                 data-testid="env-deployment-template"
-                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
+                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
                                 to={updatedEnvConfig.deploymentTemplate.href}
+                                onClick={handleDeploymentTemplateNavLinkOnClick}
                             >
-                                <span className="dc__truncate">{updatedEnvConfig.deploymentTemplate.title}</span>
+                                <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
+                                <span className="dc__truncate flex-grow-1">
+                                    {updatedEnvConfig.deploymentTemplate.title}
+                                </span>
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}

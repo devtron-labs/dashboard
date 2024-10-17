@@ -23,7 +23,7 @@
         }
     }
 
-    &__sub-path-checkbox {
+    &__checkbox {
         .form__checkbox-container {
             align-self: flex-start;
         }
@@ -65,7 +65,7 @@
 
     &__approval-tippy {
         .tippy-box {
-            top: 55px;
+            top: 50px;
         }
     }
 }

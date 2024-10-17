@@ -26,7 +26,7 @@
     --full-screen-modal-index: 10;
     --page-header-index: 12;
     --filter-menu-index: 7;
-    --transparent-div-index: 6;
+    --transparent-div-index: 24;
     --app-list-header-index: 3;
     --navigation-index: 13;
     --tooltip-index: 7;
@@ -4833,6 +4833,16 @@ textarea::placeholder {
     background: linear-gradient(14deg, var(--N50) 48.93%, #d4e6f7 80.3%);
 }
 
+@mixin nav-item-icon-svg-styles($color) {
+    svg.dc__nav-item__start-icon *[stroke^='#'] {
+        stroke: $color;
+    }
+
+    svg.dc__nav-item__start-icon *[fill^='#'] {
+        fill: $color;
+    }
+}
+
 .dc__nav-item {
     &.active {
         color: var(--B500);
@@ -4843,6 +4853,8 @@ textarea::placeholder {
             color: var(--B500);
             background: var(--B100);
         }
+
+        @include nav-item-icon-svg-styles(var(--B500));
     }
 
     &:hover {
@@ -4854,6 +4866,8 @@ textarea::placeholder {
     &__text {
         max-width: 192px;
     }
+
+    @include nav-item-icon-svg-styles(var(--N700));
 }
 
 .bw-1_5 {

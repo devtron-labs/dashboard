@@ -115,6 +115,7 @@ export const getConfigToolbarPopupConfig = ({
     handleShowEditHistory,
     isProtected = false,
     isDeletable = false,
+    isDeleteOverrideDraftPresent = false,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -150,7 +151,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !isDeleteOverrideDraftPresent) {
         secondConfigSegment.push({
             text: 'Delete override',
             onClick: handleDeleteOverride,

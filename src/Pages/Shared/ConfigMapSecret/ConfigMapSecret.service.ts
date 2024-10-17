@@ -26,10 +26,12 @@ import {
     getAppEnvDeploymentConfig,
     ConfigResourceType,
     getIsRequestAborted,
+    DraftMetadataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     CMSecretDTO,
     CMSecretComponentType,
@@ -41,6 +43,8 @@ import {
     OverrideConfigMapSecretProps,
     GetCMSecretProps,
 } from './types'
+
+const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export const updateConfigMap = ({ id, appId, payload, signal }: UpdateConfigMapSecretProps) =>
     post(
@@ -156,6 +160,31 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
               ))
 
         return result as GetConfigMapSecretConfigDataReturnType<IsJob>
+    } catch (error) {
+        if (!getIsRequestAborted(error)) {
+            throw error
+        }
+
+        return null
+    }
+}
+
+export const getConfigMapSecretConfigDraftData = async ({
+    appId,
+    envId,
+    name,
+    componentType,
+    abortControllerRef,
+}: Pick<
+    GetConfigMapSecretConfigDataProps<false>,
+    'abortControllerRef' | 'appId' | 'envId' | 'componentType' | 'name'
+>) => {
+    try {
+        const res = await (getDraftByResourceName
+            ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef.current.signal)
+            : null)
+
+        return res ? (res.result as DraftMetadataDTO) : null
     } catch (error) {
         if (!getIsRequestAborted(error)) {
             throw error
