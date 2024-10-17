@@ -154,7 +154,7 @@ export class CINode extends Component<CINodeProps> {
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
-                                onClick={this.handleLinkedCIWorkflowChipClick}
+                                onClick={this.props.isReadonlyView ? null : this.handleLinkedCIWorkflowChipClick}
                             >
                                 <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                                 <span>{this.props.linkedCount}</span>
