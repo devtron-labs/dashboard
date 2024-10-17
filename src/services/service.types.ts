@@ -89,17 +89,6 @@ export interface AllWorkflows extends ResponseType {
     result?: AppIdWorkflowNamesMapping
 }
 
-export interface LastExecutionMinResponseType {
-    code: number
-    status: string
-    result: {
-        lastExecution: string
-        imageScanDeployInfoId: number
-        severityCount: SeverityCount
-        scanned: boolean
-    }
-}
-
 export interface HostURLConfig {
     id: number
     key: string

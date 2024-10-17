@@ -29,15 +29,15 @@ import {
     getUrlWithSearchParams,
     ROUTES,
     SERVER_MODE,
+    ACCESS_TYPE_MAP,
+    ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
+import { Routes } from '../config'
 import {
     CDPipelines,
     AppListMin,
     ProjectFilteredApps,
     AppOtherEnvironment,
-    LastExecutionMinResponseType,
     ClusterEnvironmentDetailList,
     ClusterListResponse,
     LoginCountType,
