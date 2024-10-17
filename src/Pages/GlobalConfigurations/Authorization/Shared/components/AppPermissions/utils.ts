@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, ACCESS_TYPE_MAP, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
-import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { EntityTypes } from '../../../constants'
+import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 import { DirectPermissionRow } from './types'
 

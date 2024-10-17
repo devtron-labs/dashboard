@@ -681,7 +681,6 @@ export default function CDPipeline({
             ..._dockerRegistries,
             value: _dockerRegistries?.id,
             label: _dockerRegistries?.id,
-            startIcon: <div className={`dc__registry-icon ${_dockerRegistries?.registryType}`} /> || null,
         }
     }
 
