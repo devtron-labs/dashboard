@@ -56,6 +56,7 @@ export const EnvConfigurationsNav = ({
     // STATES
     const [expandedIds, setExpandedIds] =
         useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
+
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
@@ -318,10 +319,10 @@ export const EnvConfigurationsNav = ({
     }
 
     return (
-        <>
+        <nav className="flexbox-col h-100 dc__overflow-hidden">
             {renderEnvSelector()}
             {showComparison && CompareWithButton && renderCompareWithBtn()}
-            <div className="mw-none p-8">
+            <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
@@ -344,6 +345,6 @@ export const EnvConfigurationsNav = ({
                     </>
                 )}
             </div>
-        </>
+        </nav>
     )
 }

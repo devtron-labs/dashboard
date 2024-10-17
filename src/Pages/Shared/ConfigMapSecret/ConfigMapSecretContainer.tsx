@@ -464,7 +464,10 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const handleNoOverrideFormCancel = () => setHideNoOverrideEmptyState(false)
+    const handleNoOverrideFormCancel = () => {
+        setFormState({ type: 'RESET' })
+        setHideNoOverrideEmptyState(false)
+    }
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
         setMergeStrategy(strategy)
@@ -606,6 +609,7 @@ export const ConfigMapSecretContainer = ({
                 cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN &&
                 draftData?.action !== DraftAction.Delete &&
                 !isCreateState,
+            isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
