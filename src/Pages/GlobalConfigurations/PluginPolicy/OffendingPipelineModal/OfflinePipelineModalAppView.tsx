@@ -12,7 +12,7 @@ const OfflinePipelineModalAppView = ({ appId }: OfflinePipelineModalAppViewProps
     const match = useRouteMatch<any>()
 
     const [isWorkflowsLoading, workflowsResponse, workflowsError, refetchWorkflows] = useAsync(
-        () => getInitialWorkflows(appId.toString(), WorkflowCreate, WorkflowCreate.workflow, true, false, null),
+        () => getInitialWorkflows(appId.toString(), WorkflowCreate, WorkflowCreate.workflow, true, false, null, false),
         [appId],
         !!appId,
     )
@@ -63,6 +63,7 @@ const OfflinePipelineModalAppView = ({ appId }: OfflinePipelineModalAppViewProps
                         reloadEnvironments={noop}
                         workflowPositionState={null}
                         handleDisplayLoader={noop}
+                        isOffendingPipelineView
                     />
                 ))
             ) : (
