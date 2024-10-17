@@ -26,10 +26,10 @@ import {
     trash,
     UserListFilterParams,
     UserStatus,
+    CustomRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import {
-    CustomRoles,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
