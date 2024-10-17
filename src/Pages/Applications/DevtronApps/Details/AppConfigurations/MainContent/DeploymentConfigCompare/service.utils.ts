@@ -21,18 +21,21 @@ export const getConfigDiffData = ({
     pipelineId,
 }: GetConfigDiffDataProps) =>
     getAppEnvDeploymentConfig({
-        ...(type === 'app'
-            ? {
-                  appName,
-                  envName: compareName || '',
-              }
-            : {
-                  appName: compareName || '',
-                  envName,
-              }),
-        configType,
-        identifierId,
-        pipelineId,
+        params: {
+            configArea: 'AppConfiguration',
+            ...(type === 'app'
+                ? {
+                      appName,
+                      envName: compareName || '',
+                  }
+                : {
+                      appName: compareName || '',
+                      envName,
+                  }),
+            configType,
+            identifierId,
+            pipelineId,
+        },
     })
 
 export const getDeploymentTemplateData = ({
@@ -51,16 +54,19 @@ export const getDeploymentTemplateData = ({
     return configType !== AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS &&
         configType !== AppEnvDeploymentConfigType.DEFAULT_VERSION
         ? getAppEnvDeploymentConfig({
-              ...(type === 'app'
-                  ? {
-                        appName,
-                        envName: compareName || '',
-                    }
-                  : {
-                        appName: compareName || '',
-                        envName,
-                    }),
-              configType,
+              params: {
+                  configArea: 'AppConfiguration',
+                  ...(type === 'app'
+                      ? {
+                            appName,
+                            envName: compareName || '',
+                        }
+                      : {
+                            appName: compareName || '',
+                            envName,
+                        }),
+                  configType,
+              },
           })
         : nullResponse
 }
