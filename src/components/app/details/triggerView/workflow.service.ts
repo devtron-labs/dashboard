@@ -75,7 +75,7 @@ export const getCreateWorkflows = (
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
-const getInitialWorkflows = (
+export const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
