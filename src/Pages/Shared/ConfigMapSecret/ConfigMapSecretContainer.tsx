@@ -457,6 +457,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleCreateOverride = () => {
+        setResolvedScopeVariables(false)
         setHideNoOverrideEmptyState(true)
         ReactGA.event({
             category: gaEventCategory,
