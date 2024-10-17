@@ -793,8 +793,8 @@ function cdPipelineToNode(
     }
 
     CD.showPluginWarning = preCD?.showPluginWarning || postCD?.showPluginWarning
-    CD.isTriggerBlocked = preCD?.isTriggerBlocked || postCD?.isTriggerBlocked
-    CD.pluginBlockState = preCD?.pluginBlockState || postCD?.pluginBlockState
+    CD.isTriggerBlocked = false
+    CD.pluginBlockState = null
     return CD
 }
 

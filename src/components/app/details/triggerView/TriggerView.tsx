@@ -44,6 +44,7 @@ import {
     getGitMaterialByCommitHash,
 } from '../../service'
 import {
+    getCDPipelineURL,
     getCIPipelineURL,
     importComponentFromFELibrary,
     preventBodyScroll,
@@ -92,10 +93,15 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -1240,6 +1246,44 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as CommonNodeAttr)
     }
 
+    renderCDMaterialContent = () => {
+        const node: CommonNodeAttr = this.getCDNode()
+
+        if (node?.showPluginWarning && node?.isTriggerBlocked) {
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={getCDPipelineURL(
+                        this.props.match.params.appId,
+                        this.state.workflowId.toString(),
+                        this.getCINode()?.id,
+                        false,
+                        node.id,
+                    )}
+                    nodeType={node.type}
+                />
+            )
+        }
+
+        return (
+            <CDMaterial
+                materialType={this.state.materialType}
+                appId={Number(this.props.match.params.appId)}
+                pipelineId={this.state.cdNodeId}
+                stageType={DeploymentNodeType[this.state.nodeType]}
+                envName={node?.environmentName}
+                envId={node?.environmentId}
+                closeCDModal={this.closeCDModal}
+                triggerType={node.triggerType}
+                isVirtualEnvironment={node.isVirtualEnvironment}
+                parentEnvironmentName={node.parentEnvironmentName}
+                isLoading={this.state.isLoading}
+                ciPipelineId={node.connectingCiPipelineId}
+                isSaveLoading={this.state.isSaveLoading}
+                deploymentAppType={node?.deploymentAppType}
+            />
+        )
+    }
+
     renderCDMaterial() {
         if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node')) {
             const node: CommonNodeAttr = this.getCDNode()
@@ -1265,22 +1309,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 </div>
                             </>
                         ) : (
-                            <CDMaterial
-                                materialType={this.state.materialType}
-                                appId={Number(this.props.match.params.appId)}
-                                pipelineId={this.state.cdNodeId}
-                                stageType={DeploymentNodeType[this.state.nodeType]}
-                                envName={node?.environmentName}
-                                envId={node?.environmentId}
-                                closeCDModal={this.closeCDModal}
-                                triggerType={node.triggerType}
-                                isVirtualEnvironment={node.isVirtualEnvironment}
-                                parentEnvironmentName={node.parentEnvironmentName}
-                                isLoading={this.state.isLoading}
-                                ciPipelineId={node.connectingCiPipelineId}
-                                isSaveLoading={this.state.isSaveLoading}
-                                deploymentAppType={node?.deploymentAppType}
-                            />
+                            this.renderCDMaterialContent()
                         )}
                     </div>
                 </VisibleModal>
