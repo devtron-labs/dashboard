@@ -196,10 +196,7 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.configmaps.map((configMap) => {
-                const { title, subtitle, href, iconConfig } = configMap
-                return { title, subtitle, href, iconConfig }
-            }),
+            items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
             isExpanded: expandedIds?.configmap,
         },
