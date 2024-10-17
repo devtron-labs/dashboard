@@ -17,7 +17,7 @@ const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisab
     }
 
     return (
-        <div className="flexbox dc__gap-4 dc__align-items-center">
+        <div className="flexbox dc__gap-6 dc__align-items-center">
             <InfoIconTippy
                 heading="Merge strategy"
                 additionalContent={<OverrideStrategyTippyContent />}
