@@ -954,6 +954,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 buttonProps: {
                                     text: 'Edit Pipeline',
                                     dataTestId: 'edit-pipeline-btn',
+                                    onClick: this.redirectToCIPipeline,
                                 },
                             })
                         } else {
