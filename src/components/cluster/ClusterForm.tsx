@@ -445,6 +445,9 @@ export default function ClusterForm({
         if (id && id !== 1 && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
+        if (e.target.name === "token") {
+            e.target.value = e.target.value?.trim()
+        }
     }
 
     const getClusterPayload = () => {
