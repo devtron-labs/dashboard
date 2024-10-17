@@ -34,9 +34,10 @@ import {
     ToastVariantType,
     BlockedStateData,
     PromiseAllStatusType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
@@ -266,9 +267,7 @@ const BulkCITrigger = ({
                 )
                 responses.forEach((res, index) => {
                     if (res.status === PromiseAllStatusType.FULFILLED) {
-                        policyListMap[appList[index]?.appId] = res.value
-                            ? processConsequenceData(res.value)
-                            : null
+                        policyListMap[appList[index]?.appId] = res.value ? processConsequenceData(res.value) : null
                     }
                 })
                 setAppPolicy(policyListMap)
@@ -588,6 +587,8 @@ const BulkCITrigger = ({
     }
 
     const renderAppName = (app: BulkCIDetailType, index: number): JSX.Element | null => {
+        const nodeType: CommonNodeAttr['type'] = 'CI'
+
         return (
             <div
                 className={`fw-6 fs-13 cn-9 pt-12 ${app.appId === selectedApp.appId ? 'pb-12' : ''}`}
@@ -608,7 +609,18 @@ const BulkCITrigger = ({
                     </span>
                 )}
                 {appPolicy[app.appId] && PolicyEnforcementMessage && (
-                    <PolicyEnforcementMessage consequence={appPolicy[app.appId]} />
+                    <PolicyEnforcementMessage
+                        consequence={appPolicy[app.appId]}
+                        configurePluginURL={getCIPipelineURL(
+                            String(app.appId),
+                            app.workFlowId,
+                            true,
+                            app.ciPipelineId,
+                            false,
+                            app.isJobCI,
+                        )}
+                        nodeType={nodeType}
+                    />
                 )}
             </div>
         )
@@ -686,11 +698,12 @@ const BulkCITrigger = ({
     const isStartBuildDisabled = (): boolean => {
         return appList.some(
             (app) =>
-                app.errorMessage &&
-                (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
-                    !app.material.some(
-                        (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
-                    )),
+                appPolicy[app.appId]?.action === ConsequenceAction.BLOCK ||
+                (app.errorMessage &&
+                    (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
+                        !app.material.some(
+                            (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
+                        ))),
         )
     }
 

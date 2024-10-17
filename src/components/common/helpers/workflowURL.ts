@@ -39,13 +39,13 @@ export function getCDPipelineURL(
 export function getCIPipelineURL(
     appId: string,
     workflowId: string,
-    isGitNotConfigured: boolean,
+    addPrefix: boolean,
     ciPipelineId: string | number = null,
     isJobView?: boolean,
     isCIJob?: boolean,
 ) {
     let prefixURL = ''
-    if (isGitNotConfigured) {
+    if (addPrefix) {
         prefixURL = `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
