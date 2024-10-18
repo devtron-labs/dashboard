@@ -41,6 +41,7 @@ import {
     RuntimeParamsListItemType,
     ToastManager,
     ToastVariantType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -74,6 +75,8 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -371,6 +374,18 @@ export default function BulkCDTrigger({
     }
 
     const renderEmptyView = (): JSX.Element => {
+        if (selectedApp.isTriggerBlockedDueToPlugin) {
+            const commonNodeAttrType: CommonNodeAttr['type'] =
+                selectedApp.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={selectedApp.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                />
+            )
+        }
+
         if (unauthorizedAppList[selectedApp.appId]) {
             return (
                 <EmptyView
@@ -387,6 +402,70 @@ export default function BulkCDTrigger({
                 subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
+    }
+
+    const renderAppWarningAndErrors = (app: BulkCDDetailType) => {
+        const commonNodeAttrType: CommonNodeAttr['type'] =
+            app.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+        if (unauthorizedAppList[app.appId]) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4 dc__no-shrink" />
+                    <span className="cy-7 fw-4 fs-12 dc__truncate">{BULK_CD_MESSAGING.unauthorized.title}</span>
+                </div>
+            )
+        }
+
+        if (tagNotFoundWarningsMap.has(app.appId)) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <Error
+                        className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp"
+                    />
+
+                    <span className="fw-4 fs-12 cr-5 dc__truncate">
+                        {tagNotFoundWarningsMap.get(app.appId)}
+                    </span>
+                </div>
+            )
+        }
+
+        if (app.isTriggerBlockedDueToPlugin) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                />
+            )
+        }
+
+        if (app.warningMessage && !app.showPluginWarning) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <Error
+                        className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7"
+                    />
+
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">
+                        {tagNotFoundWarningsMap.get(app.appId)}
+                    </span>
+                </div>
+            )
+        }
+
+        if (app.showPluginWarning) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                />
+            )   
+        }
+
+        return null
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -659,34 +738,7 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            {(app.warningMessage ||
-                                tagNotFoundWarningsMap.has(app.appId) ||
-                                appDeploymentWindowMap[app.appId]?.warningMessage) && (
-                                <span
-                                    className={`flex left top fw-4 m-0 fs-12 ${
-                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
-                                    }`}
-                                >
-                                    <Error
-                                        className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
-                                            tagNotFoundWarningsMap.has(app.appId)
-                                                ? 'alert-icon-r5-imp'
-                                                : 'warning-icon-y7'
-                                        }`}
-                                    />
-                                    <p className="m-0">
-                                        {app.warningMessage ||
-                                            appDeploymentWindowMap[app.appId]?.warningMessage ||
-                                            tagNotFoundWarningsMap.get(app.appId)}
-                                    </p>
-                                </span>
-                            )}
-                            {unauthorizedAppList[app.appId] && (
-                                <span className="flex left cy-7 fw-4 fs-12">
-                                    <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.unauthorized.title}
-                                </span>
-                            )}
+                            {renderAppWarningAndErrors(app)}
                         </div>
                     ))}
                 </div>

@@ -1748,6 +1748,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
+                const doesWorkflowContainsWebhook = !!wf.nodes.find((node) => node.type === WorkflowNodeType.WEBHOOK)
                 let _selectedNode: CommonNodeAttr
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
@@ -1778,6 +1779,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         tagsEditable: wf.tagsEditable,
                         ciPipelineId: _selectedNode.connectingCiPipelineId,
                         hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete,
+                        showPluginWarning: _selectedNode.showPluginWarning,
+                        isTriggerBlockedDueToPlugin: _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning,
+                        configurePluginURL: getCDPipelineURL(
+                            String(wf.appId),
+                            wf.id,
+                            doesWorkflowContainsWebhook ? '0' : String(_selectedNode.connectingCiPipelineId),
+                            doesWorkflowContainsWebhook,
+                            _selectedNode.id,
+                            true,
+                        ),
+                        consequence: _selectedNode.pluginBlockState,
+                        warningMessage: _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning ? `${DeploymentNodeType[_selectedNode.type] === DeploymentNodeType.PRECD ? 'Pre-Deployment': 'Post-Deployment'} is blocked` : ''
                     })
                 } else {
                     let warningMessage = ''

@@ -71,7 +71,6 @@ type CDMaterialBulkRuntimeParams =
 type CDMaterialPluginWarningProps =
     | {
           showPluginWarningBeforeTrigger: boolean
-          isTriggerBlockedDueToPlugin?: boolean
           consequence?: ConsequenceType
           configurePluginURL?: string
       }
@@ -79,7 +78,6 @@ type CDMaterialPluginWarningProps =
           showPluginWarningBeforeTrigger?: never
           consequence?: never
           configurePluginURL?: never
-          isTriggerBlockedDueToPlugin?: never
       }
 
 export type CDMaterialProps = {
@@ -150,6 +148,7 @@ export type CDMaterialProps = {
      * To be consumed through variable called appName
      */
     selectedAppName?: string
+    isTriggerBlockedDueToPlugin?: boolean
 } & CDMaterialBulkRuntimeParams &
     CDMaterialPluginWarningProps
 

@@ -1258,7 +1258,7 @@ const CDMaterial = ({
             return (
                 <MissingPluginBlockState
                     configurePluginURL={configurePluginURL}
-                    nodeType={isPreOrPostCD}
+                    nodeType={allowWarningWithTippyNodeTypeProp}
                 />
             )
         }
