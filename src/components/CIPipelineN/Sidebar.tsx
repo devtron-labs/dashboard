@@ -21,6 +21,7 @@ import {
     CHECKBOX_VALUE,
     PipelineFormType,
     SelectPicker,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
@@ -314,13 +315,14 @@ export const Sidebar = ({
                 <div className="sidebar-action-container">
                     {showMandatoryWarning() && (
                         <MandatoryPluginWarning
-                            stage={activeStageName}
                             mandatoryPluginData={mandatoryPluginData}
+                            stage={activeStageName}
                             formData={formData}
                             setFormData={setFormData}
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
                             handleApplyPlugin={handleApplyPlugin}
+                            resourceKind={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
                         />
                     )}
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
