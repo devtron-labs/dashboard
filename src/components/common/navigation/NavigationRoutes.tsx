@@ -460,7 +460,7 @@ export default function NavigationRoutes() {
                                                       >
                                                           <SoftwareDistributionHubRenderProvider
                                                               renderers={{
-                                                                  renderConfigurations: Configurations,
+                                                                ReleaseConfigurations: Configurations,
                                                               }}
                                                           >
                                                               <SoftwareDistributionHub />

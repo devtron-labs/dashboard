@@ -131,40 +131,40 @@ export const Configurations = () => {
         </Switch>
     )
 
-    const renderCompareView = () => (
-        <Route
-            key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-            path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-        >
-            {({ match, location }) => {
-                const basePath = generatePath(path, match.params)
-                // Set the resourceTypePath based on the resourceType from the URL parameters.
-                // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
-                // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
-                const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
-
-                const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
-
-                return (
-                    <DeploymentConfigCompare
-                        type="app"
-                        appName={selectedApp.label}
-                        environments={environments}
-                        goBackURL={goBackURL}
-                        getNavItemHref={(resourceType, resourceName) =>
-                            `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                        }
-                    />
-                )
-            }}
-        </Route>
-    )
-
     return (
         <div className="h-100 dc__overflow-auto">
             <Switch>
-                {!showConfig ? <Progressing pageLoader fullHeight /> : renderCompareView()}
+                {!showConfig ? (
+                    <Progressing pageLoader fullHeight />
+                ) : (
+                    <Route
+                        key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                        path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                    >
+                        {({ match, location }) => {
+                            const basePath = generatePath(path, match.params)
+                            // Set the resourceTypePath based on the resourceType from the URL parameters.
+                            // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
+                            // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                            const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                            const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+
+                            const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+
+                            return (
+                                <DeploymentConfigCompare
+                                    type="app"
+                                    appName={selectedApp.label}
+                                    environments={environments}
+                                    goBackURL={goBackURL}
+                                    getNavItemHref={(resourceType, resourceName) =>
+                                        `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                    }
+                                />
+                            )
+                        }}
+                    </Route>
+                )}
                 <Route>
                     <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
                         <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
