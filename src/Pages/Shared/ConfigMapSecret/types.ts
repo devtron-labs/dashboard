@@ -293,3 +293,23 @@ export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'i
     componentType: CMSecretComponentType
     envId?: number
 }
+
+// UTILS TYPES
+export type ConfigMapSecretDecodedDataReturnType<IsDraft extends boolean> = IsDraft extends false
+    ? CMSecretConfigData & { isDecoded?: boolean }
+    : CMSecretDraftData & { isDecoded?: boolean; parsedData?: Record<string, any> }
+
+export type ConfigMapSecretEncodedDataReturnType<IsDraft extends boolean> = IsDraft extends false
+    ? CMSecretConfigData
+    : CMSecretDraftData
+
+export type ConfigMapSecretDecodedDataProps<IsDraft extends boolean> = {
+    configMapSecretData: ConfigMapSecretEncodedDataReturnType<IsDraft>
+    isDraft?: IsDraft
+    isSecret?: boolean
+}
+
+export type ConfigMapSecretEncodedDataProps<IsDraft extends boolean> = {
+    configMapSecretData: ConfigMapSecretDecodedDataReturnType<IsDraft>
+    isDraft?: IsDraft
+}
