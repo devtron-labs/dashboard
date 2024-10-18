@@ -131,7 +131,9 @@ const NodeDetailComponent = ({
     const showDesiredAndCompareManifest =
         !isResourceBrowserView &&
         (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.appType === AppType.DEVTRON_APP && isFELibAvailable)) &&
+            (window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                appDetails.appType === AppType.DEVTRON_APP &&
+                isFELibAvailable)) &&
         !currentResource?.['parentRefs']?.length
 
     const isResourceMissing =
