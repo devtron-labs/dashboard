@@ -136,6 +136,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 width: WorkflowCreate.cDNodeSizes.nodeWidth,
                 x: 580,
                 y: 25,
+                showPluginWarning: false,
+                isTriggerBlocked: false,
+                pluginBlockState: null,
             })
         }
 
@@ -330,6 +333,18 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     openCDPipeline(node: CommonNodeAttr, isWebhookCD: boolean) {
         const { appId } = this.props.match.params
+
+        if (this.props.isOffendingPipelineView) {
+            return getCDPipelineURL(
+                appId,
+                this.props.id.toString(),
+                String(node.connectingCiPipelineId ?? 0),
+                isWebhookCD,
+                node.id,
+                true,
+            )
+        }
+
         return `${this.props.match.url}/${getCDPipelineURL(
             appId,
             this.props.id.toString(),
@@ -353,11 +368,15 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
-                node.branch === GIT_BRANCH_NOT_CONFIGURED,
+                node.branch === GIT_BRANCH_NOT_CONFIGURED || this.props.isOffendingPipelineView,
                 node.id,
                 this.props.isJobView,
                 node.isJobCI,
             )
+        }
+
+        if (this.props.isOffendingPipelineView) {
+            return url
         }
         return `${this.props.match.url}/${url}`
     }
@@ -404,7 +423,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
-                isReadonlyView={this.props.isOffendingPipelineView}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -482,7 +501,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppCreated={node.deploymentAppCreated}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 handleDisplayLoader={this.props.handleDisplayLoader}
-                isReadonlyView={this.props.isOffendingPipelineView}
+                showPluginWarning={node.showPluginWarning}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }
