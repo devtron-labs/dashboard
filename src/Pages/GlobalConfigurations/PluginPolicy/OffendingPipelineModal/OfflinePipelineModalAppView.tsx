@@ -1,6 +1,6 @@
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { APIResponseHandler, GenericEmptyState, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import noOffendingPipelineImg from '@Images/no-offending-pipeline.png'
+import { APIResponseHandler, GenericEmptyState, ImageType, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import noOffendingPipelineImg from '@Images/no-offending-pipeline.svg'
 import { WorkflowCreate } from '@Components/app/details/triggerView/config'
 import { getInitialWorkflows } from '@Components/app/details/triggerView/workflow.service'
 import { Workflow } from '@Components/workflowEditor/Workflow'
@@ -81,6 +81,7 @@ const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModal
                     title="All pipelines are compliant for this app"
                     subTitle="All matching pipelines have required plugins configured."
                     image={noOffendingPipelineImg}
+                    imageType={ImageType.Large}
                 />
             )}
         </APIResponseHandler>
