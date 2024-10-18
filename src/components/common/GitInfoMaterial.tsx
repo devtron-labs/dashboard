@@ -427,12 +427,10 @@ export default function GitInfoMaterial({
         return (
             <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
                 <CiWebhookModal
-                    context={triggerViewContext}
                     webhookPayloads={webhookPayloads}
                     ciPipelineMaterialId={material[0].id}
                     ciPipelineId={pipelineId}
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
-                    hideWebhookModal={hideWebhookModal}
                     workflowId={workflowId}
                     fromAppGrouping={fromAppGrouping}
                     fromBulkCITrigger={fromBulkCITrigger}
