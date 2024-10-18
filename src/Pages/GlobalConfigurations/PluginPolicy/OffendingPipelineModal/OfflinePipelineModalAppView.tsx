@@ -39,7 +39,7 @@ const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModal
                 reload: refetchWorkflows,
             }}
         >
-            {!isWorkflowsLoading && !workflowsError && workflowsResponse.workflows.length > 0 ? (
+            {!isWorkflowsLoading && !workflowsError && workflowsResponse.workflows?.length > 0 ? (
                 workflowsResponse.workflows.map((workflow) => (
                     <Workflow
                         key={workflow.id}
