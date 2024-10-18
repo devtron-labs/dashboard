@@ -445,8 +445,8 @@ export default function ClusterForm({
         if (id && id !== 1 && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (e.target.name === "token") {
-            e.target.value = e.target.value?.trim()
+        else if (e.target.name === "token") {
+            e.target.value = e.target.value.trim()
         }
     }
 
@@ -457,7 +457,7 @@ export default function ClusterForm({
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
-                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value?.trim() : '',
                 tls_key: state.tlsClientKey.value,
                 cert_data: state.tlsClientCert.value,
                 cert_auth_data: state.certificateAuthorityData.value,
