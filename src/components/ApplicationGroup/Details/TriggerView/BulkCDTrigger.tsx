@@ -408,6 +408,8 @@ export default function BulkCDTrigger({
         const commonNodeAttrType: CommonNodeAttr['type'] =
             app.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
+        const warningMessage = app.warningMessage || appDeploymentWindowMap[app.appId]?.warningMessage
+
         if (unauthorizedAppList[app.appId]) {
             return (
                 <div className="flex left top dc__gap-4">
@@ -441,7 +443,7 @@ export default function BulkCDTrigger({
             )
         }
 
-        if (app.warningMessage && !app.showPluginWarning) {
+        if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
                     <Error
@@ -449,7 +451,7 @@ export default function BulkCDTrigger({
                     />
 
                     <span className="fw-4 fs-12 cy-7 dc__truncate">
-                        {tagNotFoundWarningsMap.get(app.appId)}
+                        {warningMessage}
                     </span>
                 </div>
             )
