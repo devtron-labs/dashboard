@@ -247,18 +247,6 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
-    return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
-}
-
-export const getLatestDeploymentConfig = (appId: number, pipelineId: number) => {
-    return get(`${Routes.LATEST_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
-}
-
-export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, wfrId: number) => {
-    return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
-}
-
 export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
     const options = {
