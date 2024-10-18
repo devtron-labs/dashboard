@@ -1622,6 +1622,12 @@ const CDMaterial = ({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
+            
+            if (!showPluginWarningOverlay && showPluginWarningBeforeTrigger) {
+                setShowPluginWarningOverlay(true)
+                return
+            }
+
             if (
                 deploymentWindowMetadata.userActionState &&
                 deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
