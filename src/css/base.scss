@@ -365,6 +365,10 @@ a:focus {
     top: 9px;
 }
 
+.dc__top-12 {
+    top: 12px;
+}
+
 .dc__top-22 {
     top: 22px;
 }
@@ -437,12 +441,20 @@ a:focus {
     right: 10px;
 }
 
+.dc__right-12 {
+    right: 12px;
+}
+
 .dc__left-0 {
     left: 0;
 }
 
 .dc__left-6 {
     left: 6px;
+}
+
+.dc__left-12 {
+    left: 12px;
 }
 
 .dc__left-30 {
@@ -1162,6 +1174,11 @@ button.anchor {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
         }
+    }
+
+    &.drifted {
+        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.missing {

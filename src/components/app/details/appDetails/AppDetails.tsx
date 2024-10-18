@@ -53,7 +53,7 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
+import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
@@ -116,7 +116,7 @@ import { renderCIListHeader } from '../cdDetails/utils'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
+const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -269,6 +269,7 @@ export const Details: React.FC<DetailsType> = ({
     deploymentUserActionState,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
+    const { path } = useRouteMatch()
     const location = useLocation()
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
@@ -304,6 +305,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -781,7 +783,13 @@ export const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
+            {detailedStatus && (
+                <AppStatusDetailModal
+                    close={hideAppDetailsStatus}
+                    showAppStatusMessage={false}
+                    showConfigDriftInfo={isConfigDriftEnabled && !!ConfigDriftModalRoute}
+                />
+            )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
@@ -823,6 +831,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
+            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
