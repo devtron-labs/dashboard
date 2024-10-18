@@ -44,6 +44,7 @@ import {
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
+import { Configurations } from '@Pages/Releases/Detail'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
@@ -92,6 +93,11 @@ const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', nu
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
+const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
+    'SoftwareDistributionHubRenderProvider',
+    null,
+    'function',
+)
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -452,7 +458,13 @@ export default function NavigationRoutes() {
                                                               getModuleInfo,
                                                           }}
                                                       >
-                                                          <SoftwareDistributionHub />
+                                                          <SoftwareDistributionHubRenderProvider
+                                                              renderers={{
+                                                                ReleaseConfigurations: Configurations,
+                                                              }}
+                                                          >
+                                                              <SoftwareDistributionHub />
+                                                          </SoftwareDistributionHubRenderProvider>
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
@@ -564,10 +576,7 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
     return (
         <ErrorBoundary>
             <Switch>
-                <Route
-                    path={`${path}/:appType`}
-                    render={() => <NewAppList isArgoInstalled={isArgoInstalled} />}
-                />
+                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
                 <Route exact path="">
                     <RedirectToAppList />
                 </Route>

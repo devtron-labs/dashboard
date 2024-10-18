@@ -5,5 +5,6 @@ export { default as NoOverrideEmptyState } from './NoOverrideEmptyState'
 export { default as ConfigHeader } from './ConfigHeader'
 export { default as NoPublishedVersionEmptyState } from './NoPublishedVersionEmptyState'
 export { default as CompareConfigView } from './CompareConfigView'
+export * from './DeploymentConfigCompare'
 
 export type { ConfigToolbarProps, CompareConfigViewProps } from './types'

@@ -41,6 +41,7 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                     goBackURL={generatePath(path, { envId })}
                     showDeploymentTemplate
                     paramToCheck="appId"
+                    compareWithURL={path}
                     showComparison
                 />
             </Route>
