@@ -22,6 +22,7 @@ import {
     DownstreamNodesEnvironmentsType,
     WorkflowType,
     getIsManualApprovalConfigured,
+    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -75,13 +76,15 @@ export const getCreateWorkflows = (
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
-const getInitialWorkflows = (
+export const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
     filteredEnvIds?: string,
+    shouldCheckDeploymentWindow: boolean = true,
+    offending: `policy/${PolicyKindType}` = null
 ): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
@@ -92,8 +95,10 @@ const getInitialWorkflows = (
 }> => {
     if (useAppWfViewAPI) {
         return Promise.all([
-            getWorkflowViewList(id, filteredEnvIds),
-            getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+            getWorkflowViewList(id, filteredEnvIds, offending),
+            shouldCheckDeploymentWindow && getDeploymentWindowState
+                ? getDeploymentWindowState(id, filteredEnvIds)
+                : null,
         ]).then((response) => {
             const workflows = {
                 appId: id,

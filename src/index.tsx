@@ -144,7 +144,7 @@ if (!window || !window._env_) {
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
-        HIDE_RELEASES: true,
+        HIDE_RELEASES: false,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
         FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
@@ -159,16 +159,14 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <>
-                <BrowserRouter basename={window.__BASE_URL__}>
-                    <ShortcutProvider>
-                        <UserEmailProvider>
-                            <App />
-                        </UserEmailProvider>
-                    </ShortcutProvider>
-                </BrowserRouter>
+            <BrowserRouter basename={window.__BASE_URL__}>
+                <ShortcutProvider>
+                    <UserEmailProvider>
+                        <App />
+                    </UserEmailProvider>
+                </ShortcutProvider>
                 <ToastManagerContainer />
-            </>
+            </BrowserRouter>
         ) : null}
     </React.StrictMode>,
     root,

@@ -181,9 +181,10 @@ export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> 
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
     isDeploymentBlocked?: boolean
+    isReadonlyView: boolean
 }
 
-export interface WebhookNodeProps {
+export interface WebhookNodeProps extends Pick<CDNodeProps, 'isReadonlyView'> {
     x: number
     y: number
     width: number

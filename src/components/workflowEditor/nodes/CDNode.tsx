@@ -18,6 +18,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import {
+    ConditionalWrap,
     ConfirmationDialog,
     DeploymentAppTypes,
     MODAL_TYPE,
@@ -281,83 +282,84 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
-            <>
-                <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
-                    <div
-                        data-testid={`workflow-editor-cd-node-${this.props.environmentName}`}
-                        className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}
-                    >
-                        {this.props.deploymentAppDeleteRequest ? (
-                            <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center" />
-                        ) : (
-                            <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
-                                {this.props.triggerType}
-                            </div>
-                        )}
-                        <div className="workflow-node__title h-100 workflow-node__title--no-margin flex">
-                            <div className="workflow-node__full-width-minus-Icon p-12">
-                                <span className="workflow-node__text-light">
-                                    {this.props.deploymentAppDeleteRequest ? (
-                                        <div className="cr-5">
-                                            Deleting
-                                            <span className="dc__loading-dots" />
-                                        </div>
-                                    ) : (
-                                        this.props.title
-                                    )}
-                                </span>
-                                {envDescriptionTippy(this.props.environmentName, this.props.description)}
-                            </div>
+            <ConditionalWrap
+                condition={!this.props.isReadonlyView && !!this.props.to}
+                wrap={(children) => <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">{children}</Link>}
+            >
+                <div
+                    data-testid={`workflow-editor-cd-node-${this.props.environmentName}`}
+                    className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}
+                >
+                    {this.props.deploymentAppDeleteRequest ? (
+                        <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center" />
+                    ) : (
+                        <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
+                            {this.props.triggerType}
+                        </div>
+                    )}
+                    <div className="workflow-node__title h-100 workflow-node__title--no-margin flex">
+                        <div className="workflow-node__full-width-minus-Icon p-12">
+                            <span className="workflow-node__text-light">
+                                {this.props.deploymentAppDeleteRequest ? (
+                                    <div className="cr-5">
+                                        Deleting
+                                        <span className="dc__loading-dots" />
+                                    </div>
+                                ) : (
+                                    this.props.title
+                                )}
+                            </span>
+                            {envDescriptionTippy(this.props.environmentName, this.props.description)}
+                        </div>
 
-                            {/* TODO: Look into these css later */}
-                            <div
-                                className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
-                                    this.props.isVirtualEnvironment
-                                        ? 'workflow-node__CD-rocket-icon'
-                                        : 'workflow-node__CD-icon dc__flip'
-                                }`}
-                            />
+                        {/* TODO: Look into these css later */}
+                        <div
+                            className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
+                                this.props.isVirtualEnvironment
+                                    ? 'workflow-node__CD-rocket-icon'
+                                    : 'workflow-node__CD-icon dc__flip'
+                            }`}
+                        />
 
-                            {selectedNodeKey !== currentNodeKey && (
-                                <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
-                                    <Tippy
-                                        placement="right"
-                                        className="default-tt"
-                                        content={
-                                            <span className="add-cd-btn-tippy">
-                                                {this.props.addNewPipelineBlocked
-                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                                    : 'Add deployment pipeline'}
-                                            </span>
-                                        }
-                                    >
-                                        <div className="flex h-100 w-100 dc__border-bottom-n1--important">
-                                            <button
-                                                type="button"
-                                                className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
-                                                disabled={this.props.addNewPipelineBlocked}
-                                                onClick={this.handleAddNewNode}
-                                            >
-                                                <Add className="icon-dim-12" />
-                                            </button>
-                                        </div>
-                                    </Tippy>
-
-                                    <Tippy placement="right" content="Delete pipeline" className="default-tt">
+                        {!this.props.isReadonlyView && selectedNodeKey !== currentNodeKey && (
+                            <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
+                                <Tippy
+                                    placement="right"
+                                    className="default-tt"
+                                    content={
+                                        <span className="add-cd-btn-tippy">
+                                            {this.props.addNewPipelineBlocked
+                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                : 'Add deployment pipeline'}
+                                        </span>
+                                    }
+                                >
+                                    <div className="flex h-100 w-100 dc__border-bottom-n1--important">
                                         <button
                                             type="button"
-                                            className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
-                                            onClick={this.handleDeleteCDNode}
+                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
+                                            disabled={this.props.addNewPipelineBlocked}
+                                            onClick={this.handleAddNewNode}
                                         >
-                                            <ICDelete className="icon-dim-12" />
+                                            <Add className="icon-dim-12" />
                                         </button>
-                                    </Tippy>
-                                </div>
-                            )}
-                        </div>
+                                    </div>
+                                </Tippy>
+
+                                <Tippy placement="right" content="Delete pipeline" className="default-tt">
+                                    <button
+                                        type="button"
+                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                        onClick={this.handleDeleteCDNode}
+                                    >
+                                        <ICDelete className="icon-dim-12" />
+                                    </button>
+                                </Tippy>
+                            </div>
+                        )}
                     </div>
-                </Link>
-            </>
+                </div>
+            </ConditionalWrap>
         )
     }
 

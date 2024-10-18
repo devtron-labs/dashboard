@@ -1483,6 +1483,17 @@ button.anchor {
     }
 }
 
+.dc__inline-radio-group {
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .form__radio-item.disabled {
+        background-color: transparent;
+    }
+}
+
 //Tippy
 
 .tippy-box.default-tt {
@@ -2578,6 +2589,10 @@ button.anchor {
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-40 {
+    border-radius: 40px;
 }
 
 .dc__no-top-border {
