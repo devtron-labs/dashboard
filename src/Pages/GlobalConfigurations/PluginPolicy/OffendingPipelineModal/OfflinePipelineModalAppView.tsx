@@ -52,14 +52,22 @@ const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModal
                         nodes={workflow.nodes}
                         history={history}
                         location={location}
-                        match={match}
+                        match={{
+                            ...match,
+                            // Can't pass appId to url since we have infinite scrolling
+                            params: {
+                                ...match.params,
+                                appId,
+                                workflowId: workflow.id,
+                            },
+                        }}
                         handleCDSelect={noop}
                         handleCISelect={noop}
                         openEditWorkflow={noop}
                         showDeleteDialog={noop}
                         addCIPipeline={noop}
                         addWebhookCD={noop}
-                        showWebhookTippy={workflow.showTippy}
+                        showWebhookTippy={false}
                         hideWebhookTippy={noop}
                         isJobView={false}
                         envList={[]}

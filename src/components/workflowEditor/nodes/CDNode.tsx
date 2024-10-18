@@ -300,9 +300,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
             <ConditionalWrap
-                condition={!this.props.isReadonlyView && !!this.props.to}
+                condition={!!this.props.to && (!this.props.isOffendingPipelineView  || this.props.showPluginWarning)}
                 wrap={(children) => (
-                    <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
+                    <Link to={this.props.to} onClick={this.onClickNodeCard} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
                         {children}
                     </Link>
                 )}
@@ -335,7 +335,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
                         {this.renderNodeIcon()}
 
-                        {!this.props.isReadonlyView && selectedNodeKey !== currentNodeKey && (
+                        {!this.props.isOffendingPipelineView && selectedNodeKey !== currentNodeKey && (
                             <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
                                 <Tippy
                                     placement="right"

@@ -152,7 +152,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     reload: () => void
 }
 export interface CDNodeProps
-    extends Pick<WorkflowProps, 'handleDisplayLoader'>,
+    extends Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
         Pick<CommonNodeAttr, 'showPluginWarning'> {
     id: string
     deploymentStrategy: string
@@ -184,10 +184,9 @@ export interface CDNodeProps
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
     isDeploymentBlocked?: boolean
-    isReadonlyView: boolean
 }
 
-export interface WebhookNodeProps extends Pick<CDNodeProps, 'isReadonlyView'> {
+export interface WebhookNodeProps {
     x: number
     y: number
     width: number
@@ -201,6 +200,7 @@ export interface WebhookNodeProps extends Pick<CDNodeProps, 'isReadonlyView'> {
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
+    isReadonlyView: boolean
 }
 
 export interface WebhookTippyType {
