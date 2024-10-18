@@ -72,11 +72,11 @@ export default function CiWebhookModal({
     }
 
     const renderPassedText = (passedCount: string): JSX.Element => (
-        <>
+        <div className="flex left">
             Passed&nbsp;
             {passedCount}
             &nbsp; filters
-        </>
+        </div>
     )
 
     const onEditShowEditableCiModal = (_ciPipelineId, _workflowId) => {
@@ -117,8 +117,10 @@ export default function CiWebhookModal({
                             webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                         return (
                             <div key={webhookPayload.parsedDataId} className="cn-5 py-8 dc__hover-n50">
-                                <div
-                                    className="cursor"
+                                <button
+                                    className="dc__unset-button-styles"
+                                    type="button"
+                                    aria-label="View webhook payload"
                                     onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                                 >
                                     <div className="flex left top dc__gap-8">
@@ -140,7 +142,7 @@ export default function CiWebhookModal({
                                         </div>
                                         <br />
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         )
                     })}
@@ -162,7 +164,7 @@ export default function CiWebhookModal({
             </div>
             <button
                 type="button"
-                className="dc__transparent"
+                className="dc__unset-button-styles dc__visible-hover--child"
                 onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
             >
                 {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
