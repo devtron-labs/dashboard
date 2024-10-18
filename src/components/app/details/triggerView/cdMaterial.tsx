@@ -216,7 +216,7 @@ const CDMaterial = ({
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     // This check assumes we have isPreOrPostCD as true
-    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] = stageType === DeploymentNodeType.PRECD ? 'POSTCD' : 'PRECD'
+    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] = stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
