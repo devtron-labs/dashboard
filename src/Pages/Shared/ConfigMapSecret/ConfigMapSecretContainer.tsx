@@ -822,7 +822,7 @@ export const ConfigMapSecretContainer = ({
                     />
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
-                    <div className="variables-widget-position-cm-cs">
+                    <div className="app-config-variable-widget-position">
                         <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
                     </div>
                 )}

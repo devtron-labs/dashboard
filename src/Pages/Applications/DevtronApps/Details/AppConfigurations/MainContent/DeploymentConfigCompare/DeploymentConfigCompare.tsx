@@ -49,6 +49,7 @@ export const DeploymentConfigCompare = ({
     envName,
     type = 'app',
     goBackURL = '',
+    overwriteNavHeading,
     isBaseConfigProtected = false,
     getNavItemHref,
 }: DeploymentConfigCompareProps) => {
@@ -519,7 +520,7 @@ export const DeploymentConfigCompare = ({
             goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
-            navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
+            navHeading={overwriteNavHeading || `Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
             tabConfig={tabConfig}
             sortingConfig={!isManifestView ? sortingConfig : null}

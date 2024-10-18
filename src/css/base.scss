@@ -4947,6 +4947,10 @@ textarea::placeholder {
     display: grid;
 }
 
+.dc__contents {
+    display: contents
+}
+
 .cd-material {
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
@@ -5044,4 +5048,10 @@ textarea::placeholder {
     color: var(--white);
     padding: 2px 10px;
     margin-left: 10px;
+}
+
+.app-config-variable-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
 }

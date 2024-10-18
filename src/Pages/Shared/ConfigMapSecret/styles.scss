@@ -68,12 +68,12 @@
             top: 50px;
         }
     }
-}
 
-.variables-widget-position-cm-cs {
-    position: absolute;
-    bottom: 120px;
-    right: 110px;
+    &__display-values-container {
+        grid-template-columns: 150px 1fr;
+        row-gap: 12px;
+        column-gap: 8px;
+    }
 }
 
 // TODO: remove when issue for svg button height is fixed

@@ -238,7 +238,7 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
                                         message: 'More than 4 characters are not allowed',
                                     },
                                     {
-                                        isValid: (value) => value.startsWith('0'),
+                                        isValid: (value) => value.length !== 4 || value.startsWith('0'),
                                         message:
                                             '4 characters are allowed in octal format only, first character should be 0',
                                     },

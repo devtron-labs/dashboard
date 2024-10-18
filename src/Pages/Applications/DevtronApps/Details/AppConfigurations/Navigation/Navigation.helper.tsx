@@ -146,9 +146,5 @@ export const resourceTypeBasedOnPath = (pathname: string) => {
     if (pathname.includes(`/${EnvResourceType.Secret}`)) {
         return EnvResourceType.Secret
     }
-    if (pathname.includes(`/${EnvResourceType.DeploymentTemplate}`)) {
-        return EnvResourceType.DeploymentTemplate
-    }
-
-    return null
+    return EnvResourceType.DeploymentTemplate
 }

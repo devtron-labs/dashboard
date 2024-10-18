@@ -146,7 +146,7 @@ export const AppNavigation = () => {
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
-                        compareWithURL={path}
+                        compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
                     />

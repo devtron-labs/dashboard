@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     DeploymentHistoryBaseParamsType,
@@ -89,8 +89,9 @@ export const Configurations = () => {
     const renderConfig = () => (
         <Switch>
             <Route key={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                <div className="deployment-template dc__overflow-auto dc__position-rel">
+                <div className="dc__overflow-auto">
                     <DeploymentTemplate
+                        key={`${appId}/${envId}`}
                         fetchEnvConfig={fetchEnvConfig}
                         isProtected={selectedEnv.isProtected}
                         reloadEnvironments={reloadEnvironments}
@@ -128,51 +129,51 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
+            <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
         </Switch>
     )
 
     return (
-        <div className="h-100 dc__overflow-auto">
-            <Switch>
-                <Route
-                    key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-                >
-                    {({ match, location }) => {
-                        const basePath = generatePath(path, match.params)
-                        // Set the resourceTypePath based on the resourceType from the URL parameters.
-                        // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
-                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
-                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+        <Switch>
+            <Route
+                key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+            >
+                {({ match, location }) => {
+                    const basePath = generatePath(path, match.params)
+                    // Set the resourceTypePath based on the resourceType from the URL parameters.
+                    // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
+                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
 
-                        return showConfig ? (
-                            <DeploymentConfigCompare
-                                type="app"
-                                appName={selectedApp.label}
-                                environments={environments}
-                                goBackURL={goBackURL}
-                                getNavItemHref={(resourceType, resourceName) =>
-                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                }
-                            />
-                        ) : (
-                            <Progressing fullHeight pageLoader />
-                        )
-                    }}
-                </Route>
-                <Route>
-                    <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                        <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
-                            <ConfigurationsAppEnvSelector />
-                            {showConfig ? renderConfigSideNav() : null}
-                        </div>
-                        {showConfig ? renderConfig() : renderNullState()}
+                    return showConfig ? (
+                        <DeploymentConfigCompare
+                            type="app"
+                            appName={selectedApp.label}
+                            environments={environments}
+                            goBackURL={goBackURL}
+                            overwriteNavHeading={`Comparing ${selectedApp.label}`}
+                            getNavItemHref={(resourceType, resourceName) =>
+                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                            }
+                        />
+                    ) : (
+                        <Progressing fullHeight pageLoader />
+                    )
+                }}
+            </Route>
+            <Route>
+                <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
+                    <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
+                        <ConfigurationsAppEnvSelector />
+                        {showConfig ? renderConfigSideNav() : null}
                     </div>
-                </Route>
-            </Switch>
-        </div>
+                    {showConfig ? renderConfig() : renderNullState()}
+                </div>
+            </Route>
+        </Switch>
     )
 }
