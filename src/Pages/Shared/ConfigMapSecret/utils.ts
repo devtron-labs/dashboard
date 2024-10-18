@@ -32,6 +32,10 @@ import {
     CMSecretConfigData,
     CMSecretDTO,
     ESOSecretData,
+    ConfigMapSecretDecodedDataReturnType,
+    ConfigMapSecretDecodedDataProps,
+    ConfigMapSecretEncodedDataProps,
+    ConfigMapSecretEncodedDataReturnType,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -488,22 +492,91 @@ export const getConfigMapSecretPayload = ({
     return payload
 }
 
+const getConfigMapSecretDecodedData = <IsDraft extends boolean = false>({
+    configMapSecretData,
+    isDraft,
+    isSecret,
+}: ConfigMapSecretDecodedDataProps<IsDraft>): ConfigMapSecretDecodedDataReturnType<IsDraft> => {
+    if (!configMapSecretData || !isSecret || configMapSecretData.unAuthorized) {
+        return configMapSecretData
+    }
+
+    if (!isDraft) {
+        const _configMapSecretData =
+            configMapSecretData as ConfigMapSecretDecodedDataProps<false>['configMapSecretData']
+        if (!isSecret || _configMapSecretData.unAuthorized || _configMapSecretData.externalType !== '') {
+            return _configMapSecretData as ConfigMapSecretDecodedDataReturnType<IsDraft>
+        }
+
+        return {
+            ..._configMapSecretData,
+            data: decode(_configMapSecretData.data),
+            isDecoded: true,
+        } as ConfigMapSecretDecodedDataReturnType<IsDraft>
+    }
+
+    const draftData = configMapSecretData as ConfigMapSecretDecodedDataProps<true>['configMapSecretData']
+    const parsedData = JSON.parse(draftData.data).configData[0]
+    if (!isSecret || draftData.unAuthorized || parsedData.externalType !== '') {
+        return draftData as ConfigMapSecretDecodedDataReturnType<IsDraft>
+    }
+
+    return {
+        ...draftData,
+        parsedData: decode(parsedData.data),
+        isDecoded: true,
+    } as ConfigMapSecretDecodedDataReturnType<IsDraft>
+}
+
+const getConfigMapSecretEncodedData = <IsDraft extends boolean = false>({
+    configMapSecretData,
+    isDraft,
+}: ConfigMapSecretEncodedDataProps<IsDraft>): ConfigMapSecretEncodedDataReturnType<IsDraft> => {
+    if (!configMapSecretData || !configMapSecretData.isDecoded) {
+        return configMapSecretData
+    }
+
+    if (!isDraft) {
+        const _configMapSecretData =
+            configMapSecretData as ConfigMapSecretEncodedDataProps<false>['configMapSecretData']
+        return {
+            ..._configMapSecretData,
+            data: decode(_configMapSecretData.data, true),
+        } as ConfigMapSecretEncodedDataReturnType<IsDraft>
+    }
+
+    const draftData = configMapSecretData as ConfigMapSecretEncodedDataProps<true>['configMapSecretData']
+    const parsedData = JSON.parse(draftData.data)
+    return {
+        ...draftData,
+        data: JSON.stringify({
+            ...parsedData,
+            configData: [{ ...parsedData.configData[0], data: decode(draftData.parsedData, true) }],
+        }),
+    } as ConfigMapSecretEncodedDataReturnType<IsDraft>
+}
+
 export const getConfigMapSecretResolvedDataPayload = ({
     formData,
     inheritedConfigMapSecretData,
     configMapSecretData,
     draftData,
+    isSecret,
 }: {
     formData: ConfigMapSecretUseFormProps
     inheritedConfigMapSecretData: CMSecretConfigData
     configMapSecretData: CMSecretConfigData
     draftData: CMSecretDraftData
+    isSecret: boolean
 }) => {
     const values = {
         formData,
-        inheritedConfigMapSecretData,
-        configMapSecretData,
-        draftData,
+        inheritedConfigMapSecretData: getConfigMapSecretDecodedData({
+            configMapSecretData: inheritedConfigMapSecretData,
+            isSecret,
+        }),
+        configMapSecretData: getConfigMapSecretDecodedData({ configMapSecretData, isSecret }),
+        draftData: getConfigMapSecretDecodedData({ configMapSecretData: draftData, isSecret, isDraft: true }),
     }
 
     return YAMLStringify(values)
@@ -608,11 +681,19 @@ export const getConfigMapSecretResolvedData = (
     resolvedDraftData: CMSecretDraftData
 } => {
     const parsedResolvedData = YAML.parse(resolvedData)
+
     return {
         resolvedFormData: parsedResolvedData.formData ?? null,
-        resolvedInheritedConfigMapSecretData: parsedResolvedData.inheritedConfigMapSecretData ?? null,
-        resolvedConfigMapSecretData: parsedResolvedData.configMapSecretData ?? null,
-        resolvedDraftData: parsedResolvedData.draftData ?? null,
+        resolvedInheritedConfigMapSecretData: getConfigMapSecretEncodedData({
+            configMapSecretData: parsedResolvedData.inheritedConfigMapSecretData,
+        }),
+        resolvedConfigMapSecretData: getConfigMapSecretEncodedData({
+            configMapSecretData: parsedResolvedData.configMapSecretData,
+        }),
+        resolvedDraftData: getConfigMapSecretEncodedData({
+            configMapSecretData: parsedResolvedData.draftData,
+            isDraft: true,
+        }),
     }
 }
 
