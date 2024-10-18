@@ -142,9 +142,9 @@ export const Configurations = () => {
                 {({ match, location }) => {
                     const basePath = generatePath(path, match.params)
                     // Set the resourceTypePath based on the resourceType from the URL parameters.
-                    // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
+                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
                     // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
                     const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
                     const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
