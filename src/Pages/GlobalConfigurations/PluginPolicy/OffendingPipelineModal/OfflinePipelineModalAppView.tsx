@@ -6,13 +6,23 @@ import { getInitialWorkflows } from '@Components/app/details/triggerView/workflo
 import { Workflow } from '@Components/workflowEditor/Workflow'
 import { OfflinePipelineModalAppViewProps } from './types'
 
-const OfflinePipelineModalAppView = ({ appId }: OfflinePipelineModalAppViewProps) => {
+const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModalAppViewProps) => {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch<any>()
 
     const [isWorkflowsLoading, workflowsResponse, workflowsError, refetchWorkflows] = useAsync(
-        () => getInitialWorkflows(appId.toString(), WorkflowCreate, WorkflowCreate.workflow, true, false, null, false),
+        () =>
+            getInitialWorkflows(
+                appId.toString(),
+                WorkflowCreate,
+                WorkflowCreate.workflow,
+                true,
+                false,
+                null,
+                false,
+                `policy/${policyKind}`,
+            ),
         [appId],
         !!appId,
     )
@@ -29,7 +39,7 @@ const OfflinePipelineModalAppView = ({ appId }: OfflinePipelineModalAppViewProps
                 reload: refetchWorkflows,
             }}
         >
-            {!isWorkflowsLoading && !workflowsError && workflowsResponse.workflows.length > 0 ? (
+            {!isWorkflowsLoading && !workflowsError && workflowsResponse.workflows?.length > 0 ? (
                 workflowsResponse.workflows.map((workflow) => (
                     <Workflow
                         key={workflow.id}

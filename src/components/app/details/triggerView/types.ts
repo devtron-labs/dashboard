@@ -165,18 +165,11 @@ export enum FilterConditionViews {
 
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
-    checkingDiff: boolean
     showSearch: boolean
-    diffFound: boolean
-    diffOptions: Record<string, boolean>
-    showConfigDiffView: boolean
     loadingMore: boolean
     showOlderImages: boolean
     selectedConfigToDeploy: ConfigToDeployOptionType
     isRollbackTrigger: boolean
-    recentDeploymentConfig: any
-    latestDeploymentConfig: any
-    specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number, boolean>

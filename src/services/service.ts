@@ -30,6 +30,7 @@ import {
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
+    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -292,12 +293,13 @@ export function getWorkflowList(appId, filteredEnvIds?: string) {
     return get(URL)
 }
 
-export function getWorkflowViewList(appId, filteredEnvIds?: string) {
-    let filteredEnvParams = ''
-    if (filteredEnvIds) {
-        filteredEnvParams = `?envIds=${filteredEnvIds}`
+export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: `policy/${PolicyKindType}` = null) {
+    const queryParams = {
+        envIds: filteredEnvIds,
+        offending,
     }
-    return get(`${Routes.WORKFLOW}/view/${appId}${filteredEnvParams}`)
+
+    return get(getUrlWithSearchParams(`${Routes.WORKFLOW}/view/${appId}`, queryParams))
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {
