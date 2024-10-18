@@ -713,8 +713,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <ImagePromotion isSuperAdmin={isSuperAdmin} />
                     </Route>
                 ),
-                // TODO: Remove this check with CD addition
-                'FEATURE_CD_MANDATORY_PLUGINS_ENABLE' in window._env_ &&
                 window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
                     ? PluginsPolicy && (
                           <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
