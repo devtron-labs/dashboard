@@ -322,7 +322,7 @@ export const Sidebar = ({
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
                             handleApplyPlugin={handleApplyPlugin}
-                            resourceKind={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
+                            resourceKindType={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
                         />
                     )}
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
