@@ -134,7 +134,6 @@ src/components/app/details/testViewer/List.tsx
 src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
 src/components/app/details/triggerView/BranchRegexModal.tsx
-src/components/app/details/triggerView/CiWebhookDebuggingModal.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/TriggerView.tsx

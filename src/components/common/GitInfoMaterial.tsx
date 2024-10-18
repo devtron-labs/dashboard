@@ -105,21 +105,21 @@ export default function GitInfoMaterial({
 
     function renderMaterialHeader() {
         return (
-            <div className={`trigger-modal__header ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
+            <div className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
                 <h1 data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
                         </button>
                     ) : null}
-                    {title}
+                    <span className="dc__mxw-250 dc__truncate">{title}</span>
                     {showWebhookModal ? (
                         <>
                             <Right
                                 className="rotate icon-dim-24 ml-16 mr-16"
                                 style={{ ['--rotateBy' as any]: '-180deg' }}
                             />
-                            <span className="fs-16"> All incoming webhook payloads </span>
+                            <span className="fs-16">/  All received webhooks </span>
                         </>
                     ) : null}
                 </h1>
@@ -394,19 +394,21 @@ export default function GitInfoMaterial({
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
 
                 {selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-                    <div className="cn-7 fs-12 fw-0 pl-20 flex left">
-                        Showing results matching &nbsp;
-                        <CiPipelineSourceConfig
-                            sourceType={selectedMaterial.type}
-                            sourceValue={selectedMaterial.value}
-                            showTooltip
-                            baseText="configured filters"
-                            showIcons={false}
-                        />
-                        .&nbsp;
-                        <span className="dc__link cursor" onClick={_toggleWebhookModal}>
-                            View all incoming webhook payloads
-                        </span>
+                    <div className="fw-6 flex left py-14">
+                        <div className="cn-7 fs-12 fw-0 pl-20 flex left">
+                            <span>Showing results matching</span> &nbsp;
+                            <CiPipelineSourceConfig
+                                sourceType={selectedMaterial.type}
+                                sourceValue={selectedMaterial.value}
+                                showTooltip
+                                baseText="configured filters"
+                                showIcons={false}
+                            />
+                            .&nbsp;
+                            <span className="dc__link cursor" onClick={_toggleWebhookModal}>
+                                View all received webhooks
+                            </span>
+                        </div>
                     </div>
                 )}
                 <div className="flexbox-col dc__gap-12 py-12 px-16">
