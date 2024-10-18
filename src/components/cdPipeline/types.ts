@@ -15,7 +15,7 @@
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { PipelineFormType, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
+import { PipelineFormType, PluginDetailPayloadType, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
@@ -76,5 +76,8 @@ export interface BuildCDProps
     isWebhookCD: boolean
     dockerRegistries: any[]
     releaseMode: ReleaseMode
-    handlePopulatePluginDataStore: (form: PipelineFormType) => Promise<void>
+    getMandatoryPluginData: (
+        form: PipelineFormType,
+        requiredPluginIds?: PluginDetailPayloadType['pluginId'],
+    ) => Promise<void>
 }

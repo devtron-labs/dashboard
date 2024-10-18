@@ -296,7 +296,11 @@ export default function CDPipeline({
         setAvailableTags(tags)
     }
 
-    const handlePopulatePluginDataStore: BuildCDProps['handlePopulatePluginDataStore'] = async (form) => {
+    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
+        if (!form) {
+            return
+        }
+
         const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
         const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
@@ -321,12 +325,10 @@ export default function CDPipeline({
         handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
     }
 
-    // TODO: Seems like weird error state here need to fix it and check if allSettled can be used?
     const getEnvCDPipelineName = (form) => {
         Promise.all([
             getCDPipelineNameSuggestion(appId),
             getEnvironmentListMinPublic(true),
-            handlePopulatePluginDataStore(form),
         ])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
@@ -450,10 +452,7 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    const getMandatoryPluginData = async (
-        form: PipelineFormType,
-        requiredPluginIds: PluginDetailPayloadType['pluginId'] = [],
-    ) => {
+    const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
         if (!processPluginData) {
             return
         }
@@ -500,7 +499,7 @@ export default function CDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
-                await handlePopulatePluginDataStore(result.form)
+                await handlePopulatePluginDataStore(form)
                 setFormData({
                     ...form,
                     clusterId: result.form?.clusterId,
@@ -1298,9 +1297,7 @@ export default function CDPipeline({
                     >
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                />
+                                <Sidebar setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep} />
                             </div>
                         )}
                         <Switch>
@@ -1327,7 +1324,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
-                                    handlePopulatePluginDataStore={handlePopulatePluginDataStore}
+                                    getMandatoryPluginData={getMandatoryPluginData}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
