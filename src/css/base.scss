@@ -2052,6 +2052,10 @@ button.anchor {
     &--n3-right {
         border-right: 1px dashed var(--N300);
     }
+
+    &--n3-bottom {
+        border-bottom: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
