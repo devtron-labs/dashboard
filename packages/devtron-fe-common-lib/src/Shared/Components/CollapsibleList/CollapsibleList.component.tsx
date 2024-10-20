@@ -60,7 +60,7 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
                                     </span>
                                 </div>
                             ) : (
-                                items.map(({ title, href, iconConfig, subtitle, onClick }) => (
+                                items.map(({ title, strikeThrough, href, iconConfig, subtitle, onClick }) => (
                                     <NavLink
                                         key={title}
                                         to={href}
@@ -74,7 +74,9 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
                                         }}
                                     >
                                         <div className="flexbox-col flex-grow-1 mw-none">
-                                            <span className="collapsible__item__title dc__truncate fs-13 lh-20">
+                                            <span
+                                                className={`collapsible__item__title dc__truncate fs-13 lh-20 ${strikeThrough ? 'dc__strike-through' : ''}`}
+                                            >
                                                 {title}
                                             </span>
                                             {subtitle && (
@@ -88,7 +90,7 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
                                             >
                                                 <iconConfig.Icon
                                                     {...iconConfig.props}
-                                                    className={`icon-dim-20 dc__no-shrink cursor ${iconConfig.props?.className || ''}`}
+                                                    className={`icon-dim-20 p-2 dc__no-shrink cursor ${iconConfig.props?.className || ''}`}
                                                 />
                                             </ConditionalWrap>
                                         )}

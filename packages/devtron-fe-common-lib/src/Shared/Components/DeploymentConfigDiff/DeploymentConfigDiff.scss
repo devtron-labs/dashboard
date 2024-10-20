@@ -3,6 +3,10 @@
     grid-template-columns: 255px 1fr;
     height: 100%;
 
+    &--drawer {
+        grid-template-columns: 220px 1fr;
+    }
+
     &__accordion {
         scroll-margin-top: 12px;
     }
@@ -18,18 +22,13 @@
     }
 
     &__main-content {
-        height: calc(100vh - 122px);
-        overflow: auto;
+        flex-grow: 1;
 
         &__heading {
             display: grid;
             // -15px to accommodate the right side bar of the code-editor
             grid-template-columns: calc(50% - 15px) calc(50% - 15px);
             grid-template-rows: auto;
-        }
-
-        &__comparison {
-            margin: 16px 0 0;
         }
     }
 
@@ -39,7 +38,7 @@
 
     &__tab-list {
         label {
-            flex-grow: 1
+            flex-grow: 1;
         }
 
         .radio__item-label {

@@ -69,7 +69,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
      */
     const onBlur = (key: keyof T, noTrim: boolean) => () => {
         if (!noTrim) {
-            setData({ ...data, [key]: data[key].trim() })
+            setData({ ...data, [key]: data[key]?.trim() })
         }
 
         if (options?.validationMode === 'onBlur') {

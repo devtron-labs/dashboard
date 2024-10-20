@@ -292,7 +292,7 @@ export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { d
         null
 
     return {
-        data: _data ? YAMLStringify(_data) ?? '' : '',
+        data: _data ? (YAMLStringify(_data) ?? '') : '',
         chartRefId: getDraftConfigChartRefId(config),
     }
 }

@@ -161,6 +161,7 @@ export interface DraftMetadataDTO {
     draftId: number
     draftVersionId: number
     draftState: number
+    draftResolvedValue: string
     approvers: string[]
     canApprove: boolean
     commentsCount: number
@@ -202,36 +203,62 @@ export enum ConfigResourceType {
     ConfigMap = 'ConfigMap',
     Secret = 'Secret',
     DeploymentTemplate = 'Deployment Template',
+    PipelineStrategy = 'Pipeline Strategy',
 }
 
 export interface DeploymentTemplateDTO {
     resourceType: ConfigResourceType.DeploymentTemplate
-    data: { [key: string]: any }
+    data: Record<string, any>
     deploymentDraftData: ConfigMapSecretDataType | null
+    variableSnapshot: {
+        'Deployment Template': Record<string, string>
+    }
+    templateVersion: string
+    isAppMetricsEnabled?: true
+    resolvedValue: Record<string, any>
 }
 
 export interface ConfigMapSecretDataDTO {
     resourceType: Extract<ConfigResourceType, ConfigResourceType.ConfigMap | ConfigResourceType.Secret>
     data: ConfigMapSecretDataType
+    variableSnapshot: Record<string, Record<string, string>>
+    resolvedValue: string
+}
+
+export interface PipelineConfigDataDTO {
+    resourceType: ConfigResourceType.PipelineStrategy
+    data: Record<string, any>
+    pipelineTriggerType: string
+    Strategy: string
 }
 
 export interface AppEnvDeploymentConfigDTO {
     deploymentTemplate: DeploymentTemplateDTO | null
     configMapData: ConfigMapSecretDataDTO | null
     secretsData: ConfigMapSecretDataDTO | null
+    pipelineConfigData?: PipelineConfigDataDTO
     isAppAdmin: boolean
 }
 
-export interface AppEnvDeploymentConfigPayloadType {
-    appName: string
-    envName: string
-    configType: AppEnvDeploymentConfigType
-    identifierId?: number
-    pipelineId?: number
-    resourceType?: ConfigResourceType
-    resourceId?: number
-    resourceName?: string
-}
+export type AppEnvDeploymentConfigPayloadType =
+    | {
+          appName: string
+          envName: string
+          configType: AppEnvDeploymentConfigType
+          identifierId?: number
+          pipelineId?: number
+          resourceType?: ConfigResourceType
+          resourceId?: number
+          resourceName?: string
+          configArea?: 'AppConfiguration'
+      }
+    | {
+          appName: string
+          envName: string
+          pipelineId: number
+          configArea: 'CdRollback' | 'DeploymentHistory'
+          wfrId: number
+      }
 
 export enum TemplateListType {
     DefaultVersions = 1,
@@ -251,6 +278,7 @@ export interface TemplateListDTO {
     finishedOn?: string
     status?: string
     pipelineId?: number
+    wfrId?: number
 }
 
 export interface ManifestTemplateDTO {
@@ -271,4 +299,5 @@ export enum EnvResourceType {
     Secret = 'secrets',
     DeploymentTemplate = 'deployment-template',
     Manifest = 'manifest',
+    PipelineStrategy = 'pipeline-strategy',
 }

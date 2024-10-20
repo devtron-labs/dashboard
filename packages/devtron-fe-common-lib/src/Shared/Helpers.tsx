@@ -821,3 +821,34 @@ export const getDefaultValueFromType = (value: unknown) => {
             return null
     }
 }
+
+/**
+ * Groups an array of objects by a specified key.
+ *
+ * This function takes an array of objects and a key, and groups the objects in the array
+ * based on the value of the specified key. If an object does not have the specified key,
+ * it will be grouped under the `'UNGROUPED'` key.
+ *
+ * @param array - The array of objects to be grouped.
+ * @param key - The key of the object used to group the array.
+ * @returns An object where the keys are the unique values of the specified key in the array,
+ * and the values are arrays of objects that share the same key value.
+ */
+export const groupArrayByObjectKey = <T extends Record<string, any>, K extends keyof T>(
+    array: T[],
+    key: K,
+): Record<string, T[]> =>
+    array.reduce(
+        (result, currentValue) => {
+            const groupKey = currentValue[key] ?? 'UNGROUPED'
+
+            if (!result[groupKey]) {
+                Object.assign(result, { [groupKey]: [] })
+            }
+
+            result[groupKey].push(currentValue)
+
+            return result
+        },
+        {} as Record<string, T[]>,
+    )

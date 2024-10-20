@@ -11,6 +11,10 @@ export interface CollapsibleListItem {
      */
     subtitle?: string
     /**
+     * If true, the title will be rendered with line-through.
+     */
+    strikeThrough?: boolean
+    /**
      * Configuration for the icon.
      */
     iconConfig?: {

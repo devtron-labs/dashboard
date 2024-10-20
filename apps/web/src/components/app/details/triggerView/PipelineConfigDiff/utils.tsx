@@ -105,7 +105,7 @@ export const parseCompareWithSearchParams =
 
 export const getPipelineDeploymentConfigFromPromiseSettled = (
     res: PromiseSettledResult<ResponseType<AppEnvDeploymentConfigDTO>>,
-) => (res.status === 'fulfilled' ? res.value?.result ?? null : null)
+) => (res.status === 'fulfilled' ? (res.value?.result ?? null) : null)
 
 export const getPipelineDeploymentConfigErrFromPromiseSettled = (
     res: PromiseSettledResult<ResponseType<AppEnvDeploymentConfigDTO>>,

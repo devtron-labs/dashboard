@@ -22,12 +22,13 @@ import { GroupBase, GroupHeadingProps, Props as ReactSelectProps, SelectInstance
 import { CreatableProps } from 'react-select/creatable'
 // This import allows to extend the base interface in react-select module via module augmentation
 import type {} from 'react-select/base'
+import { TooltipProps } from '@Common/Tooltip/types'
 
 export interface SelectPickerOptionType<OptionValue = string | number> extends OptionType<OptionValue, ReactNode> {
     /**
      * Description to be displayed for the option
      */
-    description?: string
+    description?: ReactNode
     /**
      * Icon at the start of the option
      */
@@ -36,6 +37,13 @@ export interface SelectPickerOptionType<OptionValue = string | number> extends O
      * Icon at the end of the option
      */
     endIcon?: ReactElement
+    /**
+     * Props passed to show the tippy on option
+     */
+    tooltipProps?:
+        | Omit<TooltipProps, 'alwaysShowTippyOnHover' | 'showOnTruncate' | 'shortcutKeyCombo'>
+        | (Omit<TooltipProps, 'alwaysShowTippyOnHover' | 'showOnTruncate' | 'content'> &
+              Required<Pick<TooltipProps, 'shortcutKeyCombo'>>)
 }
 
 type SelectProps<OptionValue, IsMulti extends boolean> = ReactSelectProps<

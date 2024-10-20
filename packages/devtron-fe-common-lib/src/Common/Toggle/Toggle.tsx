@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { useEffectAfterMount } from '../Helper'
+import React, { useCallback } from 'react'
+import { throttle, useEffectAfterMount } from '../Helper'
 import './Toggle.scss'
 
 const Toggle = ({
@@ -27,6 +27,7 @@ const Toggle = ({
     dataTestId = 'handle-toggle-button',
     Icon = null,
     iconClass = '',
+    throttleOnChange = false,
     ...props
 }) => {
     const [active, setActive] = React.useState(selected)
@@ -49,13 +50,20 @@ const Toggle = ({
         }
     }
 
+    const throttledHandleClick = useCallback(throttle(handleClick, 500), [disabled])
+
     return (
         <label
             {...props}
             className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`}
             style={{ ['--color' as any]: color }}
         >
-            <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input" />
+            <input
+                type="checkbox"
+                checked={!!active}
+                onChange={throttleOnChange ? throttledHandleClick : handleClick}
+                className="toggle__input"
+            />
             <span className={`toggle__slider ${Icon ? 'with-icon br-4 dc__border' : 'round'}`} data-testid={dataTestId}>
                 {Icon && <Icon className={`icon-dim-20 br-4 p-2 ${iconClass}`} />}
             </span>

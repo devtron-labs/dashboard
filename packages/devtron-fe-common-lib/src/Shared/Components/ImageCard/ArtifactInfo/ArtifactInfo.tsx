@@ -15,6 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
+import { Tooltip } from '@Common/Tooltip'
 import { DefaultUserKey } from '../../../types'
 import { ImagePathTippyContentProps } from './types'
 import { ArtifactInfoProps } from '../types'
@@ -57,8 +58,8 @@ const ArtifactInfo = ({
         }
 
         return (
-            <div className="material-history__info flex left fs-13">
-                <DeployIcon className="icon-dim-16 scn-6 mr-8" />
+            <div className="material-history__info flex left fs-13 dc__gap-8">
+                <DeployIcon className="icon-dim-16 scn-6" />
                 <span className="fs-13 fw-4">{deployedTime}</span>
             </div>
         )
@@ -88,7 +89,9 @@ const ArtifactInfo = ({
                 >
                     {deployedBy[0]}
                 </span>
-                <span className="fs-13 fw-4">{deployedBy}</span>
+                <Tooltip content={deployedBy}>
+                    <span className="fs-13 fw-4 dc__truncate dc__mxw-200">{deployedBy}</span>
+                </Tooltip>
             </div>
         )
     }

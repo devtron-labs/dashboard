@@ -1,16 +1,26 @@
-import { Fragment, TransitionEvent, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
+import Tippy from '@tippyjs/react'
 
 import { ReactComponent as ICSortArrowDown } from '@Icons/ic-sort-arrow-down.svg'
 import { ReactComponent as ICSort } from '@Icons/ic-arrow-up-down.svg'
+import { ReactComponent as ICViewVariableToggle } from '@Icons/ic-view-variable-toggle.svg'
 import { Progressing } from '@Common/Progressing'
 import { CodeEditor } from '@Common/CodeEditor'
 import { MODES, SortingOrder } from '@Common/Constants'
 import ErrorScreenManager from '@Common/ErrorScreenManager'
+import Toggle from '@Common/Toggle/Toggle'
+import { ComponentSizeType } from '@Shared/constants'
 
+import { Button, ButtonStyleType, ButtonVariantType } from '../Button'
 import { SelectPicker } from '../SelectPicker'
 import { DeploymentHistoryDiffView } from '../CICDHistory'
 import { DeploymentConfigDiffAccordion } from './DeploymentConfigDiffAccordion'
-import { DeploymentConfigDiffMainProps, DeploymentConfigDiffSelectPickerProps } from './DeploymentConfigDiff.types'
+import {
+    DeploymentConfigDiffMainProps,
+    DeploymentConfigDiffSelectPickerProps,
+    DeploymentConfigDiffState,
+    DeploymentConfigDiffAccordionProps,
+} from './DeploymentConfigDiff.types'
 
 export const DeploymentConfigDiffMain = ({
     isLoading,
@@ -20,9 +30,16 @@ export const DeploymentConfigDiffMain = ({
     selectorsConfig,
     sortingConfig,
     scrollIntoViewId,
+    scopeVariablesConfig,
+    showDetailedDiffState,
+    hideDiffState,
 }: DeploymentConfigDiffMainProps) => {
     // STATES
     const [expandedView, setExpandedView] = useState<Record<string | number, boolean>>({})
+
+    // REFS
+    /** Ref to track if the element should scroll into view after expanding */
+    const scrollIntoViewAfterExpand = useRef(false)
 
     const handleAccordionClick = (id: string) => () => {
         setExpandedView({
@@ -31,10 +48,12 @@ export const DeploymentConfigDiffMain = ({
         })
     }
 
-    const handleTransitionEnd = (id: string) => (e: TransitionEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget && scrollIntoViewId === id) {
+    const onTransitionEnd: DeploymentConfigDiffAccordionProps['onTransitionEnd'] = (e) => {
+        if (scrollIntoViewAfterExpand.current && e.target === e.currentTarget) {
             const element = document.querySelector(`#${scrollIntoViewId}`)
             element?.scrollIntoView({ block: 'start' })
+            // Reset ref after scrolling into view
+            scrollIntoViewAfterExpand.current = false
         }
     }
 
@@ -42,7 +61,10 @@ export const DeploymentConfigDiffMain = ({
         if (!isLoading) {
             setExpandedView(
                 configList.reduce(
-                    (acc, curr) => ({ ...acc, [curr.id]: scrollIntoViewId === curr.id || curr.hasDiff }),
+                    (acc, curr) => ({
+                        ...acc,
+                        [curr.id]: scrollIntoViewId === curr.id || curr.diffState !== DeploymentConfigDiffState.NO_DIFF,
+                    }),
                     {},
                 ),
             )
@@ -51,6 +73,7 @@ export const DeploymentConfigDiffMain = ({
 
     useEffect(() => {
         if (scrollIntoViewId) {
+            scrollIntoViewAfterExpand.current = true
             setExpandedView((prev) => ({ ...prev, [scrollIntoViewId]: true }))
         }
     }, [scrollIntoViewId])
@@ -65,7 +88,9 @@ export const DeploymentConfigDiffMain = ({
                         ) : (
                             configItem.text
                         )}
-                        {index !== list.length - 1 && <span className="cn-9 fs-13 lh-20">/</span>}
+                        {!selectorsConfig?.hideDivider && index !== list.length - 1 && (
+                            <span className="cn-9 fs-13 lh-20">/</span>
+                        )}
                     </Fragment>
                 )
             }
@@ -80,7 +105,9 @@ export const DeploymentConfigDiffMain = ({
                             isDisabled={isLoading || selectPickerProps?.isDisabled}
                         />
                     </div>
-                    {index !== list.length - 1 && <span className="cn-9 fs-13 lh-20">/</span>}
+                    {!selectorsConfig?.hideDivider && index !== list.length - 1 && (
+                        <span className="cn-9 fs-13 lh-20">/</span>
+                    )}
                 </Fragment>
             )
         })
@@ -90,26 +117,55 @@ export const DeploymentConfigDiffMain = ({
             const { handleSorting, sortBy, sortOrder } = sortingConfig
 
             return (
-                <div className="dc__border-left p-12 h-100">
-                    <button
-                        type="button"
-                        className={`dc__unset-button-styles flexbox dc__align-items-center dc__gap-6 ${isLoading ? 'dc__disabled' : ''}`}
-                        onClick={handleSorting}
-                        disabled={isLoading}
-                    >
-                        {sortBy ? (
+                <Button
+                    dataTestId="config-diff-sort-button"
+                    text="Sort keys"
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    size={ComponentSizeType.small}
+                    startIcon={
+                        sortBy ? (
                             <ICSortArrowDown
-                                className="fcn-7 rotate"
+                                className="rotate"
                                 style={{
                                     ['--rotateBy' as string]: sortOrder === SortingOrder.ASC ? '0deg' : '180deg',
                                 }}
                             />
                         ) : (
-                            <ICSort className="icon-dim-12 mw-12 scn-7" />
-                        )}
-                        <span className="cn-7 fs-13 lh-20 fw-6">Sort keys</span>
-                    </button>
-                </div>
+                            <ICSort />
+                        )
+                    }
+                    onClick={handleSorting}
+                    disabled={isLoading}
+                />
+            )
+        }
+
+        return null
+    }
+
+    const renderScopeVariablesButton = () => {
+        if (scopeVariablesConfig) {
+            const { convertVariables } = scopeVariablesConfig
+
+            return (
+                <Tippy
+                    content={convertVariables ? 'Hide variables values' : 'Show variables values'}
+                    placement="bottom-start"
+                    animation="shift-away"
+                    className="default-tt"
+                    arrow={false}
+                >
+                    <div className="w-40 h-20">
+                        <Toggle
+                            selected={scopeVariablesConfig.convertVariables}
+                            color="var(--V500)"
+                            onSelect={scopeVariablesConfig.onConvertVariablesClick}
+                            Icon={ICViewVariableToggle}
+                            throttleOnChange
+                        />
+                    </div>
+                </Tippy>
             )
         }
 
@@ -117,7 +173,7 @@ export const DeploymentConfigDiffMain = ({
     }
 
     const renderDiffs = () =>
-        configList.map(({ id, isDeploymentTemplate, primaryConfig, secondaryConfig, title, hasDiff }) => {
+        configList.map(({ id, primaryConfig, secondaryConfig, title, diffState, singleView }) => {
             const { heading: primaryHeading, list: primaryList } = primaryConfig
             const { heading: secondaryHeading, list: secondaryList } = secondaryConfig
 
@@ -127,18 +183,20 @@ export const DeploymentConfigDiffMain = ({
                     id={id}
                     title={title}
                     isExpanded={expandedView[id]}
-                    hasDiff={hasDiff}
+                    diffState={diffState}
                     onClick={handleAccordionClick(id)}
-                    onTransitionEnd={handleTransitionEnd(id)}
+                    onTransitionEnd={onTransitionEnd}
+                    showDetailedDiffState={showDetailedDiffState}
+                    hideDiffState={hideDiffState}
                 >
-                    {isDeploymentTemplate ? (
+                    {singleView ? (
                         <>
                             <div className="bcn-1 deployment-config-diff__main-content__heading dc__border-top">
                                 <div className="px-12 py-6 dc__border-right">{primaryHeading}</div>
                                 <div className="px-12 py-6">{secondaryHeading}</div>
                             </div>
                             <CodeEditor
-                                key={sortingConfig?.sortOrder}
+                                key={`${sortingConfig?.sortBy}-${sortingConfig?.sortOrder}-${scopeVariablesConfig?.convertVariables}`}
                                 diffView
                                 defaultValue={primaryList.codeEditorValue.value}
                                 value={secondaryList.codeEditorValue.value}
@@ -151,17 +209,19 @@ export const DeploymentConfigDiffMain = ({
                         </>
                     ) : (
                         <div className="p-16">
-                            <div className="bcn-1 deployment-diff__upper dc__top-radius-4 dc__border-right dc__border-left dc__border-top">
-                                <div className="px-12 py-6 dc__border-right">{primaryHeading}</div>
-                                <div className="px-12 py-6">{secondaryHeading}</div>
-                            </div>
+                            {primaryHeading && secondaryHeading && (
+                                <div className="bcn-1 deployment-diff__upper dc__top-radius-4 dc__border-right dc__border-left dc__border-top">
+                                    <div className="px-12 py-6">{primaryHeading}</div>
+                                    <div className="px-12 py-6">{secondaryHeading}</div>
+                                </div>
+                            )}
                             <DeploymentHistoryDiffView
+                                codeEditorKey={`${sortingConfig?.sortBy}-${sortingConfig?.sortOrder}-${scopeVariablesConfig?.convertVariables}`}
                                 baseTemplateConfiguration={secondaryList}
                                 currentConfiguration={primaryList}
                                 previousConfigAvailable
-                                rootClassName="m-0 dc__no-top-radius dc__no-top-border"
-                                comparisonBodyClassName="deployment-config-diff__main-content__comparison"
-                                sortOrder={sortingConfig?.sortOrder}
+                                rootClassName={`${primaryHeading && secondaryHeading ? 'dc__no-top-radius dc__no-top-border' : ''}`}
+                                sortingConfig={sortingConfig}
                             />
                         </div>
                     )}
@@ -170,21 +230,33 @@ export const DeploymentConfigDiffMain = ({
         })
 
     return (
-        <div className="bcn-0 deployment-config-diff__main-top">
+        <div className="bcn-0 deployment-config-diff__main-top flexbox-col min-h-100">
             <div className="dc__border-bottom-n1 flexbox dc__align-items-center dc__position-sticky dc__top-0 bcn-0 w-100 dc__zi-11">
                 <div className="flexbox dc__align-items-center p-12 dc__gap-8 deployment-config-diff__main-top__header">
-                    <p className="m-0 cn-9 fs-13 lh-20">{headerText}</p>
+                    {!!headerText && <p className="m-0 cn-9 fs-13 lh-20">{headerText}</p>}
                     {renderHeaderSelectors(selectorsConfig.primaryConfig)}
                 </div>
                 <div className="dc__border-left flexbox dc__align-items-center deployment-config-diff__main-top__header">
                     <div className="flex-grow-1 flexbox dc__align-items-center dc__gap-8 p-12">
                         {renderHeaderSelectors(selectorsConfig.secondaryConfig)}
                     </div>
-                    {renderSortButton()}
+                    {(sortingConfig || scopeVariablesConfig) && (
+                        <div className="dc__border-left flex dc__gap-8 pr-12 pl-8 py-8">
+                            {renderSortButton()}
+                            {renderScopeVariablesButton()}
+                        </div>
+                    )}
                 </div>
             </div>
-            <div className="deployment-config-diff__main-content">
-                {errorConfig?.error && <ErrorScreenManager code={errorConfig.code} reload={errorConfig.reload} />}
+            <div className="deployment-config-diff__main-content dc__overflow-y-auto">
+                {errorConfig?.error && (
+                    <ErrorScreenManager
+                        code={errorConfig.code}
+                        subtitle={errorConfig.message}
+                        redirectURL={errorConfig.redirectURL}
+                        reload={errorConfig.reload}
+                    />
+                )}
                 {!errorConfig?.error &&
                     (isLoading ? (
                         <Progressing fullHeight size={48} />

@@ -66,7 +66,7 @@ import { GitTriggers } from '../../types'
 import warn from '../../../Assets/Icon/ic-warning.svg'
 import LogsRenderer from './LogsRenderer'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
-import { DeploymentHistoryDetailedView, DeploymentHistoryConfigList } from './DeploymentHistoryDiff'
+import { DeploymentHistoryConfigDiff } from './DeploymentHistoryConfigDiff'
 import { GitChanges, Scroller } from './History.components'
 import Artifacts from './Artifacts'
 import { statusColor as colorMap, EMPTY_STATE_STATUS, PULSATING_STATUS_MAP } from '../../constants'
@@ -297,7 +297,7 @@ const StartDetails = ({
 
     return (
         <div className="w-100 pr-20 flex column left dc__border-bottom-n1">
-            <div className="flexbox dc__gap-8 dc__align-items-center pb-12">
+            <div className="flexbox dc__gap-8 dc__align-items-center pb-12 flex-wrap">
                 <div className="flex left dc__gap-4 cn-9 fs-13 fw-6 lh-20">
                     <div className="flex left dc__no-shrink dc__gap-4" data-testid="deployment-history-start-heading">
                         <div>Start</div>
@@ -488,8 +488,6 @@ const HistoryLogs: React.FC<HistoryLogsProps> = ({
     triggerDetails,
     loading,
     setFullScreenView,
-    deploymentHistoryList,
-    setDeploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
     userApprovalMetadata,
@@ -509,6 +507,8 @@ const HistoryLogs: React.FC<HistoryLogsProps> = ({
     scrollToTop,
     scrollToBottom,
     fullScreenView,
+    appName,
+    triggerHistory,
 }) => {
     const { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -528,7 +528,7 @@ const HistoryLogs: React.FC<HistoryLogsProps> = ({
     const CDBuildReportUrl = `app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${triggerId}`
 
     return (
-        <div className="trigger-outputs-container flexbox-col flex-grow-1">
+        <div className="trigger-outputs-container flexbox-col flex-grow-1 h-100">
             {loading ? (
                 <Progressing pageLoader />
             ) : (
@@ -591,24 +591,17 @@ const HistoryLogs: React.FC<HistoryLogsProps> = ({
                         />
                     </Route>
                     {triggerDetails.stage === 'DEPLOY' && (
-                        <Route path={`${path}/configuration`} exact>
-                            <DeploymentHistoryConfigList
-                                setDeploymentHistoryList={setDeploymentHistoryList}
-                                deploymentHistoryList={deploymentHistoryList}
+                        <Route path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}`}>
+                            <DeploymentHistoryConfigDiff
+                                appName={appName}
+                                envName={selectedEnvironmentName}
+                                pipelineId={+pipelineId}
+                                wfrId={+triggerId}
+                                triggerHistory={triggerHistory}
                                 setFullScreenView={setFullScreenView}
-                            />
-                        </Route>
-                    )}
-                    {triggerDetails.stage === 'DEPLOY' && (
-                        <Route
-                            path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
-                        >
-                            <DeploymentHistoryDetailedView
-                                setDeploymentHistoryList={setDeploymentHistoryList}
-                                deploymentHistoryList={deploymentHistoryList}
-                                setFullScreenView={setFullScreenView}
-                                renderRunSource={renderRunSource}
                                 resourceId={resourceId}
+                                renderRunSource={renderRunSource}
+                                runSource={triggerDetails.runSource}
                             />
                         </Route>
                     )}
@@ -662,8 +655,6 @@ const TriggerOutput = ({
     triggerHistory,
     setTriggerHistory,
     setFullScreenView,
-    setDeploymentHistoryList,
-    deploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
     appReleaseTags,
@@ -683,6 +674,7 @@ const TriggerOutput = ({
     scrollToTop,
     scrollToBottom,
     renderTargetConfigInfo,
+    appName,
 }: TriggerOutputProps) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -913,8 +905,6 @@ const TriggerOutput = ({
                 userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
                 triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
-                setDeploymentHistoryList={setDeploymentHistoryList}
-                deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 artifactId={triggerDetailsResult?.result?.artifactId}
@@ -932,6 +922,8 @@ const TriggerOutput = ({
                 scrollToTop={scrollToTop}
                 scrollToBottom={scrollToBottom}
                 fullScreenView={fullScreenView}
+                appName={appName}
+                triggerHistory={triggerHistory}
             />
         </>
     )

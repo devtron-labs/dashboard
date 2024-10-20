@@ -55,8 +55,11 @@ export const getArtifactInfo = async (
     }
 }
 
-export const getAppEnvDeploymentConfig = (
-    params: AppEnvDeploymentConfigPayloadType,
-    signal?: AbortSignal,
-): Promise<ResponseType<AppEnvDeploymentConfigDTO>> =>
+export const getAppEnvDeploymentConfig = ({
+    params,
+    signal,
+}: {
+    params: AppEnvDeploymentConfigPayloadType
+    signal?: AbortSignal
+}): Promise<ResponseType<AppEnvDeploymentConfigDTO>> =>
     get(getUrlWithSearchParams(ROUTES.CONFIG_DATA, params), { signal })

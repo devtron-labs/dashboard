@@ -1,0 +1,10 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -->
+
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon/ic-diff-file-removed">
+<rect id="Rectangle 15" x="2.41699" y="2.41663" width="15.1667" height="15.1667" rx="1.25" stroke="#F33E3E" stroke-width="1.5"/>
+<path id="Vector" d="M5.83301 10H14.1663" stroke="#F33E3E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

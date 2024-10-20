@@ -40,7 +40,7 @@ export const useGetCISecurityDetails = ({
 
     const severityCount: SeverityCount = isSecurityScanV2Enabled
         ? getSeverityCountFromSummary(scanResultResponse?.result.imageScan.vulnerability?.summary.severities)
-        : executionDetailsResponse?.result.severityCount ?? { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
+        : (executionDetailsResponse?.result.severityCount ?? { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 })
 
     const totalCount = getTotalSeverityCount(severityCount)
 
