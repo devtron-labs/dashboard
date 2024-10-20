@@ -1,0 +1,20 @@
+.edit-image-form-field {
+    &__figure-container {
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(12, 1fr);
+
+        & &--base-image {
+            grid-column: 1 / span 12;
+            grid-row: 1 / span 12;
+        }
+
+        & &--edit-image-icon {
+            grid-column: 8 / span 4;
+            grid-row: 8 / span 4;
+        }
+    }
+
+    &__fallback-image {
+        background: rgba(57, 137, 217, 0.20);
+    }
+}

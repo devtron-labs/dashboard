@@ -1,0 +1,26 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="46" viewBox="0 0 44 46" fill="none">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M5 24H29V41C29 43.2091 27.2091 45 25 45H9C6.79086 45 5 43.2091 5 41V24Z" fill="#F33E3E" fill-opacity="0.12" stroke="#F33E3E" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M17 29.5V39.5" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 29.5V39.5" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12 29.5V39.5" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40 10C41.6569 10 43 11.3431 43 13C43 14.6569 41.6569 16 40 16H31" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36 23C36 21.3431 34.6569 20 33 20H25" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M29.6903 7.03989L2.11567 11.902C1.57177 11.9979 1.2086 12.5166 1.30451 13.0605L1.82545 16.0149C1.92136 16.5588 2.44001 16.922 2.98391 16.8261L30.5585 11.9639C31.1024 11.868 31.4656 11.3494 31.3697 10.8055L30.8487 7.85105C30.7528 7.30715 30.2342 6.94398 29.6903 7.03989Z" fill="#F33E3E" fill-opacity="0.12" stroke="#F33E3E" stroke-width="2" stroke-linejoin="round"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M10.9227 4.25671L18.8012 2.86752C19.889 2.67572 20.9263 3.40205 21.1181 4.48984L21.8127 8.42907L9.99501 10.5129L9.30042 6.57362C9.10861 5.48583 9.83495 4.44851 10.9227 4.25671Z" stroke="#F33E3E" stroke-width="2" stroke-linejoin="round"/>
+</svg>

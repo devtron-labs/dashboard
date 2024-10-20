@@ -1,0 +1,95 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.empty-state {
+    height: 100%;
+    img {
+        height: 40%;
+        max-height: 200px;
+        width: auto;
+        max-width: 250px;
+    }
+    svg {
+        height: 40%;
+        max-height: 200px;
+        width: auto;
+    }
+    .button svg {
+        height: 100%;
+        max-height: none;
+        width: 100%;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--N900);
+    }
+    .subtitle {
+        font-size: 13px;
+        font-weight: 400;
+        text-align: center;
+        line-height: 20px;
+        margin-bottom: 6px;
+
+        &--text-start {
+            text-align: start;
+        }
+    }
+    .cta {
+        height: 36px;
+    }
+    p {
+        text-align: center;
+        font-size: 13px;
+        color: var(--N700);
+    }
+    strong {
+        font-size: 16px;
+        margin-bottom: 4px;
+        color: var(--N900);
+        font-weight: normal;
+    }
+    .select-popup {
+        height: min-content;
+        max-height: 250px;
+        overflow: auto;
+        padding: 8px 0;
+    }
+    .empty-state__loader {
+        width: 34px;
+        height: 34px;
+        margin-bottom: 16px;
+    }
+    .empty-state__loading-text {
+        font-size: 12px;
+        width: 200px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        text-align: center;
+        color: var(--N900);
+    }
+    .button__icon {
+        width: 16px;
+        height: 16px;
+        margin-left: 8px;
+    }
+}

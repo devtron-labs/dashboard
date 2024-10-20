@@ -1,0 +1,90 @@
+@mixin svg-styles($color) {
+    svg.tab-group__tab__icon *[stroke^='#'] {
+        stroke: $color;
+    }
+
+    svg.tab-group__tab__icon *[fill^='#'] {
+        fill: $color;
+    }
+}
+
+.tab-group {
+    list-style: none;
+
+    &__tab {
+        $parent-selector: &;
+        position: relative;
+
+        @include svg-styles(var(--N700));
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: transparent;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+        }
+
+        &--align-active-border::after {
+            bottom: -1px;
+        }
+
+        &:hover:not(.tab-group__tab--block) {
+            color: var(--B500);
+            @include svg-styles(var(--B500));
+        }
+
+        &--active {
+            @include svg-styles(var(--B500));
+
+            &::after {
+                background-color: var(--B500);
+            }
+        }
+
+        &__badge {
+            border-radius: 10px;
+            min-width: 20px;
+
+            &--medium {
+                min-width: 18px;
+            }
+        }
+
+        &__indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 100%;
+        }
+
+        &__description {
+            list-style: none;
+        }
+
+        &__nav-link {
+            &.active {
+                color: var(--B500);
+                font-weight: 600;
+                @include svg-styles(var(--B500));
+            }
+
+            &:not(.active) {
+                color: var(--N900);
+            }
+
+            &:hover {
+                color: var(--B500);
+            }
+        }
+
+        &:has(.active) {
+            &::after {
+                background-color: var(--B500);
+            }
+        }
+    }
+}

@@ -1,0 +1,65 @@
+.logs-renderer-container {
+    .logs-renderer {
+        &__search-bar {
+            .search-bar {
+                background: transparent;
+                border-radius: 0px;
+                border: none !important;
+
+                input {
+                    color: var(--N0);
+
+                    &::placeholder {
+                        color: var(--N500);
+                    }
+                }
+
+                &:hover {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                &__icon {
+                    path:nth-child(1) {
+                        fill: none !important;
+                    }
+
+                    path:nth-child(2) {
+                        fill: var(--N400);
+                    }
+                }
+            }
+
+            .search-bar:focus-within {
+                border: none !important;
+            }
+        }
+
+        &__stage-accordion {
+            background-color: #0c1021;
+
+            &:not(&--open-stage):hover {
+                background-color: rgba(44, 51, 84, 0.5);
+            }
+
+            &--open-stage {
+                background-color: #2c3354;
+            }
+        }
+
+        &__log-item {
+            grid-template-columns: 34px auto;
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        &__filters-border-bottom {
+            border-bottom: 1px solid #2c3354;
+
+            & > :not(:first-child) {
+                border-left: 1px solid #2C3354;
+            }
+        }
+    }
+}

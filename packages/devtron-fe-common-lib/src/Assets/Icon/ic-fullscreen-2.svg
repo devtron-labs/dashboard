@@ -1,0 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+    <path fill="#767D84" fill-rule="evenodd" d="M3.75 9.75c.385 0 .702.29.745.663l.005.087v1.938l2.432-2.43c.293-.294.768-.294 1.06 0 .271.27.292.695.063.99l-.062.07L5.56 13.5H7.5c.385 0 .702.29.745.663l.005.087c0 .385-.29.702-.663.745L7.5 15H3.75l-.078-.005-.049-.006-.051-.01-.054-.016c-.015-.004-.03-.01-.044-.015l-.05-.023c-.015-.006-.029-.014-.043-.022-.018-.01-.036-.021-.053-.033l-.033-.023c-.024-.02-.048-.04-.07-.061l-.005-.006c-.051-.051-.09-.103-.123-.16l-.005-.01-.018-.035c-.01-.019-.018-.039-.026-.06l-.014-.04-.016-.06-.008-.041-.005-.037-.002-.023L3 14.271V10.5c0-.414.336-.75.75-.75zM14.25 3l.076.004.05.007.052.01.054.016c.015.004.03.01.044.015l.05.023c.015.006.029.014.043.022.018.01.036.021.053.033.01.006.018.013.027.02l.034.026.031.028.016.016c.051.051.09.103.123.16l.005.01.018.035c.01.019.018.039.026.06l.014.04.016.06.008.041.003.018.005.046.001.03.001.03V7.5c0 .414-.336.75-.75.75-.385 0-.702-.29-.745-.663L13.5 7.5V5.56l-2.47 2.47c-.293.293-.767.293-1.06 0-.27-.27-.291-.695-.063-.99l.063-.07 2.469-2.471L10.5 4.5c-.385 0-.702-.29-.745-.663L9.75 3.75c0-.385.29-.702.663-.745L10.5 3h3.75z"/>
+</svg>

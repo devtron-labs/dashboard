@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ */
+
+button.selected-tab {
+  border-bottom: 2px solid var(--B500);
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  border-radius: 8px;
+  border: 1px solid var(--N200, #D0D4D9);
+  background: var(--N0, #FFF);
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.10);
+}

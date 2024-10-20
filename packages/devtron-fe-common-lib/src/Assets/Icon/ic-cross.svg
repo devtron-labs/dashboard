@@ -1,0 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.2803 5.78033C19.5732 5.48744 19.5732 5.01256 19.2803 4.71967C18.9874 4.42678 18.5126 4.42678 18.2197 4.71967L19.2803 5.78033ZM4.71967 18.2197C4.42678 18.5126 4.42678 18.9874 4.71967 19.2803C5.01256 19.5732 5.48744 19.5732 5.78033 19.2803L4.71967 18.2197ZM18.2197 19.2803C18.5126 19.5732 18.9874 19.5732 19.2803 19.2803C19.5732 18.9874 19.5732 18.5126 19.2803 18.2197L18.2197 19.2803ZM5.78033 4.71967C5.48744 4.42678 5.01256 4.42678 4.71967 4.71967C4.42678 5.01256 4.42678 5.48744 4.71967 5.78033L5.78033 4.71967ZM18.2197 4.71967L11.4697 11.4697L12.5303 12.5303L19.2803 5.78033L18.2197 4.71967ZM11.4697 11.4697L4.71967 18.2197L5.78033 19.2803L12.5303 12.5303L11.4697 11.4697ZM19.2803 18.2197L12.5303 11.4697L11.4697 12.5303L18.2197 19.2803L19.2803 18.2197ZM12.5303 11.4697L5.78033 4.71967L4.71967 5.78033L11.4697 12.5303L12.5303 11.4697Z" fill="#596168"/>
+</svg>

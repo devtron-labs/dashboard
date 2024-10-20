@@ -1,0 +1,305 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.ci-details {
+    background-color: var(--white);
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    transition: all 0.3s;
+    display: flex;
+
+    .ci-artifact {
+        .add-image-button {
+            margin-left: 52px;
+        }
+        &.ci-artifact--report {
+            svg path {
+                fill: currentColor;
+            }
+        }
+    }
+
+    .zoom {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .ci-details__history {
+        padding: 16px 0 0 0;
+        border-right: 1px solid var(--N200);
+        display: grid;
+        grid-template-rows: 80px 1fr;
+        overflow: hidden;
+        flex-basis: 280px;
+        transition: flex-basis 0.3s;
+    }
+
+    .ci-details__body {
+        flex-basis: calc(100% - 280px);
+        transition: flex-basis 0.3s;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+
+        .trigger-details {
+            transition: height 0.3s;
+
+            &__grid {
+                grid-template-columns: 50px 1fr;
+            }
+
+            .trigger-details__summary {
+                .inprogress-status-color {
+                    color: var(--inprogress-orange);
+                }
+            }
+        }
+
+        .history-logs {
+            height: 100%;
+            overflow: auto;
+        }
+    }
+
+    &.ci-details--full-screen {
+        .ci-details__history {
+            flex-basis: 0;
+            overflow: hidden;
+            transition: flex-basis 0.3s;
+            border-right: unset;
+        }
+
+        .ci-details__body {
+            overflow: auto;
+            flex-basis: 100%;
+            transition: flex-basis 0.3s;
+
+            .trigger-details {
+                overflow: hidden;
+                height: 0px;
+                transition: height 0.3s;
+            }
+        }
+    }
+}
+
+.historical-diff {
+    display: grid;
+    grid-template-rows: 60px auto;
+    height: 100%;
+    background-color: var(--white);
+}
+
+.historical-diff__container {
+    display: grid;
+    grid-template-columns: 280px auto;
+    height: calc(100vh - 147px);
+}
+
+.deployment-diff__upper {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto;
+}
+
+.historical-diff__left {
+    padding: 16px 12px;
+    overflow: hidden;
+    min-width: 280px;
+}
+
+.history_diff__wrapper {
+    .tab-list__tab-link.active {
+        color: var(--N900);
+        background: #e5f2ff;
+        font-weight: 600;
+        border-bottom: 0px;
+    }
+}
+
+.code-editor-header-value {
+    border-bottom: 1px solid var(--N200);
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.compare-history__border-right {
+    border-right: 1px solid var(--N100);
+}
+
+.compare-history__border-left {
+    border-left: 1px solid var(--N100);
+}
+
+.configuration-link {
+    &.active {
+        background: var(--B100);
+        color: var(--N900);
+        font-weight: 600;
+        border-right: 1px solid var(--N200);
+    }
+}
+.historical-name:hover {
+    color: var(--N900) !important;
+}
+
+.code-editor-green-diff {
+    background: #eaf1dd;
+}
+
+.code-editor-red-diff {
+    background: #ffd4d1;
+}
+
+.left-50 {
+    left: 50px;
+}
+
+.deployment-aborted {
+    height: calc(100vh - 250px);
+    justify-content: center;
+}
+
+.icon-selected {
+    background-color: #0066cc;
+    border-radius: 4px;
+    path {
+        stroke: #fff;
+    }
+}
+
+.deployment-history-card-container {
+    text-decoration: unset;
+    padding: 0 16px;
+
+    &:hover {
+        text-decoration: unset;
+        background: var(--N50);
+    }
+
+    &.active {
+        background: var(--B100);
+    }
+
+    .deployment-history-card {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        padding: 12px 0;
+        column-gap: 12px;
+    }
+
+    .app-status__icon {
+        position: unset;
+    }
+}
+
+.deployment-status-breakdown-container,
+.deployment-approval-container {
+    .vertical-connector {
+        border-left: 1px solid var(--N300);
+        height: 15px;
+        position: relative;
+        left: 18px;
+        width: 5px;
+    }
+    .deployment-status-breakdown-row {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+
+        &.border-collapse {
+            border-radius: 4px 4px 0 0;
+        }
+    }
+
+    .pulse-highlight {
+        width: 12px;
+        height: 12px;
+        border: solid 4px rgba(255, 126, 91, 0.4);
+        background-color: #ff7e5b;
+        position: relative;
+        top: 5px;
+        right: -5px;
+        border-radius: 50%;
+        animation-name: pulse;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    .green-tick {
+        path {
+            stroke: var(--G500);
+        }
+    }
+
+    .app-status-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+    }
+    .resource-list {
+        .app-status-row {
+            &:hover {
+                background-color: var(--N50);
+            }
+        }
+    }
+
+    .detail-tab_border {
+        border-radius: 0 0 4px 4px;
+        border-top: 0;
+    }
+}
+
+.history-component__wrapper {
+    .history-component__artifact {
+        width: min(100%, 800px);
+    }
+}
+
+.log-resize-button {
+    transition: opacity 0.2s ease-in-out;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    box-shadow:
+        0 0 4px 0 rgba(0, 10, 20, 0.5),
+        0 0 4px 0 rgba(0, 10, 20, 0.5);
+    background-color: #2c3354;
+    opacity: 0.8;
+    z-index: 11;
+
+    & > svg {
+        transition: transform 0.2s ease-in-out;
+        transform: scale(1);
+    }
+
+    &:hover {
+        opacity: 1;
+
+        & > svg {
+            transform: scale(1.1);
+        }
+    }
+}

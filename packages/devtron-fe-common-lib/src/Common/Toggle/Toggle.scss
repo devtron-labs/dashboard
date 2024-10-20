@@ -1,0 +1,122 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.toggle__switch {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+
+    &.disabled {
+        cursor: not-allowed;
+        .toggle__slider {
+            cursor: not-allowed;
+        }
+    }
+}
+
+/* Hide default HTML checkbox */
+
+.toggle__switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+
+.toggle__slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: all 0.4s ease;
+    &.round {
+        border-radius: 34px;
+        &:before {
+            border-radius: 50%;
+        }
+    }
+    &:before {
+        position: absolute;
+        content: '';
+        height: calc(100% - 8px);
+        width: calc(50% - 4px);
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: all 0.4s ease;
+    }
+    &.with-icon {
+        background-color: var(--N000) !important;
+        svg {
+            position: absolute;
+            content: '';
+            top: -1px;
+            left: -1px;
+            background-color: var(--N300);
+            transition: all 0.4s ease;
+        }
+    }
+}
+
+input:checked + .toggle__slider {
+    background-color: var(--color);
+    &:before {
+        transform: translateX(calc(100%));
+    }
+    &.with-icon {
+        svg {
+            transform: translateX(calc(100%));
+            background-color: var(--color);
+        }
+    }
+}
+
+input:focus + .toggle__slider {
+    box-shadow: 0 0 1px var(--color);
+}
+
+.dc__toggle-square-toggle {
+    .toggle__slider {
+        border-color: var(--color);
+        background-color: var(--color) !important;
+
+        &:before {
+            background-color: transparent;
+        }
+
+        &.with-icon svg {
+            height: 16px;
+            width: 16px;
+            margin-top: 1px;
+            background-color: var(--N0);
+            left: 0;
+            padding: 0;
+            border-radius: 3px;
+        }
+    }
+
+    input:checked + .toggle__slider {
+        &.with-icon svg {
+            left: -6px;
+            background-color: var(--N0);
+        }
+    }
+}

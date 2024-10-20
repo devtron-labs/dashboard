@@ -1,0 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <path fill="#596168" fill-rule="evenodd" d="M12.444 1.778c.982 0 1.778.796 1.778 1.778v6.11c0 .983-.796 1.778-1.778 1.778H7.72l-2.582 2.583c-.402.402-1.076.147-1.134-.396L4 13.556v-2.112h-.444c-.945 0-1.717-.735-1.775-1.665l-.003-.112V3.556c0-.982.796-1.778 1.778-1.778zm0 1.333H3.556c-.246 0-.445.2-.445.445v6.11c0 .246.2.445.445.445h1.11c.369 0 .667.299.667.667v1.167l1.64-1.639c.104-.104.24-.17.384-.19l.087-.005h5c.246 0 .445-.199.445-.444V3.556c0-.246-.2-.445-.445-.445zM8 7.056c.368 0 .667.298.667.666 0 .342-.258.624-.59.662L8 8.39H5.222c-.368 0-.666-.299-.666-.667 0-.342.257-.623.588-.662l.078-.004H8zm2.778-2.223c.368 0 .666.299.666.667 0 .342-.257.624-.588.662l-.078.005H5.222c-.368 0-.666-.299-.666-.667 0-.342.257-.624.588-.662l.078-.005h5.556z"/>
+</svg>

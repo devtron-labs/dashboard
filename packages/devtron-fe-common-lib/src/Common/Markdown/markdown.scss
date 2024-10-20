@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.markdown {
+    padding: 0 20px 20px 20px;
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        tbody {
+            td,
+            th {
+                padding: 6px 13px;
+                border: 1px solid #dfe2e5;
+            }
+
+            tr {
+                height: 37px;
+            }
+
+            tr:nth-child(2n + 3) {
+                background: #f6f8fa;
+            }
+
+            tr:first-child {
+                th {
+                    text-align: center;
+                }
+            }
+        }
+
+        code {
+            background-color: rgba(27, 31, 35, 0.05);
+        }
+    }
+
+    pre {
+        padding: 16px;
+        border: unset;
+        overflow: auto;
+        font-size: 85%;
+        line-height: 1.45;
+        background-color: #f7f7f7;
+        border-radius: 3px;
+
+        code {
+            display: inline;
+            margin: 0;
+            overflow: visible;
+            line-height: inherit;
+            word-wrap: normal;
+            white-space: pre;
+            border: 0;
+        }
+    }
+
+    a.anchor {
+        color: var(--N900);
+    }
+}

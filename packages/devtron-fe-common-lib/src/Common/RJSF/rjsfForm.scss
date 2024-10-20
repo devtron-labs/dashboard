@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.rjsf-form-template {
+    &__container > div:first-child {
+        padding: 20px;
+        margin-right: 28px;
+    }
+
+    &__field,
+    &__field--error {
+        grid-template-columns: 250px 1fr;
+
+        input.form__input {
+            padding: 6px 8px;
+        }
+    }
+
+    &__additional-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    &__array-field-item {
+        grid-template-columns: 1fr auto;
+
+        & > :first-child {
+            // This is added as the array field itself has a margin bottom
+            margin: 0;
+        }
+
+        & legend {
+            display: none;
+        }
+
+        &:has(+ div) {
+            margin-bottom: 8px;
+        }
+    }
+
+    &__additional-fields,
+    &__array-field-item {
+        z-index: 0;
+        background: transparent;
+
+        &:has(> .remove-btn__container:hover)::after {
+            background: var(--R50);
+        }
+
+        &:has(> .remove-btn__container)::after {
+            border-radius: 4px;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            background: transparent;
+            z-index: -1;
+            position: absolute;
+            /* NOTE: this overlay is exactly 6px wider & taller on all sides
+             * therefore the 8px (4 + 4) on height & width */
+            height: calc(100% + 8px);
+            width: calc(100% + 8px);
+            content: '';
+            transition: all 100ms ease-out;
+        }
+
+        & > .remove-btn__container:hover {
+            fill: var(--R500);
+            path {
+                fill: var(--R500);
+            }
+        }
+
+        & > .remove-btn__container {
+            transition: all 100ms ease-out;
+        }
+    }
+}
