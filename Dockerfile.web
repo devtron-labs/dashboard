@@ -9,6 +9,8 @@ COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html
 
+RUN if [ -d "./devtron-fe-lib" ]; then rm -rf packages/devtron-fe-lib; cp -r ./devtron-fe-lib packages/devtron-fe-lib; fi
+
 RUN pnpm i
 RUN pnpm run build:prod
 
