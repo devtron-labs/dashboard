@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN pnpm i --frozen-lockfile
+RUN pnpm i
 
 RUN pnpm --filter=web build-storybook
 

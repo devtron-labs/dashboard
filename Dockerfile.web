@@ -9,7 +9,7 @@ COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html
 
-RUN pnpm i --frozen-lockfile
+RUN pnpm i
 RUN pnpm run build:prod
 
 FROM nginx:stable
