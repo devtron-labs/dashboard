@@ -271,7 +271,7 @@ export default function CIPipeline({
                     mandatoryPluginData: processedPluginData,
                     pluginDataStore: updatedPluginDataStore,
                 }: ProcessPluginDataReturnType = await processPluginData({
-                    formData: _formData as any,
+                    formData: _formData,
                     pluginDataStoreState: pluginDataStore,
                     appId: +appId,
                     appName,

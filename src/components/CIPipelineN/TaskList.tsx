@@ -24,8 +24,8 @@ import {
     PipelineFormType,
     ValidationResponseType,
     StepType,
-    TaskActionModalType,
-    TaskActionModalStateType,
+    PipelineStageTaskActionModalType,
+    PipelineStageTaskActionModalStateType,
     ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -69,7 +69,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
-    const [taskActionModalState, setTaskActionModalState] = useState<TaskActionModalStateType>(null)
+    const [taskActionModalState, setTaskActionModalState] = useState<PipelineStageTaskActionModalStateType>(null)
 
     const handleDragStart = (index: number): void => {
         setDragItemIndex(index)
@@ -155,7 +155,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
 
             if (!pluginValidationStatus.isValid) {
                 setTaskActionModalState({
-                    type: TaskActionModalType.DELETE,
+                    type: PipelineStageTaskActionModalType.DELETE,
                     pluginId,
                     taskIndex,
                 })
@@ -237,7 +237,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
 
             if (!pluginValidationStatus.isValid) {
                 setTaskActionModalState({
-                    type: TaskActionModalType.MOVE_PLUGIN,
+                    type: PipelineStageTaskActionModalType.MOVE_PLUGIN,
                     pluginId,
                     taskIndex,
                 })

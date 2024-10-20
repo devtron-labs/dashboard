@@ -461,7 +461,7 @@ export default function CDPipeline({
             mandatoryPluginData: processedPluginData,
             pluginDataStore: updatedPluginDataStore,
         }: ProcessPluginDataReturnType = await processPluginData({
-            formData: form as any,
+            formData: form,
             pluginDataStoreState: pluginDataStore,
             appId: +appId,
             appName,
