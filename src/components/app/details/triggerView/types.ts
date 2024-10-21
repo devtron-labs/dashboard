@@ -40,6 +40,7 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
+    ConsequenceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -211,10 +212,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     appId: string
     isJobView?: boolean
     isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
+    ciBlockState?: ConsequenceType
     selectedEnv?: EnvironmentWithSelectPickerType
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     environmentLists?: any[]
