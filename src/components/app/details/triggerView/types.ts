@@ -229,9 +229,9 @@ export interface RegexValueType {
 }
 
 export interface CIMaterialState {
-    regexValue: Record<number, RegexValueType>
-    savingRegexValue: boolean
-    selectedCIPipeline?: any
+    // regexValue: Record<number, RegexValueType>
+    // savingRegexValue: boolean
+    // selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
     runtimeParamsErrorState: boolean

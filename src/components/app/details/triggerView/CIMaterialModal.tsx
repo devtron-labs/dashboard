@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, VisibleModal, stopPropagation, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    ServerErrors,
+    SourceTypeMap,
+    VisibleModal,
+    showError,
+    stopPropagation,
+    usePrompt,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 import CIMaterial from './ciMaterial'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { CIMaterialModalProps, CIMaterialRouterProps } from './types'
+import { CIMaterialModalProps, CIMaterialRouterProps, RegexValueType } from './types'
+import BranchRegexModal from './BranchRegexModal'
+import { TriggerViewContext } from './config'
 
 export const CIMaterialModal = ({
     loader,
@@ -30,6 +41,17 @@ export const CIMaterialModal = ({
     ...props
 }: CIMaterialModalProps) => {
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
+    const context = React.useContext(TriggerViewContext)
+    const [savingRegexValue, setSavingRegexValue] = useState(false)
+    const selectedCIPipeline = props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId)
+    const _regexValue: Record<number, RegexValueType> = {}
+    props.material.forEach((mat) => {
+        _regexValue[mat.gitMaterialId] = {
+            value: mat.value,
+            isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+        }
+    })
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(_regexValue)
     usePrompt({ shouldPrompt: isLoading })
 
     useEffect(
@@ -40,8 +62,106 @@ export const CIMaterialModal = ({
         [],
     )
 
-    return (
+    useEffect(() => {
+        if (props.isJobView && props.environmentLists?.length > 0) {
+            const envId = selectedCIPipeline?.environmentId || 0
+            const _selectedEnv = props.environmentLists.find((env) => env.id === envId)
+            props.setSelectedEnv(_selectedEnv)
+        }
+    }, [selectedCIPipeline])
+
+    const isRegexValueInvalid = (_cm): void => {
+        const regExp = new RegExp(_cm.source.regex)
+        const regVal = regexValue[_cm.gitMaterialId]
+        if (!regExp.test(regVal.value)) {
+            const _regexVal = {
+                ...regexValue,
+                [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
+            }
+            setRegexValue(_regexVal)
+        }
+    }
+
+    const onClickNextButton = () => {
+        setSavingRegexValue(true)
+        const payload: any = {
+            appId: Number(props.match.params.appId ?? props.appId),
+            id: +props.workflowId,
+            ciPipelineMaterial: [],
+        }
+
+        // Populate the ciPipelineMaterial with flatten object
+        if (selectedCIPipeline?.ciMaterial?.length) {
+            payload.ciPipelineMaterial = selectedCIPipeline.ciMaterial.map((_cm) => {
+                const regVal = regexValue[_cm.gitMaterialId]
+                let _updatedCM
+
+                if (regVal?.value && _cm.source.regex) {
+                    isRegexValueInvalid(_cm)
+
+                    _updatedCM = {
+                        ..._cm,
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal.value,
+                        regex: _cm.source.regex,
+                    }
+                } else {
+                    // Maintain the flattened object structure for unchanged values
+                    _updatedCM = {
+                        ..._cm,
+                        ..._cm.source,
+                    }
+                }
+
+                // Deleting as it's not required in the request payload
+                delete _updatedCM.source
+
+                return _updatedCM
+            })
+        }
+
+        savePipeline(payload, true)
+            .then((response) => {
+                if (response) {
+                    props.getWorkflows()
+                    context.onClickCIMaterial(props.pipelineId.toString(), props.pipelineName)
+                }
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
+            .finally(() => {
+                setSavingRegexValue(false)
+            })
+    }
+
+    const handleRegexInputValue = (id, value, mat) => {
+        setRegexValue((prevState) => ({
+            ...prevState,
+            [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
+        }))
+    }
+
+    const renderBranchRegexModal = () => (
+        <VisibleModal className="w-600 bcn-0" close={props.onCloseBranchRegexModal}>
+            <BranchRegexModal
+                material={props.material}
+                selectedCIPipeline={selectedCIPipeline}
+                showWebhookModal={props.showWebhookModal}
+                title={props.title}
+                isChangeBranchClicked={props.isChangeBranchClicked}
+                onClickNextButton={onClickNextButton}
+                handleRegexInputValue={handleRegexInputValue}
+                regexValue={regexValue}
+                onCloseBranchRegexModal={props.onCloseBranchRegexModal}
+                savingRegexValue={savingRegexValue}
+            />
+        </VisibleModal>
+    )
+
+    const renderBranchCIModal = () => (
         <VisibleModal className="" close={closeCIModal}>
+            (
             <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
                 {loader ? (
                     <>
@@ -63,8 +183,11 @@ export const CIMaterialModal = ({
                     <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={+ciNodeId} />
                 )}
             </div>
+            )
         </VisibleModal>
     )
+
+    return props.showMaterialRegexModal ? renderBranchRegexModal() : renderBranchCIModal()
 }
 
 export default CIMaterialModal

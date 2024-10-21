@@ -126,7 +126,7 @@ export default function BranchRegexModal({
     return (
         <>
             {renderBranchRegexMaterialHeader()}
-            <div className="select-material--regex-body p-20 fs-13">
+            <div className="select-material--regex-body p-20 fs-13 w-600">
                 <div className="flex left">
                     {isChangeBranchClicked && (
                         <div onClick={onClickBackArrow}>
