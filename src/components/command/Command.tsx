@@ -552,7 +552,7 @@ export class Command extends Component<CommandProps, CommandState> {
         if (this.props.isCommandBarActive) {
             return (
                 <div
-                    className="dc__transparent-div"
+                    className="dc__transparent-div dc__transparent-div--command-bar"
                     onKeyDown={this.disableTab}
                     onClick={() => {
                         ReactGA.event({
