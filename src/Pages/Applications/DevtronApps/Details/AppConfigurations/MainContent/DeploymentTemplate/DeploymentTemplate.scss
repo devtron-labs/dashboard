@@ -1,0 +1,36 @@
+.deployment-template {
+    &__comments-view {
+        display: grid;
+        grid-template-columns: 1fr 0;
+        position: absolute;
+        left: 56px;
+        width: calc(100% - 56px);
+        height: calc(100% - 78px);
+        animation: comments-view-opening;
+        animation-duration: 200ms;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+
+    &__approval-tippy {
+        .tippy-box {
+            top: 55px;
+        }
+    }
+
+    @keyframes comments-view-opening {
+        0% {
+            grid-template-columns: 1fr 0;
+        }
+
+        100% {
+            grid-template-columns: 1fr 300px;
+        }
+    }
+
+    .variables-widget-position {
+        position: absolute;
+        bottom: 120px;
+        right: 110px;
+    }
+}

@@ -19,12 +19,12 @@ import {
     CollapsibleListItem,
     AppEnvDeploymentConfigType,
     EnvResourceType,
+    AppEnvironment,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
 import { WorkflowResult } from '@Components/app/details/triggerView/types'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
-import { AppEnvironment } from '@Services/service.types'
 
 import { ResourceConfig, ResourceConfigState } from '../../service.types'
 

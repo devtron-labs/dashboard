@@ -1,0 +1,7 @@
+// FIXME: When issue for svg button height is fixed, remove this file
+.no-override-empty-state-container {
+    .empty-state svg {
+        height: 100%;
+        width: 100%;
+    }
+}

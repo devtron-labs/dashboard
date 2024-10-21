@@ -15,6 +15,7 @@ import {
     EnvConfigType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
+    EnvironmentOptionType,
 } from '../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 
@@ -93,9 +94,10 @@ const getIcon = (configState: ResourceConfigState, isProtected: boolean): Collap
                 content: configState === ResourceConfigState.ApprovalPending ? 'Approval pending' : 'Draft',
                 placement: 'right',
                 arrow: false,
+                className: 'default-tt',
             },
             props: {
-                className: configState === ResourceConfigState.Draft ? 'scn-6' : '',
+                className: `p-2 ${configState === ResourceConfigState.Draft ? 'scn-6' : ''}`,
             },
         }
     }
@@ -114,7 +116,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    { value: id, isProtected },
+    { id, isProtected }: EnvironmentOptionType,
     paramToCheck: 'appId' | 'envId' = 'envId',
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem

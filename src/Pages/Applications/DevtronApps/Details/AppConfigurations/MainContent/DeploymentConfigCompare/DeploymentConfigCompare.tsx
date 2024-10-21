@@ -16,8 +16,7 @@ import {
     EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getChartReferencesForAppAndEnv } from '@Services/service'
-import { getOptions } from '@Components/deploymentConfig/service'
+import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
@@ -42,6 +41,7 @@ import {
     isConfigTypePublished,
 } from './utils'
 import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
+import { DeploymentConfigComparisonDataType } from './types'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -114,7 +114,11 @@ export const DeploymentConfigCompare = ({
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
     const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
-        () => Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)]),
+        () =>
+            Promise.all([
+                getTemplateOptions(compareToAppId, compareToEnvId),
+                getTemplateOptions(compareWithAppId, compareWithEnvId),
+            ]),
         [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
     )
 
@@ -189,31 +193,46 @@ export const DeploymentConfigCompare = ({
         ])
     }
 
+    const getComparisonData = async (): Promise<DeploymentConfigComparisonDataType> => {
+        if (isManifestView) {
+            const manifestData = await fetchManifestData()
+
+            return {
+                isManifestComparison: true,
+                manifestData,
+            }
+        }
+
+        const appConfigData = await Promise.all([
+            getConfigDiffData({
+                type,
+                appName,
+                envName,
+                compareName: compareTo,
+                configType,
+                identifierId,
+                pipelineId,
+            }),
+            getConfigDiffData({
+                type,
+                appName,
+                envName,
+                compareName: compareWith,
+                configType: compareWithConfigType,
+                identifierId: chartRefId || compareWithIdentifierId,
+                pipelineId: compareWithPipelineId,
+            }),
+        ])
+
+        return {
+            isManifestComparison: false,
+            appConfigData,
+        }
+    }
+
     // Load data for comparing the two environments
     const [comparisonDataLoader, comparisonData, comparisonDataErr, reloadComparisonData] = useAsync(
-        () =>
-            isManifestView
-                ? fetchManifestData()
-                : Promise.all([
-                      getConfigDiffData({
-                          type,
-                          appName,
-                          envName,
-                          compareName: compareTo,
-                          configType,
-                          identifierId,
-                          pipelineId,
-                      }),
-                      getConfigDiffData({
-                          type,
-                          appName,
-                          envName,
-                          compareName: compareWith,
-                          configType: compareWithConfigType,
-                          identifierId: chartRefId || compareWithIdentifierId,
-                          pipelineId: compareWithPipelineId,
-                      }),
-                  ]),
+        getComparisonData,
         [
             isManifestView,
             compareTo,
@@ -243,16 +262,26 @@ export const DeploymentConfigCompare = ({
     // Generate the deployment configuration list for the environments using comparison data
     const appEnvDeploymentConfigList = useMemo(() => {
         if (!comparisonDataLoader && comparisonData) {
-            const [{ result: currentList }, { result: compareList }] = comparisonData
+            const { isManifestComparison, appConfigData, manifestData } = comparisonData
 
-            const configData = getAppEnvDeploymentConfigList({
+            if (isManifestComparison) {
+                const [{ result: currentList }, { result: compareList }] = manifestData
+                return getAppEnvDeploymentConfigList({
+                    currentList,
+                    compareList,
+                    getNavItemHref,
+                    isManifestView: true,
+                })
+            }
+
+            const [{ result: currentList }, { result: compareList }] = appConfigData
+            return getAppEnvDeploymentConfigList({
                 currentList,
                 compareList,
                 getNavItemHref,
                 isManifestView,
                 convertVariables,
             })
-            return configData
         }
 
         return null
@@ -474,14 +503,15 @@ export const DeploymentConfigCompare = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
+    // DATA CONSTANTS
     const isLoading = comparisonDataLoader || optionsLoader
-    const isError = comparisonDataErr || optionsErr
+    const isError = !!(comparisonDataErr || optionsErr)
 
     return (
         <DeploymentConfigDiff
             isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
-                error: isError && !isLoading,
+                error: !isLoading && isError,
                 code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}
