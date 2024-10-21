@@ -45,7 +45,7 @@ const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = 
     'function',
 )
 
-const TaskActionConfirmationDialog = importComponentFromFELibrary('TaskActionConfirmationDialog', null, 'function')
+const PipelineTaskActionConfirmationDialog = importComponentFromFELibrary('PipelineTaskActionConfirmationDialog', null, 'function')
 
 export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJobView }: TaskListType) => {
     const {
@@ -415,8 +415,8 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                     </Fragment>
                 ))}
 
-                {TaskActionConfirmationDialog && taskActionModalState && (
-                    <TaskActionConfirmationDialog
+                {PipelineTaskActionConfirmationDialog && taskActionModalState && (
+                    <PipelineTaskActionConfirmationDialog
                         handleClose={handleClearTaskActionModalState}
                         handleDelete={deleteTask}
                         handleMoveTask={moveTaskToOtherStage}

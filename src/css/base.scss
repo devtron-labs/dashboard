@@ -3865,6 +3865,14 @@ textarea,
     margin-bottom: -2px;
 }
 
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
