@@ -265,6 +265,7 @@ export const ConfigMapSecretContainer = ({
                     inheritedConfigMapSecretData,
                     configMapSecretData,
                     draftData,
+                    isSecret,
                 })
 
                 return getConfigMapSecretResolvedValues(
@@ -307,14 +308,6 @@ export const ConfigMapSecretContainer = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !hideNoOverrideEmptyState &&
         !draftData
-
-    // RESET FORM STATE FROM AFTER DATA LOAD
-    useEffect(() => {
-        if (!configMapSecretResLoading && configMapSecretRes) {
-            // might be redundant
-            setFormState({ type: 'RESET' })
-        }
-    }, [configMapSecretResLoading, configMapSecretRes])
 
     // SET DRAFT DATA BASED STATES
     useEffect(() => {
@@ -458,6 +451,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleCreateOverride = () => {
+        setResolvedScopeVariables(false)
         setHideNoOverrideEmptyState(true)
         ReactGA.event({
             category: gaEventCategory,
@@ -822,7 +816,7 @@ export const ConfigMapSecretContainer = ({
                     />
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
-                    <div className="variables-widget-position-cm-cs">
+                    <div className="app-config-variable-widget-position">
                         <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
                     </div>
                 )}

@@ -21,12 +21,12 @@ export const ConfigMapSecretReadyOnly = ({
     ) : (
         <div className="p-16 bcn-0 h-100 flexbox-col dc__gap-12 dc__overflow-auto">
             {hasHashiOrAWS(configMapSecretData?.externalType) && renderHashiOrAwsDeprecatedInfo()}
-            <div className="dc__border br-4 py-4">
+            <div className="configmap-secret-container__display-values-container dc__border br-4 px-16 py-10 dc__grid">
                 {displayValues.configData.map(({ displayName, value }) =>
                     value ? (
-                        <div key={displayName} className="px-16 py-6 flex left dc__gap-8 fs-13 lh-20">
+                        <div key={displayName} className="dc__contents fs-13 lh-20 ">
                             <p className="m-0 w-150 cn-7">{displayName}</p>
-                            <p className="m-0 flex-grow-1 cn-9">{value}</p>
+                            <p className="m-0 flex-grow-1 cn-9 dc__word-break">{value}</p>
                         </div>
                     ) : null,
                 )}

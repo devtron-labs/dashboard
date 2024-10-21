@@ -54,7 +54,7 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                         APPLICATIONS
                     </h4>
                 </div>
-                <div className="px-8">
+                <div className="px-8 dc__overflow-auto">
                     {envAppList.map(({ name, isProtected, id }) => (
                         <Fragment key={id}>
                             {renderNavItem(

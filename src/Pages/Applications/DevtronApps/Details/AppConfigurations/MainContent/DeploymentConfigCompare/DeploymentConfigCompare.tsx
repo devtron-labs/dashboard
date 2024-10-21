@@ -49,6 +49,7 @@ export const DeploymentConfigCompare = ({
     envName,
     type = 'app',
     goBackURL = '',
+    overwriteNavHeading,
     isBaseConfigProtected = false,
     getNavItemHref,
 }: DeploymentConfigCompareProps) => {
@@ -119,7 +120,7 @@ export const DeploymentConfigCompare = ({
                 getTemplateOptions(compareToAppId, compareToEnvId),
                 getTemplateOptions(compareWithAppId, compareWithEnvId),
             ]),
-        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
+        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId, isManifestView],
     )
 
     // Options for previous deployments and default versions
@@ -275,17 +276,21 @@ export const DeploymentConfigCompare = ({
             }
 
             const [{ result: currentList }, { result: compareList }] = appConfigData
-            return getAppEnvDeploymentConfigList({
-                currentList,
-                compareList,
-                getNavItemHref,
-                isManifestView,
-                convertVariables,
-            })
+            if (options) {
+                return getAppEnvDeploymentConfigList({
+                    currentList,
+                    compareList,
+                    getNavItemHref,
+                    isManifestView,
+                    convertVariables,
+                    compareToTemplateOptions: options[0].result,
+                    compareWithTemplateOptions: options[1].result,
+                })
+            }
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables, options])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -519,7 +524,7 @@ export const DeploymentConfigCompare = ({
             goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
-            navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
+            navHeading={overwriteNavHeading || `Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
             tabConfig={tabConfig}
             sortingConfig={!isManifestView ? sortingConfig : null}

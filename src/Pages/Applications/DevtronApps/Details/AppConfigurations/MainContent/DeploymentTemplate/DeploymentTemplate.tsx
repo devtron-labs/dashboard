@@ -1452,7 +1452,7 @@ const DeploymentTemplate = ({
     const renderValuesView = () => (
         <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <div className="variables-widget-position">
+                <div className="app-config-variable-widget-position">
                     <FloatingVariablesSuggestions
                         zIndex={100}
                         appId={appId}

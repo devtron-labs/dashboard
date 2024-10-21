@@ -4,8 +4,13 @@ import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
     CollapsibleList,
     CollapsibleListConfig,
+    ComponentSizeType,
     EnvResourceType,
     getSelectPickerOptionByValue,
     SelectPicker,
@@ -14,19 +19,17 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
-import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
-
-const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -333,7 +336,16 @@ export const EnvConfigurationsNav = ({
 
         return (
             <div className="p-8">
-                <CompareWithButton href={compareWithHref} />
+                <Button
+                    dataTestId="compare-with-button"
+                    component={ButtonComponentType.link}
+                    variant={ButtonVariantType.secondary}
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                    startIcon={<ICArrowsLeftRight />}
+                    linkProps={{ to: compareWithHref }}
+                    text="Compare with..."
+                />
             </div>
         )
     }
@@ -341,7 +353,7 @@ export const EnvConfigurationsNav = ({
     return (
         <nav className="flexbox-col h-100 dc__overflow-hidden">
             {!hideEnvSelector && renderEnvSelector()}
-            {showComparison && CompareWithButton && renderCompareWithBtn()}
+            {showComparison && renderCompareWithBtn()}
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)

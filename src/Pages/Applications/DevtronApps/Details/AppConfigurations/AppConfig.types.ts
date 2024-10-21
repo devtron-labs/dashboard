@@ -263,6 +263,7 @@ export type DeploymentConfigCompareProps = {
     goBackURL?: string
     isBaseConfigProtected?: boolean
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
+    overwriteNavHeading?: string
 } & (
     | {
           type: 'appGroup'
