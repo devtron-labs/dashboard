@@ -120,7 +120,7 @@ export const DeploymentConfigCompare = ({
                 getTemplateOptions(compareToAppId, compareToEnvId),
                 getTemplateOptions(compareWithAppId, compareWithEnvId),
             ]),
-        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
+        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId, isManifestView],
     )
 
     // Options for previous deployments and default versions
@@ -276,17 +276,21 @@ export const DeploymentConfigCompare = ({
             }
 
             const [{ result: currentList }, { result: compareList }] = appConfigData
-            return getAppEnvDeploymentConfigList({
-                currentList,
-                compareList,
-                getNavItemHref,
-                isManifestView,
-                convertVariables,
-            })
+            if (options) {
+                return getAppEnvDeploymentConfigList({
+                    currentList,
+                    compareList,
+                    getNavItemHref,
+                    isManifestView,
+                    convertVariables,
+                    compareToTemplateOptions: options[0].result,
+                    compareWithTemplateOptions: options[1].result,
+                })
+            }
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables, options])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
