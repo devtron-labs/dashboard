@@ -56,6 +56,9 @@ import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-del
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 import { EDITOR_VIEW } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 
 const NodeDetailComponent = ({
     loadingResources,
@@ -127,7 +130,10 @@ const NodeDetailComponent = ({
 
     const showDesiredAndCompareManifest =
         !isResourceBrowserView &&
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                appDetails.appType === AppType.DEVTRON_APP &&
+                isFELibAvailable)) &&
         !currentResource?.['parentRefs']?.length
 
     const isResourceMissing =
@@ -140,7 +146,10 @@ const NodeDetailComponent = ({
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
-    const [selectedContainerName, setSelectedContainerName] = useState<OptionType>(({label: _selectedContainer, value: _selectedContainer}))
+    const [selectedContainerName, setSelectedContainerName] = useState<OptionType>({
+        label: _selectedContainer,
+        value: _selectedContainer,
+    })
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
     // States uplifted from Manifest Component
@@ -152,6 +161,7 @@ const NodeDetailComponent = ({
             manifest: '',
             activeManifestEditorData: '',
             modifiedManifest: '',
+            normalizedLiveManifest: '',
         },
         id: '',
     })
@@ -323,7 +333,7 @@ const NodeDetailComponent = ({
     }
 
     const switchSelectedContainer = (containerName: string) => {
-        setSelectedContainerName({label: containerName, value: containerName})
+        setSelectedContainerName({ label: containerName, value: containerName })
         setSelectedContainer(selectedContainer.set(selectedContainerValue, containerName))
     }
 
