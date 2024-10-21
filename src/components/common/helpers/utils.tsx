@@ -73,7 +73,7 @@ export const swap = (array: any[], indexA: number, indexB: number) => {
     array[indexB] = temp
 }
 
-export const getGitProviderIcon = (gitUrl: string): JSX.Element => {
+export const getGitProviderIcon = (gitUrl: string, rootClassName?: string): JSX.Element => {
     let IconComponent: React.ElementType = Git // Using React.ElementType for any JSX component
     if(!gitUrl) return null
     if (gitUrl.includes('gitlab')) {
@@ -84,5 +84,5 @@ export const getGitProviderIcon = (gitUrl: string): JSX.Element => {
         IconComponent = BitBucket
     }
 
-    return <IconComponent className="icon-dim-20 mw-20" />
+    return <IconComponent className={`icon-dim-20 ${rootClassName} mw-20`} />
 }

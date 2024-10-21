@@ -23,17 +23,14 @@ import {
     InfoColourBar,
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
+import { getGitProviderIcon } from '@Components/common'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 
 const BranchRegexModal = ({
     material,
@@ -102,39 +99,6 @@ const BranchRegexModal = ({
         </div>
     )
 
-    const renderMaterialRegexFooterNextButton = () => {
-        let _isDisabled = true
-
-        for (let index = 0; index < material.length; index++) {
-            const selectedMaterial = material[index]
-            const _regexValue = regexValue[selectedMaterial.gitMaterialId] || {}
-            _isDisabled = _regexValue.isInvalid
-            if (_isDisabled) {
-                break
-            }
-        }
-
-        return (
-            <div className="trigger-modal__trigger flex right">
-                <ButtonWithLoader
-                    dataTestId="branch-regex-save-next-button"
-                    rootClassName="cta flex"
-                    onClick={onClickNextButton}
-                    disabled={_isDisabled || savingRegexValue}
-                    isLoading={savingRegexValue}
-                >
-                    Save {!isChangeBranchClicked && '& Next'}
-                    {!isChangeBranchClicked && (
-                        <LeftIcon
-                            style={{ ['--rotateBy' as any]: '180deg' }}
-                            className={`rotate icon-dim-16 ml-8 ${_isDisabled ? 'scn-4' : 'scn-0'} transform`}
-                        />
-                    )}
-                </ButtonWithLoader>
-            </div>
-        )
-    }
-
     const getErrorMessage = (_regexValue) => {
         if (!_regexValue.value) {
             return REQUIRED_FIELD_MSG
@@ -146,23 +110,14 @@ const BranchRegexModal = ({
     }
 
     const renderBranchRegexContent = () => (
-        <div className="ci-trigger__branch-regex-wrapper p-20 fs-13 dc__overflow-scroll mxh-400">
+        <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-scroll mxh-400">
             {material?.map((mat, index) => {
                 const _regexValue = regexValue[mat.gitMaterialId] || {}
                 return (
                     mat.regex && (
-                        <div className="dc__border-bottom pb-20 pt-20" key={`regex_${mat.id}`}>
-                            <div className="flex left">
-                                <span className="mr-14">
-                                    {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}
-                                    {mat.gitMaterialUrl.includes('github') ? <GitHub /> : null}
-                                    {mat.gitMaterialUrl.includes('bitbucket') ? <BitBucket /> : null}
-                                    {mat.gitMaterialUrl.includes('gitlab') ||
-                                    mat.gitMaterialUrl.includes('github') ||
-                                    mat.gitMaterialUrl.includes('bitbucket') ? null : (
-                                        <Git />
-                                    )}
-                                </span>
+                        <div className="dc__border-bottom py-20" key={`regex_${mat.id}`}>
+                            <div className="flex left dc__gap-14">
+                                {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
                                 <span>
                                     <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                     <div className="pb-12">
@@ -192,6 +147,38 @@ const BranchRegexModal = ({
             })}
         </div>
     )
+    const renderMaterialRegexFooterNextButton = () => {
+        let _isDisabled = true
+
+        for (let index = 0; index < material.length; index++) {
+            const selectedMaterial = material[index]
+            const _regexValue = regexValue[selectedMaterial.gitMaterialId] || {}
+            _isDisabled = _regexValue.isInvalid
+            if (_isDisabled) {
+                break
+            }
+        }
+
+        return (
+            <div className="trigger-modal__trigger flex right">
+                <ButtonWithLoader
+                    dataTestId="branch-regex-save-next-button"
+                    rootClassName="cta flex"
+                    onClick={onClickNextButton}
+                    disabled={_isDisabled || savingRegexValue}
+                    isLoading={savingRegexValue}
+                >
+                    Fetch commits {!isChangeBranchClicked && '& Next'}
+                    {!isChangeBranchClicked && (
+                        <LeftIcon
+                            style={{ ['--rotateBy' as any]: '180deg' }}
+                            className={`rotate icon-dim-16 ml-8 ${_isDisabled ? 'scn-4' : 'scn-0'} transform`}
+                        />
+                    )}
+                </ButtonWithLoader>
+            </div>
+        )
+    }
 
     return (
         <VisibleModal className="visible-modal__body">
