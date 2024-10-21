@@ -115,11 +115,6 @@
     height: calc(100vh - 122px);
 }
 
-.select-material--regex-body {
-    height: calc(100vh - 108px);
-    overflow: auto;
-}
-
 .select-material__empty-state-container {
     height: calc(100% - 74px);
     display: flex;
@@ -522,6 +517,12 @@
         .material-history:last-child {
             margin-bottom: 8px;
         }
+    }
+}
+
+.ci-trigger__branch-regex-wrapper {
+    .trigger-modal__trigger {
+        position: relative;
     }
 }
 
