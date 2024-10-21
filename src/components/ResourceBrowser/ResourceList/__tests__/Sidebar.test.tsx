@@ -24,16 +24,15 @@ import {
     PodSelectedResource,
 } from '../__mocks__/Sidebar.mock'
 import Sidebar from '../Sidebar'
-import { IWithShortcut, ShortcutProvider, withShortcut } from 'react-keybind'
+import { ShortcutProvider } from 'react-keybind'
 import { BrowserRouter } from 'react-router-dom'
 import { K8SObjectMapType, SidebarType } from '../../Types'
 
 describe('Sidebar component', () => {
-    const SidebarComponentWithShortcut = withShortcut((props: SidebarType & IWithShortcut) => <Sidebar {...props} />)
-    const SidebarComponentWithProvider = (props: SidebarType & IWithShortcut) => {
+    const SidebarComponentWithProvider = (props: SidebarType) => {
         return (
             <ShortcutProvider>
-                <SidebarComponentWithShortcut {...props} />
+                <Sidebar {...props} />
             </ShortcutProvider>
         )
     }
