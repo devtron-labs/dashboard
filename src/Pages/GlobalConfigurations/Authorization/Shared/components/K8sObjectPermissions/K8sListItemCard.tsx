@@ -28,6 +28,7 @@ import {
     OptionType,
     LoadingIndicator,
     GVKType,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -56,7 +57,7 @@ import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-
 import { formatResourceKindOptionLabel, k8sRoleSelectionStyle, multiSelectAllState } from './utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
-import { authorizationSelectStyles, ALL_NAMESPACE, EntityTypes } from '../../../constants'
+import { authorizationSelectStyles, ALL_NAMESPACE } from '../../../constants'
 import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE, resourceSelectStyles } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { K8sItemCardLoadingState, K8sListItemCardType } from './types'

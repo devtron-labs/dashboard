@@ -23,23 +23,19 @@ import {
     ToastVariantType,
     UserStatus,
     UserStatusDto,
-    ZERO_TIME_STRING,
-} from '@devtron-labs/devtron-fe-common-lib'
-import {
     ACCESS_TYPE_MAP,
-    Moment12HourFormat,
-    REQUIRED_FIELDS_MISSING,
-    SELECT_ALL_VALUE,
-    SERVER_MODE,
-} from '../../../config'
+    ZERO_TIME_STRING,
+    EntityTypes,
+    CustomRoleAndMeta,
+    CustomRoles,
+    MetaPossibleRoles,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import {
     APIRoleFilter,
     APIRoleFilterDto,
     CreateUserPermissionPayloadParams,
-    CustomRoleAndMeta,
-    CustomRoles,
     DirectPermissionsRoleFilter,
-    MetaPossibleRoles,
     PermissionGroup,
     PermissionGroupDto,
     User,
@@ -52,9 +48,9 @@ import {
     CONFIG_APPROVER_ACTION,
     ARTIFACT_PROMOTER_ACTION,
     ActionTypes,
-    EntityTypes,
     PermissionType,
     ViewChartGroupPermission,
+    TERMINAL_EXEC_ACTION,
 } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
@@ -270,6 +266,9 @@ const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
     if (permission.action.artifactPromoter) {
         labels.push(ARTIFACT_PROMOTER_ACTION.value)
     }
+    if (permission.action.terminalExec) {
+        labels.push(TERMINAL_EXEC_ACTION.value)
+    }
 
     return labels.join(',')
 }
@@ -405,18 +404,13 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
 }
 
 const isRoleCustom = (roleValue: string) =>
-    [CONFIG_APPROVER_ACTION.value, ARTIFACT_PROMOTER_ACTION.value].includes(roleValue)
+    [CONFIG_APPROVER_ACTION.value, ARTIFACT_PROMOTER_ACTION.value, TERMINAL_EXEC_ACTION.value].includes(roleValue)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseData(dataList: any[], entity: string, accessType?: string) {
     switch (entity) {
         case EntityTypes.DIRECT:
-            if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter(
-                    (role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && !isRoleCustom(role.value),
-                )
-            }
-            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+            return dataList.filter((role) => role.accessType === accessType && !isRoleCustom(role.value))
 
         case EntityTypes.CLUSTER:
         case EntityTypes.CHART_GROUP:
