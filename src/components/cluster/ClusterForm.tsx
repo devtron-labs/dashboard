@@ -454,7 +454,7 @@ export default function ClusterForm({
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
-                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value?.trim() : '',
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value.trim() : '',
                 tls_key: state.tlsClientKey.value,
                 cert_data: state.tlsClientCert.value,
                 cert_auth_data: state.certificateAuthorityData.value,
