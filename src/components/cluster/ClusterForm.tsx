@@ -288,7 +288,7 @@ export default function ClusterForm({
                     ? {}
                     : {
                           required: true,
-                          validator: { error: 'token is required and cannot contain spaces', regex: /^(?!\s)[^\s]+(?!\s)$/}
+                          validator: { error: 'token is required', regex: /[^]+/ }
                       },
             endpoint: {
                 required: !!prometheusToggleEnabled,
@@ -444,9 +444,6 @@ export default function ClusterForm({
     const handleOnBlur = (e): void => {
         if (id && id !== 1 && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
-        }
-        else if (e.target.name === "token") {
-            e.target.value = e.target.value.trim()
         }
     }
 
