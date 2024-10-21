@@ -2,12 +2,12 @@ import {
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
     getAppEnvDeploymentConfig,
+    getDeploymentManifest,
+    GetDeploymentManifestProps,
+    ResolvedDeploymentTemplateDTO,
     ResponseType,
     TemplateListType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { getDeploymentManisfest } from '@Components/deploymentConfig/service'
-
 import { GetConfigDiffDataProps, GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
 import { getAppAndEnvIds } from './utils'
 
@@ -21,18 +21,21 @@ export const getConfigDiffData = ({
     pipelineId,
 }: GetConfigDiffDataProps) =>
     getAppEnvDeploymentConfig({
-        ...(type === 'app'
-            ? {
-                  appName,
-                  envName: compareName || '',
-              }
-            : {
-                  appName: compareName || '',
-                  envName,
-              }),
-        configType,
-        identifierId,
-        pipelineId,
+        params: {
+            configArea: 'AppConfiguration',
+            ...(type === 'app'
+                ? {
+                      appName,
+                      envName: compareName || '',
+                  }
+                : {
+                      appName: compareName || '',
+                      envName,
+                  }),
+            configType,
+            identifierId,
+            pipelineId,
+        },
     })
 
 export const getDeploymentTemplateData = ({
@@ -51,16 +54,19 @@ export const getDeploymentTemplateData = ({
     return configType !== AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS &&
         configType !== AppEnvDeploymentConfigType.DEFAULT_VERSION
         ? getAppEnvDeploymentConfig({
-              ...(type === 'app'
-                  ? {
-                        appName,
-                        envName: compareName || '',
-                    }
-                  : {
-                        appName: compareName || '',
-                        envName,
-                    }),
-              configType,
+              params: {
+                  configArea: 'AppConfiguration',
+                  ...(type === 'app'
+                      ? {
+                            appName,
+                            envName: compareName || '',
+                        }
+                      : {
+                            appName: compareName || '',
+                            envName,
+                        }),
+                  configType,
+              },
           })
         : nullResponse
 }
@@ -86,7 +92,7 @@ export const getManifestData = ({
         type,
     })
 
-    const nullResponse = {
+    const nullResponse: ResponseType<ResolvedDeploymentTemplateDTO> = {
         code: 200,
         status: 'OK',
         result: {
@@ -101,28 +107,31 @@ export const getManifestData = ({
         configType === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT
     const isDefaultSelected = configType === AppEnvDeploymentConfigType.DEFAULT_VERSION
 
-    const deploymentManifestRequestData: Record<string, string | number> = {
+    const isHistoricData = !values && envId > -1
+
+    const deploymentManifestRequestData: GetDeploymentManifestProps = {
         appId: +appId,
-        valuesAndManifestFlag: 2,
         chartRefId: manifestChartRefId,
+        ...(envId > -1 && {
+            envId,
+        }),
+        ...(!isDefaultSelected && {
+            ...(isHistoricData
+                ? {
+                      type:
+                          identifierId && pipelineId
+                              ? TemplateListType.DeployedOnSelfEnvironment
+                              : TemplateListType.PublishedOnEnvironments,
+                      deploymentTemplateHistoryId: identifierId,
+                      pipelineId,
+                  }
+                : {
+                      values: values || null,
+                  }),
+        }),
     }
 
-    if (envId > -1) {
-        deploymentManifestRequestData.envId = envId
-
-        if (!values && !isDefaultSelected) {
-            deploymentManifestRequestData.type =
-                identifierId && pipelineId
-                    ? TemplateListType.DeployedOnSelfEnvironment
-                    : TemplateListType.PublishedOnEnvironments
-            deploymentManifestRequestData.deploymentTemplateHistoryId = identifierId
-            deploymentManifestRequestData.pipelineId = pipelineId
-        }
-    }
-
-    if (values && !isDefaultSelected) {
-        deploymentManifestRequestData.values = values
-    }
-
-    return !isDraftSelected || values ? getDeploymentManisfest(deploymentManifestRequestData) : nullResponse
+    return !isDraftSelected || values
+        ? getDeploymentManifest(deploymentManifestRequestData)
+        : Promise.resolve(nullResponse)
 }

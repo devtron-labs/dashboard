@@ -15,3 +15,4 @@
  */
 
 export * from './GlobalConfigurations'
+export * from './Applications'
