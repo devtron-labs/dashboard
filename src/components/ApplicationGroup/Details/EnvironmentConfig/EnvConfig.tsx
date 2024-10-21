@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
-import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -31,18 +31,13 @@ import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
 const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
-const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
-    const {
-        path,
-        params: { appId, envId },
-    } = useRouteMatch<{ envId: string; appId: string }>()
+    const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
+    const { appId, envId } = params
     const { pathname } = useLocation()
-
-    // STATES
-    const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
+    const { replace } = useHistory()
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -65,7 +60,8 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         isLoading: envConfigLoading,
     }
 
-    useEffect(() => {
+    // CONSTANTS
+    const envAppList = useMemo<ConfigAppList[]>(() => {
         if (
             initDataResults?.[0].status === 'fulfilled' &&
             initDataResults?.[1].status === 'fulfilled' &&
@@ -78,11 +74,25 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
             }))
 
             _appList.sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(_appList)
+            return _appList
         }
+
+        return []
     }, [initDataResults])
 
-    if (loading || !envAppList.length) {
+    const isAppNotPresentInEnv = useMemo(
+        () => envAppList.length && appId && !envAppList.some(({ id }) => id === +appId),
+        [envAppList, appId],
+    )
+
+    useEffect(() => {
+        // If the app is unavailable in the current environment, redirect to the app selection page
+        if (isAppNotPresentInEnv) {
+            replace(generatePath(path, { ...params, appId: null }))
+        }
+    }, [isAppNotPresentInEnv])
+
+    if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />
@@ -92,34 +102,32 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     return (
         <Switch>
-            {CompareWithButton && (
-                <Route
-                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-                >
-                    {({ match, location }) => {
-                        const basePath = generatePath(path, match.params)
-                        // Set the resourceTypePath based on the resourceType from the URL parameters.
-                        // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
-                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
-                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+            <Route
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+            >
+                {({ match, location }) => {
+                    const basePath = generatePath(path, match.params)
+                    // Set the resourceTypePath based on the resourceType from the URL parameters.
+                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
+                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
 
-                        return (
-                            <DeploymentConfigCompare
-                                type="appGroup"
-                                envName={envName}
-                                environments={envAppList}
-                                goBackURL={goBackURL}
-                                getNavItemHref={(resourceType, resourceName) =>
-                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                }
-                            />
-                        )
-                    }}
-                </Route>
-            )}
+                    return (
+                        <DeploymentConfigCompare
+                            type="appGroup"
+                            envName={envName}
+                            environments={envAppList}
+                            goBackURL={goBackURL}
+                            getNavItemHref={(resourceType, resourceName) =>
+                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                            }
+                        />
+                    )
+                }}
+            </Route>
             <Route>
                 <div className="env-compose">
                     <div
