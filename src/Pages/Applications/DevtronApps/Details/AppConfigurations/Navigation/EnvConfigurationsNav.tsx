@@ -1,29 +1,35 @@
-import { useEffect, useState } from 'react'
-import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
+import { MouseEvent, useEffect, useState } from 'react'
+import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
     CollapsibleList,
     CollapsibleListConfig,
+    ComponentSizeType,
     EnvResourceType,
+    getSelectPickerOptionByValue,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
-import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
-
-const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -43,16 +49,19 @@ export const EnvConfigurationsNav = ({
     paramToCheck = 'envId',
     showComparison,
     isCMSecretLocked,
+    hideEnvSelector,
+    compareWithURL,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId, appId } = params
+    const { envId } = params
 
     // STATES
     const [expandedIds, setExpandedIds] =
         useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
+
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
@@ -62,26 +71,15 @@ export const EnvConfigurationsNav = ({
     // CONSTANTS
     const { isLoading, config } = envConfig
     /** Current Environment Data. */
-    const _environmentData =
-        environments && environments.find((environment) => environment.id === +params[paramToCheck])
-    const selectedNavEnvironmentOptions = {
-        ..._environmentData,
-        label: _environmentData?.name || BASE_CONFIGURATIONS.name,
-        value: _environmentData?.id || BASE_CONFIGURATIONS.id,
-        isProtected: _environmentData?.isProtected,
-    }
-
-    const selectedEnvironmentWithBaseConfiguration = showBaseConfigurations
-        ? {
-              label: BASE_CONFIGURATIONS.name,
-              value: BASE_CONFIGURATIONS.id,
-              endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
-              isProtected: isBaseConfigProtected,
-          }
-        : null
-
-    const environmentData = selectedNavEnvironmentOptions || selectedEnvironmentWithBaseConfiguration
-
+    const environmentData =
+        environments.find((environment) => environment.id === +params[paramToCheck]) ||
+        (showBaseConfigurations
+            ? {
+                  name: BASE_CONFIGURATIONS.name,
+                  id: BASE_CONFIGURATIONS.id,
+                  isProtected: isBaseConfigProtected,
+              }
+            : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
     const isCreate = pathname.includes('/create')
 
@@ -89,19 +87,29 @@ export const EnvConfigurationsNav = ({
         const envConfigKey =
             resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
 
+        setExpandedIds({ ...expandedIds, [resourceType]: true })
+
         return {
             ..._updatedEnvConfig,
             [envConfigKey]: [
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, params, environmentData.value, resourceType, 'create', paramToCheck),
+                    href: getNavigationPath(path, params, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                 },
             ],
         }
     }
+
+    useEffect(() => {
+        if (environmentData.id === BASE_CONFIGURATIONS.id && envId) {
+            // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
+            const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
+            history.push(`${basePath}${resourcePath}`)
+        }
+    }, [environmentData, envId])
 
     useEffect(() => {
         // Fetch the env configuration
@@ -114,7 +122,7 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
+            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
     }, [isLoading, config, pathname])
@@ -170,7 +178,7 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        history.push(getNavigationPath(path, params, environmentData.value, _resourceType, 'create', paramToCheck))
+        history.push(getNavigationPath(path, params, _resourceType, 'create'))
     }
 
     /** Collapsible List Config. */
@@ -231,33 +239,61 @@ export const EnvConfigurationsNav = ({
     ]
 
     // REACT SELECT PROPS
-    const getSelectOptions = () =>
-        [...environments].map((env) => ({
-            label: env.name,
-            value: env.id,
-            endIcon: env.isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
-        }))
+    const baseEnvOption = showBaseConfigurations
+        ? [
+              {
+                  label: BASE_CONFIGURATIONS.name,
+                  value: BASE_CONFIGURATIONS.id,
+                  endIcon: isBaseConfigProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
+              },
+          ]
+        : []
 
-    const envOptions: SelectPickerOptionType[] = [
-        ...(showBaseConfigurations
-            ? [
-                  {
-                      label: BASE_CONFIGURATIONS.name,
-                      value: BASE_CONFIGURATIONS.id,
-                      endIcon: isBaseConfigProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />,
-                  },
-              ]
-            : []),
-        ...getSelectOptions(),
+    const envOptions: OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>> = [
+        ...baseEnvOption,
+        {
+            label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
+            options: environments.map(({ name, id, isProtected }) => ({
+                label: name,
+                value: id,
+                endIcon: isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
+            })),
+        },
     ]
 
-    const onEnvSelect = (_selectedEnv) => {
-        if (environmentData.value === _selectedEnv.value) {
+    const onEnvSelect = ({ value }: SelectPickerOptionType<number>) => {
+        // Exit early if the selected environment is the current one
+        if (environmentData.id === value) {
             return
         }
 
-        const name = pathname.split(`${resourceType}/`)[1]
-        history.push(getNavigationPath(path, params, _selectedEnv.value, resourceType, name, paramToCheck))
+        // Extract the resource name from the current pathname based on resourceType
+        const resourceName = pathname.split(`${resourceType}/`)[1]
+
+        // Truncate the path to the base application configuration path
+        const truncatedPath = `${path.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+
+        // Build the new app path, conditionally adding the environment override config when switching to environment
+        const appPath = `${truncatedPath}${
+            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : ''
+        }/:resourceType(${Object.values(EnvResourceType).join('|')})` // Dynamically set valid resource types
+
+        // Generate the final path
+        // if application/job (paramToCheck = envId), use `appPath`
+        // otherwise applicationGroups (paramToCheck = 'appId'), use `path`
+        const generatedPath = `${generatePath(paramToCheck === 'envId' ? appPath : path, {
+            ...params,
+            [paramToCheck]: value,
+        })}${resourceName ? `/${resourceName}` : ''}`
+
+        // Navigate to the generated path
+        history.push(generatedPath)
+    }
+
+    const handleDeploymentTemplateNavLinkOnClick = (e: MouseEvent<HTMLAnchorElement>) => {
+        if (pathname === updatedEnvConfig.deploymentTemplate.href) {
+            e.preventDefault()
+        }
     }
 
     const renderEnvSelector = () => (
@@ -267,52 +303,61 @@ export const EnvConfigurationsNav = ({
                     <ICBack className="icon-dim-16" />
                 </div>
             </NavLink>
-            <SelectPicker
-                inputId="env-config-selector"
-                classNamePrefix="env-config-selector"
-                isClearable={false}
-                value={environmentData}
-                options={envOptions}
-                getOptionLabel={(option) => `${option.label}`}
-                getOptionValue={(option) => `${option.value}`}
-                onChange={onEnvSelect}
-                placeholder="Select Environment"
-                variant={SelectPickerVariantType.BORDER_LESS}
-            />
+            <div className="flex-grow-1 text-left">
+                <SelectPicker<number, false>
+                    inputId="env-config-selector"
+                    classNamePrefix="env-config-selector"
+                    variant={SelectPickerVariantType.BORDER_LESS}
+                    isClearable={false}
+                    value={getSelectPickerOptionByValue(envOptions, +params[paramToCheck], baseEnvOption[0])}
+                    options={envOptions}
+                    onChange={onEnvSelect}
+                    placeholder="Select Environment"
+                    showSelectedOptionIcon={false}
+                />
+            </div>
+            {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
         </div>
     )
 
     const renderCompareWithBtn = () => {
-        const { label: compareTo } = environmentData
+        const { name: compareTo } = environmentData
 
-        // Determine base path based on pathname
-        const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)
-        const basePath = isOverrideConfig
-            ? pathname.split(URLS.APP_ENV_OVERRIDE_CONFIG)[0]
-            : `${pathname.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+        // Extract the resource name from the current pathname based on resourceType
+        const resourceName = pathname.split(`/${resourceType}/`)[1]
 
-        // Determine comparePath based on paramToCheck
-        let comparePath = ''
-        if (paramToCheck === 'envId') {
-            comparePath = isOverrideConfig
-                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
-                : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
-        } else if (paramToCheck === 'appId') {
-            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
-        }
+        // Construct the compare view path with dynamic route parameters for comparison
+        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`
+
+        const compareWithHref = generatePath(compareViewPath, {
+            ...params,
+            // Only set compareTo if it's not the base configuration
+            compareTo: compareTo !== BASE_CONFIGURATIONS.name ? compareTo : null,
+            resourceType,
+            resourceName: resourceName ?? null,
+        })
 
         return (
             <div className="p-8">
-                <CompareWithButton href={comparePath} />
+                <Button
+                    dataTestId="compare-with-button"
+                    component={ButtonComponentType.link}
+                    variant={ButtonVariantType.secondary}
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                    startIcon={<ICArrowsLeftRight />}
+                    linkProps={{ to: compareWithHref }}
+                    text="Compare with..."
+                />
             </div>
         )
     }
 
     return (
-        <>
-            {renderEnvSelector()}
-            {showComparison && CompareWithButton && renderCompareWithBtn()}
-            <div className="mw-none p-8">
+        <nav className="flexbox-col h-100 dc__overflow-hidden">
+            {!hideEnvSelector && renderEnvSelector()}
+            {showComparison && renderCompareWithBtn()}
+            <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
@@ -320,10 +365,14 @@ export const EnvConfigurationsNav = ({
                         {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
                             <NavLink
                                 data-testid="env-deployment-template"
-                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
+                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
                                 to={updatedEnvConfig.deploymentTemplate.href}
+                                onClick={handleDeploymentTemplateNavLinkOnClick}
                             >
-                                <span className="dc__truncate">{updatedEnvConfig.deploymentTemplate.title}</span>
+                                <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
+                                <span className="dc__truncate flex-grow-1">
+                                    {updatedEnvConfig.deploymentTemplate.title}
+                                </span>
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}
@@ -335,6 +384,6 @@ export const EnvConfigurationsNav = ({
                     </>
                 )}
             </div>
-        </>
+        </nav>
     )
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AppEnvironment as BaseAppEnvironmentType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
 import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../appDetails.type'
@@ -25,12 +26,7 @@ export interface EnvironmentStatusComponentType {
     isVirtualEnvironment?: boolean
     refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
-export interface AppEnvironment {
-    environmentName: string
-    environmentId: number
-    appMetrics: boolean
-    infraMetrics: boolean
-    prod: boolean
+export interface AppEnvironment extends BaseAppEnvironmentType {
     isSelected?: boolean
 }
 

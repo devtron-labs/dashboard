@@ -30,7 +30,7 @@
     }
 
     .app-compose__nav {
-        padding: 16px 12px 0;
+        padding: 16px 12px;
         border-right: solid 1px #d6dbdf;
         background: white;
         height: 100%;
@@ -189,12 +189,6 @@
         .nav-text {
             max-width: 192px;
         }
-    }
-
-    .shebang {
-        padding: 0 60px;
-        color: #151515;
-        opacity: 0.6;
     }
 
     .yaml-container {
