@@ -694,7 +694,7 @@ export default function BulkCDTrigger({
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0 dc__zi-1">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs

@@ -77,11 +77,8 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '..
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from './types'
 
-const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> = importComponentFromFELibrary(
-    'processPluginData',
-    null,
-    'function',
-)
+const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
+    importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 export default function CIPipeline({
     appName,
@@ -243,7 +240,7 @@ export default function CIPipeline({
         }
     }
 
-    const areMandatoryPluginPossible = !isJobCard && processPluginData
+    const areMandatoryPluginPossible = !isJobCard && !!processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
@@ -267,19 +264,17 @@ export default function CIPipeline({
             }
             if (selectedBranchRef.current !== branchName) {
                 selectedBranchRef.current = branchName
-                const {
-                    mandatoryPluginData: processedPluginData,
-                    pluginDataStore: updatedPluginDataStore,
-                }: ProcessPluginDataReturnType = await processPluginData({
-                    formData: _formData,
-                    pluginDataStoreState: pluginDataStore,
-                    appId: +appId,
-                    appName,
-                    ciPipelineId: +ciPipelineId,
-                    branchName,
-                    requiredPluginIds,
-                    resourceKind: ResourceKindType.ciPipeline,
-                })
+                const { mandatoryPluginData: processedPluginData, pluginDataStore: updatedPluginDataStore } =
+                    await processPluginData({
+                        formData: _formData,
+                        pluginDataStoreState: pluginDataStore,
+                        appId: +appId,
+                        appName,
+                        ciPipelineId: +ciPipelineId,
+                        branchName,
+                        requiredPluginIds,
+                        resourceKind: ResourceKindType.ciPipeline,
+                    })
 
                 setMandatoryPluginData(processedPluginData)
                 handlePluginDataStoreUpdate(updatedPluginDataStore)

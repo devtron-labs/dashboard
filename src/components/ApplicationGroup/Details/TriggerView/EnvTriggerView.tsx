@@ -2132,7 +2132,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             workflowId,
             doesWorkflowContainsWebhook ? '0' : ciNodeId,
             doesWorkflowContainsWebhook,
-            node.id,
+            node?.id,
             true,
         )
 

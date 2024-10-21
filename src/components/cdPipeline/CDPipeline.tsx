@@ -45,7 +45,6 @@ import {
     ToastVariantType,
     ToastManager,
     MandatoryPluginDataType,
-    PluginDetailPayloadType,
     ProcessPluginDataParamsType,
     ProcessPluginDataReturnType,
     ResourceKindType,
@@ -108,11 +107,8 @@ import {
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const processPluginData: (params: ProcessPluginDataParamsType) => Promise<any> = importComponentFromFELibrary(
-    'processPluginData',
-    null,
-    'function',
-)
+const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
+    importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -326,10 +322,7 @@ export default function CDPipeline({
     }
 
     const getEnvCDPipelineName = (form) => {
-        Promise.all([
-            getCDPipelineNameSuggestion(appId),
-            getEnvironmentListMinPublic(true),
-        ])
+        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
                 let list = envList.result || []
@@ -457,18 +450,16 @@ export default function CDPipeline({
             return
         }
 
-        const {
-            mandatoryPluginData: processedPluginData,
-            pluginDataStore: updatedPluginDataStore,
-        }: ProcessPluginDataReturnType = await processPluginData({
-            formData: form,
-            pluginDataStoreState: pluginDataStore,
-            appId: +appId,
-            appName,
-            envName: form.environmentName,
-            requiredPluginIds,
-            resourceKind: ResourceKindType.cdPipeline,
-        })
+        const { mandatoryPluginData: processedPluginData, pluginDataStore: updatedPluginDataStore } =
+            await processPluginData({
+                formData: form,
+                pluginDataStoreState: pluginDataStore,
+                appId: +appId,
+                appName,
+                envName: form.environmentName,
+                requiredPluginIds,
+                resourceKind: ResourceKindType.cdPipeline,
+            })
 
         setMandatoryPluginData(processedPluginData)
         // The method itself adds over existing plugins, so no need to worry about of overriding

@@ -216,7 +216,8 @@ const CDMaterial = ({
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     // This check assumes we have isPreOrPostCD as true
-    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] = stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
+        stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -1622,7 +1623,6 @@ const CDMaterial = ({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            
             if (!showPluginWarningOverlay && showPluginWarningBeforeTrigger) {
                 setShowPluginWarningOverlay(true)
                 return
@@ -1711,7 +1711,9 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD) ? (
+                    {AllowedWithWarningTippy &&
+                    showPluginWarningBeforeTrigger &&
+                    (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD) ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}
@@ -1719,6 +1721,7 @@ const CDMaterial = ({
                             onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
                             nodeType={allowWarningWithTippyNodeTypeProp}
                             visible={showPluginWarningOverlay}
+                            onClose={handleClosePluginWarningOverlay}
                         >
                             {renderTriggerDeployButton(disableDeployButton)}
                         </AllowedWithWarningTippy>
@@ -1751,9 +1754,13 @@ const CDMaterial = ({
         </div>
     )
 
+    const handleClosePluginWarningOverlay = () => {
+        setShowPluginWarningOverlay(false)
+    }
+
     const handleConfirmationClose = (e) => {
         e.stopPropagation()
-        setShowPluginWarningOverlay(false)
+        handleClosePluginWarningOverlay()
         setShowDeploymentWindowConfirmation(false)
     }
 
