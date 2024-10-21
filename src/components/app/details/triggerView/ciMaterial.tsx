@@ -17,18 +17,15 @@
 import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
 import {
-    showError,
-    ServerErrors,
     Checkbox,
     noop,
     CIMaterialSidebarType,
     ButtonWithLoader,
     ModuleNameMap,
-    SourceTypeMap,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
+import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
@@ -51,18 +48,8 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     constructor(props) {
         super(props)
-        // const regexValue: Record<number, RegexValueType> = {}
-        // this.props.material.forEach((mat) => {
-        //     regexValue[mat.gitMaterialId] = {
-        //         value: mat.value,
-        //         isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
-        //     }
-        // })
 
         this.state = {
-            // regexValue,
-            // savingRegexValue: false,
-            // selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
             runtimeParamsErrorState: false,
@@ -71,11 +58,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        // if (this.props.isJobView && this.props.environmentLists?.length > 0) {
-            // const envId = this.state.selectedCIPipeline?.environmentId || 0
-            // const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
-            // this.props.setSelectedEnv(_selectedEnv)
-        // }
     }
 
     async getSecurityModuleStatus(): Promise<void> {
@@ -314,104 +296,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
-    // isRegexValueInvalid = (_cm): void => {
-    //     const regExp = new RegExp(_cm.source.regex)
-    //     const regVal = this.state.regexValue[_cm.gitMaterialId]
-    //     if (!regExp.test(regVal.value)) {
-    //         const _regexVal = {
-    //             ...this.state.regexValue,
-    //             [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
-    //         }
-    //         this.setState({
-    //             regexValue: _regexVal,
-    //         })
-    //     }
-    // }
-
-    // onClickNextButton = () => {
-    //     this.setState({
-    //         savingRegexValue: true,
-    //     })
-    //     const payload: any = {
-    //         appId: Number(this.props.match.params.appId ?? this.props.appId),
-    //         id: +this.props.workflowId,
-    //         ciPipelineMaterial: [],
-    //     }
-
-    //     // Populate the ciPipelineMaterial with flatten object
-    //     if (this.state.selectedCIPipeline?.ciMaterial?.length) {
-    //         for (const _cm of this.state.selectedCIPipeline.ciMaterial) {
-    //             const regVal = this.state.regexValue[_cm.gitMaterialId]
-    //             let _updatedCM
-    //             if (regVal?.value && _cm.source.regex) {
-    //                 this.isRegexValueInvalid(_cm)
-
-    //                 _updatedCM = {
-    //                     ..._cm,
-    //                     type: SourceTypeMap.BranchFixed,
-    //                     value: regVal.value,
-    //                     regex: _cm.source.regex,
-    //                 }
-    //             } else {
-    //                 // To maintain the flatten object structure supported by API for unchanged values
-    //                 // as during update/next click it uses the fetched ciMaterial structure i.e. containing source
-    //                 _updatedCM = {
-    //                     ..._cm,
-    //                     ..._cm.source,
-    //                 }
-    //             }
-
-    //             // Deleting as it's not required in the request payload
-    //             delete _updatedCM['source']
-    //             payload.ciPipelineMaterial.push(_updatedCM)
-    //         }
-    //     }
-
-    //     savePipeline(payload, true)
-    //         .then((response) => {
-    //             if (response) {
-    //                 this.props.getWorkflows()
-    //                 this.context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
-    //             }
-    //         })
-    //         .catch((error: ServerErrors) => {
-    //             showError(error)
-    //         })
-    //         .finally(() => {
-    //             this.setState({
-    //                 savingRegexValue: false,
-    //             })
-    //         })
-    // }
-
-    // handleRegexInputValue = (id, value, mat) => {
-    //     this.setState((prevState) => {
-    //         return {
-    //             regexValue: {
-    //                 ...prevState.regexValue,
-    //                 [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
-    //             },
-    //         }
-    //     })
-    // }
-
     render() {
-        // if (this.props.showMaterialRegexModal) {
-        //     return (
-        //         <BranchRegexModal
-        //             material={this.props.material}
-        //             selectedCIPipeline={this.state.selectedCIPipeline}
-        //             showWebhookModal={this.props.showWebhookModal}
-        //             title={this.props.title}
-        //             isChangeBranchClicked={this.props.isChangeBranchClicked}
-        //             onClickNextButton={this.onClickNextButton}
-        //             handleRegexInputValue={this.handleRegexInputValue}
-        //             regexValue={this.state.regexValue}
-        //             onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
-        //             savingRegexValue={this.state.savingRegexValue}
-        //         />
-        //     )
-        // }
         return this.renderCIModal()
     }
 }
