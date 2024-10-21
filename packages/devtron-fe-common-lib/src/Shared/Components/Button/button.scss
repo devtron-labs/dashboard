@@ -1,0 +1,234 @@
+@mixin svg-styles($color) {
+    svg *[stroke^="#"] {
+        stroke: $color;
+    }
+
+    svg *[fill^="#"] {
+        fill: $color;
+    }
+}
+
+@mixin button-variant-styles($background, $text-color, $border-color) {
+    background: $background;
+    color: $text-color;
+    border: 1px solid $border-color;
+
+    &.button__link {
+        color: $text-color;
+    }
+
+    @include svg-styles($text-color);
+
+    // Custom state for loader
+    // Added using css to ensure using the respective text-color
+    .loader {
+        visibility: visible;
+        position: absolute;
+
+        svg,
+        svg * {
+            fill: $text-color;
+            stroke: none;
+        }
+    }
+}
+
+@mixin pseudo-states($hover-bg-color, $active-bg-color, $hover-border-color: null, $color: null) {
+    $parent-selector: &;
+
+    &:hover:not([disabled]) {
+        background: $hover-bg-color;
+
+        @if ($hover-border-color) {
+            border-color: $hover-border-color;
+        }
+
+        @if ($color) {
+            color: $color;
+
+            @include svg-styles($color);
+        }
+    }
+
+    &:active:not([disabled]) {
+        background: $active-bg-color;
+
+        @if ($color) {
+            color: $color;
+    
+            @include svg-styles($color);
+        }
+    }
+}
+
+.button {
+    // Reset the default styles
+    background: none;
+    color: inherit;
+    border: none;
+    outline: inherit;
+    text-decoration: none;
+
+    &__primary {
+        $border-color: transparent;
+        $text-color: var(--N0);
+
+        &--default {
+            @include button-variant-styles(var(--B500), $text-color, $border-color);
+            @include pseudo-states(var(--B600), var(--B700));
+        }
+
+        &--negative {
+            @include button-variant-styles(var(--R500), $text-color, $border-color);
+            @include pseudo-states(var(--R600), var(--R700));
+        }
+
+        &--negative-grey {
+            @include button-variant-styles(var(--N600), $text-color, $border-color);
+            @include pseudo-states(var(--R600), var(--R700), null, $text-color);
+        }
+
+        &--positive {
+            @include button-variant-styles(var(--G500), $text-color, $border-color);
+            @include pseudo-states(var(--G600), var(--G700));
+        }
+
+        &--warning {
+            @include button-variant-styles(var(--Y500), var(--N900), $border-color);
+            @include pseudo-states(var(--Y600), var(--Y700));
+        }
+
+        &--neutral {
+            @include button-variant-styles(var(--N600), $text-color, $border-color);
+            @include pseudo-states(var(--N700), var(--N800));
+        }
+    }
+
+    &__secondary {
+        $background: var(--N0);
+        $border-color: var(--N200);
+
+        &--default {
+            @include button-variant-styles($background, var(--B500), $border-color);
+            @include pseudo-states(var(--B100), var(--B200), var(--B500));
+        }
+
+        &--negative {
+            @include button-variant-styles($background, var(--R600), $border-color);
+            @include pseudo-states(var(--R100), var(--R200), var(--R600), var(--R600));
+        }
+
+        &--negative-grey {
+            @include button-variant-styles($background, var(--N700), $border-color);
+            @include pseudo-states(var(--R100), var(--R200), var(--R600), var(--R600));
+        }
+
+        &--positive {
+            @include button-variant-styles($background, var(--G600), $border-color);
+            @include pseudo-states(var(--G100), var(--G200), var(--G600));
+        }
+
+        &--warning {
+            @include button-variant-styles($background, var(--Y700), $border-color);
+            @include pseudo-states(var(--Y100), var(--Y200), var(--Y700));
+        }
+
+        &--neutral {
+            @include button-variant-styles($background, var(--N700), $border-color);
+            @include pseudo-states(var(--N100), var(--N200), var(--N700));
+        }
+    }
+
+    // Base styling is same for border-less and text button
+    &__border-less,
+    &__text {
+        $background: transparent;
+        $border-color: transparent;
+
+        &--default {
+            @include button-variant-styles($background, var(--B500), $border-color);
+        }
+
+        &--negative {
+            @include button-variant-styles($background, var(--R600), $border-color);
+        }
+
+        &--negative-grey {
+            @include button-variant-styles($background, var(--N700), $border-color);
+        }
+
+        &--positive {
+            @include button-variant-styles($background, var(--G600), $border-color);
+        }
+
+        &--warning {
+            @include button-variant-styles($background, var(--Y700), $border-color);
+        }
+
+        &--neutral {
+            @include button-variant-styles($background, var(--N700), $border-color);
+        }
+    }
+
+    // Pseudo states for border-less button
+    &__border-less {
+        &--default {
+            @include pseudo-states(var(--B100), var(--B200));
+        }
+
+        &--negative {
+            @include pseudo-states(var(--R100), var(--R200));
+        }
+
+        &--negative-grey {
+            @include pseudo-states(var(--R100), var(--R200), null, var(--R600));
+        }
+
+        &--positive {
+            @include pseudo-states(var(--G100), var(--G200));
+        }
+
+        &--warning {
+            @include pseudo-states(var(--Y100), var(--Y200));
+        }
+
+        &--neutral {
+            @include pseudo-states(var(--N100), var(--N200));
+        }
+    }
+
+    // Overrides for text button
+    &__text {
+
+        &--default,
+        &--negative,
+        &--negative-grey,
+        &--positive,
+        &--warning,
+        &--neutral {
+            padding: 0 !important;
+            min-width: 0 !important;
+            border: none;
+
+            &:hover {
+                text-decoration: underline !important;
+            }
+        }
+    }
+
+    // Hide the visibility for the button child elements when loading is true
+    &--loading {
+        // Override the opacity from dc__disabled
+        opacity: 1 !important;
+
+        &>* {
+            visibility: hidden;
+        }
+    }
+
+    &__link {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

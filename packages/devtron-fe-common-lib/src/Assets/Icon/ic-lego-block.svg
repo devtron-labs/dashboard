@@ -1,0 +1,36 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_5769_4636)">
+<path d="M0.00016284 10.6669V22.9938C0.00016284 23.4007 0.246767 23.7671 0.623788 23.9202L16.0002 30.1669V16.6669L0.00016284 10.6669Z" fill="#2589C7"/>
+<path d="M32.0002 10.6669V22.9938C32.0002 23.4007 31.7536 23.7671 31.3765 23.9202L16.0002 30.1669V16.6669L32.0002 10.6669Z" fill="#0E71AF"/>
+<path d="M16.0002 16.6669L0.00016284 10.6669L16.0002 4.66687L32.0002 10.6669L16.0002 16.6669Z" fill="#53ABDB"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M28.0002 7.33221H21.0002V10.8319C21.0002 10.832 21.0002 10.8321 21.0002 10.8322C21.0007 11.4764 22.5675 11.9986 24.5002 11.9986C26.4328 11.9986 27.9996 11.4764 28.0002 10.8322C28.0002 10.8321 28.0002 10.832 28.0002 10.8319V7.33221Z" fill="#1E85C5"/>
+<ellipse cx="24.5002" cy="7.33354" rx="3.5" ry="1.16667" fill="#6DC4F3"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.0002 7.33221H4.00016V10.8319C4.00016 10.832 4.00016 10.8321 4.00016 10.8322C4.00069 11.4764 5.56749 11.9986 7.50016 11.9986C9.43283 11.9986 10.9996 11.4764 11.0002 10.8322C11.0002 10.8321 11.0002 10.832 11.0002 10.8319V7.33221Z" fill="#1E85C5"/>
+<ellipse cx="7.50016" cy="7.33354" rx="3.5" ry="1.16667" fill="#6DC4F3"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M19.5002 3.83221H12.5002V7.33189C12.5002 7.332 12.5002 7.33211 12.5002 7.33221C12.5007 7.9764 14.0675 8.49856 16.0002 8.49856C17.9328 8.49856 19.4996 7.9764 19.5002 7.33221C19.5002 7.33211 19.5002 7.332 19.5002 7.33189V3.83221Z" fill="#1E85C5"/>
+<ellipse cx="16.0002" cy="3.83354" rx="3.5" ry="1.16667" fill="#6DC4F3"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M19.5002 10.3322H12.5002V13.8319C12.5002 13.832 12.5002 13.8321 12.5002 13.8322C12.5007 14.4764 14.0675 14.9986 16.0002 14.9986C17.9328 14.9986 19.4996 14.4764 19.5002 13.8322C19.5002 13.8321 19.5002 13.832 19.5002 13.8319V10.3322Z" fill="#1E85C5"/>
+<ellipse cx="16.0002" cy="10.3335" rx="3.5" ry="1.16667" fill="#6DC4F3"/>
+</g>
+<defs>
+<clipPath id="clip0_5769_4636">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

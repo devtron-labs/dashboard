@@ -1,0 +1,23 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.29075 5.35813V2.63086M8.29075 5.35813H3.1778C2.89542 5.35813 2.6665 5.61862 2.6665 5.93995V14.0854C2.6665 14.4067 2.89542 14.6672 3.1778 14.6672H13.4037C13.6861 14.6672 13.915 14.4067 13.915 14.0854V5.93995C13.915 5.61862 13.6861 5.35813 13.4037 5.35813H8.29075Z" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="6.71338" y1="11.3945" x2="9.86792" y2="11.3945" stroke="#596168" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M5.96355 9.33334C6.44554 9.33334 6.83628 8.94261 6.83628 8.46062C6.83628 7.97862 6.44554 7.58789 5.96355 7.58789C5.48155 7.58789 5.09082 7.97862 5.09082 8.46062C5.09082 8.94261 5.48155 9.33334 5.96355 9.33334Z" fill="#596168"/>
+<path d="M10.6178 9.33334C11.0998 9.33334 11.4906 8.94261 11.4906 8.46062C11.4906 7.97862 11.0998 7.58789 10.6178 7.58789C10.1359 7.58789 9.74512 7.97862 9.74512 8.46062C9.74512 8.94261 10.1359 9.33334 10.6178 9.33334Z" fill="#596168"/>
+<path d="M9.98769 2L6.59375 2" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

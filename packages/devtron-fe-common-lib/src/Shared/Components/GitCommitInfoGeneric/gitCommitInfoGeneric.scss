@@ -1,0 +1,12 @@
+.git-commit-info-generic__wrapper {
+    .git-commit-info-generic__header {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+    }
+
+    &:hover {
+        .git-commit-info-generic__copy {
+            visibility: visible;
+        }
+    }
+}

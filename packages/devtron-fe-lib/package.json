@@ -1,0 +1,9 @@
+{
+  "name": "@devtron-labs/devtron-fe-lib",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {},
+  "author": "devtron-labs",
+  "license": "ISC"
+}

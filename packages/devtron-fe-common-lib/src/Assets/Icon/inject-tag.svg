@@ -1,0 +1,21 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 10H3.33333" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="9.99992" cy="9.99967" r="1.66667" fill="#596168"/>
+<path d="M4.41455 6.40325L9.76177 3.39544C9.83454 3.35451 9.91661 3.33301 10.0001 3.33301C10.0836 3.33301 10.1657 3.35451 10.2384 3.39544L15.5856 6.40325C15.6608 6.44554 15.7234 6.50706 15.7669 6.58152C15.8105 6.65598 15.8334 6.74068 15.8334 6.82693V12.8208C15.8334 12.9071 15.8105 12.9918 15.7669 13.0662C15.7234 13.1407 15.6608 13.2022 15.5856 13.2445L10.2384 16.2523C10.1657 16.2933 10.0836 16.3148 10.0001 16.3148C9.91661 16.3148 9.83454 16.2933 9.76177 16.2523L4.41455 13.2445" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

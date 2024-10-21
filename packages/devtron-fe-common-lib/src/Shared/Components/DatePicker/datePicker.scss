@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.SingleDatePicker_picker {
+    z-index: calc(var(--modal-index) + 1) !important;
+}
+
+.date-time-picker {
+    .SingleDatePicker {
+        width: 100%;
+    }
+
+    .SingleDatePickerInput {
+        display: flex !important;
+        width: 100%;
+        background-color: var(--N50);
+        margin-right: 0 !important;
+        padding: 0 !important;
+        height: 36px !important;
+        overflow: hidden;
+        border: 1px solid var(--N200);
+        border-radius: 4px;
+
+        &:hover {
+            border: 1px solid var(--N400);
+        }
+
+        &:focus,
+        &:focus-visible,
+        &:focus-within {
+            border: 1px solid var(--B500);
+        }
+
+        &__disabled {
+            background-color: var(--N100);
+            border-color: var(--N200);
+        }
+    }
+
+    .SingleDatePickerInput_calendarIcon {
+        padding: 0 !important;
+        margin: 0 !important;
+        padding-right: 8px !important;
+        background-color: transparent !important;
+        height: 34px !important;
+        display: flex;
+        align-items: center;
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    .SingleDatePickerInput__withBorder {
+        .DateInput {
+            line-height: 20px !important;
+            height: 34px;
+            background-color: transparent;
+            width: 100%;
+
+            &:focus-visible {
+                outline: none;
+            }
+        }
+
+        .DateInput_input {
+            font-size: 13px;
+            border-bottom: none;
+            cursor: pointer;
+            background-color: transparent;
+            color: var(--N900);
+
+            &__focused + .DateInput_fang {
+                display: none;
+            }
+
+            &__disabled {
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    .DateInput_input {
+        padding: 6px 8px !important;
+
+        &__disabled {
+            font-style: normal;
+        }
+    }
+}

@@ -1,0 +1,114 @@
+{
+    "name": "@devtron-labs/devtron-fe-common-lib",
+    "version": "0.5.0-patch-1",
+    "description": "Supporting common component library",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/devtron-labs/devtron-fe-common-lib.git"
+    },
+    "author": "Devtron",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/devtron-labs/devtron-fe-common-lib/issues"
+    },
+    "homepage": "https://github.com/devtron-labs/devtron-fe-common-lib#readme",
+    "sideEffects": [
+        "**/*.css"
+    ],
+    "scripts": {
+        "lint": "tsc --noEmit && NODE_OPTIONS=--max_old_space_size=3072 eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+        "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
+        "test": "exit 0",
+        "dev": "NODE_OPTIONS=--max_old_space_size=3072 vite",
+        "build": "NODE_OPTIONS=--max_old_space_size=3072 vite build",
+        "build-watch": "NODE_OPTIONS=--max_old_space_size=3072 vite build --sourcemap --watch",
+        "build-lib": "vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+        "@sentry/browser": "^7.31.1",
+        "@testing-library/jest-dom": "^5.16.2",
+        "@testing-library/react": "^12.1.4",
+        "@tippyjs/react": "^4.2.0",
+        "@typeform/embed-react": "2.20.0",
+        "@types/react": "17.0.39",
+        "@types/react-dom": "17.0.13",
+        "@types/react-router-dom": "^5.3.3",
+        "@typescript-eslint/eslint-plugin": "8.3.0",
+        "@typescript-eslint/parser": "8.3.0",
+        "@vitejs/plugin-react": "4.3.1",
+        "eslint": "^8.56.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-import-resolver-typescript": "^3.6.1",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-jsx-a11y": "^6.8.0",
+        "eslint-plugin-prettier": "^5.1.2",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "glob": "^10.3.3",
+        "moment": "^2.29.4",
+        "monaco-editor": "0.44.0",
+        "monaco-yaml": "5.1.1",
+        "prettier": "^3.1.1",
+        "react-ga4": "^1.4.1",
+        "react-mde": "^11.5.0",
+        "react-toastify": "9.1.3",
+        "typescript": "5.5.4",
+        "vite": "5.4.6",
+        "vite-plugin-dts": "4.0.3",
+        "vite-plugin-lib-inject-css": "2.0.1",
+        "vite-plugin-svgr": "^2.4.0",
+        "vite-tsconfig-paths": "5.0.1"
+    },
+    "peerDependencies": {
+        "@rjsf/core": "^5.13.3",
+        "@rjsf/utils": "^5.13.3",
+        "@rjsf/validator-ajv8": "^5.13.3",
+        "@typeform/embed-react": "2.20.0",
+        "dompurify": "^3.0.2",
+        "marked": "4.3.0",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-draggable": "^4.4.5",
+        "react-ga4": "^1.4.1",
+        "react-keybind": "^0.9.4",
+        "react-mde": "^11.5.0",
+        "react-router": "^5.3.0",
+        "react-router-dom": "^5.3.0",
+        "react-select": "5.8.0",
+        "rxjs": "^7.8.1",
+        "yaml": "^2.4.1"
+    },
+    "dependencies": {
+        "@types/react-dates": "^21.8.6",
+        "ansi_up": "^5.2.1",
+        "dayjs": "^1.11.13",
+        "fast-json-patch": "^3.1.1",
+        "jsonpath-plus": "^9.0.0",
+        "react-dates": "^21.8.0",
+        "react-monaco-editor": "^0.54.0",
+        "sass": "^1.69.7",
+        "tippy.js": "^6.3.7",
+        "tslib": "2.7.0"
+    },
+    "overrides": {
+        "react-dates": {
+            "react": "^17.0.2",
+            "react-dom": "^17.0.2"
+        },
+        "react-monaco-editor": {
+            "monaco-editor": "0.44.0"
+        },
+        "vite-plugin-svgr": {
+            "vite": "5.4.6"
+        }
+    }
+}

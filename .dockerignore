@@ -1,2 +1,8 @@
 node_modules/
 README.md
+.github
+.husky
+.lintstagedrc
+LICENSE
+.vscode/
+.prettierrc.js

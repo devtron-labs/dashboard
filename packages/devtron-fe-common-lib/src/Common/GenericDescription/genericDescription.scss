@@ -1,0 +1,148 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.tab-description {
+    .tab-list__tab {
+        .tab-hover {
+            &:hover,
+            &.active {
+                color: var(--B500);
+                .edit-yaml-icon {
+                    path {
+                        stroke: var(--B500);
+                    }
+                }
+                .terminal-icon {
+                    path {
+                        fill: var(--B500);
+                    }
+                }
+            }
+        }
+        .node-details__active-tab {
+            height: 2px;
+            background-color: var(--B500);
+            border-radius: 2px 2px 0px 0px;
+            margin-top: -1px;
+        }
+    }
+}
+
+.cluster__body-details {
+    flex-basis: 100%;
+
+    .pencil-icon:hover {
+        color: var(--B500);
+        text-decoration: none;
+        svg path {
+            stroke: var(--B500);
+        }
+    }
+
+    .mark-down-editor-container {
+        border-bottom: 1px solid var(--N200);
+        border-radius: 3px 3px 0 0;
+        font-family: 'Open Sans', Arial, sans-serif !important;
+        font-size: 13px !important;
+        line-height: 1.67;
+
+        .mark-down-editor-preview {
+            background-color: white !important;
+        }
+
+        .mark-down-editor-textarea-wrapper {
+            border-radius: 3px !important;
+            border: 1px solid var(--N200) !important;
+            background-color: var(--N50) !important;
+        }
+
+        .mde-textarea-wrapper {
+            background-color: white !important;
+            padding: 10px !important;
+        }
+
+        .mark-down-editor-toolbar {
+            justify-content: space-between !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            background-color: white !important;
+        }
+
+        .mde-header {
+            height: 36px !important;
+            .mde-tabs {
+                height: inherit !important;
+                button {
+                    padding-left: 0px !important;
+                    padding-right: 0px !important;
+                    margin: 0 16px 0 0px !important;
+                    padding-top: 4px !important;
+                }
+                .active-tab {
+                    border-bottom: 2px solid var(--B500) !important;
+                    border-radius: 0px !important;
+                }
+            }
+            ul.mde-header-group {
+                height: inherit !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding-top: 0px !important;
+                padding-bottom: 0px !important;
+                padding-right: 0px !important;
+                .mde-header-item button {
+                    padding: 10px 4px !important;
+                    height: inherit !important;
+                }
+            }
+        }
+
+        .mde-preview {
+            .mde-preview-content {
+                padding: 0px !important;
+
+                a.anchor {
+                    color: var(--N900);
+                }
+            }
+        }
+
+        .mark-down-editor__hidden {
+            display: none !important;
+        }
+    }
+
+    .mark-down-editor__no-border {
+        border: 0px;
+    }
+
+    .cluster__description-footer {
+        border-radius: 0 0 3px 3px;
+        border: 1px solid var(--N200);
+        border-top: 0px;
+    }
+}
+
+.cluster__description-footer {
+    border-radius: 0 0 3px 3px;
+    border: 1px solid var(--N200);
+}
+
+.create-app-description {
+    border-bottom: 1px solid var(--N200) !important;
+    border-radius: 3px !important;
+}

@@ -1,0 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.09915 11.4621L3.82901 11.0215C3.90233 10.9773 3.96305 10.9149 4.00535 10.8405C4.04765 10.766 4.07012 10.6819 4.0706 10.5963L4.08328 8.33822C4.08381 8.24387 4.11102 8.15161 4.16177 8.07207L5.40193 6.12847C5.43858 6.07102 5.48659 6.02168 5.54301 5.98346C5.59943 5.94524 5.66307 5.91896 5.73002 5.90623C5.79696 5.89349 5.8658 5.89458 5.93231 5.90942C5.99882 5.92426 6.0616 5.95254 6.11678 5.99252L7.34527 6.88256C7.44932 6.95795 7.5784 6.99038 7.70572 6.97314L9.67325 6.70668C9.79394 6.69034 9.90451 6.6305 9.98421 6.53841L11.369 4.93836C11.4531 4.84123 11.4966 4.71546 11.4904 4.58715L11.4174 3.06818M11.6917 12.7302L11.021 12.0581C10.9582 11.9953 10.8799 11.9502 10.794 11.9277L9.45281 11.5757C9.33378 11.5445 9.23044 11.4705 9.16259 11.3678C9.09474 11.2651 9.06713 11.141 9.08506 11.0193L9.23411 10.007C9.24669 9.92158 9.28119 9.84085 9.33425 9.7727C9.38731 9.70455 9.45712 9.65131 9.53687 9.61816L11.44 8.82712C11.5279 8.79058 11.6245 8.7799 11.7182 8.79633C11.812 8.81276 11.8991 8.85561 11.9694 8.91986L13.5253 10.3429M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" stroke="#1DAD70" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

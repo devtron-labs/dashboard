@@ -1,0 +1,83 @@
+@import 'react-toastify/dist/ReactToastify.css';
+
+.Toastify {
+    &__toast {
+        gap: 8px;
+    }
+
+    &__toast-container {
+        padding: 0;
+        width: 280px;
+
+        &--top-right {
+            top: 8em;
+        }
+    }
+
+    &__progress-bar {
+        height: 3px;
+    }
+}
+
+.custom-toast {
+    max-height: none;
+    padding: 12px;
+    box-shadow: none;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    min-height: 0;
+    color: var(--N0);
+    background: #1B1C1E;
+    font-family: inherit;
+
+    &__body {
+        margin: 0;
+        padding: 0;
+        gap: 8px;
+        align-items: flex-start;
+        align-self: center;
+
+        >.Toastify__toast-icon {
+            margin: 0;
+            width: auto;
+            align-self: flex-start;
+        }
+    }
+
+    &__content {
+
+        // Override the style for the action button
+        button {
+            color: var(--N0);
+
+            svg *[stroke^="#"] {
+                stroke: var(--N0);
+            }
+
+            svg *[fill^="#"] {
+                fill: var(--N0);
+            }
+
+            &:hover,
+            &:active {
+                color: var(--N0);
+            }
+        }
+    }
+
+    // Custom styling for close btn
+    &__close-btn {
+        button {
+            svg {
+                path {
+                    fill: var(--N0) !important;
+                }
+            }
+
+            &:hover,
+            &:active {
+                background: #fff3 !important;
+            }
+        }
+    }
+}

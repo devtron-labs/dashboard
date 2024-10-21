@@ -1,0 +1,9 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Radio">
+<g id="outer border">
+<rect x="1.66663" y="1.66699" width="16.6667" height="16.6667" rx="8.33333" fill="white"/>
+<rect x="1.66663" y="1.66699" width="16.6667" height="16.6667" rx="8.33333" stroke="#ABCFF3"/>
+</g>
+<rect id="inner border" x="2.41663" y="2.41699" width="15.1667" height="15.1667" rx="7.58333" fill="white" stroke="#959BA1" stroke-width="1.5"/>
+</g>
+</svg>

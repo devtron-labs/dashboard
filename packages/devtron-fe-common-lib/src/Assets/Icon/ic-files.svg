@@ -1,0 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="19.5" height="18" viewBox="0 0 19.5 18" style = "margin-left: 2px;height: 24px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8573 3.53223H4.32641C4.18208 3.53223 4.04366 3.58956 3.9416 3.69162C3.83955 3.79367 3.78221 3.93209 3.78221 4.07642V16.0487C3.78221 16.1931 3.83955 16.3315 3.9416 16.4335C4.04366 16.5356 4.18208 16.5929 4.32641 16.5929H14.1225C14.1939 16.5929 14.2647 16.5789 14.3307 16.5515C14.3967 16.5242 14.4567 16.4841 14.5073 16.4335C14.5578 16.383 14.5979 16.323 14.6252 16.257C14.6526 16.191 14.6667 16.1202 14.6667 16.0487V7.3416M10.8573 3.53223L14.6667 7.3416M10.8573 3.53223V7.3416H14.6667M7.04792 10.6068H11.4015M7.04792 12.7836H11.4015M12.2178 4.89272L8.40841 1.08334H1.87752C1.73319 1.08334 1.59478 1.14068 1.49272 1.24273C1.39066 1.34479 1.33333 1.48321 1.33333 1.62754V13.5999C1.33333 13.7442 1.39066 13.8826 1.49272 13.9847C1.59478 14.0867 1.73319 14.1441 1.87752 14.1441H3.78221" stroke="#3B444C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

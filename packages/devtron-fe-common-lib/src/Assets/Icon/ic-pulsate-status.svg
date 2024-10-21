@@ -1,0 +1,21 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .pulsate__history-status {
+            animation: pulsate__history-status-animation 2s infinite ease-in-out;
+            opacity: 0.8;
+            }
+            
+            @keyframes pulsate__history-status-animation {
+                0% {
+                    stroke-width: 0;
+                    stroke-opacity: 0.5;
+                }
+                100% {
+                    stroke-width: 10;
+                    stroke-opacity: 0;
+                }
+            }
+    </style>
+    <circle class="pulsate__history-status" cx="10" cy="10" r="5" fill="#FF7E5B" stroke="#FF7E5B" stroke-opacity="0.3" stroke-width="10"/>
+    <path d="M10 0L10 5" stroke="#3B444C"/>
+</svg>
