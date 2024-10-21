@@ -78,6 +78,8 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                         const errorObj =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]
+
+                        const isInputVariableRequired = type === PluginVariableType.INPUT && !variable.allowEmptyValue
                         return (
                             <Fragment key={`variable-container-${index}`}>
                                 {type === PluginVariableType.INPUT && variable.description ? (
@@ -100,7 +102,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                         >
                                             <span
                                                 className={`text-underline-dashed ${
-                                                    type === PluginVariableType.INPUT && !variable.allowEmptyValue
+                                                    isInputVariableRequired
                                                         ? 'dc__required-field'
                                                         : ''
                                                 }`}
@@ -110,7 +112,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                         </div>
                                     </Tippy>
                                 ) : (
-                                    <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.name}</span>
+                                    <span className={`fs-13 fw-4 lh-28 dc__truncate ${isInputVariableRequired ? 'dc__required-field' : ''}`}>{variable.name}</span>
                                 )}
 
                                 <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.format}</span>

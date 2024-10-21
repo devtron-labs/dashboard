@@ -28,6 +28,7 @@ import {
     ToastVariantType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as ICDelete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { CDNodeProps, CDNodeState } from '../types'
@@ -278,8 +279,24 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
     }
 
+    renderNodeIcon = () => {
+        if (this.props.showPluginWarning) {
+            return <ICWarning className="icon-dim-18 warning-icon-y7 mr-12 dc__no-shrink" />
+        }
+
+        return (
+            <div
+                className={`workflow-node__icon-common dc__no-shrink pt-12 pb-12 mr-12 ${
+                    this.props.isVirtualEnvironment
+                        ? 'workflow-node__CD-rocket-icon'
+                        : 'workflow-node__CD-icon dc__flip'
+                }`}
+            />
+        )
+    }
+
     renderWrapWithLink = (children: ReactElement) => (
-        <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
+        <Link to={this.props.to} onClick={this.onClickNodeCard} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
             {children}
         </Link>
     )
@@ -288,7 +305,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
-            <ConditionalWrap condition={!this.props.isReadonlyView && !!this.props.to} wrap={this.renderWrapWithLink}>
+            <ConditionalWrap
+                condition={!!this.props.to && (!this.props.isOffendingPipelineView  || this.props.showPluginWarning)}
+                wrap={this.renderWrapWithLink}
+            >
                 <div
                     data-testid={`workflow-editor-cd-node-${this.props.environmentName}`}
                     className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}
@@ -315,16 +335,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                             {envDescriptionTippy(this.props.environmentName, this.props.description)}
                         </div>
 
-                        {/* TODO: Look into these css later */}
-                        <div
-                            className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
-                                this.props.isVirtualEnvironment
-                                    ? 'workflow-node__CD-rocket-icon'
-                                    : 'workflow-node__CD-icon dc__flip'
-                            }`}
-                        />
+                        {this.renderNodeIcon()}
 
-                        {!this.props.isReadonlyView && selectedNodeKey !== currentNodeKey && (
+                        {!this.props.isOffendingPipelineView && selectedNodeKey !== currentNodeKey && (
                             <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
                                 <Tippy
                                     placement="right"

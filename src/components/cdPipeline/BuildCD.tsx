@@ -33,7 +33,7 @@ import {
     ToastVariantType,
     ToastManager,
     ComponentSizeType,
-    SelectPickerOptionType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -62,6 +62,7 @@ import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { BuildCDProps } from './types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -89,7 +90,8 @@ export default function BuildCD({
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
     releaseMode,
-}) {
+    getMandatoryPluginData,
+}: BuildCDProps) {
     const {
         formData,
         setFormData,
@@ -108,6 +110,7 @@ export default function BuildCD({
         appId,
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
+    const [loadingEnvChangePluginDetails, setLoadingEnvChangePluginDetails] = useState<boolean>(false)
     const validationRules = new ValidationRules()
     const history = useHistory()
 
@@ -149,20 +152,15 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const selectEnvironment = (selection: EnvironmentWithSelectPickerType): void => {
+    const selectEnvironment = async (selection: EnvironmentWithSelectPickerType) => {
         const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
+        // Generating form without setStates since we need to make an api call before setting the state so that we can handle error efficiently
         if (selection) {
-            if (envIds.includes(selection.id)) {
-                setIsEnvUsedState(true)
-            } else {
-                setIsEnvUsedState(false)
-            }
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace
-            setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
             _formDataErrorObj.nameSpaceError =
                 !selection.isVirtualEnvironment && validationRules.namespace(selection.namespace)
@@ -195,8 +193,6 @@ export default function BuildCD({
             _form.isDigestEnforcedForEnv = _form.environments.find(
                 (env) => env.id == selection.id,
             )?.isDigestEnforcedForEnv
-            setFormDataErrorObj(_formDataErrorObj)
-            setFormData(_form)
         } else {
             const list = _form.environments.map((item) => {
                 return {
@@ -207,11 +203,32 @@ export default function BuildCD({
             _form.environmentId = 0
             _form.namespace = ''
             _form.environments = list
-            setIsVirtualEnvironment(false)
             _formDataErrorObj.envNameError = validationRules.environment(_form.environmentId)
-            setFormData(_form)
-            setFormDataErrorObj(_formDataErrorObj)
         }
+
+        try {
+            setLoadingEnvChangePluginDetails(true)
+            await getMandatoryPluginData(_form)
+            setLoadingEnvChangePluginDetails(false)
+        } catch (error) {
+            setLoadingEnvChangePluginDetails(false)
+            showError(error)
+            return
+        }
+
+        if (selection) {
+            if (envIds.includes(selection.id)) {
+                setIsEnvUsedState(true)
+            } else {
+                setIsEnvUsedState(false)
+            }
+            setIsVirtualEnvironment(selection.isVirtualEnvironment)
+        } else {
+            setIsVirtualEnvironment(false)
+        }
+
+        setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderPipelineNameInput = () => {
@@ -335,7 +352,8 @@ export default function BuildCD({
         formDataError.containerRegistryError = validationRules.containerRegistry(
             selectedRegistry.id || formData.containerRegistryName,
         )
-        form.selectedRegistry = { ...selectedRegistry,
+        form.selectedRegistry = {
+            ...selectedRegistry,
             value: selectedRegistry.id,
             label: selectedRegistry.id,
         } as RegistryPayloadWithSelectType
@@ -377,7 +395,7 @@ export default function BuildCD({
     const renderEnvSelector = () => {
         const envId = formData.environmentId
         const _environment = formData.environments.find((env) => env.id == envId)
-        const selectedEnv: EnvironmentWithSelectPickerType = _environment &&{
+        const selectedEnv: EnvironmentWithSelectPickerType = _environment && {
             ..._environment,
             label: _environment.name,
             value: _environment.id.toString(),
@@ -422,6 +440,7 @@ export default function BuildCD({
                     getOptionValue={(option) => option.value as unknown as string}
                     onChange={selectEnvironment}
                     size={ComponentSizeType.large}
+                    isLoading={loadingEnvChangePluginDetails}
                 />
                 {isEnvUsedState && (
                     <span className="form__error">
