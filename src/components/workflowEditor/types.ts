@@ -200,7 +200,10 @@ export interface WebhookNodeProps {
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
-    isReadonlyView: boolean
+    /**
+     * @default false
+     */
+    isReadonlyView?: boolean
 }
 
 export interface WebhookTippyType {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import React, { Component, ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import {
@@ -295,17 +295,19 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         )
     }
 
+    renderWrapWithLink = (children: ReactElement) => (
+        <Link to={this.props.to} onClick={this.onClickNodeCard} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
+            {children}
+        </Link>
+    )
+
     renderCardContent() {
         const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
             <ConditionalWrap
                 condition={!!this.props.to && (!this.props.isOffendingPipelineView  || this.props.showPluginWarning)}
-                wrap={(children) => (
-                    <Link to={this.props.to} onClick={this.onClickNodeCard} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
-                        {children}
-                    </Link>
-                )}
+                wrap={this.renderWrapWithLink}
             >
                 <div
                     data-testid={`workflow-editor-cd-node-${this.props.environmentName}`}

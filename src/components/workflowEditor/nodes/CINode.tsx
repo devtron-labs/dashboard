@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import React, { Component, ReactElement } from 'react'
 import { WorkflowNodeType, SelectedNode, CommonNodeAttr, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, RouteComponentProps } from 'react-router-dom'
@@ -56,6 +56,11 @@ export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
+    /**
+     * If true the view is read only
+     *
+     * @default false
+     */
     isOffendingPipelineView: boolean
 }
 
@@ -119,6 +124,17 @@ export class CINode extends Component<CINodeProps> {
         )
     }
 
+    renderWrapWithLink = (children: ReactElement) => (
+        <Link
+            to={this.props.to}
+            onClick={this.props.hideWebhookTippy}
+            target={this.props.isOffendingPipelineView ? '_blank' : '_self'}
+            className="dc__no-decor"
+        >
+            {children}
+        </Link>
+    )
+
     renderCardContent = (isJobCard: boolean) => {
         const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
         const env = currPipeline?.environmentId
@@ -133,11 +149,7 @@ export class CINode extends Component<CINodeProps> {
         return (
             <ConditionalWrap
                 condition={!!this.props.to && (!this.props.isOffendingPipelineView || this.props.showPluginWarning)}
-                wrap={(children) => (
-                    <Link to={this.props.to} onClick={this.props.hideWebhookTippy} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
-                        {children}
-                    </Link>
-                )}
+                wrap={this.renderWrapWithLink}
             >
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
@@ -155,7 +167,9 @@ export class CINode extends Component<CINodeProps> {
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
-                                onClick={this.props.isOffendingPipelineView ? null : this.handleLinkedCIWorkflowChipClick}
+                                onClick={
+                                    this.props.isOffendingPipelineView ? null : this.handleLinkedCIWorkflowChipClick
+                                }
                             >
                                 <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                                 <span>{this.props.linkedCount}</span>
@@ -176,12 +190,8 @@ export class CINode extends Component<CINodeProps> {
                             </Tippy>
                             {this.props.isJobView && (
                                 <>
-                                    <span className="fw-4 fs-11">
-                                        Env: {env ? env.environment_name : DEFAULT_ENV}
-                                    </span>
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
-                                        {!env && '(Default)'}
-                                    </span>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && '(Default)'}</span>
                                 </>
                             )}
                         </div>

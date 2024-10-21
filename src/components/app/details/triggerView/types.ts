@@ -228,10 +228,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     appId: string
     isJobView?: boolean
     isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
+    ciBlockState?: ConsequenceType
     selectedEnv?: EnvironmentWithSelectPickerType
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     environmentLists?: any[]

@@ -284,7 +284,7 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
         return null
     }
     if (data.isCITriggerBlocked) {
-        return { action: ConsequenceAction.BLOCK, metadataField: null }
+        return { action: ConsequenceAction.BLOCK }
     }
     return data.ciBlockState
 }

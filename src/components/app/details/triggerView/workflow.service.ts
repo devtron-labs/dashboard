@@ -94,6 +94,7 @@ export const getInitialWorkflows = (
     blackListedCI: BlackListedCI
 }> => {
     if (useAppWfViewAPI) {
+        // TODO: Seems like a good candidate for Promise.allSettled
         return Promise.all([
             getWorkflowViewList(id, filteredEnvIds, offending),
             shouldCheckDeploymentWindow && getDeploymentWindowState
@@ -145,7 +146,7 @@ export const getInitialWorkflows = (
         getCIConfig(id),
         getCDConfig(id),
         getExternalCIList(id),
-        getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+        shouldCheckDeploymentWindow && getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
         if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
