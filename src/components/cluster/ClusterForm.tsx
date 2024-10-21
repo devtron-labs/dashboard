@@ -288,7 +288,7 @@ export default function ClusterForm({
                     ? {}
                     : {
                           required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ }
+                          validator: { error: 'token is required', regex: /[^]+/ },
                       },
             endpoint: {
                 required: !!prometheusToggleEnabled,
