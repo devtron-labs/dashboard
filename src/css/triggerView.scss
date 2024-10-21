@@ -115,11 +115,6 @@
     height: calc(100vh - 122px);
 }
 
-// .select-material--regex-body {
-//     height: calc(100vh - 108px);
-//     overflow: auto;
-// }
-
 .select-material__empty-state-container {
     height: calc(100% - 74px);
     display: flex;
@@ -525,14 +520,10 @@
     }
 }
 
-.select-material--regex-body{
-    min-width: 600px;
-    max-width: 600px;
-    background: var(--N000);
+.ci-trigger__branch-regex-wrapper{
 
-    .modal-body--ci-material{
-        min-width: 600px;
-        max-width: 600px;
+    .trigger-modal__trigger{
+        position: relative;
     }
 }
 

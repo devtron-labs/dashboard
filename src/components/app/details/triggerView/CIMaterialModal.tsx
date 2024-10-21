@@ -143,20 +143,18 @@ export const CIMaterialModal = ({
     }
 
     const renderBranchRegexModal = () => (
-        <VisibleModal className="w-600 bcn-0" close={props.onCloseBranchRegexModal}>
-            <BranchRegexModal
-                material={props.material}
-                selectedCIPipeline={selectedCIPipeline}
-                showWebhookModal={props.showWebhookModal}
-                title={props.title}
-                isChangeBranchClicked={props.isChangeBranchClicked}
-                onClickNextButton={onClickNextButton}
-                handleRegexInputValue={handleRegexInputValue}
-                regexValue={regexValue}
-                onCloseBranchRegexModal={props.onCloseBranchRegexModal}
-                savingRegexValue={savingRegexValue}
-            />
-        </VisibleModal>
+        <BranchRegexModal
+            material={props.material}
+            selectedCIPipeline={selectedCIPipeline}
+            showWebhookModal={props.showWebhookModal}
+            title={props.title}
+            isChangeBranchClicked={props.isChangeBranchClicked}
+            onClickNextButton={onClickNextButton}
+            handleRegexInputValue={handleRegexInputValue}
+            regexValue={regexValue}
+            onCloseBranchRegexModal={props.onCloseBranchRegexModal}
+            savingRegexValue={savingRegexValue}
+        />
     )
 
     const renderBranchCIModal = () => (
