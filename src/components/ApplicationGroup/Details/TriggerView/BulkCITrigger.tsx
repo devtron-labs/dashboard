@@ -620,6 +620,7 @@ const BulkCITrigger = ({
                             app.isJobCI,
                         )}
                         nodeType={nodeType}
+                        shouldRenderAdditionalInfo={app.appId === selectedApp.appId}
                     />
                 )}
             </div>

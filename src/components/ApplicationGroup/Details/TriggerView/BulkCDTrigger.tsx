@@ -410,6 +410,8 @@ export default function BulkCDTrigger({
 
         const warningMessage = app.warningMessage || appDeploymentWindowMap[app.appId]?.warningMessage
 
+        const isAppSelected = selectedApp.appId === app.appId
+
         if (unauthorizedAppList[app.appId]) {
             return (
                 <div className="flex left top dc__gap-4">
@@ -439,6 +441,7 @@ export default function BulkCDTrigger({
                     consequence={app.consequence}
                     configurePluginURL={app.configurePluginURL}
                     nodeType={commonNodeAttrType}
+                    shouldRenderAdditionalInfo={isAppSelected}
                 />
             )
         }
@@ -463,6 +466,7 @@ export default function BulkCDTrigger({
                     consequence={app.consequence}
                     configurePluginURL={app.configurePluginURL}
                     nodeType={commonNodeAttrType}
+                    shouldRenderAdditionalInfo={isAppSelected}
                 />
             )   
         }
@@ -733,7 +737,7 @@ export default function BulkCDTrigger({
                     {appList.map((app, index) => (
                         <div
                             key={`app-${app.appId}`}
-                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor ${
+                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor w-100 ${
                                 app.appId === selectedApp.appId ? 'dc__window-bg' : ''
                             }`}
                             data-index={index}

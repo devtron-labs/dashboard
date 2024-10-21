@@ -4253,6 +4253,18 @@ textarea::placeholder {
 
 .dc__hover-color-b500:hover {
     color: var(--B500);
+
+    &.fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+
+    &.stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
 .dc__hover-color-n800:hover {
