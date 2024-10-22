@@ -30,10 +30,10 @@ import {
     ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
-import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
+import { CiWebhookModal } from '../app/details/triggerView/CiWebhookDebuggingModal'
 import { ReactComponent as Back } from '@Icons/ic-back.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Right } from '@Icons/ic-arrow-left.svg'

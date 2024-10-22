@@ -16,7 +16,14 @@
 
 import { useEffect, useState } from 'react'
 import { generatePath, NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { showError, Progressing, sortCallback, CodeEditor, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    sortCallback,
+    CodeEditor,
+    ClipboardButton,
+    getFormattedSchema,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as InfoOutlined } from '@Icons/ic-info-outlined.svg'
@@ -26,7 +33,7 @@ import { Moment12HourFormat } from '../../../../config'
 import './triggerView.scss'
 import { CiWebhookModalProps, CIWebhookPayload, WebhookPayload, WebhookReceivedFiltersType } from './types'
 
-export default function CiWebhookModal({
+export const CiWebhookModal = ({
     webhookPayloads,
     ciPipelineMaterialId,
     ciPipelineId,
@@ -36,7 +43,7 @@ export default function CiWebhookModal({
     fromBulkCITrigger,
     appId,
     isJobView,
-}: CiWebhookModalProps) {
+}: CiWebhookModalProps) => {
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState<CIWebhookPayload | null>(null)
     const [selectedPassedCountRatio, setSelectedPassedCountRatio] = useState<string>('')
@@ -44,6 +51,7 @@ export default function CiWebhookModal({
     const history = useHistory()
     const { path } = useRouteMatch()
     const params = useParams<{ appId: string; envId: string; ciPipelineId: string }>()
+    const payloadId = webhookPayloads?.payloads ? webhookPayloads.payloads[0]?.parsedDataId : ''
 
     const getCIWebhookPayloadRes = async (pipelineMaterialId, webhookPayload: WebhookPayload) => {
         setIsPayloadLoading(true)
@@ -60,7 +68,7 @@ export default function CiWebhookModal({
     }
 
     useEffect(() => {
-        history.push(`${generatePath(path, { ...params })}/payloadId/${webhookPayloads?.payloads?.[0]?.parsedDataId}`)
+        history.push(`${generatePath(path, { ...params })}/payloadId/${payloadId}`)
     }, [])
 
     useEffect(() => {
@@ -100,13 +108,11 @@ export default function CiWebhookModal({
 
     const renderWebhookPayloadLoader = () => (
         <div className="flex column">
-            <div className="pb-12">
-                <Progressing pageLoader />
-            </div>
+            <Progressing pageLoader />
             <div>
-                Fetching webhook payloads.
+                <span>Fetching webhook payloads.</span>
                 <br />
-                This might take some time.
+                <span>This might take some time.</span>
             </div>
         </div>
     )
@@ -120,7 +126,7 @@ export default function CiWebhookModal({
                         const isPassed =
                             webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                         const webhookPayloadId = webhookPayload.parsedDataId
-                        const isActive = location.pathname.includes(webhookPayloadId.toString())
+                        const isActive = location.pathname.includes(String(webhookPayloadId))
                         return (
                             <div
                                 key={webhookPayloadId}
@@ -219,7 +225,7 @@ export default function CiWebhookModal({
     )
 
     const _value = webhookIncomingPayloadRes?.payloadJson
-        ? JSON.stringify(JSON.parse(webhookIncomingPayloadRes?.payloadJson) ?? {}, null, 4)
+        ? getFormattedSchema(webhookIncomingPayloadRes.payloadJson)
         : ''
 
     const renderReceivedPayloadCodeEditor = () => (
@@ -248,7 +254,7 @@ export default function CiWebhookModal({
         </div>
     )
 
-    const renderTimeStampDetailedIncomingModal = () => (
+    const renderWebhookPayloadContent = () => (
         <div
             className={` bcn-0 dc__top-0 dc__right-0 timestamp-detail-container ${
                 fromBulkCITrigger ? 'env-modal-width' : ''
@@ -264,18 +270,18 @@ export default function CiWebhookModal({
 
     const renderWebHookModal = () => (
         <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header pl-20 fs-13 cn-9">
-            {isWebhookPayloadLoading ? (
-                renderWebhookPayloadLoader()
-            ) : (
-                <>
-                    {renderSidebar()}
-                    {!webhookPayloads?.payloads?.length
-                        ? renderNoWebhookPayloadView
-                        : renderTimeStampDetailedIncomingModal()}
-                </>
-            )}
+            {renderSidebar()}
+            {!webhookPayloads?.payloads?.length ? renderNoWebhookPayloadView : renderWebhookPayloadContent()}
         </div>
     )
+
+    if (isWebhookPayloadLoading) {
+        return (
+            <div className="flex h-100 payload-wrapper-no-header">
+                <Progressing pageLoader styles={{ height: '100%' }} />
+            </div>
+        )
+    }
 
     return renderWebHookModal()
 }
