@@ -250,10 +250,8 @@ const BulkCITrigger = ({
                     branchNames += `${branchNames ? ',' : ''}${branchValue}`
                 }
             }
-            // Not a correct check
-            return !branchNames
-                ? () => null
-                : () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames, appDetails.name)
+
+            return () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames, appDetails.name)
         })
 
         if (policyPromiseFunctionList?.length) {

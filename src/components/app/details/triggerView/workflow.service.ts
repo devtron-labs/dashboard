@@ -44,6 +44,7 @@ import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary('getParsedPluginPolicyConsequenceData', null, 'function')
 
 export const getTriggerWorkflows = (
     appId,
@@ -567,7 +568,7 @@ function ciPipelineToNode(
             isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
             showPluginWarning: false,
             isTriggerBlocked: false,
-            pluginBlockState: null,
+            pluginBlockState: getParsedPluginPolicyConsequenceData?.(),
         }
     })
     const trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
@@ -607,7 +608,7 @@ function ciPipelineToNode(
         downstreamNodes: new Array<CommonNodeAttr>(),
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isTriggerBlocked: ciPipeline.isCITriggerBlocked,
-        pluginBlockState: ciPipeline.ciBlockState,
+        pluginBlockState: getParsedPluginPolicyConsequenceData?.(ciPipeline.ciBlockState),
     }
 
     return ciNode
@@ -648,8 +649,6 @@ function cdPipelineToNode(
     let postCD: CommonNodeAttr | undefined
     let stageIndex = 1
 
-    // We check preStage?.config for migration in case of old data
-    // FIXME: As of now not checking preStage?.config for mandatory plugin warning need to connect again with BE
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
         const trigger =
             cdPipeline.preDeployStage?.triggerType?.toLowerCase() ||
@@ -687,7 +686,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
-            pluginBlockState: cdPipeline.preDeployStage?.pluginBlockState,
+            pluginBlockState: getParsedPluginPolicyConsequenceData?.(cdPipeline.preDeployStage?.pluginBlockState),
         }
         stageIndex++
     }
@@ -740,7 +739,7 @@ function cdPipelineToNode(
         // Will populate this after initializing postCD
         showPluginWarning: false,
         isTriggerBlocked: false,
-        pluginBlockState: null,
+        pluginBlockState: getParsedPluginPolicyConsequenceData?.(),
     }
     stageIndex++
 
@@ -781,7 +780,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
-            pluginBlockState: cdPipeline.postDeployStage?.pluginBlockState,
+            pluginBlockState: getParsedPluginPolicyConsequenceData?.(cdPipeline.postDeployStage?.pluginBlockState),
         }
     }
 
@@ -800,7 +799,7 @@ function cdPipelineToNode(
 
     CD.showPluginWarning = preCD?.showPluginWarning || postCD?.showPluginWarning
     CD.isTriggerBlocked = false
-    CD.pluginBlockState = null
+    CD.pluginBlockState = getParsedPluginPolicyConsequenceData?.()
     return CD
 }
 

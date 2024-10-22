@@ -45,7 +45,11 @@ const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = 
     'function',
 )
 
-const PipelineTaskActionConfirmationDialog = importComponentFromFELibrary('PipelineTaskActionConfirmationDialog', null, 'function')
+const PipelineTaskActionConfirmationDialog = importComponentFromFELibrary(
+    'PipelineTaskActionConfirmationDialog',
+    null,
+    'function',
+)
 
 export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJobView }: TaskListType) => {
     const {
@@ -63,7 +67,6 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         handleValidateMandatoryPlugins,
         isCdPipeline,
         pluginDataStore,
-        // TODO: Add null checks everywhere
         mandatoryPluginData,
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
@@ -138,34 +141,6 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         })
     }
 
-    const handleTriggerDelete = (e: SyntheticEvent) => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
-        const taskDetails: StepType = formData[activeStageName].steps[taskIndex]
-
-        if (taskDetails?.stepType === PluginType.PLUGIN_REF && taskDetails.pluginRefStepDetail?.pluginId) {
-            const pluginId = taskDetails.pluginRefStepDetail.pluginId
-
-            const pluginValidationStatus = getTaskActionPluginValidationStatus({
-                mandatoryPluginList: mandatoryPluginData?.pluginData || [],
-                formData,
-                targetPluginId: pluginId,
-                activeStageName,
-                pluginDataStore,
-            })
-
-            if (!pluginValidationStatus.isValid) {
-                setTaskActionModalState({
-                    type: PipelineStageTaskActionModalType.DELETE,
-                    pluginId,
-                    taskIndex,
-                })
-                return
-            }
-        }
-
-        deleteTask(taskIndex)
-    }
-
     const moveTaskToOtherStage = (taskIndex: number): void => {
         const moveToStage =
             activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
@@ -211,7 +186,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
             setFormData(_formData)
         }
 
-        // FIXME: Check during review re-check should'nt it be from _formData?
+        // FIXME: This is wrong ideally should be done on _formData[moveToStage].steps[_formData[moveToStage].steps.length-1]
         validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
         setFormDataErrorObj(_formDataErrorObj)
         handleValidateMandatoryPlugins({
@@ -219,11 +194,14 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         })
     }
 
-    const handleTriggerMoveToOtherStage = (e: SyntheticEvent): void => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
+    const handleTaskAction = (taskIndex: number, taskType: PipelineStageTaskActionModalType) => {
         const taskDetails: StepType = formData[activeStageName].steps[taskIndex]
 
-        if (taskDetails?.stepType === PluginType.PLUGIN_REF && taskDetails.pluginRefStepDetail?.pluginId) {
+        if (
+            getTaskActionPluginValidationStatus &&
+            taskDetails?.stepType === PluginType.PLUGIN_REF &&
+            taskDetails.pluginRefStepDetail?.pluginId
+        ) {
             const pluginId = taskDetails.pluginRefStepDetail.pluginId
 
             const pluginValidationStatus = getTaskActionPluginValidationStatus({
@@ -232,19 +210,34 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                 targetPluginId: pluginId,
                 activeStageName,
                 pluginDataStore,
-                isFromMoveTask: true,
+                isFromMoveTask: taskType === PipelineStageTaskActionModalType.MOVE_PLUGIN,
             })
 
             if (!pluginValidationStatus.isValid) {
                 setTaskActionModalState({
-                    type: PipelineStageTaskActionModalType.MOVE_PLUGIN,
+                    type: taskType,
                     pluginId,
                     taskIndex,
                 })
                 return
             }
         }
-        moveTaskToOtherStage(taskIndex)
+
+        if (taskType === PipelineStageTaskActionModalType.MOVE_PLUGIN) {
+            moveTaskToOtherStage(taskIndex)
+        } else if (taskType === PipelineStageTaskActionModalType.DELETE) {
+            deleteTask(taskIndex)
+        }
+    }
+
+    const handleTriggerDelete = (e: SyntheticEvent) => {
+        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
+        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.DELETE)
+    }
+
+    const handleTriggerMoveToOtherStage = (e: SyntheticEvent): void => {
+        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
+        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.MOVE_PLUGIN)
     }
 
     const handleClearTaskActionModalState = () => {
@@ -342,6 +335,8 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         setSelectedTaskIndex(index)
     }
 
+    const currentStageText = isCdPipeline ? 'deploy' : 'build'
+
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -398,12 +393,12 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                                                         className="rotate icon-dim-16 dc__no-shrink"
                                                         style={{ ['--rotateBy' as any]: '180deg' }}
                                                     />
-                                                    Move to post-{isCdPipeline ? 'deploy' : 'build'} stage
+                                                    Move to post-{currentStageText} stage
                                                 </>
                                             ) : (
                                                 <>
                                                     <MoveToPre className="icon-dim-16 dc__no-shrink" />
-                                                    Move to pre-{isCdPipeline ? 'deploy' : 'build'} stage
+                                                    Move to pre-{currentStageText} stage
                                                 </>
                                             )}
                                         </button>

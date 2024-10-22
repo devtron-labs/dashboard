@@ -56,12 +56,6 @@ export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
-    /**
-     * If true the view is read only
-     *
-     * @default false
-     */
-    isOffendingPipelineView: boolean
 }
 
 export class CINode extends Component<CINodeProps> {

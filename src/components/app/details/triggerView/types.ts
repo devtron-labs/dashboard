@@ -72,8 +72,8 @@ type CDMaterialBulkRuntimeParams =
 type CDMaterialPluginWarningProps =
     | {
           showPluginWarningBeforeTrigger: boolean
-          consequence?: ConsequenceType
-          configurePluginURL?: string
+          consequence: ConsequenceType
+          configurePluginURL: string
       }
     | {
           showPluginWarningBeforeTrigger?: never

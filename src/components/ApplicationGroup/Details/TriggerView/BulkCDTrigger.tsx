@@ -327,6 +327,7 @@ export default function BulkCDTrigger({
                 setLoading(false)
             })
             .catch((error) => {
+                setLoading(false)
                 showError(error)
             })
     }

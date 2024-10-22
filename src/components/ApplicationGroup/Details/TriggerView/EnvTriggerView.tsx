@@ -138,7 +138,6 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -1759,13 +1758,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedNode = _cdNode.postNode
                 }
                 if (_selectedNode) {
+                    const stageType = DeploymentNodeType[_selectedNode.type]
+                    const isTriggerBlockedDueToPlugin =
+                        _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning
+
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
                         name: wf.name,
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
-                        stageType: DeploymentNodeType[_selectedNode.type],
+                        stageType,
                         triggerType: _cdNode.triggerType,
                         envName: _selectedNode.environmentName,
                         envId: _selectedNode.environmentId,
@@ -1781,7 +1784,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ciPipelineId: _selectedNode.connectingCiPipelineId,
                         hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete,
                         showPluginWarning: _selectedNode.showPluginWarning,
-                        isTriggerBlockedDueToPlugin: _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning,
+                        isTriggerBlockedDueToPlugin,
                         configurePluginURL: getCDPipelineURL(
                             String(wf.appId),
                             wf.id,
@@ -1791,7 +1794,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             true,
                         ),
                         consequence: _selectedNode.pluginBlockState,
-                        warningMessage: _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning ? `${DeploymentNodeType[_selectedNode.type] === DeploymentNodeType.PRECD ? 'Pre-Deployment': 'Post-Deployment'} is blocked` : ''
+                        warningMessage: isTriggerBlockedDueToPlugin
+                            ? `${stageType === DeploymentNodeType.PRECD ? 'Pre-Deployment' : 'Post-Deployment'} is blocked`
+                            : '',
                     })
                 } else {
                     let warningMessage = ''
@@ -2112,14 +2117,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const renderCDModalHeader = () => (
-        <div className="trigger-modal__header flex right">
-            <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                <CloseIcon />
-            </button>
-        </div>
-    )
-
     const renderCDMaterialContent = ({
         node,
         appId,
@@ -2163,6 +2160,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
+        if (!selectedCDNode?.id) {
+            return null
+        }
+
         if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
@@ -2198,7 +2199,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     >
                         {isCDLoading ? (
                             <>
-                                {renderCDModalHeader()}
+                                <div className="trigger-modal__header flex right">
+                                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
+                                        <CloseIcon />
+                                    </button>
+                                </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
                                     <Progressing pageLoader size={32} />
                                 </div>

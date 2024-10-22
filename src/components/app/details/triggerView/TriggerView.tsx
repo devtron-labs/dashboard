@@ -1247,14 +1247,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as CommonNodeAttr)
     }
 
-    renderCDModalHeader = () => (
-        <div className="trigger-modal__header flexbox dc__content-space">
-            <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
-                <CloseIcon />
-            </button>
-        </div>
-    )
-
     renderCDMaterialContent = () => {
         const node: CommonNodeAttr = this.getCDNode()
         const selectedWorkflow = this.state.workflows.find((wf) => +wf.id === +this.state.workflowId)
@@ -1308,7 +1300,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     >
                         {this.state.isLoading ? (
                             <>
-                                {this.renderCDModalHeader()}
+                                <div className="trigger-modal__header flexbox dc__content-space">
+                                    <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
+                                        <CloseIcon />
+                                    </button>
+                                </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
                                     <Progressing pageLoader size={32} />
                                 </div>
