@@ -311,6 +311,11 @@ export default function BulkCDTrigger({
             }
         }
 
+        if (!_cdMaterialFunctionsList.length) {
+            setLoading(false)
+            return
+        }
+
         ApiQueuingWithBatch(_cdMaterialFunctionsList, httpProtocol)
             .then(async (responses: any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
