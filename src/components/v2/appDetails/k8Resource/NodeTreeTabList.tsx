@@ -26,11 +26,12 @@ import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
+import { ALL_RESOURCE_KIND_FILTER } from './Constants'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
-    const filterType = useSearchString().searchParams.filterType || 'all'
+    const filterType = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),

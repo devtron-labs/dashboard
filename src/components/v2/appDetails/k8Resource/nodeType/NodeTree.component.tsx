@@ -40,10 +40,7 @@ const NodeTreeComponent = ({
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     )
-    const [nodes] = useSharedState(
-        IndexStore.getAppDetailsNodes(),
-        IndexStore.getAppDetailsNodesObservable(),
-    )
+    const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const _arr = url.split(URLS.APP_DETAILS_K8)
     const k8URL = _arr[0] + URLS.APP_DETAILS_K8
 
@@ -64,7 +61,7 @@ const NodeTreeComponent = ({
     }
 
     useEffect(() => {
-        const _urlArray = window.location.pathname.split(`${URLS.APP_DETAILS_K8}/`)
+        const _urlArray = location.pathname.split(`${URLS.APP_DETAILS_K8}/`)
         if (_urlArray?.length === 2) {
             const [_kind, _ignore, _name] = _urlArray[1].split('/')
             const parent = getPNodeName(_kind)
@@ -75,7 +72,8 @@ const NodeTreeComponent = ({
             }
         } else {
             history.replace({
-                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
+                pathname:
+                    url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
                 search: location.search,
             })
         }
@@ -144,7 +142,7 @@ const NodeTreeComponent = ({
         })
     }
 
-    return <>{_filteredTreeNodes && _filteredTreeNodes.length > 0 && makeNodeTree(_filteredTreeNodes, [], isDevtronApp)}</>
+    return <>{_filteredTreeNodes?.length > 0 && makeNodeTree(_filteredTreeNodes, [], isDevtronApp)}</>
 }
 
 export function generateSelectedNodes(

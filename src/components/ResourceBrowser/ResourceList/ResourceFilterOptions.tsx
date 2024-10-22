@@ -18,13 +18,13 @@ import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } f
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { useAsync, useRegisterShortcut, OptionType, SearchBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { URLS } from '../../../config'
-import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 

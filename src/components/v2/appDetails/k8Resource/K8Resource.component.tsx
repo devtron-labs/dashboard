@@ -20,7 +20,6 @@ import {
     AppType,
     getPodsRootParentNameAndStatus,
     Node,
-    NodeFilters,
     StatusFilterButtonComponent,
     useMainContext,
     useSearchString,
@@ -36,6 +35,7 @@ import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
 import './k8resources.scss'
 import { ALL_RESOURCE_KIND_FILTER } from './Constants'
+import { doesNodeSatisfiesFilter } from './utils'
 
 export const K8ResourceComponent = ({
     clickedNodes,
@@ -62,12 +62,9 @@ export const K8ResourceComponent = ({
     const currentFilteredNodes = useMemo(
         () =>
             nodes.filter(
-                (node) =>
-                    currentFilter === ALL_RESOURCE_KIND_FILTER ||
-                    node.health?.status.toLowerCase() === currentFilter ||
-                    (currentFilter === NodeFilters.drifted && node.hasDrift),
+                (node) => currentFilter === ALL_RESOURCE_KIND_FILTER || doesNodeSatisfiesFilter(node, currentFilter),
             ),
-        [currentFilter],
+        [currentFilter, nodes],
     )
 
     useEffect(() => {
@@ -80,16 +77,18 @@ export const K8ResourceComponent = ({
         }
     }, [nodes])
 
+    useEffect(() => {
+        IndexStore.updateFilterType(currentFilter.toUpperCase())
+    }, [currentFilter])
+
     const getPodNameForSelectedFilter = (selectedFilter: string) => {
         const podParents = getPodsRootParentNameAndStatus(nodes)
         const selectNode = podParents.find((parent) => parent[1].toLowerCase() === selectedFilter)?.[0]
         return selectNode?.split('/')?.[2]
     }
 
-    const appDetails = IndexStore.getAppDetails()
-    IndexStore.updateFilterType(currentFilter.toUpperCase())
-
     const getRedirectPathname = (newNode: Node, selectedFilter: string) => {
+        const appDetails = IndexStore.getAppDetails()
         const nodeKind = newNode.kind.toLowerCase()
         const newKind = nodeKind === 'pod' ? `pod/group/${getPodNameForSelectedFilter(selectedFilter)}` : nodeKind
         switch (appDetails.appType) {
@@ -113,11 +112,7 @@ export const K8ResourceComponent = ({
             return
         }
         // current selected node exist in new selected filter or not
-        const nextFilterNodes = nodes.filter(
-            (node) =>
-                node.health?.status.toLowerCase() === selectedFilter ||
-                (selectedFilter === NodeFilters.drifted && node.hasDrift),
-        )
+        const nextFilterNodes = nodes.filter((node) => doesNodeSatisfiesFilter(node, selectedFilter))
         const selectedNodeExists = nextFilterNodes.some((node) => node.kind.toLowerCase() === currentNode)
 
         if (!selectedNodeExists) {
