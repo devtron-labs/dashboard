@@ -24,21 +24,25 @@ import {
     CIMaterialType,
     SearchBar,
     SourceTypeMap,
+    ComponentSizeType,
+    ButtonVariantType,
+    Button,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
-import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
-import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
-import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg'
-import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
-import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
+import { ReactComponent as Back } from '@Icons/ic-back.svg'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ReactComponent as Right } from '@Icons/ic-arrow-left.svg'
+import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
+import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
+import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
+import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
@@ -78,14 +82,16 @@ export default function GitInfoMaterial({
     handleRuntimeParamChange,
     handleRuntimeParamError,
 }) {
+    const { push } = useHistory()
+    const location = useLocation()
+    const { url } = useRouteMatch()
+    const triggerViewContext = useContext(TriggerViewContext)
+
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [showAllCommits, setShowAllCommits] = useState(false)
     const [showExcludePopUp, setShowExcludePopUp] = useState(false)
-
-    const { push } = useHistory()
-    const location = useLocation()
-    const triggerViewContext = useContext(TriggerViewContext)
+    const _showWebhookModal = location.pathname.includes('payloadId') || showWebhookModal
 
     useEffect(() => {
         if (!selectedMaterial || !selectedMaterial.searchText) {
@@ -103,23 +109,30 @@ export default function GitInfoMaterial({
         hideWebhookModal()
     }
 
+    const onClickBackButton = (): void => {
+        push(url.replace('/payloadId', ''))
+        hideWebhookModal()
+    }
+
     function renderMaterialHeader() {
         return (
-            <div className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
+            <div
+                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
+            >
                 <h1 data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
-                    {showWebhookModal ? (
-                        <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
+                    {_showWebhookModal ? (
+                        <button type="button" className="dc__transparent flex" onClick={onClickBackButton}>
                             <Back className="mr-16" />
                         </button>
                     ) : null}
                     <span className="dc__mxw-250 dc__truncate">{title}</span>
-                    {showWebhookModal ? (
+                    {_showWebhookModal ? (
                         <>
                             <Right
                                 className="rotate icon-dim-24 ml-16 mr-16"
                                 style={{ ['--rotateBy' as any]: '-180deg' }}
                             />
-                            <span className="fs-16">/  All received webhooks </span>
+                            <span className="fs-16">/ All received webhooks </span>
                         </>
                     ) : null}
                 </h1>
@@ -176,12 +189,11 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
         return (
             <div
-                className={`fs-13 lh-20 fw-6 flex ${selectedMaterial.regex ? 'cursor' : ''} cn-9`}
-                style={{ background: 'var(--window-bg)' }}
+                className={`fs-13 lh-20 fw-6 flex ${selectedMaterial.regex ? 'cursor' : ''} cn-9 dc__window-bg`}
                 onClick={onClickHeader}
             >
                 <BranchFixed className=" mr-8 icon-color-n9 mw-14" />
-                {showWebhookModal ? (
+                {_showWebhookModal ? (
                     'Select commit to build'
                 ) : (
                     <Tippy
@@ -195,11 +207,15 @@ export default function GitInfoMaterial({
                     </Tippy>
                 )}
                 {selectedMaterial.regex && (
-                    <Tippy className="default-tt" arrow={false} placement="top" content="Change branch" interactive>
-                        <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
-                            <Edit className="icon-dim-16" />
-                        </button>
-                    </Tippy>
+                    <Button
+                        dataTestId={dataTestId}
+                        ariaLabel="Change branch"
+                        icon={<Edit className="scn-7" />}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.small}
+                        showAriaLabelInTippy={false}
+                        style={ButtonStyleType.neutral}
+                    />
                 )}
             </div>
         )
@@ -258,6 +274,7 @@ export default function GitInfoMaterial({
 
     const _toggleWebhookModal = () => {
         toggleWebhookModal(selectedMaterial.id)
+        push(`${url}/payloadId`)
     }
 
     const toggleShowExcludePopUp = () => {
@@ -312,11 +329,8 @@ export default function GitInfoMaterial({
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
 
         return (
-            <div
-                className="flex dc__content-space dc__position-sticky py-8 px-16"
-                style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
-            >
-                <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
+            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__window-bg top">
+                {renderBranchChangeHeader(selectedMaterial)}
                 {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
                     <div className="flex right dc__gap-8">
                         {renderSearch()}
@@ -452,12 +466,12 @@ export default function GitInfoMaterial({
 
     return (
         <>
-            {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
+            {(!fromBulkCITrigger || _showWebhookModal) && renderMaterialHeader()}
             {BuildTriggerBlockedState && isCITriggerBlocked ? (
                 <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
             ) : (
-                <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
-                    {showWebhookModal == true ? (
+                <div className={`m-lr-0 ${_showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
+                    {_showWebhookModal ? (
                         renderWebhookModal()
                     ) : (
                         <>
