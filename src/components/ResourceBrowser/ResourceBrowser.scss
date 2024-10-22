@@ -155,6 +155,12 @@
                     & > :last-child {
                         padding-right: 20px;
                     }
+
+                    &.no-hover-bg {
+                        &:hover > :first-child {
+                            background-color: var(--N0);
+                        }
+                    }
                 }
             }
 

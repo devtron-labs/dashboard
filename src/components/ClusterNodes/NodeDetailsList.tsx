@@ -596,7 +596,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         <div className="mt-16 dc__overflow-scroll h-100 w-100">
                             <div
                                 data-testid="node-status"
-                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row dc__zi-2"
+                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row no-hover-bg dc__zi-2"
                                 style={{ gridTemplateColumns }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}
