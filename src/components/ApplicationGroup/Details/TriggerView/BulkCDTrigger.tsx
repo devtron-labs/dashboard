@@ -558,6 +558,7 @@ export default function BulkCDTrigger({
             materials: updatedMaterials ?? appListData.material,
             approvalUsers: appListData.approvalUsers,
             requestedUserId: appListData.requestedUserId,
+            // FIXME: Not using anywhere
             userApprovalConfig: appListData.userApprovalConfig,
             appReleaseTagNames: appListData.appReleaseTags,
             tagsEditable: appListData.tagsEditable,

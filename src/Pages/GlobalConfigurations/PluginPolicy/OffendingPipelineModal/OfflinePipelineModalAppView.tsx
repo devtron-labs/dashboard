@@ -6,7 +6,7 @@ import { getInitialWorkflows } from '@Components/app/details/triggerView/workflo
 import { Workflow } from '@Components/workflowEditor/Workflow'
 import { OfflinePipelineModalAppViewProps } from './types'
 
-const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModalAppViewProps) => {
+const OfflinePipelineModalAppView = ({ appId, policyKind, policyName }: OfflinePipelineModalAppViewProps) => {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch<any>()
@@ -21,7 +21,7 @@ const OfflinePipelineModalAppView = ({ appId, policyKind }: OfflinePipelineModal
                 false,
                 null,
                 false,
-                `policy/${policyKind}`,
+                `policy/${policyKind}|identifier|${policyName}`,
             ),
         [appId],
         !!appId,

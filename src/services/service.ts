@@ -25,12 +25,12 @@ import {
     LastExecutionResponseType,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    TemplateListDTO,
     getUrlWithSearchParams,
     ROUTES,
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
-    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -43,6 +43,7 @@ import {
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
+    MinChartRefDTO,
     ClusterEnvTeams,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
@@ -50,6 +51,7 @@ import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStack
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
+import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -293,7 +295,7 @@ export function getWorkflowList(appId, filteredEnvIds?: string) {
     return get(URL)
 }
 
-export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: `policy/${PolicyKindType}` = null) {
+export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: OffendingWorkflowQueryParamType = null) {
     const queryParams = {
         envIds: filteredEnvIds,
         offending,
@@ -402,27 +404,7 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferences(appId: number): Promise<ResponseType> {
-    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`
-    return get(URL)
-}
-
-export function getAppChartRef(appId: number): Promise<ResponseType> {
-    return getChartReferences(appId).then((response) => {
-        const {
-            result: { chartRefs, latestAppChartRef },
-        } = response
-        const selectedChartId = latestAppChartRef
-        const chart = chartRefs?.find((chart) => selectedChartId === chart.id)
-        return {
-            code: response.code,
-            status: response.status,
-            result: chart,
-        }
-    })
-}
-
-export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
+export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
     let envParam = ''
     if (envId) {
         envParam = `/${envId}`
@@ -518,3 +500,7 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`
     return post(URL, request)
 }
+
+export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> => (
+    get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
+)

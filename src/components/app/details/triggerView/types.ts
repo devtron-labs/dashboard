@@ -42,6 +42,7 @@ import {
     CiPipeline,
     CdPipeline,
     ConsequenceType,
+    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -697,3 +698,5 @@ export interface CIMaterialModalProps extends CIMaterialProps {
     abortController: AbortController
     resetAbortController: () => void
 }
+
+export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`
