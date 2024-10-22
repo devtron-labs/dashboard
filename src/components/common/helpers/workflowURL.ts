@@ -24,7 +24,7 @@ export function getCDPipelineURL(
     cdPipelineId: string = null,
     shouldComputeCompleteURL: boolean = false,
 ) {
-    const prefix = `/${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
+    const prefix = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
     const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
