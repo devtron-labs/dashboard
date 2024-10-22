@@ -17,11 +17,14 @@
 import { useContext } from 'react'
 import {
     CustomInput,
-    ButtonWithLoader,
     VisibleModal,
     stopPropagation,
     InfoColourBar,
     SourceTypeMap,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon } from '@Components/common'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -47,20 +50,17 @@ const BranchRegexModal = ({
 }: BranchRegexModalProps) => {
     const triggerViewContext = useContext(TriggerViewContext)
 
-    const getBranchRegexName = (gitMaterialId: number): string => {
+    const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
             (_ciMaterial) =>
                 _ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source?.type === SourceTypeMap.BranchRegex,
         )
-        return ciMaterial?.source?.regex || ''
+
+        return <span className="fw-6 cn-9">{ciMaterial?.source?.regex || ''}</span>
     }
 
     const _closeCIModal = () => {
         triggerViewContext.closeCIModal()
-    }
-
-    const onClickBackArrow = (): void => {
-        onCloseBranchRegexModal()
     }
 
     const renderBranchRegexMaterialHeader = () => {
@@ -69,22 +69,31 @@ const BranchRegexModal = ({
         }
         return (
             <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
-                <h1 className="modal__title flex left dc__gap-12 fs-16 fw-6">
+                <h2 className="modal__title flex left dc__gap-12 fs-16 fw-6">
                     {isChangeBranchClicked && (
-                        <button
-                            type="button"
-                            aria-label="back"
-                            onClick={onClickBackArrow}
-                            className="dc__unset-button-styles flex"
-                        >
-                            <LeftIcon className="rotate icon-dim-16 cursor" />
-                        </button>
+                        <Button
+                            dataTestId="regex-modal-header-back-button"
+                            onClick={onCloseBranchRegexModal}
+                            ariaLabel="regex-back"
+                            icon={<LeftIcon />}
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.small}
+                            showAriaLabelInTippy={false}
+                            style={ButtonStyleType.neutral}
+                        />
                     )}
-                    {title}
-                </h1>
-                <button type="button" className="dc__transparent" onClick={_closeCIModal} aria-label="close-button">
-                    <Close />
-                </button>
+                    <span className="dc__mxw-250 dc__truncate">{title}</span>&nbsp;/ Set branch
+                </h2>
+                <Button
+                    dataTestId="regex-modal-header-close-button"
+                    onClick={_closeCIModal}
+                    ariaLabel="close-button"
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.large}
+                    showAriaLabelInTippy={false}
+                    icon={<Close />}
+                    style={ButtonStyleType.neutral}
+                />
             </div>
         )
     }
@@ -110,25 +119,23 @@ const BranchRegexModal = ({
     }
 
     const renderBranchRegexContent = () => (
-        <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-scroll mxh-400">
+        <div className="ci-trigger__branch-regex-wrapper px-20 py-16 fs-13 dc__overflow-scroll mxh-500 mh-200">
             {material?.map((mat, index) => {
                 const _regexValue = regexValue[mat.gitMaterialId] || {}
                 return (
                     mat.regex && (
-                        <div className="dc__border-bottom py-20" key={`regex_${mat.id}`}>
+                        <div className="dc__border-bottom flex left column dc__gap-6 pb-20" key={`regex_${mat.id}`}>
                             <div className="flex left dc__gap-14">
                                 {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
-                                <span>
-                                    <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
-                                    <div className="pb-12">
-                                        {BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchName}&nbsp;
-                                        <span className="fw-6">
-                                            {getBranchRegexName(mat.gitMaterialId) || mat.regex}
-                                        </span>
+                                <div>
+                                    <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
+                                    <div className="dc__required-field">
+                                        <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
+                                        {getBranchRegexName(mat.gitMaterialId) || mat.regex}
                                     </div>
-                                </span>
+                                </div>
                             </div>
-                            <div className="ml-36-imp">
+                            <div className="ml-36-imp w-100">
                                 <CustomInput
                                     name="name"
                                     data-testid={`branch-name-matching-regex-textbox${index}`}
@@ -148,34 +155,30 @@ const BranchRegexModal = ({
         </div>
     )
     const renderMaterialRegexFooterNextButton = () => {
-        let _isDisabled = true
-
-        for (let index = 0; index < material.length; index++) {
-            const selectedMaterial = material[index]
+        const isDisabled = material.some((selectedMaterial) => {
             const _regexValue = regexValue[selectedMaterial.gitMaterialId] || {}
-            _isDisabled = _regexValue.isInvalid
-            if (_isDisabled) {
-                break
-            }
-        }
+            return _regexValue.isInvalid
+        })
 
         return (
-            <div className="trigger-modal__trigger flex right">
-                <ButtonWithLoader
+            <div className="trigger-modal__trigger flex right dc__gap-16">
+                <Button
+                    variant={ButtonVariantType.secondary}
+                    text="Cancel"
                     dataTestId="branch-regex-save-next-button"
-                    rootClassName="cta flex"
+                    onClick={onCloseBranchRegexModal}
+                    size={ComponentSizeType.xl}
+                    style={ButtonStyleType.neutral}
+                />
+                <Button
+                    variant={ButtonVariantType.primary}
+                    text={`Fetch commits ${!isChangeBranchClicked ? '& Next' : ''}`}
+                    dataTestId="branch-regex-save-next-button"
                     onClick={onClickNextButton}
-                    disabled={_isDisabled || savingRegexValue}
+                    disabled={isDisabled || savingRegexValue}
                     isLoading={savingRegexValue}
-                >
-                    Fetch commits {!isChangeBranchClicked && '& Next'}
-                    {!isChangeBranchClicked && (
-                        <LeftIcon
-                            style={{ ['--rotateBy' as any]: '180deg' }}
-                            className={`rotate icon-dim-16 ml-8 ${_isDisabled ? 'scn-4' : 'scn-0'} transform`}
-                        />
-                    )}
-                </ButtonWithLoader>
+                    size={ComponentSizeType.xl}
+                />
             </div>
         )
     }

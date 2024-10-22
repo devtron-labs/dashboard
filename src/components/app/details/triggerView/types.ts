@@ -656,7 +656,7 @@ export interface WorkflowDisplay {
 }
 
 export interface BranchRegexModalProps {
-    material
+    material: CIMaterialType[]
     selectedCIPipeline
     showWebhookModal: boolean
     title: string
@@ -779,4 +779,10 @@ export interface CiWebhookModalProps {
     fromBulkCITrigger: boolean
     appId: number
     isJobView: boolean
+}
+
+export interface CIWebhookPayload {
+    payloadId: number
+    payloadJson: string
+    selectorsData: WebhookReceivedFiltersType[]
 }

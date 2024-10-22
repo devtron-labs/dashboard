@@ -18,12 +18,12 @@ import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
 import {
     Checkbox,
-    noop,
     CIMaterialSidebarType,
-    ButtonWithLoader,
     ModuleNameMap,
     ToastManager,
     ToastVariantType,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -33,9 +33,7 @@ import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
-import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
@@ -201,40 +199,27 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     onConfigure={this.redirectToCIPipeline}
                     onStart={this.handleStartBuildAction}
                 >
-                    <ButtonWithLoader
-                        rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                    <Button
                         dataTestId="ci-trigger-start-build-button"
+                        text="Start Build"
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
-                        onClick={noop}
-                    >
-                        <Play className="trigger-btn__icon" />
-                        Start Build
-                    </ButtonWithLoader>
+                        size={ComponentSizeType.xl}
+                    />
                 </AllowedWithWarningTippy>
             )
         }
 
         return (
-            <ButtonWithLoader
-                rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
+            <Button
                 dataTestId="ci-trigger-start-build-button"
+                text={this.props.isJobView ? 'Run Job' : 'Start Build'}
                 disabled={!canTrigger}
                 isLoading={this.props.isLoading}
                 onClick={this.handleStartBuildAction}
-            >
-                {this.props.isJobView ? (
-                    <>
-                        <RunIcon className="trigger-job-btn__icon" />
-                        Run Job
-                    </>
-                ) : (
-                    <>
-                        <Play className="trigger-btn__icon" />
-                        Start Build
-                    </>
-                )}
-            </ButtonWithLoader>
+                size={ComponentSizeType.large}
+                startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
+            />
         )
     }
 

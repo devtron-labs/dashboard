@@ -53,7 +53,7 @@ export const BRANCH_REGEX_MODAL_MESSAGING = {
     SetPrimaryHeading: 'Set a primary branch',
     SetPrimaryInfoText:
         'Primary branch will be used to trigger automatic builds on every commit. This can be changed later.',
-    MatchingBranchName: 'Use branch name matching',
+    SubTitle: 'Use branch name matching',
     MatchingBranchNameRegex: 'Enter branch name matching regex',
     NoMatchingBranchName: 'Branch name does not match the regex.',
 }
