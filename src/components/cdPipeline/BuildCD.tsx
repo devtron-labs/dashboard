@@ -110,7 +110,6 @@ export default function BuildCD({
         appId,
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
-    const [loadingEnvChangePluginDetails, setLoadingEnvChangePluginDetails] = useState<boolean>(false)
     const validationRules = new ValidationRules()
     const history = useHistory()
 
@@ -156,11 +155,16 @@ export default function BuildCD({
         const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
-        // Generating form without setStates since we need to make an api call before setting the state so that we can handle error efficiently
         if (selection) {
+            if (envIds.includes(selection.id)) {
+                setIsEnvUsedState(true)
+            } else {
+                setIsEnvUsedState(false)
+            }
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace
+            setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
             _formDataErrorObj.nameSpaceError =
                 !selection.isVirtualEnvironment && validationRules.namespace(selection.namespace)
@@ -203,32 +207,18 @@ export default function BuildCD({
             _form.environmentId = 0
             _form.namespace = ''
             _form.environments = list
-            _formDataErrorObj.envNameError = validationRules.environment(_form.environmentId)
-        }
-
-        try {
-            setLoadingEnvChangePluginDetails(true)
-            await getMandatoryPluginData(_form)
-            setLoadingEnvChangePluginDetails(false)
-        } catch (error) {
-            setLoadingEnvChangePluginDetails(false)
-            showError(error)
-            return
-        }
-
-        if (selection) {
-            if (envIds.includes(selection.id)) {
-                setIsEnvUsedState(true)
-            } else {
-                setIsEnvUsedState(false)
-            }
-            setIsVirtualEnvironment(selection.isVirtualEnvironment)
-        } else {
             setIsVirtualEnvironment(false)
+            _formDataErrorObj.envNameError = validationRules.environment(_form.environmentId)
         }
 
         setFormData(_form)
         setFormDataErrorObj(_formDataErrorObj)
+
+        try {
+            await getMandatoryPluginData(_form)
+        } catch (error) {
+            showError(error)
+        }
     }
 
     const renderPipelineNameInput = () => {
@@ -440,7 +430,6 @@ export default function BuildCD({
                     getOptionValue={(option) => option.value as unknown as string}
                     onChange={selectEnvironment}
                     size={ComponentSizeType.large}
-                    isLoading={loadingEnvChangePluginDetails}
                 />
                 {isEnvUsedState && (
                     <span className="form__error">
