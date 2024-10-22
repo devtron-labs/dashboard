@@ -26,7 +26,7 @@
     --full-screen-modal-index: 10;
     --page-header-index: 12;
     --filter-menu-index: 7;
-    --transparent-div-index: 6;
+    --transparent-div-index: 24;
     --app-list-header-index: 3;
     --navigation-index: 13;
     --tooltip-index: 7;
@@ -365,6 +365,10 @@ a:focus {
     top: 9px;
 }
 
+.dc__top-12 {
+    top: 12px;
+}
+
 .dc__top-22 {
     top: 22px;
 }
@@ -437,12 +441,20 @@ a:focus {
     right: 10px;
 }
 
+.dc__right-12 {
+    right: 12px;
+}
+
 .dc__left-0 {
     left: 0;
 }
 
 .dc__left-6 {
     left: 6px;
+}
+
+.dc__left-12 {
+    left: 12px;
 }
 
 .dc__left-30 {
@@ -1162,6 +1174,11 @@ button.anchor {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
         }
+    }
+
+    &.drifted {
+        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.missing {
@@ -2100,6 +2117,10 @@ button.anchor {
         border-bottom: solid 1px var(--B200);
     }
 
+    &--n3 {
+        border-bottom: solid 1px var(--N300);
+    }
+
     &--n7 {
         border-bottom: solid 1px var(--N700);
     }
@@ -2969,6 +2990,10 @@ textarea,
     min-width: 84px;
 }
 
+.mw-120 {
+    min-width: 120px;
+}
+
 .mw-140 {
     min-width: 140px;
 }
@@ -3219,6 +3244,10 @@ textarea,
 
 .w-600 {
     width: 600px;
+}
+
+.w-650 {
+    width: 650px
 }
 
 .w-800 {
@@ -4836,6 +4865,16 @@ textarea::placeholder {
     background: linear-gradient(14deg, var(--N50) 48.93%, #d4e6f7 80.3%);
 }
 
+@mixin nav-item-icon-svg-styles($color) {
+    svg.dc__nav-item__start-icon *[stroke^='#'] {
+        stroke: $color;
+    }
+
+    svg.dc__nav-item__start-icon *[fill^='#'] {
+        fill: $color;
+    }
+}
+
 .dc__nav-item {
     &.active {
         color: var(--B500);
@@ -4846,6 +4885,8 @@ textarea::placeholder {
             color: var(--B500);
             background: var(--B100);
         }
+
+        @include nav-item-icon-svg-styles(var(--B500));
     }
 
     &:hover {
@@ -4857,6 +4898,8 @@ textarea::placeholder {
     &__text {
         max-width: 192px;
     }
+
+    @include nav-item-icon-svg-styles(var(--N700));
 }
 
 .bw-1_5 {
@@ -4936,6 +4979,10 @@ textarea::placeholder {
     display: grid;
 }
 
+.dc__contents {
+    display: contents
+}
+
 .cd-material {
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
@@ -4955,6 +5002,18 @@ textarea::placeholder {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+.code-editor__warning {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
 }
 
 .security-policy--whitelist,
@@ -5021,4 +5080,10 @@ textarea::placeholder {
     color: var(--white);
     padding: 2px 10px;
     margin-left: 10px;
+}
+
+.app-config-variable-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
 }

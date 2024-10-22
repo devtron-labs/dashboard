@@ -214,17 +214,3 @@ div.override-container {
     transition: max-height 0.3s ease-in;
     overflow: hidden;
 }
-
-.deployment-template-override {
-    height: calc(100vh - 102px);
-
-    .chart-version.popup-button {
-        width: 100%;
-    }
-}
-
-.variables-widget-position {
-    position: absolute;
-    bottom: 120px;
-    right: 110px;
-}

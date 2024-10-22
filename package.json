@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.5.2-beta-5",
+        "@devtron-labs/devtron-fe-common-lib": "0.5.8-beta-1",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -35,7 +35,6 @@
         "react-draggable": "^4.4.5",
         "react-ga4": "^1.4.1",
         "react-gtm-module": "^2.0.11",
-        "react-keybind": "^0.9.4",
         "react-mde": "^11.5.0",
         "react-monaco-editor": "^0.55.0",
         "react-router-dom": "^5.3.4",
@@ -61,6 +60,7 @@
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
+        "build-cluster": "relative-deps && NODE_OPTIONS=--max_old_space_size=4096 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false vite build",
         "build-k8s-app": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false VITE_K8S_CLIENT=true vite build",
@@ -124,6 +124,7 @@
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
+        "relative-deps": "^1.0.7",
         "sass": "^1.69.7",
         "storybook": "^8.2.9",
         "ts-jest": "29.2.5",
@@ -157,5 +158,9 @@
             "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
+    },
+    "relativeDependencies": {
+        "@devtron-labs/devtron-fe-common-lib": "../devtron-fe-common-lib",
+        "@devtron-labs/devtron-fe-lib": "../devtron-fe-lib"
     }
 }

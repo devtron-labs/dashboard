@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -40,7 +40,6 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -51,6 +50,7 @@ import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/e
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
+const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -145,10 +145,9 @@ export const SourceInfo = ({
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = getIsApprovalConfigured()
-        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
-            appDetails.resourceTree.lastSnapshotTime,
-            true,
-        ) : ''
+        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
+            ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
+            : ''
 
         return (
             <div className="flex left w-100">
@@ -169,6 +168,15 @@ export const SourceInfo = ({
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
+                )}
+                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
+                    <div className="pl-8">
+                        <ConfigSyncStatusButton
+                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                            appId={appDetails.appId}
+                            envId={envId}
+                        />
+                    </div>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -293,15 +301,15 @@ export const SourceInfo = ({
                   environment && (
                       <div className="flex left w-100">
                           {status && (
-                            <AppStatusCard
-                                // TODO: Fix and remove
-                                // @ts-ignore
-                                appDetails={appDetails}
-                                status={status}
-                                cardLoading={cardLoading}
-                                setDetailed={setDetailed}
-                                message={message}
-                            />
+                              <AppStatusCard
+                                  // TODO: Fix and remove
+                                  // @ts-ignore
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
                           )}
                           {!helmMigratedAppNotTriggered && (
                               <>
@@ -328,8 +336,7 @@ export const SourceInfo = ({
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}
                                       hideDetails={
-                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM ||
-                                          isIsolatedEnv
+                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
                                       refetchDeploymentStatus={refetchDeploymentStatus}
