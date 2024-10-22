@@ -229,9 +229,6 @@ export interface RegexValueType {
 }
 
 export interface CIMaterialState {
-    regexValue: Record<number, RegexValueType>
-    savingRegexValue: boolean
-    selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
     runtimeParamsErrorState: boolean
@@ -659,13 +656,13 @@ export interface WorkflowDisplay {
 }
 
 export interface BranchRegexModalProps {
-    material
+    material: CIMaterialType[]
     selectedCIPipeline
     showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    handleRegexInputValue: (id, value, mat) => void
+    handleRegexInputValue: (id: number, value: string, mat: CIMaterialType) => void
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
@@ -750,4 +747,42 @@ export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
     abortController: AbortController
     resetAbortController: () => void
+}
+
+export interface WebhookPayload {
+    eventTime: string
+    matchedFiltersCount: number
+    failedFiltersCount: number
+    matchedFilters: boolean
+    parsedDataId: number
+}
+
+export interface WebhookReceivedFiltersType {
+    selectorName: string
+    selectorValue: string
+    selectorCondition: string
+    match: boolean
+}
+
+export interface WebhookPayloadType {
+    filters: Record<string, string> | unknown
+    repositoryUrl: string
+    payloads: WebhookPayload[]
+}
+export interface CiWebhookModalProps {
+    webhookPayloads: WebhookPayloadType
+    ciPipelineMaterialId: number
+    ciPipelineId: number
+    isWebhookPayloadLoading: boolean
+    workflowId: number
+    fromAppGrouping: boolean
+    fromBulkCITrigger: boolean
+    appId: number
+    isJobView: boolean
+}
+
+export interface CIWebhookPayload {
+    payloadId: number
+    payloadJson: string
+    selectorsData: WebhookReceivedFiltersType[]
 }

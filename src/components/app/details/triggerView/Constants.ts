@@ -25,7 +25,7 @@ export const CI_MATERIAL_EMPTY_STATE_MESSAGING = {
     ClearSearch: 'Clear search',
     Retry: 'Retry',
     WebhookModalCTA: 'View all incoming webhook payloads',
-    NoCommitEligibleCommit: 'No eligible commit found in recent commits',
+    NoCommitEligibleCommit: 'No recent eligible commit found',
     NoCommitEligibleCommitSubtitle:
         'Commits that contain changes only in excluded files or folders are not eligible for build.',
     NoCommitEligibleCommitButtonText: 'Show excluded commits',
@@ -53,7 +53,7 @@ export const BRANCH_REGEX_MODAL_MESSAGING = {
     SetPrimaryHeading: 'Set a primary branch',
     SetPrimaryInfoText:
         'Primary branch will be used to trigger automatic builds on every commit. This can be changed later.',
-    MatchingBranchName: 'Use branch name matching',
+    SubTitle: 'Use branch name matching',
     MatchingBranchNameRegex: 'Enter branch name matching regex',
     NoMatchingBranchName: 'Branch name does not match the regex.',
 }

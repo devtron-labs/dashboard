@@ -32,6 +32,7 @@ import {
     SourceTypeMap,
     ToastManager,
     ToastVariantType,
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -383,7 +384,7 @@ const BulkCITrigger = ({
         }
     }
 
-    const handleRegexInputValueChange = (id, value, mat) => {
+    const handleRegexInputValueChange = (id: number, value: string, mat: CIMaterialType) => {
         const _regexValue = { ...regexValue }
         _regexValue[id] = { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) }
         setRegexValue(_regexValue)

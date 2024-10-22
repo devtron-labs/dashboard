@@ -2069,6 +2069,10 @@ button.anchor {
     &--n3-right {
         border-right: 1px dashed var(--N300);
     }
+
+    &--n3-bottom {
+        border-bottom: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
@@ -3655,6 +3659,10 @@ textarea,
 
 .mxh-450 {
     max-height: 450px;
+}
+
+.mxh-500 {
+    max-height: 500px;
 }
 
 .mxh-504 {

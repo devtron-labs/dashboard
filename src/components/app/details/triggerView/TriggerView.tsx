@@ -1098,9 +1098,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    toggleWebhookModal = (id, webhhookTimeStampOrder) => {
+    toggleWebhookModal = (id) => {
         this.setState({ isWebhookPayloadLoading: true })
-        getCIWebhookRes(id, this.state.webhhookTimeStampOrder).then((result) => {
+        getCIWebhookRes(id).then((result) => {
             this.setState({
                 showWebhookModal: true,
                 webhookPayloads: result?.result,

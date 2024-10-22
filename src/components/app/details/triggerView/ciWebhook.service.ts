@@ -16,7 +16,7 @@
 
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 
-export function getCIWebhookRes(pipelineMaterialId, timeStampOrder): Promise<any> {
+export function getCIWebhookRes(pipelineMaterialId): Promise<any> {
     const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}?limit=1000&offset=0&timeSort=DESC`
     return get(URL)
 }
