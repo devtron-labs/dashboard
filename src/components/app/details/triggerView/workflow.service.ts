@@ -22,7 +22,6 @@ import {
     DownstreamNodesEnvironmentsType,
     WorkflowType,
     getIsManualApprovalConfigured,
-    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -33,6 +32,7 @@ import {
     Workflow,
     WorkflowResult,
     AddDimensionsToDownstreamDeploymentsParams,
+    OffendingWorkflowQueryParamType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
@@ -84,7 +84,7 @@ export const getInitialWorkflows = (
     isJobView?: boolean,
     filteredEnvIds?: string,
     shouldCheckDeploymentWindow: boolean = true,
-    offending: `policy/${PolicyKindType}` = null
+    offending: OffendingWorkflowQueryParamType = null,
 ): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string

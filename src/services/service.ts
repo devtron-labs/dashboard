@@ -30,7 +30,6 @@ import {
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
-    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -50,6 +49,7 @@ import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStack
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
+import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -293,7 +293,7 @@ export function getWorkflowList(appId, filteredEnvIds?: string) {
     return get(URL)
 }
 
-export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: `policy/${PolicyKindType}` = null) {
+export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: OffendingWorkflowQueryParamType = null) {
     const queryParams = {
         envIds: filteredEnvIds,
         offending,
