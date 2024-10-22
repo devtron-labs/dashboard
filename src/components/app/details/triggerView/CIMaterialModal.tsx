@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
+    CIMaterialType,
     Progressing,
     ServerErrors,
     SourceTypeMap,
@@ -142,7 +143,7 @@ export const CIMaterialModal = ({
             })
     }
 
-    const handleRegexInputValue = (id, value, mat) => {
+    const handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
         setRegexValue((prevState) => ({
             ...prevState,
             [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },

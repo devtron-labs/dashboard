@@ -662,7 +662,7 @@ export interface BranchRegexModalProps {
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    handleRegexInputValue: (id, value, mat) => void
+    handleRegexInputValue: (id: number, value: string, mat: CIMaterialType) => void
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
