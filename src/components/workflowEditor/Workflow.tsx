@@ -55,7 +55,11 @@ import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
-const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary('getParsedPluginPolicyConsequenceData', null, 'function')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
+    'getParsedPluginPolicyConsequenceData',
+    null,
+    'function',
+)
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -362,7 +366,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {
-            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id, true)
+            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id, this.props.isOffendingPipelineView)
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {

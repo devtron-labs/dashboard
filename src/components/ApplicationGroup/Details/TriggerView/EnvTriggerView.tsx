@@ -1761,6 +1761,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     const stageType = DeploymentNodeType[_selectedNode.type]
                     const isTriggerBlockedDueToPlugin =
                         _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning
+                    const stageText = stageType === DeploymentNodeType.PRECD ? 'Pre-Deployment' : 'Post-Deployment'
 
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
@@ -1794,9 +1795,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             true,
                         ),
                         consequence: _selectedNode.pluginBlockState,
-                        warningMessage: isTriggerBlockedDueToPlugin
-                            ? `${stageType === DeploymentNodeType.PRECD ? 'Pre-Deployment' : 'Post-Deployment'} is blocked`
-                            : '',
+                        warningMessage: isTriggerBlockedDueToPlugin ? `${stageText} is blocked` : '',
                     })
                 } else {
                     let warningMessage = ''
