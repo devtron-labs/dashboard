@@ -134,7 +134,7 @@ export default function GitInfoMaterial({
                             onClick={onClickBackButton}
                         />
                     ) : null}
-                    <div className='flex left'>
+                    <div className="flex left">
                         <span className="dc__mxw-250 dc__truncate">{title}</span>
                         {_showWebhookModal ? <span className="fs-16">&nbsp;/ All received webhooks </span> : null}
                     </div>
@@ -419,21 +419,19 @@ export default function GitInfoMaterial({
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
 
                 {selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-                    <div className="fw-6 flex left py-14">
-                        <div className="cn-7 fs-12 fw-0 pl-20 flex left">
-                            <span>Showing results matching</span> &nbsp;
-                            <CiPipelineSourceConfig
-                                sourceType={selectedMaterial.type}
-                                sourceValue={selectedMaterial.value}
-                                showTooltip
-                                baseText="configured filters"
-                                showIcons={false}
-                            />
-                            .&nbsp;
-                            <span className="dc__link cursor" onClick={_toggleWebhookModal}>
-                                View all received webhooks
-                            </span>
-                        </div>
+                    <div className="cn-7 fs-13 fw-6 pl-20 flex left py-14">
+                        <span className='lh-20'>Showing results matching</span> &nbsp;
+                        <CiPipelineSourceConfig
+                            sourceType={selectedMaterial.type}
+                            sourceValue={selectedMaterial.value}
+                            showTooltip
+                            baseText="configured filters"
+                            showIcons={false}
+                        />
+                        .&nbsp;
+                        <span className="dc__link cursor lh-20" onClick={_toggleWebhookModal}>
+                            View all received webhooks
+                        </span>
                     </div>
                 )}
                 <MaterialHistory

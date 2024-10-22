@@ -184,8 +184,8 @@ export const CiWebhookModal = ({
             </div>
             {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
             <Button
-                showAriaLabelInTippy
-                ariaLabel="View approvers"
+                showAriaLabelInTippy={false}
+                ariaLabel="Edit CI pipeline"
                 icon={<Edit />}
                 variant={ButtonVariantType.borderLess}
                 style={ButtonStyleType.neutral}
