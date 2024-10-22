@@ -245,7 +245,7 @@ export interface EnvConfigRouteParams {
 }
 
 export interface ExtendedCollapsibleListItem
-    extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
+    extends Pick<CollapsibleListItem<'navLink'>, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
     configState: ResourceConfigState
 }
 
