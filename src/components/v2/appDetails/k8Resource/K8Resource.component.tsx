@@ -23,6 +23,7 @@ import {
     StatusFilterButtonComponent,
     useMainContext,
     useSearchString,
+    ALL_RESOURCE_KIND_FILTER,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as K8ResourceIcon } from '@Icons/ic-object.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
@@ -34,7 +35,6 @@ import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
 import './k8resources.scss'
-import { ALL_RESOURCE_KIND_FILTER } from './Constants'
 import { doesNodeSatisfiesFilter } from './utils'
 
 export const K8ResourceComponent = ({

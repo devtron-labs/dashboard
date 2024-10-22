@@ -24,9 +24,8 @@ import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-ob
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, useSearchString, ALL_RESOURCE_KIND_FILTER } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
-import { ALL_RESOURCE_KIND_FILTER } from './Constants'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
