@@ -16,7 +16,6 @@
 
 import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import { useAsync, useRegisterShortcut, OptionType, SearchBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
@@ -37,11 +36,10 @@ const ResourceFilterOptions = ({
     isOpen,
     setSearchText,
     isSearchInputDisabled,
-    shortcut,
     renderRefreshBar,
     updateK8sResourceTab,
-}: ResourceFilterOptionsProps & IWithShortcut) => {
-    const { registerShortcut } = useRegisterShortcut()
+}: ResourceFilterOptionsProps) => {
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
     const { clusterId, namespace, group } = useParams<URLParams>()
@@ -68,19 +66,14 @@ const ResourceFilterOptions = ({
 
     useEffect(() => {
         if (registerShortcut && isOpen) {
-            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
-            shortcut.registerShortcut(
-                handleShowFilterModal,
-                ['f'],
-                'ResourceFilterDrawer',
-                'Open resource filter drawer',
-            )
+            registerShortcut({ keys: ['R'], callback: handleInputShortcut })
+            registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
         }
         return (): void => {
-            shortcut.unregisterShortcut(['f'])
-            shortcut.unregisterShortcut(['r'])
+            unregisterShortcut(['F'])
+            unregisterShortcut(['R'])
         }
-    }, [registerShortcut, isOpen])
+    }, [isOpen])
 
     const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
@@ -168,4 +161,4 @@ const ResourceFilterOptions = ({
     )
 }
 
-export default withShortcut(ResourceFilterOptions)
+export default ResourceFilterOptions

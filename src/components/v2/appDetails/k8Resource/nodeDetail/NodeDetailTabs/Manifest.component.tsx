@@ -124,6 +124,8 @@ const ManifestComponent = ({
         }
     }
 
+    const isConfigDriftEnabled = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+
     const _selectedResource = isResourceBrowserView
         ? selectedResource
         : appDetails.resourceTree.nodes.filter(
@@ -512,7 +514,7 @@ const ManifestComponent = ({
                             theme="vs-dark--dt"
                             height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
                             value={
-                                appDetails?.appType === AppType.DEVTRON_APP && showManifestCompareView
+                                isConfigDriftEnabled && appDetails?.appType === AppType.DEVTRON_APP && showManifestCompareView
                                     ? normalizedLiveManifest
                                     : trimedManifestEditorData
                             } // In case of devtron apps we compare normalized values
@@ -544,6 +546,7 @@ const ManifestComponent = ({
                             )}
                             {!loading &&
                                 !error &&
+                                isConfigDriftEnabled &&
                                 'hasDrift' in _selectedResource &&
                                 _selectedResource.hasDrift &&
                                 !showManifestCompareView &&

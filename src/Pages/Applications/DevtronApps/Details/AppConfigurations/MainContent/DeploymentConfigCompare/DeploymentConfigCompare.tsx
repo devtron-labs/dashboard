@@ -16,8 +16,7 @@ import {
     EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getChartReferencesForAppAndEnv } from '@Services/service'
-import { getOptions } from '@Components/deploymentConfig/service'
+import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
@@ -42,6 +41,7 @@ import {
     isConfigTypePublished,
 } from './utils'
 import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
+import { DeploymentConfigComparisonDataType } from './types'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -49,6 +49,7 @@ export const DeploymentConfigCompare = ({
     envName,
     type = 'app',
     goBackURL = '',
+    overwriteNavHeading,
     isBaseConfigProtected = false,
     getNavItemHref,
 }: DeploymentConfigCompareProps) => {
@@ -56,6 +57,9 @@ export const DeploymentConfigCompare = ({
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
+
+    // STATES
+    const [convertVariables, setConvertVariables] = useState(false)
 
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
@@ -111,8 +115,12 @@ export const DeploymentConfigCompare = ({
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
     const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
-        () => Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)]),
-        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId],
+        () =>
+            Promise.all([
+                getTemplateOptions(compareToAppId, compareToEnvId),
+                getTemplateOptions(compareWithAppId, compareWithEnvId),
+            ]),
+        [compareToAppId, compareToEnvId, compareWithAppId, compareWithEnvId, isManifestView],
     )
 
     // Options for previous deployments and default versions
@@ -186,31 +194,46 @@ export const DeploymentConfigCompare = ({
         ])
     }
 
+    const getComparisonData = async (): Promise<DeploymentConfigComparisonDataType> => {
+        if (isManifestView) {
+            const manifestData = await fetchManifestData()
+
+            return {
+                isManifestComparison: true,
+                manifestData,
+            }
+        }
+
+        const appConfigData = await Promise.all([
+            getConfigDiffData({
+                type,
+                appName,
+                envName,
+                compareName: compareTo,
+                configType,
+                identifierId,
+                pipelineId,
+            }),
+            getConfigDiffData({
+                type,
+                appName,
+                envName,
+                compareName: compareWith,
+                configType: compareWithConfigType,
+                identifierId: chartRefId || compareWithIdentifierId,
+                pipelineId: compareWithPipelineId,
+            }),
+        ])
+
+        return {
+            isManifestComparison: false,
+            appConfigData,
+        }
+    }
+
     // Load data for comparing the two environments
     const [comparisonDataLoader, comparisonData, comparisonDataErr, reloadComparisonData] = useAsync(
-        () =>
-            isManifestView
-                ? fetchManifestData()
-                : Promise.all([
-                      getConfigDiffData({
-                          type,
-                          appName,
-                          envName,
-                          compareName: compareTo,
-                          configType,
-                          identifierId,
-                          pipelineId,
-                      }),
-                      getConfigDiffData({
-                          type,
-                          appName,
-                          envName,
-                          compareName: compareWith,
-                          configType: compareWithConfigType,
-                          identifierId: chartRefId || compareWithIdentifierId,
-                          pipelineId: compareWithPipelineId,
-                      }),
-                  ]),
+        getComparisonData,
         [
             isManifestView,
             compareTo,
@@ -232,6 +255,7 @@ export const DeploymentConfigCompare = ({
     )
 
     const reload = () => {
+        setConvertVariables(false)
         reloadOptions()
         reloadComparisonData()
     }
@@ -239,20 +263,34 @@ export const DeploymentConfigCompare = ({
     // Generate the deployment configuration list for the environments using comparison data
     const appEnvDeploymentConfigList = useMemo(() => {
         if (!comparisonDataLoader && comparisonData) {
-            const [{ result: currentList }, { result: compareList }] = comparisonData
+            const { isManifestComparison, appConfigData, manifestData } = comparisonData
 
-            const configData = getAppEnvDeploymentConfigList({
-                currentList,
-                compareList,
-                getNavItemHref,
-                sortOrder,
-                isManifestView,
-            })
-            return configData
+            if (isManifestComparison) {
+                const [{ result: currentList }, { result: compareList }] = manifestData
+                return getAppEnvDeploymentConfigList({
+                    currentList,
+                    compareList,
+                    getNavItemHref,
+                    isManifestView: true,
+                })
+            }
+
+            const [{ result: currentList }, { result: compareList }] = appConfigData
+            if (options) {
+                return getAppEnvDeploymentConfigList({
+                    currentList,
+                    compareList,
+                    getNavItemHref,
+                    isManifestView,
+                    convertVariables,
+                    compareToTemplateOptions: options[0].result,
+                    compareWithTemplateOptions: options[1].result,
+                })
+            }
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, sortOrder, isManifestView])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables, options])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -439,6 +477,9 @@ export const DeploymentConfigCompare = ({
     const onTabClick = (tab: string) => {
         setSelectedTab(tab)
         const _isManifestView = tab === deploymentConfigDiffTabs.MANIFEST
+        if (_isManifestView) {
+            setConvertVariables(false)
+        }
         push(
             generatePath(path, {
                 ...params,
@@ -462,11 +503,20 @@ export const DeploymentConfigCompare = ({
         sortOrder,
     }
 
+    const scopeVariablesConfig: DeploymentConfigDiffProps['scopeVariablesConfig'] = {
+        convertVariables,
+        onConvertVariablesClick: () => setConvertVariables(!convertVariables),
+    }
+
+    // DATA CONSTANTS
+    const isLoading = comparisonDataLoader || optionsLoader
+    const isError = !!(comparisonDataErr || optionsErr)
+
     return (
         <DeploymentConfigDiff
-            isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
+            isLoading={isLoading || (!isError && !appEnvDeploymentConfigList)}
             errorConfig={{
-                error: (comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader),
+                error: !isLoading && isError,
                 code: comparisonDataErr?.code || optionsErr?.code,
                 reload,
             }}
@@ -474,10 +524,11 @@ export const DeploymentConfigCompare = ({
             goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
-            navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
+            navHeading={overwriteNavHeading || `Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
             tabConfig={tabConfig}
             sortingConfig={!isManifestView ? sortingConfig : null}
+            scopeVariablesConfig={!isManifestView ? scopeVariablesConfig : null}
         />
     )
 }

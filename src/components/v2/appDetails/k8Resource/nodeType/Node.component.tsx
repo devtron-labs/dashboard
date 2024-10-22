@@ -432,7 +432,7 @@ const NodeComponent = ({
                                             {nodeStatus}
                                         </span>
                                     )}
-                                    {renderConfigDriftDetectedText && renderConfigDriftDetectedText(node)}
+                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE && renderConfigDriftDetectedText && renderConfigDriftDetectedText(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
