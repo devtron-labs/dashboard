@@ -430,7 +430,7 @@ export const K8SResourceList = ({
             )} dc__overflow-scroll`}
         >
             <div
-                className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                 style={{ gridTemplateColumns }}
             >
                 {resourceList?.headers.map((columnName) => (
