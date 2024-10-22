@@ -44,13 +44,20 @@ export const CIMaterialModal = ({
     const context = React.useContext(TriggerViewContext)
     const [savingRegexValue, setSavingRegexValue] = useState(false)
     const selectedCIPipeline = props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId)
-    const _regexValue: Record<number, RegexValueType> = {}
-    props.material.forEach((mat) => {
-        _regexValue[mat.gitMaterialId] = {
-            value: mat.value,
-            isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
-        }
-    })
+
+    const isValidRegex = (pattern: string, value: string): boolean => new RegExp(pattern).test(value)
+
+    const _regexValue: Record<number, RegexValueType> = props.material.reduce(
+        (acc, mat) => {
+            acc[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex ? !isValidRegex(mat.regex, mat.value) : false,
+            }
+            return acc
+        },
+        {} as Record<number, RegexValueType>,
+    )
+
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(_regexValue)
     usePrompt({ shouldPrompt: isLoading })
 
