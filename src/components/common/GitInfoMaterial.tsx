@@ -34,9 +34,8 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import { CiWebhookModal } from '../app/details/triggerView/CiWebhookDebuggingModal'
-import { ReactComponent as Back } from '@Icons/ic-back.svg'
+import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
-import { ReactComponent as Right } from '@Icons/ic-arrow-left.svg'
 import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
@@ -119,26 +118,38 @@ export default function GitInfoMaterial({
             <div
                 className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
             >
-                <h1 data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
+                <h2
+                    data-testid="build-deploy-pipeline-name-heading"
+                    className="modal__title flex left fs-16 dc__gap-12"
+                >
                     {_showWebhookModal ? (
-                        <button type="button" className="dc__transparent flex" onClick={onClickBackButton}>
-                            <Back className="mr-16" />
-                        </button>
+                        <Button
+                            dataTestId={`${dataTestId}-back-button`}
+                            ariaLabel="Back"
+                            icon={<LeftIcon />}
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.xs}
+                            showAriaLabelInTippy={false}
+                            style={ButtonStyleType.neutral}
+                            onClick={onClickBackButton}
+                        />
                     ) : null}
-                    <span className="dc__mxw-250 dc__truncate">{title}</span>
-                    {_showWebhookModal ? (
-                        <>
-                            <Right
-                                className="rotate icon-dim-24 ml-16 mr-16"
-                                style={{ ['--rotateBy' as any]: '-180deg' }}
-                            />
-                            <span className="fs-16">/ All received webhooks </span>
-                        </>
-                    ) : null}
-                </h1>
-                <button type="button" className="dc__transparent" onClick={onClickCloseButton}>
-                    <Close />
-                </button>
+                    <div className='flex left'>
+                        <span className="dc__mxw-250 dc__truncate">{title}</span>
+                        {_showWebhookModal ? <span className="fs-16">&nbsp;/ All received webhooks </span> : null}
+                    </div>
+                </h2>
+
+                <Button
+                    dataTestId={`${dataTestId}-close-button`}
+                    ariaLabel="Cancel"
+                    icon={<Close />}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    showAriaLabelInTippy={false}
+                    style={ButtonStyleType.neutral}
+                    onClick={onClickCloseButton}
+                />
             </div>
         )
     }
@@ -425,14 +436,12 @@ export default function GitInfoMaterial({
                         </div>
                     </div>
                 )}
-                <div className="flexbox-col dc__gap-12 py-12 px-16">
-                    <MaterialHistory
-                        material={selectedMaterial}
-                        pipelineName={pipelineName}
-                        ciPipelineId={pipelineId}
-                        selectCommit={triggerViewContext.selectCommit}
-                    />
-                </div>
+                <MaterialHistory
+                    material={selectedMaterial}
+                    pipelineName={pipelineName}
+                    ciPipelineId={pipelineId}
+                    selectCommit={triggerViewContext.selectCommit}
+                />
             </div>
         )
     }

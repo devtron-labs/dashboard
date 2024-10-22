@@ -23,6 +23,10 @@ import {
     CodeEditor,
     ClipboardButton,
     getFormattedSchema,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -84,7 +88,7 @@ export const CiWebhookModal = ({
     }
 
     const renderPassedText = (passedCount: string) => (
-        <div className="flex left">
+        <div className="flex left lh-18">
             Passed&nbsp;
             {passedCount}
             &nbsp; filters
@@ -119,60 +123,57 @@ export const CiWebhookModal = ({
 
     const renderSidebar = () => (
         <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
-            <span className="py-14 fw-6 lh-20">Received webhooks</span>
-            <div>
-                <div className="dc__overflow-scroll">
-                    {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
-                        const isPassed =
-                            webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
-                        const webhookPayloadId = webhookPayload.parsedDataId
-                        const isActive = location.pathname.includes(String(webhookPayloadId))
-                        return (
-                            <div
+            <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
+            <div className="p-8">
+                {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
+                    const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
+                    const webhookPayloadId = webhookPayload.parsedDataId
+                    const isActive = location.pathname.includes(String(webhookPayloadId))
+                    return (
+                        <div
+                            key={webhookPayloadId}
+                            className={`cn-5 py-8 dc__hover-n50 ${isActive ? 'bcb-1 p-8 br-4' : ''}`}
+                        >
+                            <NavLink
+                                activeClassName="active"
                                 key={webhookPayloadId}
-                                className={`cn-5 py-8 dc__hover-n50 ${isActive ? 'bcb-1' : ''}`}
+                                data-testid={`payload-id-${webhookPayloadId}-anchor`}
+                                to={`${generatePath(path, { ...params })}/payloadId/${webhookPayloadId}`}
+                                className="dc__no-decor"
+                                type="button"
+                                aria-label="View webhook payload"
+                                onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                             >
-                                <NavLink
-                                    activeClassName="active"
-                                    key={webhookPayloadId}
-                                    data-testid={`payload-id-${webhookPayloadId}-anchor`}
-                                    to={`${generatePath(path, { ...params })}/payloadId/${webhookPayloadId}`}
-                                    className="dc__no-decor"
-                                    type="button"
-                                    aria-label="View webhook payload"
-                                    onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
-                                >
-                                    <div className="flex left top dc__gap-8">
-                                        <div
-                                            className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'failed'}`}
-                                        />
-                                        <div>
-                                            <span className="cb-5">
-                                                {moment(webhookPayload.eventTime).format(Moment12HourFormat)}
-                                            </span>
-                                            <div className="cn-7 fs-12">
-                                                {renderPassedText(
-                                                    renderSelectedPassedCountRatio(
-                                                        webhookPayload.matchedFiltersCount,
-                                                        webhookPayload.failedFiltersCount,
-                                                    ),
-                                                )}
-                                            </div>
+                                <div className="flex left top dc__gap-8">
+                                    <div
+                                        className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'failed'}`}
+                                    />
+                                    <div>
+                                        <span className={`cb-5 lh-20 ${isActive ? 'fw-6' : ''}`}>
+                                            {moment(webhookPayload.eventTime).format(Moment12HourFormat)}
+                                        </span>
+                                        <div className="cn-7 fs-12">
+                                            {renderPassedText(
+                                                renderSelectedPassedCountRatio(
+                                                    webhookPayload.matchedFiltersCount,
+                                                    webhookPayload.failedFiltersCount,
+                                                ),
+                                            )}
                                         </div>
-                                        <br />
                                     </div>
-                                </NavLink>
-                            </div>
-                        )
-                    })}
-                </div>
+                                    <br />
+                                </div>
+                            </NavLink>
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )
 
     const renderIncomingPayloadTitle = () => (
         <div className="fw-6 fs-14 flex left dc__content-space w-100">
-            <div className="flex left fs-14 fw-6 mb-8">
+            <div className="flex left fs-14 fw-6">
                 <div className="flex left">
                     {renderPassedText(selectedPassedCountRatio)}. Webhook received from&nbsp;
                 </div>
@@ -181,14 +182,17 @@ export const CiWebhookModal = ({
                     /{webhookPayloads?.repositoryUrl.replace('.git', '').split('/').pop()}
                 </a>
             </div>
-            <button
-                type="button"
-                className="dc__unset-button-styles dc__visible-hover--child"
+            {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
+            <Button
+                showAriaLabelInTippy
+                ariaLabel="View approvers"
+                icon={<Edit />}
+                variant={ButtonVariantType.borderLess}
+                style={ButtonStyleType.neutral}
+                dataTestId="show-approvers-info-button"
+                size={ComponentSizeType.xs}
                 onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
-            >
-                {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
-                <Edit className="icon-dim-16" />
-            </button>
+            />
         </div>
     )
 
@@ -197,11 +201,11 @@ export const CiWebhookModal = ({
 
     const renderFilterTableContent = () => (
         <div className="w-100">
-            <div className="cn-7 fw-6 dc__border-bottom ci__filter-table__row dc__uppercase py-10">
-                <div>Selector/Key</div>
-                <div>Selector value in payload</div>
-                <div>Configured filter</div>
-                <div>Result</div>
+            <div className="cn-7 fw-6 dc__border-bottom ci__filter-table__row dc__uppercase py-8 fs-12">
+                <div className="lh-20">Selector/Key</div>
+                <div className="lh-20">Selector value in payload</div>
+                <div className="lh-20">Configured filter</div>
+                <div className="lh-20">Result</div>
             </div>
 
             {getWebhookIncomingPayload()?.map((selectedData: WebhookReceivedFiltersType) => (
@@ -269,7 +273,7 @@ export const CiWebhookModal = ({
     )
 
     const renderWebHookModal = () => (
-        <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header pl-20 fs-13 cn-9">
+        <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header fs-13 cn-9">
             {renderSidebar()}
             {!webhookPayloads?.payloads?.length ? renderNoWebhookPayloadView : renderWebhookPayloadContent()}
         </div>

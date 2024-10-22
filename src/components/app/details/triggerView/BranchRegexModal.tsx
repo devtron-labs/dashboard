@@ -69,7 +69,7 @@ const BranchRegexModal = ({
         }
         return (
             <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
-                <h2 className="modal__title flex left dc__gap-12 fs-16 fw-6">
+                <div className="modal__title flex left dc__gap-12 fs-16 fw-6">
                     {isChangeBranchClicked && (
                         <Button
                             dataTestId="regex-modal-header-back-button"
@@ -83,13 +83,13 @@ const BranchRegexModal = ({
                         />
                     )}
                     <span className="dc__mxw-250 dc__truncate">{title}</span>&nbsp;/ Set branch
-                </h2>
+                </div>
                 <Button
                     dataTestId="regex-modal-header-close-button"
                     onClick={_closeCIModal}
                     ariaLabel="close-button"
                     variant={ButtonVariantType.borderLess}
-                    size={ComponentSizeType.large}
+                    size={ComponentSizeType.small}
                     showAriaLabelInTippy={false}
                     icon={<Close />}
                     style={ButtonStyleType.neutral}

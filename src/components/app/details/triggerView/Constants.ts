@@ -25,7 +25,7 @@ export const CI_MATERIAL_EMPTY_STATE_MESSAGING = {
     ClearSearch: 'Clear search',
     Retry: 'Retry',
     WebhookModalCTA: 'View all incoming webhook payloads',
-    NoCommitEligibleCommit: 'No eligible commit found in recent commits',
+    NoCommitEligibleCommit: 'No recent eligible commit found',
     NoCommitEligibleCommitSubtitle:
         'Commits that contain changes only in excluded files or folders are not eligible for build.',
     NoCommitEligibleCommitButtonText: 'Show excluded commits',
