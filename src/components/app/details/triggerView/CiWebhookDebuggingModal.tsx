@@ -128,11 +128,11 @@ export const CiWebhookModal = ({
                 {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
                     const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                     const webhookPayloadId = webhookPayload.parsedDataId
-                    const isActive = location.pathname.includes(String(webhookPayloadId))
+                    const isActive = location.pathname.split('/').pop() === String(webhookPayloadId)
                     return (
                         <div
                             key={webhookPayloadId}
-                            className={`cn-5 py-8 dc__hover-n50 ${isActive ? 'bcb-1 p-8 br-4' : ''}`}
+                            className={`cn-5 p-8 dc__hover-n50 ${isActive ? 'bcb-1 br-4' : ''}`}
                         >
                             <NavLink
                                 activeClassName="active"

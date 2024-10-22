@@ -140,7 +140,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <Checkbox
                 isChecked={this.context.invalidateCache}
                 onClick={this.onClickStopPropagation}
-                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                rootClassName="form__checkbox-label--ignore-cache mb-0 flex top"
                 value="CHECKED"
                 onChange={this.context.toggleInvalidateCache}
                 data-testid="set-clone-directory"
