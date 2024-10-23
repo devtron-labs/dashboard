@@ -25,8 +25,9 @@ import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { WorkflowProps } from '../Workflow'
 
-export interface CINodeProps extends RouteComponentProps<{}> {
+export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps, 'isOffendingPipelineView'> {
     x: number
     y: number
     width: number
@@ -55,12 +56,6 @@ export interface CINodeProps extends RouteComponentProps<{}> {
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
-    /**
-     * If true the view is read only
-     *
-     * @default false
-     */
-    isReadonlyView?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -124,7 +119,12 @@ export class CINode extends Component<CINodeProps> {
     }
 
     renderWrapWithLink = (children: ReactElement) => (
-        <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
+        <Link
+            to={this.props.to}
+            onClick={this.props.hideWebhookTippy}
+            target={this.props.isOffendingPipelineView ? '_blank' : '_self'}
+            className="dc__no-decor"
+        >
             {children}
         </Link>
     )
@@ -141,7 +141,10 @@ export class CINode extends Component<CINodeProps> {
         const currentNodeKey = `${WorkflowNodeType.CI}-${this.props.id ?? ''}`
 
         return (
-            <ConditionalWrap condition={!this.props.isReadonlyView && !!this.props.to} wrap={this.renderWrapWithLink}>
+            <ConditionalWrap
+                condition={!!this.props.to && (!this.props.isOffendingPipelineView || this.props.showPluginWarning)}
+                wrap={this.renderWrapWithLink}
+            >
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
                         <Tippy
@@ -158,7 +161,9 @@ export class CINode extends Component<CINodeProps> {
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
-                                onClick={this.props.isReadonlyView ? null : this.handleLinkedCIWorkflowChipClick}
+                                onClick={
+                                    this.props.isOffendingPipelineView ? null : this.handleLinkedCIWorkflowChipClick
+                                }
                             >
                                 <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                                 <span>{this.props.linkedCount}</span>
@@ -186,13 +191,15 @@ export class CINode extends Component<CINodeProps> {
                         </div>
                         {this.renderNodeIcon(isJobCard)}
 
-                        {!this.props.isReadonlyView && !this.props.isJobView && selectedNodeKey !== currentNodeKey && (
-                            <ToggleCDSelectButton
-                                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
-                                onClickAddNode={this.onClickAddNode}
-                                testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
-                            />
-                        )}
+                        {!this.props.isOffendingPipelineView &&
+                            !this.props.isJobView &&
+                            selectedNodeKey !== currentNodeKey && (
+                                <ToggleCDSelectButton
+                                    addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                                    onClickAddNode={this.onClickAddNode}
+                                    testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                                />
+                            )}
                     </div>
                 </div>
             </ConditionalWrap>

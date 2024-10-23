@@ -22,7 +22,6 @@ import {
     DeploymentNodeType,
     UserApprovalConfigType,
     CIBuildConfigType,
-    DockerConfigOverrideType,
     ReleaseTag,
     ImageComment,
     DeploymentAppTypes,
@@ -40,11 +39,14 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
+    CiPipeline,
+    CdPipeline,
     ConsequenceType,
     PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { AppContextType } from '@Components/common'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { Offset, WorkflowDimensions } from './config'
@@ -65,6 +67,18 @@ type CDMaterialBulkRuntimeParams =
           handleBulkRuntimeParamChange?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
+      }
+
+type CDMaterialPluginWarningProps =
+    | {
+          showPluginWarningBeforeTrigger: boolean
+          consequence: ConsequenceType
+          configurePluginURL: string
+      }
+    | {
+          showPluginWarningBeforeTrigger?: never
+          consequence?: never
+          configurePluginURL?: never
       }
 
 export type CDMaterialProps = {
@@ -135,7 +149,9 @@ export type CDMaterialProps = {
      * To be consumed through variable called appName
      */
     selectedAppName?: string
-} & CDMaterialBulkRuntimeParams
+    isTriggerBlockedDueToPlugin?: boolean
+} & CDMaterialBulkRuntimeParams &
+    CDMaterialPluginWarningProps
 
 export interface ConfigToDeployOptionType {
     label: string
@@ -286,7 +302,9 @@ export interface TriggerCDNodeState {
     gitOpsRepoWarningCondition: boolean
 }
 
-export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
+export interface TriggerPrePostCDNodeProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<CommonNodeAttr, 'isTriggerBlocked'> {
     x: number
     y: number
     height: number
@@ -368,6 +386,7 @@ export interface TriggerViewRouterProps {
 export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
+    appContext: AppContextType
 }
 
 export interface WebhookPayloadDataResponse {
@@ -519,40 +538,6 @@ export interface CiScript {
     outputLocation?: string
 }
 
-export interface CiPipeline {
-    isManual: boolean
-    dockerArgs?: Map<string, string>
-    isExternal: boolean
-    parentCiPipeline: number
-    parentAppId: number
-    externalCiConfig: ExternalCiConfig
-    ciMaterial?: CiMaterial[]
-    name?: string
-    id?: number
-    active?: boolean
-    linkedCount: number
-    scanEnabled: boolean
-    deleted?: boolean
-    version?: string
-    beforeDockerBuild?: Array<Task>
-    afterDockerBuild?: Array<Task>
-    appWorkflowId?: number
-    beforeDockerBuildScripts?: Array<CiScript>
-    afterDockerBuildScripts?: Array<CiScript>
-    isDockerConfigOverridden?: boolean
-    dockerConfigOverride?: DockerConfigOverrideType
-    appName?: string
-    appId?: string
-    componentId?: number
-    isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
-    isOffendingMandatoryPlugin?: boolean
-    pipelineType?: string
-}
-
 export interface CiPipelineResult {
     id?: number
     appId?: number
@@ -596,43 +581,6 @@ export interface PrePostDeployStageType {
     triggerType: string
     name: string
     status: string
-}
-
-// Remove this and use from fe-common
-/**
- * @deprecated
- */
-export interface CdPipeline {
-    id: number
-    environmentId: number
-    environmentName?: string
-    description?: string
-    ciPipelineId: number
-    triggerType: 'AUTOMATIC' | 'MANUAL'
-    name: string
-    strategies?: Strategy[]
-    namespace?: string
-    appWorkflowId?: number
-    deploymentTemplate?: string
-    preStage?: CDStage
-    postStage?: CDStage
-    preStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    postStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    runPreStageInEnv?: boolean
-    runPostStageInEnv?: boolean
-    isClusterCdActive?: boolean
-    parentPipelineId?: number
-    parentPipelineType?: string
-    deploymentAppDeleteRequest?: boolean
-    deploymentAppCreated?: boolean
-    userApprovalConfig?: UserApprovalConfigType
-    isVirtualEnvironment?: boolean
-    deploymentAppType: DeploymentAppTypes
-    helmPackageName?: string
-    preDeployStage?: PrePostDeployStageType
-    postDeployStage?: PrePostDeployStageType
-    isGitOpsRepoNotConfigured?: boolean
-    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {

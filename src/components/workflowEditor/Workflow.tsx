@@ -55,6 +55,11 @@ import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
+    'getParsedPluginPolicyConsequenceData',
+    () => null,
+    'function',
+)
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -136,6 +141,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 width: WorkflowCreate.cDNodeSizes.nodeWidth,
                 x: 580,
                 y: 25,
+                showPluginWarning: false,
+                isTriggerBlocked: false,
+                pluginBlockState: getParsedPluginPolicyConsequenceData() || null,
             })
         }
 
@@ -330,6 +338,18 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     openCDPipeline(node: CommonNodeAttr, isWebhookCD: boolean) {
         const { appId } = this.props.match.params
+
+        if (this.props.isOffendingPipelineView) {
+            return getCDPipelineURL(
+                appId,
+                this.props.id.toString(),
+                String(node.connectingCiPipelineId ?? 0),
+                isWebhookCD,
+                node.id,
+                true,
+            )
+        }
+
         return `${this.props.match.url}/${getCDPipelineURL(
             appId,
             this.props.id.toString(),
@@ -346,18 +366,22 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {
-            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
+            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id, this.props.isOffendingPipelineView)
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
-                node.branch === GIT_BRANCH_NOT_CONFIGURED,
+                node.branch === GIT_BRANCH_NOT_CONFIGURED || this.props.isOffendingPipelineView,
                 node.id,
                 this.props.isJobView,
                 node.isJobCI,
             )
+        }
+
+        if (this.props.isOffendingPipelineView) {
+            return url
         }
         return `${this.props.match.url}/${url}`
     }
@@ -404,7 +428,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
-                isReadonlyView={this.props.isOffendingPipelineView}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -482,7 +506,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppCreated={node.deploymentAppCreated}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 handleDisplayLoader={this.props.handleDisplayLoader}
-                isReadonlyView={this.props.isOffendingPipelineView}
+                showPluginWarning={node.showPluginWarning}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }

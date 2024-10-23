@@ -3894,6 +3894,14 @@ textarea,
     margin-bottom: -2px;
 }
 
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -4117,6 +4125,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {
@@ -4268,10 +4280,24 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
+
+    &--fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+    &--stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
