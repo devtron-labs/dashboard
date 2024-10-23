@@ -56,6 +56,7 @@ export const K8ResourceComponent = ({
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        IndexStore.updateFilterType(currentFilter.toUpperCase())
     }, [])
 
     // nodes according to current filter
@@ -76,10 +77,6 @@ export const K8ResourceComponent = ({
             history.push({ pathname: location.pathname, search: `filterType=${ALL_RESOURCE_KIND_FILTER}` })
         }
     }, [nodes])
-
-    useEffect(() => {
-        IndexStore.updateFilterType(currentFilter.toUpperCase())
-    }, [currentFilter])
 
     const getPodNameForSelectedFilter = (selectedFilter: string) => {
         const podParents = getPodsRootParentNameAndStatus(nodes)
@@ -109,6 +106,7 @@ export const K8ResourceComponent = ({
         const searchParams = new URLSearchParams([['filterType', selectedFilter]])
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
             history.push({ search: `${searchParams}` })
+            IndexStore.updateFilterType(selectedFilter.toUpperCase())
             return
         }
         // current selected node exist in new selected filter or not
@@ -124,6 +122,7 @@ export const K8ResourceComponent = ({
         } else {
             history.push({ search: `${searchParams}` })
         }
+        IndexStore.updateFilterType(selectedFilter.toUpperCase())
     }
 
     return (
