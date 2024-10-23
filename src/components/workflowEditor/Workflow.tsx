@@ -57,7 +57,7 @@ const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
     'getParsedPluginPolicyConsequenceData',
-    null,
+    () => null,
     'function',
 )
 
@@ -143,7 +143,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 y: 25,
                 showPluginWarning: false,
                 isTriggerBlocked: false,
-                pluginBlockState: getParsedPluginPolicyConsequenceData?.() || null,
+                pluginBlockState: getParsedPluginPolicyConsequenceData() || null,
             })
         }
 

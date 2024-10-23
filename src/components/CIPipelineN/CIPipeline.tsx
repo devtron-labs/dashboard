@@ -50,6 +50,7 @@ import {
 import Tippy from '@tippyjs/react'
 import {
     FloatingVariablesSuggestions,
+    getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -255,10 +256,7 @@ export default function CIPipeline({
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
                     if (!material.isRegex || material.value) {
-                        const parsedBranchName = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
-                            ? `[${material.value}]`
-                            : material.value
-                        branchName += `${branchName ? ',' : ''}${parsedBranchName}`
+                        branchName += `${branchName ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
                     }
                 }
             }

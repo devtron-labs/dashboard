@@ -33,6 +33,7 @@ import {
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
 } from './AppGroup.types'
+import { getParsedBranchValuesForPlugin } from '@Components/common'
 
 let timeoutId
 
@@ -266,10 +267,7 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
                 const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
                     for (const mat of selectedCIPipeline.ciMaterial) {
-                        const currentBranchValues = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
-                            ? `[${mat.source.value}]`
-                            : mat.source.value
-                        branchValues += `${branchValues ? ',' : ''}${currentBranchValues}`
+                        branchValues += `${branchValues ? ',' : ''}${getParsedBranchValuesForPlugin(mat.source.value)}`
                     }
                 }
                 break

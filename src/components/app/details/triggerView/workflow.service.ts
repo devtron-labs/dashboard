@@ -44,7 +44,7 @@ import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
-const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary('getParsedPluginPolicyConsequenceData', null, 'function')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary('getParsedPluginPolicyConsequenceData', () => null, 'function')
 
 export const getTriggerWorkflows = (
     appId,
@@ -568,7 +568,7 @@ function ciPipelineToNode(
             isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
             showPluginWarning: false,
             isTriggerBlocked: false,
-            pluginBlockState: getParsedPluginPolicyConsequenceData?.(),
+            pluginBlockState: getParsedPluginPolicyConsequenceData(),
         }
     })
     const trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
@@ -608,7 +608,7 @@ function ciPipelineToNode(
         downstreamNodes: new Array<CommonNodeAttr>(),
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isTriggerBlocked: ciPipeline.isCITriggerBlocked,
-        pluginBlockState: getParsedPluginPolicyConsequenceData?.(ciPipeline.ciBlockState),
+        pluginBlockState: getParsedPluginPolicyConsequenceData(ciPipeline.ciBlockState),
     }
 
     return ciNode
@@ -686,7 +686,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
-            pluginBlockState: getParsedPluginPolicyConsequenceData?.(cdPipeline.preDeployStage?.pluginBlockState),
+            pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
         }
         stageIndex++
     }
@@ -739,7 +739,7 @@ function cdPipelineToNode(
         // Will populate this after initializing postCD
         showPluginWarning: false,
         isTriggerBlocked: false,
-        pluginBlockState: getParsedPluginPolicyConsequenceData?.(),
+        pluginBlockState: getParsedPluginPolicyConsequenceData(),
     }
     stageIndex++
 
@@ -780,7 +780,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
-            pluginBlockState: getParsedPluginPolicyConsequenceData?.(cdPipeline.postDeployStage?.pluginBlockState),
+            pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
         }
     }
 
@@ -799,7 +799,7 @@ function cdPipelineToNode(
 
     CD.showPluginWarning = preCD?.showPluginWarning || postCD?.showPluginWarning
     CD.isTriggerBlocked = false
-    CD.pluginBlockState = getParsedPluginPolicyConsequenceData?.()
+    CD.pluginBlockState = getParsedPluginPolicyConsequenceData()
     return CD
 }
 

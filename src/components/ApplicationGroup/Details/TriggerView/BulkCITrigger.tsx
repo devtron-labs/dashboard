@@ -37,7 +37,7 @@ import {
     CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
@@ -178,10 +178,7 @@ const BulkCITrigger = ({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res.value?.['result']
                     })
-                    // These two handlers should be imported from elsewhere
-                    if (getCIBlockState) {
-                        await getPolicyEnforcementData(_materialListMap)
-                    }
+                    await getPolicyEnforcementData(_materialListMap)
                     if (getRuntimeParams) {
                         await getRuntimeParamsData(_materialListMap)
                     }
@@ -234,6 +231,10 @@ const BulkCITrigger = ({
     }
 
     const getPolicyEnforcementData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
+        if (!getCIBlockState) {
+            return null
+        }
+
         const policyPromiseFunctionList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return () => null
@@ -244,10 +245,7 @@ const BulkCITrigger = ({
                     (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
                     material.value !== '--'
                 ) {
-                    const branchValue = window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
-                        ? `[${material.value}]`
-                        : material.value
-                    branchNames += `${branchNames ? ',' : ''}${branchValue}`
+                    branchNames += `${branchNames ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
                 }
             }
 
@@ -257,7 +255,6 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
                 const responses = await ApiQueuingWithBatch<BlockedStateData>(
                     policyPromiseFunctionList,
                     httpProtocol,

@@ -1748,7 +1748,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
-                const doesWorkflowContainsWebhook = !!wf.nodes.find((node) => node.type === WorkflowNodeType.WEBHOOK)
+                const selectedCINode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                const doesWorkflowContainsWebhook = selectedCINode?.type === WorkflowNodeType.WEBHOOK
+
                 let _selectedNode: CommonNodeAttr
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
@@ -1789,7 +1793,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         configurePluginURL: getCDPipelineURL(
                             String(wf.appId),
                             wf.id,
-                            doesWorkflowContainsWebhook ? '0' : String(_selectedNode.connectingCiPipelineId),
+                            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
                             doesWorkflowContainsWebhook,
                             _selectedNode.id,
                             true,

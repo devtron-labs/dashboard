@@ -4280,22 +4280,24 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
 
-    &.fill:hover {
+    &--fill:hover {
         path {
             fill: var(--B500);
         }
     }
-
-    &.stroke:hover {
+    &--stroke:hover {
         path {
             stroke: var(--B500);
         }
     }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
