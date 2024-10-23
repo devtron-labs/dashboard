@@ -2,20 +2,15 @@ import { useMemo, useState } from 'react'
 import YAML from 'yaml'
 
 import {
-    Button,
-    ButtonStyleType,
     CompareFromApprovalOptionsValuesType,
-    ComponentSizeType,
     DraftAction,
     DraftState,
     noop,
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { hasApproverAccess, importComponentFromFELibrary } from '@Components/common'
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 
 import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
@@ -23,12 +18,12 @@ import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './u
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
 import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
-
-const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy', null, 'function')
 
 export const ConfigMapSecretProtected = ({
     id,
+    formMethodsRef,
     draftData,
     componentType,
     componentName,
@@ -48,7 +43,6 @@ export const ConfigMapSecretProtected = ({
     setRestoreYAML,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
-    const { email } = useUserEmail()
     const { formDataRef } = useConfigMapSecretFormContext()
 
     // STATES
@@ -158,6 +152,7 @@ export const ConfigMapSecretProtected = ({
     // RENDERERS
     const renderFormView = () => (
         <ConfigMapSecretForm
+            ref={formMethodsRef}
             configMapSecretData={configMapSecretData}
             id={id}
             componentType={componentType}
@@ -183,50 +178,6 @@ export const ConfigMapSecretProtected = ({
         />
     )
 
-    const renderApproveButton = () => {
-        if (draftData.draftState !== DraftState.AwaitApproval || !ApproveRequestTippy) {
-            return null
-        }
-
-        const hasAccess = hasApproverAccess(email, draftData.approvers)
-
-        return (
-            <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
-                {draftData.canApprove && hasAccess ? (
-                    <ApproveRequestTippy
-                        draftId={draftData.draftId}
-                        draftVersionId={draftData.draftVersionId}
-                        resourceName={componentName}
-                        reload={updateCMSecret}
-                        envName={parentName}
-                    >
-                        <Button
-                            dataTestId="cm-secret-approve-btn"
-                            text="Approve Changes"
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.positive}
-                        />
-                    </ApproveRequestTippy>
-                ) : (
-                    <Button
-                        dataTestId="cm-secret-approve-btn"
-                        text="Approve Changes"
-                        size={ComponentSizeType.medium}
-                        style={ButtonStyleType.positive}
-                        disabled
-                        showTooltip
-                        tooltipProps={{
-                            placement: 'top-end',
-                            content: hasAccess
-                                ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                                : 'You do not have permission to approve configuration changes for this application - environment combination.',
-                        }}
-                    />
-                )}
-            </footer>
-        )
-    }
-
     const renderCompareView = () => (
         <div className="flexbox-col h-100 dc__overflow-hidden">
             <div className="flex-grow-1 dc__overflow-auto">
@@ -243,7 +194,13 @@ export const ConfigMapSecretProtected = ({
                     />
                 )}
             </div>
-            {renderApproveButton()}
+            <ConfigMapSecretApproveButton
+                componentName={componentName}
+                configMapSecretData={configMapSecretData}
+                draftData={draftData}
+                parentName={parentName}
+                updateCMSecret={updateCMSecret}
+            />
         </div>
     )
 

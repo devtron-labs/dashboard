@@ -9,6 +9,7 @@ import {
     ConfigToolbarPopupNodeType,
     DraftAction,
     DraftState,
+    DryRunEditorMode,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
     noop,
@@ -58,6 +59,7 @@ import {
     CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
+    ConfigMapSecretFormRefType,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
@@ -65,6 +67,7 @@ import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
 import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 
 import './styles.scss'
@@ -95,6 +98,7 @@ export const ConfigMapSecretContainer = ({
 
     // REFS
     const abortControllerRef = useRef<AbortController>()
+    const formMethodsRef = useRef<ConfigMapSecretFormRefType>(null)
 
     // STATES
     const [configHeaderTab, setConfigHeaderTab] = useState<ConfigHeaderTabType>(null)
@@ -110,6 +114,7 @@ export const ConfigMapSecretContainer = ({
     const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [restoreYAML, setRestoreYAML] = useState(false)
+    const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -308,6 +313,7 @@ export const ConfigMapSecretContainer = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !hideNoOverrideEmptyState &&
         !draftData
+    const showNoOverride = cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !hideNoOverrideEmptyState && !draftData
 
     // SET DRAFT DATA BASED STATES
     useEffect(() => {
@@ -360,7 +366,11 @@ export const ConfigMapSecretContainer = ({
 
     // NO SCOPE VARIABLES PRESENT HANDLING
     useEffect(() => {
-        if (resolvedScopeVariablesRes && !resolvedScopeVariablesRes.areVariablesPresent) {
+        if (
+            !reloadResolvedScopeVariablesResErr &&
+            resolvedScopeVariablesRes &&
+            !resolvedScopeVariablesRes.areVariablesPresent
+        ) {
             setResolvedScopeVariables(false)
             ToastManager.showToast({
                 title: 'Error',
@@ -368,7 +378,7 @@ export const ConfigMapSecretContainer = ({
                 variant: ToastVariantType.error,
             })
         }
-    }, [resolvedScopeVariablesRes])
+    }, [resolvedScopeVariablesRes, reloadResolvedScopeVariablesResErr])
 
     // TAB HANDLING
     useEffect(() => {
@@ -405,6 +415,36 @@ export const ConfigMapSecretContainer = ({
 
         if (isCreateState) {
             history.push(generatePath(path, { ...params, appId, envId, name: configName }))
+        }
+    }
+
+    const handleActionWithFormValidation =
+        <Args extends unknown[]>(func: (...args: Args) => void) =>
+        async (...args: Args) => {
+            if (formMethodsRef.current) {
+                const { handleSubmit } = formMethodsRef.current
+
+                await handleSubmit(
+                    () => func(...args),
+                    () => {
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: 'Please add input for required fields',
+                        })
+                    },
+                )()
+            } else {
+                func(...args)
+            }
+        }
+
+    const handleTabChange = (tab: ConfigHeaderTabType) => {
+        setConfigHeaderTab(tab)
+        if (tab === ConfigHeaderTabType.DRY_RUN) {
+            ReactGA.event({
+                category: gaEventCategory,
+                action: 'clicked-dry-run',
+            })
         }
     }
 
@@ -473,6 +513,8 @@ export const ConfigMapSecretContainer = ({
     }
 
     const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
+
+    const handleChangeDryRunEditorMode = (mode: DryRunEditorMode) => setDryRunEditorMode(mode)
 
     const reloadSaveChangesModal = () => {
         setShowDraftSaveModal(false)
@@ -622,6 +664,7 @@ export const ConfigMapSecretContainer = ({
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
         isProtected && draftData ? (
             <ConfigMapSecretProtected
+                formMethodsRef={formMethodsRef}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentName={componentName}
                 publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
@@ -644,6 +687,7 @@ export const ConfigMapSecretContainer = ({
         ) : (
             <ConfigMapSecretForm
                 id={id}
+                ref={formMethodsRef}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
@@ -690,6 +734,34 @@ export const ConfigMapSecretContainer = ({
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                     />
                 )
+            case ConfigHeaderTabType.DRY_RUN:
+                return (
+                    <ConfigMapSecretDryRun
+                        id={id}
+                        isJob={isJob}
+                        componentType={componentType}
+                        componentName={componentName}
+                        cmSecretStateLabel={cmSecretStateLabel}
+                        isProtected={isProtected}
+                        resolvedFormData={resolvedFormData}
+                        publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
+                        draftData={resolvedDraftData ?? draftData}
+                        inheritedConfigMapSecretData={
+                            resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData
+                        }
+                        areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                        resolveScopedVariables={resolvedScopeVariables}
+                        handleToggleScopedVariablesView={handleToggleScopedVariablesView}
+                        dryRunEditorMode={dryRunEditorMode}
+                        handleChangeDryRunEditorMode={handleChangeDryRunEditorMode}
+                        mergeStrategy={mergeStrategy}
+                        showCrudButtons={!showNoOverride}
+                        isSubmitting={isSubmitting}
+                        onSubmit={onSubmit}
+                        parentName={parentName}
+                        updateCMSecret={updateCMSecret}
+                    />
+                )
             default:
                 return null
         }
@@ -734,19 +806,16 @@ export const ConfigMapSecretContainer = ({
             <div className="flexbox-col h-100">
                 <ConfigHeader
                     configHeaderTab={configHeaderTab}
-                    handleTabChange={setConfigHeaderTab}
+                    handleTabChange={handleActionWithFormValidation(handleTabChange)}
                     isDisabled={isLoading}
                     areChangesPresent={isFormDirty}
                     isOverridable={
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     }
-                    showNoOverride={
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !hideNoOverrideEmptyState && !draftData
-                    }
+                    showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideDryRunTab
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
@@ -755,7 +824,7 @@ export const ConfigMapSecretContainer = ({
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
-                        disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
+                        disableAllActions={isLoading || isSubmitting || !!parsingError}
                         isProtected={isProtected}
                         isDraftPresent={!!draftData}
                         isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
@@ -770,7 +839,7 @@ export const ConfigMapSecretContainer = ({
                         baseConfigurationURL={baseConfigurationURL}
                         headerMessage={headerMessage}
                         selectedProtectionViewTab={selectedProtectionViewTab}
-                        handleProtectionViewTabChange={handleProtectionViewTabChange}
+                        handleProtectionViewTabChange={handleActionWithFormValidation(handleProtectionViewTabChange)}
                         handleToggleCommentsView={toggleDraftComments}
                         resolveScopedVariables={resolvedScopeVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}

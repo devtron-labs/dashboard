@@ -12,7 +12,10 @@ import {
     UseFormErrors,
     UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
+    DryRunEditorMode,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ConfigToolbarProps } from '@Pages/Applications'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
@@ -216,7 +219,43 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         inheritedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
         draftData: CMSecretDraftData
         selectedProtectionViewTab: ProtectConfigTabsType
+    } & {
+        formMethodsRef: MutableRefObject<ConfigMapSecretFormRefType>
     }
+
+export type ConfigMapSecretDryRunProps = Pick<
+    ConfigMapSecretFormProps,
+    | 'cmSecretStateLabel'
+    | 'componentType'
+    | 'isProtected'
+    | 'isSubmitting'
+    | 'onSubmit'
+    | 'resolvedFormData'
+    | 'isJob'
+    | 'areScopeVariablesResolving'
+> &
+    Pick<ConfigToolbarProps, 'mergeStrategy' | 'resolveScopedVariables' | 'handleToggleScopedVariablesView'> &
+    Pick<
+        ConfigMapSecretProtectedProps,
+        | 'id'
+        | 'inheritedConfigMapSecretData'
+        | 'publishedConfigMapSecretData'
+        | 'draftData'
+        | 'updateCMSecret'
+        | 'componentName'
+        | 'parentName'
+    > & {
+        dryRunEditorMode: DryRunEditorMode
+        handleChangeDryRunEditorMode: (mode: DryRunEditorMode) => void
+        showCrudButtons: boolean
+    }
+
+export interface ConfigMapSecretApproveButtonProps
+    extends Pick<ConfigMapSecretProtectedProps, 'updateCMSecret' | 'parentName' | 'componentName' | 'draftData'> {
+    configMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
+}
+
+export interface ConfigMapSecretFormRefType extends Pick<ConfigMapSecretDataProps['useFormProps'], 'handleSubmit'> {}
 
 // CONTEXT TYPES
 type SetFormStateParams =
