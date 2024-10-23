@@ -4,6 +4,11 @@ export const DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType = OverrideMergeSt
 
 export const MERGE_STRATEGY_OPTIONS: SelectPickerOptionType[] = [
     {
+        label: 'Patch',
+        description: 'Override values for specific keys',
+        value: OverrideMergeStrategyType.PATCH,
+    },
+    {
         label: 'Replace',
         description: 'Override complete configuration',
         value: OverrideMergeStrategyType.REPLACE,
