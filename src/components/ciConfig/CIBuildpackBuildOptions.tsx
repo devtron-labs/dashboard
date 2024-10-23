@@ -633,11 +633,6 @@ export default function CIBuildpackBuildOptions({
                             size={ComponentSizeType.large}
                         />
                     </div>
-
-                    {console.log(
-                        'version',
-                        getBuildPackLanguageVersionOption(),
-                    )}
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
                         <SelectPicker
