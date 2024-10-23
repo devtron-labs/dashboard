@@ -166,7 +166,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     fromAppGrouping={this.props.fromAppGrouping}
-                    isCITriggerBlocked={node.isCITriggerBlocked}
+                    isCITriggerBlocked={node.isTriggerBlocked}
                 />
             )
         }
@@ -222,8 +222,8 @@ export class Workflow extends Component<WorkflowProps> {
                 fromAppGrouping={this.props.fromAppGrouping}
                 isJobView={this.props.isJobView}
                 index={this.props.index}
-                isCITriggerBlocked={node.isCITriggerBlocked}
-                ciBlockState={node.ciBlockState}
+                isCITriggerBlocked={node.isTriggerBlocked}
+                ciBlockState={node.pluginBlockState}
                 filteredCIPipelines={this.props.filteredCIPipelines}
                 environmentLists={this.props.environmentLists}
             />
@@ -296,6 +296,7 @@ export class Workflow extends Component<WorkflowProps> {
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
                 deploymentAppType={node.deploymentAppType}
                 isDeploymentBlocked={node.isDeploymentBlocked}
+                isTriggerBlocked={node.isTriggerBlocked}
             />
         )
     }

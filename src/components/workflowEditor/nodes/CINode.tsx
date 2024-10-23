@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { WorkflowNodeType, SelectedNode, CommonNodeAttr } from '@devtron-labs/devtron-fe-common-lib'
+import React, { Component, ReactElement } from 'react'
+import { WorkflowNodeType, SelectedNode, CommonNodeAttr, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
@@ -25,8 +25,9 @@ import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { WorkflowProps } from '../Workflow'
 
-export interface CINodeProps extends RouteComponentProps<{}> {
+export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps, 'isOffendingPipelineView'> {
     x: number
     y: number
     width: number
@@ -117,6 +118,17 @@ export class CINode extends Component<CINodeProps> {
         )
     }
 
+    renderWrapWithLink = (children: ReactElement) => (
+        <Link
+            to={this.props.to}
+            onClick={this.props.hideWebhookTippy}
+            target={this.props.isOffendingPipelineView ? '_blank' : '_self'}
+            className="dc__no-decor"
+        >
+            {children}
+        </Link>
+    )
+
     renderCardContent = (isJobCard: boolean) => {
         const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
         const env = currPipeline?.environmentId
@@ -129,7 +141,10 @@ export class CINode extends Component<CINodeProps> {
         const currentNodeKey = `${WorkflowNodeType.CI}-${this.props.id ?? ''}`
 
         return (
-            <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
+            <ConditionalWrap
+                condition={!!this.props.to && (!this.props.isOffendingPipelineView || this.props.showPluginWarning)}
+                wrap={this.renderWrapWithLink}
+            >
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
                         <Tippy
@@ -146,7 +161,9 @@ export class CINode extends Component<CINodeProps> {
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
-                                onClick={this.handleLinkedCIWorkflowChipClick}
+                                onClick={
+                                    this.props.isOffendingPipelineView ? null : this.handleLinkedCIWorkflowChipClick
+                                }
                             >
                                 <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                                 <span>{this.props.linkedCount}</span>
@@ -174,16 +191,18 @@ export class CINode extends Component<CINodeProps> {
                         </div>
                         {this.renderNodeIcon(isJobCard)}
 
-                        {!this.props.isJobView && selectedNodeKey !== currentNodeKey && (
-                            <ToggleCDSelectButton
-                                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
-                                onClickAddNode={this.onClickAddNode}
-                                testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
-                            />
-                        )}
+                        {!this.props.isOffendingPipelineView &&
+                            !this.props.isJobView &&
+                            selectedNodeKey !== currentNodeKey && (
+                                <ToggleCDSelectButton
+                                    addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                                    onClickAddNode={this.onClickAddNode}
+                                    testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                                />
+                            )}
                     </div>
                 </div>
-            </Link>
+            </ConditionalWrap>
         )
     }
 

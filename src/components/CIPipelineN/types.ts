@@ -16,11 +16,11 @@
 
 import {
     OptionType,
-    PluginDetailType,
     StepType,
     PipelineFormType,
     Environment,
     SelectPickerOptionType,
+    ParentPluginType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExtendedOptionType } from '@Components/app/types'
 
@@ -62,7 +62,9 @@ export interface PluginDetailHeaderProps {
 
 export interface PluginVersionSelectProps extends PluginDetailHeaderProps {}
 
-export interface PluginVersionSelectOptionType extends OptionType<number, string>, Pick<PluginDetailType, 'isLatest'> {}
+export interface PluginVersionSelectOptionType
+    extends OptionType<number, string>,
+        Pick<ParentPluginType['pluginVersions'][0], 'isLatest'> {}
 export interface TaskDetailComponentParamsType {
     appId: string
 }

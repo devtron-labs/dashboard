@@ -143,7 +143,7 @@ if (!window || !window._env_) {
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
-        HIDE_RELEASES: true,
+        HIDE_RELEASES: false,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
         FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
@@ -152,6 +152,7 @@ if (!window || !window._env_) {
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_CD_MANDATORY_PLUGINS_ENABLE: true,
         FEATURE_CONFIG_DRIFT_ENABLE: false,
     }
 }
@@ -159,16 +160,14 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <>
-                <BrowserRouter basename={window.__BASE_URL__}>
-                    <UseRegisterShortcutProvider>
-                        <UserEmailProvider>
-                            <App />
-                        </UserEmailProvider>
-                    </UseRegisterShortcutProvider>
-                </BrowserRouter>
+            <BrowserRouter basename={window.__BASE_URL__}>
+                <UseRegisterShortcutProvider>
+                    <UserEmailProvider>
+                        <App />
+                    </UserEmailProvider>
+                </UseRegisterShortcutProvider>
                 <ToastManagerContainer />
-            </>
+            </BrowserRouter>
         ) : null}
     </React.StrictMode>,
     root,

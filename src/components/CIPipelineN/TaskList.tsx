@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useContext, Fragment } from 'react'
+import { useState, useContext, Fragment, SyntheticEvent } from 'react'
 import {
     PopupMenu,
     BuildStageVariable,
@@ -22,7 +22,13 @@ import {
     RefVariableStageType,
     RefVariableType,
     PipelineFormType,
+    ValidationResponseType,
+    StepType,
+    PipelineStageTaskActionModalType,
+    PipelineStageTaskActionModalStateType,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
@@ -31,20 +37,24 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { TaskListType } from '../ciConfig/types'
-import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
-const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export const TaskList = ({
-    withWarning,
-    setInputVariablesListFromPrevStep,
-    isJobView,
-}: TaskListType) => {
+const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = importComponentFromFELibrary(
+    'getTaskActionPluginValidationStatus',
+    null,
+    'function',
+)
+
+const PipelineTaskActionConfirmationDialog = importComponentFromFELibrary(
+    'PipelineTaskActionConfirmationDialog',
+    null,
+    'function',
+)
+
+export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJobView }: TaskListType) => {
     const {
         formData,
         setFormData,
-        isCdPipeline,
         addNewTask,
         activeStageName,
         selectedTaskIndex,
@@ -54,12 +64,16 @@ export const TaskList = ({
         setFormDataErrorObj,
         validateTask,
         validateStage,
+        handleValidateMandatoryPlugins,
+        isCdPipeline,
         pluginDataStore,
-        mandatoryPluginsMap = {},
+        mandatoryPluginData,
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
+    const [taskActionModalState, setTaskActionModalState] = useState<PipelineStageTaskActionModalStateType>(null)
+
     const handleDragStart = (index: number): void => {
         setDragItemIndex(index)
         setDragItemStartIndex(index)
@@ -98,29 +112,11 @@ export const TaskList = ({
         setDragItemStartIndex(index)
     }
 
-    const deleteTask = (e): void => {
-        const taskIndex = +e.currentTarget.dataset.index
+    const deleteTask = (taskIndex: number): void => {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        const _taskDetail = newList.splice(taskIndex, 1)
-        let isMandatoryMissing = false
-        if (_taskDetail[0].isMandatory) {
-            isMandatoryMissing = true
-            const deletedTaskPluginId = _taskDetail[0].pluginRefStepDetail.pluginId
-            const deletedTaskParentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
+        newList.splice(taskIndex, 1)
 
-            for (const task of newList) {
-                const currentTaskPluginId = task.pluginRefStepDetail?.pluginId
-                const currentTaskParentPluginId =
-                    pluginDataStore.pluginVersionStore[currentTaskPluginId]?.parentPluginId
-
-                if (currentTaskParentPluginId === deletedTaskParentPluginId) {
-                    task.isMandatory = true
-                    isMandatoryMissing = false
-                    break
-                }
-            }
-        }
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
         const newListIndex = newListLength > 1 ? newListLength - 1 : 0
@@ -139,44 +135,21 @@ export const TaskList = ({
         newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
 
-        if (isMandatoryMissing) {
-            validateStage(activeStageName, _formData, _formDataErrorObj)
-        } else {
-            setFormDataErrorObj(_formDataErrorObj)
-        }
+        setFormDataErrorObj(_formDataErrorObj)
+        handleValidateMandatoryPlugins({
+            newFormData: _formData,
+        })
     }
 
-    const moveTaskToOtherStage = (e): void => {
-        const taskIndex = +e.currentTarget.dataset.index
+    const moveTaskToOtherStage = (taskIndex: number): void => {
         const moveToStage =
             activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
-        let isMandatoryMissing = false
+
         if (_taskDetail[0].pluginRefStepDetail) {
             const pluginId = _taskDetail[0].pluginRefStepDetail.pluginId
-            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
-            const isPluginRequired =
-                !isJobView &&
-                isRequired &&
-                !isCdPipeline &&
-                isRequired(_formData, mandatoryPluginsMap, moveToStage, parentPluginId, pluginDataStore, true)
-            if (_taskDetail[0].isMandatory && !isPluginRequired) {
-                isMandatoryMissing = true
-                for (const task of newList) {
-                    const taskParentPluginId =
-                        pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
-                    if (!!parentPluginId && !!taskParentPluginId && taskParentPluginId === parentPluginId) {
-                        task.isMandatory = true
-                        isMandatoryMissing = false
-                        break
-                    }
-                }
-                _taskDetail[0].isMandatory = false
-            } else {
-                _taskDetail[0].isMandatory = isPluginRequired
-            }
 
             _taskDetail[0].pluginRefStepDetail = {
                 id: 0,
@@ -212,12 +185,63 @@ export const TaskList = ({
         } else {
             setFormData(_formData)
         }
-        if (isMandatoryMissing) {
-            validateStage(activeStageName, _formData, _formDataErrorObj)
-        } else {
-            validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
-            setFormDataErrorObj(_formDataErrorObj)
+
+        // FIXME: This is wrong ideally should be done on _formData[moveToStage].steps[_formData[moveToStage].steps.length-1]
+        validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+        setFormDataErrorObj(_formDataErrorObj)
+        handleValidateMandatoryPlugins({
+            newFormData: _formData,
+        })
+    }
+
+    const handleTaskAction = (taskIndex: number, taskType: PipelineStageTaskActionModalType) => {
+        const taskDetails: StepType = formData[activeStageName].steps[taskIndex]
+
+        if (
+            getTaskActionPluginValidationStatus &&
+            taskDetails?.stepType === PluginType.PLUGIN_REF &&
+            taskDetails.pluginRefStepDetail?.pluginId
+        ) {
+            const pluginId = taskDetails.pluginRefStepDetail.pluginId
+
+            const pluginValidationStatus = getTaskActionPluginValidationStatus({
+                mandatoryPluginList: mandatoryPluginData?.pluginData || [],
+                formData,
+                targetPluginId: pluginId,
+                activeStageName,
+                pluginDataStore,
+                isFromMoveTask: taskType === PipelineStageTaskActionModalType.MOVE_PLUGIN,
+            })
+
+            if (!pluginValidationStatus.isValid) {
+                setTaskActionModalState({
+                    type: taskType,
+                    pluginId,
+                    taskIndex,
+                })
+                return
+            }
         }
+
+        if (taskType === PipelineStageTaskActionModalType.MOVE_PLUGIN) {
+            moveTaskToOtherStage(taskIndex)
+        } else if (taskType === PipelineStageTaskActionModalType.DELETE) {
+            deleteTask(taskIndex)
+        }
+    }
+
+    const handleTriggerDelete = (e: SyntheticEvent) => {
+        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
+        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.DELETE)
+    }
+
+    const handleTriggerMoveToOtherStage = (e: SyntheticEvent): void => {
+        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
+        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.MOVE_PLUGIN)
+    }
+
+    const handleClearTaskActionModalState = () => {
+        setTaskActionModalState(null)
     }
 
     const clearDependentPostVariables = (
@@ -311,6 +335,8 @@ export const TaskList = ({
         setSelectedTaskIndex(index)
     }
 
+    const currentStageText = isCdPipeline ? 'deploy' : 'build'
+
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -327,10 +353,12 @@ export const TaskList = ({
                             onDragOver={(e) => e.preventDefault()}
                             onClick={() => handleSelectedTaskChange(index)}
                         >
-                            <Drag className="dc__grabbable icon-dim-20 p-2 dc__no-shrink" onMouseDown={() => setDragAllowed(true)} />
+                            <Drag
+                                className="dc__grabbable icon-dim-20 p-2 dc__no-shrink"
+                                onMouseDown={() => setDragAllowed(true)}
+                            />
                             <div className={`flex left dc__gap-6 dc__content-space w-100`}>
                                 <TaskTitle taskDetail={taskDetail} />
-                                {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
@@ -344,56 +372,58 @@ export const TaskList = ({
                                     />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div
-                                        className="flex left p-8 pointer dc__hover-n50"
+                                    <button
+                                        className="dc__transparent cr-5 flex left p-8 pointer dc__hover-n50 w-100 dc__gap-10"
                                         data-index={index}
-                                        onClick={deleteTask}
+                                        onClick={handleTriggerDelete}
+                                        type="button"
                                     >
-                                        <Trash className="icon-dim-16 mr-10" />
+                                        <Trash className="icon-dim-16 scr-5 dc__no-shrink" />
                                         Remove
-                                    </div>
+                                    </button>
                                     {!isJobView && taskDetail.stepType && (
-                                        <div
-                                            className="flex left p-8 pointer dc__hover-n50"
+                                        <button
+                                            className="dc__transparent flex left p-8 pointer dc__hover-n50 w-100 dc__gap-10"
                                             data-index={index}
-                                            onClick={moveTaskToOtherStage}
+                                            onClick={handleTriggerMoveToOtherStage}
                                         >
                                             {activeStageName === BuildStageVariable.PreBuild ? (
                                                 <>
                                                     <MoveToPre
-                                                        className="rotate icon-dim-16 mr-10"
+                                                        className="rotate icon-dim-16 dc__no-shrink"
                                                         style={{ ['--rotateBy' as any]: '180deg' }}
                                                     />
-                                                    Move to post-build stage
+                                                    Move to post-{currentStageText} stage
                                                 </>
                                             ) : (
                                                 <>
-                                                    <MoveToPre className="icon-dim-16 mr-10" />
-                                                    Move to pre-build stage
+                                                    <MoveToPre className="icon-dim-16 dc__no-shrink" />
+                                                    Move to pre-{currentStageText} stage
                                                 </>
                                             )}
-                                        </div>
+                                        </button>
                                     )}
-                                    {!isJobView &&
-                                        !isCdPipeline &&
-                                        taskDetail.isMandatory &&
-                                        MandatoryPluginMenuOptionTippy && (
-                                            <MandatoryPluginMenuOptionTippy
-                                                pluginDetail={
-                                                    mandatoryPluginsMap[
-                                                        pluginDataStore.pluginVersionStore[
-                                                            taskDetail.pluginRefStepDetail.pluginId
-                                                        ].parentPluginId
-                                                    ]
-                                                }
-                                            />
-                                        )}
                                 </PopupMenu.Body>
                             </PopupMenu>
                         </div>
                         <div className="vertical-line-connector" />
                     </Fragment>
                 ))}
+
+                {PipelineTaskActionConfirmationDialog && taskActionModalState && (
+                    <PipelineTaskActionConfirmationDialog
+                        handleClose={handleClearTaskActionModalState}
+                        handleDelete={deleteTask}
+                        handleMoveTask={moveTaskToOtherStage}
+                        taskIndex={taskActionModalState.taskIndex}
+                        type={taskActionModalState.type}
+                        pluginId={taskActionModalState.pluginId}
+                        activeStageName={activeStageName}
+                        pluginDataStore={pluginDataStore}
+                        resourceKindType={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
+                        mandatoryPluginList={mandatoryPluginData?.pluginData || []}
+                    />
+                )}
             </div>
             <div
                 data-testid="sidebar-add-task-button"

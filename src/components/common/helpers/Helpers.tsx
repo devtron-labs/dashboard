@@ -1222,3 +1222,16 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
     }
     return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }
+
+// FIXME: Ideally whole branch calculations should be in fe-lib
+export const getParsedBranchValuesForPlugin = (branchName: string): string => {
+    if (!branchName) {
+        return ''
+    }
+
+    if (window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE) {
+        return `[${branchName}]`
+    }
+
+    return branchName
+}

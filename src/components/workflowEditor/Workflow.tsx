@@ -55,6 +55,11 @@ import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
+    'getParsedPluginPolicyConsequenceData',
+    () => null,
+    'function',
+)
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -94,6 +99,7 @@ export interface WorkflowProps
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
     handleDisplayLoader?: () => void
+    isOffendingPipelineView?: boolean
 }
 
 interface WorkflowState {
@@ -135,6 +141,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 width: WorkflowCreate.cDNodeSizes.nodeWidth,
                 x: 580,
                 y: 25,
+                showPluginWarning: false,
+                isTriggerBlocked: false,
+                pluginBlockState: getParsedPluginPolicyConsequenceData() || null,
             })
         }
 
@@ -322,12 +331,25 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
+                isReadonlyView={this.props.isOffendingPipelineView}
             />
         )
     }
 
     openCDPipeline(node: CommonNodeAttr, isWebhookCD: boolean) {
         const { appId } = this.props.match.params
+
+        if (this.props.isOffendingPipelineView) {
+            return getCDPipelineURL(
+                appId,
+                this.props.id.toString(),
+                String(node.connectingCiPipelineId ?? 0),
+                isWebhookCD,
+                node.id,
+                true,
+            )
+        }
+
         return `${this.props.match.url}/${getCDPipelineURL(
             appId,
             this.props.id.toString(),
@@ -344,18 +366,22 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {
-            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
+            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id, this.props.isOffendingPipelineView)
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
-                node.branch === GIT_BRANCH_NOT_CONFIGURED,
+                node.branch === GIT_BRANCH_NOT_CONFIGURED || this.props.isOffendingPipelineView,
                 node.id,
                 this.props.isJobView,
                 node.isJobCI,
             )
+        }
+
+        if (this.props.isOffendingPipelineView) {
+            return url
         }
         return `${this.props.match.url}/${url}`
     }
@@ -402,6 +428,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -431,6 +458,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 id={node.id}
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
+                readOnly={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -478,6 +506,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppCreated={node.deploymentAppCreated}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 handleDisplayLoader={this.props.handleDisplayLoader}
+                showPluginWarning={node.showPluginWarning}
+                isOffendingPipelineView={this.props.isOffendingPipelineView}
             />
         )
     }
@@ -530,7 +560,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             const isSelectedEdge = selectedNodeKey === currentNodeIdentifier
             const addCDButtons = isSelectedEdge ? [AddCDPositions.RIGHT] : []
 
-            if (ApprovalNodeEdge) {
+            if (!this.props.isOffendingPipelineView && ApprovalNodeEdge) {
                 // The props that will be helpful are showAddCD
                 return (
                     <ApprovalNodeEdge
@@ -588,7 +618,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
 
             const leftTooltipContent = this.getAddCDButtonTooltipContent(startNode)
-            if (ApprovalNodeEdge) {
+            if (!this.props.isOffendingPipelineView && ApprovalNodeEdge) {
                 edgeList.push(
                     <ApprovalNodeEdge
                         key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
@@ -728,11 +758,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
 
         // If no node is present in workflow then disable change CI button
-        const isChangeCIEnabled = nodesWithBufferHeight.length > 0
+        const isChangeCIEnabled = !this.props.isOffendingPipelineView && nodesWithBufferHeight.length > 0
 
         return (
             <ConditionalWrap
-                condition={this.props.showWebhookTippy}
+                condition={!this.props.isOffendingPipelineView && this.props.showWebhookTippy}
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
@@ -772,7 +802,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         data-testid="workflow-header"
                     >
                         <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
-                        {!configDiffView && (
+                        {!this.props.isOffendingPipelineView && !configDiffView && (
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
 
@@ -829,7 +859,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             </div>
                         )}
                     </div>
-                    {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
+                    {!this.props.isOffendingPipelineView && isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div
                         className={
                             configDiffView
@@ -850,7 +880,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 {this.renderNodes({ nodesWithBufferHeight })}
                             </svg>
                         )}
-                        {!configDiffView && (
+                        {!this.props.isOffendingPipelineView && !configDiffView && (
                             <PipelineSelect
                                 workflowId={this.props.id}
                                 showMenu={this.state.showCIMenu}
