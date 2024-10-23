@@ -13,16 +13,16 @@ const OfflinePipelineModalAppView = ({ appId, policyKind, policyName }: OfflineP
 
     const [isWorkflowsLoading, workflowsResponse, workflowsError, refetchWorkflows] = useAsync(
         () =>
-            getInitialWorkflows(
-                appId.toString(),
-                WorkflowCreate,
-                WorkflowCreate.workflow,
-                true,
-                false,
-                null,
-                false,
-                `policy/${policyKind}|identifier|${policyName}`,
-            ),
+            getInitialWorkflows({
+                id: appId.toString(),
+                dimensions: WorkflowCreate,
+                workflowOffset: WorkflowCreate.workflow,
+                useAppWfViewAPI: true,
+                isJobView: false,
+                filteredEnvIds: null,
+                shouldCheckDeploymentWindow: false,
+                offending: `policy/${policyKind}|identifier|${policyName}`,
+            }),
         [appId],
         !!appId,
     )

@@ -32,7 +32,7 @@ import {
     Workflow,
     WorkflowResult,
     AddDimensionsToDownstreamDeploymentsParams,
-    OffendingWorkflowQueryParamType,
+    GetInitialWorkflowsParamsType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
@@ -50,16 +50,16 @@ export const getTriggerWorkflows = (
     useAppWfViewAPI: boolean,
     isJobView: boolean,
     filteredEnvIds?: string,
-): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(
-        appId,
-        WorkflowTrigger,
-        WorkflowTrigger.workflow,
+): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> =>
+    getInitialWorkflows({
+        id: appId,
+        dimensions: WorkflowTrigger,
+        workflowOffset: WorkflowTrigger.workflow,
         useAppWfViewAPI,
         isJobView,
         filteredEnvIds,
-    )
-}
+    })
+
 
 export const getCreateWorkflows = (
     appId,
@@ -72,20 +72,26 @@ export const getCreateWorkflows = (
     filteredCIPipelines
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
-}> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
-}
+}> =>
+    getInitialWorkflows({
+        id: appId,
+        dimensions: WorkflowCreate,
+        workflowOffset: WorkflowCreate.workflow,
+        useAppWfViewAPI: false,
+        isJobView,
+        filteredEnvIds,
+    })
 
-export const getInitialWorkflows = (
+export const getInitialWorkflows = ({
     id,
-    dimensions: WorkflowDimensions,
-    workflowOffset: Offset,
-    useAppWfViewAPI?: boolean,
-    isJobView?: boolean,
-    filteredEnvIds?: string,
-    shouldCheckDeploymentWindow: boolean = true,
-    offending: OffendingWorkflowQueryParamType = null,
-): Promise<{
+    dimensions,
+    workflowOffset,
+    useAppWfViewAPI,
+    isJobView,
+    filteredEnvIds,
+    shouldCheckDeploymentWindow = true,
+    offending = null,
+}: GetInitialWorkflowsParamsType): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
     workflows: WorkflowType[]

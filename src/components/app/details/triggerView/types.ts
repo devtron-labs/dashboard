@@ -47,7 +47,7 @@ import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { WorkflowDimensions } from './config'
+import { Offset, WorkflowDimensions } from './config'
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
 
@@ -752,3 +752,14 @@ export interface CIMaterialModalProps extends CIMaterialProps {
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`
+
+export interface GetInitialWorkflowsParamsType {
+    id: any
+    dimensions: WorkflowDimensions
+    workflowOffset: Offset
+    useAppWfViewAPI?: boolean
+    isJobView?: boolean
+    filteredEnvIds?: string
+    shouldCheckDeploymentWindow?: boolean
+    offending?: OffendingWorkflowQueryParamType
+}
