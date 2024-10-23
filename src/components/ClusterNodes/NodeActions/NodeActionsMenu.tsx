@@ -195,9 +195,11 @@ export default function NodeActionsMenu({
             )}
             {showDeleteNodeDialog && (
                 <DeleteNodeModal
-                    name={nodeData.name}
-                    version={nodeData.version}
-                    kind={nodeData.kind}
+                    nodes={[{
+                        name: nodeData.name,
+                        version: nodeData.version,
+                        kind: nodeData.kind,
+                    }]}
                     closePopup={hideDeleteNodeModal}
                 />
             )}

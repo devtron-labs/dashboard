@@ -30,6 +30,11 @@ import {
     SortingOrder,
     Tooltip,
     ClipboardButton,
+    useBulkSelection,
+    Checkbox,
+    BulkSelectionEvents,
+    CHECKBOX_VALUE,
+    BulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -46,6 +51,8 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 import { URLParams } from '../ResourceBrowser/Types'
 import './clusterNodes.scss'
+import BulkSelectionActionWidget from '@Components/ResourceBrowser/ResourceList/BulkSelectionActionWidget'
+import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 
 export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab, showStaleDataWarning }) {
     const { clusterId, nodeType } = useParams<URLParams>()
@@ -62,10 +69,17 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [searchText, setSearchText] = useState(name || label || group || '')
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
-    const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
+    const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<NodeDetail[]>([])
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        handleBulkSelection,
+        setIdentifiers,
+        isBulkSelectionApplied,
+        getSelectedIdentifiersCount,
+    } = useBulkSelection<Record<number, NodeDetail>>()
 
     const initialSeachType = getInitialSearchType(name, label, group)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<SearchTextType | ''>(initialSeachType)
@@ -74,8 +88,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
+    const [openDeleteNodeModal, setOpenDeleteNodeModal] = useState(false)
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
+    const parentRef = useRef(null)
 
     const [, nodeK8sVersions] = useAsync(
         () =>
@@ -128,6 +144,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value)
+
+    const showPaginatedView = filteredFlattenNodeList.length > pageSize
 
     useEffect(() => {
         const qs = queryString.parse(location.search)
@@ -217,7 +235,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         getNodeList(clusterId)
             .then((response) => {
                 if (response.result) {
-                    const _flattenNodeList = response.result.map((data) => {
+                    const _flattenNodeList = response.result.map((data, index) => {
                         const _flattenNodeData = flattenObject(data)
                         if (data['errors']) {
                             _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
@@ -225,6 +243,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         if (data['taints']) {
                             _flattenNodeData['taintCount'] = Object.keys(data['taints']).length
                         }
+                        _flattenNodeData['id'] = index
                         return _flattenNodeData
                     })
                     setFlattenNodeList(_flattenNodeList)
@@ -307,6 +326,33 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         setNodeListOffset(0)
     }
 
+    useEffect(() => {
+        setIdentifiers(
+            filteredFlattenNodeList.slice(nodeListOffset, nodeListOffset + pageSize).reduce((acc, curr) => {
+                acc[curr.id] = curr
+                return acc
+            }, {}),
+        )
+    }, [nodeListOffset, pageSize, filteredFlattenNodeList])
+
+    const handleOpenBulkDeleteModal = () => {
+        setOpenDeleteNodeModal(true)
+    }
+
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
+
+    const handleCloseBulkDeleteModal = (refreshData = false) => {
+        setOpenDeleteNodeModal(false)
+        if (refreshData) {
+            handleClearBulkSelection()
+            getNodeListData()
+        }
+    }
+
     const numericComparatorMethod = (a, b) => {
         let firstValue = a[sortByColumn.sortingFieldName] || 0
         let secondValue = b[sortByColumn.sortingFieldName] || 0
@@ -362,18 +408,69 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         setNodeListOffset(0)
     }
 
-    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
-        <SortableTableHeaderCell
-            key={column.label}
-            showTippyOnTruncate
-            disabled={false}
-            triggerSorting={handleSortClick(column)}
-            title={column.label}
-            isSorted={sortByColumn.value === column.value}
-            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-            isSortable={!!column.isSortingAllowed}
-        />
-    )
+    const getHandleCheckedForId = (nodeData: NodeDetail) => () => {
+        const id = nodeData.id
+        const clone = structuredClone(bulkSelectionState)
+
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else if (clone[id]) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else {
+            handleBulkSelection({
+                action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                data: {
+                    identifierObject: {
+                        ...bulkSelectionState,
+                        [id]: nodeData,
+                    },
+                },
+            })
+        }
+    }
+
+    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
+        if (column.label.toUpperCase() === 'NODE') {
+            return (
+                <div className="flexbox dc__gap-8 dc__align-items-center">
+                    <BulkSelection showPagination={showPaginatedView} />
+                    <SortableTableHeaderCell
+                        key={column.label}
+                        showTippyOnTruncate
+                        disabled={false}
+                        triggerSorting={handleSortClick(column)}
+                        title={column.label}
+                        isSorted={sortByColumn.value === column.value}
+                        sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+                        isSortable={!!column.isSortingAllowed}
+                    />
+                </div>
+            )
+        }
+
+        return (
+            <SortableTableHeaderCell
+                key={column.label}
+                showTippyOnTruncate
+                disabled={false}
+                triggerSorting={handleSortClick(column)}
+                title={column.label}
+                isSorted={sortByColumn.value === column.value}
+                sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+                isSortable={!!column.isSortingAllowed}
+            />
+        )
+    }
 
     const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
         return (
@@ -456,10 +553,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
 
-    const renderNodeList = (nodeData: Object): JSX.Element => {
+    const renderNodeList = (nodeData: NodeDetail): JSX.Element => {
         return (
             <div
-                key={nodeData['name']}
+                key={`${nodeData.id}-${bulkSelectionState[nodeData.id]}-${isBulkSelectionApplied}`}
                 ref={nodeListRef}
                 className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
@@ -469,6 +566,12 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
+                            <Checkbox
+                                isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
+                                onChange={getHandleCheckedForId(nodeData)}
+                                rootClassName="mb-0"
+                                value={CHECKBOX_VALUE.CHECKED}
+                            />
                             <Tooltip content={nodeData[column.value]}>
                                 <NavLink
                                     data-testid="cluster-node-link"
@@ -484,7 +587,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                                 rootClassName="p-4 dc__visible-hover--child"
                             />
                             <NodeActionsMenu
-                                nodeData={nodeData as NodeDetail}
+                                nodeData={nodeData}
                                 openTerminal={openTerminalComponent}
                                 getNodeListData={getNodeListData}
                                 isSuperAdmin={isSuperAdmin}
@@ -519,9 +622,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         nodeListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
         history.push(url)
     }
+
     const renderPagination = (): JSX.Element => {
         return (
-            filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
+            showPaginatedView && (
                 <Pagination
                     rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                     size={filteredFlattenNodeList.length}
@@ -566,10 +670,14 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
 
     return (
-        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left">
+        <div
+            ref={parentRef}
+            data-testid="cluster_name_info_page"
+            className="node-list dc__overflow-hidden dc__border-left flexbox-col"
+        >
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
-                className={`bcn-0 pt-16 h-100 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
+                className={`bcn-0 pt-16 flex-grow-1 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
                     noResults ? 'no-result-container' : ''
                 }`}
             >
@@ -609,6 +717,22 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     </>
                 )}
             </div>
+            {(getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                <BulkSelectionActionWidget
+                    count={
+                        isBulkSelectionApplied ? filteredFlattenNodeList?.length ?? 0 : getSelectedIdentifiersCount()
+                    }
+                    handleClearBulkSelection={handleClearBulkSelection}
+                    handleOpenBulkDeleteModal={handleOpenBulkDeleteModal}
+                    parentRef={parentRef}
+                />
+            )}
+            {openDeleteNodeModal && (
+                <DeleteNodeModal
+                    closePopup={handleCloseBulkDeleteModal}
+                    nodes={isBulkSelectionApplied ? filteredFlattenNodeList ?? [] : Object.values(bulkSelectionState)}
+                />
+            )}
         </div>
     )
 }

@@ -1097,9 +1097,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                     )}
                     {showDeleteNodeDialog && (
                         <DeleteNodeModal
-                            name={node}
-                            version={nodeDetail.version}
-                            kind={nodeDetail.kind}
+                            nodes={[{
+                                name: node,
+                                version: nodeDetail.version,
+                                kind: nodeDetail.kind,
+                            }]}
                             closePopup={hideDeleteNodeModal}
                         />
                     )}

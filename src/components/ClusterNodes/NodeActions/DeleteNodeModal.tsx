@@ -15,14 +15,15 @@
  */
 
 import { useState } from 'react'
-import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
+import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager, ApiQueuingWithBatch, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
+import { Prompt, useParams } from 'react-router-dom'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { NodeActionModalPropType } from '../types'
+import { DeleteNodeModalProps } from '../types'
 import { deleteNodeCapacity } from '../clusterNodes.service'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 
-export default function DeleteNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
+export default function DeleteNodeModal({ closePopup, nodes }: DeleteNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -30,16 +31,20 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
         closePopup()
     }
 
+    usePrompt({
+        shouldPrompt: apiCallInProgress
+    })
+
     const deleteAPI = async () => {
         try {
             setAPICallInProgress(true)
-            const payload = {
-                clusterId: Number(clusterId),
-                name,
-                version,
-                kind,
-            }
-            await deleteNodeCapacity(payload)
+            const calls = nodes.map((node) => {
+                return () => deleteNodeCapacity({
+                    clusterId: Number(clusterId),
+                    ...node
+                })
+            })
+            await ApiQueuingWithBatch(calls, true)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: DELETE_NODE_MODAL_MESSAGING.initiated,
@@ -62,22 +67,25 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
     }
 
     return (
-        <DeleteDialog
-            title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${name}’ ?`}
-            delete={deleteAPI}
-            closeDelete={onClose}
-            deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
-            apiCallInProgress={apiCallInProgress}
-        >
-            <InfoColourBar
-                classname="question-bar p-lr-12"
-                message={<RecommendedNote />}
-                Icon={Help}
-                iconClass="fcv-5"
-            />
-            <DeleteDialog.Description>
-                <p className="mt-12 mb-12">{DELETE_NODE_MODAL_MESSAGING.description}</p>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+        <>
+            <Prompt when={apiCallInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+            <DeleteDialog
+                title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${name}’ ?`}
+                delete={deleteAPI}
+                closeDelete={onClose}
+                deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
+                apiCallInProgress={apiCallInProgress}
+            >
+                <InfoColourBar
+                    classname="question-bar p-lr-12"
+                    message={<RecommendedNote />}
+                    Icon={Help}
+                    iconClass="fcv-5"
+                />
+                <DeleteDialog.Description>
+                    <p className="mt-12 mb-12">{DELETE_NODE_MODAL_MESSAGING.description}</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+        </>
     )
 }

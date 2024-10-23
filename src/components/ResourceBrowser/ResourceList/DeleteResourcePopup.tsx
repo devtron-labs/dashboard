@@ -66,7 +66,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
 
                 return () => deleteResource(resourceDeletePayload)
             })
-            await ApiQueuingWithBatch(calls)
+            await ApiQueuingWithBatch(calls, true)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Resource deleted successfully',

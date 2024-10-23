@@ -162,7 +162,7 @@ export const K8SResourceList = ({
         return result
     }, [_resourceList])
 
-    const showPaginatedView = filteredResourceList?.length >= pageSize
+    const showPaginatedView = filteredResourceList?.length > pageSize
 
     /**
      * Initial Sort Key

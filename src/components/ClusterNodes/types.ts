@@ -165,6 +165,8 @@ export interface NodeDetail {
     manifest: object
     conditions: { haveIssue: boolean; message: string; reason: string; type: string }[]
     taintCount: number
+    // NOTE: adding this to response locally for use as key
+    id?: number
 }
 export interface NodeDetailResponse extends ResponseType {
     result?: NodeDetail
@@ -258,6 +260,10 @@ export interface NodeActionRequest {
 }
 export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
+}
+
+export interface DeleteNodeModalProps extends Pick<NodeActionModalPropType, 'closePopup'> {
+    nodes: Array<NodeActionRequest>
 }
 
 export interface CordonNodeModalType extends NodeActionModalPropType {
