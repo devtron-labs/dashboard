@@ -104,9 +104,9 @@ export const K8ResourceComponent = ({
 
     const handleFilterClick = (selectedFilter: string) => {
         const searchParams = new URLSearchParams([['filterType', selectedFilter]])
+        IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
             history.push({ search: `${searchParams}` })
-            IndexStore.updateFilterType(selectedFilter.toUpperCase())
             return
         }
         // current selected node exist in new selected filter or not
@@ -122,7 +122,6 @@ export const K8ResourceComponent = ({
         } else {
             history.push({ search: `${searchParams}` })
         }
-        IndexStore.updateFilterType(selectedFilter.toUpperCase())
     }
 
     return (
