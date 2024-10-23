@@ -252,5 +252,12 @@ export interface BulkSelectionActionWidgetProps {
     count: number
     handleOpenBulkDeleteModal: () => void
     handleClearBulkSelection: () => void
+    handleOpenRestartWorkloadModal: () => void
     parentRef: RefObject<HTMLDivElement>
+    showBulkRestartOption: boolean
+}
+
+export interface RestartWorkloadModalProps {
+    resources: NonNullable<SelectedResourceType[]>
+    handleModalClose: () => void
 }

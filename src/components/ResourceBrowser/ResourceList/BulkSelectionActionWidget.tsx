@@ -4,15 +4,18 @@ import {
     DraggableWrapper,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import { ReactComponent as ICTrash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICRestart } from '@Icons/ic-arrow-clockwise.svg'
 import { BulkSelectionActionWidgetProps } from '../Types'
 
 const BulkSelectionActionWidget = ({
     count,
     handleOpenBulkDeleteModal,
     handleClearBulkSelection,
+    showBulkRestartOption,
     parentRef,
+    handleOpenRestartWorkloadModal,
 }: BulkSelectionActionWidgetProps) => (
     <DraggableWrapper
         dragSelector=".drag-selector"
@@ -28,14 +31,29 @@ const BulkSelectionActionWidget = ({
             </div>
             <div className="dc__divider h-16" />
             <div className="flex dc__gap-8">
+                {showBulkRestartOption && (
+                    <>
+                        <Tooltip className="default-tt" arrow={false} placement="top" content="Restart workload(s)">
+                            <button
+                                type="button"
+                                className="dc__transparent flex p-0 icon-delete"
+                                onClick={handleOpenRestartWorkloadModal}
+                                aria-label="Restart selected workloads"
+                            >
+                                <ICRestart className="scn-6 icon-dim-28 p-6 dc__no-shrink" />
+                            </button>
+                        </Tooltip>
+                        <div className="dc__divider h-16" />
+                    </>
+                )}
                 <Tooltip className="default-tt" arrow={false} placement="top" content="Delete resources(s)">
                     <button
                         type="button"
                         className="dc__transparent flex p-0 icon-delete"
                         onClick={handleOpenBulkDeleteModal}
-                        aria-label="Delete selected user"
+                        aria-label="Delete selected resources"
                     >
-                        <Trash className="scn-6 icon-dim-28 p-6 dc__no-shrink" />
+                        <ICTrash className="scn-6 icon-dim-28 p-6 dc__no-shrink" />
                     </button>
                 </Tooltip>
                 <div className="dc__divider h-16" />
@@ -46,7 +64,7 @@ const BulkSelectionActionWidget = ({
                         onClick={handleClearBulkSelection}
                         aria-label="Clear bulk selection"
                     >
-                        <Close className="fcn-6 icon-dim-28 p-6 dc__no-shrink" />
+                        <ICClose className="fcn-6 icon-dim-28 p-6 dc__no-shrink" />
                     </button>
                 </Tooltip>
             </div>

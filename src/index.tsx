@@ -153,6 +153,7 @@ if (!window || !window._env_) {
         FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
         FEATURE_CONFIG_DRIFT_ENABLE: false,
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
     }
 }
 

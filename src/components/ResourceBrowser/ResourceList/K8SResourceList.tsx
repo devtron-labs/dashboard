@@ -53,7 +53,13 @@ import {
     DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
+import {
+    K8SResourceListType,
+    ResourceDetailDataType,
+    ResourceDetailType,
+    RestartWorkloadModalProps,
+    URLParams,
+} from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -69,6 +75,7 @@ import { URLS } from '../../../config'
 import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import BulkSelectionActionWidget from './BulkSelectionActionWidget'
 import DeleteResourcePopup from './DeleteResourcePopup'
+import RestartWorkloadModal from './RestartWorkloadModal'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -107,6 +114,7 @@ export const K8SResourceList = ({
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [openDeleteResourceModal, setOpenDeleteResourceModal] = useState(false)
+    const [openRestartWorkloadModal, setOpenRestartWorkloadModal] = useState(false)
 
     // REFS
     const resourceListRef = useRef<HTMLDivElement>(null)
@@ -452,6 +460,14 @@ export const K8SResourceList = ({
         setOpenDeleteResourceModal(false)
     }
 
+    const handleOpenRestartWorkloadModal = () => {
+        setOpenRestartWorkloadModal(true)
+    }
+
+    const handleCloseRestartWorkloadModal = () => {
+        setOpenRestartWorkloadModal(false)
+    }
+
     const handleClearBulkSelection = () => {
         handleBulkSelection({
             action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
@@ -461,6 +477,22 @@ export const K8SResourceList = ({
     const handleReloadDataAfterBulkDelete = () => {
         handleClearBulkSelection()
         reloadResourceListData()
+    }
+
+    const getRestartWorkloadResources = (): RestartWorkloadModalProps['resources'] => {
+        const arr = (isBulkSelectionApplied ? filteredResourceList : Object.values(bulkSelectionState)) ?? []
+
+        return (
+            arr?.map((resource) => ({
+                clusterId: Number(clusterId),
+                group: selectedResource?.gvk?.Group,
+                kind: selectedResource?.gvk?.Kind,
+                version: selectedResource?.gvk?.Version,
+                namespace: resource.namespace as string,
+                containers: [],
+                name: resource.name as string,
+            })) ?? []
+        )
     }
 
     const renderEmptyPage = (): JSX.Element => {
@@ -613,7 +645,13 @@ export const K8SResourceList = ({
                     count={isBulkSelectionApplied ? filteredResourceList?.length ?? 0 : getSelectedIdentifiersCount()}
                     handleClearBulkSelection={handleClearBulkSelection}
                     handleOpenBulkDeleteModal={handleOpenBulkDeleteModal}
+                    handleOpenRestartWorkloadModal={handleOpenRestartWorkloadModal}
                     parentRef={parentRef}
+                    showBulkRestartOption={
+                        window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                            .map((feat: string) => feat.trim().toUpperCase())
+                            .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
+                    }
                 />
             )}
             {openDeleteResourceModal && (
@@ -625,6 +663,12 @@ export const K8SResourceList = ({
                         isBulkSelectionApplied ? filteredResourceList ?? [] : Object.values(bulkSelectionState)
                     }
                     getResourceListData={handleReloadDataAfterBulkDelete as () => Promise<void>}
+                />
+            )}
+            {openRestartWorkloadModal && (
+                <RestartWorkloadModal
+                    handleModalClose={handleCloseRestartWorkloadModal}
+                    resources={getRestartWorkloadResources()}
                 />
             )}
         </div>

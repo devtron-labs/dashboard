@@ -35,6 +35,7 @@ import {
     BulkSelectionEvents,
     CHECKBOX_VALUE,
     BulkSelection,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -725,6 +726,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     handleClearBulkSelection={handleClearBulkSelection}
                     handleOpenBulkDeleteModal={handleOpenBulkDeleteModal}
                     parentRef={parentRef}
+                    showBulkRestartOption={false}
+                    handleOpenRestartWorkloadModal={noop}
                 />
             )}
             {openDeleteNodeModal && (
