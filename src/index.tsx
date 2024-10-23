@@ -152,6 +152,9 @@ if (!window || !window._env_) {
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: 'Try Devtron',
+        FEATURE_PROMO_EMBEDDED_MODAL_TITLE: 'Try Devtron Enterprise',
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL:'https://docs.google.com/forms/d/e/1FAIpQLSeIHqKdB2bxsOuxS9TJ6qTUK3bwayNmO1sETJDNCijBis_G0g/viewform'
     }
 }
 
