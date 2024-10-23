@@ -68,15 +68,15 @@ const ConfigHeader = ({
     parsingError,
     restoreLastSavedYAML,
 }: ConfigHeaderProps) => {
-    const validTabKeys = isOverridable
+    const tabKeys = isOverridable
         ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
         : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE
 
-    const activeTabIndex = validTabKeys.indexOf(configHeaderTab)
+    const activeTabIndex = tabKeys.indexOf(configHeaderTab)
 
     return (
         <div className="flexbox w-100 dc__align-items-center bc-n50 dc__box-shadow-bottom-n2">
-            {validTabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
+            {tabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
                 <InvalidYAMLTippyWrapper
                     key={currentTab}
                     parsingError={parsingError}
@@ -99,7 +99,7 @@ const ConfigHeader = ({
             ))}
 
             <div
-                className={`flex-grow-1 h-100 ${activeTabIndex >= 0 && activeTabIndex === validTabKeys.length - 1 ? 'dc__border-left' : ''}`}
+                className={`flex-grow-1 h-100 ${activeTabIndex >= 0 && activeTabIndex === tabKeys.length - 1 ? 'dc__border-left' : ''}`}
             />
         </div>
     )
