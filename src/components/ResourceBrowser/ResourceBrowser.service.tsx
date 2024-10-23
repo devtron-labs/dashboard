@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { ApiResourceType, get, post, ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResourceType,
+    get,
+    post,
+    ResponseType,
+    ApiResourceGroupType,
+    showError,
+    getIsRequestAborted,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType, ResourceListResponse } from './Types'
@@ -25,13 +33,22 @@ export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLU
 export const namespaceListByClusterId = (clusterId: string): Promise<ResponseType> =>
     get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
 
-export const getResourceList = (
+export const getResourceList = async (
     resourceListPayload: ResourceListPayloadType,
     signal?: AbortSignal,
-): Promise<ResourceListResponse> =>
-    post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
-        signal,
-    })
+): Promise<ResourceListResponse> => {
+    try {
+        return await post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
+            signal,
+        })
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+            throw err
+        }
+    }
+    return null
+}
 
 export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<ApiResourceType>> =>
     get(`${Routes.API_RESOURCE}/${clusterId}`, {

@@ -88,7 +88,6 @@ const BulkCITrigger = ({
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
     setPageViewType,
-    httpProtocol,
 }: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
@@ -137,7 +136,7 @@ const BulkCITrigger = ({
         if (runtimeParamsServiceList.length) {
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
-                const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
+                const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, true)
                 const _runtimeParams: Record<string, RuntimeParamsListItemType[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
@@ -166,7 +165,7 @@ const BulkCITrigger = ({
         if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
             // TODO: Remove then and use async await
-            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList, httpProtocol)
+            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList)
                 .then(async (responses: any[]) => {
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res.value?.['result']
@@ -249,7 +248,7 @@ const BulkCITrigger = ({
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
-                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, true)
                 responses.forEach((res, index) => {
                     policyListMap[appList[index]?.appId] = res.value?.['result']
                         ? processConsequenceData(res.value['result'])

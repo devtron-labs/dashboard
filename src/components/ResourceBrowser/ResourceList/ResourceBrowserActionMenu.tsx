@@ -178,7 +178,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
             {showDeleteDialog && (
                 <DeleteResourcePopup
                     clusterId={clusterId}
-                    resourceData={resourceData}
+                    resourceDatas={[resourceData]}
                     selectedResource={selectedResource}
                     getResourceListData={getResourceListData}
                     toggleDeleteDialog={toggleDeleteDialog}

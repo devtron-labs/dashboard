@@ -293,7 +293,7 @@ export const triggerCDNode = ({
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
     return new Promise((resolve) => {
         ApiQueuingWithBatch(
             appIds.map(
@@ -304,7 +304,6 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                         value: value,
                     }),
             ),
-            httpProtocol,
         )
             .then((results: any[]) => {
                 // Adding for legacy code since have move API Queueing to generics with unknown as default response

@@ -62,7 +62,6 @@ export const RestartWorkloadModal = ({
     envName,
     envId,
     hibernateInfoMap,
-    httpProtocol,
     isDeploymentBlockedViaWindow,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
@@ -604,7 +603,7 @@ export const RestartWorkloadModal = ({
         } else {
             const functionCalls = createFunctionCallsFromRestartPodMap()
             setStatusModalLoading(true)
-            ApiQueuingWithBatch(functionCalls, httpProtocol)
+            ApiQueuingWithBatch(functionCalls)
                 .then(async () => {})
                 .catch(() => {})
                 .finally(() => {

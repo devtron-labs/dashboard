@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { RefObject } from 'react'
 import {
     K8SObjectBaseType,
     ResponseType,
@@ -28,6 +28,7 @@ import { useTabs } from '../common/DynamicTabs'
 
 export type ResourceDetailDataType = {
     [key: string]: string | number | object
+    id?: number
 }
 
 export interface ResourceDetailType {
@@ -157,7 +158,7 @@ export interface ResourceBrowserActionMenuType {
 
 export interface DeleteResourcePopupType {
     clusterId: string
-    resourceData: ResourceDetailDataType
+    resourceDatas: ResourceDetailDataType[]
     selectedResource: ApiResourceGroupType
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
@@ -245,4 +246,11 @@ export interface ClusterSelectorType {
 export interface CreateResourceButtonType {
     clusterId: string
     closeModal: CreateResourceType['closePopup']
+}
+
+export interface BulkSelectionActionWidgetProps {
+    count: number
+    handleOpenBulkDeleteModal: () => void
+    handleClearBulkSelection: () => void
+    parentRef: RefObject<HTMLDivElement>
 }

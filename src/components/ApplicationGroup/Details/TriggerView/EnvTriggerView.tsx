@@ -142,7 +142,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const match = useRouteMatch<CIMaterialRouterProps>()
     const { url } = useRouteMatch()
 
-    const httpProtocol = useRef('')
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
@@ -191,20 +190,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (ApprovalMaterialModal) {
             getConfigs()
         }
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-                const protocol = entry.nextHopProtocol
-                if (protocol && entry.initiatorType === 'fetch') {
-                    httpProtocol.current = protocol
-                    observer.disconnect()
-                }
-            })
-        })
 
-        observer.observe({ type: 'resource', buffered: true })
         return () => {
             handledLocation.current = false
-            observer.disconnect()
         }
     }, [])
 
@@ -1197,7 +1185,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        triggerBranchChange(appIds, +envId, value, httpProtocol.current)
+        triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
                 const _responseList = []
                 response.map((res) => {
@@ -1532,7 +1520,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBulkTriggerLoading(true)
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
-            ApiQueuingWithBatch(promiseFunctionList, httpProtocol.current).then((responses: any[]) => {
+            ApiQueuingWithBatch(promiseFunctionList).then((responses: any[]) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -2034,7 +2022,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCDLoading}
                 isVirtualEnv={isVirtualEnv}
                 uniqueReleaseTags={uniqueReleaseTags}
-                httpProtocol={httpProtocol.current}
                 runtimeParams={runtimeParams}
                 setRuntimeParams={setRuntimeParams}
                 runtimeParamsErrorState={runtimeParamsErrorState}
@@ -2068,7 +2055,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 runtimeParamsErrorState={runtimeParamsErrorState}
                 setRuntimeParamsErrorState={setRuntimeParamsErrorState}
                 setPageViewType={setPageViewType}
-                httpProtocol={httpProtocol.current}
             />
         )
     }

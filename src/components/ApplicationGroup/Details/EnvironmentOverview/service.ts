@@ -34,7 +34,6 @@ export const manageApps = async (
     envId: number,
     envName: string,
     action: 'hibernate' | 'unhibernate',
-    httpProtocol: string,
 ) => {
     const appIdsSet = new Set(appIds)
     const appNames = appDetailsList
@@ -55,7 +54,6 @@ export const manageApps = async (
                         { timeout: window._env_.TRIGGER_API_TIMEOUT },
                     ),
             ),
-            httpProtocol,
         )
             // Disabling this rule as this is earlier implementation of APIQueueing when it did not had generics
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

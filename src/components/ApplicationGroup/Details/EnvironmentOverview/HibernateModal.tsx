@@ -35,7 +35,6 @@ export const HibernateModal = ({
     setShowHibernateStatusDrawer,
     isDeploymentWindowLoading,
     showDefaultDrawer,
-    httpProtocol,
     isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -58,7 +57,6 @@ export const HibernateModal = ({
             Number(envId),
             envName,
             openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'hibernate' : 'unhibernate',
-            httpProtocol,
         ).then((res) => {
             setAppStatusResponseList(res)
             setShowHibernateStatusDrawer({

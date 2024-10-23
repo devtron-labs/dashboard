@@ -23,15 +23,18 @@ import {
     noop,
     ToastManager,
     ToastVariantType,
+    ApiQueuingWithBatch,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType, ResourceListPayloadType } from '../Types'
 import { deleteResource } from '../ResourceBrowser.service'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     clusterId,
-    resourceData,
+    resourceDatas,
     selectedResource,
     getResourceListData,
     toggleDeleteDialog,
@@ -41,35 +44,44 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
 
+    usePrompt({
+        shouldPrompt: apiCallInProgress,
+    })
+
     const handleDelete = async (): Promise<void> => {
         try {
             setApiCallInProgress(true)
-            const resourceDeletePayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedResource.gvk,
-                        namespace: String(resourceData.namespace),
-                        name: String(resourceData.name),
+            const calls = resourceDatas.map((resourceData) => {
+                const resourceDeletePayload: ResourceListPayloadType = {
+                    clusterId: Number(clusterId),
+                    k8sRequest: {
+                        resourceIdentifier: {
+                            groupVersionKind: selectedResource.gvk,
+                            namespace: String(resourceData.namespace),
+                            name: String(resourceData.name),
+                        },
+                        forceDelete,
                     },
-                    forceDelete,
-                },
-            }
+                }
 
-            await deleteResource(resourceDeletePayload)
+                return () => deleteResource(resourceDeletePayload)
+            })
+            await ApiQueuingWithBatch(calls)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Resource deleted successfully',
             })
+            if (removeTabByIdentifier) {
+                resourceDatas.forEach((resourceData) => {
+                    removeTabByIdentifier(
+                        `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
+                    )
+                        .then((url) => url && push(url))
+                        .catch(noop)
+                })
+            }
             await getResourceListData()
             toggleDeleteDialog()
-            if (removeTabByIdentifier) {
-                removeTabByIdentifier(
-                    `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
-                )
-                    .then((url) => url && push(url))
-                    .catch(noop)
-            }
         } catch (err) {
             showError(err)
         } finally {
@@ -82,25 +94,32 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     }
 
     return (
-        <DeleteDialog
-            title={`Delete ${selectedResource.gvk.Kind} "${resourceData.name}"`}
-            delete={handleDelete}
-            closeDelete={toggleDeleteDialog}
-            apiCallInProgress={apiCallInProgress}
-        >
-            <DeleteDialog.Description>
-                <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
-                <Checkbox
-                    rootClassName="resource-force-delete"
-                    isChecked={forceDelete}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    disabled={apiCallInProgress}
-                    onChange={forceDeleteHandler}
-                >
-                    {DELETE_MODAL_MESSAGING.checkboxText}
-                </Checkbox>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+        <>
+            <Prompt when={apiCallInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+            <DeleteDialog
+                title={
+                    resourceDatas.length > 1
+                        ? `Delete ${resourceDatas.length} ${selectedResource.gvk.Kind}(s)?`
+                        : `Delete ${selectedResource.gvk.Kind} "${resourceDatas[0]?.name}"`
+                }
+                delete={handleDelete}
+                closeDelete={toggleDeleteDialog}
+                apiCallInProgress={apiCallInProgress}
+            >
+                <DeleteDialog.Description>
+                    <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
+                    <Checkbox
+                        rootClassName="resource-force-delete"
+                        isChecked={forceDelete}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        disabled={apiCallInProgress}
+                        onChange={forceDeleteHandler}
+                    >
+                        {DELETE_MODAL_MESSAGING.checkboxText}
+                    </Checkbox>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+        </>
     )
 }
 

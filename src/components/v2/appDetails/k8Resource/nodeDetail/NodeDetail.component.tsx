@@ -595,7 +595,7 @@ const NodeDetailComponent = ({
             {isResourceBrowserView && showDeleteDialog && (
                 <DeleteResourcePopup
                     clusterId={`${selectedResource.clusterId}`}
-                    resourceData={selectedResource}
+                    resourceDatas={[selectedResource]}
                     selectedResource={{
                         gvk: {
                             Group: selectedResource.group,

@@ -89,7 +89,6 @@ export default function BulkCDTrigger({
     setLoading,
     isVirtualEnv,
     uniqueReleaseTags,
-    httpProtocol,
     runtimeParams,
     setRuntimeParams,
     runtimeParamsErrorState,
@@ -308,7 +307,7 @@ export default function BulkCDTrigger({
             }
         }
 
-        ApiQueuingWithBatch(_cdMaterialFunctionsList, httpProtocol)
+        ApiQueuingWithBatch(_cdMaterialFunctionsList)
             .then(async (responses: any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
                 if (getDeploymentWindowStateAppGroup) {
