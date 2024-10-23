@@ -25,6 +25,7 @@ import {
     CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
     CONFIG_MAP_SECRET_NO_DATA_ERROR,
+    configMapSecretMountDataMap,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
@@ -59,11 +60,17 @@ export const ConfigMapSecretData = ({
     const config: KeyValueConfig<'k' | 'v'> = {
         headers: [
             {
-                label: data.externalType === '' && data.selectedType === 'volume' ? 'File Name' : 'Key',
+                label:
+                    data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
+                        ? 'File Name'
+                        : 'Key',
                 key: 'k',
             },
             {
-                label: data.externalType === '' && data.selectedType === 'volume' ? 'File Content' : 'Value',
+                label:
+                    data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
+                        ? 'File Content'
+                        : 'Value',
                 key: 'v',
             },
         ],

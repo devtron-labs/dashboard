@@ -6,5 +6,6 @@ export { default as ConfigHeader } from './ConfigHeader'
 export { default as NoPublishedVersionEmptyState } from './NoPublishedVersionEmptyState'
 export { default as CompareConfigView } from './CompareConfigView'
 export * from './DeploymentConfigCompare'
+export { default as ToggleResolveScopedVariables } from './ToggleResolveScopedVariables'
 
 export type { ConfigToolbarProps, CompareConfigViewProps } from './types'
