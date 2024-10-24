@@ -123,7 +123,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                                     placement="left"
                                 >
                                     <div className="flex center dc__content-start">
-                                        <ICVisibilityOn className="icon-dim-20" data-testid="visibility-on" />
+                                        <ICVisibilityOn className="icon-dim-20 scn-6" data-testid="visibility-on" />
                                     </div>
                                 </Tippy>
                             )}
