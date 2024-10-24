@@ -978,7 +978,12 @@ const DeploymentTemplate = ({
 
         if (shouldValidateLockChanges) {
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments(false, state),
+                documents: getLockedDiffModalDocuments({
+                    isApprovalView: false,
+                    state,
+                    isEnvView: !!envId,
+                    isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
+                }),
                 lockedConfigKeysWithLockType,
             })
 
@@ -1022,7 +1027,12 @@ const DeploymentTemplate = ({
             // We are going to test the draftData not the current edited data and for this the computation has already been done
             // TODO: Test concurrent behavior for api validation
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments(true, state),
+                documents: getLockedDiffModalDocuments({
+                    isApprovalView: true,
+                    state,
+                    isEnvView: !!envId,
+                    isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
+                }),
                 lockedConfigKeysWithLockType,
             })
 
@@ -1637,7 +1647,12 @@ const DeploymentTemplate = ({
                         showLockedDiffForApproval={showLockedDiffForApproval}
                         onSave={handleTriggerSaveFromLockedModal}
                         isSaving={isSaving}
-                        documents={getLockedDiffModalDocuments(isApprovalView, state)}
+                        documents={getLockedDiffModalDocuments({
+                            isApprovalView,
+                            state,
+                            isEnvView: !!envId,
+                            isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
+                        })}
                         appId={appId}
                         envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
                     />

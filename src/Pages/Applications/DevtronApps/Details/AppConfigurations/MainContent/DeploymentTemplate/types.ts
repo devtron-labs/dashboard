@@ -466,3 +466,15 @@ export interface OverriddenBaseDeploymentTemplateParsedDraftDTO {
     mergeStrategy: OverrideMergeStrategyType
     envOverridePatchValues: Record<string, string>
 }
+
+export interface GetLockedDiffModalDocumentsParamsType {
+    isApprovalView: boolean
+    state: DeploymentTemplateStateType
+    isPreviousOverrideAvailable: boolean
+    isEnvView: boolean
+}
+
+export interface GetLockedDiffModalDocumentsReturnType {
+    unedited: Record<string, string>
+    edited: Record<string, string>
+}

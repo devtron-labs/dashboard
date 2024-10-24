@@ -19,6 +19,8 @@ import {
     GetCurrentEditorStateProps,
     GetDryRunViewEditorStateProps,
     GetLockConfigEligibleAndIneligibleChangesType,
+    GetLockedDiffModalDocumentsParamsType,
+    GetLockedDiffModalDocumentsReturnType,
     GetRawEditorValueForDryRunModeProps,
     HandleInitializeDraftDataProps,
     OverriddenBaseDeploymentTemplateParsedDraftDTO,
@@ -135,8 +137,13 @@ export const getCurrentTemplateWithLockedKeys = ({
     return currentEditorTemplateData.editorTemplate
 }
 
-export const getLockedDiffModalDocuments = (isApprovalView: boolean, state: DeploymentTemplateStateType) => ({
-    unedited: state.publishedTemplateData.originalTemplate,
+export const getLockedDiffModalDocuments = ({
+    isApprovalView,
+    state,
+    isPreviousOverrideAvailable,
+    isEnvView,
+}: GetLockedDiffModalDocumentsParamsType): GetLockedDiffModalDocumentsReturnType => ({
+    unedited: isEnvView && !isPreviousOverrideAvailable ? {} : state.publishedTemplateData.originalTemplate,
     edited: isApprovalView
         ? state.draftTemplateData.originalTemplate
         : YAML.parse(
@@ -487,7 +494,12 @@ export const getUpdateBaseDeploymentTemplatePayload = (
     if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
         // Question: In case of draft edit should we do this or approval as unedited?
         const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments(false, state),
+            documents: getLockedDiffModalDocuments({
+                isApprovalView: false,
+                state,
+                isEnvView: false,
+                isPreviousOverrideAvailable: false,
+            }),
             lockedConfigKeysWithLockType,
         })
 
@@ -589,7 +601,12 @@ export const getUpdateEnvironmentDTPayload = (
 
     if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
         const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments(false, state),
+            documents: getLockedDiffModalDocuments({
+                isApprovalView: false,
+                state,
+                isEnvView: true,
+                isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
+            }),
             lockedConfigKeysWithLockType,
         })
 
