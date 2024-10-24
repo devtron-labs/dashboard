@@ -8,8 +8,11 @@ import {
     DOCUMENTATION_HOME_PAGE,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
+
+const PatchStrategyTooltipInfo = importComponentFromFELibrary('PatchStrategyTooltipInfo', null, 'function')
 
 const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisabled }: SelectMergeStrategyProps) => {
     const handleChange = (selectedOption: SelectPickerOptionType) => {
@@ -20,7 +23,11 @@ const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisab
         <div className="flexbox dc__gap-6 dc__align-items-center">
             <InfoIconTippy
                 heading="Merge strategy"
-                additionalContent={<OverrideStrategyTippyContent />}
+                additionalContent={
+                    <OverrideStrategyTippyContent>
+                        {PatchStrategyTooltipInfo && <PatchStrategyTooltipInfo />}
+                    </OverrideStrategyTippyContent>
+                }
                 documentationLink={DOCUMENTATION_HOME_PAGE}
             />
 
