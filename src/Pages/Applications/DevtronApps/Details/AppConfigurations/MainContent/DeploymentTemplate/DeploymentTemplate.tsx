@@ -1048,13 +1048,18 @@ const DeploymentTemplate = ({
         await handleSaveTemplate()
     }
 
+    const handleApprovalLockConfigError = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_LOCKED_DIFF_FOR_APPROVAL,
+        })
+    }
+
     /**
      * If true, it is valid, else would show locked diff modal
      */
     const handleValidateApprovalState = (): boolean => {
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
-            // TODO: Concurrent behavior will be handled through 422 api code
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                 documents: getLockedDiffModalDocuments({
                     isApprovalView: true,
@@ -1064,9 +1069,7 @@ const DeploymentTemplate = ({
             })
 
             if (Object.keys(ineligibleChanges || {}).length) {
-                dispatch({
-                    type: DeploymentTemplateActionType.SHOW_LOCKED_DIFF_FOR_APPROVAL,
-                })
+                handleApprovalLockConfigError()
 
                 return false
             }
@@ -1473,6 +1476,7 @@ const DeploymentTemplate = ({
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
                     isDryRunView={isDryRunView}
+                    handleApprovalLockConfigError={handleApprovalLockConfigError}
                 />
             )
         }
