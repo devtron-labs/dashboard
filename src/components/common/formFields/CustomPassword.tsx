@@ -43,7 +43,7 @@ export const CustomPassword = ({ name, value, error, onChange, label, disabled =
                     onClick={(e) => setShowPassword(!showPassword)}
                     style={{ bottom: error ? 28 : 7 }}
                 >
-                    <Show className={`icon-dim-24 ${showPassword ? 'icon-n5' : 'icon-n3'}`} />
+                    <Show className={`icon-dim-24 ${showPassword ? 'scn-5' : 'scn-3'}`} />
                 </button>
             </div>
             {error && (

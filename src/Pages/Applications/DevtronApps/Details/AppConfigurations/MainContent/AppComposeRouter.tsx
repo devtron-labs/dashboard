@@ -23,7 +23,7 @@ import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
 import { ErrorBoundary, importComponentFromFELibrary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
@@ -34,13 +34,12 @@ import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
-const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
+const DeploymentTemplate = lazy(() => import('./DeploymentTemplate/DeploymentTemplate'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -202,13 +201,13 @@ const AppComposeRouter = () => {
             )}
             {isUnlocked.deploymentTemplate && (
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                    <DeploymentConfig
+                    <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
-                        environments={environments}
                         isProtected={isBaseConfigProtected}
                         reloadEnvironments={reloadEnvironments}
+                        fetchEnvConfig={fetchEnvConfig}
                     />
                 </Route>
             )}
@@ -291,49 +290,41 @@ const AppComposeRouter = () => {
                         />
                     )}
                 </Route>,
-                ...(CompareWithButton
-                    ? [
-                          <Route
-                              key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                              path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-                          >
-                              {({ match }) => {
-                                  const basePath = generatePath(path, match.params)
-                                  const envOverridePath = match.params.envId
-                                      ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                                      : ''
-                                  // Set the resourceTypePath based on the resourceType from the URL parameters.
-                                  // If the resourceType is 'Manifest', use 'deployment-template' as the back URL.
-                                  // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                                  const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
-                                  const resourceNamePath = match.params.resourceName
-                                      ? `/${match.params.resourceName}`
-                                      : ''
+                <Route
+                    key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                >
+                    {({ match }) => {
+                        const basePath = generatePath(path, match.params)
+                        const envOverridePath = match.params.envId
+                            ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                            : ''
+                        // Set the resourceTypePath based on the resourceType from the URL parameters.
+                        // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
+                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                                  const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+                        const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
 
-                                  return (
-                                      <DeploymentConfigCompare
-                                          type="app"
-                                          appName={currentAppName}
-                                          environments={environments.map(
-                                              ({ environmentId, environmentName, isProtected }) => ({
-                                                  id: environmentId,
-                                                  isProtected,
-                                                  name: environmentName,
-                                              }),
-                                          )}
-                                          isBaseConfigProtected={isBaseConfigProtected}
-                                          goBackURL={goBackURL}
-                                          getNavItemHref={(resourceType, resourceName) =>
-                                              `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                          }
-                                      />
-                                  )
-                              }}
-                          </Route>,
-                      ]
-                    : []),
+                        return (
+                            <DeploymentConfigCompare
+                                type="app"
+                                appName={currentAppName}
+                                environments={environments.map(({ environmentId, environmentName, isProtected }) => ({
+                                    id: environmentId,
+                                    isProtected,
+                                    name: environmentName,
+                                }))}
+                                isBaseConfigProtected={isBaseConfigProtected}
+                                goBackURL={goBackURL}
+                                getNavItemHref={(resourceType, resourceName) =>
+                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                }
+                            />
+                        )
+                    }}
+                </Route>,
             ]}
             {/* Redirect route is there when current path url has something after /edit */}
             {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
