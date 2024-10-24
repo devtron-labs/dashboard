@@ -158,7 +158,6 @@ export interface DeploymentTemplateStateType {
      */
     showReadMe: boolean
     editMode: ConfigurationType
-    configHeaderTab: ConfigHeaderTabType
     shouldMergeTemplateWithPatches: boolean
     selectedProtectionViewTab: ProtectConfigTabsType
     /**
@@ -485,4 +484,8 @@ export interface GetLockedDiffModalDocumentsParamsType {
 export interface GetLockedDiffModalDocumentsReturnType {
     unedited: Record<string, string>
     edited: Record<string, string>
+}
+
+export interface DeploymentTemplateURLConfigType {
+    configHeaderTab: ConfigHeaderTabType
 }

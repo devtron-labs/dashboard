@@ -36,6 +36,7 @@ import {
     ResponseType,
     API_STATUS_CODES,
     OverrideMergeStrategyType,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -49,6 +50,7 @@ import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
 import {
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
+    DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
     HandleInitializeTemplatesWithoutDraftParamsType,
@@ -71,6 +73,7 @@ import {
     getUpdateBaseDeploymentTemplatePayload,
     getUpdateEnvironmentDTPayload,
     handleInitializeDraftData,
+    parseDeploymentTemplateParams,
 } from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import {
@@ -130,6 +133,15 @@ const DeploymentTemplate = ({
         getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
+    const { configHeaderTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<
+        never,
+        DeploymentTemplateURLConfigType
+    >({
+        parseSearchParams: parseDeploymentTemplateParams(envId),
+    })
+
+    const configHeaderTab = urlConfigHeaderTab || ConfigHeaderTabType.VALUES
+
     const {
         chartDetails,
         lockedConfigKeysWithLockType,
@@ -143,7 +155,6 @@ const DeploymentTemplate = ({
         showDraftComments,
         hideLockedKeys,
         editMode,
-        configHeaderTab,
         shouldMergeTemplateWithPatches,
         selectedProtectionViewTab,
         dryRunEditorMode,
@@ -496,11 +507,12 @@ const DeploymentTemplate = ({
             })
         }
 
+        updateSearchParams({
+            configHeaderTab: tab,
+        })
+
         dispatch({
             type: DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB,
-            payload: {
-                configHeaderTab: tab,
-            },
         })
     }
 
@@ -690,6 +702,15 @@ const DeploymentTemplate = ({
             originalTemplateState: publishedTemplateState,
         }
 
+        if (!urlConfigHeaderTab) {
+            updateSearchParams({
+                configHeaderTab:
+                    envId && !publishedTemplateState.isOverridden
+                        ? ConfigHeaderTabType.INHERITED
+                        : ConfigHeaderTabType.VALUES,
+            })
+        }
+
         dispatch({
             type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT,
             payload: {
@@ -698,7 +719,6 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
-                envId,
             },
         })
     }
@@ -785,6 +805,12 @@ const DeploymentTemplate = ({
         const clonedTemplateData = structuredClone(draftTemplateState)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
 
+        if (!urlConfigHeaderTab) {
+            updateSearchParams({
+                configHeaderTab: ConfigHeaderTabType.VALUES,
+            })
+        }
+
         dispatch({
             type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT,
             payload: {
@@ -861,6 +887,10 @@ const DeploymentTemplate = ({
     }, [])
 
     const handleReload = async () => {
+        updateSearchParams({
+            configHeaderTab: null,
+        })
+
         dispatch({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {

@@ -1,8 +1,6 @@
 import YAML from 'yaml'
 import {
-    BaseURLParams,
     CompareFromApprovalOptionsValuesType,
-    ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     ConfigurationType,
     DEFAULT_LOCKED_KEYS_CONFIG,
@@ -105,6 +103,7 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL
     | DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
+    | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
 
 export type DeploymentTemplateActionState =
     | {
@@ -123,9 +122,7 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT
-          payload: InitializeStateBasePayloadType &
-              Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'> &
-              Pick<BaseURLParams, 'envId'>
+          payload: InitializeStateBasePayloadType & Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'>
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT
@@ -163,10 +160,6 @@ export type DeploymentTemplateActionState =
     | {
           type: DeploymentTemplateActionType.UPDATE_HIDE_LOCKED_KEYS
           payload: Pick<DeploymentTemplateStateType, 'hideLockedKeys'>
-      }
-    | {
-          type: DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
-          payload: Pick<DeploymentTemplateStateType, 'configHeaderTab'>
       }
     | {
           type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB
@@ -251,7 +244,6 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
     editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
-    configHeaderTab: ConfigHeaderTabType.VALUES,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
@@ -380,7 +372,6 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
-                envId,
             } = action.payload
 
             return {
@@ -390,10 +381,6 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
-                configHeaderTab:
-                    envId && !publishedTemplateData.isOverridden
-                        ? ConfigHeaderTabType.INHERITED
-                        : ConfigHeaderTabType.VALUES,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -418,7 +405,6 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab,
                 areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
@@ -575,9 +561,8 @@ export const deploymentTemplateReducer = (
 
         case DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB:
             return {
-                ...state,
+                ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
-                configHeaderTab: action.payload.configHeaderTab,
             }
 
         case DeploymentTemplateActionType.TOGGLE_SHOW_COMPARISON_WITH_MERGED_PATCHES:

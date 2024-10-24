@@ -7,6 +7,8 @@ import {
     logExceptionToSentry,
     DeploymentTemplateConfigState,
     OverrideMergeStrategyType,
+    ConfigHeaderTabType,
+    CONFIG_HEADER_TAB_VALUES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
@@ -14,6 +16,7 @@ import {
     BaseDeploymentTemplateParsedDraftDTO,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
+    DeploymentTemplateURLConfigType,
     GetCompareFromEditorConfigParams,
     GetCurrentEditorPayloadForScopedVariablesProps,
     GetCurrentEditorStateProps,
@@ -715,3 +718,25 @@ export const getCompareFromEditorConfig = ({
         publishedEditorConfig,
     }
 }
+
+export const parseDeploymentTemplateParams =
+    (envId: string) =>
+    (searchParams: URLSearchParams): DeploymentTemplateURLConfigType => {
+        const urlConfigHeaderTab = searchParams.get('configHeaderTab') as ConfigHeaderTabType
+
+        if (!urlConfigHeaderTab) {
+            return {
+                configHeaderTab: null,
+            }
+        }
+
+        const validConfigHeaderTabList = envId
+            ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
+            : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE
+
+        const isURLConfigHeaderTabValid = validConfigHeaderTabList.includes(urlConfigHeaderTab)
+
+        return {
+            configHeaderTab: isURLConfigHeaderTabValid ? urlConfigHeaderTab : null,
+        }
+    }
