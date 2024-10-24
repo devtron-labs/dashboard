@@ -14,6 +14,7 @@ import {
     ConfigHeaderTabType,
     ProtectConfigTabsType,
     DraftMetadataDTO,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 type BaseDeploymentTemplateProps = {
@@ -286,6 +287,8 @@ interface EnvironmentConfigDTO {
     namespace: string
     saveEligibleChanges: boolean
     status: number
+    mergeStrategy: OverrideMergeStrategyType
+    envOverridePatchValues: Record<string, string>
 }
 
 export interface EnvironmentOverrideDeploymentTemplateDTO {
@@ -435,4 +438,31 @@ export type GetLockConfigEligibleAndIneligibleChangesType = (props: {
 }) => {
     eligibleChanges: Record<string, any>
     ineligibleChanges: Record<string, any>
+}
+
+export interface BaseDeploymentTemplateParsedDraftDTO {
+    valuesOverride: Record<string, string>
+    id: number
+    refChartTemplate: string
+    refChartTemplateVersion: string
+    isAppMetricsEnabled: boolean
+    chartRefId: number
+    readme: string
+    schema: Record<string, string>
+}
+
+export interface OverriddenBaseDeploymentTemplateParsedDraftDTO {
+    envOverrideValues: Record<string, string>
+    id: number
+    isDraftOverriden: boolean
+    isAppMetricsEnabled: boolean
+    chartRefId: number
+    status: number
+    manualReviewed: boolean
+    active: boolean
+    namespace: string
+    readme: string
+    schema: Record<string, string>
+    mergeStrategy: OverrideMergeStrategyType
+    envOverridePatchValues: Record<string, string>
 }

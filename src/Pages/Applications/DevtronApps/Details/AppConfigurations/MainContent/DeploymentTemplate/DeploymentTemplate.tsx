@@ -35,6 +35,7 @@ import {
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
     ResponseType,
     API_STATUS_CODES,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -593,9 +594,22 @@ const DeploymentTemplate = ({
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
         } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
 
-        const { id, status, manualReviewed, active, namespace, envOverrideValues } = environmentConfig || {}
+        const {
+            id,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+            envOverrideValues,
+            mergeStrategy = DEFAULT_MERGE_STRATEGY,
+            envOverridePatchValues = {},
+        } = environmentConfig || {}
 
-        const originalTemplate = IsOverride ? envOverrideValues || globalConfig : globalConfig
+        const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+        // If not overridden, will replace the editorTemplate, originalTemplate with envOverridePatchValues
+        const mergedTemplateObject = IsOverride ? envOverrideValues || globalConfig : globalConfig
+
+        const originalTemplate = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
         const stringifiedTemplate = YAMLStringify(originalTemplate, { simpleKeys: true })
 
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
@@ -603,13 +617,15 @@ const DeploymentTemplate = ({
             lockedConfigKeys,
         )
 
+        const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
+
         return {
             originalTemplate,
             schema,
             readme,
             guiSchema,
             isAppMetricsEnabled: appMetrics,
-            editorTemplate: stringifiedTemplate,
+            editorTemplate: !Object.keys(originalTemplate).length ? '' : stringifiedTemplate,
             isOverridden: !!IsOverride,
             environmentConfig: {
                 id,
@@ -618,10 +634,22 @@ const DeploymentTemplate = ({
                 active,
                 namespace,
             },
-            mergeStrategy: DEFAULT_MERGE_STRATEGY,
             editorTemplateWithoutLockedKeys,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
+            ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                ? {
+                      mergeStrategy,
+                      mergedTemplate: stringifiedFinalTemplate,
+                      mergedTemplateObject,
+                      mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                          stringifiedFinalTemplate,
+                          lockedConfigKeys,
+                      ).editorTemplate,
+                  }
+                : {
+                      mergeStrategy,
+                  }),
         }
     }
 

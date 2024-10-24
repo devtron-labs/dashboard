@@ -13,6 +13,10 @@ import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
 
 const PatchStrategyTooltipInfo = importComponentFromFELibrary('PatchStrategyTooltipInfo', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+
+const getIsOptionDisabled = (option: SelectPickerOptionType) =>
+    !isFELibAvailable && option.value === OverrideMergeStrategyType.PATCH
 
 const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisabled }: SelectMergeStrategyProps) => {
     const handleChange = (selectedOption: SelectPickerOptionType) => {
@@ -45,6 +49,7 @@ const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisab
                 variant={SelectPickerVariantType.BORDER_LESS}
                 isSearchable={false}
                 size={ComponentSizeType.small}
+                isOptionDisabled={getIsOptionDisabled}
             />
         </div>
     )

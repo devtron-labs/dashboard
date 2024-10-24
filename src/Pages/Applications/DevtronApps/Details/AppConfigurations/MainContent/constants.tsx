@@ -3,7 +3,9 @@ import { EnterpriseTag, OverrideMergeStrategyType, SelectPickerOptionType } from
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 
-export const DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType = OverrideMergeStrategyType.PATCH
+export const DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType = isFELibAvailable
+    ? OverrideMergeStrategyType.PATCH
+    : OverrideMergeStrategyType.REPLACE
 
 export const MERGE_STRATEGY_OPTIONS: SelectPickerOptionType[] = [
     {

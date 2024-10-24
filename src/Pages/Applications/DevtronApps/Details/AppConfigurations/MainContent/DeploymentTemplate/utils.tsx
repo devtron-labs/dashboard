@@ -6,10 +6,12 @@ import {
     YAMLStringify,
     logExceptionToSentry,
     DeploymentTemplateConfigState,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
 import {
+    BaseDeploymentTemplateParsedDraftDTO,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
     GetCompareFromEditorConfigParams,
@@ -19,6 +21,7 @@ import {
     GetLockConfigEligibleAndIneligibleChangesType,
     GetRawEditorValueForDryRunModeProps,
     HandleInitializeDraftDataProps,
+    OverriddenBaseDeploymentTemplateParsedDraftDTO,
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
@@ -88,7 +91,8 @@ export const getEditorTemplateAndLockedKeys = (
     }
 
     try {
-        const { document, addOperations } = removeLockedKeysFromYaml(template, lockedConfigKeys)
+        const clonedLockedConfigKeys = structuredClone(lockedConfigKeys)
+        const { document, addOperations } = removeLockedKeysFromYaml(template, clonedLockedConfigKeys)
         if (addOperations.length) {
             removedPatches.push(...addOperations)
         }
@@ -352,7 +356,7 @@ export const handleInitializeDraftData = ({
             chartRefId,
             readme,
             schema,
-        } = JSON.parse(latestDraft.data)
+        } = JSON.parse(latestDraft.data) as BaseDeploymentTemplateParsedDraftDTO
 
         const stringifiedTemplate = YAMLStringify(valuesOverride, { simpleKeys: true })
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
@@ -389,19 +393,28 @@ export const handleInitializeDraftData = ({
         namespace,
         readme,
         schema,
-    } = JSON.parse(latestDraft.data)
-    const stringifiedTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
+        mergeStrategy = DEFAULT_MERGE_STRATEGY,
+        envOverridePatchValues = {},
+    } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
+
+    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+    const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
+
+    const stringifiedFinalTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
+
+    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
     const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
         stringifiedTemplate,
         lockedConfigKeys,
     )
+
     const response: DeploymentTemplateStateType['draftTemplateData'] = {
-        originalTemplate: envOverrideValues,
+        originalTemplate: originalTemplateObject,
         schema,
         readme,
         guiSchema,
         isAppMetricsEnabled,
-        editorTemplate: stringifiedTemplate,
+        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
         latestDraft,
         selectedChartRefId: chartRefId,
         selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
@@ -414,7 +427,19 @@ export const handleInitializeDraftData = ({
             active,
             namespace,
         },
-        mergeStrategy: DEFAULT_MERGE_STRATEGY,
+        ...(isMergeStrategyPatch
+            ? {
+                  mergeStrategy,
+                  mergedTemplate: stringifiedFinalTemplate,
+                  mergedTemplateObject: envOverrideValues,
+                  mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                      stringifiedFinalTemplate,
+                      lockedConfigKeys,
+                  ).editorTemplate,
+              }
+            : {
+                  mergeStrategy,
+              }),
     }
 
     return response
