@@ -740,3 +740,11 @@ export const parseDeploymentTemplateParams =
             configHeaderTab: isURLConfigHeaderTabValid ? urlConfigHeaderTab : null,
         }
     }
+
+export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, version: string): string => {
+    if (!version || !chartName) {
+        return null
+    }
+
+    return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${chartName.toLowerCase()}-chart_${version.replace(/\./g, '-')}`
+}
