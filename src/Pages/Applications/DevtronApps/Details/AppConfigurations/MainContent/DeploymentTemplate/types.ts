@@ -470,8 +470,6 @@ export interface OverriddenBaseDeploymentTemplateParsedDraftDTO {
 export interface GetLockedDiffModalDocumentsParamsType {
     isApprovalView: boolean
     state: DeploymentTemplateStateType
-    isPreviousOverrideAvailable: boolean
-    isEnvView: boolean
 }
 
 export interface GetLockedDiffModalDocumentsReturnType {

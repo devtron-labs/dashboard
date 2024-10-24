@@ -140,10 +140,9 @@ export const getCurrentTemplateWithLockedKeys = ({
 export const getLockedDiffModalDocuments = ({
     isApprovalView,
     state,
-    isPreviousOverrideAvailable,
-    isEnvView,
 }: GetLockedDiffModalDocumentsParamsType): GetLockedDiffModalDocumentsReturnType => ({
-    unedited: isEnvView && !isPreviousOverrideAvailable ? {} : state.publishedTemplateData.originalTemplate,
+    // In case previous override is not available we should send empty object which would be automatically handled since while parsing response we parse originalTemplate as empty object in that case
+    unedited: state.publishedTemplateData.originalTemplate,
     edited: isApprovalView
         ? state.draftTemplateData.originalTemplate
         : YAML.parse(
@@ -497,8 +496,6 @@ export const getUpdateBaseDeploymentTemplatePayload = (
             documents: getLockedDiffModalDocuments({
                 isApprovalView: false,
                 state,
-                isEnvView: false,
-                isPreviousOverrideAvailable: false,
             }),
             lockedConfigKeysWithLockType,
         })
@@ -604,8 +601,6 @@ export const getUpdateEnvironmentDTPayload = (
             documents: getLockedDiffModalDocuments({
                 isApprovalView: false,
                 state,
-                isEnvView: true,
-                isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
             }),
             lockedConfigKeysWithLockType,
         })

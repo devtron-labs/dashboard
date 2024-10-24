@@ -9,6 +9,7 @@ import {
     DeploymentChartVersionType,
     DeploymentTemplateConfigState,
     DryRunEditorMode,
+    OverrideMergeStrategyType,
     ProtectConfigTabsType,
     ServerErrors,
     ToastManager,
@@ -655,14 +656,32 @@ export const deploymentTemplateReducer = (
                 },
             }
 
-        case DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY:
-            return {
-                ...state,
-                currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
-                    mergeStrategy: action.payload.mergeStrategy,
-                },
+        case DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY: {
+            const { mergeStrategy } = action.payload
+
+            const stateWithReAppliedLockedKeys = handleReApplyLockedKeys(state)
+            const currentEditorTemplateData: typeof state.currentEditorTemplateData = structuredClone(
+                stateWithReAppliedLockedKeys.currentEditorTemplateData,
+            )
+
+            currentEditorTemplateData.mergeStrategy = mergeStrategy
+
+            // TODO: Need to think on this behavior with product
+            if (
+                mergeStrategy === OverrideMergeStrategyType.REPLACE &&
+                !stateWithReAppliedLockedKeys.publishedTemplateData?.isOverridden &&
+                !stateWithReAppliedLockedKeys.currentEditorTemplateData.editorTemplate
+            ) {
+                currentEditorTemplateData.editorTemplate =
+                    stateWithReAppliedLockedKeys.publishedTemplateData?.mergedTemplate || ''
             }
+
+            return {
+                ...stateWithReAppliedLockedKeys,
+                ...handleUnResolveScopedVariables(),
+                currentEditorTemplateData,
+            }
+        }
 
         case DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG:
             return {

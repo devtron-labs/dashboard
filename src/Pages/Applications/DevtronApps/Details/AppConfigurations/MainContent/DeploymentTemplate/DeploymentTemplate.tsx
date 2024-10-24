@@ -619,6 +619,7 @@ const DeploymentTemplate = ({
 
         const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
 
+        // In case of no override it same as saying we have override with no patch value
         return {
             originalTemplate,
             schema,
@@ -981,8 +982,6 @@ const DeploymentTemplate = ({
                 documents: getLockedDiffModalDocuments({
                     isApprovalView: false,
                     state,
-                    isEnvView: !!envId,
-                    isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
                 }),
                 lockedConfigKeysWithLockType,
             })
@@ -1025,13 +1024,11 @@ const DeploymentTemplate = ({
     const handleValidateApprovalState = (): boolean => {
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
-            // TODO: Test concurrent behavior for api validation
+            // TODO: Concurrent behavior will be handled through 422 api code
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                 documents: getLockedDiffModalDocuments({
                     isApprovalView: true,
                     state,
-                    isEnvView: !!envId,
-                    isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
                 }),
                 lockedConfigKeysWithLockType,
             })
@@ -1224,6 +1221,10 @@ const DeploymentTemplate = ({
     const getShouldShowMergePatchesButton = (): boolean => false
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
+        if (mergeStrategy === currentEditorTemplateData.mergeStrategy) {
+            return
+        }
+
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
             action: 'clicked-merge-strategy-dropdown',
@@ -1650,8 +1651,6 @@ const DeploymentTemplate = ({
                         documents={getLockedDiffModalDocuments({
                             isApprovalView,
                             state,
-                            isEnvView: !!envId,
-                            isPreviousOverrideAvailable: state.publishedTemplateData?.isOverridden,
                         })}
                         appId={appId}
                         envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
