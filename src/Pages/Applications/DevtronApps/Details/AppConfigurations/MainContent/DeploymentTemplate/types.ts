@@ -14,6 +14,7 @@ import {
     ConfigHeaderTabType,
     ProtectConfigTabsType,
     DraftMetadataDTO,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 type BaseDeploymentTemplateProps = {
@@ -157,7 +158,6 @@ export interface DeploymentTemplateStateType {
      */
     showReadMe: boolean
     editMode: ConfigurationType
-    configHeaderTab: ConfigHeaderTabType
     shouldMergeTemplateWithPatches: boolean
     selectedProtectionViewTab: ProtectConfigTabsType
     /**
@@ -286,6 +286,8 @@ interface EnvironmentConfigDTO {
     namespace: string
     saveEligibleChanges: boolean
     status: number
+    mergeStrategy: OverrideMergeStrategyType
+    envOverridePatchValues: Record<string, string>
 }
 
 export interface EnvironmentOverrideDeploymentTemplateDTO {
@@ -402,15 +404,25 @@ interface UpdateDTCommonPayloadType {
     schema?: Record<string, string>
 }
 
-export interface UpdateEnvironmentDTPayloadType
-    extends UpdateDTCommonPayloadType,
-        Partial<Pick<DeploymentTemplateEditorDataStateType, 'environmentConfig'>> {
-    environmentId: number
-    envOverrideValues: Record<string, string>
-    IsOverride: boolean
-    isDraftOverriden?: boolean
-    globalConfig?: Record<string, string>
-}
+export type UpdateEnvironmentDTPayloadStrategyDetailsType =
+    | {
+          mergeStrategy: OverrideMergeStrategyType.PATCH
+          envOverridePatchValues: Record<string, string>
+          envOverrideValues?: never
+      }
+    | {
+          mergeStrategy: Exclude<OverrideMergeStrategyType, OverrideMergeStrategyType.PATCH>
+          envOverrideValues: Record<string, string>
+          envOverridePatchValues?: never
+      }
+
+export type UpdateEnvironmentDTPayloadType = UpdateDTCommonPayloadType &
+    Partial<Pick<DeploymentTemplateEditorDataStateType, 'environmentConfig'>> & {
+        environmentId: number
+        IsOverride: boolean
+        isDraftOverriden?: boolean
+        globalConfig?: Record<string, string>
+    } & UpdateEnvironmentDTPayloadStrategyDetailsType
 
 export interface UpdateBaseDTPayloadType
     extends UpdateDTCommonPayloadType,
@@ -435,4 +447,45 @@ export type GetLockConfigEligibleAndIneligibleChangesType = (props: {
 }) => {
     eligibleChanges: Record<string, any>
     ineligibleChanges: Record<string, any>
+}
+
+export interface BaseDeploymentTemplateParsedDraftDTO {
+    valuesOverride: Record<string, string>
+    id: number
+    refChartTemplate: string
+    refChartTemplateVersion: string
+    isAppMetricsEnabled: boolean
+    chartRefId: number
+    readme: string
+    schema: Record<string, string>
+}
+
+export interface OverriddenBaseDeploymentTemplateParsedDraftDTO {
+    envOverrideValues: Record<string, string>
+    id: number
+    isDraftOverriden: boolean
+    isAppMetricsEnabled: boolean
+    chartRefId: number
+    status: number
+    manualReviewed: boolean
+    active: boolean
+    namespace: string
+    readme: string
+    schema: Record<string, string>
+    mergeStrategy: OverrideMergeStrategyType
+    envOverridePatchValues: Record<string, string>
+}
+
+export interface GetLockedDiffModalDocumentsParamsType {
+    isApprovalView: boolean
+    state: DeploymentTemplateStateType
+}
+
+export interface GetLockedDiffModalDocumentsReturnType {
+    unedited: Record<string, string>
+    edited: Record<string, string>
+}
+
+export interface DeploymentTemplateURLConfigType {
+    configHeaderTab: ConfigHeaderTabType
 }

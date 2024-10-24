@@ -52,7 +52,7 @@ const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: La
                     </div>
                 </div>
                 <div className="flex br-4">
-                    <Timer className="icon-dim-24 mt-4" />
+                    <Timer className="icon-dim-24 mt-4 scn-9" />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container dc__content-space">

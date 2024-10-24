@@ -293,12 +293,12 @@ export default function GitInfoMaterial({
                     >
                         {showAllCommits ? (
                             <>
-                                <Hide data-testid="hide-excluded-commits" className="icon-dim-16 mr-10" />
+                                <Hide data-testid="hide-excluded-commits" className="icon-dim-16 scn-8 mr-10" />
                                 Hide excluded commits
                             </>
                         ) : (
                             <>
-                                <Show data-testid="show-excluded-commits" className="icon-dim-16 mr-10" />
+                                <Show data-testid="show-excluded-commits" className="icon-dim-16 scn-8 mr-10" />
                                 Show excluded commits
                             </>
                         )}

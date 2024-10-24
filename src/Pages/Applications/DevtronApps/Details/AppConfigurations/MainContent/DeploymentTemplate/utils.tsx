@@ -6,20 +6,29 @@ import {
     YAMLStringify,
     logExceptionToSentry,
     DeploymentTemplateConfigState,
+    OverrideMergeStrategyType,
+    ConfigHeaderTabType,
+    CONFIG_HEADER_TAB_VALUES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
 import {
+    BaseDeploymentTemplateParsedDraftDTO,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
+    DeploymentTemplateURLConfigType,
     GetCompareFromEditorConfigParams,
     GetCurrentEditorPayloadForScopedVariablesProps,
     GetCurrentEditorStateProps,
     GetDryRunViewEditorStateProps,
     GetLockConfigEligibleAndIneligibleChangesType,
+    GetLockedDiffModalDocumentsParamsType,
+    GetLockedDiffModalDocumentsReturnType,
     GetRawEditorValueForDryRunModeProps,
     HandleInitializeDraftDataProps,
+    OverriddenBaseDeploymentTemplateParsedDraftDTO,
     UpdateBaseDTPayloadType,
+    UpdateEnvironmentDTPayloadStrategyDetailsType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
 import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
@@ -88,7 +97,8 @@ export const getEditorTemplateAndLockedKeys = (
     }
 
     try {
-        const { document, addOperations } = removeLockedKeysFromYaml(template, lockedConfigKeys)
+        const clonedLockedConfigKeys = structuredClone(lockedConfigKeys)
+        const { document, addOperations } = removeLockedKeysFromYaml(template, clonedLockedConfigKeys)
         if (addOperations.length) {
             removedPatches.push(...addOperations)
         }
@@ -131,7 +141,11 @@ export const getCurrentTemplateWithLockedKeys = ({
     return currentEditorTemplateData.editorTemplate
 }
 
-export const getLockedDiffModalDocuments = (isApprovalView: boolean, state: DeploymentTemplateStateType) => ({
+export const getLockedDiffModalDocuments = ({
+    isApprovalView,
+    state,
+}: GetLockedDiffModalDocumentsParamsType): GetLockedDiffModalDocumentsReturnType => ({
+    // In case previous override is not available we should send empty object which would be automatically handled since while parsing response we parse originalTemplate as empty object in that case
     unedited: state.publishedTemplateData.originalTemplate,
     edited: isApprovalView
         ? state.draftTemplateData.originalTemplate
@@ -352,7 +366,7 @@ export const handleInitializeDraftData = ({
             chartRefId,
             readme,
             schema,
-        } = JSON.parse(latestDraft.data)
+        } = JSON.parse(latestDraft.data) as BaseDeploymentTemplateParsedDraftDTO
 
         const stringifiedTemplate = YAMLStringify(valuesOverride, { simpleKeys: true })
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
@@ -389,19 +403,28 @@ export const handleInitializeDraftData = ({
         namespace,
         readme,
         schema,
-    } = JSON.parse(latestDraft.data)
-    const stringifiedTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
+        mergeStrategy = DEFAULT_MERGE_STRATEGY,
+        envOverridePatchValues = {},
+    } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
+
+    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+    const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
+
+    const stringifiedFinalTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
+
+    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
     const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
         stringifiedTemplate,
         lockedConfigKeys,
     )
+
     const response: DeploymentTemplateStateType['draftTemplateData'] = {
-        originalTemplate: envOverrideValues,
+        originalTemplate: originalTemplateObject,
         schema,
         readme,
         guiSchema,
         isAppMetricsEnabled,
-        editorTemplate: stringifiedTemplate,
+        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
         latestDraft,
         selectedChartRefId: chartRefId,
         selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
@@ -414,7 +437,19 @@ export const handleInitializeDraftData = ({
             active,
             namespace,
         },
-        mergeStrategy: DEFAULT_MERGE_STRATEGY,
+        ...(isMergeStrategyPatch
+            ? {
+                  mergeStrategy,
+                  mergedTemplate: stringifiedFinalTemplate,
+                  mergedTemplateObject: envOverrideValues,
+                  mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
+                      stringifiedFinalTemplate,
+                      lockedConfigKeys,
+                  ).editorTemplate,
+              }
+            : {
+                  mergeStrategy,
+              }),
     }
 
     return response
@@ -462,7 +497,10 @@ export const getUpdateBaseDeploymentTemplatePayload = (
     if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
         // Question: In case of draft edit should we do this or approval as unedited?
         const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments(false, state),
+            documents: getLockedDiffModalDocuments({
+                isApprovalView: false,
+                state,
+            }),
             lockedConfigKeysWithLockType,
         })
 
@@ -485,9 +523,11 @@ export const getDeleteProtectedOverridePayload = (
 ): UpdateEnvironmentDTPayloadType => {
     const { baseDeploymentTemplateData, chartDetails, currentEditorTemplateData } = state
 
+    // FIXME: Need to confirm with BE once
     return {
         environmentId: +envId,
-        envOverrideValues: baseDeploymentTemplateData.originalTemplate,
+        mergeStrategy: OverrideMergeStrategyType.PATCH,
+        envOverridePatchValues: {},
         chartRefId: chartDetails.globalChartDetails.id,
         IsOverride: false,
         isAppMetricsEnabled: baseDeploymentTemplateData.isAppMetricsEnabled,
@@ -510,6 +550,23 @@ export const getDeleteProtectedOverridePayload = (
                   schema: baseDeploymentTemplateData.schema,
               }
             : {}),
+    }
+}
+
+const getMergeStrategyPayload = (
+    mergeStrategy: OverrideMergeStrategyType,
+    validEditorObject: Record<string, string>,
+): UpdateEnvironmentDTPayloadStrategyDetailsType => {
+    if (mergeStrategy === OverrideMergeStrategyType.PATCH) {
+        return {
+            mergeStrategy,
+            envOverridePatchValues: validEditorObject,
+        }
+    }
+
+    return {
+        mergeStrategy,
+        envOverrideValues: validEditorObject,
     }
 }
 
@@ -564,19 +621,22 @@ export const getUpdateEnvironmentDTPayload = (
 
     if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
         const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments(false, state),
+            documents: getLockedDiffModalDocuments({
+                isApprovalView: false,
+                state,
+            }),
             lockedConfigKeysWithLockType,
         })
 
         return {
             ...baseObject,
-            envOverrideValues: eligibleChanges,
+            ...getMergeStrategyPayload(currentEditorTemplateData.mergeStrategy, eligibleChanges),
         }
     }
 
     return {
         ...baseObject,
-        envOverrideValues: editorTemplateObject,
+        ...getMergeStrategyPayload(currentEditorTemplateData.mergeStrategy, editorTemplateObject),
     }
 }
 
@@ -657,4 +717,34 @@ export const getCompareFromEditorConfig = ({
         currentEditorConfig,
         publishedEditorConfig,
     }
+}
+
+export const parseDeploymentTemplateParams =
+    (envId: string) =>
+    (searchParams: URLSearchParams): DeploymentTemplateURLConfigType => {
+        const urlConfigHeaderTab = searchParams.get('configHeaderTab') as ConfigHeaderTabType
+
+        if (!urlConfigHeaderTab) {
+            return {
+                configHeaderTab: null,
+            }
+        }
+
+        const validConfigHeaderTabList = envId
+            ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
+            : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE
+
+        const isURLConfigHeaderTabValid = validConfigHeaderTabList.includes(urlConfigHeaderTab)
+
+        return {
+            configHeaderTab: isURLConfigHeaderTabValid ? urlConfigHeaderTab : null,
+        }
+    }
+
+export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, version: string): string => {
+    if (!version || !chartName) {
+        return null
+    }
+
+    return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${chartName.toLowerCase()}-chart_${version.replace(/\./g, '-')}`
 }
