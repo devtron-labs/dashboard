@@ -29,7 +29,7 @@ import {
     configMapSecretMountDataMap,
     getSecretDataTypeOptions,
 } from './constants'
-import { getConfigMapSecretFormInitialValues, hasESO, hasHashiOrAWS } from './utils'
+import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload, hasESO, hasHashiOrAWS } from './utils'
 import { getConfigMapSecretFormValidations } from './validations'
 import {
     renderChartVersionBelow3090NotSupportedText,
@@ -45,6 +45,7 @@ import {
     ConfigMapSecretFormRefType,
 } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
+import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 
 export const ConfigMapSecretForm = forwardRef(
     (
@@ -60,6 +61,7 @@ export const ConfigMapSecretForm = forwardRef(
             isProtected,
             areScopeVariablesResolving,
             resolvedFormData,
+            isPatchMode,
             restoreYAML,
             setRestoreYAML,
             onSubmit,
@@ -121,7 +123,10 @@ export const ConfigMapSecretForm = forwardRef(
                  * The form reset is triggered with the keepDirty option, which resets the form using the stored values while preserving the “dirty” state.
                  * During the reset, we also ensure that yamlMode is preserved.
                  */
-                reset({ ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false }, { keepDirty: true })
+                reset(
+                    { ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false },
+                    { triggerDirty: true },
+                )
             }
         }, [resolvedFormData])
 
@@ -410,26 +415,42 @@ export const ConfigMapSecretForm = forwardRef(
                     ) : (
                         <div className="p-16 flex-grow-1 dc__overflow-auto">
                             <div className="flexbox-col dc__gap-16 dc__mxw-1200">
-                                {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
-                                <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
-                                    {renderDataTypeSelector()}
-                                    {renderName()}
-                                </div>
-                                {renderESOInfo(isESO)}
-                                {renderExternalInfo(
-                                    data.externalType === CMSecretExternalType.KubernetesSecret ||
-                                        (!data.isSecret && data.external),
-                                    componentType,
+                                {isPatchMode ? (
+                                    <ConfigMapSecretReadyOnly
+                                        componentType={componentType}
+                                        isJob={isJob}
+                                        configMapSecretData={{
+                                            ...configMapSecretData,
+                                            patchData: getConfigMapSecretPayload(data).patchData,
+                                        }}
+                                        areScopeVariablesResolving={areScopeVariablesResolving}
+                                        hideCodeEditor
+                                    />
+                                ) : (
+                                    <>
+                                        {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
+                                        <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
+                                            {renderDataTypeSelector()}
+                                            {renderName()}
+                                        </div>
+                                        {renderESOInfo(isESO)}
+                                        {renderExternalInfo(
+                                            data.externalType === CMSecretExternalType.KubernetesSecret ||
+                                                (!data.isSecret && data.external),
+                                            componentType,
+                                        )}
+                                        {renderMountData()}
+                                        {renderVolumeMountPath()}
+                                        {renderRollARN()}
+                                    </>
                                 )}
-                                {renderMountData()}
-                                {renderVolumeMountPath()}
-                                {renderRollARN()}
                                 <ConfigMapSecretData
                                     isESO={isESO}
                                     isHashiOrAWS={isHashiOrAWS}
                                     isUnAuthorized={isUnAuthorized}
                                     useFormProps={useFormProps}
                                     readOnly={isFormDisabled}
+                                    isPatchMode={isPatchMode}
                                 />
                             </div>
                         </div>

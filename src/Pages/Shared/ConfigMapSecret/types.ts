@@ -13,6 +13,7 @@ import {
     UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
+    ConfigHeaderTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -37,6 +38,7 @@ export enum CM_SECRET_STATE {
 export type CMSecretPayloadType = Pick<
     CMSecretConfigData,
     | 'data'
+    | 'patchData'
     | 'name'
     | 'type'
     | 'externalType'
@@ -149,12 +151,13 @@ export interface ConfigMapSecretFormProps
     areScopeVariablesResolving: boolean
     resolvedFormData: ConfigMapSecretUseFormProps
     isDraft?: boolean
+    isPatchMode: boolean
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
 }
 
-export interface ConfigMapSecretDataProps {
+export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'isPatchMode'> {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
@@ -162,10 +165,13 @@ export interface ConfigMapSecretDataProps {
     useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
-export type ConfigMapSecretReadyOnlyProps = Pick<
-    ConfigMapSecretFormProps,
-    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
->
+export interface ConfigMapSecretReadyOnlyProps
+    extends Pick<
+        ConfigMapSecretFormProps,
+        'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
+    > {
+    hideCodeEditor?: boolean
+}
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
@@ -212,6 +218,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'restoreYAML'
         | 'setRestoreYAML'
         | 'appChartRef'
+        | 'isPatchMode'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -351,4 +358,8 @@ export type ConfigMapSecretDecodedDataProps<IsDraft extends boolean> = {
 export type ConfigMapSecretEncodedDataProps<IsDraft extends boolean> = {
     configMapSecretData: ConfigMapSecretDecodedDataReturnType<IsDraft>
     isDraft?: IsDraft
+}
+
+export interface ConfigMapSecretQueryParamsType {
+    tab: ConfigHeaderTabType
 }

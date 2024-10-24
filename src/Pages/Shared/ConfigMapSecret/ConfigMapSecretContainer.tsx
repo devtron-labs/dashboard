@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 
 import {
@@ -22,6 +22,7 @@ import {
     ToastVariantType,
     useAsync,
     usePrompt,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -49,6 +50,7 @@ import {
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
     hasHashiOrAWS,
+    parseConfigMapSecretSearchParams,
 } from './utils'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
@@ -60,6 +62,7 @@ import {
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
     ConfigMapSecretFormRefType,
+    ConfigMapSecretQueryParamsType,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
@@ -92,17 +95,23 @@ export const ConfigMapSecretContainer = ({
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const { setFormState, isFormDirty, parsingError, formDataRef } = useConfigMapSecretFormContext()
+    const location = useLocation()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
+
+    // SEARCH PARAMS
+    const { tab: configHeaderTab, updateSearchParams } = useUrlFilters<void, ConfigMapSecretQueryParamsType>({
+        parseSearchParams: parseConfigMapSecretSearchParams,
+    })
 
     // REFS
     const abortControllerRef = useRef<AbortController>()
     const formMethodsRef = useRef<ConfigMapSecretFormRefType>(null)
 
     // STATES
-    const [configHeaderTab, setConfigHeaderTab] = useState<ConfigHeaderTabType>(null)
-    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(OverrideMergeStrategyType.REPLACE)
+    // TODO: setMergeStrategy after getting data
+    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(OverrideMergeStrategyType.PATCH)
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
     const [showComments, setShowComments] = useState(false)
@@ -129,6 +138,7 @@ export const ConfigMapSecretContainer = ({
     const id = selectedCMSecret?.id
     const isCreateState = name === 'create' && !id
     const isEmptyState = !name && !envConfigData.length
+    const isPatchMode = mergeStrategy === OverrideMergeStrategyType.PATCH
 
     // GA EVENT CATEGORY (BASED ON CM/SECRET)
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
@@ -382,12 +392,24 @@ export const ConfigMapSecretContainer = ({
 
     // TAB HANDLING
     useEffect(() => {
-        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
-            setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
-        } else {
-            setConfigHeaderTab(ConfigHeaderTabType.VALUES)
+        if (!configHeaderTab) {
+            if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
+                updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
+            } else {
+                updateSearchParams({ tab: ConfigHeaderTabType.VALUES })
+            }
         }
     }, [cmSecretStateLabel, draftData])
+
+    // MERGE STRATEGY HANDLING
+    useEffect(() => {
+        // TODO: CHANGE LOGIC AFTER API SUPPORT
+        if (configMapSecretData && cmSecretStateLabel !== CM_SECRET_STATE.INHERITED) {
+            const _mergeStrategy =
+                (configMapSecretData.mergeStrategy as OverrideMergeStrategyType) ?? OverrideMergeStrategyType.REPLACE
+            setMergeStrategy(_mergeStrategy)
+        }
+    }, [configMapSecretData])
 
     const redirectURLToValidPage = () => {
         history.replace(
@@ -429,7 +451,7 @@ export const ConfigMapSecretContainer = ({
                     () => {
                         ToastManager.showToast({
                             variant: ToastVariantType.error,
-                            description: 'Please add input for required fields',
+                            description: 'Please resolve errors before continuing',
                         })
                     },
                 )()
@@ -439,7 +461,7 @@ export const ConfigMapSecretContainer = ({
         }
 
     const handleTabChange = (tab: ConfigHeaderTabType) => {
-        setConfigHeaderTab(tab)
+        updateSearchParams({ tab })
         if (tab === ConfigHeaderTabType.DRY_RUN) {
             ReactGA.event({
                 category: gaEventCategory,
@@ -470,7 +492,7 @@ export const ConfigMapSecretContainer = ({
 
     const handleClearPopupNode = () => setPopupNodeType(null)
 
-    const handleViewInheritedConfig = () => setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
+    const handleViewInheritedConfig = () => updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
 
     const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
         setSelectedProtectionViewTab(tab)
@@ -671,6 +693,7 @@ export const ConfigMapSecretContainer = ({
                 draftData={resolvedDraftData ?? draftData}
                 inheritedConfigMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                 id={id}
+                isPatchMode={isPatchMode}
                 onError={onError}
                 onSubmit={onSubmit}
                 selectedProtectionViewTab={selectedProtectionViewTab}
@@ -686,11 +709,13 @@ export const ConfigMapSecretContainer = ({
             />
         ) : (
             <ConfigMapSecretForm
+                // key={mergeStrategy}
                 id={id}
                 ref={formMethodsRef}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
+                isPatchMode={isPatchMode}
                 isJob={isJob}
                 isProtected={isProtected}
                 isSubmitting={isSubmitting}
@@ -821,7 +846,7 @@ export const ConfigMapSecretContainer = ({
                     <ConfigToolbar
                         configHeaderTab={configHeaderTab}
                         mergeStrategy={mergeStrategy}
-                        handleMergeStrategyChange={handleMergeStrategyChange}
+                        handleMergeStrategyChange={handleActionWithFormValidation(handleMergeStrategyChange)}
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
@@ -857,7 +882,10 @@ export const ConfigMapSecretContainer = ({
 
     return (
         <>
-            <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt
+                when={shouldPrompt}
+                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
+            />
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >

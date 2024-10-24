@@ -41,6 +41,7 @@ export const ConfigMapSecretProtected = ({
     updateCMSecret,
     restoreYAML,
     setRestoreYAML,
+    isPatchMode,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { formDataRef } = useConfigMapSecretFormContext()
@@ -164,6 +165,7 @@ export const ConfigMapSecretProtected = ({
                     : cmSecretStateLabel
             }
             isJob={isJob}
+            isPatchMode={isPatchMode}
             appChartRef={appChartRef}
             isProtected
             isDraft

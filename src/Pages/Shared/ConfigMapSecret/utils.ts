@@ -9,6 +9,7 @@ import {
     DraftState,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
+    OverrideMergeStrategyType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -36,6 +37,7 @@ import {
     ConfigMapSecretDecodedDataProps,
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
+    ConfigMapSecretQueryParamsType,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -89,6 +91,34 @@ const processCurrentData = ({
 }: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel'> & {
     isSecret: boolean
 }) => {
+    let _mergeStrategy =
+        configMapSecretData.mergeStrategy ??
+        (cmSecretStateLabel !== CM_SECRET_STATE.BASE && cmSecretStateLabel !== CM_SECRET_STATE.INHERITED)
+            ? OverrideMergeStrategyType.PATCH
+            : null
+    // TODO: Remove these if-else when mergeStrategy is coming from api
+    if (cmSecretStateLabel !== CM_SECRET_STATE.BASE && configMapSecretData.data && configMapSecretData.defaultData) {
+        _mergeStrategy = OverrideMergeStrategyType.REPLACE
+    } else if (
+        cmSecretStateLabel !== CM_SECRET_STATE.BASE &&
+        !configMapSecretData.data &&
+        configMapSecretData.defaultData
+    ) {
+        _mergeStrategy = OverrideMergeStrategyType.PATCH
+    }
+
+    if (_mergeStrategy === OverrideMergeStrategyType.PATCH) {
+        if (configMapSecretData.patchData) {
+            return secureValues(
+                configMapSecretData.patchData,
+                isSecret && configMapSecretData.externalType === '',
+                isSecret && configMapSecretData.unAuthorized,
+            )
+        }
+
+        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
+    }
+
     if (configMapSecretData.data) {
         return secureValues(
             configMapSecretData.data,
@@ -431,6 +461,7 @@ export const getConfigMapSecretPayload = ({
         type: selectedType,
         external,
         data,
+        patchData: null,
         roleARN: null,
         externalType: null,
         esoSecretData: null,
@@ -699,4 +730,12 @@ export const getConfigMapSecretResolvedData = (
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
+
+export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams): ConfigMapSecretQueryParamsType => {
+    const tab = searchParams.get('tab') as ConfigMapSecretQueryParamsType['tab']
+
+    return {
+        tab: tab ?? null,
+    }
+}
 // DATA UTILS ----------------------------------------------------------------

@@ -8,6 +8,7 @@ import {
     DraftState,
     DryRunEditorMode,
     MODES,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -16,7 +17,7 @@ import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, ToggleResolveScopedVariables } from '@Pages/Applications'
 
-import { CM_SECRET_STATE, ConfigMapSecretDryRunProps } from './types'
+import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
 import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload } from './utils'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
@@ -54,7 +55,12 @@ export const ConfigMapSecretDryRun = ({
     const isCreateView = id === null
 
     const dryRunConfigMapSecretData = useMemo(() => {
-        let configMapSecretData = publishedConfigMapSecretData ?? null
+        let configMapSecretData: CMSecretConfigData = publishedConfigMapSecretData
+            ? {
+                  ...publishedConfigMapSecretData,
+                  ...(cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? inheritedConfigMapSecretData ?? {} : {}),
+              }
+            : null
 
         if (draftData) {
             if (draftData.action === DraftAction.Delete) {
@@ -69,9 +75,16 @@ export const ConfigMapSecretDryRun = ({
 
         if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
             if (resolvedFormData ?? formDataRef.current) {
+                const payload = getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current)
+
                 configMapSecretData = {
                     ...configMapSecretData,
-                    ...getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current),
+                    ...payload,
+                    ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                        ? {
+                              data: { ...configMapSecretData.data, ...payload.data },
+                          }
+                        : {}),
                 }
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
