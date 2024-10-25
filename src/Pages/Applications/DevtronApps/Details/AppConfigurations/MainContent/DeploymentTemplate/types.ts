@@ -375,18 +375,19 @@ export interface GetCurrentEditorStateProps {
 export interface GetDryRunViewEditorStateProps
     extends Pick<GetCurrentEditorStateProps, 'state' | 'isPublishedConfigPresent' | 'isDeleteOverrideDraft'> {}
 
-export interface GetRawEditorValueForDryRunModeProps
-    extends Pick<
-        GetCurrentEditorStateProps,
-        'isPublishedConfigPresent' | 'isDryRunView' | 'isDeleteOverrideDraft' | 'state'
-    > {}
-
 export interface GetCurrentEditorPayloadForScopedVariablesProps
     extends Pick<
-            GetCurrentEditorStateProps,
-            'isInheritedView' | 'isPublishedValuesView' | 'showApprovalPendingEditorInCompareView'
-        >,
-        GetRawEditorValueForDryRunModeProps {}
+        GetCurrentEditorStateProps,
+        | 'isInheritedView'
+        | 'isPublishedValuesView'
+        | 'showApprovalPendingEditorInCompareView'
+        | 'isPublishedConfigPresent'
+        | 'isDryRunView'
+        | 'isDeleteOverrideDraft'
+        | 'state'
+    > {
+    shouldUseMergedTemplate: boolean
+}
 
 export interface HandleInitializeDraftDataProps {
     latestDraft: DraftMetadataDTO

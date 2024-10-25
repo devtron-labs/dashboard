@@ -155,6 +155,7 @@ const DeploymentTemplate = ({
         showDraftComments,
         hideLockedKeys,
         editMode,
+        // TODO: Set it as false on tab change
         shouldMergeTemplateWithPatches,
         selectedProtectionViewTab,
         dryRunEditorMode,
@@ -315,6 +316,10 @@ const DeploymentTemplate = ({
         })
     }
 
+    // TODO: Fill on api integration
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleLoadMergedTemplate = async () => {}
+
     const handleLoadScopedVariables = async () => {
         try {
             /**
@@ -336,6 +341,7 @@ const DeploymentTemplate = ({
                         isInheritedView,
                         isPublishedValuesView,
                         showApprovalPendingEditorInCompareView,
+                        shouldUseMergedTemplate: isDryRunView || (isCompareView && shouldMergeTemplateWithPatches),
                     }),
                     valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
@@ -650,19 +656,11 @@ const DeploymentTemplate = ({
             editorTemplateWithoutLockedKeys,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
-            ...(mergeStrategy === OverrideMergeStrategyType.PATCH
-                ? {
-                      mergeStrategy,
-                      mergedTemplate: stringifiedFinalTemplate,
-                      mergedTemplateObject,
-                      mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
-                          stringifiedFinalTemplate,
-                          lockedConfigKeys,
-                      ).editorTemplate,
-                  }
-                : {
-                      mergeStrategy,
-                  }),
+            mergeStrategy,
+            mergedTemplate: stringifiedFinalTemplate,
+            mergedTemplateObject,
+            mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
+                .editorTemplate,
         }
     }
 
@@ -1146,6 +1144,15 @@ const DeploymentTemplate = ({
             return ''
         }
 
+        const shouldUseMergedTemplate = isCompareView && shouldMergeTemplateWithPatches
+
+        if (isDryRunView || shouldUseMergedTemplate) {
+            return hideLockedKeys
+                ? currentTemplateState.mergedTemplateWithoutLockedKeys
+                : currentTemplateState.mergedTemplate
+        }
+
+        // This means currentTemplateState is from editable state
         if ((currentTemplateState as typeof currentEditorTemplateData).originalTemplateState) {
             return currentTemplateState.editorTemplate
         }
@@ -1239,6 +1246,14 @@ const DeploymentTemplate = ({
             return ''
         }
 
+        const shouldUseMergedTemplate = isCompareView && shouldMergeTemplateWithPatches
+
+        if (shouldUseMergedTemplate) {
+            return hideLockedKeys
+                ? publishedTemplateData.mergedTemplateWithoutLockedKeys
+                : publishedTemplateData.mergedTemplate
+        }
+
         if (resolveScopedVariables) {
             return hideLockedKeys
                 ? resolvedPublishedTemplate.templateWithoutLockedKeys
@@ -1250,8 +1265,27 @@ const DeploymentTemplate = ({
             : publishedTemplateData.editorTemplate
     }
 
-    // NOTE: Need to implement when we have support for merge patches
-    const getShouldShowMergePatchesButton = (): boolean => false
+    const getShouldShowMergePatchesButton = (): boolean => {
+        if (!isCompareView) {
+            return false
+        }
+
+        const currentTemplateState = getCurrentEditorState({
+            state,
+            isPublishedConfigPresent,
+            isDryRunView,
+            isDeleteOverrideDraft,
+            isInheritedView,
+            isPublishedValuesView,
+            showApprovalPendingEditorInCompareView,
+        })
+
+        const isPublishedStrategyPatch =
+            publishedTemplateData?.isOverridden &&
+            publishedTemplateData?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+        return isPublishedStrategyPatch || currentTemplateState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+    }
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
         if (mergeStrategy === currentEditorTemplateData.mergeStrategy) {

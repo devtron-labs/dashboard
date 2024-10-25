@@ -4,7 +4,6 @@ import {
     getGuiSchemaFromChartName,
     ResponseType,
     YAMLStringify,
-    logExceptionToSentry,
     DeploymentTemplateConfigState,
     OverrideMergeStrategyType,
     ConfigHeaderTabType,
@@ -24,7 +23,6 @@ import {
     GetLockConfigEligibleAndIneligibleChangesType,
     GetLockedDiffModalDocumentsParamsType,
     GetLockedDiffModalDocumentsReturnType,
-    GetRawEditorValueForDryRunModeProps,
     HandleInitializeDraftDataProps,
     OverriddenBaseDeploymentTemplateParsedDraftDTO,
     UpdateBaseDTPayloadType,
@@ -215,7 +213,7 @@ const getDryRunViewEditorState = ({
     } = state
 
     if (!draftTemplateData?.latestDraft) {
-        return currentEditorTemplateData
+        return isPublishedConfigPresent ? currentEditorTemplateData : baseDeploymentTemplateData
     }
 
     if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
@@ -279,34 +277,6 @@ export const getCurrentEditorState = ({
 }
 
 /**
- * This method returns the editor value (un-resolved and with locked keys) in case of dry run mode
- */
-export const getRawEditorValueForDryRunMode = ({
-    state,
-    isPublishedConfigPresent,
-    isDryRunView,
-    isDeleteOverrideDraft,
-}: GetRawEditorValueForDryRunModeProps): string => {
-    if (!isDryRunView) {
-        logExceptionToSentry(new Error('getRawEditorValueForDryRunMode called in non dry run mode'))
-        return ''
-    }
-
-    // We don't have to worry about hideLockedKeys since, we are always showing locked keys in dry run mode
-    return (
-        getCurrentEditorState({
-            state,
-            isPublishedConfigPresent,
-            isDeleteOverrideDraft,
-            isDryRunView: true,
-            isInheritedView: false,
-            isPublishedValuesView: false,
-            showApprovalPendingEditorInCompareView: false,
-        })?.editorTemplate || ''
-    )
-}
-
-/**
  * This method returns the editor value (un-resolved and with locked keys) based on the current view (In case of single editor) and RHS editor value (In case of compare view)
  */
 export const getCurrentEditorPayloadForScopedVariables = ({
@@ -317,6 +287,7 @@ export const getCurrentEditorPayloadForScopedVariables = ({
     isInheritedView,
     isPublishedValuesView,
     showApprovalPendingEditorInCompareView,
+    shouldUseMergedTemplate,
 }: GetCurrentEditorPayloadForScopedVariablesProps): string => {
     const { hideLockedKeys, wasGuiOrHideLockedKeysEdited } = state
 
@@ -332,6 +303,10 @@ export const getCurrentEditorPayloadForScopedVariables = ({
 
     if (!currentEditorState) {
         return ''
+    }
+
+    if (shouldUseMergedTemplate) {
+        return currentEditorState.mergedTemplate
     }
 
     if (hideLockedKeys && !!(currentEditorState as DeploymentTemplateEditorDataStateType).removedPatches?.length) {
@@ -437,19 +412,11 @@ export const handleInitializeDraftData = ({
             active,
             namespace,
         },
-        ...(isMergeStrategyPatch
-            ? {
-                  mergeStrategy,
-                  mergedTemplate: stringifiedFinalTemplate,
-                  mergedTemplateObject: envOverrideValues,
-                  mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
-                      stringifiedFinalTemplate,
-                      lockedConfigKeys,
-                  ).editorTemplate,
-              }
-            : {
-                  mergeStrategy,
-              }),
+        mergeStrategy,
+        mergedTemplate: stringifiedFinalTemplate,
+        mergedTemplateObject: envOverrideValues,
+        mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
+            .editorTemplate,
     }
 
     return response
