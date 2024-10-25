@@ -470,6 +470,8 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
+        guiSchema: Record<string, string>
+        unableToParseManifest: boolean
     }
     id: string
 }
@@ -480,7 +482,6 @@ export enum ManifestCodeEditorMode {
     APPLY_CHANGES = 'applyChanges',
     CANCEL = 'cancel',
 }
-
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean

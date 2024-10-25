@@ -42,7 +42,13 @@ import {
 } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, ManifestActionPropsType, ManifestCodeEditorMode, NodeType } from '../../../appDetails.type'
+import {
+    AppType,
+    ManifestActionPropsType,
+    ManifestCodeEditorMode,
+    ManifestViewRefType,
+    NodeType,
+} from '../../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -99,6 +105,9 @@ const ManifestComponent = ({
     const [showDecodedData, setShowDecodedData] = useState(false)
 
     const [secretViewAccess, setSecretViewAccess] = useState(false)
+    const [guiSchema, setGUISchema] = useState<ManifestViewRefType['data']['guiSchema']>({})
+    const [unableToParseManifest, setUnableToParseManifest] = useState(false)
+
     const { isSuperAdmin } = useMainContext() // to show the cluster meta data at the bottom
     // Cancel is an intermediate state wherein edit is true
     const isEditMode =
@@ -111,6 +120,8 @@ const ManifestComponent = ({
         setDesiredManifest(manifestViewRef.current.data.desiredManifest)
         setManifest(manifestViewRef.current.data.manifest)
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
+        setGUISchema(manifestViewRef.current.data.guiSchema)
+        setUnableToParseManifest(manifestViewRef.current.data.unableToParseManifest)
 
         if (showManifestCompareView) {
             setActiveManifestEditorData(manifestViewRef.current.data.manifest)
@@ -128,11 +139,27 @@ const ManifestComponent = ({
                 manifest,
                 activeManifestEditorData,
                 modifiedManifest,
+                guiSchema,
+                unableToParseManifest,
             },
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id])
+    }, [
+        error,
+        secretViewAccess,
+        desiredManifest,
+        activeManifestEditorData,
+        manifest,
+        modifiedManifest,
+        id,
+        guiSchema,
+        unableToParseManifest,
+    ])
+
+    const handleInitializeGUISchema = async () => {
+        setGUISchema({})
+    }
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -177,8 +204,10 @@ const ManifestComponent = ({
             setLoading(false)
             setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
         } else {
+            // TODO: Move to util and add gui call as well
             setLoading(true)
 
+            handleInitializeGUISchema()
             try {
                 Promise.all([
                     !_isResourceMissing &&
@@ -279,6 +308,12 @@ const ManifestComponent = ({
     const handleEditorValueChange = (codeEditorData: string) => {
         if (!showManifestCompareView && isEditMode) {
             setModifiedManifest(codeEditorData)
+
+            try {
+                YAML.parse(codeEditorData)
+            } catch (err) {
+                setUnableToParseManifest(true)
+            }
         }
     }
 
