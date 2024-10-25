@@ -17,21 +17,13 @@
 import { ApiResourceType, get, post, ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType, ResourceListResponse } from './Types'
+import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType } from './Types'
 import { ALL_NAMESPACE_OPTION } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
 
 export const namespaceListByClusterId = (clusterId: string): Promise<ResponseType> =>
     get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
-
-export const getResourceList = (
-    resourceListPayload: ResourceListPayloadType,
-    signal?: AbortSignal,
-): Promise<ResourceListResponse> =>
-    post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
-        signal,
-    })
 
 export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<ApiResourceType>> =>
     get(`${Routes.API_RESOURCE}/${clusterId}`, {
