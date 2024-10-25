@@ -475,6 +475,8 @@ export interface ManifestViewRefType {
          * Normalized live manifest for manifest diff view
          */
         normalizedLiveManifest: string
+        guiSchema: Record<string, string>
+        unableToParseManifest: boolean
     }
     id: string
 }

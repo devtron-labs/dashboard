@@ -22,6 +22,7 @@ import {
     CHECKBOX_VALUE,
     OptionType,
     DeploymentAppTypes,
+    ConfigurationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -59,6 +60,7 @@ import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+const ToggleManifestConfigurationMode = importComponentFromFELibrary('ToggleManifestConfigurationMode', false, 'function')
 
 const NodeDetailComponent = ({
     loadingResources,
@@ -151,6 +153,7 @@ const NodeDetailComponent = ({
         value: _selectedContainer,
     })
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
+    const [manifestConfigurationType, setManifestConfigurationType] = useState<ConfigurationType>(ConfigurationType.YAML)
 
     // States uplifted from Manifest Component
     const manifestViewRef = useRef<ManifestViewRefType>({
@@ -162,6 +165,8 @@ const NodeDetailComponent = ({
             activeManifestEditorData: '',
             modifiedManifest: '',
             normalizedLiveManifest: '',
+            guiSchema: {},
+            unableToParseManifest: false,
         },
         id: '',
     })
@@ -376,68 +381,86 @@ const NodeDetailComponent = ({
         )
     }
 
-    const renderManifestTabHeader = () => (
-        <>
-            {(isExternalApp ||
-                isResourceBrowserView ||
-                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                    appDetails.deploymentAppDeleteRequest)) &&
-                manifestCodeEditorMode &&
-                !showManifestCompareView &&
-                !isResourceMissing && (
-                    <>
-                        <div className="ml-4 mr-12 tab-cell-border" />
-                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
-                            <div className="flex dc__gap-12">
+    const handleToggleManifestConfigurationMode = () => {
+        setManifestConfigurationType(
+            (prev) => (prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML),
+        )
+    }
+
+    const renderManifestTabHeader = () => {
+        const componentKey = getComponentKeyFromParams()
+
+        return (
+            <>
+                {(isExternalApp ||
+                    isResourceBrowserView ||
+                    (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                        appDetails.deploymentAppDeleteRequest)) &&
+                    manifestCodeEditorMode &&
+                    !showManifestCompareView &&
+                    !isResourceMissing && (
+                        <>
+                            <div className="ml-4 mr-12 tab-cell-border" />
+                            {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                                <div className="flex dc__gap-12">
+                                    {ToggleManifestConfigurationMode && (
+                                        <ToggleManifestConfigurationMode
+                                            mode={manifestConfigurationType}
+                                            handleToggle={handleToggleManifestConfigurationMode}
+                                            isDisabled={manifestViewRef.current[componentKey]?.data.unableToParseManifest}
+                                        />
+                                    )}
+    
+                                    <button
+                                        type="button"
+                                        className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                        onClick={handleManifestApplyChanges}
+                                    >
+                                        <>
+                                            <ICCheck className="icon-dim-16 scb-5" />
+                                            <span>Apply changes</span>
+                                        </>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                        onClick={handleManifestCancel}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            ) : (
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                    onClick={handleManifestApplyChanges}
+                                    onClick={handleManifestEdit}
                                 >
                                     <>
-                                        <ICCheck className="icon-dim-16 scb-5" />
-                                        <span>Apply changes</span>
+                                        <ICPencil className="icon-dim-16 scb-5" />
+                                        <span>Edit live manifest</span>
                                     </>
                                 </button>
-                                <button
-                                    type="button"
-                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
-                                    onClick={handleManifestCancel}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        ) : (
+                            )}
+                        </>
+                    )}
+                {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
+                    !showManifestCompareView &&
+                    (showDesiredAndCompareManifest || isResourceMissing) && (
+                        <>
+                            <div className="ml-12 mr-12 tab-cell-border" />
                             <button
                                 type="button"
                                 className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                onClick={handleManifestEdit}
+                                onClick={handleManifestCompareWithDesired}
                             >
-                                <>
-                                    <ICPencil className="icon-dim-16 scb-5" />
-                                    <span>Edit live manifest</span>
-                                </>
+                                <ICArrowsLeftRight className="icon-dim-16 scb-5" />
+                                <span>Compare with desired</span>
                             </button>
-                        )}
-                    </>
-                )}
-            {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
-                !showManifestCompareView &&
-                (showDesiredAndCompareManifest || isResourceMissing) && (
-                    <>
-                        <div className="ml-12 mr-12 tab-cell-border" />
-                        <button
-                            type="button"
-                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                            onClick={handleManifestCompareWithDesired}
-                        >
-                            <ICArrowsLeftRight className="icon-dim-16 scb-5" />
-                            <span>Compare with desired</span>
-                        </button>
-                    </>
-                )}
-        </>
-    )
+                        </>
+                    )}
+            </>
+        )
+    }
 
     return (
         <>
