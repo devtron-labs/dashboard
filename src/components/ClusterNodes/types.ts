@@ -16,11 +16,11 @@
 
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ApiResourceGroupType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ClusterOptionType, ResourceDetailDataType } from '../ResourceBrowser/Types'
+import { ClusterOptionType } from '../ResourceBrowser/Types'
 import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
@@ -133,7 +133,7 @@ export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
 
-export interface PodType extends ResourceDetailDataType {
+export interface PodType extends K8sResourceDetailDataType {
     name: string
     namespace: string
     cpu: ResourceDetail
