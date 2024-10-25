@@ -273,7 +273,11 @@ const DeploymentTemplate = ({
         })
     }
 
-    const handleUpdateProtectedTabSelection = (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
+    // TODO: Fill on api integration
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleLoadMergedTemplate = async () => {}
+
+    const handleUpdateProtectedTabSelection = async (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
         if (tab === selectedProtectionViewTab) {
             return
         }
@@ -283,6 +287,8 @@ const DeploymentTemplate = ({
                 category: 'devtronapp-configuration-dt',
                 action: 'clicked-compare',
             })
+
+            await handleLoadMergedTemplate()
         }
 
         dispatch({
@@ -315,10 +321,6 @@ const DeploymentTemplate = ({
             },
         })
     }
-
-    // TODO: Fill on api integration
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleLoadMergedTemplate = async () => {}
 
     const handleLoadScopedVariables = async () => {
         try {
@@ -501,7 +503,7 @@ const DeploymentTemplate = ({
         handleUpdateReadmeMode(false)
     }
 
-    const handleConfigHeaderTabChange = (tab: ConfigHeaderTabType) => {
+    const handleConfigHeaderTabChange = async (tab: ConfigHeaderTabType) => {
         if (configHeaderTab === tab) {
             return
         }
@@ -511,6 +513,8 @@ const DeploymentTemplate = ({
                 category: 'devtronapp-configuration-dt',
                 action: 'clicked-dry-run',
             })
+
+            await handleLoadMergedTemplate()
         }
 
         updateSearchParams({
@@ -522,8 +526,8 @@ const DeploymentTemplate = ({
         })
     }
 
-    const handleViewInheritedConfig = () => {
-        handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
+    const handleViewInheritedConfig = async () => {
+        await handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType =>
@@ -1270,6 +1274,7 @@ const DeploymentTemplate = ({
             return false
         }
 
+        // TODO: Behavior wise should we check current selection or the one which is being compared and remove show merged patches on change?
         const currentTemplateState = getCurrentEditorState({
             state,
             isPublishedConfigPresent,
