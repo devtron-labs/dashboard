@@ -30,7 +30,6 @@ import {
     FilterChips,
     handleUTCTime,
     ModuleNameMap,
-    getUrlWithSearchParams,
     getNamespaceListMin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCommonAppFilters } from '@Services/service'
@@ -42,11 +41,12 @@ import { AppListPropType } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
-import { APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     getAppStatusFormattedValue,
     getChangeAppTabURL,
+    getFilterChipConfig,
     getFormattedFilterLabel,
     parseSearchParams,
 } from './list.utils'
@@ -93,6 +93,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const urlFilters = useUrlFilters<AppListSortableKeys, AppListUrlFiltersType>({
         initialSortKey: AppListSortableKeys.APP_NAME,
         parseSearchParams,
+        localStorageKey: APP_LIST_LOCAL_STORAGE_KEY,
     })
     const {
         searchKey,
@@ -214,7 +215,12 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 (currentNamespace) => clusterIdsMap.get(+currentNamespace.split('_')[0]) ?? false,
             )
             // To clear template type filter if cluster filter is cleared
-            updateSearchParams({ namespace: updatedNamespaces, templateType: clusterIdsCsv ? templateType : [] })
+            // and clear environment filter if cluster is selected
+            updateSearchParams({
+                namespace: updatedNamespaces,
+                templateType: clusterIdsCsv ? templateType : [],
+                environment: clusterIdsCsv ? [] : environment,
+            })
         }
     }, [`${cluster}`])
 
@@ -262,16 +268,21 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         setFetchingExternalApps(fetching)
     }
 
-    const renderAppliedFilters = () => (
-        <FilterChips<AppListUrlFiltersType>
-            filterConfig={{ appStatus, project, cluster, environment, namespace, templateType }}
-            onRemoveFilter={updateSearchParams}
-            clearFilters={clearFilters}
-            className="px-20"
-            getFormattedLabel={getFormattedFilterLabel}
-            getFormattedValue={getFormattedFilterValue}
-        />
-    )
+    const renderAppliedFilters = () =>
+        !appListFiltersLoading &&
+        !appListFiltersError && (
+            <FilterChips<Partial<AppListUrlFiltersType>>
+                filterConfig={getFilterChipConfig(
+                    { appStatus, project, environment, cluster, namespace, templateType },
+                    params.appType,
+                )}
+                onRemoveFilter={updateSearchParams}
+                clearFilters={clearFilters}
+                className="px-20"
+                getFormattedLabel={getFormattedFilterLabel}
+                getFormattedValue={getFormattedFilterValue}
+            />
+        )
 
     const renderAppTabs = () => {
         const tabs: TabProps[] = [
@@ -284,14 +295,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           props: {
                               to: {
                                   pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
-                                  search: getUrlWithSearchParams('', {
-                                      appStatus,
-                                      project,
-                                      environment,
-                                      cluster,
-                                      namespace,
-                                      searchKey,
-                                  }),
+                                  search: location.search,
                               },
                               'data-testid': 'devtron-app-list-button',
                           },
@@ -305,14 +309,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 props: {
                     to: {
                         pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
-                        search: getUrlWithSearchParams('', {
-                            appStatus,
-                            project,
-                            environment,
-                            cluster,
-                            namespace,
-                            searchKey,
-                        }),
+                        search: location.search,
                     },
                     'data-testid': 'helm-app-list-button',
                 },
@@ -326,11 +323,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           props: {
                               to: {
                                   pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
-                                  search: getUrlWithSearchParams('', {
-                                      cluster,
-                                      namespace,
-                                      searchKey,
-                                  }),
+                                  search: location.search,
                               },
                               'data-testid': 'argo-app-list-button',
                           },
@@ -346,12 +339,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                           props: {
                               to: {
                                   pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
-                                  search: getUrlWithSearchParams('', {
-                                      cluster,
-                                      namespace,
-                                      templateType,
-                                      searchKey,
-                                  }),
+                                  search: location.search,
                               },
                               'data-testid': 'flux-app-list-button',
                           },

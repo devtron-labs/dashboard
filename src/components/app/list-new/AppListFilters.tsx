@@ -48,6 +48,17 @@ const AppListFilters = ({
         isExternalFlux,
     })
 
+    const getIsClusterOptionDisabled = (option: SelectPickerOptionType): boolean => {
+        const clusterList = appListFiltersResponse?.isFullMode
+            ? appListFiltersResponse?.appListFilters.result.clusters
+            : appListFiltersResponse?.clusterList.result
+        if (!clusterList) return false
+        if (isExternalArgo || isExternalFlux) {
+            return clusterList.find((clusterItem) => clusterItem.id === +option.value)?.isVirtualCluster
+        }
+        return false
+    }
+
     const selectedAppStatus = appStatus.map((status) => ({ label: status, value: status })) || []
 
     const selectedProjects =
@@ -193,11 +204,12 @@ const AppListFilters = ({
                             inputId="app-list-cluster-filter"
                             options={clusterOptions}
                             appliedFilterOptions={selectedClusters}
-                            isDisabled={!!environment.length}
+                            isDisabled={!(isExternalArgo || isExternalFlux) && !!environment.length}
                             isLoading={appListFiltersLoading}
                             handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                             optionListError={appListFiltersError}
                             reloadOptionList={reloadAppListFilters}
+                            isOptionDisabled={getIsClusterOptionDisabled}
                         />
                         {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                     </div>
