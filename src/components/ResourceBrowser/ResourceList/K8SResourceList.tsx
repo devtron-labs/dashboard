@@ -34,6 +34,9 @@ import {
     ClipboardButton,
     Tooltip,
     useResizableTableConfig,
+    getK8sResourceList,
+    K8sResourceDetailDataType,
+    K8sResourceDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -49,8 +52,8 @@ import {
     SEARCH_QUERY_PARAM_KEY,
     DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
-import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
+import { getResourceListPayload } from '../ResourceBrowser.service'
+import { K8SResourceListType, URLParams } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -93,7 +96,7 @@ export const K8SResourceList = ({
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
-    const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
+    const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
 
     // REFS
     const resourceListRef = useRef<HTMLDivElement>(null)
@@ -112,7 +115,7 @@ export const K8SResourceList = ({
         () =>
             abortPreviousRequests(
                 () =>
-                    getResourceList(
+                    getK8sResourceList(
                         getResourceListPayload(
                             clusterId,
                             selectedNamespace.value.toLowerCase(),
@@ -288,7 +291,7 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
+    const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => (
         <div
             key={`${resourceData.id}-${resourceData.name}`}
             className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
