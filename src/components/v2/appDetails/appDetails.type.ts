@@ -21,6 +21,7 @@ import {
     Node as CommonNode,
     iNode as CommoniNode,
     ApiResourceGroupType,
+    ConfigurationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
@@ -471,7 +472,6 @@ export interface ManifestViewRefType {
         activeManifestEditorData: string
         modifiedManifest: string
         guiSchema: Record<string, string>
-        unableToParseManifest: boolean
     }
     id: string
 }
@@ -492,6 +492,9 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
     manifestCodeEditorMode: ManifestCodeEditorMode
     setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
+    handleSwitchToYAMLMode: () => void
+    manifestFormConfigurationType: ConfigurationType
+    handleUpdateUnableToParseManifest: (value: boolean) => void
 }
 
 export interface NodeTreeDetailTabProps {

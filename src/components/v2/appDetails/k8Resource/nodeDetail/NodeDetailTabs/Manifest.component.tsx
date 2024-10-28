@@ -30,14 +30,21 @@ import {
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    FormProps,
+    ConfigurationType,
+    YAMLStringify,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
 import {
     createResource,
     getDesiredManifestResource,
     getManifestResource,
+    getResourceRequestPayload,
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
@@ -60,6 +67,10 @@ import {
     SAVE_DATA_VALIDATION_ERROR_MSG,
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
+const ManifestGUIView = importComponentFromFELibrary('ManifestGUIView', null, 'function')
 
 const ManifestComponent = ({
     selectedTab,
@@ -74,6 +85,9 @@ const ManifestComponent = ({
     setShowManifestCompareView,
     manifestCodeEditorMode,
     setManifestCodeEditorMode,
+    manifestFormConfigurationType,
+    handleSwitchToYAMLMode,
+    handleUpdateUnableToParseManifest,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -106,7 +120,6 @@ const ManifestComponent = ({
 
     const [secretViewAccess, setSecretViewAccess] = useState(false)
     const [guiSchema, setGUISchema] = useState<ManifestViewRefType['data']['guiSchema']>({})
-    const [unableToParseManifest, setUnableToParseManifest] = useState(false)
 
     const { isSuperAdmin } = useMainContext() // to show the cluster meta data at the bottom
     // Cancel is an intermediate state wherein edit is true
@@ -121,7 +134,6 @@ const ManifestComponent = ({
         setManifest(manifestViewRef.current.data.manifest)
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
         setGUISchema(manifestViewRef.current.data.guiSchema)
-        setUnableToParseManifest(manifestViewRef.current.data.unableToParseManifest)
 
         if (showManifestCompareView) {
             setActiveManifestEditorData(manifestViewRef.current.data.manifest)
@@ -129,6 +141,8 @@ const ManifestComponent = ({
             setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
         }
     }
+
+    const isReadOnlyView = showManifestCompareView || !isEditMode
 
     useEffectAfterMount(() => {
         manifestViewRef.current = {
@@ -140,25 +154,32 @@ const ManifestComponent = ({
                 activeManifestEditorData,
                 modifiedManifest,
                 guiSchema,
-                unableToParseManifest,
             },
             /* NOTE: id is unlikely to change but still kept as dep */
             id,
         }
-    }, [
-        error,
-        secretViewAccess,
-        desiredManifest,
-        activeManifestEditorData,
-        manifest,
-        modifiedManifest,
-        id,
-        guiSchema,
-        unableToParseManifest,
-    ])
+    }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id, guiSchema])
 
-    const handleInitializeGUISchema = async () => {
-        setGUISchema({})
+    const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
+        if (!getManifestGUISchema) {
+            return
+        }
+
+        const resourceRequestPayload = getResourceRequestPayload({
+            appDetails,
+            nodeName: params.podName,
+            nodeType: params.nodeType,
+            isResourceBrowserView,
+            selectedResource,
+        })
+
+        const guiSchemaResponse = await getManifestGUISchema({
+            clusterId: resourceRequestPayload.clusterId,
+            gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
+            signal: abortSignal,
+        })
+
+        setGUISchema(guiSchemaResponse)
     }
 
     useEffect(() => {
@@ -204,10 +225,7 @@ const ManifestComponent = ({
             setLoading(false)
             setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
         } else {
-            // TODO: Move to util and add gui call as well
             setLoading(true)
-
-            handleInitializeGUISchema()
             try {
                 Promise.all([
                     !_isResourceMissing &&
@@ -221,6 +239,7 @@ const ManifestComponent = ({
                         ),
                     _showDesiredAndCompareManifest &&
                         getDesiredManifestResource(appDetails, params.podName, params.nodeType, abortController.signal),
+                    handleInitializeGUISchema(abortController.signal),
                 ])
                     .then((response) => {
                         setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
@@ -272,7 +291,7 @@ const ManifestComponent = ({
         }
         if (isEditMode) {
             try {
-                const jsonManifestData = YAML.parse(activeManifestEditorData)
+                const jsonManifestData = YAML.parse(modifiedManifest)
                 if (jsonManifestData?.metadata?.managedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
@@ -308,13 +327,20 @@ const ManifestComponent = ({
     const handleEditorValueChange = (codeEditorData: string) => {
         if (!showManifestCompareView && isEditMode) {
             setModifiedManifest(codeEditorData)
+            // Question: Should we directly set this in case of errored string?
+            setTrimedManifestEditorData(codeEditorData)
 
             try {
                 YAML.parse(codeEditorData)
-            } catch (err) {
-                setUnableToParseManifest(true)
+                handleUpdateUnableToParseManifest(false)
+            } catch {
+                handleUpdateUnableToParseManifest(true)
             }
         }
+    }
+
+    const handleGUIViewValueChange: FormProps['onChange'] = (data) => {
+        handleEditorValueChange(YAMLStringify(data.formData))
     }
 
     const handleEditLiveManifest = () => {
@@ -447,7 +473,12 @@ const ManifestComponent = ({
     const handleDesiredManifestClose = () => setShowManifestCompareView(false)
 
     const renderShowDecodedValueCheckbox = () => {
-        const jsonManifestData = YAML.parse(trimedManifestEditorData)
+        let jsonManifestData
+        try {
+            jsonManifestData = YAML.parse(trimedManifestEditorData)
+        } catch {
+            return null
+        }
         if (jsonManifestData?.kind === 'Secret' && !isEditMode && secretViewAccess) {
             return (
                 <ConditionalWrap
@@ -484,6 +515,119 @@ const ManifestComponent = ({
         }
     }
 
+    const renderEditorInfo = (isCodeEditorView: boolean = false) => {
+        if (!showInfoText) {
+            return null
+        }
+
+        const message =
+            isEditMode && !showManifestCompareView
+                ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
+                : EA_MANIFEST_SECRET_INFO_TEXT
+
+        if (isCodeEditorView) {
+            return (
+                <CodeEditor.Information text={message} className="flex left">
+                    {renderShowDecodedValueCheckbox()}
+                </CodeEditor.Information>
+            )
+        }
+
+        return (
+            <InfoColourBar
+                message={message}
+                classname="w-100 m-0 code-editor__information dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                Icon={ICInfoFilled}
+                iconClass="icon-dim-16"
+                linkClass="dc__truncate--clamp-6"
+            />
+        )
+    }
+
+    const renderErrorBar = (isCodeEditorView: boolean = false) => {
+        if (showManifestCompareView || !errorText) {
+            return null
+        }
+
+        if (isCodeEditorView) {
+            return <CodeEditor.ErrorBar text={errorText} />
+        }
+
+        return (
+            <InfoColourBar
+                message={errorText}
+                classname="w-100 m-0 code-editor__error dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                Icon={ICErrorExclamation}
+                iconClass="icon-dim-16"
+                linkClass="dc__truncate--clamp-6"
+            />
+        )
+    }
+
+    const renderContent = () => {
+        if (!isReadOnlyView && manifestFormConfigurationType === ConfigurationType.GUI) {
+            return (
+                <>
+                    {renderEditorInfo()}
+                    {renderErrorBar()}
+                    <ManifestGUIView
+                        guiSchema={guiSchema}
+                        handleChange={handleGUIViewValueChange}
+                        // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
+                        manifestYAMLString={trimedManifestEditorData}
+                        handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                    />
+                </>
+            )
+        }
+
+        return (
+            <CodeEditor
+                defaultValue={showManifestCompareView && desiredManifest}
+                cleanData={showManifestCompareView}
+                diffView={showManifestCompareView}
+                theme="vs-dark--dt"
+                height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
+                value={trimedManifestEditorData}
+                mode={MODES.YAML}
+                readOnly={showManifestCompareView || !isEditMode}
+                onChange={handleEditorValueChange}
+                loading={loading}
+                customLoader={
+                    <MessageUI
+                        msg={loadingMsg}
+                        icon={MsgUIType.LOADING}
+                        size={24}
+                        minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
+                    />
+                }
+                focus={isEditMode}
+            >
+                {renderEditorInfo(true)}
+
+                {showManifestCompareView && (
+                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
+                        <div className="dc__split-header">
+                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
+                                <span>Desired manifest</span>
+                                <button
+                                    className="dc__unset-button-styles flex"
+                                    aria-label="Close Desired Manifest"
+                                    onClick={handleDesiredManifestClose}
+                                >
+                                    <ICClose className="icon-dim-16 scn-0" />
+                                </button>
+                            </div>
+                            <div className="dc__split-header__pane">Live manifest</div>
+                        </div>
+                    </CodeEditor.Header>
+                )}
+
+                {renderErrorBar(true)}
+            </CodeEditor>
+        )
+    }
+
     return isDeleted ? (
         <div className="h-100 flex-grow-1">
             <MessageUI
@@ -516,58 +660,7 @@ const ManifestComponent = ({
                             onActionButtonClick={recreateResource}
                         />
                     ) : (
-                        <CodeEditor
-                            defaultValue={showManifestCompareView && desiredManifest}
-                            cleanData={showManifestCompareView}
-                            diffView={showManifestCompareView}
-                            theme="vs-dark--dt"
-                            height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
-                            value={trimedManifestEditorData}
-                            mode={MODES.YAML}
-                            readOnly={showManifestCompareView || !isEditMode}
-                            onChange={handleEditorValueChange}
-                            loading={loading}
-                            customLoader={
-                                <MessageUI
-                                    msg={loadingMsg}
-                                    icon={MsgUIType.LOADING}
-                                    size={24}
-                                    minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
-                                />
-                            }
-                            focus={isEditMode}
-                        >
-                            {showInfoText && (
-                                <CodeEditor.Information
-                                    text={
-                                        isEditMode && !showManifestCompareView
-                                            ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
-                                            : EA_MANIFEST_SECRET_INFO_TEXT
-                                    }
-                                    className="flex left"
-                                >
-                                    {renderShowDecodedValueCheckbox()}
-                                </CodeEditor.Information>
-                            )}
-                            {showManifestCompareView && (
-                                <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                                    <div className="dc__split-header">
-                                        <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                            <span>Desired manifest</span>
-                                            <button
-                                                className="dc__unset-button-styles flex"
-                                                aria-label="Close Desired Manifest"
-                                                onClick={handleDesiredManifestClose}
-                                            >
-                                                <ICClose className="icon-dim-16 scn-0" />
-                                            </button>
-                                        </div>
-                                        <div className="dc__split-header__pane">Live manifest</div>
-                                    </div>
-                                </CodeEditor.Header>
-                            )}
-                            {!showManifestCompareView && errorText && <CodeEditor.ErrorBar text={errorText} />}
-                        </CodeEditor>
+                        renderContent()
                     )}
                 </div>
             )}
