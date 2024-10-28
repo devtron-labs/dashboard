@@ -754,7 +754,7 @@ export default function BuildCD({
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
                                         height={300}
-                                        value={strategy.jsonStr}
+                                        value={strategy.yamlStr}
                                         mode="yaml"
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
