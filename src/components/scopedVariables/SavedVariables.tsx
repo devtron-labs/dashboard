@@ -38,6 +38,7 @@ export default function SavedVariablesView({
     reloadScopedVariables,
     setScopedVariables,
 }: SavedVariablesViewProps) {
+    const [searchText, setSearchText] = useState<string>('')
     const [variablesList, setVariablesList] = useState<VariableType[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
     // No need to make it a state since editor here is read only and we don't need to update it
@@ -58,7 +59,8 @@ export default function SavedVariablesView({
 
     const handleActivateEditView = () => setShowEditView(true)
 
-    const handleSearch = (query: string) => {
+    const onSearch = (query: string) => {
+        setSearchText(query)
         const filteredVariables = scopedVariablesData?.spec?.filter(
             (variable) =>
                 variable.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -72,6 +74,8 @@ export default function SavedVariablesView({
         }))
         setVariablesList(variables)
     }
+
+    const handleClearFilters = () => onSearch('')
 
     if (showEditView) {
         return (
@@ -110,11 +114,14 @@ export default function SavedVariablesView({
             <Switch>
                 <Route path={`${URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}/:currentView?`} exact>
                     <SavedVariablesContent
-                        handleSearch={handleSearch}
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        onSearch={onSearch}
                         readFile={readFile}
                         handleActivateEditView={handleActivateEditView}
                         scopedVariablesYAML={scopedVariablesYAML}
                         variablesList={variablesList}
+                        handleClearFilters={handleClearFilters}
                     />
                 </Route>
 

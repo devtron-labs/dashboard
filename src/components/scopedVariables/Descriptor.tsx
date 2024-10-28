@@ -25,7 +25,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { HEADER_TEXT } from '@Config/constants'
 
-export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
+export default function Descriptor({ children, showUploadButton, readFile, searchText, setSearchText, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         if (readFile) {
@@ -54,7 +54,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                     />
 
                     <div className="flex dc__gap-12">
-                        {onSearch && <SearchBar onSearch={onSearch} placeholder="Search variables" Icon={ICSearch} />}
+                        {onSearch && <SearchBar searchText={searchText} setSearchText={setSearchText} onSearch={onSearch} placeholder="Search variables" Icon={ICSearch} />}
 
                         {showUploadButton && (
                             <button

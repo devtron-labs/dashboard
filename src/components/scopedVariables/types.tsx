@@ -15,6 +15,7 @@
  */
 
 import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import { Dispatch, SetStateAction } from 'react'
 import { useFileReader } from '../common'
 import { FileReaderStatusType, FileDataType } from '../common/hooks/types'
 import { parseIntoYAMLString } from './utils'
@@ -57,11 +58,10 @@ export interface UploadScopedVariablesProps {
     setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataType>>
 }
 
-export interface DescriptorProps {
+export interface DescriptorProps extends Partial<Pick<SearchBarProps, 'searchText' | 'setSearchText' | 'onSearch'>> {
     children?: React.ReactNode
     showUploadButton?: boolean
     readFile?: ReturnType<typeof useFileReader>['readFile']
-    onSearch?: (query: string) => void
 }
 
 export interface VariableType {
@@ -100,6 +100,8 @@ export interface VariablesListItemProps {
 }
 
 export interface SearchBarProps {
+    searchText: string
+    setSearchText: Dispatch<SetStateAction<string>>
     onSearch: (query: string) => void
     placeholder?: string
     inputClass?: string
@@ -109,8 +111,9 @@ export interface SearchBarProps {
     iconClass?: string
 }
 
-export interface SavedVariablesContentProps {
-    handleSearch: (searchKey: string) => void
+export interface SavedVariablesContentProps
+    extends Required<Pick<DescriptorProps, 'searchText' | 'setSearchText' | 'onSearch'>> {
+    handleClearFilters: () => void
     readFile: ReturnType<typeof useFileReader>['readFile']
     handleActivateEditView: () => void
     scopedVariablesYAML: ReturnType<typeof parseIntoYAMLString>

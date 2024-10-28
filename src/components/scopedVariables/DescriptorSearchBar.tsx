@@ -22,6 +22,8 @@ import { SearchBarProps } from './types'
  * @deprecated Use `SearchBar` from common-lib instead
  */
 export default function SearchBar({
+    searchText,
+    setSearchText,
     onSearch,
     Icon,
     children,
@@ -30,8 +32,6 @@ export default function SearchBar({
     inputClass = '',
     iconClass = '',
 }: SearchBarProps) {
-    const [searchText, setSearchText] = useState<string>('')
-
     const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             onSearch(searchText)
