@@ -26,7 +26,7 @@
     --full-screen-modal-index: 10;
     --page-header-index: 12;
     --filter-menu-index: 7;
-    --transparent-div-index: 24;
+    --transparent-div-index: 6;
     --app-list-header-index: 3;
     --navigation-index: 13;
     --tooltip-index: 7;
@@ -2418,6 +2418,10 @@ button.anchor {
 
 .fw-n {
     font-weight: normal !important;
+}
+
+.fw-6-imp {
+    font-weight: 600 !important;
 }
 
 .dc__hide-section {
@@ -5041,6 +5045,10 @@ textarea::placeholder {
     right: 0;
     height: 100vh;
     z-index: var(--transparent-div-index);
+
+    &--command-bar {
+        z-index: 24;
+    }
 }
 
 @-webkit-keyframes pulse {
