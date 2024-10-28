@@ -1061,10 +1061,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.6.1.tgz#7698501cfe814c1ec2cfd765ccebc1582bd5fade"
-  integrity sha512-4dn8/WFB8ahFGFjNXTHm0fz57ekHzYR+wHMToFvXiXgo7JtFMuHgNMvGENfGQnyq0XSYUveRR1HAT5KO36MU0Q==
+"@devtron-labs/devtron-fe-common-lib@0.6.1-beta-1":
+  version "0.6.1-beta-1"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.6.1-beta-1.tgz#656e77777c851cb523f29ccfb1f2e3ad99c5de8e"
+  integrity sha512-T+cogxSJ02PWrX6FjSadk5MQ60MASkwRjIDAJHqRA5+tG9Tj21i//JnKyOodiYMkG/ks/HY3WvRaJaDTsv/Gkg==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -3135,9 +3135,9 @@ acorn@^7.4.1:
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
 
 acorn@^8.11.0, acorn@^8.11.3, acorn@^8.12.1, acorn@^8.4.1, acorn@^8.8.2, acorn@^8.9.0:
-  version "8.13.0"
-  resolved "https://registry.npmjs.org/acorn/-/acorn-8.13.0.tgz"
-  integrity sha512-8zSiw54Oxrdym50NlZ9sUusyO1Z1ZchgRLWRaK6c86XJFClyCgFKetdowBg5bKxyp/u+CDBJG4Mpp0m3HLZl9w==
+  version "8.14.0"
+  resolved "https://registry.npmjs.org/acorn/-/acorn-8.14.0.tgz"
+  integrity sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==
 
 agent-base@6:
   version "6.0.2"
