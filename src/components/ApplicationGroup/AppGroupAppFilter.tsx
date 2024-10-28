@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import ReactSelect from 'react-select'
+import { useEffect, useRef, useState } from 'react'
+import ReactSelect, { SelectInstance } from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
-import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function AppGroupAppFilter() {
     const {
@@ -37,6 +37,8 @@ export default function AppGroupAppFilter() {
         setSelectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
+    const appGroupFilterRef = useRef<SelectInstance<OptionType>>()
+    const {registerShortcut, unregisterShortcut} = useRegisterShortcut()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
 
@@ -101,8 +103,22 @@ export default function AppGroupAppFilter() {
         return 'Search filters'
     }
 
+    const handleFilterFocus = () => {
+        appGroupFilterRef.current.focus()
+        appGroupFilterRef.current.onMenuOpen()
+    }
+
+    useEffect(() => {
+        registerShortcut({keys: ['F'], callback: handleFilterFocus})
+
+        return () => {
+            unregisterShortcut(['F'])
+        }
+    }, [])
+
     return (
         <ReactSelect
+            ref={appGroupFilterRef}
             menuIsOpen={isMenuOpen}
             value={selectedFilterTab === AppFilterTabs.APP_FILTER ? selectedAppList : selectedGroupFilter}
             options={selectedFilterTab === AppFilterTabs.APP_FILTER ? appListOptions : groupFilterOptions}
