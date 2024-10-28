@@ -39,6 +39,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import {
     AppType,
+    ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
     NodeDetailPropsType,
@@ -64,7 +65,11 @@ import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
-const ToggleManifestConfigurationMode = importComponentFromFELibrary('ToggleManifestConfigurationMode', false, 'function')
+const ToggleManifestConfigurationMode = importComponentFromFELibrary(
+    'ToggleManifestConfigurationMode',
+    false,
+    'function',
+)
 
 const NodeDetailComponent = ({
     loadingResources,
@@ -157,7 +162,10 @@ const NodeDetailComponent = ({
         value: _selectedContainer,
     })
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
-    const [manifestConfigurationType, setManifestConfigurationType] = useState<ConfigurationType>(ConfigurationType.YAML)
+    const [manifestFormConfigurationType, setManifestFormConfigurationType] = useState<ConfigurationType>(
+        ConfigurationType.YAML,
+    )
+    const [unableToParseManifest, setUnableToParseManifest] = useState<boolean>(false)
 
     // States uplifted from Manifest Component
     const manifestViewRef = useRef<ManifestViewRefType>({
@@ -170,7 +178,6 @@ const NodeDetailComponent = ({
             modifiedManifest: '',
             normalizedLiveManifest: '',
             guiSchema: {},
-            unableToParseManifest: false,
         },
         id: '',
     })
@@ -386,85 +393,91 @@ const NodeDetailComponent = ({
     }
 
     const handleToggleManifestConfigurationMode = () => {
-        setManifestConfigurationType(
-            (prev) => (prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML),
+        setManifestFormConfigurationType((prev) =>
+            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
         )
     }
 
-    const renderManifestTabHeader = () => {
-        const componentKey = getComponentKeyFromParams()
+    const handleSwitchToYAMLMode = () => {
+        setManifestFormConfigurationType(ConfigurationType.YAML)
+    }
 
-        return (
-            <>
-                {(isExternalApp ||
-                    isResourceBrowserView ||
-                    (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                        appDetails.deploymentAppDeleteRequest)) &&
-                    manifestCodeEditorMode &&
-                    !showManifestCompareView &&
-                    !isResourceMissing && (
-                        <>
-                            <div className="ml-4 mr-12 tab-cell-border" />
-                            {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
-                                <div className="flex dc__gap-12">
-                                    {ToggleManifestConfigurationMode && (
-                                        <ToggleManifestConfigurationMode
-                                            mode={manifestConfigurationType}
-                                            handleToggle={handleToggleManifestConfigurationMode}
-                                            isDisabled={manifestViewRef.current[componentKey]?.data.unableToParseManifest}
-                                        />
-                                    )}
-    
-                                    <button
-                                        type="button"
-                                        className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                        onClick={handleManifestApplyChanges}
-                                    >
-                                        <>
-                                            <ICCheck className="icon-dim-16 scb-5" />
-                                            <span>Apply changes</span>
-                                        </>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
-                                        onClick={handleManifestCancel}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            ) : (
+    const handleUpdateUnableToParseManifest: ManifestActionPropsType['handleUpdateUnableToParseManifest'] = (
+        value: boolean,
+    ) => {
+        setUnableToParseManifest(value)
+    }
+
+    const renderManifestTabHeader = () => (
+        <>
+            {(isExternalApp ||
+                isResourceBrowserView ||
+                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                    appDetails.deploymentAppDeleteRequest)) &&
+                manifestCodeEditorMode &&
+                !showManifestCompareView &&
+                !isResourceMissing && (
+                    <>
+                        <div className="ml-4 mr-12 tab-cell-border" />
+                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                            <div className="flex dc__gap-12">
+                                {ToggleManifestConfigurationMode && (
+                                    <ToggleManifestConfigurationMode
+                                        mode={manifestFormConfigurationType}
+                                        handleToggle={handleToggleManifestConfigurationMode}
+                                        isDisabled={unableToParseManifest}
+                                    />
+                                )}
+
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                    onClick={handleManifestEdit}
+                                    onClick={handleManifestApplyChanges}
                                 >
                                     <>
-                                        <ICPencil className="icon-dim-16 scb-5" />
-                                        <span>Edit live manifest</span>
+                                        <ICCheck className="icon-dim-16 scb-5" />
+                                        <span>Apply changes</span>
                                     </>
                                 </button>
-                            )}
-                        </>
-                    )}
-                {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
-                    !showManifestCompareView &&
-                    (showDesiredAndCompareManifest || isResourceMissing) && (
-                        <>
-                            <div className="ml-12 mr-12 tab-cell-border" />
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                    onClick={handleManifestCancel}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
                             <button
                                 type="button"
                                 className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                onClick={handleManifestCompareWithDesired}
+                                onClick={handleManifestEdit}
                             >
-                                <ICArrowsLeftRight className="icon-dim-16 scb-5" />
-                                <span>Compare with desired</span>
+                                <>
+                                    <ICPencil className="icon-dim-16 scb-5" />
+                                    <span>Edit live manifest</span>
+                                </>
                             </button>
-                        </>
-                    )}
-            </>
-        )
-    }
+                        )}
+                    </>
+                )}
+            {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
+                !showManifestCompareView &&
+                (showDesiredAndCompareManifest || isResourceMissing) && (
+                    <>
+                        <div className="ml-12 mr-12 tab-cell-border" />
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                            onClick={handleManifestCompareWithDesired}
+                        >
+                            <ICArrowsLeftRight className="icon-dim-16 scb-5" />
+                            <span>Compare with desired</span>
+                        </button>
+                    </>
+                )}
+        </>
+    )
 
     const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => {
         return {
@@ -542,6 +555,9 @@ const NodeDetailComponent = ({
                             setShowManifestCompareView={setShowManifestCompareView}
                             manifestCodeEditorMode={manifestCodeEditorMode}
                             setManifestCodeEditorMode={setManifestCodeEditorMode}
+                            handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                            manifestFormConfigurationType={manifestFormConfigurationType}
+                            handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
