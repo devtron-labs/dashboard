@@ -4,9 +4,14 @@ import noOffendingPipelineImg from '@Images/no-offending-pipeline.svg'
 import { WorkflowCreate } from '@Components/app/details/triggerView/config'
 import { getInitialWorkflows } from '@Components/app/details/triggerView/workflow.service'
 import { Workflow } from '@Components/workflowEditor/Workflow'
-import { OfflinePipelineModalAppViewProps } from './types'
+import { OffendingPipelineModalAppViewProps } from './types'
 
-const OfflinePipelineModalAppView = ({ appId, appName, policyKind, policyName }: OfflinePipelineModalAppViewProps) => {
+const OffendingPipelineModalAppView = ({
+    appId,
+    appName,
+    policyKind,
+    policyName,
+}: OffendingPipelineModalAppViewProps) => {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch<any>()
@@ -96,4 +101,4 @@ const OfflinePipelineModalAppView = ({ appId, appName, policyKind, policyName }:
     )
 }
 
-export default OfflinePipelineModalAppView
+export default OffendingPipelineModalAppView

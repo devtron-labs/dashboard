@@ -1,1 +1,1 @@
-export { default as OfflinePipelineModalAppView } from './OfflinePipelineModalAppView'
+export { default as OffendingPipelineModalAppView } from './OfflinePipelineModalAppView'
