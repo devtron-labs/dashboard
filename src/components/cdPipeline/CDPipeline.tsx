@@ -1354,7 +1354,7 @@ export default function CDPipeline({
                         deleteCD={deleteCD}
                         deploymentAppType={formData.deploymentAppType}
                         forceDeleteData={forceDeleteData}
-                        deleteTitleName={formData.name}
+                        deleteTitleName={formData.environmentName}
                     />
                 )}
 

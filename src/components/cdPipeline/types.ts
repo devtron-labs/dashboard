@@ -55,7 +55,6 @@ export interface DeleteCDNodeProps {
     forceDeleteData: ForceDeleteMessageType
     deleteTitleName: string
     isLoading?: boolean
-    showConfirmationBar?: boolean
 }
 
 export interface PullImageDigestToggleType {
