@@ -56,8 +56,11 @@ export const K8ResourceComponent = ({
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
-        IndexStore.updateFilterType(currentFilter.toUpperCase())
     }, [])
+
+    useEffect(() => {
+        IndexStore.updateFilterType(currentFilter.toUpperCase())
+    }, [currentFilter, nodes])
 
     // nodes according to current filter
     const currentFilteredNodes = useMemo(
