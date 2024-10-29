@@ -139,7 +139,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         ) : (
             <>
                 <Success className="icon-dim-16 dc__no-shrink" />
-                <span>Successful</span>
+                <span>Connected</span>
             </>
         )
     }
@@ -183,6 +183,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 >
                     <div className="flexbox dc__align-items-center dc__gap-8">{renderClusterStatus(clusterData)}</div>
                 </Tooltip>
+                <div className="child-shimmer-loading">{clusterData.isProd ? 'Production' : 'Non Production'}</div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
                     {errorCount > 0 &&
@@ -261,7 +262,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
                 <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
                     <div>Cluster</div>
-                    <div data-testid="cluster-list-connection-status">Connection status</div>
+                    <div data-testid="cluster-list-connection-status">Status</div>
+                    <div>Type</div>
                     <div>Nodes</div>
                     <div>NODE Errors</div>
                     <div>K8S version</div>
