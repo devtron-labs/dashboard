@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ResponsiveContainer, Treemap, TreemapProps } from 'recharts'
+import { followCursor } from 'tippy.js'
 
 import { ConditionalWrap, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -25,8 +26,19 @@ const ClusterTreeMapContent = ({
     href,
 }: TreemapProps['content']['props']) => (
     <ConditionalWrap condition={!!href} wrap={renderWithLink(href)}>
-        <Tooltip alwaysShowTippyOnHover content={name} placement="bottom">
-            <g>
+        <Tooltip
+            alwaysShowTippyOnHover
+            content={
+                <div className="flexbox-col dc__gap-4">
+                    <span>{name}</span>
+                    <span>{value}</span>
+                    <span className="dc__capitalize">{status}</span>
+                </div>
+            }
+            followCursor
+            plugins={[followCursor]}
+        >
+            <g className="cluster-map__bar">
                 <rect
                     x={x}
                     y={y}
@@ -34,10 +46,10 @@ const ClusterTreeMapContent = ({
                     height={height}
                     className={`cluster-map__rect ${status === 'unhealthy' ? 'cluster-map__rect--unhealthy' : ''}`}
                 />
-                <text x={x + 4} y={y + 15} className="cluster-map__text fcn-9 fs-11 fw-6">
-                    {getVisibleSvgTextWithEllipsis(name, width, 11, 600)}
+                <text x={x + 8} y={y + 19} className="cluster-map__text fcn-9 fs-13 fw-6">
+                    {getVisibleSvgTextWithEllipsis(name, width, 13, 600)}
                 </text>
-                <text x={x + 4} y={y + 28} className="cluster-map__text fcn-9 fs-9 fw-4">
+                <text x={x + 8} y={y + 35} className="cluster-map__text fcn-9 fs-12 fw-4">
                     {value}
                 </text>
             </g>
@@ -53,7 +65,7 @@ export const ClusterMap = ({ treeMapData = [] }: ClusterMapProps) =>
                     <div key={id} className="flexbox-col dc__gap-4" style={{ flexGrow: data.length, minWidth: '0' }}>
                         {label && (
                             <Tooltip content={label}>
-                                <p className="m-0 fs-13 lh-18 fw-6 cn-9">{label}</p>
+                                <p className="m-0 fs-12 lh-16 fw-6 cn-9">{label}</p>
                             </Tooltip>
                         )}
                         <div className="cluster-map__container">
@@ -62,7 +74,7 @@ export const ClusterMap = ({ treeMapData = [] }: ClusterMapProps) =>
                                     data={data}
                                     stroke="var(--N0)"
                                     content={<ClusterTreeMapContent />}
-                                    animationDuration={200}
+                                    isAnimationActive={false}
                                 />
                             </ResponsiveContainer>
                         </div>
