@@ -20,9 +20,8 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
-import { ShortcutProvider } from 'react-keybind'
 import App from './App'
-import { ToastManagerContainer, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -154,6 +153,9 @@ if (!window || !window._env_) {
         FEATURE_STEP_WISE_LOGS_ENABLE: true,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
         FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS: false,
+        FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
+        FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL:''
     }
 }
 
@@ -162,11 +164,11 @@ ReactDOM.render(
         {window.top === window.self ? (
             <>
                 <BrowserRouter basename={window.__BASE_URL__}>
-                    <ShortcutProvider>
+                    <UseRegisterShortcutProvider>
                         <UserEmailProvider>
                             <App />
                         </UserEmailProvider>
-                    </ShortcutProvider>
+                    </UseRegisterShortcutProvider>
                 </BrowserRouter>
                 <ToastManagerContainer />
             </>

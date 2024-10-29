@@ -16,7 +16,6 @@
 
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
 import { stopPropagation, ConditionalWrap, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,7 +49,7 @@ const DynamicTabs = ({
     refreshData,
     setIsDataStale,
     isOverview,
-}: DynamicTabsProps & IWithShortcut) => {
+}: DynamicTabsProps) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -389,4 +388,4 @@ const DynamicTabs = ({
     )
 }
 
-export default withShortcut(DynamicTabs)
+export default DynamicTabs

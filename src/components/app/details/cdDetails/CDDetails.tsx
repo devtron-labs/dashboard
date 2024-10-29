@@ -37,14 +37,15 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
+    AppEnvironment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
+import { useAppContext } from '@Components/common'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import './cdDetail.scss'
 import { DeploymentTemplateList } from './cd.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {
     processVirtualEnvironmentDeploymentData,
@@ -64,6 +65,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         triggerId: string
         pipelineId: string
     }>()
+    const { currentAppName } = useAppContext()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
@@ -92,7 +94,6 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     const { path } = useRouteMatch()
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
-    const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
 
     const triggerDetails = triggerHistory?.get(+triggerId)
@@ -288,6 +289,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     if (!result || (envId && dependencyState[2] !== envId)) {
         return null
     }
+
     return (
         <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
             {!fullScreenView && (
@@ -305,7 +307,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll h-100" ref={scrollableRef}>
                     {triggerHistory.size > 0 || fetchTriggerIdData ? (
                         <Route
                             path={`${path
@@ -318,8 +320,6 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                                 deploymentHistoryResult={deploymentHistoryResult ?? null}
                                 setTriggerHistory={setTriggerHistory}
                                 setFullScreenView={setFullScreenView}
-                                setDeploymentHistoryList={setDeploymentHistoryList}
-                                deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
                                 appReleaseTags={appReleaseTags}
@@ -336,6 +336,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                                 processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                                 scrollToTop={scrollToTop}
                                 scrollToBottom={scrollToBottom}
+                                appName={currentAppName}
                             />
                         </Route>
                     ) : !envId ? (
