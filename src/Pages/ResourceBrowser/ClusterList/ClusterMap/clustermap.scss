@@ -1,0 +1,28 @@
+.cluster-map {
+    &__container {
+        height: 165px;
+    }
+
+    &__rect {
+        stroke: var(--N0);
+        stroke-width: 2;
+        fill: var(--G200);
+        cursor: pointer;
+
+        &:hover {
+            fill: var(--G500);
+        }
+
+        &--unhealthy {
+            fill: var(--R200);
+
+            &:hover {
+                fill: var(--R500);
+            }
+        }
+    }
+
+    &__text {
+        stroke-width: 0;
+    }
+}
