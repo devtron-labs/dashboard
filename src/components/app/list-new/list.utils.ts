@@ -160,8 +160,8 @@ export const useFilterOptions = ({
     )
 
     const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
-        clusterList
-            ?.map((clusterItem) => ({
+        (clusterList ?? [])
+            .map((clusterItem) => ({
                 label: clusterItem.cluster_name,
                 value: String(clusterItem.id),
             }))

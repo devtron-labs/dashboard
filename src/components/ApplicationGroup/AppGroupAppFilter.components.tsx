@@ -56,9 +56,9 @@ export const ValueContainer = (props): JSX.Element => {
                     {!props.selectProps.menuIsOpen ? (
                         <div className="flexbox dc__gap-4 dc__align-items-center">
                             {selectedAppsLength > 0 ? (
-                                <ShowIconFilterApplied className="icon-dim-16 mw-18" />
+                                <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
                             ) : (
-                                <ShowIconFilter className="icon-dim-16 mw-18" />
+                                <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
                             )}
                             <span data-testid="app-group-selector-text" className="cn-9 ml-2">
                                 {selectorText}

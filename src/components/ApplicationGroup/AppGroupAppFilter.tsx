@@ -38,7 +38,7 @@ export default function AppGroupAppFilter() {
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const appGroupFilterRef = useRef<SelectInstance<OptionType>>()
-    const {registerShortcut, unregisterShortcut} = useRegisterShortcut()
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
 
@@ -109,7 +109,7 @@ export default function AppGroupAppFilter() {
     }
 
     useEffect(() => {
-        registerShortcut({keys: ['F'], callback: handleFilterFocus})
+        registerShortcut({ keys: ['F'], callback: handleFilterFocus })
 
         return () => {
             unregisterShortcut(['F'])
