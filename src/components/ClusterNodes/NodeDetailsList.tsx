@@ -80,7 +80,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const { gridTemplateColumns, handleResize } = useResizableTableConfig({
         headersConfig: appliedColumns.map((column, index) => ({
             id: column.label,
-            maxWidth: 300,
+            minWidth: index === 0 ? 120 : null,
             width: index === 0 ? 260 : index === 1 ? 180 : 120,
         })),
     })
