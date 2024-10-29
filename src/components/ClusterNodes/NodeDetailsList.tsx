@@ -374,6 +374,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         <SortableTableHeaderCell
             key={column.label}
             id={column.label}
+            isResizable
             handleResize={handleResize}
             showTippyOnTruncate
             disabled={false}
