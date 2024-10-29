@@ -23,7 +23,10 @@ import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
 import { usePermissionConfiguration } from './PermissionConfigurationFormProvider'
 import { PermissionConfigurationFormProps } from './types'
 
-const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }: PermissionConfigurationFormProps) => {
+const PermissionConfigurationForm = ({
+    showUserPermissionGroupSelector = false,
+    hideDirectPermissions = false,
+}: PermissionConfigurationFormProps) => {
     const { permissionType, setPermissionType } = usePermissionConfiguration()
     const isSuperAdminPermission = getIsSuperAdminPermission(permissionType)
 
@@ -62,13 +65,15 @@ const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }
                     {showUserPermissionGroupSelector && (
                         <>
                             <UserPermissionGroupsSelector />
-                            <div className="dc__border-top" />
+                            {!hideDirectPermissions && <div className="dc__border-top" />}
                         </>
                     )}
-                    <div className="flexbox-col dc__gap-8">
-                        <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>
-                        <AppPermissions />
-                    </div>
+                    {!hideDirectPermissions && (
+                        <div className="flexbox-col dc__gap-8">
+                            <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>
+                            <AppPermissions />
+                        </div>
+                    )}
                 </>
             )}
         </>
