@@ -63,7 +63,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
     'ToggleManifestConfigurationMode',
-    false,
+    null,
     'function',
 )
 
