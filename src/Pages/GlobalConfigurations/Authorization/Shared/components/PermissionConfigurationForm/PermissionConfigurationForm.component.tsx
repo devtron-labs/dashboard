@@ -68,12 +68,19 @@ const PermissionConfigurationForm = ({
                             {!hideDirectPermissions && <div className="dc__border-top" />}
                         </>
                     )}
-                    {!hideDirectPermissions && (
-                        <div className="flexbox-col dc__gap-8">
-                            <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>
-                            <AppPermissions />
-                        </div>
-                    )}
+                    <div
+                        className="flexbox-col dc__gap-8"
+                        style={
+                            hideDirectPermissions
+                                ? {
+                                      display: 'none',
+                                  }
+                                : {}
+                        }
+                    >
+                        <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>
+                        <AppPermissions />
+                    </div>
                 </>
             )}
         </>
