@@ -46,10 +46,10 @@ const ClusterTreeMapContent = ({
                     height={height}
                     className={`cluster-map__rect ${status === 'unhealthy' ? 'cluster-map__rect--unhealthy' : ''}`}
                 />
-                <text x={x + 8} y={y + 19} className="cluster-map__text fcn-9 fs-13 fw-6">
+                <text x={x + 8} y={y + 22} className="cluster-map__text fcn-9 fs-13 fw-6">
                     {getVisibleSvgTextWithEllipsis(name, width, 13, 600)}
                 </text>
-                <text x={x + 8} y={y + 35} className="cluster-map__text fcn-9 fs-12 fw-4">
+                <text x={x + 8} y={y + 38} className="cluster-map__text fcn-9 fs-12 fw-4">
                     {value}
                 </text>
             </g>
