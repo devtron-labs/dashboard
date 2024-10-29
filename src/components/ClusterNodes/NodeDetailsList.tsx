@@ -30,6 +30,7 @@ import {
     SortingOrder,
     Tooltip,
     ClipboardButton,
+    useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -76,6 +77,13 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: appliedColumns.map((column, index) => ({
+            id: column.label,
+            maxWidth: 300,
+            width: index === 0 ? 260 : index === 1 ? 180 : 120,
+        })),
+    })
 
     const [, nodeK8sVersions] = useAsync(
         () =>
@@ -365,6 +373,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
         <SortableTableHeaderCell
             key={column.label}
+            id={column.label}
+            handleResize={handleResize}
             showTippyOnTruncate
             disabled={false}
             triggerSorting={handleSortClick(column)}
@@ -453,8 +463,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             history.push(url)
         }
     }
-
-    const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
 
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
