@@ -15,7 +15,7 @@
  */
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { ColumnMetadataType, EFFECT_TYPE } from './types'
+import { ClusterFiltersType, ClusterStatusType, ColumnMetadataType, EFFECT_TYPE } from './types'
 
 export const clusterSelectStyle = {
     ...multiSelectStyles,
@@ -484,3 +484,8 @@ export const defaultManifestErrorText =
     "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"
 
 export const manifestCommentsRegex = /^(.*?apiVersion:)/s
+
+export const ClusterStatusByFilter = {
+    [ClusterFiltersType.HEALTHY]: ClusterStatusType.HEALTHY,
+    [ClusterFiltersType.UNHEALTHY]: ClusterStatusType.UNHEALTHY,
+}

@@ -65,6 +65,18 @@ export interface NodeDetailsType {
     taints?: NodeTaintType[]
 }
 
+export enum ClusterFiltersType {
+    ALL_CLUSTERS = 'all',
+    HEALTHY = 'healthy',
+    UNHEALTHY = 'unhealthy',
+}
+
+export enum ClusterStatusType {
+    HEALTHY = 'healthy',
+    UNHEALTHY = 'unhealthy',
+    CONNECTION_FAILED = 'connection failed',
+}
+
 export interface ClusterCapacityType {
     name: string
     nodeCount: number
@@ -74,6 +86,8 @@ export interface ClusterCapacityType {
     serverVersion: string
     nodeDetails?: NodeDetailsType[]
     nodeErrors: Record<string, string>[]
+    status?: ClusterStatusType
+    isProd: boolean
 }
 
 export interface ClusterDetail extends ClusterCapacityType {
