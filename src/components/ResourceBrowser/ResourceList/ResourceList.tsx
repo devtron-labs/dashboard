@@ -27,6 +27,7 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
@@ -102,6 +103,7 @@ const ResourceList = () => {
     const isSuperAdmin = !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
 
     const getDynamicTabData = () => {
@@ -135,6 +137,7 @@ const ResourceList = () => {
             node && getDynamicTabData(),
             isTerminalNodeType,
             isOverviewNodeType,
+            isMonitoringNodeType,
         )
         initTabs(
             _tabs,
@@ -166,6 +169,8 @@ const ResourceList = () => {
             addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
             return
         }
+
+        // These checks are wrong since tabs are sorted by position so index is not fixed
         /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
         if (isOverviewNodeType) {
             if (tabs[FIXED_TABS_INDICES.OVERVIEW] && !tabs[FIXED_TABS_INDICES.OVERVIEW].isSelected) {
@@ -173,12 +178,26 @@ const ResourceList = () => {
             }
             return
         }
+
+        // TODO: Add component check as well
+        if (isMonitoringNodeType) {
+            if (
+                tabs[FIXED_TABS_INDICES.MONITORING_DASHBOARD] &&
+                !tabs[FIXED_TABS_INDICES.MONITORING_DASHBOARD].isSelected
+            ) {
+                markTabActiveById(tabs[FIXED_TABS_INDICES.MONITORING_DASHBOARD].id)
+            }
+
+            return
+        }
+
         if (isTerminalNodeType) {
             if (tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL] && !tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isSelected) {
                 markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].id)
             }
             return
         }
+
         if (tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST] && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected) {
             markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
         }
@@ -314,6 +333,8 @@ const ResourceList = () => {
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
+        // TODO: Conditional check using fe-lib
+        <GenericEmptyState title="Title" subTitle="subTitle" />,
         ...(isSuperAdmin &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
@@ -349,7 +370,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        isOverview={isOverviewNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}

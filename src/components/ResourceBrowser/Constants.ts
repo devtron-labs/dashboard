@@ -182,6 +182,7 @@ export const SIDEBAR_KEYS: {
     namespaceGVK: GVKType
     nodeGVK: GVKType
     overviewGVK: GVKType
+    monitoringGVK: GVKType
 } = {
     nodes: 'Nodes',
     events: 'Events',
@@ -204,7 +205,12 @@ export const SIDEBAR_KEYS: {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview as Nodes,
+        Kind: Nodes.Overview,
+    },
+    monitoringGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.MonitoringDashboard,
     },
 }
 

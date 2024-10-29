@@ -60,6 +60,7 @@ export const unauthorizedInfoText = (nodeType?: string) => {
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 
+    // TODO: Add monitoringGVK as well
     if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(true)
         emptyStateData.link = DOCUMENTATION.GLOBAL_CONFIG_PERMISSION

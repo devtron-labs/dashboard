@@ -15,8 +15,8 @@
  */
 
 import { Dayjs } from 'dayjs'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { DynamicTabType, TabsDataType } from './Types'
+import { OptionType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
+import { TabsDataType } from './Types'
 import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
 
 export const COMMON_TABS_SELECT_STYLES = {
