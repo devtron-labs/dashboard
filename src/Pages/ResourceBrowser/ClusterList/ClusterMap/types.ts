@@ -14,5 +14,6 @@ export interface ClusterTreeMapData {
 }
 
 export interface ClusterMapProps {
+    isLoading?: boolean
     treeMapData: ClusterTreeMapData[]
 }

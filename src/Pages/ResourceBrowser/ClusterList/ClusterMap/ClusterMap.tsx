@@ -57,29 +57,40 @@ const ClusterTreeMapContent = ({
     </ConditionalWrap>
 )
 
-export const ClusterMap = ({ treeMapData = [] }: ClusterMapProps) =>
+export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapProps) =>
     treeMapData.length ? (
         <div className="cluster-map pb-16 px-20 bcn-50">
             <div className="w-100 p-12 bcn-0 dc__border br-4 flexbox dc__align-items-center dc__gap-6">
-                {treeMapData.map(({ id, label, data }) => (
-                    <div key={id} className="flexbox-col dc__gap-4" style={{ flexGrow: data.length, minWidth: '0' }}>
-                        {label && (
-                            <Tooltip content={label}>
-                                <p className="m-0 fs-12 lh-16 fw-6 cn-9">{label}</p>
-                            </Tooltip>
-                        )}
-                        <div className="cluster-map__container">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <Treemap
-                                    data={data}
-                                    stroke="var(--N0)"
-                                    content={<ClusterTreeMapContent />}
-                                    isAnimationActive={false}
-                                />
-                            </ResponsiveContainer>
-                        </div>
+                {isLoading ? (
+                    <div className="w-100 flexbox-col dc__gap-4">
+                        <div className="shimmer-loading h-16" />
+                        <div className="shimmer-loading cluster-map__container" />
                     </div>
-                ))}
+                ) : (
+                    treeMapData.map(({ id, label, data }) => (
+                        <div
+                            key={id}
+                            className="flexbox-col dc__gap-4"
+                            style={{ flexGrow: data.length, minWidth: '0' }}
+                        >
+                            {label && (
+                                <Tooltip content={label}>
+                                    <p className="m-0 fs-12 lh-16 fw-6 cn-9">{label}</p>
+                                </Tooltip>
+                            )}
+                            <div className="cluster-map__container">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <Treemap
+                                        data={data}
+                                        stroke="var(--N0)"
+                                        content={<ClusterTreeMapContent />}
+                                        isAnimationActive={false}
+                                    />
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     ) : null
