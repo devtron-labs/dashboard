@@ -22,9 +22,12 @@ import {
     ApiResourceGroupType,
     GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
+
+const MONITORING_DASHBOARD_TAB_INDEX = importComponentFromFELibrary('MONITORING_DASHBOARD_TAB_INDEX', null, 'function')
 
 export type ResourceDetailDataType = {
     [key: string]: string | number | object
@@ -233,8 +236,9 @@ export interface SidebarChildButtonPropsType {
 
 export enum FIXED_TABS_INDICES {
     OVERVIEW = 0,
-    K8S_RESOURCE_LIST,
-    ADMIN_TERMINAL,
+    K8S_RESOURCE_LIST = 1,
+    MONITORING_DASHBOARD = MONITORING_DASHBOARD_TAB_INDEX || 3,
+    ADMIN_TERMINAL = MONITORING_DASHBOARD_TAB_INDEX ? 3 : 2,
 }
 
 export interface ClusterSelectorType {

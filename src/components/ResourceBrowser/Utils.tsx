@@ -17,25 +17,35 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResourceGroupType,
+    DATE_TIME_FORMAT_STRING,
+    GVKType,
+    InitTabType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
-import { eventAgeComparator, processK8SObjects } from '../common'
+import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
     ClusterOptionType,
+    FIXED_TABS_INDICES,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    FIXED_TABS_INDICES,
     ResourceDetailDataType,
 } from './Types'
-import { InitTabType } from '../common/DynamicTabs/Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
+
+const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
+    'getMonitoringDashboardTabConfig',
+    null,
+    'function',
+)
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -270,6 +280,7 @@ export const getTabsBasedOnRole = (
     dynamicTabData: InitTabType,
     isTerminalSelected = false,
     isOverviewSelected = false,
+    isMonitoringDashBoardSelected: boolean = false,
 ): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
@@ -290,12 +301,25 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
+            isSelected:
+                (!isSuperAdmin || !isTerminalSelected) &&
+                !dynamicTabData &&
+                !isOverviewSelected &&
+                !isMonitoringDashBoardSelected,
             position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
         },
+        ...(getMonitoringDashboardTabConfig
+            ? [
+                  getMonitoringDashboardTabConfig(
+                      `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                      isMonitoringDashBoardSelected,
+                      FIXED_TABS_INDICES.MONITORING_DASHBOARD,
+                  ),
+              ]
+            : []),
         ...(!isSuperAdmin
             ? []
             : [
