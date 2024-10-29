@@ -30,6 +30,10 @@ export interface OptionTypeWithIcon {
     icon?: string
 }
 
+export interface ExpandedExternalLink extends OptionTypeWithIcon {
+    externalLinkURL: string
+}
+
 export interface IdentifierOptionType {
     label: string
     value: any

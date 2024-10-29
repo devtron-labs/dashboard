@@ -15,7 +15,7 @@
  */
 
 import React, { Fragment, useEffect, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -24,17 +24,13 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
+    ExpandedExternalLink,
     ExternalLink,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
-import {
-    getMonitoringToolIcon,
-    getParsedURL,
-    MONITORING_TOOL_ICONS,
-    onImageLoadError,
-} from './ExternalLinks.utils'
+import { getMonitoringToolIcon, getParsedURL, MONITORING_TOOL_ICONS, onImageLoadError } from './ExternalLinks.utils'
 import {
     TippyCustomized,
     TippyTheme,
@@ -45,10 +41,19 @@ import {
     SelectPicker,
     SelectPickerVariantType,
     getHandleOpenURL,
+    EMPTY_STATE_STATUS,
+    VisibleModal2,
+    stopPropagation,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonComponentType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
+import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -123,6 +128,61 @@ export const NoMatchingResults = (): JSX.Element => {
     return <GenericFilterEmptyState />
 }
 
+const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => {
+    const handleOpenExternalLink = () => {
+        window.open(selectedExternalLink.externalLinkURL, '_blank')
+    }
+
+    return (
+        <VisibleModal2 close={handleCloseModal}>
+            <div
+                className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bcn-0"
+                onClick={stopPropagation}
+            >
+                <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
+                    <div className="flexbox dc__gap-8 dc__align-items-center">
+                        <img
+                            className="icon-dim-20"
+                            src={selectedExternalLink.icon}
+                            alt={selectedExternalLink.label}
+                            onError={onImageLoadError}
+                        />
+                        <span className="cn-9 fs-16 fw-6 lh-24">{selectedExternalLink.label}</span>
+                    </div>
+                    <div className="flexbox dc__gap-8">
+                        <Button
+                            ariaLabel="external-link-open"
+                            dataTestId="external-link-open"
+                            icon={<ICArrowOut className="scn-6" />}
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.xs}
+                            component={ButtonComponentType.button}
+                            style={ButtonStyleType.neutral}
+                            onClick={handleOpenExternalLink}
+                            showAriaLabelInTippy={false}
+                        />
+                        <Button
+                            ariaLabel="external-link-modal-close"
+                            dataTestId="external-link-modal-close"
+                            icon={<ICClose />}
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.xs}
+                            component={ButtonComponentType.button}
+                            style={ButtonStyleType.negativeGrey}
+                            onClick={handleCloseModal}
+                            showAriaLabelInTippy={false}
+                        />
+                    </div>
+                </div>
+                <iframe
+                    className="flex-grow-1 dc__no-border dc__bottom-radius-8"
+                    src={selectedExternalLink.externalLinkURL}
+                />
+            </div>
+        </VisibleModal2>
+    )
+}
+
 export const AppLevelExternalLinks = ({
     appDetails,
     helmAppDetails,
@@ -131,7 +191,16 @@ export const AppLevelExternalLinks = ({
     isOverviewPage,
 }: AppLevelExternalLinksType): JSX.Element | null => {
     const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
+    const [expandedExternalLink, setExpandedExternalLink] = useState<ExpandedExternalLink>(null)
     const details = appDetails || helmAppDetails
+
+    const handleOpenModal = (linkOption: OptionTypeWithIcon, externalLinkURL: string) => {
+        setExpandedExternalLink({ ...linkOption, externalLinkURL })
+    }
+
+    const handleCloseModal = () => {
+        setExpandedExternalLink(null)
+    }
 
     const filterAppLevelExternalLinks = (link: ExternalLink) => {
         if (isOverviewPage) {
@@ -166,6 +235,7 @@ export const AppLevelExternalLinks = ({
     }, [externalLinks, monitoringTools])
 
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
+        const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
         return (
             <ConditionalWrap
                 key={`${linkOption.label}-${idx}`}
@@ -183,23 +253,35 @@ export const AppLevelExternalLinks = ({
                     </TippyCustomized>
                 )}
             >
-                <a
-                    key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value.toString(), details)}
-                    target="_blank"
-                    className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
-                    rel="noreferrer"
-                >
-                    <img
-                        className="icon-dim-16 mr-4"
-                        src={linkOption.icon}
-                        alt={linkOption.label}
-                        onError={onImageLoadError}
-                    />
-                    <span className="dc__ellipsis-right" data-testid="overview_external_link_value">
-                        {linkOption.label}
-                    </span>
-                </a>
+                <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
+                    <div
+                        className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center"
+                        role="button"
+                        onClick={() => handleOpenModal(linkOption, externalLinkURL)}
+                    >
+                        <img
+                            className="icon-dim-16"
+                            src={linkOption.icon}
+                            alt={linkOption.label}
+                            onError={onImageLoadError}
+                        />
+                        <span
+                            className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
+                            data-testid="overview_external_link_value"
+                        >
+                            {linkOption.label}
+                        </span>
+                    </div>
+                    <a
+                        key={linkOption.label}
+                        href={getParsedURL(true, linkOption.value.toString(), details)}
+                        target="_blank"
+                        className="flex p-4 open-link-button"
+                        rel="noreferrer"
+                    >
+                        <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink" />
+                    </a>
+                </div>
             </ConditionalWrap>
         )
     }
@@ -214,21 +296,29 @@ export const AppLevelExternalLinks = ({
     }
 
     return (
-        appLevelExternalLinks.length > 0 && (
-            <div
-                data-testid="external-links-wrapper"
-                className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
-            >
-                {!isOverviewPage && (
-                    <div className="app-level__external-links-icon icon-dim-20">
-                        <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
+        <>
+            {appLevelExternalLinks.length > 0 && (
+                <div
+                    data-testid="external-links-wrapper"
+                    className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
+                >
+                    {!isOverviewPage && (
+                        <div className="app-level__external-links-icon icon-dim-20">
+                            <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
+                        </div>
+                    )}
+                    <div className="flex left flex-wrap dc__gap-8">
+                        {appLevelExternalLinks.map((link, idx) => getExternalLinkChip(link, idx))}
                     </div>
-                )}
-                <div className="flex left flex-wrap">
-                    {appLevelExternalLinks.map((link, idx) => getExternalLinkChip(link, idx))}
                 </div>
-            </div>
-        )
+            )}
+            {expandedExternalLink && (
+                <ExternalLinkIframeModal
+                    selectedExternalLink={expandedExternalLink}
+                    handleCloseModal={handleCloseModal}
+                />
+            )}
+        </>
     )
 }
 
