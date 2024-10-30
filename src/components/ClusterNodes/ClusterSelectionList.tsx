@@ -237,7 +237,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     return (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
-            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 bcn-50">
+            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                 <div className="flex dc__gap-12">
                     <SearchBar
                         initialSearchText={searchKey}
