@@ -95,7 +95,7 @@ const ResourceBrowser: React.FC = () => {
     }
 
     return (
-        <div className="resource-browser-container h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bcn-0">
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"
