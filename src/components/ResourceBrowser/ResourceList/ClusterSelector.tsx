@@ -36,18 +36,23 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList,
     const defaultOption = filteredClusterList.find((item) => String(item.value) === clusterId)
 
     return (
-        <ReactSelect
-            classNamePrefix="cluster-select-header"
-            options={filteredClusterList}
-            onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            value={defaultOption}
-            styles={appSelectorStyle}
-        />
+        <div className="flexbox dc__align-items-center dc__gap-12">
+            <ReactSelect
+                classNamePrefix="cluster-select-header"
+                options={filteredClusterList}
+                onChange={onChange}
+                components={{
+                    IndicatorSeparator: null,
+                    DropdownIndicator,
+                    LoadingIndicator: null,
+                }}
+                value={defaultOption}
+                styles={appSelectorStyle}
+            />
+            {defaultOption.isProd && (
+                <span className="px-6 py-2 dc__border eb-2 br-4 bcb-1 cb-7 fs-12 lh-18 fw-5">Production</span>
+            )}
+        </div>
     )
 }
 
