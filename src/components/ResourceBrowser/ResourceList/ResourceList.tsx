@@ -27,12 +27,11 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
-    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
-import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
+import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -46,6 +45,8 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+
+const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -335,8 +336,15 @@ const ResourceList = () => {
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
-        // TODO: Conditional check using fe-lib
-        <GenericEmptyState title="Title" subTitle="subTitle" />,
+        ...(MonitoringDashboard
+            ? [
+                  isMonitoringNodeType ? (
+                      <MonitoringDashboard key={FIXED_TABS_INDICES.MONITORING_DASHBOARD} />
+                  ) : (
+                      <div key={FIXED_TABS_INDICES.MONITORING_DASHBOARD} />
+                  ),
+              ]
+            : []),
         ...(isSuperAdmin &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
