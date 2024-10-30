@@ -16,7 +16,7 @@
 
 import Tippy from '@tippyjs/react'
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -25,8 +25,10 @@ import {
     useDownload,
     useMainContext,
     useKeyDown,
+    SearchBar,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
 import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play-filled.svg'
@@ -45,7 +47,6 @@ import LogViewerComponent from './LogViewer.component'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
-import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
@@ -74,7 +75,6 @@ const LogsComponent = ({
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
-    isExternalApp,
 }: LogsComponentProps) => {
     const [logsShownOption, setLogsShownOption] = useState({
         prev: getPodLogsOptions()[5],
@@ -162,7 +162,10 @@ const LogsComponent = ({
         const pipes = parsePipes(searchText)
         const tokens = pipes.map((p) => getGrepTokens(p))
         if (tokens.some((t) => !t)) {
-            toast.warn('Expression is invalid.')
+            ToastManager.showToast({
+                variant: ToastVariantType.warn,
+                description: 'Expression is invalid.',
+            })
             return
         }
         setLogState({
@@ -371,15 +374,13 @@ const LogsComponent = ({
         })
     }
 
-    const handleLogsSearch = (e) => {
-        e.preventDefault()
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            const str = replaceLastOddBackslash(e.target.value)
-            handleSearchTextChange(str)
-            const { length, [length - 1]: highlightString } = str.split(' ')
-            setHighlightString(highlightString)
-            handleCurrentSearchTerm(str)
-        }
+    const handleLogsSearch = (_searchText: string): void => {
+        setTempSearch(_searchText)
+        const str = replaceLastOddBackslash(_searchText)
+        handleSearchTextChange(str)
+        const { length, [length - 1]: highlightString } = str.split(' ')
+        setHighlightString(highlightString)
+        handleCurrentSearchTerm(str)
     }
 
     const handleLogOptionChange = (selected) => {
@@ -479,6 +480,19 @@ const LogsComponent = ({
             },
         ]
     }
+
+    const renderSearchText = (): JSX.Element => (
+        <SearchBar
+            initialSearchText={tempSearch}
+            containerClassName='w-100 bcn-0'
+            handleEnter={handleLogsSearch}
+            inputProps={{
+                placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
+            }}
+            dataTestId="Search-by-app-name"
+            noBackgroundAndBorder
+        />
+    )
 
     return isDeleted ? (
         <MessageUI
@@ -696,58 +710,34 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
-
-                        {!isExternalApp &&
-                            (isDownloading ? (
-                                <Progressing
-                                    size={16}
-                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                                />
-                            ) : (
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                    <span>
-                                        <Download
-                                            className={`icon-dim-16 mr-8 cursor ${
-                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                                (prevContainer && showNoPrevContainer != '')
-                                                    ? 'cursor-not-allowed dc__opacity-0_5'
-                                                    : ''
-                                            }`}
-                                            onClick={handleDownloadLogs}
-                                        />
-                                    </span>
-                                </Tippy>
-                            ))}
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
+                        {isDownloading ? (
+                            <Progressing
+                                size={16}
+                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                            />
+                        ) : (
+                            <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
+                                <span>
+                                    <Download
+                                        className={`icon-dim-16 mr-8 cursor ${
+                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                            (prevContainer && showNoPrevContainer != '')
+                                                ? 'cursor-not-allowed dc__opacity-0_5'
+                                                : ''
+                                        }`}
+                                        onClick={handleDownloadLogs}
+                                    />
+                                </span>
+                            </Tippy>
+                        )}
                     </div>
                     <div className="dc__border-right " />
                     <form
-                        className="w-30 flex flex-justify left bcn-1 pl-10 flex-align-center "
+                        className="w-30 flex flex-justify left bcn-1 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
-                        <Search className="icon-dim-16 mr-4" />
-                        <input
-                            value={tempSearch}
-                            className="bw-0 w-100"
-                            style={{ background: 'transparent', outline: 'none' }}
-                            onKeyUp={handleLogsSearch}
-                            onChange={(e) => setTempSearch(e.target.value as string)}
-                            type="search"
-                            name="log_search_input"
-                            placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
-                        />
-                        {logState.grepTokens && (
-                            <CloseImage
-                                className="icon-dim-20 pointer"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleSearchTextChange('')
-                                    setHighlightString('')
-                                    setTempSearch('')
-                                    handleCurrentSearchTerm('')
-                                }}
-                            />
-                        )}
+                      {renderSearchText()}
                         <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"

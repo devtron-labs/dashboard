@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
-import ReactSelect from 'react-select'
+import { useEffect, useState } from 'react'
+import { GroupBase } from 'react-select'
+import { useParams } from 'react-router-dom'
 import {
     Progressing,
     DeleteDialog,
@@ -28,23 +28,18 @@ import {
     Drawer,
     TippyTheme,
     GitOpsAuthModeType,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedText,
-    getCommonSelectStyle,
-    GroupHeading,
-    Option,
-} from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { importComponentFromFELibrary, Select } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 
 import {
     ActiveReadmeColumnProps,
@@ -72,10 +67,10 @@ import {
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
+import { getChartValuesFiltered } from '@Components/charts/charts.helper'
+import { ChartValuesType } from '@Components/charts/charts.types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -87,49 +82,32 @@ export const ChartEnvironmentSelector = ({
     selectedEnvironment,
     handleEnvironmentSelection,
     environments,
-    invalidaEnvironment,
+    invalidEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
-    isOCICompliantChart,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-    const singleOption = (props) => {
-        return <EnvFormatOptions {...props} environmentfieldName="label" />
-    }
 
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
         }
-    }
 
-    const renderOCIContainerRegistryText = () => {
-        if (isOCICompliantChart) {
-            return (
-                <div className="cn-7 fs-12 pt-16 flexbox">
-                    <InfoIcon className="icon-dim-20 mr-4" />
-                    Charts from container registries can be deployed via helm only.
-                </div>
-            )
-        }
+        return null
     }
 
     const renderVirtualTippy = (): JSX.Element => {
         if (isVirtualEnvironment && VirtualEnvHelpTippy) {
             return (
                 <div className="flex left">
-                    <div className="ml-4 mr-4">(Virtual)</div>
+                    <div className="ml-4 mr-4">(Isolated)</div>
                     <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
         }
     }
 
-    const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'label')
-    }
-
     return !isDeployChartView ? (
-        <div className="chart-values__environment-container mb-12">
+        <div className="chart-values__environment-container w-100">
             <h2
                 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
                 data-testid="environment-heading"
@@ -150,27 +128,17 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">
-                Deploy to environment
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    SingleValue: singleOption,
-                    GroupHeading,
-                }}
-                classNamePrefix="values-environment-select"
+            <SelectPicker
+                label="Deploy to environment"
+                inputId="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
-                formatOptionLabel={handleFormatHighlightedText}
+                required
+                error={invalidEnvironment ? REQUIRED_FIELD_MSG : null}
+                helperText={renderVirtualEnvironmentInfoText()}
             />
-            {invalidaEnvironment && renderValidationErrorLabel()}
-            {renderVirtualEnvironmentInfoText()}
-            {renderOCIContainerRegistryText()}
         </div>
     )
 }
@@ -185,7 +153,7 @@ export const DeploymentAppSelector = ({
     allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
-        <div className="chart-values__deployment-type">
+        <div className="chart-values__deployment-type w-100">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
                 Deploy app using
             </h2>
@@ -216,7 +184,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target='_blank'>
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
@@ -226,7 +194,7 @@ export const DeploymentAppSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4 pt-16">
+        <div className="w-100">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
@@ -331,10 +299,14 @@ export const GitOpsDrawer = ({
     showRepoSelector,
     allowedCustomBool,
 }: gitOpsDrawerType): JSX.Element => {
-    const [selectedRepoType, setSelectedRepoType] = useState(commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE)
+    const [selectedRepoType, setSelectedRepoType] = useState(
+        commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE,
+    )
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
+    const [repoURL, setRepoURL] = useState(
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL,
+    )
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -455,7 +427,10 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left" onClick={toggleDrawer}>
+                        <a
+                            className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left"
+                            onClick={toggleDrawer}
+                        >
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>
@@ -477,65 +452,50 @@ export const ChartProjectSelector = ({
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return (
-        <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">
-                Project
-            </span>
-            <ReactSelect
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option,
-                }}
+        <div className="form__row form__row--w-100">
+            <SelectPicker
+                label="Project"
+                inputId="select-chart-project"
                 placeholder="Select Project"
-                classNamePrefix="select-chart-project"
                 value={selectedProject}
-                styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
                 options={projects}
+                required
+                error={invalidProject ? REQUIRED_FIELD_MSG : null}
             />
-            {invalidProject && renderValidationErrorLabel()}
-        </label>
+        </div>
     )
 }
 
 export const ChartVersionSelector = ({
     selectedVersion,
-    chartVersionObj,
     selectedVersionUpdatePage,
     handleVersionSelection,
     chartVersionsData,
 }: ChartVersionSelectorType) => {
+    const selectOptions = chartVersionsData.map(chartVersion => ({
+        value: chartVersion.id,
+        label: chartVersion.version,
+    }))
+
+    const selectedOption = selectOptions.find(
+        (option) => option.value === selectedVersionUpdatePage?.id || option.value === selectedVersion,
+    )
+
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">
-                Chart Version
-            </span>
-            <Select
-                tabIndex={4}
-                rootClassName="select-button--default chart-values-selector"
-                onChange={(event) => {
-                    handleVersionSelection(event.target.value, {
-                        id: event.target.value,
-                        version: event.target.innerText,
+            <SelectPicker<number, false>
+                label="Chart Version"
+                inputId="chart-values-selector"
+                options={selectOptions}
+                onChange={(option) =>
+                    handleVersionSelection(option.value, {
+                        id: option.value,
+                        version: option.label as string,
                     })
-                }}
-                value={selectedVersionUpdatePage?.id || selectedVersion}
-                dataTestId="select-chart-version"
-            >
-                <Select.Button dataTestIdDropdown="chart-version-of-preset">
-                    {selectedVersionUpdatePage?.version || chartVersionObj?.version}
-                </Select.Button>
-                {chartVersionsData.map((_chartVersion, index) => (
-                    <Select.Option
-                        key={_chartVersion.id}
-                        value={_chartVersion.id}
-                        dataTestIdMenuList={`chart-select-${index}`}
-                    >
-                        {_chartVersion.version}
-                    </Select.Option>
-                ))}
-            </Select>
+                }
+                value={selectedOption}
+            />
         </div>
     )
 }
@@ -548,21 +508,79 @@ export const ChartValuesSelector = ({
     hideVersionFromLabel,
     hideCreateNewOption,
 }: ChartValuesSelectorType) => {
+    const filteredChartValues = getChartValuesFiltered(chartValuesList)
+
+    const selectOptions: GroupBase<SelectPickerOptionType<ChartValuesType>>[] = [
+        {
+            label: 'Deployed',
+            options: filteredChartValues.deployedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+                description: `Deployed on: ${chartValue.environmentName || ''}`,
+            })),
+        },
+        {
+            label: 'Preset Values',
+            options: filteredChartValues.savedChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+        {
+            label: 'Existing',
+            options: filteredChartValues.existingChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name}${hideVersionFromLabel || !chartValue.chartVersion ? '' : ` (${chartValue.chartVersion})`}`,
+            })),
+        },
+        {
+            label: 'Default',
+            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
+        },
+    ]
+
+    const renderMenuListFooter = () => {
+        if (hideCreateNewOption) {
+            return null
+        }
+
+        return (
+            <button
+                className="dc__transparent fs-13 lh-20 flex left dc__gap-6 cb-5 px-12 py-4"
+                onClick={redirectToChartValues}
+                data-testid="add-preset-values-button-dropdown"
+            >
+                <ICAdd className="icon-dim-20 dc__no-shrink fcb-5" />
+                Create preset value
+            </button>
+        )
+    }
+
+    const getOptionValue: SelectPickerProps<ChartValuesType>['getOptionValue'] = (option) =>
+        `${option.value.id} ${option.value.kind}`
+
+    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
+        handleChartValuesSelection(selectedOption.value)
+
+    const selectedOption = selectOptions.flatMap(groupedOption => groupedOption.options).find(option => getOptionValue(option) === getOptionValue({
+        // Setting label null since the getOptionValue is not consuming it
+        label: null,
+        value: chartValues
+    }))
+
     return (
-        <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
-                Chart Values
-            </span>
-            <ChartValuesSelect
-                className="chart-values-selector"
-                chartValuesList={chartValuesList}
-                chartValues={chartValues}
-                redirectToChartValues={redirectToChartValues}
-                onChange={handleChartValuesSelection}
-                hideVersionFromLabel={hideVersionFromLabel}
-                hideCreateNewOption={hideCreateNewOption}
-            />
-        </div>
+        <SelectPicker<ChartValuesType, false>
+            inputId="chart-values-selector"
+            options={selectOptions}
+            renderMenuListFooter={renderMenuListFooter}
+            getOptionValue={getOptionValue}
+            label="Chart Values"
+            onChange={handleChange}
+            value={selectedOption}
+        />
     )
 }
 
@@ -604,14 +622,14 @@ export const ChartVersionValuesSelector = ({
 
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
-        <div className="chart-values-view__readme">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">
+        <div className="chart-values-view__readme dc__overflow-scroll dc__border-right">
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1" data-testid="readme-heading">
                 Readme
             </div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
-                <MarkDown markdown={activeReadMe} className="chart-values-view__readme-markdown" />
+                <MarkDown markdown={activeReadMe} />
             )}
         </div>
     )
@@ -672,7 +690,7 @@ export const ValueNameInput = ({
     valueNameDisabled,
 }: ValueNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="value-name"
                 label="Name"
@@ -680,13 +698,13 @@ export const ValueNameInput = ({
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                handleOnBlur={() => handleValueNameOnBlur()}
+                onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
                 isRequiredField
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 
@@ -698,7 +716,7 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <label className="form__row form__row--w-100">
+        <div className="w-100">
             <CustomInput
                 name="app-name"
                 tabIndex={1}
@@ -706,12 +724,12 @@ export const AppNameInput = ({
                 placeholder="Eg. app-name"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                handleOnBlur={handleAppNameOnBlur}
+                onBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
-        </label>
+        </div>
     )
 }
 

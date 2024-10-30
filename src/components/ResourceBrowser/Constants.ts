@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
+import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { GVKType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -208,6 +208,12 @@ export const SIDEBAR_KEYS: {
     },
 }
 
+export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
+    events: null,
+    nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+    namespaces: null,
+}
+
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 15
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE =
@@ -254,34 +260,6 @@ export const SELECTE_CLUSTER_STATE_MESSAGING = {
     heading: 'Select a cluster to view Kubernetes resources',
     infoText: 'All Kubernetes resources in the selected cluster will be shown here',
     altText: 'No Cluster Selected',
-}
-
-export const K8_ABBREVIATES = {
-    csr: 'certificatesigningrequest',
-    cs: 'componentstatus',
-    cm: 'configmap',
-    ds: 'daemonset',
-    ns: 'namespaces',
-    deploy: 'deployment',
-    ep: 'endpoints',
-    ev: 'events',
-    hpa: 'horizontalpodautoscaler',
-    ing: 'ingress',
-    limits: 'limitrange',
-    no: 'nodes',
-    pvc: 'persistentvolumeclaim',
-    pv: 'persistentvolume',
-    po: 'pod',
-    pdb: 'poddisruptionbudget',
-    rs: 'replicaset',
-    rc: 'replicationcontroller',
-    quota: 'resourcequota',
-    sa: 'serviceaccount',
-    sc: 'storageclass',
-    svc: 'service',
-    wf: 'workflow',
-    sts: 'statefulset',
-    crd: 'customresourcedefinition',
 }
 
 export const SEARCH_QUERY_PARAM_KEY = 'search'

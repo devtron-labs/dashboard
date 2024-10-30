@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import {
     BuildStageVariable,
@@ -27,65 +26,13 @@ import {
     StepType,
     TaskErrorObj,
     VariableType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'
-
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-            backgroundColor: 'white',
-        }
-    },
-    singleValue: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-        }
-    },
-    multiValue: (base, state) => {
-        return {
-            ...base,
-            backgroundColor: 'var(--N0)',
-            border: '1px solid var(--N200)',
-            borderRadius: '4px',
-        }
-    },
-    option: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-            paddingLeft: '8px',
-        }
-    },
-}
-
-export const Option = (props) => {
-    const { selectOption, data } = props
-    const style = { flex: '0 0', alignText: 'left' }
-    const onClick = (e) => selectOption(data)
-    return (
-        <div className="flex left" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-            {props.isSelected ? (
-                <Check onClick={onClick} className="icon-dim-16" style={style} />
-            ) : (
-                <span onClick={onClick} style={style} />
-            )}
-            <components.Option {...props} />
-        </div>
-    )
-}
 
 export const DropdownIndicator = (props) => {
     return (
@@ -117,6 +64,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
             const outputVarMap: Map<string, boolean> = new Map()
             const currentStepTypeVariable =
                 taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
+
             taskErrorObj[currentStepTypeVariable].inputVariables = []
             taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                 taskErrorObj[currentStepTypeVariable].inputVariables.push(
@@ -126,6 +74,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
                     taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
                 inputVarMap.set(element.name, true)
             })
+
             if (taskData.stepType === PluginType.INLINE) {
                 taskErrorObj.inlineStepDetail.outputVariables = []
                 taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
@@ -258,6 +207,9 @@ export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
     return checkStepsUniqueness(list)
 }
 
+/**
+ * @description This method adds the output variables of the previous steps to the input variables of the next steps
+ */
 export const calculateLastStepDetailsLogic = (
     _formData: PipelineFormType,
     activeStageName: string,
@@ -368,7 +320,11 @@ export const calculateLastStepDetailsLogic = (
 
 // Handle delete cd node
 
-export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType) => {
+export const handleDeletePipeline = (
+    deleteAction: DELETE_ACTION,
+    deleteCD: (force: boolean, cascadeDelete: boolean) => void,
+    deploymentAppType,
+) => {
     switch (deleteAction) {
         case DELETE_ACTION.DELETE:
             return deleteCD(false, true)
@@ -379,6 +335,47 @@ export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD: (for
     }
 }
 
-export const handleDeleteCDNodePipeline = (deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType: DeploymentAppTypes) => {
+export const handleDeleteCDNodePipeline = (
+    deleteCD: (force: boolean, cascadeDelete: boolean) => void,
+    deploymentAppType: DeploymentAppTypes,
+) => {
     handleDeletePipeline(DELETE_ACTION.DELETE, deleteCD, deploymentAppType)
+}
+
+export const filterInvalidConditionDetails = (
+    conditionDetails: StepType['pluginRefStepDetail']['conditionDetails'],
+    inputVariableCount: number,
+    outputVariableCount: number,
+): StepType['pluginRefStepDetail']['conditionDetails'] => {
+    if (!inputVariableCount && !outputVariableCount) {
+        return []
+    }
+
+    return (
+        conditionDetails?.filter((conditionDetail) => {
+            const isInputVariableCondition =
+                conditionDetail.conditionType === ConditionType.TRIGGER ||
+                conditionDetail.conditionType === ConditionType.SKIP
+            const isOutputVariableCondition =
+                conditionDetail.conditionType === ConditionType.PASS ||
+                conditionDetail.conditionType === ConditionType.FAIL
+
+            if (isInputVariableCondition && !inputVariableCount) {
+                return false
+            }
+
+            if (isOutputVariableCondition && !outputVariableCount) {
+                return false
+            }
+
+            return true
+        }) || []
+    )
+}
+
+export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace: string): string => {
+    if (isVirtualEnvironment && !namespace) {
+        return 'Not available'
+    }
+    return 'Will be auto-populated based on environment'
 }

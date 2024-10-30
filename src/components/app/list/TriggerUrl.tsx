@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { Progressing, VisibleModal, GenericEmptyState, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+import {
+    Progressing,
+    VisibleModal,
+    GenericEmptyState,
+    ClipboardButton,
+    EMPTY_STATE_STATUS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import { ManifestUrlList, TriggerURL } from './types'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
-export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) => {
+export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, close, appType }: TriggerURL) => {
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
@@ -46,8 +51,8 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close 
 
     async function getManifest() {
         try {
-            if (isEAMode) {
-                const response = await getManifestUrlInfo(appId)
+            if (isExternalApp) {
+                const response = await getManifestUrlInfo(appId, appType)
                 setResponse(response.result)
                 setLoading(false)
             } else {

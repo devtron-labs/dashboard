@@ -20,7 +20,6 @@ import {
     Drawer,
     ErrorScreenManager,
     OptionType,
-    PluginDetailType,
     RefVariableType,
     ServerErrors,
     showError,
@@ -31,15 +30,33 @@ import {
     MODAL_TYPE,
     ACTION_STATE,
     YAMLStringify,
+    PluginDataStoreType,
+    DEFAULT_PLUGIN_DATA_STORE,
+    getPluginsDetail,
+    getUpdatedPluginStore,
+    sanitizeUserApprovalConfig,
+    UserApprovalConfigType,
+    UserApprovalConfigPayloadType,
+    Environment,
+    PipelineFormType,
+    ReleaseMode,
+    TabGroup,
+    TabProps,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import {
+    FloatingVariablesSuggestions,
+    getPluginIdsFromBuildStage,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
+import { CD_PATCH_ACTION, GeneratedHelmPush } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -53,9 +70,8 @@ import { getEnvironmentListMinPublic } from '../../services/service'
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
-import { getGlobalVariable, getPluginsData } from '../ciPipeline/ciPipeline.service'
+import { getGlobalVariable } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import './cdPipeline.scss'
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
@@ -72,7 +88,7 @@ import {
     validateTask,
 } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
 import NoGitOpsRepoConfiguredWarning, {
@@ -91,9 +107,11 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType =
+    importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
+const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
-    match,
     location,
     appName,
     close,
@@ -146,6 +164,8 @@ export default function CDPipeline({
         environmentName: '',
         namespace: '',
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
+        deploymentAppName: '',
+        releaseMode: ReleaseMode.NEW_DEPLOYMENT,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -161,8 +181,8 @@ export default function CDPipeline({
             triggerType: TriggerType.Auto,
             steps: [],
         },
-        requiredApprovals: '',
-        userApprovalConfig: null,
+        // Utilizing the null checks to get default value
+        userApprovalConfig: sanitizeUserApprovalConfig(null),
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
@@ -179,10 +199,7 @@ export default function CDPipeline({
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
-    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
-    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
-    const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [globalVariables, setGlobalVariables] = useState<
         { label: string; value: string; format: string; stageType: string }[]
     >([])
@@ -223,6 +240,9 @@ export default function CDPipeline({
             steps: [],
             isValid: true,
         },
+        userApprovalConfig: {
+            isValid: true,
+        },
     })
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
@@ -231,6 +251,37 @@ export default function CDPipeline({
     const [selectedCDStageTypeValue, setSelectedCDStageTypeValue] = useState<OptionType>(customTagStageTypeOptions[0])
     const [showDeploymentConfirmationDeleteDialog, setShowDeploymentConfirmationDeleteDialog] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
+
+    const [availableTags, setAvailableTags] = useState<string[]>([])
+    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(
+        structuredClone(DEFAULT_PLUGIN_DATA_STORE),
+    )
+    const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
+    const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
+
+    const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
+        hideScopedVariableWidgetValue: boolean,
+    ) => {
+        setHideScopedVariableWidget(hideScopedVariableWidgetValue)
+    }
+
+    const handleDisableParentModalCloseUpdate: PipelineContext['handleDisableParentModalCloseUpdate'] = (
+        disableParentModalCloseValue: boolean,
+    ) => {
+        setDisableParentModalClose(disableParentModalCloseValue)
+    }
+
+    const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
+        const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
+
+        setPluginDataStore((prevPluginDataStore) =>
+            getUpdatedPluginStore(prevPluginDataStore, parentPluginStore, pluginVersionStore),
+        )
+    }
+
+    const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
+        setAvailableTags(tags)
+    }
 
     useEffect(() => {
         getInit()
@@ -241,12 +292,6 @@ export default function CDPipeline({
             getConfigMapSecrets()
         }
     }, [formData.environmentId])
-
-    const escFunction = (event) => {
-        if ((event.keyCode === 27 || event.key === 'Escape') && typeof close === 'function') {
-            close()
-        }
-    }
 
     const getInit = () => {
         Promise.all([
@@ -270,7 +315,6 @@ export default function CDPipeline({
 
                 const _form = { ...formData }
                 _form.strategies = strategies
-                getAvailablePlugins()
                 if (cdPipelineId) {
                     getCDPipeline(_form, dockerRegistries)
                 } else {
@@ -363,6 +407,25 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
+    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
+        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
+        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
+        const pluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
+        if (pluginIds.length === 0) {
+            return
+        }
+
+        const {
+            pluginStore: { parentPluginStore, pluginVersionStore },
+        } = await getPluginsDetail({
+            appId: +appId,
+            pluginIds,
+            shouldShowError: false,
+        })
+
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+    }
+
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then(async (result) => {
@@ -387,6 +450,7 @@ export default function CDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
+                await handlePopulatePluginDataStore(result.form)
                 setFormData({
                     ...form,
                     clusterId: result.form?.clusterId,
@@ -407,28 +471,6 @@ export default function CDPipeline({
         getConfigMapAndSecrets(appId, formData.environmentId)
             .then((response) => {
                 setConfigMapAndSecrets(response.list)
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
-    const getAvailablePlugins = (): void => {
-        getPluginsData(Number(appId))
-            .then((response) => {
-                const _presetPlugin = []
-                const _sharedPlugin = []
-                const pluginListLength = response?.result?.length || 0
-                for (let i = 0; i < pluginListLength; i++) {
-                    const pluginData = response.result[i]
-                    if (pluginData.type === 'PRESET') {
-                        _presetPlugin.push(pluginData)
-                    } else {
-                        _sharedPlugin.push(pluginData)
-                    }
-                }
-                setPresetPlugins(_presetPlugin)
-                setSharedPlugins(_sharedPlugin)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -480,6 +522,7 @@ export default function CDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: YAMLStringify(pipelineConfigFromRes.strategies[i].config),
                     selection: YAMLStringify(allStrategies.current[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -493,6 +536,8 @@ export default function CDPipeline({
         }
         const env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         form.name = pipelineConfigFromRes.name
+        form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
+        form.releaseMode = pipelineConfigFromRes.releaseMode
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -508,7 +553,7 @@ export default function CDPipeline({
         form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
-        form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
+        form.userApprovalConfig = sanitizeUserApprovalConfig(pipelineConfigFromRes.userApprovalConfig)
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         form.customTag = pipelineConfigFromRes.customTag
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
@@ -538,7 +583,9 @@ export default function CDPipeline({
                 }
             }
         }
-        form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
+        const _dockerRegistries: RegistryPayloadType = dockerRegistries.find(
+            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+        )
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -581,9 +628,11 @@ export default function CDPipeline({
             pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                 ? GeneratedHelmPush.PUSH
                 : GeneratedHelmPush.DO_NOT_PUSH
-        form.selectedRegistry = dockerRegistries.find(
-            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
-        )
+        form.selectedRegistry = {
+            ..._dockerRegistries,
+            value: _dockerRegistries?.id,
+            label: _dockerRegistries?.id,
+        }
     }
 
     const responseCode = () => {
@@ -605,13 +654,6 @@ export default function CDPipeline({
             }),
         }
 
-        const _userApprovalConfig =
-            formData.requiredApprovals?.length > 0
-                ? {
-                      requiredCount: +formData.requiredApprovals,
-                  }
-                : null
-
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -619,13 +661,19 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_HELM ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
             deploymentAppType: formData.deploymentAppType,
+            deploymentAppName: formData.deploymentAppName,
+            releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            userApprovalConfig: _userApprovalConfig,
+            ...(getUserApprovalConfigPayload
+                ? {
+                      userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig),
+                  }
+                : {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -749,7 +797,12 @@ export default function CDPipeline({
         setFormData(_form)
     }
 
-    const validateStage = (stageName: string, _formData: PipelineFormType, formDataErrorObject?): void => {
+    const validateStage = (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?,
+        _clonedPluginDataStore?: typeof pluginDataStore,
+    ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),
@@ -772,6 +825,7 @@ export default function CDPipeline({
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid &&
                 _formDataErrorObj.envNameError.isValid &&
+                _formDataErrorObj.userApprovalConfig?.isValid &&
                 isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
@@ -837,7 +891,10 @@ export default function CDPipeline({
         }
         const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
-            toast.error('All task names must be unique')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'All task names must be unique',
+            })
             return
         }
         setLoadingData(true)
@@ -851,8 +908,23 @@ export default function CDPipeline({
         ) {
             setLoadingData(false)
             if (formData.name === '') {
-                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: MULTI_REQUIRED_FIELDS_MSG,
+                })
             }
+            return
+        }
+
+        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } =
+            formDataErrorObj.userApprovalConfig ?? {}
+
+        if (!isUserApprovalConfigValid) {
+            setLoadingData(false)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: userApprovalConfigErrorMessage,
+            })
             return
         }
 
@@ -941,7 +1013,10 @@ export default function CDPipeline({
                         setFormData(form)
                         setDeleteDialog(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
-                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: TOAST_INFO.PIPELINE_DELETION_INIT,
+                        })
                         hideDeleteModal()
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName
@@ -964,8 +1039,10 @@ export default function CDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                // 422 is for deployment window
-                if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
+                //For now we are removing check for error code 422 which is of deployment window, 
+                // so in that case force delete modal would be shown.
+                // This should be done at BE and when done we will revert our changes
+                if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
@@ -994,31 +1071,23 @@ export default function CDPipeline({
         }
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
         const showAlert = !formDataErrorObj[stageName].isValid
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                    activeClassName="active"
-                    to={`${toLink}?${urlParams}`}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {CDDeploymentTabText[stageName]}
-                    {showAlert && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${CDDeploymentTabText[stageName]}-tab`,
+            label: CDDeploymentTabText[stageName],
+            tabType: 'navLink',
+            showError: showAlert,
+            props: {
+                to: `${toLink}?${urlParams}`,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+        }
     }
 
     const renderSecondaryButton = () => {
@@ -1034,7 +1103,7 @@ export default function CDPipeline({
                 </button>
             )
         }
-        if (!isAdvanced) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
             return (
                 !isWebhookCD && (
                     <button
@@ -1048,10 +1117,22 @@ export default function CDPipeline({
                 )
             )
         }
+        return null
     }
 
     const closePipelineModal = () => {
+        if (disableParentModalClose) {
+            return
+        }
         close()
+    }
+
+    const handleSelectMigrateHelmRelease = () => {
+        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_HELM, deploymentAppType: DeploymentAppTypes.HELM })
+    }
+
+    const handleSelectNewDeployment = () => {
+        setFormData({ ...formData, releaseMode: ReleaseMode.NEW_DEPLOYMENT })
     }
 
     const contextValue = useMemo(() => {
@@ -1071,8 +1152,6 @@ export default function CDPipeline({
             validateTask,
             validateStage,
             addNewTask,
-            configurationType,
-            setConfigurationType,
             pageState,
             setPageState,
             globalVariables,
@@ -1086,6 +1165,12 @@ export default function CDPipeline({
             selectedCDStageTypeValue,
             setSelectedCDStageTypeValue,
             setReloadNoGitOpsRepoConfiguredModal,
+            pluginDataStore,
+            handlePluginDataStoreUpdate,
+            availableTags,
+            handleUpdateAvailableTags,
+            handleHideScopedVariableWidgetUpdate,
+            handleDisableParentModalCloseUpdate,
         }
     }, [
         formData,
@@ -1093,11 +1178,12 @@ export default function CDPipeline({
         formDataErrorObj,
         inputVariablesListFromPrevStep,
         selectedTaskIndex,
-        configurationType,
         pageState,
         globalVariables,
         configMapAndSecrets,
         isVirtualEnvironment,
+        pluginDataStore,
+        availableTags,
     ])
 
     const renderCDPipelineBody = () => {
@@ -1115,11 +1201,17 @@ export default function CDPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={[
+                                getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                getNavLink(`build`, BuildStageVariable.Build),
+                                getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
@@ -1130,21 +1222,18 @@ export default function CDPipeline({
                     >
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar
-                                    pluginList={[...presetPlugins, ...sharedPlugins]}
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                />
+                                <Sidebar setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep} />
                             </div>
                         )}
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>
@@ -1159,6 +1248,7 @@ export default function CDPipeline({
                                     envIds={envIds}
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                                    releaseMode={formData.releaseMode}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1181,13 +1271,24 @@ export default function CDPipeline({
             title = CREATE_DEPLOYMENT_PIPELINE
         }
 
+        // Disable button if environment or release name is not selected
+        const getButtonDisabledMessage = (): string => {
+            if (!formData.environmentId) {
+                return 'Please select an environment'
+            }
+            if (formData.releaseMode === ReleaseMode.MIGRATE_HELM && !formData.deploymentAppName) {
+                return 'Please select a release'
+            }
+            return ''
+        }
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <div className="flex flex-align-center flex-justify bcn-0 px-20 py-12">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -1195,11 +1296,22 @@ export default function CDPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
+                {!isAdvanced && ReleaseModeTabs && (
+                    <ReleaseModeTabs
+                        handleSelectMigrateHelmRelease={handleSelectMigrateHelmRelease}
+                        handleSelectNewDeployment={handleSelectNewDeployment}
+                        releaseMode={formData.releaseMode}
+                    />
+                )}
                 {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
                         className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            !isWebhookCD && (cdPipelineId || !isAdvanced) ? 'flex-justify' : 'justify-right'
+                            !isWebhookCD &&
+                            !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
+                            (cdPipelineId || !isAdvanced)
+                                ? 'flex-justify'
+                                : 'justify-right'
                         } `}
                     >
                         {formData && (
@@ -1210,6 +1322,7 @@ export default function CDPipeline({
                                     dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}
+                                    disabled={!!getButtonDisabledMessage()}
                                 >
                                     {text}
                                 </ButtonWithLoader>
@@ -1263,7 +1376,11 @@ export default function CDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (
+            !window._env_.ENABLE_SCOPED_VARIABLES ||
+            activeStageName === BuildStageVariable.Build ||
+            hideScopedVariableWidget
+        ) {
             return <></>
         }
 

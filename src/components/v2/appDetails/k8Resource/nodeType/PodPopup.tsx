@@ -21,21 +21,19 @@ import { PodPopupProps } from './types'
 import { ReactComponent as ICDeleteInteractive } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { NodeType } from '../../appDetails.type'
 
-const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
 
 // TODO: Need to make it common and use this in ResourceTree component as well
 const PodPopup = ({
     kind,
     describeNode,
-    isExternalArgoApp,
     toggleShowDeleteConfirmation,
     handleShowVulnerabilityModal,
 }: PodPopupProps) => {
     const { installedModuleMap } = useMainContext()
-    const showResourceScanModal = getShowResourceScanModal(
-        kind as NodeType,
-        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-    )
+    const showResourceScanModal =
+        window._env_.ENABLE_RESOURCE_SCAN_V2 &&
+        getShowResourceScanModal(kind as NodeType, installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY])
 
     const handleDescribeEvents = () => {
         describeNode(NodeDetailTabs.EVENTS)
@@ -64,16 +62,14 @@ const PodPopup = ({
             {showResourceScanModal && OpenSecurityModalButton && (
                 <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
             )}
-            {!isExternalArgoApp && (
-                <span
-                    data-testid="delete-resource-button"
-                    className="flex dc__gap-8 pod-info__popup-row cr-5"
-                    onClick={toggleShowDeleteConfirmation}
-                >
-                    <ICDeleteInteractive className="icon-dim-16 scr-5" />
-                    <span>Delete</span>
-                </span>
-            )}
+            <span
+                data-testid="delete-resource-button"
+                className="flex dc__gap-8 pod-info__popup-row cr-5"
+                onClick={toggleShowDeleteConfirmation}
+            >
+                <ICDeleteInteractive className="icon-dim-16 scr-5" />
+                <span>Delete</span>
+            </span>
         </div>
     )
 }

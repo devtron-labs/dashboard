@@ -17,12 +17,11 @@
 // Disabling due to react select issue
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles } from './CIConfig.utils'
+import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { CISelfDockerBuildOptionProps } from './types'
+import { getGitRepositoryOptions } from './utils'
 
 const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
     readOnly,
@@ -63,31 +62,17 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
     return (
         <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
             <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                <label className="form__label">Select repository containing Dockerfile</label>
-
-                <ReactSelect
-                    className="m-0"
+                <SelectPicker
+                    inputId="select-repository-containing-dockerfile"
+                    name="select-repository-containing-dockerfile"
+                    label="Select repository containing Dockerfile"
                     classNamePrefix="build-config__select-repository-containing-dockerfile"
-                    isMulti={false}
                     isClearable={false}
-                    options={sourceMaterials}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.checkoutPath}`}
+                    options={getGitRepositoryOptions(sourceMaterials)}
                     value={selectedMaterial}
-                    styles={{
-                        ..._multiSelectStyles,
-                        menu: (base) => ({
-                            ...base,
-                            marginTop: '0',
-                            paddingBottom: '4px',
-                        }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: repositoryOption,
-                        Control: repositoryControls,
-                    }}
                     onChange={handleFileLocationChange}
+                    size={ComponentSizeType.large}
+                    isSearchable={false}
                 />
 
                 {repositoryError && <label className="form__error">{repositoryError}</label>}
@@ -105,19 +90,18 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
                         placement="top"
                         content={selectedMaterial?.checkoutPath}
                     >
-                        <span className="h-38 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                        <span className="h-36 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                             {selectedMaterial?.checkoutPath}
                         </span>
                     </Tippy>
 
                     <CustomInput
-                        rootClassName="file-name"
+                        rootClassName="file-name h-36"
                         data-testid="dockerfile-path-text-box"
                         placeholder="Dockerfile"
                         name="dockerfile"
                         value={dockerFileValue}
                         onChange={handleOnChangeConfig}
-                        autoComplete="off"
                         autoFocus={!configOverrideView}
                         error={dockerfileError}
                     />

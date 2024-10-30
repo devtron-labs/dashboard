@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { RouteComponentProps } from 'react-router-dom'
+import { OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
@@ -379,12 +379,31 @@ export interface ChartListType {
 export interface ChartGroupDeployResponse {
     chartGroupInstallMetadata: ChartGroupInstallMetadaum[]
     summary: string
-  }
-  
-  export interface ChartGroupInstallMetadaum {
+}
+
+export interface ChartGroupInstallMetadaum {
     appName: string
     environmentId: number
     triggerStatus: 'success' | 'failed'
     reason: string
-  }
-  
+}
+
+export interface SelectedChartRepositoryType extends Pick<ChartListType, 'isOCIRegistry'>, Pick<OptionType, 'label'> {
+    value: number
+}
+
+export interface ChartHeaderFilterProps {
+    selectedChartRepo: SelectedChartRepositoryType[]
+    includeDeprecated: number
+    chartRepoList: SelectedChartRepositoryType[]
+    setSelectedChartRepo: (chartRepoList: SelectedChartRepositoryType[]) => void
+    appStoreName: string
+    isGrid: boolean
+    setIsGrid: (isGrid: boolean) => void
+}
+
+export interface DeleteInstalledChartParamsType {
+    forceDelete?: true
+    partialDelete?: true
+    cascade?: false
+}

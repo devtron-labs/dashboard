@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -30,9 +29,11 @@ import {
     noop,
     StyledRadioGroup as RadioGroup,
     EditableTextArea,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
@@ -49,7 +50,7 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
-import { getAppConfig, getGitProviderIcon, getResourceKindFromAppType } from './utils'
+import { getAppConfig, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -59,6 +60,7 @@ const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const DependencyList = importComponentFromFELibrary('DependencyList')
 const DeploymentWindowOverview = importComponentFromFELibrary('DeploymentWindowOverview')
+const PartOfReleaseTrack = importComponentFromFELibrary('PartOfReleaseTrack', null, 'function')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
@@ -71,8 +73,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const isUpdateDependencyModalOpen =
         activeTab === OVERVIEW_TABS.DEPENDENCIES && searchParams.get(MODAL_STATE.key) === MODAL_STATE.value
     const config = getAppConfig(appType)
-    const isJobOverview = appType === 'job'
-    const isHelmChart = appType === 'helm-chart'
+    const isJobOverview = appType === APP_TYPE.JOB
+    const isHelmChart = appType === APP_TYPE.HELM_CHART
     // For helm the appId from the params is the installed appId and not the actual id of the app
     const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const [isLoading, setIsLoading] = useState(true)
@@ -223,7 +225,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
 
             try {
                 await editApp(payload)
-                toast.success('Successfully saved')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully saved',
+                })
                 await getAppMetaInfoRes()
             } catch (err) {
                 showError(err)
@@ -306,7 +311,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {appType === 'app' && gitMaterials.length > 0 && (
+                    {appType === APP_TYPE.DEVTRON_APPS && gitMaterials.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="flexbox-col dc__gap-4">
@@ -327,6 +332,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             </div>
                         </div>
                     )}
+                    {PartOfReleaseTrack && appType === 'app' && <PartOfReleaseTrack appId={+appId} />}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}

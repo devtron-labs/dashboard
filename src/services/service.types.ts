@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentStrategy,
+    AppEnvironment,
+    DeploymentChartVersionType,
+    ChartMetadataType,
+    EnvListMinDTO,
+    ResponseType,
+    SeverityCount,
+    Teams,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -24,14 +34,6 @@ export interface RootObject {
 
 export interface CDPipelines {
     pipelines: CDPipeline[]
-}
-
-type DeploymentStrategyType = 'CANARY' | 'ROLLING' | 'RECREATE' | 'BLUE_GREEN'
-
-export interface DeploymentStrategy {
-    deploymentTemplate: DeploymentStrategyType
-    config: any
-    default: boolean
 }
 
 export interface PrePostStage {
@@ -76,26 +78,6 @@ export interface ProjectFilteredApps extends ResponseType {
     }[]
 }
 
-export interface AppEnvironment {
-    environmentId: number
-    environmentName: string
-    appMetrics: boolean
-    infraMetrics: boolean
-    prod: boolean
-    chartRefId?: number
-    lastDeployed?: string
-    lastDeployedBy?: string
-    lastDeployedImage?: string
-    appStatus?: string
-    deploymentAppDeleteRequest?: boolean
-    isVirtualEnvironment?: boolean
-    isProtected?: boolean
-    pipelineId?: number
-    latestCdWorkflowRunnerId?: number
-    commits?: string[]
-    ciArtifactId?: number
-}
-
 export interface AppIdWorkflowNamesMapping {
     appIdWorkflowNamesMapping: { [key: string]: string[] }
 }
@@ -105,20 +87,6 @@ export interface AppOtherEnvironment extends ResponseType {
 }
 export interface AllWorkflows extends ResponseType {
     result?: AppIdWorkflowNamesMapping
-}
-
-export interface LastExecutionMinResponseType {
-    code: number
-    status: string
-    result: {
-        lastExecution: string
-        imageScanDeployInfoId: number
-        severityCount: {
-            critical: number
-            moderate: number
-            low: number
-        }
-    }
 }
 
 export interface HostURLConfig {
@@ -156,6 +124,7 @@ export interface Cluster {
     errorInConnecting?: string
     isVirtualCluster?: boolean
 }
+
 export interface LoginCountType extends ResponseType {
     result?: LoginCount
 }
@@ -184,4 +153,18 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {
         workflows: ConfigOverrideWorkflowDetails[]
     }
+}
+
+export interface MinChartRefDTO {
+    chartMetadata: Record<string, ChartMetadataType>
+    chartRefs: DeploymentChartVersionType[]
+    latestAppChartRef: number
+    latestChartRef: number
+    latestEnvChartRef?: number
+}
+
+export interface ClusterEnvTeams {
+    clusters: Cluster[]
+    environments: EnvListMinDTO[]
+    teams: Teams[]
 }

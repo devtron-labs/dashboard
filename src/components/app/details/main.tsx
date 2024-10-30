@@ -21,15 +21,16 @@ import {
     Progressing,
     stopPropagation,
     OptionType,
-    ToastBody,
     DeleteDialog,
     ErrorScreenManager,
+    ResourceKindType,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { URLS } from '../../../config'
-import AppConfig from './appConfig/AppConfig'
+import { APP_TYPE, URLS } from '../../../config'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -73,7 +74,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
-    const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [apiError, setApiError] = useState(null)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -147,6 +148,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
+            setApiError(null)
             const { result } = await getAppMetaInfo(Number(appId))
             if (result) {
                 setAppName(result.appName)
@@ -155,25 +157,17 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
-            if (err['code'] === 403) {
-                setErrorStatusCode(403)
-            } else {
-                showError(err)
-            }
+            setApiError(err)
+            showError(err)
         }
     }
 
-    const handleToast = (action: string) => {
-        return toast.info(
-            <ToastBody
-                title={`Cannot ${action} filter`}
-                subtitle={`You can ${action} a filter with only those environments for which you have admin/manager permission.`}
-            />,
-            {
-                className: 'devtron-toast unauthorized',
-            },
-        )
-    }
+    const handleToast = (action: string) =>
+        ToastManager.showToast({
+            variant: ToastVariantType.notAuthorized,
+            title: `Cannot ${action} filter`,
+            description: `You can ${action} a filter with only those environments for which you have admin/manager permission.`,
+        })
 
     async function getPermissionCheck(payload, _edit?: boolean, _delete?: boolean): Promise<void> {
         try {
@@ -282,7 +276,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setDeleting(true)
         try {
             await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            toast.success('Successfully deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully deleted',
+            })
             setShowDeleteGroup(false)
             getSavedFilterData(
                 selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
@@ -307,17 +304,17 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
-    if (errorStatusCode) {
-        return <ErrorScreenManager code={errorStatusCode} />
-    }
-
     if (appListLoading) {
         return <Progressing pageLoader />
     }
 
+    if (apiError) {
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
+    }
+
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page">
+        <div className="app-details-page dc__overflow-scroll">
             {!isV2 && (
                 <AppHeader
                     appName={appName}
@@ -369,7 +366,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
-                                appType="app"
+                                appType={APP_TYPE.DEVTRON_APPS}
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}
@@ -394,7 +391,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
+                            <AppConfig
+                                appName={appName}
+                                resourceKind={ResourceKindType.devtronApplication}
+                                filteredEnvIds={_filteredEnvIds}
+                            />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

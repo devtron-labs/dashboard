@@ -23,20 +23,22 @@ import {
     getIsRequestAborted,
     LoadingIndicator,
     ReactSelectInputAction,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
+import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import {
     CONFIG_APPROVER_ACTION,
     authorizationSelectStyles,
-    EntityTypes,
     ARTIFACT_PROMOTER_ACTION,
+    TERMINAL_EXEC_ACTION,
 } from '../../../constants'
 import { AppOption, ClusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
@@ -80,10 +82,12 @@ const DirectPermission = ({
     const multiRole = permission.action.value.split(',')
     const doesConfigApproverRoleExist = multiRole.includes(CONFIG_APPROVER_ACTION.value)
     const doesArtifactPromoterRoleExist = multiRole.includes(ARTIFACT_PROMOTER_ACTION.value)
+    const doesTerminalAccessRoleExist = multiRole.includes(TERMINAL_EXEC_ACTION.value)
 
     const primaryActionRoleIndex = getPrimaryRoleIndex(multiRole, [
         CONFIG_APPROVER_ACTION.value,
         ARTIFACT_PROMOTER_ACTION.value,
+        TERMINAL_EXEC_ACTION.value,
     ])
 
     const primaryActionRole = {
@@ -91,6 +95,7 @@ const DirectPermission = ({
         value: multiRole[primaryActionRoleIndex],
         configApprover: doesConfigApproverRoleExist || permission.action.configApprover,
         artifactPromoter: doesArtifactPromoterRoleExist || permission.action.artifactPromoter,
+        terminalExec: doesTerminalAccessRoleExist || permission.action.terminalExec,
     }
 
     const [openMenu, setOpenMenu] = useState<DirectPermissionFieldName | ''>('')
@@ -130,6 +135,9 @@ const DirectPermission = ({
                 throw new Error(`Unknown access type ${permission.accessType}`)
         }
     }
+
+    const getSelectedRolesDisplay = (selectedPermissions: string[]) =>
+        selectedPermissions.filter((selectedVal) => !!selectedVal).join(', ')
 
     const metaRolesForAccessType = _getMetaRolesForAccessType()
     const listForAccessType = getListForAccessType(permission.accessType)
@@ -175,10 +183,18 @@ const DirectPermission = ({
                     ...props,
                 }}
             >
-                {value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value}
-                {ApproverPermission &&
-                    (permission.approver || primaryActionRole.configApprover || primaryActionRole.artifactPromoter) &&
-                    ', Approver'}
+                {getSelectedRolesDisplay([
+                    value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value,
+                    ...(ApproverPermission
+                        ? [
+                              (permission.approver ||
+                                  primaryActionRole.configApprover ||
+                                  primaryActionRole.artifactPromoter) &&
+                                  'Approver',
+                              primaryActionRole.terminalExec && 'Terminal',
+                          ]
+                        : []),
+                ])}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -195,19 +211,24 @@ const DirectPermission = ({
     const RoleMenuList = (props) => (
         <components.MenuList {...props}>
             {props.children}
-            {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
-                <ApproverPermission
-                    optionProps={props}
-                    approver={permission.approver}
-                    configApprover={primaryActionRole.configApprover}
-                    artifactPromoter={primaryActionRole.artifactPromoter}
-                    handleDirectPermissionChange={(...rest) => {
-                        props.selectOption(props.selectProps.value)
-                        handleDirectPermissionChange(...rest)
-                    }}
-                    formatOptionLabel={formatOptionLabel}
-                />
-            )}
+            {ApproverPermission &&
+                (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ||
+                    permission.accessType === ACCESS_TYPE_MAP.HELM_APPS) && (
+                    <ApproverPermission
+                        optionProps={props}
+                        approver={permission.approver}
+                        configApprover={primaryActionRole.configApprover}
+                        artifactPromoter={primaryActionRole.artifactPromoter}
+                        terminalExec={primaryActionRole.terminalExec}
+                        handleDirectPermissionChange={(...rest) => {
+                            props.selectOption(props.selectProps.value)
+                            handleDirectPermissionChange(...rest)
+                        }}
+                        formatOptionLabel={formatOptionLabel}
+                        accessType={permission.accessType}
+                        customRoles={customRoles}
+                    />
+                )}
         </components.MenuList>
     )
 

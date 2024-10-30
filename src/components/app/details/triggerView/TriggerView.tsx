@@ -23,18 +23,17 @@ import {
     stopPropagation,
     VisibleModal,
     DeploymentNodeType,
-    ToastBodyWithButton,
-    ToastBody,
     CommonNodeAttr,
     WorkflowType,
-    HandleKeyValueChangeType,
-    KeyValueListActionType,
     getIsRequestAborted,
     handleUTCTime,
     createGitCommitUrl,
-    CIMaterialType
+    CIMaterialType,
+    Environment,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
 import {
@@ -52,7 +51,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -88,9 +87,7 @@ import {
     processWorkflowStatuses,
 } from '../../../ApplicationGroup/AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 
@@ -98,6 +95,7 @@ const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModa
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -244,7 +242,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             if (!isNaN(nodeId)) {
                                 this.onClickRollbackMaterial(nodeId)
                             } else {
-                                toast.error('Invalid node id')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node id',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
@@ -259,14 +260,20 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 nodeType !== DeploymentNodeType.PRECD &&
                                 nodeType !== DeploymentNodeType.POSTCD
                             ) {
-                                toast.error('Invalid node type')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node type',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
                             } else if (!isNaN(nodeId)) {
                                 this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
                             } else {
-                                toast.error('Invalid node id')
+                                ToastManager.showToast({
+                                    variant: ToastVariantType.error,
+                                    description: 'Invalid node id',
+                                })
                                 this.props.history.push({
                                     search: '',
                                 })
@@ -284,7 +291,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (!isNaN(+ciNodeId) && !!pipelineName) {
                             this.onClickCIMaterial(ciNodeId, pipelineName, false)
                         } else {
-                            toast.error('Invalid Node')
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Invalid Node',
+                            })
                         }
                     }
                     this.timerRef && clearInterval(this.timerRef)
@@ -719,7 +729,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 if (resp[2]) {
                     // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
-                        runtimeParams: resp[2],
+                        runtimeParams: resp[2] || [],
                     })
                 }
             })
@@ -869,12 +879,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
         if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            toast.error(
-                CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
                     '$GIT_MATERIAL_ID',
                     `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
                 ),
-            )
+            })
             this.setState({ isLoading: false })
             return
         }
@@ -883,12 +894,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             envId = this.state.selectedEnv.id
         }
 
-        const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(this.state.runtimeParams ?? [])
-        if (!runtimeParamsValidationResponse.isValid) {
-            this.setState({ isLoading: false })
-            toast.error(runtimeParamsValidationResponse.message)
-            return
-        }
+        // No need to validate here since ciMaterial handles it for trigger view
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
@@ -896,14 +903,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
         this.abortCIBuild = new AbortController()
         triggerCINode(payload, this.abortCIBuild.signal)
             .then((response: any) => {
                 if (response.result) {
-                    toast.success('Pipeline Triggered')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Pipeline Triggered',
+                    })
                     this.setState(
                         {
                             code: response.code,
@@ -923,28 +933,31 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code === 403) {
-                    toast.info(
-                        <ToastBody title="Access denied" subtitle="You don't have access to perform this action." />,
-                        {
-                            className: 'devtron-toast unauthorized',
-                        },
-                    )
+                    ToastManager.showToast({
+                        variant: ToastVariantType.notAuthorized,
+                        description: TOAST_ACCESS_DENIED.SUBTITLE,
+                    })
                 } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
-                    errors.errors.map((err) => toast.error(err.internalMessage))
+                    errors.errors.map((err) =>
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: err.internalMessage,
+                        }),
+                    )
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                            const errorToastBody = (
-                                <ToastBodyWithButton
-                                    onClick={this.redirectToCIPipeline}
-                                    subtitle={error.userMessage}
-                                    title="Nothing to execute"
-                                    buttonText="EDIT PIPELINE"
-                                />
-                            )
-                            toast.error(errorToastBody)
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                title: 'Nothing to execute',
+                                description: 'error.userMessage',
+                                buttonProps: {
+                                    text: 'Edit Pipeline',
+                                    dataTestId: 'edit-pipeline-btn',
+                                },
+                            })
                         } else {
-                            toast.error(error)
+                            showError(errors)
                         }
                     })
                 }
@@ -1106,31 +1119,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch })
     }
 
-    handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        const { runtimeParams } = this.state
-        let _runtimeParams = runtimeParams
-
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
-                break
-
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
-
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
-
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action: ${action}`)
-        }
-
-        this.setState({ runtimeParams: _runtimeParams })
+    handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
+        this.setState({
+            runtimeParams: updatedRuntimeParams,
+        })
     }
 
     setLoader = (isLoader) => {
@@ -1139,7 +1131,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    setSelectedEnv = (_selectedEnv: Environment) => {
+    setSelectedEnv = (_selectedEnv) => {
         this.setState({ selectedEnv: _selectedEnv })
     }
 
@@ -1218,7 +1210,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             environmentLists={this.state.environmentLists}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
-                            handleRuntimeParametersChange={this.handleRuntimeParametersChange}
+                            handleRuntimeParamChange={this.handleRuntimeParamChange}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}
@@ -1255,7 +1247,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
-                        className={`modal-body--cd-material h-100 contains-diff-view ${
+                        className={`modal-body--cd-material h-100 flexbox-col contains-diff-view ${
                             material.length > 0 ? '' : 'no-material'
                         }`}
                         onClick={stopPropagation}

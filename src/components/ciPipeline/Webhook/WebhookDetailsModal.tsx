@@ -25,12 +25,17 @@ import {
     CustomInput,
     ClipboardButton,
     ButtonWithLoader,
-    CodeEditor
+    CodeEditor,
+    SelectPicker,
+    TabGroup,
+    ComponentSizeType,
+    ToastVariantType,
+    ToastManager,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -40,19 +45,18 @@ import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
-import { Option } from '../../v2/common/ReactSelect.utils'
 import {
     getUserRole,
     createOrUpdateUser,
 } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
+    getWebhookTokenListOptions,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
-    SELECT_TOKEN_STYLE,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
@@ -60,7 +64,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { ActionTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,
@@ -199,7 +203,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setErrorInGetData(true)
         }
     }
-
     const generateToken = async (): Promise<void> => {
         if (!tokenName) {
             setTokenNameError(true)
@@ -215,14 +218,15 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
                 const userPermissionPayload = createUserPermissionPayload({
-                    id: result.id,
+                    id: result.userId,
                     userIdentifier: result.userIdentifier,
-                    userGroups: [],
+                    userRoleGroups: [],
                     serverMode: SERVER_MODE.FULL,
                     directPermission: [],
                     chartPermission: {} as ChartGroupPermissionsFilter,
                     k8sPermission: [],
                     permissionType: PermissionType.SPECIFIC,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
                 const { result: userPermissionResponse } = await createOrUpdateUser({
@@ -273,51 +277,26 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setSelectedTab(e.currentTarget.dataset.key, index)
         }
         return (
-            <ul role="tablist" className={`tab-list ${isChildTab ? '' : 'dc__border-bottom'}`}>
-                {tabList.map((tabDetail) => (
-                    <li
-                        key={tabDetail.key}
-                        className="tab-list__tab pointer"
-                        onClick={tabClickHandler}
-                        data-key={tabDetail.key}
-                    >
-                        <div
-                            className={`mb-6 ${isChildTab ? 'fs-12 child-tab' : 'fs-13'} tab-hover${
-                                selectedTab === tabDetail.key ? ' fw-6 active' : ' fw-4'
-                            }`}
-                        >
-                            {tabDetail.value}
-                        </div>
-                        {selectedTab === tabDetail.key && (
-                            <div className={`tab-list_active-tab ${isChildTab ? 'child-tab' : ''}`} />
-                        )}
-                    </li>
-                ))}
-            </ul>
-        )
-    }
-
-    function formatOptionLabel(option): JSX.Element {
-        return (
-            <div className="flexbox justify-space">
-                <span className="cn-9 fw-4">{option.label}</span>
-                <span className="cn-5 fw-4 font-roboto">Has access</span>
+            <div className={`${!isChildTab ? 'dc__border-bottom' : ''}`}>
+                <TabGroup
+                    tabs={tabList.map(({ key, value }) => ({
+                        id: key,
+                        label: value,
+                        tabType: 'button',
+                        active: selectedTab === key,
+                        props: {
+                            onClick: tabClickHandler,
+                            'data-key': key,
+                        },
+                    }))}
+                    hideTopPadding
+                    alignActiveBorderWithContainer={!isChildTab}
+                    size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
+                />
             </div>
         )
     }
 
-    const ValueContainer = (props) => {
-        const value = props.getValue()[0]?.label
-        return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select API token</span>)}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
-        )
-    }
 
     const toggleTokenSection = (): void => {
         setShowTokenSection(true)
@@ -359,7 +338,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         }
     }
 
-    const renderWebhhokTokenLabel = (): JSX.Element => {
+    const renderWebhookTokenLabel = (): JSX.Element => {
         return (
             <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
                 api-token
@@ -391,7 +370,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
             <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
-                {renderWebhhokTokenLabel()}
+                {renderWebhookTokenLabel()}
                 <CustomInput
                     name="api-token"
                     placeholder="Enter API token"
@@ -420,24 +399,24 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     }
 
     const renderSelectTokenSection = (): JSX.Element => {
+
+        const handleSelectedTokenChange = (selectedToken): void => {
+            setSelectedToken(selectedToken)
+        }
+
         return (
             <>
                 <div className="w-400 h-32 mt-16">
-                    <ReactSelect
-                        classNamePrefix='selectToken'
+                    <SelectPicker
+                        inputId="select-token"
+                        name="select-token"
+                        classNamePrefix="select-token"
+                        placeholder="Select API token"
+                        isClearable={false}
+                        options={getWebhookTokenListOptions(tokenList)}
                         value={selectedToken}
-                        tabIndex={1}
-                        onChange={setSelectedToken}
-                        options={tokenList}
+                        onChange={handleSelectedTokenChange}
                         isSearchable={false}
-                        formatOptionLabel={formatOptionLabel}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                            ValueContainer,
-                        }}
-                        styles={SELECT_TOKEN_STYLE}
-                        menuPlacement="auto"
                     />
                 </div>
                 {selectedToken?.value && renderSelectedToken('Selected', selectedToken.token)}
@@ -484,7 +463,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             return (
                 <a
                     className="dc__link dc__no-decor fs-13 fw-4"
-                    href={DOCUMENTATION.WEBHOOK_API_TOKEN}
+                    href={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
                     rel="noreferrer noopener"
                     target="_blank"
                 >
@@ -512,9 +491,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 data-testid="sample-script"
             >
                 <code>{value}</code>
-                {showCopyOption && (
-                        <ClipboardButton content={value} />
-                )}
+                {showCopyOption && <ClipboardButton content={value} />}
             </pre>
         )
     }
@@ -788,7 +765,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">
+                                {response.code}
+                            </div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(
@@ -819,7 +798,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             _modifiedPayload = JSON.parse(modifiedSampleString)
         } catch (error) {
-            toast.error('Invalid JSON')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid JSON',
+            })
             return
         }
         setWebhookExecutionLoader(true)
@@ -912,7 +894,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const copySharableURL = (): void => {
         copyToClipboard(window.location.href, () => {
-            toast.success('URL copied successfully')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'URL copied successfully',
+            })
         })
     }
 

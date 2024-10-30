@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { IndexStore, 
-    getiNodesByKindWithChildNodes, 
-    getiNodesByRootNodeWithChildNodes, 
-    getPodsRootParentNameAndStatus, 
-    reduceKindStatus, 
-    getPodsForRootNodeName } from "@devtron-labs/devtron-fe-common-lib"
+import {
+    IndexStore,
+    getiNodesByKindWithChildNodes,
+    getiNodesByRootNodeWithChildNodes,
+    getPodsRootParentNameAndStatus,
+    reduceKindStatus,
+    getPodsForRootNodeName,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export default IndexStore
 export {
@@ -27,5 +29,5 @@ export {
     getiNodesByRootNodeWithChildNodes,
     getPodsRootParentNameAndStatus,
     reduceKindStatus,
-    getPodsForRootNodeName
+    getPodsForRootNodeName,
 }

@@ -16,26 +16,22 @@
 
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
-import { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { DropdownIndicator, Option, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
-import { _customStyles } from './CIConfig.utils'
+import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { getGitProviderIcon } from '@Components/common'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 
-const Title: FunctionComponent = () => {
-    return (
-        <Tippy
-            className="default-tt w-200"
-            arrow={false}
-            placement="top"
-            content={CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE_INFO}
-        >
-            <span className="fs-13 fw-4 lh-20 cn-7 mr-8">{CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE}</span>
-        </Tippy>
-    )
-}
+const Title: FunctionComponent = () => (
+    <Tippy
+        className="default-tt w-200"
+        arrow={false}
+        placement="top"
+        content={CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE_INFO}
+    >
+        <span className="fs-13 fw-4 lh-20 cn-7 mr-8">{CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE}</span>
+    </Tippy>
+)
 
 const ResetEditorChanges: FunctionComponent<ResetEditorChangesProps> = ({ resetChanges, editorData, editorValue }) => {
     const showReset = !editorData?.fetching && editorData?.data !== editorValue
@@ -76,8 +72,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     handleFrameworkSelection,
     readOnly,
 }) => {
-    const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value)
-
+    const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value.toString())
     if (readOnly) {
         return (
             <div className="flex">
@@ -85,9 +80,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
 
                 {/* TODO: Look into this condition, this won't ever be true since we derive icon from url  */}
                 <div className="flex left">
-                    {selectedMaterial?.icon && (
-                        <img src={currentMaterial.icon} alt={currentMaterial.label} className="icon-dim-20 mr-8" />
-                    )}
+                    {getGitProviderIcon(currentMaterial?.icon)}
                     <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
                 </div>
 
@@ -96,7 +89,11 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
 
                 <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
                     {selectedLanguage?.icon && (
-                        <img src={selectedLanguage.icon} alt={selectedLanguage.label} className="icon-dim-20 mr-8" />
+                        <img
+                            src={selectedLanguage.icon}
+                            alt={selectedLanguage.label.toString()}
+                            className="icon-dim-20 mr-8"
+                        />
                     )}
                     <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
                 </div>
@@ -117,62 +114,44 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
     return (
         <div className="flex">
             <Title />
-
-            <ReactSelect
+            <SelectPicker
+                inputId="build-pack-material"
                 isSearchable={false}
                 options={materialOptions}
-                getOptionLabel={(option) => `${option.name}`}
-                getOptionValue={(option) => `${option.checkoutPath}`}
                 value={selectedMaterial}
-                styles={_customStyles}
-                components={{
-                    IndicatorSeparator: null,
-                    Option: repositoryOption,
-                    Control: repositoryControls,
-                }}
                 onChange={handleGitRepoChange}
                 classNamePrefix="build-config__select-repository-containing-code"
+                variant={SelectPickerVariantType.BORDER_LESS}
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
             <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
 
-            <ReactSelect
+            <SelectPicker
+                inputId="build-pack-language"
                 classNamePrefix="select-create-dockerfile-language-dropdown"
                 options={languages}
                 value={selectedLanguage}
                 isSearchable={false}
-                styles={_customStyles}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator,
-                    Option: OptionWithIcon,
-                    ValueContainer: ValueContainerWithIcon,
-                }}
                 onChange={handleLanguageSelection}
+                variant={SelectPickerVariantType.BORDER_LESS}
             />
-
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
                     <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
                     <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
 
-                    <ReactSelect
+                    <SelectPicker
+                        inputId="build-pack-framework"
                         options={selectedLanguageFrameworks || []}
                         value={selectedFramework}
                         classNamePrefix="build-config__select-framework"
                         isSearchable={false}
-                        styles={_customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
                         onChange={handleFrameworkSelection}
+                        variant={SelectPickerVariantType.BORDER_LESS}
                     />
                 </>
             )}
-
             <ResetEditorChanges resetChanges={resetChanges} editorData={editorData} editorValue={editorValue} />
         </div>
     )

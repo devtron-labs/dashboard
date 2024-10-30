@@ -22,13 +22,15 @@ import {
     TagLabelSelect,
     TagType,
     DEFAULT_TAG_DATA,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
+import { APP_TYPE } from '@Config/constants'
 
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({
@@ -38,6 +40,7 @@ export default function AboutTagEditModal({
     appMetaInfo,
     currentLabelTags,
     getAppMetaInfoRes,
+    appType
 }: AboutAppInfoModalProps) {
     const editLabelRef = useRef(null)
     const [submitting, setSubmitting] = useState(false)
@@ -86,7 +89,10 @@ export default function AboutTagEditModal({
             }
         }
         if (invalidLabels) {
-            toast.error('Some required fields are missing or invalid')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or invalid',
+            })
             return
         }
         setSubmitting(true)
@@ -100,7 +106,10 @@ export default function AboutTagEditModal({
 
         try {
             await editApp(payload)
-            toast.success('Successfully saved')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
             onClose(e)
@@ -125,6 +134,7 @@ export default function AboutTagEditModal({
                         setLabelTags={setLabelTags}
                         selectedProjectId={appMetaInfo.projectId}
                         reloadProjectTags={reloadMandatoryProjects}
+                        hidePropagateTag={appType === APP_TYPE.HELM_CHART}
                     />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Subject } from '../Subject';
+import { Subject } from '../Subject'
 
 test('Subscriber test', () => {
     let rec: Array<string> = new Array()
@@ -37,7 +37,7 @@ test('Subscriber removal test', () => {
     let subscriber = (s: unknown) => {
         rec.push(s as string)
     }
-    let [added, unsubsribe] = subject.subscribe(subscriber)
+    let [, unsubsribe] = subject.subscribe(subscriber)
     subject.publish('hello')
     subject.publish('world')
     subject.publish('!!!')
@@ -47,16 +47,18 @@ test('Subscriber removal test', () => {
     expect(subject.size()).toStrictEqual(0)
 })
 
-test("Unsubscribe subscribe test", () => {
+test('Unsubscribe subscribe test', () => {
     let rec: Array<string> = new Array()
     let subject = new Subject()
-    let subscriber = (s: unknown) => { rec.push(s as string) }
+    let subscriber = (s: unknown) => {
+        rec.push(s as string)
+    }
     let [added, unsubsribe] = subject.subscribe(subscriber)
-    unsubsribe();
-    [added, unsubsribe] = subject.subscribe(subscriber)
-    subject.publish("hello")
-    subject.publish("world")
-    subject.publish("!!!")
+    unsubsribe()
+    ;[added, unsubsribe] = subject.subscribe(subscriber)
+    subject.publish('hello')
+    subject.publish('world')
+    subject.publish('!!!')
     expect(subject.size()).toStrictEqual(1)
     expect(rec.length).toStrictEqual(3)
     unsubsribe()

@@ -22,7 +22,6 @@ import {
     GenericEmptyState,
     useUrlFilters,
     OptionType,
-    LoadingIndicator,
     abortPreviousRequests,
     getIsRequestAborted,
     ErrorScreenNotAuthorized,
@@ -31,9 +30,9 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     WorkflowNodeType,
     CommonNodeAttr,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import { LinkedCIAppListFilterParams, LinkedCIDetailModalProps } from './types'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -42,7 +41,7 @@ import './linkedCIAppList.scss'
 import { getAppList, getLinkedCIPipelineEnvironmentList } from './service'
 import { getLinkedCITippyContent, parseSearchParams } from './utils'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
-import { ALL_ENVIRONMENT_OPTION, SortableKeys, environmentFilterDropdownStyles } from './constants'
+import { ALL_ENVIRONMENT_OPTION, SortableKeys } from './constants'
 import { preventBodyScroll } from '../../../components/common'
 
 const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalProps) => {
@@ -178,7 +177,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                     />
                 </div>
                 <div className="flexbox-col flex-grow-1">
-                    <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20">
+                    <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20 dc__zi-5">
                         <SearchBar
                             containerClassName="w-250"
                             inputProps={{
@@ -189,16 +188,12 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                             initialSearchText={searchKey}
                             handleEnter={handleSearch}
                         />
-                        <ReactSelect
+                        <SelectPicker
+                            inputId="linked-ci-environment-dropdown"
                             isDisabled={showLoadingState || envLoading}
-                            styles={environmentFilterDropdownStyles}
                             options={selectOptions}
                             isLoading={envLoading}
                             onChange={updateEnvironmentFilter}
-                            components={{
-                                LoadingIndicator,
-                                IndicatorSeparator: null,
-                            }}
                             value={selectedOption}
                         />
                     </div>

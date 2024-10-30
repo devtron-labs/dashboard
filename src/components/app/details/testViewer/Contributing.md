@@ -9,7 +9,7 @@ When any pipeline is selected, route is changed to /tests/pipelineId and testsfi
 
 Triggerlist in testsfilter calls gettriggerlist
 
-On clicking any particular row in the table we get redirected to 
+On clicking any particular row in the table we get redirected to
 
 /appid/tests/pipelineid/triggerid. Here again testsfilter is called and it comprises of testrundetails.
 

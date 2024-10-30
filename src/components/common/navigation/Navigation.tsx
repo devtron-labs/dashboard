@@ -17,6 +17,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
+import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -31,6 +32,7 @@ import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-cod
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
 import { ReactComponent as ReleasesIcon } from '../../../assets/icons/ic-open-box.svg'
+import { ReactComponent as ICBrowser } from '../../../assets/icons/ic-browser.svg'
 // Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
@@ -47,6 +49,7 @@ import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
+const hideNetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 const NavigationList = [
     {
@@ -90,6 +93,17 @@ const NavigationList = [
         hideNav: hideSoftwareDistributionHub,
     },
     {
+        title: 'Network status interface',
+        dataTestId: 'click-on-network-status-interface',
+        type: 'link',
+        iconClass: 'scn-0',
+        icon: ICBrowser,
+        href: CommonURLS.NETWORK_STATUS_INTERFACE,
+        isAvailableInEA: true,
+        forceHideEnvKey: 'HIDE_NETWORK_STATUS_INTERFACE',
+        hideNav: hideNetworkStatusInterface,
+    },
+    {
         title: 'Resource Browser',
         dataTestId: 'click-on-resource-browser',
         type: 'link',
@@ -107,7 +121,7 @@ const NavigationList = [
         href: URLS.RESOURCE_WATCHER,
         iconClass: 'nav-resource-watcher',
         icon: ResourceWatcherIcon,
-        isAvailableInEA: true,
+        isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
         hideNav: hideResourceWatcher,
     },
@@ -246,7 +260,7 @@ export default class Navigation extends Component<
             }
         } catch (error) {
             if (retryOnError >= 0) {
-                this.getSecurityModuleStatus(retryOnError--)
+                this.getSecurityModuleStatus(--retryOnError)
             }
         }
     }

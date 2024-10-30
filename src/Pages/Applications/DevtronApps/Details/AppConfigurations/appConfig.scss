@@ -1,0 +1,265 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.app-compose {
+    display: grid;
+    grid-template-columns: 255px 1fr;
+    height: calc(100vh - 77px);
+    background: white;
+    overflow: hidden;
+
+    &.app-compose-for-env-compare {
+        grid-template-columns: 0 1fr;
+
+        & .app-compose__nav {
+            border-right: none;
+        }
+    }
+
+    .app-compose__nav {
+        padding: 16px 12px;
+        border-right: solid 1px #d6dbdf;
+        background: white;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        overflow: hidden;
+
+        &.app-compose-env-configurations__nav {
+            padding: 0;
+            display: block
+        }
+
+        &.app-compose-with-no-gitops-config__nav {
+            grid-template-rows: 110px repeat(4, 32px) 54px 1fr auto;
+
+            &.hide-app-config-help {
+                grid-template-rows: repeat(4, 32px) 54px 1fr auto;
+
+                &.hide-external-links {
+                    grid-template-rows: repeat(4, 32px) 1fr auto;
+                }
+            }
+
+            &.job-compose__side-nav {
+                grid-template-rows: 110px repeat(3, 32px) 1fr;
+
+                &.hide-app-config-help {
+                    grid-template-rows: repeat(3, 32px) 1fr;
+                }
+            }
+
+            &.config-protection__side-nav {
+                grid-template-rows: 110px repeat(4, 32px) 54px 32px 1fr auto;
+
+                &.hide-external-links {
+                    grid-template-rows: 110px repeat(4, 32px) 54px 1fr auto;
+                }
+
+                &.hide-app-config-help {
+                    grid-template-rows: repeat(4, 32px) 54px 32px 1fr auto;
+
+                    &.hide-external-links {
+                        grid-template-rows: repeat(4, 32px) 54px 1fr auto;
+                    }
+                }
+            }
+        }
+
+        &.app-compose-with-gitops-config__nav {
+            grid-template-rows: 110px repeat(5, 32px) 54px 1fr auto;
+
+            &.hide-app-config-help {
+                grid-template-rows: repeat(5, 32px) 54px 1fr auto;
+
+                &.hide-external-links {
+                    grid-template-rows: repeat(5, 32px) 1fr auto;
+                }
+            }
+
+            &.config-protection__side-nav {
+                grid-template-rows: 110px repeat(5, 32px) 54px 32px 1fr auto;
+
+                &.hide-external-links {
+                    grid-template-rows: 110px repeat(5, 32px) 54px 1fr auto;
+                }
+
+                &.hide-app-config-help {
+                    grid-template-rows: repeat(5, 32px) 54px 32px 1fr auto;
+
+                    &.hide-external-links {
+                        grid-template-rows: repeat(5, 32px) 54px 1fr auto;
+                    }
+                }
+            }
+        }
+
+        .help-container {
+            background-color: #f3f0ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            height: 100px;
+
+            .progress-container {
+                background-color: #ffffff;
+                margin: 5px 0 10px 0;
+                font-size: 12px;
+
+                .progress-tracker {
+                    background-color: #1dad70;
+                    height: 4px;
+                    width: 1%;
+                }
+            }
+
+            .font-weight-600 {
+                font-weight: 600;
+            }
+
+            .need-help {
+                color: var(--B500);
+            }
+        }
+
+        .cta-delete-app {
+            bottom: 0;
+
+            .cta.delete {
+                width: calc(100% - 8px);
+            }
+        }
+    }
+
+    .app-compose__main {
+        overflow: auto;
+        background-color: var(--window-bg);
+    }
+
+    .app-compose__nav-item {
+        font-size: 13px;
+        line-height: 32px;
+        color: var(--N700);
+        width: 100%;
+        border-radius: 4px;
+        padding: 0 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+
+        &--job {
+            max-width: 188px;
+        }
+
+        &.routes-container-header {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 32px;
+            color: var(--N600);
+        }
+
+        &:hover:not(.no-hover) {
+            text-decoration: none;
+            background: var(--N50);
+        }
+
+        &.active {
+            color: var(--B500);
+            font-weight: 600;
+            background: var(--B100);
+
+            &:hover:not(.no-hover) {
+                background: var(--B100);
+            }
+        }
+
+        .nav-text {
+            max-width: 192px;
+        }
+    }
+
+    .yaml-container {
+        border: 1px solid var(--N200);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .validation-error-block {
+        padding: 8px 16px;
+        background: var(--R100);
+        display: grid;
+        grid-template-columns: 16px 1fr;
+        grid-column-gap: 8px;
+        align-content: initial;
+        color: #f32e2e;
+        font-size: 12px;
+
+        svg {
+            height: 16px;
+            width: 16px;
+        }
+
+        white-space: pre;
+    }
+
+    .app-compose__next-section {
+        position: fixed;
+        bottom: 0;
+        width: calc(100% - 240px - 72px);
+        height: 64px;
+        padding: 12px 24px;
+        background-color: rgba(242, 244, 247, 0.8);
+        box-shadow: inset 0 1px 0 0 #d6dbdf;
+        z-index: var(--index-next-section);
+    }
+
+    .app-compose__nav-icon {
+        margin-left: auto;
+    }
+
+    .w-960 {
+        width: 960px;
+    }
+
+    .environment-routes {
+        width: 100%;
+        margin-left: 24px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 100%;
+    }
+
+    .no-env-overrides {
+        font-size: 12px !important;
+        padding: 10px 12px !important;
+    }
+
+    .environment-routes-container {
+        width: 100%;
+        height: calc(100% - 48px);
+        overflow: hidden;
+
+        & > .app-compose__nav-item {
+            height: 40px;
+            line-height: 40px;
+            width: 100%;
+        }
+    }
+
+    .repo-configured-icon {
+        width: 96px;
+    }
+}

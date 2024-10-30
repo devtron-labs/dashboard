@@ -58,32 +58,31 @@ export interface ResourceDetail {
     requestPercentage: string
     limitPercentage: string
 }
-export interface ClusterCapacityType {
-    nodeK8sVersions: string[]
-    nodeErrors: Record<string, string>[]
-    cpu: ResourceDetail
-    memory: ResourceDetail
-}
 
 export interface NodeDetailsType {
     nodeName: string
     nodeGroup: string
     taints?: NodeTaintType[]
 }
-export interface ClusterDetail {
-    id: number
+
+export interface ClusterCapacityType {
     name: string
     nodeCount: number
-    nodeErrors: Record<string, string>[]
-    errorInNodeListing: string
     nodeK8sVersions: string[]
     cpu: ResourceDetail
     memory: ResourceDetail
     serverVersion: string
-    nodeNames?: string[]
     nodeDetails?: NodeDetailsType[]
+    nodeErrors: Record<string, string>[]
+}
+
+export interface ClusterDetail extends ClusterCapacityType {
+    id: number
+    errorInNodeListing: string
+    nodeNames?: string[]
     isVirtualCluster?: boolean
 }
+
 export interface ClusterDescriptionType {
     clusterId: number
     clusterName: string
@@ -93,6 +92,7 @@ export interface ClusterDescriptionType {
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
 }
+
 export interface ClusterNoteType {
     id: number
     description: string
@@ -193,6 +193,7 @@ export interface ClusterListType {
     isSuperAdmin: boolean
     k8SObjectMapRaw: ApiResourceGroupType[]
     addTab?: ReturnType<typeof useTabs>['addTab']
+    updateTabUrl: (url: string) => void
 }
 
 export interface ClusterAboutPropType {

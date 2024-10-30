@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams, useHistory, RouteComponentProps } from 'react-router'
+import { useParams, useHistory, RouteComponentProps } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -25,8 +25,10 @@ import {
     DeleteDialog,
     GenericEmptyState,
     PageHeader,
+    SearchBar,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
@@ -108,8 +110,11 @@ export default function SavedValuesList() {
 
     const deleteChartValue = () => {
         deleteChartValues(selectedValue.id)
-            .then((response) => {
-                toast.success('Deleted successfully')
+            .then(() => {
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted successfully',
+                })
                 getData()
             })
             .catch((error) => {
@@ -134,43 +139,23 @@ export default function SavedValuesList() {
         setSearchText('')
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setSearchText(_searchText)
+        handleFilterChanges(_searchText)
     }
-    const renderSearch = (): JSX.Element => {
-        return (
-            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search"
-                    value={searchText}
-                    className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
-                    onKeyDown={handleFilterKeyPress}
-                    data-testid="preset-value-search-box"
-                />
-                {searchApplied && (
-                    <button
-                        className="search__clear-button"
-                        type="button"
-                        onClick={clearSearch}
-                        data-testid="preset-values-search-close-button"
-                    >
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
-        )
-    }
+
+    const renderSearchText = (): JSX.Element => (
+        <SearchBar
+            initialSearchText={searchText}
+            containerClassName="w-250 br-4"
+            handleEnter={handleFilterKeyPress}
+            inputProps={{
+                placeholder: 'Search',
+                autoFocus: true,
+            }}
+            dataTestId="preset-value-search-box"
+        />
+    )
 
     const renderDeleteDialog = (): JSX.Element => {
         return (
@@ -227,7 +212,7 @@ export default function SavedValuesList() {
                 </p>
                 <div className="flexbox dc__content-space">
                     {renderUploadButton()}
-                    {renderSearch()}
+                    {renderSearchText()}
                 </div>
             </>
         )
@@ -391,9 +376,7 @@ export default function SavedValuesList() {
     if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                />
+                <ErrorScreenManager code={errorStatusCode} />
             </div>
         )
     }

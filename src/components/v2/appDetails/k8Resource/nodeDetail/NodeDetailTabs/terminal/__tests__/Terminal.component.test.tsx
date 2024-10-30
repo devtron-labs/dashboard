@@ -51,7 +51,7 @@ describe('TerminalView', () => {
                     clearTerminal={false}
                     renderConnectionStrip={jest.fn()}
                 />,
-            )
+            ),
         )
         await waitFor(() => {
             expect(container).toBeInTheDocument()

@@ -17,7 +17,7 @@
 import React from 'react'
 import Select, { components } from 'react-select'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
+import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { Option } from '../../../v2/common/ReactSelect.utils'
 import AppDetails from './AppDetails'
 

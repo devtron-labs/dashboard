@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef, RefObject, useLayoutEffect } from 'react'
 import {
     showError,
-    useThrottledEffect,
     OptionType,
     DeploymentAppTypes,
     APIOptions,
@@ -26,22 +25,25 @@ import {
     YAMLStringify,
     ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
+    ApiResourceGroupType,
+    PluginDetailServiceParamsType,
+    PipelineBuildStageType,
+    SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
-import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
+import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
     getAggregator as getAppDetailsAggregator,
     AggregationKeys,
     NodeType,
 } from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
@@ -67,6 +69,9 @@ export function validateEmail(email) {
     return result
 }
 
+/**
+ * @deprecated use `useForm` from fe-common-lib.
+ */
 export function useForm(stateSchema, validationSchema = {}, callback) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)
@@ -220,6 +225,9 @@ export function useWhyDidYouUpdate(name, props) {
     })
 }
 
+/**
+ * @deprecated - Use from fe-common-lib
+ */
 export const useIntersection = (
     target: React.RefObject<Element> | Element | null,
     options: IntersectionOptions = {},
@@ -402,115 +410,6 @@ export function useOnline() {
     }, [])
 
     return online
-}
-
-interface scrollableInterface {
-    autoBottomScroll: boolean
-}
-
-/**
- * @deprecated
- */
-export function useScrollable(options: scrollableInterface) {
-    const targetRef = useRef(null)
-    const raf_id = useRef(0)
-    const wheelListener = useRef(null)
-    const [scrollHeight, setScrollHeight] = useState(0)
-    const [scrollTop, setScrollTop] = useState(0)
-    const [autoBottom, toggleAutoBottom] = useState(false)
-
-    const target = useCallback((node) => {
-        if (node === null) {
-            return
-        }
-        targetRef.current = node
-        wheelListener.current = node.addEventListener('wheel', handleWheel)
-        raf_id.current = requestAnimationFrame(rAFCallback)
-        return () => {
-            node.removeEventListener('wheel', handleWheel)
-            cancelAnimationFrame(raf_id.current)
-        }
-    }, [])
-
-    function handleWheel(e) {
-        if (e.deltaY < 0) {
-            toggleAutoBottom(false)
-        }
-    }
-
-    const [topScrollable, bottomScrollable] = useMemo(() => {
-        if (!targetRef.current) {
-            return [false, false]
-        }
-
-        let topScrollable = true
-        const bottomScrollable = !(
-            targetRef.current.scrollHeight - targetRef.current.scrollTop ===
-            targetRef.current.clientHeight
-        )
-        if (scrollTop === 0) {
-            topScrollable = false
-        }
-
-        if (!bottomScrollable && options.autoBottomScroll) {
-            toggleAutoBottom(true)
-        }
-        return [topScrollable, bottomScrollable]
-    }, [scrollHeight, scrollTop])
-
-    useEffect(() => {
-        if (options.autoBottomScroll) {
-            toggleAutoBottom(true)
-        } else {
-            toggleAutoBottom(false)
-        }
-    }, [options.autoBottomScroll])
-
-    useThrottledEffect(
-        () => {
-            if (!autoBottom || !targetRef.current) {
-                return
-            }
-            targetRef.current.scrollBy({
-                top: scrollHeight,
-                left: 0,
-            })
-        },
-        500,
-        [scrollHeight, autoBottom],
-    )
-
-    function scrollToTop(e) {
-        targetRef.current.scrollBy({
-            top: -1 * scrollTop,
-            left: 0,
-            behavior: 'smooth',
-        })
-        if (options.autoBottomScroll) {
-            toggleAutoBottom(false)
-        }
-    }
-
-    function scrollToBottom(e) {
-        toggleAutoBottom(true)
-        targetRef.current.scrollBy({
-            top: scrollHeight,
-            left: 0,
-            behavior: 'smooth',
-        })
-    }
-
-    function rAFCallback() {
-        if (!targetRef.current) {
-            return
-        }
-
-        setScrollHeight(targetRef.current.scrollHeight)
-        setScrollTop(targetRef.current.scrollTop)
-        raf_id.current = requestAnimationFrame(rAFCallback)
-    }
-
-    return [target, topScrollable ? scrollToTop : null, bottomScrollable ? scrollToBottom : null]
 }
 
 /**
@@ -859,6 +758,10 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
 }
 
 export const filterImageList = (imageList: ClusterImageList[], serverVersion: string): ImageList[] => {
+    if (!imageList) {
+        return []
+    }
+
     let nodeImageList = imageList.find((imageObj) => {
         const regex = new RegExp(imageObj.groupRegex)
         return regex.test(serverVersion)
@@ -877,6 +780,7 @@ export const convertToOptionsList = (
     arr: any[],
     customLabel?: string,
     customValue?: string,
+    customDescription?: string,
     customFieldKey?: string,
 ): OptionType[] => {
     if (!Array.isArray(arr) || !arr) {
@@ -886,6 +790,7 @@ export const convertToOptionsList = (
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
+            description: customDescription ? ele[customDescription] : '',
         }
 
         if (customFieldKey) {
@@ -896,7 +801,7 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
     try {
         let component = defaultComponent || null
         if (!module) {
@@ -961,16 +866,16 @@ export const processK8SObjects = (
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
     let _selectedResource: ApiResourceGroupType
-    const isShowNamespace = false
-    const isShowEvent = false
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
             ? element.gvk.Group
             : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
 
+        const shortNames = element.shortNames?.map((name) => name.toLowerCase()) ?? null
+        const k8sObject = { namespaced: element.namespaced, gvk: { ...element.gvk }, shortNames }
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-            _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
+            _selectedResource = structuredClone(k8sObject)
         }
         const currentData = _k8SObjectMap.get(groupParent)
         if (!currentData) {
@@ -980,10 +885,10 @@ export const processK8SObjects = (
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind,
-                child: [{ namespaced: element.namespaced, gvk: element.gvk }],
+                child: [k8sObject],
             })
         } else {
-            currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
+            currentData.child = [...currentData.child, k8sObject]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
                 currentData.isExpanded =
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
@@ -992,9 +897,11 @@ export const processK8SObjects = (
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.events = shortNames
             SIDEBAR_KEYS.eventGVK = { ...element.gvk }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.namespaces = shortNames
             SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
         }
     }
@@ -1140,16 +1047,6 @@ export const reloadLocation = () => {
     window.location.reload()
 }
 
-export const reloadToastBody = () => {
-    return (
-        <UpdateToast
-            onClick={reloadLocation}
-            text="You are viewing an outdated version of Devtron UI."
-            buttonText="Reload"
-        />
-    )
-}
-
 /**
  * @deprecated
  */
@@ -1256,6 +1153,22 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     return className
 }
 
+export const getPluginIdsFromBuildStage = (
+    stage: PipelineBuildStageType,
+): PluginDetailServiceParamsType['pluginIds'] => {
+    if (!stage?.steps?.length) {
+        return []
+    }
+
+    const pluginIds = []
+    stage.steps.forEach((step) => {
+        if (step.pluginRefStepDetail?.pluginId) {
+            pluginIds.push(step.pluginRefStepDetail.pluginId)
+        }
+    })
+
+    return pluginIds
+}
 // Should contain git-codecommit.*.amazonaws.com
 export const isAWSCodeCommitURL = (url: string = ''): boolean => {
     return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
@@ -1279,4 +1192,33 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     return <Git className="dc__vertical-align-middle icon-dim-20" />
+}
+
+export const getSeverityWithCount = (severityCount: SeverityCount) => {
+    if (severityCount.critical) {
+        return (
+            <span className="severity-chip severity-chip--critical dc__w-fit-content">
+                {severityCount.critical} Critical
+            </span>
+        )
+    }
+    if (severityCount.high) {
+        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
+    }
+    if (severityCount.medium) {
+        return (
+            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
+        )
+    }
+    if (severityCount.low) {
+        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
+    }
+    if (severityCount.unknown) {
+        return (
+            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
+                {severityCount.unknown} Unknown
+            </span>
+        )
+    }
+    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }

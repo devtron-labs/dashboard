@@ -169,7 +169,8 @@
     background-color: transparent;
 }
 
-.command__input:focus, .command__input:hover {
+.command__input:focus,
+.command__input:hover {
     outline: none;
 }
 

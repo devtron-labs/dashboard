@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
-
-export interface AppListState {
-    code: number
-    view: string
-    errors: ServerError[]
-    apps: App[]
-    showCommandBar: boolean
-    sortRule: {
-        key: string
-        order: string
-    }
-    size: number
-    offset: number
-    pageSize: number
-    expandedRow: Record<number, boolean>
-    isAllExpanded: boolean
-    isAllExpandable: boolean
-}
+import {
+    AppType,
+    EnvironmentListHelmResult,
+    EnvListMinDTO,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
 
 export interface App {
     id: number
@@ -65,79 +51,18 @@ export interface Environment {
     isVirtualEnvironment?: boolean
 }
 
-export interface EnvironmentClusterList {
-    environmentClusterAppListData: any
-}
-
-export interface AppListProps extends RouteComponentProps<{ route: string }> {
-    payloadParsedFromUrl?: any
-    serverMode?: string
+export interface DevtronAppListProps
+    extends Pick<UseUrlFiltersReturnType<AppListSortableKeys>, 'changePage' | 'changePageSize' | 'handleSorting'> {
+    filterConfig: AppListFilterConfig
+    appFiltersResponseLoading: boolean
+    environmentList: EnvListMinDTO[]
+    namespaceList: EnvironmentListHelmResult[]
+    isArgoInstalled: boolean
+    syncListData: boolean
+    updateDataSyncing: (loading: boolean) => void
     clearAllFilters: () => void
-    sortApplicationList: (key: string) => void
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-    setAppCount: React.Dispatch<React.SetStateAction<number>>
-    updateDataSyncing: (loading: boolean) => void
-    isArgoInstalled: boolean
-    environmentClusterList: EnvironmentClusterList
     setCurrentAppName: (appName: string) => void
-}
-
-export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-    expandRow: (id: number | null) => void
-    closeExpandedRow: (id: number | null) => void
-    sort: (key: string) => void
-    handleEditApp: (appId: number) => void
-    redirectToAppDetails: (app, envId: number) => string
-    clearAll: () => void
-    changePage: (pageNo: number) => void
-    changePageSize: (size: number) => void
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-    updateDataSyncing: (loading: boolean) => void
-    toggleExpandAllRow: () => void
-    isArgoInstalled: boolean
-}
-
-export interface AppListResponse {
-    appId: number
-    appName: string
-    environments: AppListEnvironmentResponse
-}
-
-export interface AppListEnvironmentResponse {
-    appId: number
-    appName: string
-    environmentId: number
-    environmentName: string
-    deploymentCounter?: number
-    instanceCounter?: number
-    status?: string
-    lastDeployedTime?: string
-    namespace?: string
-    prometheusEndpoint?: string
-    default?: boolean
-    lastSuccessDeploymentDetail?: DeploymentDetailContainerResponse
-}
-
-export interface DeploymentDetailContainerResponse {
-    appId: number
-    appName: string
-    environmentId: number
-    environmentName: string
-    statusMessage?: string
-    LastDeployedBy?: string
-    status?: string
-    lastDeployedTime?: string
-    namespace?: string
-    prometheusEndpoint?: string
-    default?: boolean
-    materialInfo?: any
-    releaseVersion?: string
-    dataSource?: string
-    lastDeployedPipeline?: string
+    setAppCount: (appCount: number) => void
 }
 
 export const OrderBy = {
@@ -147,14 +72,9 @@ export const OrderBy = {
 
 export const SortBy = {
     APP_NAME: 'appNameSort',
-    LAST_DEPLOYED: 'lastDeployedSort',
-    STATUS: 'statusSort',
-    ENVIRONMENT: 'environmentSort',
 }
 
 export interface AppListPropType {
-    isSuperAdmin: boolean
-    appListCount: number
     isArgoInstalled: boolean
 }
 
@@ -163,7 +83,8 @@ export interface TriggerURL {
     envId: string
     installedAppId?: string
     close: () => void
-    isEAMode?: boolean
+    isExternalApp?: boolean
+    appType: AppType
 }
 
 export interface ManifestUrlList {
@@ -173,9 +94,15 @@ export interface ManifestUrlList {
     urls: string[]
 }
 
-export interface CopyToClipboardTextProps {
-    text: string
-    rootClassName?: string
-    iconClass?: string
-    placement?: 'top' | 'bottom' | 'left' | 'right'
+export interface GetEnvironmentsFromClusterNamespaceProps {
+    selectedClusterIds: number[]
+    selectedNamespaces: string[]
+    environmentList: EnvListMinDTO[]
+    namespaceList: EnvironmentListHelmResult[]
+}
+
+export interface DevtronAppExpandedState {
+    expandedRow: Record<number, boolean>
+    isAllExpanded: boolean
+    isAllExpandable: boolean
 }

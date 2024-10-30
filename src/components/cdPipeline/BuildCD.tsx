@@ -25,24 +25,24 @@ import {
     TippyTheme,
     YAMLStringify,
     CodeEditor,
+    UserApprovalConfigType,
+    Environment,
+    ReleaseMode,
+    SelectPicker,
+    CDFormType,
+    ToastVariantType,
+    ToastManager,
+    ComponentSizeType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import yamlJsParser from 'yaml'
-import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
-import { Environment, GeneratedHelmPush } from './cdPipeline.types'
+import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, TriggerType, URLS, ViewType } from '../../config'
+import { GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedTextDescription,
-    GroupHeading,
-    groupStyle,
-} from '../v2/common/ReactSelect.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
@@ -50,19 +50,32 @@ import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { styles, Option } from './cdpipeline.util'
+import { getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
+import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
+import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const ManualApproval = importComponentFromFELibrary('ManualApproval')
+const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
+const validateUserApprovalConfig: (
+    userApprovalConfig: UserApprovalConfigType,
+) => PipelineFormDataErrorType['userApprovalConfig'] = importComponentFromFELibrary(
+    'validateUserApprovalConfig',
+    () => ({
+        isValid: true,
+    }),
+    'function',
+)
+const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -75,6 +88,7 @@ export default function BuildCD({
     envIds,
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
+    releaseMode,
 }) {
     const {
         formData,
@@ -135,8 +149,8 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const selectEnvironment = (selection: Environment): void => {
-        const _form = { ...formData }
+    const selectEnvironment = (selection: EnvironmentWithSelectPickerType): void => {
+        const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
         if (selection) {
@@ -218,7 +232,7 @@ export default function BuildCD({
         )
     }
 
-    const renderWebhookWarning = () => {
+    const renderWebhookInfo = () => {
         return (
             <InfoColourBar
                 message={
@@ -321,7 +335,10 @@ export default function BuildCD({
         formDataError.containerRegistryError = validationRules.containerRegistry(
             selectedRegistry.id || formData.containerRegistryName,
         )
-        form.selectedRegistry = selectedRegistry
+        form.selectedRegistry = { ...selectedRegistry,
+            value: selectedRegistry.id,
+            label: selectedRegistry.id,
+        } as RegistryPayloadWithSelectType
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
@@ -347,7 +364,7 @@ export default function BuildCD({
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] =YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
+        selection['yamlStr'] = YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
             indent: 2,
         })
         selection['isCollapsed'] = true
@@ -357,25 +374,15 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderEnvNamespaceAndTriggerType = () => {
+    const renderEnvSelector = () => {
         const envId = formData.environmentId
-        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        const namespaceEditable = false
+        const _environment = formData.environments.find((env) => env.id == envId)
+        const selectedEnv: EnvironmentWithSelectPickerType = _environment &&{
+            ..._environment,
+            label: _environment.name,
+            value: _environment.id.toString(),
+        }
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
-
-        const groupHeading = (props) => {
-            return <GroupHeading {...props} />
-        }
-
-        const getNamespaceplaceholder = (): string => {
-            if (isVirtualEnvironment) {
-                if (formData.namespace) {
-                    return 'Will be auto-populated based on environment'
-                }
-                return 'Not available'
-            }
-            return 'Will be auto-populated based on environment'
-        }
 
         const renderVirtualEnvironmentInfo = () => {
             if (isVirtualEnvironment && VirtualEnvSelectionInfoText) {
@@ -383,13 +390,61 @@ export default function BuildCD({
             }
         }
 
-        const singleOption = (props) => {
-            return <EnvFormatOptions {...props} environmentfieldName="name" />
-        }
+        const getEnvListOptions = () =>
+            envList.map((_elm) => ({
+                label: `Cluster: ${_elm.label}`,
+                options: _elm.options.map((_option) => ({
+                    ..._option,
+                    label: _option?.name,
+                    value: _option?.id.toString(),
+                })),
+            }))
 
-        const handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
-            return formatHighlightedTextDescription(opt, inputValue, 'name')
-        }
+        return (
+            <>
+                <SelectPicker
+                    label="Environment"
+                    required
+                    inputId="environment"
+                    menuPosition={isAdvanced ? null : 'fixed'}
+                    isDisabled={!!cdPipelineId}
+                    classNamePrefix="cd-pipeline-environment-dropdown"
+                    placeholder="Select Environment"
+                    autoFocus
+                    options={
+                        releaseMode === ReleaseMode.MIGRATE_HELM
+                            ? getEnvListOptions().filter((env) =>
+                                  env.options.filter((_env) => !_env.isVirtualEnvironment),
+                              )
+                            : getEnvListOptions()
+                    }
+                    value={selectedEnv}
+                    getOptionValue={(option) => option.value as unknown as string}
+                    onChange={selectEnvironment}
+                    size={ComponentSizeType.large}
+                />
+                {isEnvUsedState && (
+                    <span className="form__error">
+                        <img src={error} className="form__icon" />
+                        {ENV_ALREADY_EXIST_ERROR}
+                    </span>
+                )}
+                {!formDataErrorObj.envNameError.isValid ? (
+                    <span className="form__error">
+                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                        {formDataErrorObj.envNameError.message}
+                    </span>
+                ) : null}
+                {renderVirtualEnvironmentInfo()}
+            </>
+        )
+    }
+
+    const renderEnvNamespaceAndTriggerType = () => {
+        const envId = formData.environmentId
+        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
+        const namespaceEditable = false
+
         const isHelmEnforced =
             formData.allowedDeploymentTypes.length === 1 &&
             formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
@@ -404,51 +459,13 @@ export default function BuildCD({
         return (
             <>
                 <div className="form__row form__row--flex mt-12">
-                    <div className="w-50 mr-8">
-                        <div className="form__label dc__required-field">Environment</div>
-                        <ReactSelect
-                            menuPosition={isAdvanced ? null : 'fixed'}
-                            closeMenuOnScroll
-                            isDisabled={!!cdPipelineId}
-                            classNamePrefix="cd-pipeline-environment-dropdown"
-                            placeholder="Select Environment"
-                            options={envList}
-                            value={selectedEnv}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            isMulti={false}
-                            onChange={(selected: any) => selectEnvironment(selected)}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                SingleValue: singleOption,
-                                GroupHeading: groupHeading,
-                            }}
-                            styles={{
-                                ...groupStyle(),
-                                control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
-                            }}
-                            formatOptionLabel={handleFormatHighlightedText}
-                        />
-                        {isEnvUsedState && (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {ENV_ALREADY_EXIST_ERROR}
-                            </span>
-                        )}
-                        {!formDataErrorObj.envNameError.isValid ? (
-                            <span className="form__error">
-                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                {formDataErrorObj.envNameError.message}
-                            </span>
-                        ) : null}
-                        {renderVirtualEnvironmentInfo()}
-                    </div>
+                    <div className="w-50 mr-8">{renderEnvSelector()}</div>
                     <div className="flex-1 ml-8">
                         <CustomInput
                             name="namespace"
+                            rootClassName="h-36"
                             label="Namespace"
-                            placeholder={getNamespaceplaceholder()}
+                            placeholder={getNamespacePlaceholder(isVirtualEnvironment, formData.namespace)}
                             data-testid="cd-pipeline-namespace-textbox"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
@@ -512,7 +529,10 @@ export default function BuildCD({
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
-            toast.error('Cannot remove default strategy')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Cannot remove default strategy',
+            })
             return
         }
         const savedStrategies = _form.savedStrategies.filter(
@@ -572,10 +592,15 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const onChangeRequiredApprovals = (requiredCount: string): void => {
-        const _form = { ...formData }
-        _form.requiredApprovals = requiredCount
+    const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
+        const _form = structuredClone(formData)
+        const _formDataErrorObj = structuredClone(formDataErrorObj)
+
+        _form.userApprovalConfig = updatedUserApprovalConfig
+        _formDataErrorObj.userApprovalConfig = validateUserApprovalConfig(updatedUserApprovalConfig)
+
         setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderDeploymentAppType = () => {
@@ -620,7 +645,7 @@ export default function BuildCD({
         )
     }
 
-    const renderBasicDeploymentStartegy = () => {
+    const renderBasicDeploymentStrategy = () => {
         const strategyMenu = Object.keys(allStrategies.current).map((option) => {
             return { label: option, value: option }
         })
@@ -635,33 +660,24 @@ export default function BuildCD({
             <>
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
-                <ReactSelect
-                    menuPosition="fixed"
-                    closeMenuOnScroll
+                <SelectPicker
                     classNamePrefix="deployment-strategy-dropdown"
-                    isSearchable={false}
-                    isClearable={false}
-                    isMulti={false}
+                    inputId="deployment-strategy-dropdown"
+                    name="deployment-strategy-dropdown"
                     placeholder="Select Strategy"
                     options={strategyMenu}
                     value={strategy}
                     onChange={(selected: any) => {
                         handleStrategy(selected.value)
                     }}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    styles={{ ...styles }}
                 />
-                {isWebhookCD && !parentPipelineId && renderWebhookWarning()}
+                {isWebhookCD && !parentPipelineId ? renderWebhookInfo() : null}
             </>
         )
     }
 
-    const renderDeploymentStrategy = () => {
-        if (noStrategyAvailable.current) {
+    const renderAdvancedDeploymentStrategy = () => {
+        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_HELM) {
             return null
         }
 
@@ -708,7 +724,7 @@ export default function BuildCD({
                                     ) : (
                                         <span
                                             className="set-as-default"
-                                            onClick={(event) => setDefaultStrategy(strategy.deploymentTemplate)}
+                                            onClick={() => setDefaultStrategy(strategy.deploymentTemplate)}
                                         >
                                             Set Default
                                         </span>
@@ -738,7 +754,7 @@ export default function BuildCD({
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
                                         height={300}
-                                        value={strategy.jsonStr}
+                                        value={strategy.yamlStr}
                                         mode="yaml"
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
@@ -758,26 +774,30 @@ export default function BuildCD({
     const renderBuild = () => {
         return (
             <>
+                {isAdvanced && formData.releaseMode === ReleaseMode.MIGRATE_HELM && (
+                    <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
+                        <ICInfo className="dc__no-shrink icon-dim-20" />
+                        <span className="fs=13 fw-4 lh-20 cn-9">
+                            This deployment pipeline was linked to helm release: {formData.deploymentAppName}
+                        </span>
+                    </div>
+                )}
                 {isAdvanced && renderPipelineNameInput()}
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
-
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
-                {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
-                {isAdvanced && ManualApproval && (
-                    <>
-                        <div className="divider mt-12 mb-12" />
-                        <ManualApproval
-                            requiredApprovals={formData.requiredApprovals}
-                            currentRequiredCount={formData.userApprovalConfig?.requiredCount}
-                            onChangeRequiredApprovals={onChangeRequiredApprovals}
-                        />
-                    </>
-                )}
+                {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
+                {isAdvanced &&
+                    getBuildCDManualApproval &&
+                    getBuildCDManualApproval(
+                        formData.userApprovalConfig,
+                        formDataErrorObj.userApprovalConfig,
+                        handleUpdateUserApprovalConfig,
+                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags
@@ -802,6 +822,17 @@ export default function BuildCD({
             <Progressing pageLoader />
         </div>
     ) : (
-        <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
+        <div className="cd-pipeline-body p-20 ci-scrollable-content">
+            {releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced ? (
+                <MigrateHelmReleaseBody
+                    renderTriggerType={renderTriggerType}
+                    formData={formData}
+                    setFormData={setFormData}
+                    renderEnvSelector={renderEnvSelector}
+                />
+            ) : (
+                renderBuild()
+            )}
+        </div>
     )
 }

@@ -35,22 +35,8 @@
 
     .zoom {
         position: absolute;
-        top: 200px;
-        right: 32px;
-        transition: top 0.3s;
-        padding: 6px;
-        width: 36px;
-        height: 36px;
-        border-radius: 4px;
-        box-shadow:
-            0 0 4px 0 rgba(0, 10, 20, 0.5),
-            0 0 4px 0 rgba(0, 10, 20, 0.5);
-        background-color: #2c3354;
-        opacity: 0.8;
-
-        &:hover {
-            opacity: 1;
-        }
+        bottom: 12px;
+        right: 12px;
     }
 
     .ci-details__history {
@@ -71,33 +57,16 @@
         position: relative;
         overflow: hidden;
 
-        .trigger-details-container {
-            height: 180px;
+        .trigger-details {
             transition: height 0.3s;
 
-            .trigger-details {
-                height: 137px;
-                display: grid;
-                grid-template-columns: 60px 1fr;
-
-                .trigger-details__summary {
-                    display: grid;
-                    grid-template-rows: 1fr 1fr;
-
-                    .inprogress-status-color {
-                        color: var(--inprogress-orange);
-                    }
-                }
+            &__grid {
+                grid-template-columns: 50px 1fr;
             }
-            &.with-trigger-metadata {
-                height: 198px;
-                transition: height 0.3s;
 
-                .trigger-details {
-                    height: 168px;
-                    .trigger-details__summary {
-                        grid-template-rows: 1fr 70px;
-                    }
+            .trigger-details__summary {
+                .inprogress-status-color {
+                    color: var(--inprogress-orange);
                 }
             }
         }
@@ -121,16 +90,11 @@
             flex-basis: 100%;
             transition: flex-basis 0.3s;
 
-            .trigger-details-container {
+            .trigger-details {
                 overflow: hidden;
                 height: 0px;
                 transition: height 0.3s;
             }
-        }
-
-        .zoom {
-            top: 30px;
-            transition: top 0.3s;
         }
     }
 }
@@ -143,8 +107,6 @@
 
 .trigger-outputs-container {
     width: 100%;
-    overflow: auto;
-    height: 100%;
     background: var(--window-bg);
 
     .hover-trigger {
@@ -378,47 +340,6 @@
     width: 100%;
     min-width: 400px;
     margin-top: 16px;
-}
-
-.security-scan-table__header {
-    border-bottom: 1px solid var(--N200);
-    cursor: default;
-}
-
-.security-scan-table__row {
-    border-bottom: solid 1px #f5f5f5;
-}
-
-.security-scan-table__title {
-    padding: 11px 24px;
-    width: 20%;
-    font-weight: 600;
-    text-transform: uppercase;
-    line-height: 18px;
-    border-collapse: collapse;
-    color: var(--N500);
-    font-size: 12px;
-}
-
-.security-scan-table__pl {
-    padding-left: 24px;
-}
-
-.security-scan-table__data {
-    padding: 11px 24px;
-    line-height: 20px;
-    font-size: 12px;
-    color: var(--N900);
-}
-
-.security-scan-table__cve {
-    width: 25%;
-    text-transform: uppercase;
-    padding-left: 24px;
-}
-
-.security-scan-table--w-18 {
-    width: 18%;
 }
 
 .git-commit-info__grid {

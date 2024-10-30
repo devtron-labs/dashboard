@@ -36,3 +36,9 @@ playwright/.auth/
 .npmrc
 
 package-lock.json
+
+*storybook.log
+storybook-static
+
+.yalc
+yalc.lock

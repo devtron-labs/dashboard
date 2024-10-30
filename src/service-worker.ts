@@ -56,9 +56,8 @@ registerRoute(navigationRoute)
 // stale-while-revalidate strategy. This route will be unaffected
 // by navigation preload.
 const staticAssetsRoute = new Route(
-    ({ request, url }) => {
-        return ['image', 'script', 'style'].includes(request.destination) && url.pathname.includes('/dashboard/assets/')
-    },
+    ({ request, url }) =>
+        ['image', 'script', 'style'].includes(request.destination) && url.pathname.includes('/dashboard/assets/'),
     new StaleWhileRevalidate({
         cacheName: 'static-assets',
     }),

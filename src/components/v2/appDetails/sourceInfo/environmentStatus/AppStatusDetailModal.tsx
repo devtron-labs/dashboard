@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import IndexStore from '../../index.store'
 import { AggregatedNodes } from '../../../../app/types'
@@ -22,7 +22,13 @@ import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES } from '../../../../../config'
 import { AppStatusDetailType } from '../../appDetails.type'
 import { STATUS_SORTING_ORDER } from './constants'
-import { Drawer, AppStatusDetailsChart, ErrorBar, aggregateNodes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Drawer,
+    AppStatusDetailsChart,
+    ErrorBar,
+    aggregateNodes,
+    stopPropagation,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusDetailModal = ({
     close,
@@ -31,6 +37,7 @@ const AppStatusDetailModal = ({
     appStatus,
     appStatusText,
     showFooter,
+    showConfigDriftInfo = false,
 }: AppStatusDetailType) => {
     const _appDetails = IndexStore.getAppDetails()
 
@@ -53,29 +60,17 @@ const AppStatusDetailModal = ({
             )
         })
     }
-    const appStatusDetailRef = useRef<HTMLDivElement>(null)
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof close === 'function') {
-            evt.preventDefault()
-            close()
-        }
-    }
     const [showSeeMore, setShowSeeMore] = useState(true)
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
-    if (
-        ['progressing', 'degraded'].includes(
-            _appDetails?.resourceTree?.status?.toLowerCase() || _appDetails?.appStatus?.toLowerCase(),
-        ) &&
-        Array.isArray(conditions) &&
-        conditions.length > 0 &&
-        conditions[0].message
-    ) {
+    if (Array.isArray(conditions) && conditions.length > 0 && conditions[0].message) {
         message = conditions[0].message
     } else if (Rollout?.health?.message) {
         message = Rollout.health.message
+    } else if (_appDetails.FluxAppStatusDetail) {
+        message = _appDetails.FluxAppStatusDetail.message
     }
 
     function handleShowMoreButton() {
@@ -92,33 +87,9 @@ const AppStatusDetailModal = ({
         )
     }
 
-    const outsideClickHandler = (evt): void => {
-        if (
-            appStatusDetailRef.current &&
-            !appStatusDetailRef.current.contains(evt.target) &&
-            typeof close === 'function'
-        ) {
-            close()
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
-
     return (
-        <Drawer position="right" width="1024px">
-            <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
+        <Drawer position="right" width="1024px" onClose={close}>
+            <div className="app-status-detail-modal bcn-0" onClick={stopPropagation}>
                 <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div>
                         <div data-testid="app-status-details-title" className="title cn-9 fs-16 fw-6 mb-4">
@@ -130,7 +101,7 @@ const AppStatusDetailModal = ({
                                 appStatus || _appDetails.resourceTree?.status?.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase()}
+                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase() || _appDetails.appStatus}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-details-cross">
@@ -158,7 +129,11 @@ const AppStatusDetailModal = ({
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree?.status.toUpperCase()]}
                         </div>
                     )}
-                    <AppStatusDetailsChart showFooter={showFooter} />
+                    <AppStatusDetailsChart
+                        showFooter={showFooter}
+                        onClose={close}
+                        showConfigDriftInfo={showConfigDriftInfo}
+                    />
                 </div>
             </div>
         </Drawer>

@@ -16,8 +16,7 @@
 
 import React from 'react'
 import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation, Switch } from 'react-router'
-import { Route, Link } from 'react-router-dom'
+import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
 import ChartGroupCard from '../util/ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -58,7 +57,7 @@ const ChartGroupList = () => {
         )
     }
     return (
-        <div className="chart-group-list-page">
+        <div className="chart-group-list-page bcn-0">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} renderActionButtons={renderCreateGroupButton} />
             <div className="chart-group-list-page__body">
                 {loading ? (

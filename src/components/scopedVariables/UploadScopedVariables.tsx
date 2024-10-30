@@ -23,15 +23,14 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { UploadScopedVariablesProps } from './types'
 import { FileReaderStatus, ReadFileAs } from '../common/hooks/types'
 import {
-    DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
-    DEFAULT_TITLE,
     SCOPED_VARIABLES_TEMPLATE_DATA,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
     DOWNLOAD_TEMPLATE_NAME,
     DOWNLOAD_FILES_AS,
 } from './constants'
+import { HEADER_TEXT } from '@Config/constants'
 
 export default function UploadScopedVariables({
     reloadScopedVariables,
@@ -68,9 +67,9 @@ export default function UploadScopedVariables({
         <div className="flex column center bcn-0 h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
-                    <p className="cn-9 fs-16 m-0 fw-6">{DEFAULT_TITLE}</p>
+                    <p className="cn-9 fs-16 m-0 fw-6">{HEADER_TEXT.SCOPED_VARIABLES.title}</p>
                     <p className="cn-7 fs-13 m-0 fw-4 lh-20 dc__align-center dc__align-self-stretch">
-                        {DEFAULT_DESCRIPTION}
+                        {HEADER_TEXT.SCOPED_VARIABLES.description}
                     </p>
                 </div>
 

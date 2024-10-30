@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
+import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { GitProviderTabProps, GitProviderType } from '@Components/common/GitTabs/types'
 
 export type GitOpsOrganisationIdType =
     | 'gitHubOrgId'
@@ -23,17 +26,6 @@ export type GitOpsOrganisationIdType =
     | 'azureProjectName'
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
-
-export enum GitProvider {
-    GITHUB = 'GITHUB',
-    GITLAB = 'GITLAB',
-    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
-    AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-    OTHER_GIT_OPS = 'OTHER_GIT_OPS',
-}
-
-export type GitProviderType = GitProvider | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
     username: {
@@ -46,7 +38,13 @@ export interface CustomGitOpsState {
     }
 }
 
-export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
+export interface GitOpsConfig
+    extends TLSConfigDTO,
+        Pick<
+            TLSConnectionDTO,
+            'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+        >,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType
     host: string
@@ -57,9 +55,14 @@ export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' 
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
     allowCustomRepository?: boolean
+    isCADataClearedAfterInitialConfig: boolean
+    isTLSCertDataClearedAfterInitialConfig: boolean
+    isTLSKeyDataClearedAfterInitialConfig: boolean
 }
 
-export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
+export interface DefaultShortGitOpsType
+    extends Pick<GitOpsConfig, 'caData' | 'tlsCertData' | 'tlsKeyData'>,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
     host: string
     gitHubOrgId: string
     gitLabGroupId: string
@@ -156,35 +159,12 @@ export interface UserGitRepoProps {
     authMode: GitOpsAuthModeType
 }
 
-export interface GitProviderTabProps {
-    /**
-     * Currently selected tab
-     */
-    providerTab: GitProviderType
-    /**
-     * Acts as handleChange on radio tab
-     */
-    handleGitopsTab: (e) => void
-    /**
-     * Based on this would showCheck of previous selected on tab
-     */
-    lastActiveGitOp: undefined | GitOpsConfig
-    /**
-     * Value of tab to be rendered
-     */
-    provider: GitProvider
-    /**
-     * If true would disable radio tab
-     */
-    saveLoading: boolean
-    datatestid: string
-}
-
 export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'provider'> {
     rootClassName?: string
 }
 
-export interface UpdateConfirmationDialogProps extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
+export interface UpdateConfirmationDialogProps
+    extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
     handleUpdate: () => void
     handleCancel: () => void
     /**

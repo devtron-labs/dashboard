@@ -25,11 +25,9 @@ import {
     useAsync,
     useEffectAfterMount,
     PageHeader,
-    UseRegisterShortcutProvider,
     getResourceGroupListRaw,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ShortcutProvider } from 'react-keybind'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
@@ -136,6 +134,7 @@ const ResourceList = () => {
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             node && getDynamicTabData(),
             isTerminalNodeType,
+            isOverviewNodeType,
         )
         initTabs(
             _tabs,
@@ -275,6 +274,7 @@ const ResourceList = () => {
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
             <div className="resource-details-container flexbox-col">
@@ -283,11 +283,11 @@ const ResourceList = () => {
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    clusterName={selectedCluster.label}
                 />
             </div>
         )
@@ -339,7 +339,7 @@ const ResourceList = () => {
         return (
             <>
                 <div
-                    className="h-36 resource-browser-tab flex left w-100"
+                    className="h-36 resource-browser-tab flex left w-100 dc__window-bg"
                     style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
                 >
                     <DynamicTabs
@@ -372,19 +372,15 @@ const ResourceList = () => {
     }
 
     return (
-        <UseRegisterShortcutProvider>
-            <ShortcutProvider>
-                <div className="resource-browser-container h-100 bcn-0">
-                    <PageHeader
-                        isBreadcrumbs
-                        breadCrumbs={renderBreadcrumbs}
-                        headerName=""
-                        renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
-                    />
-                    {renderMainBody()}
-                </div>
-            </ShortcutProvider>
-        </UseRegisterShortcutProvider>
+        <div className="resource-browser-container h-100 bcn-0">
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderBreadcrumbs}
+                headerName=""
+                renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
+            />
+            {renderMainBody()}
+        </div>
     )
 }
 

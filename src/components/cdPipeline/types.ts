@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ChangeCIPayloadType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface CDPipelineProps {

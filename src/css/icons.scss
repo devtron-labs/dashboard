@@ -40,7 +40,7 @@
 .deployed,
 .synced,
 .sync.ok,
-.superseded ,
+.superseded,
 .deploy-success {
     background-image: url('../assets/icons/appstatus/healthy.svg');
 }
@@ -123,6 +123,7 @@
     width: 8px !important;
     height: 8px !important;
 }
+
 .icon-dim-10 {
     width: 10px;
     height: 10px;
@@ -179,8 +180,8 @@
 }
 
 .icon-dim-28 {
-  width: 28px;
-  height: 28px;
+    width: 28px;
+    height: 28px;
 }
 
 .icon-dim-30 {
@@ -291,7 +292,7 @@
 
 .icon-use-fill-n6 {
     use {
-        fill: var(--N600)
+        fill: var(--N600);
     }
 }
 
@@ -299,6 +300,32 @@
     &:hover {
         .stroke-color {
             stroke: var(--R500);
+        }
+    }
+
+    // For delete interactive icon
+    &__hover {
+        path {
+            stroke: var(--N600);
+        }
+
+        &:hover {
+            path {
+                stroke: var(--R500);
+            }
+        }
+    }
+}
+
+.dc__hover-remove-btn {
+    @extend .icon-use-fill-n6;
+
+    &:hover {
+        background: var(--R100);
+        border-radius: 2px;
+
+        svg use {
+            fill: var(--R500);
         }
     }
 }

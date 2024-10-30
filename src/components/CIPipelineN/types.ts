@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { PipelineFormType } from '../workflowEditor/types'
+import {
+    OptionType,
+    PluginDetailType,
+    StepType,
+    PipelineFormType,
+    Environment,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ExtendedOptionType } from '@Components/app/types'
 
 export enum DockerArgsAction {
     ADD = 'add_docker_arg',
@@ -46,4 +54,61 @@ export interface DockerArgsProps extends DockerArgsCommonType {
 export interface DockerArgsItemProps extends DockerArgsCommonType {
     arg: PipelineFormType['args'][number]
     index: number
+}
+
+export interface PluginDetailHeaderProps {
+    handlePluginVersionChange: (pluginId: number) => Promise<void>
+}
+
+export interface PluginVersionSelectProps extends PluginDetailHeaderProps {}
+
+export interface PluginVersionSelectOptionType extends OptionType<number, string>, Pick<PluginDetailType, 'isLatest'> {}
+export interface TaskDetailComponentParamsType {
+    appId: string
+}
+
+export interface TaskTitleProps {
+    taskDetail: StepType
+}
+
+export interface TaskTitleTippyContentProps {
+    isLatest: boolean
+    pluginVersion: string
+    pluginName: string
+    displayName: string
+}
+
+export interface SuggestedTagOptionType {
+    label: string
+    options: OptionsListType[]
+}
+
+export interface OptionsListType {
+    value: string
+    description: string
+    format: string
+    label: string
+    stageType: string
+    variableType: string
+}
+
+export interface InputPluginSelectionType {
+    selectedOutputVariable: ExtendedOptionType
+    variableOptions?: SuggestedTagOptionType[]
+    variableData?: ExtendedOptionType
+    setVariableData?: (tagData: ExtendedOptionType) => void
+    refVar?: React.MutableRefObject<HTMLTextAreaElement>
+    noBackDrop?: boolean
+    placeholder: string
+    selectedVariableIndex: number
+}
+
+export type EnvironmentWithSelectPickerType = Environment & SelectPickerOptionType
+
+export interface EnvironmentListType {
+    isBuildStage?: boolean
+    environments: EnvironmentWithSelectPickerType[]
+    selectedEnv: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
+    isBorderLess?: boolean
 }

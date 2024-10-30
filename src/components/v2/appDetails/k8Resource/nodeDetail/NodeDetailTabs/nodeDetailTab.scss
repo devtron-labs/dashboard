@@ -29,7 +29,10 @@
     top: 100px;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: height 0.25s, width 0.25s, opacity 0.25s;
+    transition:
+        height 0.25s,
+        width 0.25s,
+        opacity 0.25s;
     overflow: hidden;
     text-align: center;
     display: block;
@@ -40,7 +43,10 @@
         width: 80px;
         padding: 16px;
         opacity: 0.95;
-        transition: height 0.25s, width 0.25s, opacity 0.25s;
+        transition:
+            height 0.25s,
+            width 0.25s,
+            opacity 0.25s;
     }
 }
 
@@ -183,16 +189,10 @@
     }
 }
 
-.devtron-toast.unauthorized {
-    &:before {
-        background-image: url('../../../../assets/icons/ic-locked.svg');
-    }
-}
-
 .manifest-tabs-row {
     height: 32px;
     background-color: inherit;
-    
+
     &__position-sticky {
         position: sticky;
         top: 155px;
@@ -205,40 +205,44 @@
         fill: var(--B500);
     }
 }
+.cluster-list-main-container {
+    .code-editor-container {
+        height: 100%;
+        background: var(--N50);
+        border: 0;
+        border-radius: none;
 
-.code-editor-container {
-    height: 100%;
-    background: var(--N50);
-    border: 0;
-    border-radius: none;
-
-    .code-editor__header {
-        background-color: var(--N000);
-    }
-
-    .react-monaco-editor-container,
-    .overflow-guard {
-        height: calc(100vh - 178px) !important;
-    }
-    .monaco-editor {
-        .monaco-editor-background,
-        .margin {
-            background-color: var(--N50) !important;
+        .code-editor__header {
+            background-color: var(--N000);
         }
-        height: calc(100vh - 178px) !important;
-    }
-    .radio-group {
-        border: 1px solid var(--N200);
-        border-radius: 4px;
+
+        .react-monaco-editor-container,
+        .overflow-guard {
+            height: calc(100vh - 178px) !important;
+        }
+
+        .monaco-editor {
+
+            .monaco-editor-background,
+            .margin {
+                background-color: var(--N50) !important;
+            }
+
+            height: calc(100vh - 178px) !important;
+        }
+
+        .radio-group {
+            border: 1px solid var(--N200);
+            border-radius: 4px;
+        }
     }
 }
-
 .pod-terminal-hidden {
     visibility: hidden;
     height: 0;
     .terminal-action-strip {
         display: none;
-      }
+    }
 }
 
 .pod-terminal-hidden * {

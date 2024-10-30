@@ -26,7 +26,10 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const defaultOptions = { value: envId, label: envName }
 
     const handleFetchOptions = (inputValue: string) => {
-        return abortPreviousRequests(() => envListOptions(inputValue, abortControllerRef.current.signal), abortControllerRef)
+        return abortPreviousRequests(
+            () => envListOptions(inputValue, abortControllerRef.current.signal),
+            abortControllerRef,
+        )
     }
 
     return (

@@ -18,40 +18,38 @@ import { MultiValue } from 'react-select'
 import { OptionType } from '../../../../app/types'
 import { AppGroupListType, EnvDeploymentStatus, EnvDeploymentStatusType } from '../../../AppGroup.types'
 
-const result = (): EnvDeploymentStatus[] => {
-    return [
-        {
-            appId: 374,
-            pipelineId: 305,
-            deployStatus: 'Succeeded',
-        },
-        {
-            appId: 19,
-            pipelineId: 19,
-            deployStatus: 'Succeeded',
-        },
-        {
-            appId: 81,
-            pipelineId: 74,
-            deployStatus: 'Succeeded',
-        },
-        {
-            appId: 23,
-            pipelineId: 21,
-            deployStatus: 'Failed',
-        },
-        {
-            appId: 1,
-            pipelineId: 63,
-            deployStatus: 'Not Deployed',
-        },
-        {
-            appId: 101,
-            pipelineId: 238,
-            deployStatus: 'Not Deployed',
-        },
-    ]
-}
+const result = (): EnvDeploymentStatus[] => [
+    {
+        appId: 374,
+        pipelineId: 305,
+        deployStatus: 'Succeeded',
+    },
+    {
+        appId: 19,
+        pipelineId: 19,
+        deployStatus: 'Succeeded',
+    },
+    {
+        appId: 81,
+        pipelineId: 74,
+        deployStatus: 'Succeeded',
+    },
+    {
+        appId: 23,
+        pipelineId: 21,
+        deployStatus: 'Failed',
+    },
+    {
+        appId: 1,
+        pipelineId: 63,
+        deployStatus: 'Not Deployed',
+    },
+    {
+        appId: 101,
+        pipelineId: 238,
+        deployStatus: 'Not Deployed',
+    },
+]
 
 export const appListResult: AppGroupListType = {
     environmentId: 41,

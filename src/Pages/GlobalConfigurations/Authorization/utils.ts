@@ -19,30 +19,27 @@ import {
     BulkSelectionEvents,
     noop,
     OptionType,
+    ToastManager,
+    ToastVariantType,
     UserStatus,
     UserStatusDto,
-    ZERO_TIME_STRING,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import {
     ACCESS_TYPE_MAP,
-    Moment12HourFormat,
-    REQUIRED_FIELDS_MISSING,
-    SELECT_ALL_VALUE,
-    SERVER_MODE,
-} from '../../../config'
+    ZERO_TIME_STRING,
+    EntityTypes,
+    CustomRoleAndMeta,
+    CustomRoles,
+    MetaPossibleRoles,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import {
     APIRoleFilter,
     APIRoleFilterDto,
     CreateUserPermissionPayloadParams,
-    CustomRoleAndMeta,
-    CustomRoles,
     DirectPermissionsRoleFilter,
-    MetaPossibleRoles,
     PermissionGroup,
     PermissionGroupDto,
     User,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
@@ -51,14 +48,14 @@ import {
     CONFIG_APPROVER_ACTION,
     ARTIFACT_PROMOTER_ACTION,
     ActionTypes,
-    EntityTypes,
     PermissionType,
     ViewChartGroupPermission,
+    TERMINAL_EXEC_ACTION,
 } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive } from './libUtils'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -92,6 +89,7 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus,
         userRoleGroups,
         roleFilters,
+        userGroups,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
@@ -124,6 +122,7 @@ export const transformUserResponse = (_user: UserDto): User => {
                 },
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
+        userGroups: getParsedUserGroupList(userGroups),
     }
 }
 
@@ -237,11 +236,8 @@ export const handleToggleCheckForBulkSelection =
         )
     }
 
-const getSelectedPermissionValues = (options: OptionType[]) => {
-    return options.some((option) => option.value === SELECT_ALL_VALUE)
-        ? ''
-        : options.map((option) => option.value).join(',')
-}
+const getSelectedPermissionValues = (options: OptionType[]) =>
+    options.some((option) => option.value === SELECT_ALL_VALUE) ? '' : options.map((option) => option.value).join(',')
 
 const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
@@ -270,6 +266,9 @@ const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
     if (permission.action.artifactPromoter) {
         labels.push(ARTIFACT_PROMOTER_ACTION.value)
     }
+    if (permission.action.terminalExec) {
+        labels.push(TERMINAL_EXEC_ACTION.value)
+    }
 
     return labels.join(',')
 }
@@ -290,7 +289,7 @@ export const getRoleFilters = ({
     CreateUserPermissionPayloadParams,
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
 >) => {
-    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+    const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directPermission
             .filter(
                 (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -343,7 +342,7 @@ export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
-    userGroups,
+    userRoleGroups,
     serverMode,
     directPermission,
     chartPermission,
@@ -351,11 +350,12 @@ export const createUserPermissionPayload = ({
     permissionType,
     userStatus,
     timeToLive,
-}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    userGroups,
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    userRoleGroups: userGroups,
+    userRoleGroups,
     superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
@@ -365,6 +365,7 @@ export const createUserPermissionPayload = ({
         serverMode,
         chartPermission,
     }),
+    userGroups,
 })
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
@@ -392,7 +393,10 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     }, [])
 
     if (!isComplete) {
-        toast.error(REQUIRED_FIELDS_MISSING)
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: REQUIRED_FIELDS_MISSING,
+        })
         setDirectPermission(tempPermissions)
     }
 
@@ -400,18 +404,13 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
 }
 
 const isRoleCustom = (roleValue: string) =>
-    [CONFIG_APPROVER_ACTION.value, ARTIFACT_PROMOTER_ACTION.value].includes(roleValue)
+    [CONFIG_APPROVER_ACTION.value, ARTIFACT_PROMOTER_ACTION.value, TERMINAL_EXEC_ACTION.value].includes(roleValue)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseData(dataList: any[], entity: string, accessType?: string) {
     switch (entity) {
         case EntityTypes.DIRECT:
-            if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter(
-                    (role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && !isRoleCustom(role.value),
-                )
-            }
-            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+            return dataList.filter((role) => role.accessType === accessType && !isRoleCustom(role.value))
 
         case EntityTypes.CLUSTER:
         case EntityTypes.CHART_GROUP:

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { VulnerabilityType, Severity } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router-dom'
+import { ResponseType, Severity, SeverityCount, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SecurityPolicyClusterState {
     view: string
@@ -35,74 +34,6 @@ export interface SecurityPolicyAppState {
     appList: { id: number; name: string }[]
 }
 
-export interface ReactSelectOptionType {
-    value: string
-    label: string
-}
-
-export interface SecurityScansTabState {
-    responseCode: number
-    view: string
-    searchObject: ReactSelectOptionType
-    searchObjectValue: string
-    searchApplied: boolean
-    filters: {
-        environments: ReactSelectOptionType[]
-        clusters: ReactSelectOptionType[]
-        severity: {
-            label: string
-            value: number
-        }[]
-    }
-    filtersApplied: {
-        environments: ReactSelectOptionType[]
-        clusters: ReactSelectOptionType[]
-        severity: {
-            label: string
-            value: number
-        }[]
-    }
-    size: number
-    offset: number
-    pageSize: number
-    securityScans: SecurityScanType[]
-    uniqueId: {
-        imageScanDeployInfoId: number
-        appId: number
-        envId: number
-    }
-    name: string
-}
-
-export interface VulnerabilityExposureState {
-    view: string
-    cve: string
-    searchApplied: boolean
-    searchObjectValue: string
-    form: {
-        cve: string
-    }
-    filters: {
-        environments: ReactSelectOptionType[]
-        clusters: ReactSelectOptionType[]
-    }
-    filtersApplied: {
-        environments: ReactSelectOptionType[]
-        clusters: ReactSelectOptionType[]
-    }
-    scanList: {
-        appName: string
-        envName: string
-        appId: number
-        envId: number
-        appStore: boolean
-        policy: string
-    }[]
-    offset: number
-    pageSize: number
-    size: number
-}
-
 export interface SecurityScanType {
     name: string
     appId: number
@@ -111,52 +42,16 @@ export interface SecurityScanType {
     imageScanDeployInfoId: number
     type: string
     environment: string
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
+    severityCount: SeverityCount
 }
 
 export interface SecurityScanListResponseType {
-    responseCode: number
     result: {
         offset: number
-        size: number
+        totalCount: number
         pageSize: number
         securityScans: SecurityScanType[]
     }
-}
-
-export interface SecurityScansResponseType {
-    offset: number
-    size: number
-    pageSize: number
-    list: SecurityScanType[]
-}
-
-export interface ScanDetailsModalProps extends RouteComponentProps<{}> {
-    lastExecutionId: number
-    name: string
-    close: () => void
-}
-
-export interface ScanDetailsModalState {
-    view: string
-    scanExecutionId: number
-    appId: number
-    appName: string
-    envId: number
-    envName: string
-    pod: string
-    replicaSet: string
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    image: string
-    vulnerabilities: VulnerabilityType[]
 }
 
 export interface VulnerabilityUIMetaData {
@@ -298,4 +193,82 @@ export interface CreateVulnerabilityPolicyRequest {
 export interface FetchPolicyQueryParams {
     level: ResourceLevel
     id?: number
+}
+
+export enum VulnerabilityExposureFilterKeys {
+    environment = 'environment',
+    cluster = 'cluster',
+}
+
+export enum VulnerabilityExposureSearchParams {
+    cveName = 'cveName',
+}
+
+export interface VulnerabilityExposureUrlFiltersType
+    extends Record<VulnerabilityExposureFilterKeys, string[]>,
+        Record<VulnerabilityExposureSearchParams, string> {}
+
+export interface ExposureListContainerProps {
+    urlFilters: UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>
+}
+
+interface VulnerabilityCVE {
+    appName: string
+    envName: string
+    policy: string
+}
+
+export interface CVEControlList {
+    totalCount: number
+    scanList: VulnerabilityCVE[]
+}
+
+export interface CVEControlListPayload {
+    offset: number
+    size: number
+    cveName: string
+    appName: string
+    clusterIds: number[]
+    envIds: number[]
+}
+
+export interface ExposureListProps
+    extends Pick<
+        UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>,
+        'offset' | 'pageSize' | 'changePage' | 'changePageSize'
+    > {
+    appListResponse: ResponseType<CVEControlList>
+    areFiltersApplied: boolean
+    clearExposureListFilters: () => void
+}
+
+export interface CveNamePolicy {
+    name: string
+    policy: VulnerabilityAction
+}
+export interface ClusterEnvironment extends CveNamePolicy {
+    applications: CveNamePolicy[]
+    isCollapsed: boolean
+}
+
+export interface CveClusters extends CveNamePolicy {
+    environments: ClusterEnvironment[]
+    isCollapsed: boolean
+}
+export interface AddCveModalState extends Pick<CveNamePolicy, 'policy'> {
+    view: string
+    cve: string
+    clusters: CveClusters[]
+}
+
+export interface SecurityPolicyEditState {
+    showWhitelistModal: boolean
+    view: string
+    isCveError: boolean
+}
+
+export interface AddCveModalProps extends Pick<SecurityPolicyEditState, 'isCveError'> {
+    close: () => void
+    saveCVE: (cve: string, policy: VulnerabilityAction) => void
+    setCVEErrorToTrue: () => void
 }

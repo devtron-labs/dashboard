@@ -14,54 +14,38 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import yamlJsParser from 'yaml'
-import { showError, Progressing, ErrorScreenManager, PageHeader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    PageHeader,
+    CodeEditor,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
     BulkEditsProps,
     BulkEditsState,
-    OutputTabType,
     CMandSecretOutputKeys,
     DtOutputKeys,
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
-import { DropdownIndicator } from '../charts/charts.util'
 import './bulkEdit.scss'
-import { multiSelectStyles } from './bulkedit.utils'
-import { Option } from '../v2/common/ReactSelect.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-
-export enum OutputObjectTabs {
-    OUTPUT = 'Output',
-    IMPACTED_OBJECTS = 'Impacted objects',
-}
-
-const STATUS = {
-    ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
-    EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
-}
-
-const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
-    return (
-        <label className="dc__tertiary-tab__radio flex fs-13">
-            <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
-            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={`${name}-link`}>
-                {' '}
-                {name}{' '}
-            </div>
-        </label>
-    )
-}
+import { OutputTabs } from './bulkedit.utils'
+import { OutputObjectTabs, STATUS } from './constants'
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     constructor(props) {
@@ -79,7 +63,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             readmeResult: [],
             showExamples: true,
             showOutputData: true,
-            showImpactedtData: false,
+            showImpactedData: false,
             codeEditorPayload: undefined,
         }
     }
@@ -89,11 +73,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({
                 view: ViewType.LOADING,
             })
-            this.initialise()
+            this.getInitialized()
         }
     }
 
-    initialise() {
+    getInitialized() {
         getSeeExample()
             .then((res) => {
                 this.setState({ view: ViewType.LOADING })
@@ -138,7 +122,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Yaml',
+            })
             this.setState({ view: ViewType.FORM })
             return
         }
@@ -156,7 +143,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     showOutputData: true,
                     outputName: 'output',
                     outputResult,
-                    showImpactedtData: false,
+                    showImpactedData: false,
                     impactedObjects: undefined,
                 })
             })
@@ -180,7 +167,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Yaml',
+            })
             this.setState({ view: ViewType.FORM })
             return
         }
@@ -196,7 +186,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     impactedObjects,
                     outputResult: undefined,
                     outputName: 'impacted',
-                    showImpactedtData: true,
+                    showImpactedData: true,
                 })
             })
             .catch((error) => {
@@ -207,7 +197,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorHeader = () => {
         return (
-            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm">
+            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 dc__border-bottom">
                 <button
                     type="button"
                     className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
@@ -251,13 +241,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({
                 outputName: 'output',
                 showOutputData: true,
-                showImpactedtData: false,
+                showImpactedData: false,
             })
         }
         if (key == 'impacted') {
             this.setState({
                 outputName: 'impacted',
-                showImpactedtData: true,
+                showImpactedData: true,
                 showOutputData: false,
             })
         }
@@ -277,7 +267,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     data-testid="code-editor"
                 />
                 <div className="bulk-output-drawer bcn-0 fs-13">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top border-btm bcn-0">
+                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bcn-0">
                         <OutputTabs
                             handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
                             outputName={this.state.outputName}
@@ -299,7 +289,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                 this.renderOutputs()
                             )
                         ) : null}
-                        {this.state.showImpactedtData ? (
+                        {this.state.showImpactedData ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
                             ) : (
@@ -641,32 +631,25 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="border-btm bcn-0 pt-5 pb-5 flex pr-20">
-                <div className="fw-6 cn-9 pl-20" data-testid="sample-application">
-                    Sample:
+            <div className="dc__border-bottom bcn-0 py-8 px-20 flex  h-48 dc__content-space">
+                <div className="flex left dc__gap-16">
+                    <div className="fw-6 cn-9" data-testid="sample-application">
+                        Sample:
+                    </div>
+                    <SelectPicker
+                        inputId="sample-application"
+                        name="sample-application"
+                        classNamePrefix="sample-application-select"
+                        value={this.state.updatedTemplate[0]}
+                        placeholder="Update Deployment Template"
+                        options={this.state.updatedTemplate}
+                        onChange={() => this.handleUpdateTemplate()}
+                        variant={SelectPickerVariantType.BORDER_LESS}
+                        size={ComponentSizeType.medium}
+                        menuSize={ComponentSizeType.medium}
+                    />
                 </div>
-                <ReactSelect
-                    classNamePrefix="sample-application-select"
-                    value={this.state.updatedTemplate[0]}
-                    defaultValue={this.state.updatedTemplate[0]}
-                    className="select-width"
-                    placeholder="Update Deployment Template"
-                    options={this.state.updatedTemplate}
-                    onChange={() => this.handleUpdateTemplate()}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    styles={{
-                        ...multiSelectStyles,
-                    }}
-                />
-                <Close
-                    style={{ margin: 'auto', marginRight: '0px' }}
-                    className="icon-dim-20 cursor"
-                    onClick={() => this.setState({ showExamples: false })}
-                />
+                <Close className="icon-dim-20 cursor" onClick={() => this.setState({ showExamples: false })} />
             </div>
         )
     }

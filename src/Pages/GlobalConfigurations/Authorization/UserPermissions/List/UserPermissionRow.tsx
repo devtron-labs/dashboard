@@ -24,10 +24,11 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     BulkSelectionEvents,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import moment from 'moment'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Lock } from '../../../../../assets/icons/ic-locked.svg'
@@ -43,6 +44,7 @@ import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
+const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')
 
 const UserPermissionRow = ({
     id,
@@ -56,6 +58,7 @@ const UserPermissionRow = ({
     isChecked = false,
     toggleChecked,
     showCheckbox,
+    userGroups,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
@@ -73,7 +76,10 @@ const UserPermissionRow = ({
         setIsModalLoading(true)
         try {
             await deleteUser(id)
-            toast.success('User deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'User deleted',
+            })
             refetchUserPermissionList()
             setIsDeleteModalOpen(false)
 
@@ -103,7 +109,7 @@ const UserPermissionRow = ({
                     isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
                 } dc__hover-n50`}
             >
-                {/* Note (v2): no checkbox for admin/system */}
+                {/* Note: no checkbox for admin/system */}
                 <div className="flex dc__content-start">
                     {(!_showCheckbox || isAdminOrSystemUser) && (
                         <span
@@ -147,6 +153,7 @@ const UserPermissionRow = ({
                         </Link>
                     </span>
                 )}
+                {showStatus && <UserGroupCell userGroups={userGroups} />}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
                     // eslint-disable-next-line react/no-unstable-nested-components

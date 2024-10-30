@@ -17,7 +17,13 @@
 import React, { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
-import { DeploymentAppTypes, DeploymentNodeType, triggerStatus, statusColor, statusIcon } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentNodeType,
+    triggerStatus,
+    statusColor,
+    statusIcon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'

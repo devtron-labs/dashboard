@@ -15,12 +15,17 @@
  */
 
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { OptionType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    AppDetails as CommonAppDetails,
+    Node as CommonNode,
+    iNode as CommoniNode,
+    ApiResourceGroupType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { useTabs } from '../../common/DynamicTabs/useTabs'
-import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -42,11 +47,20 @@ export enum AppType {
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
     EXTERNAL_ARGO_APP = 'external_argo_app',
+    EXTERNAL_FLUX_APP = 'external_flux_app',
+}
+
+export enum K8sResourcePayloadAppType {
+    DEVTRON_APP = 0,
+    HELM_APP = 1,
+    EXTERNAL_ARGO_APP = 2,
+    EXTERNAL_FLUX_APP = 3,
 }
 
 export enum K8sResourcePayloadDeploymentType {
     HELM_INSTALLED = 0,
     ARGOCD_INSTALLED = 1,
+    FLUXCD_INSTALLED = 2,
 }
 
 export interface EnvDetails {
@@ -352,12 +366,12 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
     k8SObjectMapRaw?: ApiResourceGroupType[]
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
+    clusterName?: string
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
@@ -368,7 +382,6 @@ export interface LogsComponentProps extends NodeDetailPropsType {
     targetContainerOption?: OptionType[]
     ephemeralFormAdvanced?: EphemeralFormAdvancedType
     imageListOption?: OptionType[]
-    isExternalApp?: boolean
 }
 
 export interface TerminalComponentProps {
@@ -380,8 +393,8 @@ export interface TerminalComponentProps {
     setSelectedContainer: (containerName: Map<string, string>) => void
     containers: Options[]
     setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
-    selectedContainerName: string
-    setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
+    selectedContainerName: OptionType
+    setSelectedContainerName: React.Dispatch<React.SetStateAction<OptionType>>
     switchSelectedContainer: (string) => void
     showTerminal: boolean
 }
@@ -420,6 +433,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
+    showConfigDriftInfo?: boolean
 }
 
 export interface StatusFilterButtonType {
@@ -431,7 +445,7 @@ export interface SyncErrorType {
     showApplicationDetailedModal?: () => void
 }
 
-export interface SelectedResourceType {
+export interface SelectedResourceType extends Pick<NodeDetailPropsType, 'clusterName'> {
     clusterId: number
     group: string
     version: string
@@ -457,10 +471,19 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
-        isEditmode: boolean
-        activeTab: (typeof ManifestTabJSON)[number]['name']
+        /*
+         * Normalized live manifest for manifest diff view
+         */
+        normalizedLiveManifest: string
     }
     id: string
+}
+
+export enum ManifestCodeEditorMode {
+    READ = 'read',
+    EDIT = 'edit',
+    APPLY_CHANGES = 'applyChanges',
+    CANCEL = 'cancel',
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
@@ -468,6 +491,10 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
     getComponentKey: () => string
+    showManifestCompareView: boolean
+    setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
+    manifestCodeEditorMode: ManifestCodeEditorMode
+    setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
 }
 
 export interface NodeTreeDetailTabProps {
@@ -477,6 +504,7 @@ export interface NodeTreeDetailTabProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     isDeploymentBlocked?: boolean
+    isVirtualEnvironment: boolean
 }
 
 export interface K8ResourceComponentProps {

@@ -92,6 +92,5 @@ export const initTabsData = (
     }
 }
 
-export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean => {
-    return now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
-}
+export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean =>
+    now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS

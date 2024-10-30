@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
     RadioGroup,
     RadioGroupItem,
-    Option,
-    multiSelectStyles,
     CHECKBOX_VALUE,
+    PipelineFormType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
-import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
@@ -33,9 +32,6 @@ import { ReactComponent as File } from '../../assets/icons/ic-file-code.svg'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
-import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
-import { ValueContainer } from '../cdPipeline/cdpipeline.util'
-import { PipelineFormType } from '../workflowEditor/types'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
 
@@ -45,8 +41,6 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    pluginList,
-    mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -55,7 +49,6 @@ export const Sidebar = ({
     const {
         formData,
         setFormData,
-        configurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -66,6 +59,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
+        pluginDataStore,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -167,21 +161,6 @@ export const Sidebar = ({
             return <Key className="icon-dim-20 mr-8" />
         }
 
-        const tempMultiSelectStyles = {
-            ...multiSelectStyles,
-            ...groupHeaderStyle,
-            menu: (base, state) => ({
-                ...base,
-                top: 'auto',
-                marginTop: '4px',
-            }),
-            dropdownIndicator: (base, state) => ({
-                ...base,
-                transition: 'all .2s ease',
-                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            }),
-        }
-
         const onBlur = () => {
             setAddConfigSecret(false)
         }
@@ -195,8 +174,6 @@ export const Sidebar = ({
             addConfigSecrets(updatedList)
         }
 
-        const searchGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
-
         return (
             <>
                 <div className="sidebar-action-container-border pb-12">
@@ -207,28 +184,20 @@ export const Sidebar = ({
                         </div>
                     ) : (
                         <div className="pl-2 pr-2">
-                            <ReactSelect
+                            <SelectPicker
+                                inputId="config-secret-select"
+                                classNamePrefix="config-secret-select"
                                 options={configMapAndSecrets}
                                 value={valueList}
                                 placeholder="Search"
                                 menuIsOpen={addConfigSecret}
                                 autoFocus={addConfigSecret}
-                                className="basic-multi-select"
                                 onBlur={onBlur}
                                 closeMenuOnSelect={false}
                                 hideSelectedOptions={false}
                                 controlShouldRenderValue={false}
-                                components={{
-                                    ClearIndicator: null,
-                                    ValueContainer,
-                                    IndicatorSeparator: null,
-                                    Option,
-                                    IndicatorsContainer: () => null,
-                                    GroupHeading: searchGroupHeading,
-                                }}
-                                styles={tempMultiSelectStyles}
-                                onChange={addConfigSecrets}
                                 isMulti
+                                onChange={addConfigSecrets}
                             />
                         </div>
                     )}
@@ -342,35 +311,30 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {configurationType === ConfigurationType.GUI && (
-                        <>
-                            {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
-                                <MandatoryPluginWarning
-                                    stage={activeStageName}
-                                    mandatoryPluginData={mandatoryPluginData}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    formDataErrorObj={formDataErrorObj}
-                                    setFormDataErrorObj={setFormDataErrorObj}
-                                    allPluginList={pluginList}
-                                    handleApplyPlugin={handleApplyPlugin}
-                                />
-                            )}
-                            <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <div className="pb-16 sidebar-action-container-border">
-                                <TaskList
-                                    withWarning={showMandatoryWarning()}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    isJobView={isJobCard}
-                                />
-                            </div>
-                            {isCdPipeline &&
-                                (!isVirtualEnvironment ||
-                                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
-                                triggerPipelineMode()}
-                        </>
+                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                        <MandatoryPluginWarning
+                            stage={activeStageName}
+                            mandatoryPluginData={mandatoryPluginData}
+                            formData={formData}
+                            setFormData={setFormData}
+                            formDataErrorObj={formDataErrorObj}
+                            setFormDataErrorObj={setFormDataErrorObj}
+                            pluginDataStore={pluginDataStore}
+                            handleApplyPlugin={handleApplyPlugin}
+                        />
                     )}
+                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
+                    <div className="pb-16 sidebar-action-container-border">
+                        <TaskList
+                            withWarning={showMandatoryWarning()}
+                            setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                            isJobView={isJobCard}
+                        />
+                    </div>
+                    {isCdPipeline &&
+                        (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
+                        triggerPipelineMode()}
+
                     {isJobView && (
                         <EnvironmentList
                             isBuildStage

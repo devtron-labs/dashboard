@@ -26,9 +26,11 @@ import {
     OptionType,
     UserStatus,
     useMainContext,
+    UserGroupType,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
-import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
@@ -49,6 +51,7 @@ import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
+const UserGroupSelector = importComponentFromFELibrary('UserGroupSelector', null, 'function')
 
 const creatableChipStyle = getCreatableChipStyle()
 
@@ -69,7 +72,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         chartPermission,
         k8sPermission,
         currentK8sPermissionRef,
-        userGroups,
+        userRoleGroups,
         data: userData,
         userStatus,
         timeToLive,
@@ -81,6 +84,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
+    const [selectedUserGroups, setSelectedUserGroups] = useState<Pick<UserGroupType, 'name' | 'userGroupId'>[]>([])
 
     // UI States
     const [submitting, setSubmitting] = useState(false)
@@ -109,7 +113,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const validateForm = (): boolean => {
         if (emailState.emails.length === 0) {
             setEmailState((prevEmailState) => ({ ...prevEmailState, emailError: 'Emails are mandatory.' }))
-            toast.error(REQUIRED_FIELDS_MISSING)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: REQUIRED_FIELDS_MISSING,
+            })
             return false
         }
 
@@ -121,7 +128,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 ...prevEmailState,
                 emailError: 'One or more emails could not be verified to be correct.',
             }))
-            toast.error('One or more emails could not be verified to be correct.')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'One or more emails could not be verified to be correct.',
+            })
             return false
         }
         return true
@@ -136,12 +146,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         const payload = createUserPermissionPayload({
             id: userData?.id,
             userIdentifier: emailState.emails.map((email) => email.value).join(','),
-            userGroups,
+            userRoleGroups,
             serverMode,
             directPermission,
             chartPermission,
             k8sPermission,
             permissionType,
+            userGroups: selectedUserGroups,
             ...getDefaultUserStatusAndTimeout(),
         })
 
@@ -152,17 +163,26 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 timeToLive,
             })
             if (isAddMode) {
-                toast.success('User(s) added')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'User(s) added',
+                })
             } else {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                toast.success('User updated')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'User updated',
+                })
             }
             _redirectToUserPermissionList()
         } catch (err) {
             // In case the permissions are partially updated for some reason, we receive 417
             if (err instanceof ServerErrors && err.code === API_STATUS_CODES.EXPECTATION_FAILED) {
                 const message = err.errors[0].userMessage
-                toast.warn(message)
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: message,
+                })
             } else {
                 showError(err)
             }
@@ -172,9 +192,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const populateDataFromAPI = (data: User) => {
-        const { emailId, userStatus: _userStatus, timeToLive: _timeToLive } = data
+        const { emailId, userStatus: _userStatus, timeToLive: _timeToLive, userGroups } = data
 
         setEmailState({ emails: [{ label: emailId, value: emailId }], inputEmailValue: '', emailError: '' })
+        setSelectedUserGroups(userGroups)
         handleUserStatusUpdate(_userStatus, _timeToLive)
     }
 
@@ -198,7 +219,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setSubmitting(true)
         try {
             await deleteUser(_userData.id)
-            toast.success('User deleted')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'User deleted',
+            })
             setDeleteConfirmationModal(false)
             _redirectToUserPermissionList()
         } catch (err) {
@@ -336,8 +360,15 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                                     </span>
                                 )}
                             </div>
-                            {!isAutoAssignFlowEnabled && <div className="dc__border-top" />}
+                            <div className="dc__border-top" />
                         </>
+                    )}
+                    {/* Show status is enterprise only check hence reusing */}
+                    {showStatus && UserGroupSelector && (
+                        <UserGroupSelector
+                            selectedUserGroups={selectedUserGroups}
+                            handleUserGroupChange={setSelectedUserGroups}
+                        />
                     )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
                         <UserAutoAssignedRoleGroupsTable roleGroups={_userData.userRoleGroups} />

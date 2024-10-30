@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,8 +23,9 @@ import {
     InfoColourBar,
     CHECKBOX_VALUE,
     MODAL_TYPE,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import {
     RotatePodsModalProps,
     RotatePodsRequest,
@@ -46,7 +47,6 @@ import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arr
 import { importComponentFromFELibrary } from '../../../../common'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
 
 export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeploymentBlocked }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -206,7 +206,10 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
             const { result } = await RotatePods(requestPayload)
             callAppDetailsAPI()
             if (!result.containsError) {
-                toast.success(POD_ROTATION_INITIATED)
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: POD_ROTATION_INITIATED,
+                })
                 onClose()
             } else {
                 setResult(result)
@@ -250,12 +253,11 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         e.preventDefault()
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
-        if(!rotatingInProgress && isWorkloadPresent && isAnySelected){
+        if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
             if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
                 // Show deployment window confirmation modal if deployment is blocked
                 setShowDeploymentWindowConfirmationModal(true)
-            }
-            else handlePodsRotation()
+            } else handlePodsRotation()
         }
     }
 

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { GitOpsAuthModeType, InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { FunctionComponent, useEffect, useState } from 'react'
+import { GitOpsAuthModeType, InfoColourBar, Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
@@ -112,7 +111,10 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
         gitOpsConfigDevtron(payload)
             .then(() => {
                 respondOnSuccess(true)
-                toast.success('Successfully saved.')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully saved',
+                })
             })
             .catch((err) => {
                 // Comes when in global config, we have changed the status of directory management
@@ -130,7 +132,9 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     return (
         <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
             <div className="w-960">
-                <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">GitOps Configuration</div>
+                <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
+                    GitOps Configuration
+                </div>
                 {isEditable ? (
                     <UserGitRepo
                         setSelectedRepoType={setSelectedRepoType}

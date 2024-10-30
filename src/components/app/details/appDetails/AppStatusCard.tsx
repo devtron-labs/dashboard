@@ -17,7 +17,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
@@ -25,7 +25,8 @@ import './appDetails.scss'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
-    const displayMessage = message && appDetails?.deploymentAppType === DeploymentAppTypes.HELM
+    const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
+    const displayMessage = message && (appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isFluxCDApp)
 
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
@@ -37,11 +38,13 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
 
     const renderBottomContainer = () => {
         return (
-            <>
+            <div className="flexbox dc__content-space w-100">
                 {displayMessage && (
-                    <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                        {message.slice(0, 30)}
-                    </div>
+                    <Tippy className="default-tt dc__mxw-200-imp" placement="bottom" content={message} arrow={false}>
+                        <div className="app-details-info-card__bottom-container__message fs-12 fw-4 dc__ellipsis-right dc__mxw-175">
+                            {message}
+                        </div>
+                    </Tippy>
                 )}
                 <div
                     className={`app-details-info-card__bottom-container__details fs-12 fw-6 ${
@@ -50,7 +53,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 >
                     Details
                 </div>
-            </>
+            </div>
         )
     }
 
@@ -69,15 +72,16 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5">Application Status</div>
+                        {/* In case of flux apps Application Status is shown as Status */}
+                        <div className="fs-12 fw-4 cn-7 mr-5">{isFluxCDApp ? 'Status' : 'Application Status'}</div>
                         <Tippy
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content="The health status of your app"
+                            content={`The ${isFluxCDApp ? '' : 'health'} status of your app`}
                         >
                             <div className="flex">
-                                <ICHelpOutline className="icon-dim-16 mt-2" />
+                                <ICHelpOutline className="icon-dim-16" />
                             </div>
                         </Tippy>
                     </div>
@@ -89,7 +93,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 </div>
                 <div className="flex br-4">
                     <figure
-                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase()} h-24 w-24`}
+                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase().replace(/ /g, '-')} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
                     />
                 </div>

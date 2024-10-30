@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
@@ -22,7 +22,7 @@ import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
 import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
-import { useRouteMatch, useHistory, useParams } from 'react-router'
+import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
@@ -40,13 +40,13 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const EnvironmentStatusComponent = ({
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
-    isHelmApp,
     refetchDeploymentStatus,
 }: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -61,6 +61,7 @@ const EnvironmentStatusComponent = ({
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
+    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
 
     const onClickUpgrade = () => {
         const _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -79,7 +80,6 @@ const EnvironmentStatusComponent = ({
 
         return <div className="flex left ml-20 mb-16">{loadingCards}</div>
     }
-
     const renderStatusBlock = () => {
         if (!status) {
             return null
@@ -90,6 +90,7 @@ const EnvironmentStatusComponent = ({
                 status={status}
                 setDetailed={setShowAppStatusDetail}
                 cardLoading={cardLoading}
+                message={appDetails.FluxAppStatusDetail?.message} // Show Message in case of FluxCD Apps
             />
         )
     }
@@ -201,12 +202,7 @@ const EnvironmentStatusComponent = ({
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
-                    {window._env_.ENABLE_RESOURCE_SCAN_V2 && (
-                        <SecurityVulnerabilityCard
-                            cardLoading={cardLoading}
-                            installedAppId={appDetails?.installedAppId}
-                        />
-                    )}
+                    {isScanV2Enabled && appDetails?.appType === AppType.DEVTRON_HELM_CHART && <SecurityVulnerabilityCard cardLoading={cardLoading} installedAppId={appDetails?.installedAppId} />}
                 </div>
             )}
             {showAppStatusDetail && (

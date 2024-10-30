@@ -28,13 +28,11 @@ interface EmptyChartType {
 }
 
 const ChartEmptyState = ({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct }: EmptyChartType) => {
-    const renderButton = () => {
-        return (
-            <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-10">
-                {buttonText || 'View all charts'}
-            </button>
-        )
-    }
+    const renderButton = () => (
+        <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex">
+            {buttonText || 'View all charts'}
+        </button>
+    )
     return (
         <span
             className="empty-height"

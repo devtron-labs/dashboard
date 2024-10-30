@@ -17,12 +17,12 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
 import Descriptor from '../Descriptor'
-import { DEFAULT_TITLE } from '../constants'
+import { HEADER_TEXT } from '../../../config'
 
 describe('Descriptor', () => {
     it('should show the title', () => {
         const { getByText } = render(<Descriptor />)
-        expect(getByText(DEFAULT_TITLE)).toBeTruthy()
+        expect(getByText(HEADER_TEXT.SCOPED_VARIABLES.title)).toBeTruthy()
     })
 
     it('should show customized tippy showing the description', () => {

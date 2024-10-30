@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
-import { updateChartGroupEntries, getChartGroups, getChartProviderList } from './charts.service'
+import { updateChartGroupEntries, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
-import { ChartSelector } from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
-import DetectBottom from '../common/DetectBottom'
 import { sortOptionsByLabel } from '../common'
 
 export default function ChartGroupUpdate({}) {
@@ -112,7 +109,10 @@ export default function ChartGroupUpdate({}) {
             await updateChartGroupEntries(requestBody)
             await reloadState()
             updateChartGroupEntriesFromResponse()
-            toast.success('Successfully saved.')
+             ToastManager.showToast({
+                 variant: ToastVariantType.success,
+                 description: 'Successfully saved',
+             })
         } catch (err) {
             showError(err)
         } finally {
@@ -246,12 +246,12 @@ export default function ChartGroupUpdate({}) {
     const renderChartGroupEditActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex right">
-                <button className="cta h-32 flex cancel mr-16" onClick={handleSave}>
+                <button className="cta h-32 flex cancel cta__no-svg-override mr-16" onClick={handleSave}>
                     {loading ? (
                         <Progressing />
                     ) : (
                         <div className="flex left " data-testid="save-group-button-navbar" style={{ width: '100%' }}>
-                            <SaveIcon className="mr-5" />
+                            <SaveIcon className="mr-5 scn-6" />
                             Save
                         </div>
                     )}
@@ -286,11 +286,9 @@ export default function ChartGroupUpdate({}) {
                             <ChartHeaderFilters
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
-                                setAppStoreName={setAppStoreName}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
@@ -371,7 +369,7 @@ export default function ChartGroupUpdate({}) {
 
 const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) => {
     return (
-        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+        <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}

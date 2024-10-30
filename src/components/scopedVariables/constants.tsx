@@ -17,9 +17,6 @@
 import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { FileReaderStatus } from '../common/hooks/types'
 
-export const DEFAULT_TITLE = 'Scoped Variables'
-export const DEFAULT_DESCRIPTION =
-    'Scoped variable is a key-value pair. Value can be scoped and can be used dynamically across devtron.'
 export const UPLOAD_DESCRIPTION_L1 = 'Upload file to add'
 export const UPLOAD_DESCRIPTION_L2 = '.JSON or .YAML'
 export const DOWNLOAD_TEMPLATE = 'Download template'

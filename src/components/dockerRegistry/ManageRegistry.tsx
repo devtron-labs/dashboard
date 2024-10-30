@@ -323,12 +323,7 @@ const ManageRegistry = ({
         return (
             <>
                 Use the&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET}
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                <a className="dc__link" href={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET} target="_blank" rel="noreferrer">
                     image pull secret name created via CLI
                 </a>
                 . The secret must be present in the namespaces you're deploying to.

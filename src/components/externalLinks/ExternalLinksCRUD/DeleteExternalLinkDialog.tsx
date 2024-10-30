@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { toast } from 'react-toastify'
-import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DeleteDialog, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteExternalLink, getExternalLinks } from '../ExternalLinks.service'
 import { DeleteExternalLinkType, ExternalLinkIdentifierType, ExternalLinkScopeType } from '../ExternalLinks.type'
 import { sortByUpdatedOn } from '../ExternalLinks.utils'
@@ -36,7 +34,10 @@ export default function DeleteExternalLinkDialog({
             const { result } = await deleteExternalLink(selectedLink.id, isAppConfigView ? appId : '')
 
             if (result?.success) {
-                toast.success('Deleted successfully!')
+                 ToastManager.showToast({
+                     variant: ToastVariantType.success,
+                     description: 'Deleted successfully!',
+                 })
 
                 if (isAppConfigView) {
                     const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)

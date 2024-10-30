@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
-import { useLocation, useParams } from 'react-router'
-import { DeploymentAppTypes, Progressing, processDeploymentStatusDetailsData } from '@devtron-labs/devtron-fe-common-lib'
+import { useLocation, useParams } from 'react-router-dom'
+import {
+    DeploymentAppTypes,
+    Progressing,
+    processDeploymentStatusDetailsData,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -45,10 +49,9 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 
-// This is being used in case of helm app detail page
 const AppDetailsComponent = ({
-    externalLinks,
-    monitoringTools,
+    externalLinks = [],
+    monitoringTools = [],
     isExternalApp,
     _init,
     loadingDetails,
@@ -59,11 +62,12 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const deploymentModalShownRef = useRef(null)
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     deploymentModalShownRef.current = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
     // State to track the loading state for the timeline data when the detailed status modal opens
     const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const shouldFetchTimelineRef = useRef(false)
+    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -90,11 +94,9 @@ const AppDetailsComponent = ({
     }, [location.search])
 
     useEffect(() => {
-        // Get deployment status timeline on argocd apps
-        if (
-            appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS ||
-            appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-        ) {
+        // Get deployment status timeline on ArgoCD apps in devtron helm apps
+        // i.e. Devtron Helm app deployed through GitOps /Manifest Download
+        if ((isGitOps || isManifestDownload) && !isExternalApp) {
             getDeploymentDetailStepsData()
         }
         isVirtualEnv.current = appDetails?.isVirtualEnvironment
@@ -173,6 +175,7 @@ const AppDetailsComponent = ({
                 externalLinks={externalLinks}
                 monitoringTools={monitoringTools}
                 isExternalApp={isExternalApp}
+                isVirtualEnvironment={isVirtualEnv.current}
             />
         )
     }
@@ -183,9 +186,9 @@ const AppDetailsComponent = ({
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
+                    loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
-                    appType={appDetails?.appType}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
@@ -193,13 +196,12 @@ const AppDetailsComponent = ({
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
-                        isHelmApp
                         refetchDeploymentStatus={getDeploymentDetailStepsData}
                     />
                 )}
             </div>
 
-            {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
+            {!appDetails.deploymentAppDeleteRequest && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}

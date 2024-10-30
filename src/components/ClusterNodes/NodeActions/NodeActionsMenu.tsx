@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { PopupMenu, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, TOAST_ACCESS_DENIED, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
@@ -49,7 +49,10 @@ export default function NodeActionsMenu({
 
     const isAuthorized = (): boolean => {
         if (!isSuperAdmin) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE
+            })
             return false
         }
         return true
@@ -123,7 +126,7 @@ export default function NodeActionsMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab>
+                <PopupMenu.Button rootClassName="flex p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

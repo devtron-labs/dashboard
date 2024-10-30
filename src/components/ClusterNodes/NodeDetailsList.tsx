@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import * as queryString from 'query-string'
 import { MultiValue } from 'react-select'
 import {
@@ -27,6 +26,10 @@ import {
     ConditionalWrap,
     ErrorScreenManager,
     Pagination,
+    SortableTableHeaderCell,
+    SortingOrder,
+    Tooltip,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -71,7 +74,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
-    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
 
@@ -128,26 +130,13 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [pageSize, setPageSize] = useState(NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value)
 
     useEffect(() => {
-        if (appliedColumns.length > 0) {
-            /*
-          136 is standard with of every column for calculations
-          65 is width of left nav
-          220 is width of resource
-          160 is the diff of node column
-          60 is the diff of status column
-          */
-
-            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60 + 220
-            const windowWidth = window.innerWidth
-            const clientWidth = 0
-            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
-        }
-    }, [appliedColumns])
-
-    useEffect(() => {
         const qs = queryString.parse(location.search)
         const offset = Number(qs['offset'])
         setNodeListOffset(offset || 0)
+        const version = qs['k8sversion']
+        if (version && typeof version === 'string' && selectedVersion.value !== version) {
+            setSelectedVersion({ label: `K8s version: ${version}`, value: version })
+        }
     }, [location.search])
 
     useEffect(() => {
@@ -315,6 +304,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
         setFilteredFlattenNodeList(_flattenNodeList)
         setNoResults(_flattenNodeList.length === 0)
+        setNodeListOffset(0)
     }
 
     const numericComparatorMethod = (a, b) => {
@@ -358,7 +348,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         handleFilterChanges()
     }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder, selectedVersion])
 
-    const handleSortClick = (column: ColumnMetadataType): void => {
+    const handleSortClick = (column: ColumnMetadataType) => () => {
         if (sortByColumn.label === column.label) {
             setSortOrder(sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC)
         } else {
@@ -372,45 +362,23 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         setNodeListOffset(0)
     }
 
-    const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
-        if (column.isSortingAllowed) {
-            if (sortByColumn.value === column.value) {
-                return <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`} />
-            }
-            return <span className="sort-column dc__opacity-0_5 ml-4" />
-        }
-    }
-
-    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
-        const nodeColumnClassName = fixedNodeNameColumn
-            ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
-            : ''
-        return (
-            <div
-                className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
-                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-120'
-                } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
-                    column.isSortingAllowed ? ' pointer' : ''
-                } ${column.value === 'status' && 'w-180'}`}
-                onClick={() => {
-                    column.isSortingAllowed && handleSortClick(column)
-                }}
-                data-testid={column.label}
-            >
-                <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
-                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
-                </Tippy>
-                {renderSortDirection(column)}
-            </div>
-        )
-    }
+    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
+        <SortableTableHeaderCell
+            key={column.label}
+            showTippyOnTruncate
+            disabled={false}
+            triggerSorting={handleSortClick(column)}
+            title={column.label}
+            isSorted={sortByColumn.value === column.value}
+            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+            isSortable={!!column.isSortingAllowed}
+        />
+    )
 
     const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
         return (
-            <Tippy
-                className="default-tt"
-                arrow={false}
-                placement="top"
+            <Tooltip
+                alwaysShowTippyOnHover
                 content={
                     <>
                         <span style={{ display: 'block' }}>
@@ -427,7 +395,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 }
             >
                 <div>{children}</div>
-            </Tippy>
+            </Tooltip>
         )
     }
 
@@ -443,9 +411,9 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
         if (column.value === 'k8sVersion') {
             return (
-                <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                <Tooltip content={nodeData[column.value]}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
-                </Tippy>
+                </Tooltip>
             )
         }
         return nodeData[column.value]
@@ -486,54 +454,47 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
     }
 
+    const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
                 key={nodeData['name']}
                 ref={nodeListRef}
-                className={`dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover ${
+                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
+                style={{ gridTemplateColumns }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div
-                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
-                            }`}
-                        >
-                            <div className="w-100 flex left">
-                                <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="right"
-                                        content={nodeData[column.value]}
-                                    >
-                                        <NavLink
-                                            data-testid="cluster-node-link"
-                                            to={`${match.url}/${nodeData[column.value]}`}
-                                            onClick={clusterNodeClickEvent(nodeData, column)}
-                                        >
-                                            {nodeData[column.value]}
-                                        </NavLink>
-                                    </Tippy>
-                                </div>
-                                <NodeActionsMenu
-                                    nodeData={nodeData as NodeDetail}
-                                    openTerminal={openTerminalComponent}
-                                    getNodeListData={getNodeListData}
-                                    isSuperAdmin={isSuperAdmin}
-                                    addTab={addTab}
-                                />
-                            </div>
+                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
+                            <Tooltip content={nodeData[column.value]}>
+                                <NavLink
+                                    data-testid="cluster-node-link"
+                                    to={`${match.url}/${nodeData[column.value]}`}
+                                    onClick={clusterNodeClickEvent(nodeData, column)}
+                                    className="dc__link dc__no-decor dc__truncate"
+                                >
+                                    {nodeData[column.value]}
+                                </NavLink>
+                            </Tooltip>
+                            <ClipboardButton
+                                content={nodeData[column.value]}
+                                rootClassName="p-4 dc__visible-hover--child"
+                            />
+                            <NodeActionsMenu
+                                nodeData={nodeData as NodeDetail}
+                                openTerminal={openTerminalComponent}
+                                getNodeListData={getNodeListData}
+                                isSuperAdmin={isSuperAdmin}
+                                addTab={addTab}
+                            />
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
-                                column.value === 'status'
-                                    ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : 'w-120'
+                            className={`dc__inline-block dc__ellipsis-right list-title pt-12 pb-12 ${
+                                column.value === 'status' ? `${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}` : ''
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}
@@ -560,9 +521,9 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
     const renderPagination = (): JSX.Element => {
         return (
-            filteredFlattenNodeList.length > pageSize && (
+            filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
                 <Pagination
-                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
+                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                     size={filteredFlattenNodeList.length}
                     pageSize={pageSize}
                     offset={nodeListOffset}
@@ -612,7 +573,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     noResults ? 'no-result-container' : ''
                 }`}
             >
-                <div className="pl-20 pr-20">
+                <div className="pl-20 pr-20 dc__zi-4">
                     <NodeListSearchFilter
                         defaultVersion={defaultVersion}
                         nodeK8sVersions={nodeK8sVersions}
@@ -632,11 +593,11 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                 ) : (
                     <>
-                        <div className="mt-16 dc__overflow-scroll h-100" style={{ width: '100%' }}>
+                        <div className="mt-16 dc__overflow-scroll h-100 w-100">
                             <div
                                 data-testid="node-status"
-                                className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
-                                style={{ width: 'max-content', minWidth: '100%', zIndex: 5 }}
+                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row dc__zi-2"
+                                style={{ gridTemplateColumns }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}
                             </div>

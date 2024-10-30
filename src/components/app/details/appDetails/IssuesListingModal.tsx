@@ -39,20 +39,16 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
         }
     }, [outsideClickHandler])
 
-    const renderErrorRows = () => {
-        return errorsList?.map((errorItem) => {
-            return (
-                <div className="issues-listing-modal__body__row">
-                    <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
-                    <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
-                </div>
-            )
-        })
-    }
+    const renderErrorRows = () =>
+        errorsList?.map((errorItem) => (
+            <div className="issues-listing-modal__body__row">
+                <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
+                <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
+            </div>
+        ))
 
-    const getErrorCountText = () => {
-        return errorsList.length > 1 ? `${errorsList.length} Errors` : `${errorsList.length} Error`
-    }
+    const getErrorCountText = () =>
+        errorsList.length > 1 ? `${errorsList.length} Errors` : `${errorsList.length} Error`
 
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>

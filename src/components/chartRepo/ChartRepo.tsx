@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
-    ToastBody,
     ErrorScreenNotAuthorized,
     Checkbox,
     CHECKBOX_VALUE,
@@ -26,11 +25,14 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
+    FeatureTitleWithInfo,
+    DeleteComponent,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
-import { useForm, getNonEditableChartRepoText } from '../common'
+import { useForm } from '../common'
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
@@ -41,10 +43,9 @@ import {
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS } from '../../config'
+import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS, HEADER_TEXT } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
@@ -78,22 +79,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     }
     return (
         <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-            <h2 className="form__title" data-testid="chart-repository-heading">
-                Chart Repository
-            </h2>
-            <p className="form__subtitle">
-                Manage your organization’s chart repositories.
-                <span>
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                    >
-                        LEARN_MORE
-                    </a>
-                </span>
-            </p>
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.CHART_REPOSITORY.title}
+                renderDescriptionContent={() => HEADER_TEXT.CHART_REPOSITORY.description}
+                docLink={HEADER_TEXT.CHART_REPOSITORY.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="chart-repository-heading"
+            />
             <CollapsedList
                 id={null}
                 default
@@ -114,7 +107,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map(
                     (chart) =>
-                        chart.id != 1 && <CollapsedList {...chart} allowInsecureConnection={chart.allow_insecure_connection} key={chart.id || getRandomInt()} reload={reload} />,
+                        chart.id != 1 && (
+                            <CollapsedList
+                                {...chart}
+                                allowInsecureConnection={chart.allow_insecure_connection}
+                                key={chart.id || getRandomInt()}
+                                reload={reload}
+                            />
+                        ),
                 )}
         </section>
     )
@@ -143,9 +143,8 @@ const CollapsedList = ({
     }
 
     const handleCollapse = (e) => {
-            e.stopPropagation()
-            toggleCollapse((t) => !t)
-       
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
     }
 
     return (
@@ -233,7 +232,7 @@ const ChartForm = ({
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
     })
-    const [allowInsecure,setAllowInsecure] = useState(allowInsecureConnection)
+    const [allowInsecure, setAllowInsecure] = useState(allowInsecureConnection)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
@@ -327,7 +326,10 @@ const ChartForm = ({
         setValidationStatus(VALIDATION_STATUS.LOADER)
         const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
 
@@ -337,11 +339,17 @@ const ChartForm = ({
                 const validateResp = response?.result
                 if (!validateResp.actualErrMsg.length) {
                     setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                    toast.success('Configuration validated')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Configuration validated',
+                    })
                 } else if (validateResp.actualErrMsg.length > 0) {
                     setValidationStatus(VALIDATION_STATUS.FAILURE)
                     setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
-                    toast.error('Configuration validation failed')
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: 'Configuration validation failed',
+                    })
                 }
             })
             .catch((error) => {
@@ -355,7 +363,10 @@ const ChartForm = ({
         setValidationStatus(VALIDATION_STATUS.LOADER)
         const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error('Some Required Fields are missing')
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some Required Fields are missing',
+            })
             return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
@@ -366,19 +377,20 @@ const ChartForm = ({
 
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success(
-                    <ToastBody
-                        data-testid="update-toast-for-chart-repo"
-                        title="Chart repo saved"
-                        subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
-                    />,
-                )
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    title: 'Chart repo saved',
+                    description: 'It may take upto 5 mins for the charts to be listed in the chart store.',
+                })
                 await reload()
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
                 setLoading(false)
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
-                toast.error('Configuration validation failed')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Configuration validation failed',
+                })
             }
         } catch (err) {
             showError(err)
@@ -496,14 +508,14 @@ const ChartForm = ({
                     </>
                 )}
 
-                        <Checkbox
-                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
-                            isChecked={allowInsecure}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={allowInsecureConnectionHandler}
-                        >
-                            <div className="ml-1">Allow Insecure Connection</div>
-                        </Checkbox>
+                <Checkbox
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                    isChecked={allowInsecure}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={allowInsecureConnectionHandler}
+                >
+                    <div className="ml-1">Allow Insecure Connection</div>
+                </Checkbox>
             </div>
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (

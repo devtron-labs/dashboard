@@ -109,7 +109,7 @@
 .form__textarea {
     border-radius: 4px;
     border: solid 1px var(--N200);
-    padding: 8px 10px;
+    padding: 7px 10px;
     display: block;
     width: 100%;
     font-weight: 400;
@@ -322,20 +322,19 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
-.form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='BULK_CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-bulk-check.svg');
 }
 
 .any-selected {
-
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
@@ -369,7 +368,7 @@ p.sentence-case:first-letter {
     margin-right: 10px;
 }
 
-.form__radio-group input {
+.form__radio-group input[type="radio"] {
     position: absolute;
     opacity: 0;
 }

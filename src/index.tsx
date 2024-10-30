@@ -21,7 +21,7 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
-import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -117,7 +117,6 @@ if (!window || !window._env_) {
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         // Remove this in next sprint, have'nt removed yet for backward compatibility
-        HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
@@ -147,18 +146,32 @@ if (!window || !window._env_) {
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        HIDE_NETWORK_STATUS_INTERFACE: true,
+        SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
+        FEATURE_STEP_WISE_LOGS_ENABLE: true,
+        FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_CONFIG_DRIFT_ENABLE: false,
+        FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
+        FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL:''
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UserEmailProvider>
-                    <App />
-                </UserEmailProvider>
-            </BrowserRouter>
+            <>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                </BrowserRouter>
+                <ToastManagerContainer />
+            </>
         ) : null}
     </React.StrictMode>,
     root,

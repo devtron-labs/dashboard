@@ -21,16 +21,17 @@ import {
     Progressing,
     showError,
     stopPropagation,
-    noop,
     ConsequenceType,
     ConsequenceAction,
     useAsync,
     GenericEmptyState,
-    KeyValueListType,
-    KeyValueListActionType,
-    HandleKeyValueChangeType,
     CIMaterialSidebarType,
     ApiQueuingWithBatch,
+    RuntimeParamsListItemType,
+    ModuleNameMap,
+    SourceTypeMap,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -45,12 +46,12 @@ import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { RegexValueType } from '../../../app/details/triggerView/types'
+import { HandleRuntimeParamChange, RegexValueType } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
@@ -61,11 +62,12 @@ import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { BULK_ERROR_MESSAGES } from './constants'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
 const BulkCITrigger = ({
     appList,
@@ -83,6 +85,8 @@ const BulkCITrigger = ({
     setLoading,
     runtimeParams,
     setRuntimeParams,
+    runtimeParamsErrorState,
+    setRuntimeParamsErrorState,
     setPageViewType,
     httpProtocol,
 }: BulkCITriggerType) => {
@@ -134,7 +138,7 @@ const BulkCITrigger = ({
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
                 const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
-                const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                const _runtimeParams: Record<string, RuntimeParamsListItemType[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
                 })
@@ -197,36 +201,28 @@ const BulkCITrigger = ({
         }
     }
 
-    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        let _runtimeParams = runtimeParams[selectedApp.ciPipelineId] ?? []
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState((prevErrorState) => ({
+            ...prevErrorState,
+            [selectedApp.ciPipelineId]: errorState,
+        }))
+    }
 
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
-                break
-
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
-
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
-
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action ${action}`)
-        }
-
-        setRuntimeParams({
-            ...runtimeParams,
-            [selectedApp.ciPipelineId]: _runtimeParams,
-        })
+    const handleRuntimeParamChange: HandleRuntimeParamChange = (currentAppRuntimeParams) => {
+        const updatedRuntimeParams = structuredClone(runtimeParams)
+        updatedRuntimeParams[selectedApp.ciPipelineId] = currentAppRuntimeParams
+        setRuntimeParams(updatedRuntimeParams)
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
+            })
+            return
+        }
+
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
     }
 
@@ -301,6 +297,14 @@ const BulkCITrigger = ({
     }
 
     const changeApp = (e): void => {
+        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
+            })
+            return
+        }
+
         stopPropagation(e)
         const _selectedApp = appList[e.currentTarget.dataset.index]
         if (_selectedApp.appId !== selectedApp.appId) {
@@ -465,12 +469,12 @@ const BulkCITrigger = ({
                 fromBulkCITrigger
                 hideSearchHeader={selectedApp.hideSearchHeader}
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
-                ciBlockState={appPolicy[selectedApp.appId]}
                 isJobCI={selectedApp.isJobCI}
                 currentSidebarTab={currentSidebarTab}
                 handleSidebarTabChange={handleSidebarTabChange}
                 runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
-                handleRuntimeParametersChange={handleRuntimeParametersChange}
+                handleRuntimeParamChange={handleRuntimeParamChange}
+                handleRuntimeParamError={handleRuntimeParamError}
                 appName={selectedApp?.name}
             />
         )
@@ -622,8 +626,8 @@ const BulkCITrigger = ({
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
-                            {GitInfoMaterialTabs ? (
-                                <GitInfoMaterialTabs
+                            {RuntimeParamTabs ? (
+                                <RuntimeParamTabs
                                     tabs={sidebarTabs}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}

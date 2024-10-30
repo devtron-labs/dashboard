@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ACTION_STATE, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    ApiResponseResultType,
+    ResponseType,
+    ServerErrors,
+    SeverityCount,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -228,10 +234,12 @@ export interface SecurityVulnerabilityCardType {
     appId?: string
     envId?: string
     installedAppId?: number
+    artifactId?: number
+    isExternalCI?: boolean
 }
 
 export interface DeployedCommitCardType {
-    showCommitInfoDrawer: () => void
+    showCommitInfoDrawer: (e) => void
     cardLoading?: boolean
     envId: number | string
     ciArtifactId: number
@@ -255,4 +263,21 @@ export interface LastUpdatedCardType {
     deploymentTriggerTime: string
     triggeredBy: string
     cardLoading: boolean
+}
+
+export interface UseGetAppSecurityDetailsProps {
+    appId: number
+    envId: number
+    installedAppId?: number
+    artifactId?: number
+    imageScanDeployInfoId?: number
+    isSecurityScanV2Enabled: boolean
+}
+export interface UseGetAppSecurityDetailsReturnType {
+    scanDetailsLoading: boolean
+    scanDetailsResponse: ResponseType<ApiResponseResultType>
+    scanDetailsError: ServerErrors
+    reloadScanDetails: () => void
+    severityCount: SeverityCount
+    totalCount: number
 }

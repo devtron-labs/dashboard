@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { CHECKBOX_VALUE, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, ResponseType, GVKType, DeploymentStrategy } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, SetStateAction } from 'react'
 import { Nodes, NodeType } from '../../../../app/types'
-import { DeploymentStrategy } from '../../../../cdPipeline/cdPipeline.types'
-import { GVKType } from '../../../../ResourceBrowser/Types'
 
 export interface WorkloadCheckType {
     isChecked: boolean

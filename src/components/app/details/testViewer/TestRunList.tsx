@@ -15,8 +15,14 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router'
-import { Progressing, multiSelectStyles, Option, useAsync, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router-dom'
+import {
+    Progressing,
+    multiSelectStyles,
+    Option,
+    useAsync,
+    ReactSelectInputAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import moment from 'moment'

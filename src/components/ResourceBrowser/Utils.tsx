@@ -17,13 +17,12 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
     ClusterOptionType,
     K8SObjectChildMapType,
@@ -42,8 +41,8 @@ import ClusterIcon from '../../assets/icons/ic-world-black.svg'
 export const getGroupedK8sObjectMap = (
     _k8SObjectList: K8SObjectType[],
     nodeType: string,
-): Map<string, K8SObjectMapType> => {
-    return _k8SObjectList.reduce((map, _k8sObject) => {
+): Map<string, K8SObjectMapType> =>
+    _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
             child: new Map<string, K8SObjectChildMapType>(),
@@ -65,7 +64,6 @@ export const getGroupedK8sObjectMap = (
         map.set(_k8sObject.name, childObj)
         return map
     }, new Map<string, K8SObjectMapType>())
-}
 
 export const getK8SObjectMapAfterGroupHeadingClick = (
     e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } },
@@ -118,16 +116,15 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
-    return storageList.map((storage) => {
-        return (storage.name as string).includes('(default)')
+export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] =>
+    storageList.map((storage) =>
+        (storage.name as string).includes('(default)')
             ? {
                   ...storage,
                   name: (storage.name as string).split(' (default)')[0],
               }
-            : storage
-    })
-}
+            : storage,
+    )
 
 export const getScrollableResourceClass = (
     className: string,
@@ -153,21 +150,21 @@ const newK8sObjectOption = (
     namespaced: boolean,
     grouped: boolean,
     groupName: string,
-): K8sObjectOptionType => {
-    return {
-        label,
-        description,
-        value: gvk.Group || K8S_EMPTY_GROUP,
-        dataset: {
-            group: gvk.Group,
-            version: gvk.Version,
-            kind: gvk.Kind,
-            namespaced: `${namespaced}`,
-            grouped: `${grouped}`,
-        },
-        groupName,
-    }
-}
+    shortNames: ApiResourceGroupType['shortNames'],
+): K8sObjectOptionType => ({
+    label,
+    description,
+    value: gvk.Group || K8S_EMPTY_GROUP,
+    dataset: {
+        group: gvk.Group,
+        version: gvk.Version,
+        kind: gvk.Kind,
+        namespaced: `${namespaced}`,
+        grouped: `${grouped}`,
+        shortNames,
+    },
+    groupName,
+})
 
 export const convertK8sObjectMapToOptionsList = (
     k8SObjectMap: Map<string, K8SObjectMapType>,
@@ -186,14 +183,30 @@ export const convertK8sObjectMapToOptionsList = (
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, '', SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.namespaces,
+                            '',
+                            SIDEBAR_KEYS.namespaceGVK,
+                            false,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.namespaces,
+                        ),
                     )
                     break
 
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.events, '', SIDEBAR_KEYS.eventGVK, true, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.events,
+                            '',
+                            SIDEBAR_KEYS.eventGVK,
+                            true,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.events,
+                        ),
                     )
                     break
 
@@ -207,6 +220,7 @@ export const convertK8sObjectMapToOptionsList = (
                                 data.namespaced,
                                 k8sObject.child.size > 1,
                                 k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                                data.shortNames,
                             ),
                         )
                     })
@@ -214,7 +228,17 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, '', SIDEBAR_KEYS.nodeGVK, false, false, ''))
+    _k8sObjectOptionsList.push(
+        newK8sObjectOption(
+            SIDEBAR_KEYS.nodes,
+            '',
+            SIDEBAR_KEYS.nodeGVK,
+            false,
+            false,
+            '',
+            JUMP_TO_KIND_SHORT_NAMES.nodes,
+        ),
+    )
 
     return _k8sObjectOptionsList
 }
@@ -245,6 +269,7 @@ export const getTabsBasedOnRole = (
     isSuperAdmin: boolean,
     dynamicTabData: InitTabType,
     isTerminalSelected = false,
+    isOverviewSelected = false,
 ): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
@@ -254,7 +279,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: false,
+            isSelected: isOverviewSelected,
             position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
@@ -265,7 +290,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
+            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
             position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
@@ -321,17 +346,15 @@ export const getRenderNodeButton =
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
-        <Tippy className="default-tt" arrow={false} placement="top" content={resourceData[columnName]}>
-            <button
-                type="button"
-                className="dc__unset-button-styles dc__ellipsis-right dc__block"
-                data-name={resourceData[columnName]}
-                onClick={handleNodeClick}
-                aria-label={`Select ${resourceData[columnName]}`}
-            >
-                <span className="dc__link">{children}</span>
-            </button>
-        </Tippy>
+        <button
+            type="button"
+            className="dc__unset-button-styles dc__no-decor flex"
+            data-name={resourceData[columnName]}
+            onClick={handleNodeClick}
+            aria-label={`Select ${resourceData[columnName]}`}
+        >
+            <span className="dc__link">{children}</span>
+        </button>
     )
 
 export const renderResourceValue = (value: string) => {

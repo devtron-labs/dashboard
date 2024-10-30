@@ -15,7 +15,6 @@
  */
 
 import {
-    KeyValueListType,
     showError,
     DeploymentWithConfigType,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
@@ -23,7 +22,7 @@ import {
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
-import { RuntimeParamsValidatorReturnType, TriggerViewDeploymentConfigType } from './types'
+import { TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -51,19 +50,19 @@ export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
 export const SPECIFIC_TRIGGER_CONFIG_OPTION = {
     label: 'Config deployed with selected image',
     value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
-    infoText: 'Use configuration deployed with selected image',
+    description: 'Use configuration deployed with selected image',
 }
 
 export const LAST_SAVED_CONFIG_OPTION = {
     label: 'Last saved config',
     value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-    infoText: 'Use last saved configuration to deploy',
+    description: 'Use last saved configuration to deploy',
 }
 
 export const LATEST_TRIGGER_CONFIG_OPTION = {
     label: 'Last deployed config',
     value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-    infoText: 'Retain currently deployed configuration',
+    description: 'Retain currently deployed configuration',
 }
 
 export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
@@ -147,7 +146,7 @@ const compareConfigValues = (configA: DeploymentHistoryDetail, configB: Deployme
         if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
             return true
         }
-    } catch (err) {
+    } catch {
         return false
     }
 
@@ -209,41 +208,4 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
     }
 
     return diffForOptions
-}
-
-export const validateAndGetValidRuntimeParams = (
-    runtimeParams: KeyValueListType[],
-): RuntimeParamsValidatorReturnType => {
-    // Checking if any key is duplicated
-    const keysFrequencyMap = {}
-    runtimeParams.forEach((param) => {
-        if (keysFrequencyMap[param.key]) {
-            keysFrequencyMap[param.key] += 1
-        } else {
-            keysFrequencyMap[param.key] = 1
-        }
-    })
-
-    const areKeysDuplicated = Object.keys(keysFrequencyMap).some((key) => keysFrequencyMap[key] > 1)
-    if (areKeysDuplicated) {
-        return {
-            isValid: false,
-            message: 'Duplicate keys found',
-        }
-    }
-
-    const validParams = {
-        envVariables: runtimeParams.reduce((acc, param) => {
-            if (param.key) {
-                acc[param.key] = param.value
-            }
-            return acc
-        }, {}),
-    }
-
-    // filtering empty keys
-    return {
-        isValid: true,
-        validParams,
-    }
 }

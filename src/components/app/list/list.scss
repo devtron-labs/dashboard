@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- .search-filter-section {
+.search-filter-section {
     padding: 12px 20px;
     display: flex;
     flex-direction: column;
@@ -25,9 +25,10 @@
 }
 
 .create-button-container {
-  z-index: var(--page-header-index);
+    z-index: var(--page-header-index);
 }
 
+// TODO (Arun): Remove unused css after filter clean up
 .app-list-filters.filters .filter {
     min-width: unset;
     flex-basis: unset;
@@ -114,8 +115,11 @@
     padding-left: 20px;
     background: white;
     z-index: var(--app-list-header-index);
-}
 
+    &__fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
+    }
+}
 
 .saved-filters + .app-list .app-list__header {
     top: 116px;
@@ -139,13 +143,16 @@
     cursor: pointer;
     background-color: white;
     border-bottom: 1px solid var(--N100);
+
+    &__fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
+    }
 }
 
 .app-list__cell {
     min-width: 0px;
     display: flex;
     align-items: center;
-    justify-content: center;
     height: 100%;
     background-color: inherit;
 }
@@ -413,16 +420,6 @@
     background-color: white;
 }
 
-.app-tabs-wrapper .app-tabs-sync {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}
-
-.app-tabs-wrapper .app-tabs-sync button {
-    margin-top: -2px;
-}
-
 .filter-divider {
     width: 1px;
     height: 20px;
@@ -460,10 +457,6 @@
     border: solid 1px var(--R200);
 }
 
-.first-app-container {
-    margin-top: 60px;
-}
-
 .helm-app-guided-cards-wrapper,
 .devtron-app-guided-cards-wrapper {
     display: grid;
@@ -483,9 +476,9 @@
 .jobs-view-container .app-list .app-list__header,
 .jobs-view-container .app-list .app-list__row {
     display: grid;
-    grid-template-columns: 25px 300px 200px repeat(3, 248px) auto 0px;
+    grid-template-columns: 25px 300px 200px repeat(2, 248px) auto 48px;
     align-items: center;
-    column-gap: 16px;
+    gap: 16px;
 }
 
 .jobs-view-container .app-list .app-list__header .app-list__cell,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { JobListViewType, JOBLIST_EMPTY_STATE_MESSAGING } from './Constants'
 import { JobsEmptyProps } from './Types'
@@ -43,11 +42,7 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
     }
 
     const renderNoResultsView = () => {
-        return (
-            <GenericFilterEmptyState
-                handleClearFilters={props.clickHandler}
-            />
-        )
+        return <GenericFilterEmptyState handleClearFilters={props.clickHandler} />
     }
 
     return (

@@ -112,7 +112,7 @@
 }
 
 .select-material--trigger-view {
-    height: calc(100vh - 72px);
+    height: calc(100vh - 122px);
 }
 
 .select-material--regex-body {
@@ -132,13 +132,11 @@
     width: 530px;
     border: solid 1px var(--N200);
     background-color: var(--white);
-    margin: 16px 20px;
-    padding-top: 14px;
-    padding-bottom: 14px;
     border-radius: 4px;
-    &:last-child {
-        margin-bottom: 92px;
-    }
+}
+
+.material-history__box-shadow:hover {
+    box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.1);
 }
 
 .material-history--cd {
@@ -146,8 +144,10 @@
     background-color: transparent;
     padding: 0px;
     margin: 0 0 12px;
+
     &:hover {
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
         .approval-text {
             color: #0066cc;
         }
@@ -189,14 +189,22 @@
     cursor: pointer;
     border: none;
     background-color: transparent;
-    padding: 2px;
     text-transform: uppercase;
     font-weight: 600;
     color: var(--B500);
     width: 150px;
     text-align: right;
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
-        'Helvetica Neue', sans-serif;
+    font-family:
+        'Open Sans',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen-Sans,
+        Ubuntu,
+        Cantarell,
+        'Helvetica Neue',
+        sans-serif;
 }
 
 .material-history__scan-error {
@@ -249,22 +257,6 @@
     grid-template-columns: 150px auto;
 }
 
-.material-history__text {
-    font-size: 12px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N700);
-    padding-top: 4px;
-    padding-bottom: 4px;
-    margin: 0px auto;
-    margin-left: 16px;
-    font-family: monospace;
-    margin-right: 16px;
-}
-
 .material-history__commit-msg {
     padding-left: 16px;
     margin-top: 12px;
@@ -288,10 +280,11 @@
     background-color: var(--B100);
     color: var(--B500);
     border-radius: 4px;
-    padding: 2px 8px;
+    padding: 2px 6px;
     display: flex;
     align-items: center;
     text-transform: lowercase;
+    line-height: 16px;
 }
 
 .commit-hash--cd {
@@ -334,6 +327,7 @@
     color: var(--N900);
     border-bottom: solid 1px #d6dbdf;
     margin: 0px;
+
     .modal__title {
         font-size: 16px;
         font-weight: 400;
@@ -519,10 +513,12 @@
     right: 0;
     background: var(--N000);
     top: 0;
+
     &.contains-diff-view {
         width: 100%;
         min-width: 800px;
         max-width: 1024px;
+
         .material-history:last-child {
             margin-bottom: 8px;
         }
@@ -613,6 +609,7 @@
         border-left: none;
         border-right: none;
         border-radius: 0;
+
         &.tab-bottom-radius {
             border-radius: 0 0 4px 4px;
             border-bottom: 0;
@@ -639,18 +636,22 @@
     display: flex;
     column-gap: 16px;
     border-bottom: 1px solid var(--N200);
+
     .items-width-1 {
         flex: 1;
     }
+
     &.table-content {
         border-bottom: 1px solid var(--N100);
     }
 }
+
 .url-box {
     max-width: 240px;
     cursor: pointer;
     color: var(--B500);
 }
+
 .trigger-modal__trigger {
     display: flex;
     justify-content: space-between;
@@ -668,9 +669,11 @@
         position: static;
         box-shadow: none;
     }
+
     .deploy-config-select__group {
         padding-top: 4px;
         padding-bottom: 4px;
+
         .deploy-config-select__group-heading {
             font-size: 12px;
             font-weight: 600;
@@ -684,10 +687,12 @@
         }
     }
 }
+
 .trigger-modal__config-diff-status {
     &:not(.config-not-found):hover {
         background-color: var(--N100);
     }
+
     svg {
         &.config-diff-found-icon {
             path {
@@ -696,6 +701,7 @@
                 }
             }
         }
+
         &.no-config-found-icon {
             path {
                 &:nth-of-type(2) {
@@ -705,13 +711,16 @@
         }
     }
 }
+
 .trigger-modal__config-diff-status svg.loader__svg path,
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
     fill: white;
 }
+
 .code-editor-green-diff {
     background: var(--code-editor-green);
 }
+
 .code-editor-red-diff {
     background: var(--code-editor-red);
 }

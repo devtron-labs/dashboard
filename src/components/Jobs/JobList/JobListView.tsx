@@ -15,14 +15,20 @@
  */
 
 import React from 'react'
-import { AppStatus, ErrorScreenManager, Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    ErrorScreenManager,
+    Progressing,
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import { Pagination } from '../../common'
+import { trackByGAEvent } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { OrderBy, SortBy } from '../../app/list/types'
-import { Job, JobListViewProps } from '../Types'
+import { Job, JobListViewProps, JobsListSortableKeys } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
@@ -34,6 +40,8 @@ export default function JobListView(props: JobListViewProps) {
     const history = useHistory()
     const location = useLocation()
 
+    const handleJobNameSorting = () => props.handleSorting(JobsListSortableKeys.APP_NAME)
+
     const expandEnv = (event): void => {
         event.stopPropagation()
         event.preventDefault()
@@ -43,16 +51,12 @@ export default function JobListView(props: JobListViewProps) {
     const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
+        trackByGAEvent('Job List', event.currentTarget.dataset.action)
         props.handleEditJob(event.currentTarget.dataset.key)
     }
 
     const closeExpandedRow = (event): void => {
         props.closeExpandedRow(event.currentTarget.dataset.key)
-    }
-
-    const sortByAppName = (e) => {
-        e.preventDefault()
-        props.sort('appNameSort')
     }
 
     const toggleAllExpandRow = () => {
@@ -95,15 +99,15 @@ export default function JobListView(props: JobListViewProps) {
                                     />
                                 )}
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0 value cb-5" data-testid="job-list-for-sort">
                                     {job.name}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView />
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">
                                     {environmentName(job.defaultPipeline)}
                                     {environmentName(job.defaultPipeline) === DEFAULT_ENV && (
@@ -111,10 +115,10 @@ export default function JobListView(props: JobListViewProps) {
                                     )}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
@@ -124,6 +128,7 @@ export default function JobListView(props: JobListViewProps) {
                                     data-key={job.id}
                                     className="button-edit"
                                     onClick={handleEditJob}
+                                    data-action="Configure Clicked"
                                 >
                                     <Edit className="button-edit__icon" />
                                 </button>
@@ -153,7 +158,7 @@ export default function JobListView(props: JobListViewProps) {
                     <div className="app-list__cell">
                         <button
                             className="app-list__cell-header flex"
-                            onClick={sortByAppName}
+                            onClick={handleJobNameSorting}
                             data-testid="job-name-header"
                         >
                             {JOB_LIST_HEADERS.Name}
@@ -195,6 +200,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 bcn-0"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}
@@ -220,7 +226,7 @@ export default function JobListView(props: JobListViewProps) {
         return (
             <JobsEmptyState
                 view={props.view}
-                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearAll}
+                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearFilters}
             />
         )
     }

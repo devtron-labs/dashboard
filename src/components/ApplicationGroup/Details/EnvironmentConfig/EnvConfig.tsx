@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../../../common'
-import EnvironmentOverride from '../../../EnvironmentOverride/EnvironmentOverride'
+import { useEffect, useMemo } from 'react'
+import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
+import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
+import { importComponentFromFELibrary } from '@Components/common'
+import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
+import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
+import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
+import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
+
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
 const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
 
-export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDefaultType) {
-    const { envId, appId } = useParams<{ envId: string; appId: string }>()
-    const { url } = useRouteMatch()
-    const history = useHistory()
-    const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
+const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
+    // HOOKS
+    const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
+    const { appId, envId } = params
+    const { pathname } = useLocation()
+    const { replace } = useHistory()
+
+    // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
@@ -38,32 +48,51 @@ export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDef
                     ? getEnvConfigProtections(Number(envId))
                     : { result: null },
             ]),
-        [envId, filteredAppIds],
+        [filteredAppIds],
+    )
+    const [envConfigLoading, envConfigRes, , refetch] = useAsync(
+        () => (appId ? getEnvConfig(+appId, +envId) : null),
+        [],
+    )
+
+    const envConfig = {
+        config: envConfigRes,
+        isLoading: envConfigLoading,
+    }
+
+    // CONSTANTS
+    const envAppList = useMemo<ConfigAppList[]>(() => {
+        if (
+            initDataResults?.[0].status === 'fulfilled' &&
+            initDataResults?.[1].status === 'fulfilled' &&
+            initDataResults[0].value?.result?.length
+        ) {
+            const configProtectionMap = initDataResults[1].value?.result ?? {}
+            const _appList = initDataResults[0].value.result.map((appData) => ({
+                ...appData,
+                isProtected: configProtectionMap[appData.id] ?? false,
+            }))
+
+            _appList.sort((a, b) => a.name.localeCompare(b.name))
+            return _appList
+        }
+
+        return []
+    }, [initDataResults])
+
+    const isAppNotPresentInEnv = useMemo(
+        () => envAppList.length && appId && !envAppList.some(({ id }) => id === +appId),
+        [envAppList, appId],
     )
 
     useEffect(() => {
-        if (initDataResults?.[0]?.['value']?.['result']?.length) {
-            const configProtectionMap = initDataResults[1]?.['value']?.['result'] ?? {}
-            let appIdExist = false
-            const _appList = (initDataResults[0]?.['value']?.['result'] ?? []).map((appData) => {
-                if (appData.id === +appId) {
-                    appIdExist = true
-                }
-                return { ...appData, isProtected: configProtectionMap[appData.id] ?? false }
-            })
-            _appList.sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(_appList)
-            if (!appId) {
-                history.replace(`${url}/${_appList[0].id}`)
-            } else if (!appIdExist) {
-                const oldUrlSubstring = `/edit/${appId}`
-                const newUrlSubstring = `/edit/${_appList[0].id}`
-                history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
-            }
+        // If the app is unavailable in the current environment, redirect to the app selection page
+        if (isAppNotPresentInEnv) {
+            replace(generatePath(path, { ...params, appId: null }))
         }
-    }, [initDataResults])
+    }, [isAppNotPresentInEnv])
 
-    if (loading || !appId) {
+    if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />
@@ -72,28 +101,67 @@ export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDef
     }
 
     return (
-        <div className="env-compose">
-            <div className="env-compose__nav flex column left top dc__position-rel dc__overflow-scroll">
-                <div className="pt-4 pb-4 w-100">
+        <Switch>
+            <Route
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+            >
+                {({ match, location }) => {
+                    const basePath = generatePath(path, match.params)
+                    // Set the resourceTypePath based on the resourceType from the URL parameters.
+                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
+                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+
+                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+
+                    return (
+                        <DeploymentConfigCompare
+                            type="appGroup"
+                            envName={envName}
+                            environments={envAppList}
+                            goBackURL={goBackURL}
+                            getNavItemHref={(resourceType, resourceName) =>
+                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                            }
+                        />
+                    )
+                }}
+            </Route>
+            <Route>
+                <div className="env-compose">
                     <div
-                        className="cn-6 pl-8 pr-8 pt-4 pb-4 fs-12 fw-6 w-100"
-                        data-testid="application-group-configuration-heading"
+                        className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
                     >
-                        APPLICATIONS
+                        <ApplicationRoute
+                            key={appId}
+                            envAppList={envAppList}
+                            envConfig={envConfig}
+                            fetchEnvConfig={refetch}
+                        />
                     </div>
-                    {envAppList.map((envData, key) => (
-                        <ApplicationRoute envListData={envData} key={`app-${envData.id}`} />
-                    ))}
+                    {appId ? (
+                        <div className="env-compose__main">
+                            <EnvironmentOverride
+                                appList={envAppList}
+                                environments={[]}
+                                reloadEnvironments={noop}
+                                envName={envName}
+                                envConfig={envConfig}
+                                fetchEnvConfig={refetch}
+                                onErrorRedirectURL={generatePath(path, { envId })}
+                            />
+                        </div>
+                    ) : (
+                        <GenericEmptyState
+                            title="Select an application to view & edit its configurations"
+                            subTitle="You can view and edit configurations for all applications deployed on this environment"
+                        />
+                    )}
                 </div>
-            </div>
-            <div className="env-compose__main">
-                <EnvironmentOverride
-                    appList={envAppList}
-                    environments={[]}
-                    reloadEnvironments={noop}
-                    envName={envName}
-                />
-            </div>
-        </div>
+            </Route>
+        </Switch>
     )
 }
+
+export default EnvConfig

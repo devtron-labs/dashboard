@@ -17,41 +17,41 @@
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent, useEffect, useState } from 'react'
-import ReactSelect from 'react-select'
-import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
-import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles, getBuildContextCheckoutSelectStyles } from './CIConfig.utils'
+import {
+    CustomInput,
+    OptionType,
+    InfoIconTippy,
+    SelectPicker,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
-const getBuildContextAdditionalContent = () => {
-    return (
-        <div className="p-12 fs-13">
-            To build all files from the root, use (.) as the build context, or set build context by referring a
-            subdirectory path such as
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
-            or
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
-            if path not set, default path will be root dir of selected git repository
-        </div>
-    )
-}
+const getBuildContextAdditionalContent = () => (
+    <div className="p-12 fs-13">
+        To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory
+        path such as
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
+        or
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
+        if path not set, default path will be root dir of selected git repository
+    </div>
+)
 
-const InfoCard: FunctionComponent = () => {
-    return (
-        <div className="row ml-0">
-            <InfoIconTippy
-                heading="Docker build context"
-                infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                documentationLinkText="View Documentation"
-                additionalContent={getBuildContextAdditionalContent()}
-                iconClassName="icon-dim-16 fcn-6 ml-4"
-                placement="right"
-            />
-        </div>
-    )
-}
+const InfoCard: FunctionComponent = () => (
+    <div className="row ml-0">
+        <InfoIconTippy
+            heading="Docker build context"
+            infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
+            documentationLinkText="View Documentation"
+            additionalContent={getBuildContextAdditionalContent()}
+            iconClassName="icon-dim-16 fcn-6 ml-4"
+            placement="right"
+        />
+    </div>
+)
 
 const BuildContext: FunctionComponent<BuildContextProps> = ({
     readOnly,
@@ -176,31 +176,15 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
             {isCollapsed && (
                 <div className="form-row__docker ml-24">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">Select repo containing build context</label>
-
-                        <ReactSelect
-                            className="m-0"
+                        <SelectPicker
+                            label="Select repo containing build context"
+                            inputId="build-context-repo"
                             classNamePrefix="build-config__select-repository-containing-build-context"
-                            isMulti={false}
                             isClearable={false}
                             options={sourceConfig.material}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.checkoutPath}`}
                             value={getSelectedBuildContextGitMaterial()}
-                            styles={{
-                                ..._multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    paddingBottom: '4px',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: repositoryOption,
-                                Control: repositoryControls,
-                            }}
                             onChange={handleBuildContextPathChange}
+                            size={ComponentSizeType.large}
                         />
 
                         {repositoryError && <label className="form__error">{repositoryError}</label>}
@@ -212,22 +196,17 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                         </label>
 
                         <div className="docker-file-container">
-                            <ReactSelect
-                                className="m-0 br-0"
+                            <SelectPicker
+                                inputId="docker-file-container"
                                 classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                isMulti={false}
                                 isClearable={false}
                                 isSearchable={false}
                                 options={checkoutPathOptions}
                                 getOptionLabel={(option) => `${option.label}`}
                                 getOptionValue={(option) => `${option.value}`}
                                 value={getCheckoutPathValue(useRootBuildContextFlag)}
-                                styles={getBuildContextCheckoutSelectStyles(checkoutPathOptions)}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option: checkoutPathOption,
-                                }}
                                 onChange={handleBuildContextCheckoutPathChange}
+                                size={ComponentSizeType.large}
                             />
 
                             <CustomInput

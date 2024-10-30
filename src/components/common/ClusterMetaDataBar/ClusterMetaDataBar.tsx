@@ -26,7 +26,12 @@ import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-termina
 import './ClusterMetaData.scss'
 import { NodeDetailTabs } from '../../app/types'
 
-export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: ClusterMetaDataBarProps) => {
+export const ClusterMetaDataBar = ({
+    clusterName,
+    namespace,
+    clusterId,
+    isVirtualEnvironment,
+}: ClusterMetaDataBarProps) => {
     const { isSuperAdmin } = useMainContext()
     const history = useHistory()
     const { pathname } = history.location
@@ -37,33 +42,29 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
         pathname.includes(NodeDetailTabs.LOGS.toLowerCase()) ||
         pathname.includes(URLS.APP_DETAILS_LOG)
 
-    const renderNavigationToAllResources = () => {
-        return (
-            <a
-                className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
-                target="_blank"
-                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
-                rel="noreferrer"
-            >
-                <AllResourcesIcon />
-                All resources
-            </a>
-        )
-    }
+    const renderNavigationToAllResources = () => (
+        <a
+            className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            target="_blank"
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
+            rel="noreferrer"
+        >
+            <AllResourcesIcon />
+            All resources
+        </a>
+    )
 
-    const renderNavigationToAClusterTerminal = () => {
-        return (
-            <a
-                className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
-                target="_blank"
-                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
-                rel="noreferrer"
-            >
-                <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
-                Cluster terminal
-            </a>
-        )
-    }
+    const renderNavigationToAClusterTerminal = () => (
+        <a
+            className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            target="_blank"
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
+            rel="noreferrer"
+        >
+            <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
+            Cluster terminal
+        </a>
+    )
 
     if (!isSuperAdmin) {
         return null
@@ -74,14 +75,20 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
         >
             <span className="dc__opacity-0_8"> Cluster: {clusterName}</span>
             <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
-            <span className="dc__opacity-0_8">Namespace: {namespace}</span>
-            <ArrowLeft
-                className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
-                style={{ ['--rotateBy' as string]: '180deg' }}
-            />
-            {renderNavigationToAllResources()}
-            <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
-            {renderNavigationToAClusterTerminal()}
+            <span className="dc__opacity-0_8">Namespace: {namespace || '-'}</span>
+            {!isVirtualEnvironment && (
+                <>
+                    <ArrowLeft
+                        className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
+                        style={{ ['--rotateBy' as string]: '180deg' }}
+                    />
+                    {renderNavigationToAllResources()}
+                    <div
+                        className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`}
+                    />
+                    {renderNavigationToAClusterTerminal()}
+                </>
+            )}
         </div>
     )
 }

@@ -15,15 +15,15 @@
  */
 
 import React from 'react'
-import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { QueryParams } from './charts.util'
 import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
+import { CHART_KEYS } from './constants'
+import { ChartHeaderFilterProps } from './charts.types'
 
 const ChartHeaderFilter = ({
     selectedChartRepo,
@@ -31,11 +31,9 @@ const ChartHeaderFilter = ({
     chartRepoList,
     setSelectedChartRepo,
     appStoreName,
-    setAppStoreName,
-    searchApplied,
     isGrid,
     setIsGrid,
-}) => {
+}: ChartHeaderFilterProps) => {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -45,9 +43,9 @@ const ChartHeaderFilter = ({
         const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
         if (selectedChartRepo.length === chartRepoList.length) {
-            handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
+            handleFilterChanges([event, ...selectedChartRepo], CHART_KEYS.CHART_REPO)
         } else {
-            handleFilterChanges(chartRepoList, 'chart-repo')
+            handleFilterChanges(chartRepoList, CHART_KEYS.CHART_REPO)
         }
     }
 
@@ -62,7 +60,7 @@ const ChartHeaderFilter = ({
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const registryId = searchParams.get(QueryParams.RegistryId)
         let isOCIRegistry
-        if (key == 'chart-repo') {
+        if (key === CHART_KEYS.CHART_REPO) {
             const paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
@@ -104,7 +102,7 @@ const ChartHeaderFilter = ({
             }
         }
 
-        if (key == 'deprecated') {
+        if (key === CHART_KEYS.DEPRECATED) {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
             if (app) {
                 qs = `${qs}&${QueryParams.AppStoreName}=${app}`
@@ -118,9 +116,8 @@ const ChartHeaderFilter = ({
             history.push(`${url}?${qs}`)
         }
 
-        if (key == 'search') {
-            selected.preventDefault()
-            let qs = `${QueryParams.AppStoreName}=${appStoreName}`
+        if (key === CHART_KEYS.SEARCH) {
+            let qs = `${QueryParams.AppStoreName}=${selected}`
             if (deprecate) {
                 qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             }
@@ -133,7 +130,7 @@ const ChartHeaderFilter = ({
             history.push(`${url}?${qs}`)
         }
 
-        if (key == 'clear') {
+        if (key === CHART_KEYS.CLEAR) {
             let qs: string = ''
             if (deprecate) {
                 qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
@@ -148,14 +145,6 @@ const ChartHeaderFilter = ({
         }
     }
 
-    const setStore = (event): void => {
-        setAppStoreName(event.target.value)
-    }
-
-    const clearFilterChange = (e): void => {
-        handleFilterChanges(e, 'clear')
-    }
-
     const setGrid = (): void => {
         setIsGrid(true)
     }
@@ -166,31 +155,26 @@ const ChartHeaderFilter = ({
 
     const toggleDeprecated = (): void => {
         const value = (includeDeprecated + 1) % 2
-        handleFilterChanges(value, 'deprecated')
+        handleFilterChanges(value, CHART_KEYS.DEPRECATED)
+    }
+
+    const handleSearchEnter = (searchKey: string): void => {
+        handleFilterChanges(searchKey, CHART_KEYS.SEARCH)
     }
 
     return (
         <div className="filter-column-container">
             <div className="pb-12 pl-12 pr-12 pt-16">
-                <form
-                    onSubmit={(e) => handleFilterChanges(e, 'search')}
-                    className="bcn-0 dc__position-rel dc__block en-2 bw-1 br-4 h-36 w-100 dc__position-rel"
-                >
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        type="text"
-                        placeholder="Search charts"
-                        value={appStoreName}
-                        className="search__input bcn-0"
-                        onChange={setStore}
-                        data-testid="chart-store-search-box"
-                    />
-                    {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearFilterChange}>
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                        </button>
-                    )}
-                </form>
+                <SearchBar
+                    initialSearchText={appStoreName}
+                    containerClassName="dc__mxw-250 flex-grow-1"
+                    handleEnter={handleSearchEnter}
+                    inputProps={{
+                        placeholder: 'Search charts',
+                        autoFocus: true
+                    }}
+                    dataTestId="chart-store-search-box"
+                />
             </div>
             <div className="pl-12 pr-12 filter-tab">
                 <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">

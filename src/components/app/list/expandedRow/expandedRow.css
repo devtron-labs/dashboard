@@ -85,5 +85,5 @@
 }
 
 .app-list__row--expanded:hover {
-    background-color: var(--N100) !important
+    background-color: var(--N100) !important;
 }

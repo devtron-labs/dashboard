@@ -24,18 +24,15 @@ import {
     PipelineType,
     CommonNodeAttr,
     WorkflowType,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    CdPipelineResult,
-    CiPipelineResult,
-    WorkflowResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
+import { CdPipelineResult, CiPipelineResult, WorkflowResult, CiPipeline } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import {
+    AppGroupFilterConfig,
     AppGroupList,
     CIConfigListType,
     CheckPermissionResponse,
@@ -46,6 +43,7 @@ import {
     EnvDeploymentStatusType,
     EnvGroupListResponse,
     EnvGroupResponse,
+    GetEnvAppListParamsType,
     WorkflowsResponseType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
@@ -195,26 +193,20 @@ export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigA
 }
 
 export const getEnvAppList = (
-    params?: {
-        envName?: string
-        clusterIds?: string
-        offset?: string
-        size?: string
-    },
+    filterConfig?: Partial<AppGroupFilterConfig>,
     signal?: AbortSignal,
 ): Promise<EnvAppType> => {
     const options = signal ? { signal } : null
-
-    if (params) {
-        const urlParams = Object.entries(params).map(([key, value]) => {
-            if (!value) {
-                return
-            }
-            return `${key}=${value}`
-        })
-        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, options)
+    const { searchKey = '', cluster = [], offset, pageSize } = filterConfig ?? {}
+    const params: GetEnvAppListParamsType = {
+        envName: searchKey,
+        clusterIds: cluster?.join(),
+        offset,
+        size: pageSize,
     }
-    return get(Routes.ENVIRONMENT_APPS, options)
+
+    const url = getUrlWithSearchParams(Routes.ENVIRONMENT_APPS, params)
+    return get(url, options)
 }
 
 export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {

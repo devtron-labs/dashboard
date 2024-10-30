@@ -46,13 +46,13 @@ describe('When FloatingVariablesSuggestions mounts', () => {
     })
 
     it('should show collapsed state by default', () => {
-        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        ;(useAsync as jest.Mock).mockReturnValue([true, null, null, null])
         const { getByTestId } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         expect(getByTestId('collapsed-state')).toBeTruthy()
     })
 
     it('should allow dragging collapsed state on drag of handle-drag', () => {
-        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        ;(useAsync as jest.Mock).mockReturnValue([true, null, null, null])
         const { getByTestId, container } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         const initialPosition = getByTestId('collapsed-state').getBoundingClientRect()
         const dragButton = container.querySelector('.handle-drag')
@@ -64,7 +64,7 @@ describe('When FloatingVariablesSuggestions mounts', () => {
     })
 
     it('should show expanded state on click of activate-suggestions', () => {
-        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        ;(useAsync as jest.Mock).mockReturnValue([true, null, null, null])
         const { getByTestId } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         fireEvent.click(getByTestId('activate-suggestions'))
         expect(screen.queryByTestId('collapsed-state')).toBeFalsy()

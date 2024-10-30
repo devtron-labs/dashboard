@@ -75,3 +75,7 @@ export interface SSOLoginTabType {
 }
 
 export const OIDCType = 'oidc'
+
+export interface SSOTabIconsTypes {
+    provider: SSOProvider
+}

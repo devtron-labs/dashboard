@@ -15,7 +15,7 @@
  */
 
 :root {
-    --V700: #4934B3;
+    --V700: #4934b3;
     --V500: #664bee;
     --V200: #b6abf3;
     --V100: #f3f0ff;
@@ -47,6 +47,7 @@
     --G200: #b6e9d3;
     --G100: #e9fbf4;
     --G50: #f2fffa;
+    --Y800: #594320;
     --Y700: #8c6324;
     --Y600: #c58d36;
     --Y500: #ffb549;
@@ -62,10 +63,10 @@
     --R200: #fcbcbc;
     --R100: #fde7e7;
     --R50: #fdf0f0;
-    --O700: #B23412;
+    --O700: #b23412;
     --O500: #ff7e5b;
-    --O200: #FFBEAD;
-    --O100: #FFE5DE;
+    --O200: #ffbead;
+    --O100: #ffe5de;
     --O50: #fcf3f0;
     --yellow: #ff8300;
     --red: rgba(240, 96, 96, 1);
@@ -76,8 +77,9 @@
     --gray: #1e23601a;
     --code-editor-green: #eaf1dd;
     --code-editor-red: #ffd4d1;
-    --code-diff-dot: #F37171;
+    --code-diff-dot: #f37171;
     --tippy-card-black-bg: #2d3452;
     --terminal-bg: #0b0f22;
     --inprogress-orange: #ff7e5b;
+    --search-highlight-text: #ffb54966;
 }

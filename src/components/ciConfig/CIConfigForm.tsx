@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { useForm } from '../common'
+import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, LoadingState } from './types'
+import { CIBuildArgType, CIConfigFormProps, CurrentMaterialType, LoadingState, SelectedGitMaterialType, SourceConfigType } from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
@@ -55,7 +54,7 @@ export default function CIConfigForm({
     loadingStateFromParent,
     setLoadingStateFromParent,
 }: CIConfigFormProps) {
-    const currentMaterial =
+    const currentMaterial: CurrentMaterialType =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
                   (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
@@ -74,8 +73,29 @@ export default function CIConfigForm({
                     (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
                 )
               : sourceConfig.material[0]
-    const currentBuildContextGitMaterial = buildCtxGitMaterial || currentMaterial
-    const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
+
+    const getParsedCurrentMaterial = (material?): SelectedGitMaterialType => {
+        const _currentMaterial = {
+            ...material,
+            name: material?.name || currentMaterial.name,
+            url: material?.url || currentMaterial.url,
+            value: material?.id || currentMaterial.id,
+            label: material?.name || currentMaterial.name,
+            startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
+            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath
+        }
+        return _currentMaterial
+    }
+
+    const getParsedSourceConfig = (): SourceConfigType => {
+        const _sourceConfig = { ...sourceConfig }
+        _sourceConfig.material = _sourceConfig.material.map(getParsedCurrentMaterial)
+        return _sourceConfig
+    }
+
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || getParsedCurrentMaterial()
+
+    const [selectedMaterial, setSelectedMaterial] = useState<SelectedGitMaterialType>(getParsedCurrentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)
     const currentRegistry =
@@ -98,15 +118,15 @@ export default function CIConfigForm({
     const [apiInProgress, setApiInProgress] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
     let _selectedPlatforms = []
-    let _customTargetPlatorm = false
+    let _customTargetPlatform = false
     if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
         _selectedPlatforms = ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
-            _customTargetPlatorm = _customTargetPlatorm || !targetPlatformMap.get(platformValue)
+            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
             return { label: platformValue, value: platformValue }
         })
     }
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
-    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
+    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatform)
     const [showCustomPlatformConfirmation, setShowCustomPlatformConfirmation] = useState<boolean>(false)
     const [showConfigOverrideDiff, setShowConfigOverrideDiff] = useState<boolean>(false)
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter(
@@ -214,7 +234,7 @@ export default function CIConfigForm({
 
         const requestBody = {
             id: ciConfig?.id ?? null,
-            appId: +appId ?? null,
+            appId: +appId,
             dockerRegistry: registry.value || '',
             dockerRepository: repository_name.value?.replace(/\s/g, '') || '',
             beforeDockerBuild: [],
@@ -227,7 +247,10 @@ export default function CIConfigForm({
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
-            toast.success('Successfully saved.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
             reload(false, !isCiPipeline)
         } catch (err) {
             showError(err)
@@ -272,36 +295,20 @@ export default function CIConfigForm({
         handleOnChange(e)
 
         if (updateDockerConfigOverride) {
+            const { value } = e.target
+
             switch (e.target.name) {
                 case DockerConfigOverrideKeys.repository_name:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRepository, e.target.value)
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRepository, value)
                     break
                 case DockerConfigOverrideKeys.projectPath:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.projectPath, {
-                        ...currentCIBuildConfig,
-                        buildPackConfig: {
-                            ...currentCIBuildConfig.buildPackConfig,
-                            projectPath: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.projectPath, value)
                     break
                 case DockerConfigOverrideKeys.dockerfile:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerfileRelativePath, {
-                        ...currentCIBuildConfig,
-                        dockerBuildConfig: {
-                            ...currentCIBuildConfig.dockerBuildConfig,
-                            dockerfileRelativePath: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerfileRelativePath, value)
                     break
                 case DockerConfigOverrideKeys.buildContext:
-                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
-                        ...currentCIBuildConfig,
-                        dockerBuildConfig: {
-                            ...currentCIBuildConfig.dockerBuildConfig,
-                            buildContext: e.target.value,
-                        },
-                    })
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, value)
                     break
                 default:
                     break
@@ -350,11 +357,11 @@ export default function CIConfigForm({
                 />
                 <CIDockerFileConfig
                     ciConfig={ciConfig}
-                    sourceConfig={sourceConfig}
+                    sourceConfig={getParsedSourceConfig()}
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     selectedCIPipeline={selectedCIPipeline}
-                    currentMaterial={currentMaterial}
+                    currentMaterial={getParsedCurrentMaterial()}
                     currentBuildContextGitMaterial={currentBuildContextGitMaterial}
                     selectedMaterial={selectedMaterial}
                     selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}

@@ -28,14 +28,12 @@ const SourceTypeCard = ({
     handleCardAction,
     disableInfo,
 }: Readonly<SourceTypeCardProps>) => {
-    const renderTippy = (children) => {
-        return (
-            <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
-                {/* Since in disabled state Tippy does'nt work */}
-                <span>{children}</span>
-            </Tippy>
-        )
-    }
+    const renderTippy = (children) => (
+        <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
+            {/* Since in disabled state Tippy does'nt work */}
+            <span>{children}</span>
+        </Tippy>
+    )
 
     return (
         <ConditionalWrap wrap={renderTippy} condition={!!disableInfo}>

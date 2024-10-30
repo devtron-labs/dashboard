@@ -16,8 +16,7 @@
 
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
-import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoIconTippy, SelectPicker, SelectPickerVariantType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
@@ -62,7 +61,7 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     iconClassName="icon-dim-16 fcn-6"
                 />
             )}
-            <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
+            <div className="cn-6">{selectData.title}</div>
             <div>
                 <CreatableSelect
                     placeholder={selectData.placeholder}
@@ -87,18 +86,16 @@ const reactSelect = (selectData: ReactSelectType) => {
         <>
             {selectData.showDivider && <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />}
             <div className="cn-6 mr-10">{selectData.title}</div>
-            <div style={{ minWidth: '145px' }}>
-                <ReactSelect
-                    placeholder={selectData.placeholder}
-                    classNamePrefix={selectData.classNamePrefix}
-                    options={selectData.options}
-                    defaultValue={selectData.defaultValue}
-                    value={selectData.value}
-                    onChange={selectData.onChange}
-                    styles={selectData.styles}
-                    components={selectData.components}
-                />
-            </div>
+            <SelectPicker
+                inputId="cluster-terminal-debug-mode"
+                name="cluster-terminal-debug-mode"
+                placeholder={selectData.placeholder}
+                classNamePrefix={selectData.classNamePrefix}
+                options={selectData.options}
+                value={selectData.value}
+                onChange={selectData.onChange}
+                variant={SelectPickerVariantType.BORDER_LESS}
+            />
         </>
     )
 }
@@ -130,7 +127,7 @@ const connectionButton = (connectData: ConnectionButtonType) => {
             content={connectData.connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
         >
             {connectData.connectTerminal ? (
-                <span className="flex mr-8">
+                <span className="flex">
                     <Disconnect
                         className="icon-dim-16 mr-4 cursor"
                         data-testid="node-details-terminal-disconnect"
@@ -138,7 +135,7 @@ const connectionButton = (connectData: ConnectionButtonType) => {
                     />
                 </span>
             ) : (
-                <span className="flex mr-8">
+                <span className="flex">
                     <Connect
                         className="icon-dim-16 mr-4 cursor"
                         data-testid="node-details-terminal-connect"
@@ -161,7 +158,7 @@ const closeExpandView = (viewData: CloseExpandView) => {
                     className="default-tt"
                     arrow={false}
                     placement="top"
-                    content={viewData.isFullScreen ? 'Restore height' : 'Maximise height'}
+                    content={viewData.isFullScreen ? 'Restore height' : 'Maximize height'}
                 >
                     <div>
                         {viewData.isFullScreen ? (
@@ -199,7 +196,7 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             <Tippy
                 className="default-tt cursor"
                 arrow={false}
@@ -207,11 +204,11 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
                 content={switchProps.toggleButton ? 'Disconnect from pod' : 'Reconnect to pod'}
             >
                 {switchProps.toggleButton ? (
-                    <span className="mr-8 flex" data-testid="disconnect-button">
+                    <span className="flex" data-testid="disconnect-button">
                         <Stop className="icon-dim-16 fcr-5 mr-4 cursor" onClick={switchProps.stopTerminalConnection} />
                     </span>
                 ) : (
-                    <span className="mr-8 flex" data-testid="play-button">
+                    <span className="flex" data-testid="play-button">
                         <Play className="icon-dim-16 fcg-5 mr-4 cursor" onClick={switchProps.resumePodConnection} />
                     </span>
                 )}
@@ -226,7 +223,7 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     }
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-            <div className="flex mr-8" data-testid={clearProps.dataTestId}>
+            <div className="flex" data-testid={clearProps.dataTestId}>
                 <Abort className="icon-dim-16 mr-4 fcn-6 cursor" onClick={clearProps.setTerminalCleared} />
             </div>
         </Tippy>
@@ -239,7 +236,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
     }
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Debug mode"
@@ -251,7 +248,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                 />
             )}
             <span>Debug Mode</span>
-            <span className="toggle-icon-dim ml-8">
+            <span className="toggle-icon-dim">
                 <Toggle onSelect={selectData.onToggle} dataTestId="toggle-debug-mode" selected={selectData.isEnabled} />
             </span>
         </>
@@ -318,7 +315,7 @@ const manifestEditButtons = ({
 
     return (
         <>
-            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
                 <span
@@ -368,7 +365,7 @@ export default function terminalStripTypeData(elementData) {
             return closeExpandView(elementData)
         case TerminalWrapperType.REACT_SELECT:
             return reactSelect(elementData)
-        case TerminalWrapperType.CONNCTION_SWITCH:
+        case TerminalWrapperType.CONNECTION_SWITCH:
             return connectionSwitch(elementData)
         case TerminalWrapperType.CLEAR_BUTTON:
             return clearTerminal(elementData)

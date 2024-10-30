@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     showError,
     Progressing,
     DeleteDialog,
-    toastAccessDenied,
     PopupMenu,
     Checkbox,
     Reload,
     GenericEmptyState,
     CiPipelineSourceConfig,
+    EMPTY_STATE_STATUS,
+    Pagination,
+    ToastManager,
+    ToastVariantType,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
-import { Pagination } from '../common'
 import {
     getNotificationConfigurations,
     deleteNotifications,
@@ -53,7 +55,6 @@ import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { HostURLConfig } from '../../services/service.types'
 import { renderPipelineTypeIcon } from './notifications.util'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export interface NotificationConfiguration {
     id: number
@@ -72,6 +73,10 @@ export interface NotificationConfiguration {
         project: { id: number; name: string }[]
         application: { id: number; name: string }[]
         environment: { id: number; name: string }[]
+        cluster: {
+            id: number
+            name: string
+        }[]
     }
     singleDeletedId: number
     isVirtualEnvironment?: boolean
@@ -387,7 +392,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             .then((response) => {
                 this.setState({ showDeleteDialog: false })
                 this.getAllNotifications()
-                toast.success('Deleted Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Deleted Successfully',
+                })
+
             })
             .catch((error) => {
                 showError(error)
@@ -416,7 +425,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     CreateNewNotification = () => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
         } else {
             this.props.history.push(URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW)
         }
@@ -448,7 +460,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     validateAccess = (updateState): void => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
         } else {
             this.setState(updateState)
         }
@@ -460,7 +475,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     applyModifyEvents = (event) => {
         if (this.state.disableEdit) {
-            toastAccessDenied()
+           ToastManager.showToast({
+               variant: ToastVariantType.notAuthorized,
+               description: TOAST_ACCESS_DENIED.SUBTITLE,
+           })
         } else {
             this.updateNotificationEvents(event)
         }
@@ -626,7 +644,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     {row.pipelineName ? row.pipelineName : ''}
                                     {row.appliedFilters.environment?.length ||
                                     row.appliedFilters.application.length ||
-                                    row.appliedFilters.project?.length ? (
+                                    row.appliedFilters.project?.length ||
+                                    row.appliedFilters.cluster?.length ? (
                                         <>
                                             <i>All current and future pipelines matching.</i>
                                             <div className="dc__devtron-tag__container">
@@ -660,6 +679,17 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                             className="dc__devtron-tag mr-5"
                                                         >
                                                             Env:{element.name}
+                                                        </span>
+                                                    )
+                                                })}
+                                                {row.appliedFilters.cluster.map((element) => {
+                                                    return (
+                                                        <span
+                                                            data-testid={`${row.pipelineType}-${element.name}`}
+                                                            key={element.name}
+                                                            className="dc__devtron-tag mr-5"
+                                                        >
+                                                            Cluster:{element.name}
                                                         </span>
                                                     )
                                                 })}
@@ -758,6 +788,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         if (this.state.pagination.size) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     offset={this.state.pagination.offset}
                     pageSize={this.state.pagination.pageSize}
                     size={this.state.pagination.size}

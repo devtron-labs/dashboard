@@ -171,6 +171,8 @@ export const BUTTON_TEXT = {
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
+    ArgoCD = 'ArgoCD',
+    FluxCD = 'FluxCD',
 }
 
 export const APP_GROUP_CD_DETAILS = {
@@ -180,9 +182,7 @@ export const APP_GROUP_CD_DETAILS = {
     },
     noDeployment: {
         title: 'No deployments',
-        getSubtitle: (appName) => {
-            return `No deployment history available for the ${appName || ''} application.`
-        },
+        getSubtitle: (appName) => `No deployment history available for the ${appName || ''} application.`,
     },
 }
 
@@ -203,6 +203,7 @@ export const DEPLOYMENT_HISTORY_TAB = {
     VALUES_YAML: 'values.yaml',
     HELM_GENERATED_MANIFEST: 'Helm generated manifest',
     ARTIFACTS: 'Artifacts',
+    SECURITY: 'Security',
 }
 
 export const API_COMPONENTS = {

@@ -51,9 +51,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     )
 
     if (!variablesList?.length) {
-        return (
-            <GenericFilterEmptyState />
-        )
+        return <GenericFilterEmptyState />
     }
 
     return (
@@ -113,7 +111,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                                     {/* Some bug in tippy i have to wrap it in div otherwise outline comes */}
                                     <div className="flex center dc__content-start">
                                         <ICVisibilityOff
-                                            className="icon-dim-20 icon-fill-n6"
+                                            className="icon-dim-20 scn-6"
                                             data-testid="visibility-off"
                                         />
                                     </div>

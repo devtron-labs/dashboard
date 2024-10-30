@@ -17,21 +17,12 @@
 import moment from 'moment'
 import React from 'react'
 import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
-import { Nodes, NodeType, AggregationKeys } from '../../types'
-import {
-    getVersionArr,
-    isVersionLessThanOrEqualToTarget,
-    DayPickerRangeControllerPresets,
-} from '../../../common'
+import { AggregationKeys } from '../../types'
+import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
-import {
-    ChartTypes,
-    AppMetricsTabType,
-    StatusType,
-    StatusTypes,
-} from './appDetails.type'
-import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
+import { ZERO_TIME_STRING, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import CreatableSelect from 'react-select/creatable'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -129,6 +120,7 @@ export const ThroughputSelect = (props) => {
     return (
         <CreatableSelect
             className=""
+            inputId="throughput-select"
             placeholder="Status Code"
             value={{ label: props.status, value: props.status }}
             options={[

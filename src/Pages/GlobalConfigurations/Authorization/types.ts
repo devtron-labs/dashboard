@@ -22,9 +22,14 @@ import {
     OptionType,
     UserStatus,
     UserRoleGroup,
+    UserGroupType,
+    UserGroupDTO,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
+    CustomRoleAndMeta,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
-import { ActionTypes, EntityTypes, PermissionType } from './constants'
+import { SERVER_MODE } from '../../../config'
+import { ActionTypes, PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -126,10 +131,14 @@ export interface UserDto {
         status?: UserStatusDto
         timeoutWindowExpression?: string
     }[]
+    userGroups: UserGroupDTO[]
 }
 
 export interface User
-    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
+    extends Omit<
+        UserDto,
+        'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters' | 'userGroups'
+    > {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -141,12 +150,19 @@ export interface User
     userStatus: UserStatus
     userRoleGroups: UserRoleGroup[]
     roleFilters: APIRoleFilter[]
+    userGroups: UserGroupType[]
 }
 
-export type UserCreateOrUpdatePayload = Pick<
+export type UserCreateOrUpdateParamsType = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
->
+> & {
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
+}
+
+export interface UserCreateOrUpdatePayloadType extends Omit<UserDto, 'userGroups'> {
+    userGroups: Pick<UserGroupDTO, 'identifier'>[]
+}
 
 // Others
 export interface UserRole {
@@ -156,8 +172,14 @@ export interface UserRole {
     roles: string[]
     /**
      * If true, the user has super admin role
+     * @note If false, this key won't be present
      */
-    superAdmin: boolean
+    superAdmin?: boolean
+    /**
+     * Role of the user
+     * @note This key is present only when superAdmin is false
+     */
+    role?: UserRoleType
 }
 
 export type UserBulkDeletePayload =
@@ -175,31 +197,6 @@ export type PermissionGroupBulkDeletePayload =
     | {
           filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
       }
-
-export interface CustomRoles {
-    id: number
-    roleName: string
-    roleDisplayName: string
-    roleDescription: string
-    entity: EntityTypes
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
-}
-
-export type MetaPossibleRoles = Record<
-    CustomRoles['roleName'],
-    {
-        value: CustomRoles['roleDisplayName']
-        description: CustomRoles['roleDescription']
-    }
->
-
-export interface CustomRoleAndMeta {
-    customRoles: CustomRoles[]
-    possibleRolesMeta: MetaPossibleRoles
-    possibleRolesMetaForHelm: MetaPossibleRoles
-    possibleRolesMetaForCluster: MetaPossibleRoles
-    possibleRolesMetaForJob: MetaPossibleRoles
-}
 
 export interface AuthorizationContextProps {
     customRoles: CustomRoleAndMeta
@@ -239,6 +236,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatu
         value: string
         configApprover?: boolean
         artifactPromoter?: boolean
+        terminalExec?: boolean
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     workflow?: OptionType[]
@@ -263,10 +261,10 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups'> {
     id: number
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     userIdentifier: string
-    userGroups: User['userRoleGroups']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter

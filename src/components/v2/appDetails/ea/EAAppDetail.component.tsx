@@ -15,8 +15,14 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useLocation, useHistory } from 'react-router'
-import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { useLocation, useHistory } from 'react-router-dom'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ServerErrors,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
 import {
@@ -98,6 +104,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
             helmReleaseStatus: helmAppDetail.releaseStatus,
             clusterId: helmAppDetail.environmentDetails.clusterId,
             notes: helmAppDetail.chartMetadata.notes,
+            deploymentAppType: DeploymentAppTypes.HELM,
         }
 
         if (installedAppInfo) {

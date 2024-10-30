@@ -15,62 +15,24 @@
  */
 
 import React, { Component } from 'react'
-import { showError, Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getCVEPolicies } from './security.service'
 import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
-import { VulnerabilityAction } from './security.types'
+import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg'
-
-export interface AddCveModalProps {
-    close: () => void
-    saveCVE: (cve: string, policy: VulnerabilityAction) => void
-}
-
-export interface AddCveModalState {
-    view: string
-    cve: string
-    cveError: boolean
-    policy: VulnerabilityAction
-    clusters: {
-        name: string
-        policy: VulnerabilityAction
-        isCollapsed: boolean
-        environments: [
-            {
-                name: string
-                isCollapsed: boolean
-                policy: VulnerabilityAction
-                applications: {
-                    name: string
-                    policy: VulnerabilityAction
-                }[]
-            },
-        ]
-    }[]
-}
-
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
-    _inputRef
-
     constructor(props) {
         super(props)
         this.state = {
             view: ViewType.FORM,
             cve: '',
             policy: VulnerabilityAction.allow,
-            cveError: false,
             clusters: [],
         }
         this.handleCveChange = this.handleCveChange.bind(this)
         this.handlePolicyChange = this.handlePolicyChange.bind(this)
         this.searchCVE = this.searchCVE.bind(this)
-    }
-
-    componentDidMount() {
-        if (this._inputRef) {
-            this._inputRef.focus()
-        }
     }
 
     handleCveChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -87,7 +49,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         if (regex.test(cve)) {
             this.props.saveCVE(this.state.cve, this.state.policy)
         } else {
-            this.setState({ cveError: true })
+            this.props.setCVEErrorToTrue()
         }
     }
 
@@ -102,7 +64,8 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                 })
             })
             .catch((error) => {
-                showError(error)
+                this.props.setCVEErrorToTrue()
+                this.setState({ view: ViewType.FORM })
             })
     }
 
@@ -139,7 +102,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     </p>
                                     {cluster.isCollapsed ? null : (
                                         <ul className="nested-list">
-                                            {cluster.environments.map((env) => {
+                                            {cluster.environments.map((env: ClusterEnvironment) => {
                                                 return (
                                                     <li key={env.name} className="nested-list__pl">
                                                         <p className="nested-list__item flexbox flex-justify">
@@ -199,14 +162,13 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                 <CustomInput
                                     name="cve"
                                     label="CVE ID"
-                                    ref={(node) => (this._inputRef = node)}
                                     autoFocus
                                     tabIndex={1}
                                     placeholder="Enter CVE ID"
                                     value={this.state.cve}
                                     onChange={this.handleCveChange}
                                     isRequiredField
-                                    error={this.state.cveError && CVE_ID_NOT_FOUND}
+                                    error={this.props.isCveError && CVE_ID_NOT_FOUND}
                                 />
                             </label>
                             {/* <button type="submit" className="cta mb-5" tabIndex={2} onClick={this.searchCVE}>Search</button> */}
@@ -220,7 +182,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     tabIndex={1}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.allow}
-                                />{' '}
+                                />&nbsp;
                                 <span className="ml-10 mr-5">Allow</span>
                             </label>
                             <label className="form__label form__label--flex cursor ml-10">
@@ -246,9 +208,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                 <span className="ml-10 mr-5">Block if fix is available</span>
                             </label>
                         </div>
-                        {/* <hr className="mt-10 mb-20"></hr>
-                    {this.renderList()}
-                    <hr className="mt-6 mb-16"></hr> */}
                         <div className="flex right form-row">
                             <button
                                 type="button"

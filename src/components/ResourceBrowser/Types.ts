@@ -15,7 +15,13 @@
  */
 
 import React from 'react'
-import { K8SObjectBaseType, ResponseType, Nodes, NodeType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    K8SObjectBaseType,
+    ResponseType,
+    OptionType,
+    ApiResourceGroupType,
+    GVKType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
@@ -31,24 +37,6 @@ export interface ResourceDetailType {
 
 export interface ResourceListResponse extends ResponseType {
     result?: ResourceDetailType
-}
-
-/**
- * @deprecated Use this type from common lib instead
- */
-export interface GVKType {
-    Group: string
-    Version: string
-    Kind: Nodes | NodeType
-}
-
-/**
- * @deprecated Use this type from common lib instead
- */
-export interface ApiResourceGroupType {
-    gvk: GVKType
-    namespaced: boolean
-    isGrouped?: boolean
 }
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -116,6 +104,7 @@ export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
     isSuperAdmin: boolean
     clusterListLoader: boolean
+    initialLoading: boolean
     refreshData: () => void
 }
 
@@ -200,20 +189,18 @@ export interface ConnectingToClusterStateProps {
     requestAbortController: AbortController
 }
 
-export interface K8sObjectOptionType extends OptionType {
-    description: string
-    dataset: {
-        group: string
-        version: string
-        kind: string
-        namespaced: string
-        grouped: string
-    }
-    groupName: string
+interface K8sObjectOptionTypeDataset extends Pick<ApiResourceGroupType, 'shortNames'> {
+    group: string
+    version: string
+    kind: string
+    namespaced: string
+    grouped: string
 }
 
-export interface K8Abbreviates {
-    [key: string]: string
+export interface K8sObjectOptionType extends OptionType {
+    description: string
+    dataset: K8sObjectOptionTypeDataset
+    groupName: string
 }
 
 export interface K8SResourceTabComponentProps {

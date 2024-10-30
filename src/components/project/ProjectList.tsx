@@ -20,9 +20,11 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import { DOCUMENTATION, ViewType } from '../../config'
+import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
@@ -62,7 +64,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             })
             .catch((errors) => {
                 if (Array.isArray(errors.error)) {
-                    errors.error.map((err) => toast.error(err.userMessage))
+                    errors.error.map((err) =>
+                        ToastManager.showToast({
+                            variant: ToastVariantType.error,
+                            description: err.userMessage,
+                        }),
+                    )
                 }
                 this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
             })
@@ -134,7 +141,10 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ loadingData: true, isValid })
         createProject(project)
             .then((response) => {
-                toast.success('Project Created Successfully')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Project Created Successfully',
+                })
                 projects[index] = {
                     ...response.result,
                     isCollapsed: true,
@@ -168,22 +178,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     renderPageHeader() {
         return (
-            <>
-                <h1 className="form__title" data-testid="project-list-title">
-                    Projects
-                </h1>
-                <p className="form__subtitle">
-                    Manage your organization's projects.&nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT}
-                        rel="noopener noreferer noreferrer"
-                        target="_blank"
-                    >
-                        Learn more about projects.
-                    </a>
-                </p>
-            </>
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.PROJECTS.title}
+                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
+                docLink={HEADER_TEXT.PROJECTS.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="project-list-title"
+            />
         )
     }
 

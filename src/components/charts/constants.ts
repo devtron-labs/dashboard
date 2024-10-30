@@ -31,3 +31,10 @@ export const NAME_REGEX_PATTERN = 'name must follow `^[a-z]+[a-z0-9-?]*[a-z0-9]+
 export const EMPTY_ENV = 'Environment is mandatory'
 
 export const APP_NAME_TAKEN = 'App name already taken'
+
+export enum CHART_KEYS {
+    CHART_REPO = 'chart-repo',
+    DEPRECATED = 'deprecated',
+    SEARCH = 'search',
+    CLEAR = 'clear',
+}

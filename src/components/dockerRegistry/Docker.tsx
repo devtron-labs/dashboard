@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FocusEventHandler, KeyboardEventHandler, useEffect, useState } from 'react'
+import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -43,10 +43,13 @@ import {
     MultiValueRemove,
     MultiValueChipContainer,
     OptionType,
+    DeleteComponent,
+    SelectPicker,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
@@ -78,13 +81,13 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
+    EAModeRegistryType,
     RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
@@ -216,7 +219,7 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    iconClassName="icon-dim-16 ml-4"
+                    iconClassName="icon-dim-20 ml-4"
                 />
             </div>
             {dockerRegistryList.map((docker) => (
@@ -845,7 +848,10 @@ const DockerForm = ({
 
     const handleDefaultChange = (e) => {
         if (isDefault) {
-            toast.success('Please mark another as default.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Please mark another as default.',
+            })
             return
         }
         toggleDefault(not)
@@ -871,7 +877,6 @@ const DockerForm = ({
                 const message = error['errors'][0].userMessage
                 if (code === 400) {
                     setValidationStatus(VALIDATION_STATUS.FAILURE)
-                    // toast.error('Configuration validation failed')
                     setValidationError({ errTitle: message, errMessage: message })
                 } else {
                     // showError(error)
@@ -906,7 +911,10 @@ const DockerForm = ({
             }
             await reload()
             await setToggleCollapse()
-            toast.success('Successfully saved.')
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
         } catch (err) {
             if (err instanceof ServerErrors && Array.isArray(err.errors) && err.code === 409) {
                 err.errors.map(({ userMessage, internalMessage }) => {
@@ -1651,7 +1659,7 @@ const DockerForm = ({
                                         tabIndex={6}
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
-                                        handleOnBlur={id && handleOnBlur}
+                                        onBlur={id && handleOnBlur}
                                         onFocus={handleOnFocus}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
@@ -1698,7 +1706,7 @@ const DockerForm = ({
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    handleOnBlur={id && handleOnBlur}
+                                    onBlur={id && handleOnBlur}
                                     onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
@@ -1780,7 +1788,7 @@ const DockerForm = ({
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    handleOnBlur={id && handleOnBlur}
+                                    onBlur={id && handleOnBlur}
                                     onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
@@ -1821,8 +1829,9 @@ const DockerForm = ({
             )
         }
     }
+
     // For EA Mode GCR is not available as it is not OCI compliant
-    const EA_MODE_REGISTRY_TYPE_MAP = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
+    const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
@@ -1832,15 +1841,12 @@ const DockerForm = ({
                         selectedDockerRegistryType.value === RegistryType.GCR ? 'mb-16' : ''
                     }`}
                 >
-                    <div className="flex left column top">
-                        <label htmlFor="" className="form__label w-100 cb-7 dc__required-field">
-                            Registry provider
-                        </label>
-                        <ReactSelect
+                    <div>
+                        <SelectPicker
+                            inputId="container-registry-type"
+                            label="Registry provider"
+                            required
                             classNamePrefix="select-container-registry-type"
-                            className="m-0 w-100"
-                            tabIndex={1}
-                            isMulti={false}
                             isClearable={false}
                             options={
                                 isHyperionMode
@@ -1850,12 +1856,6 @@ const DockerForm = ({
                             getOptionLabel={(option) => `${option.label}`}
                             getOptionValue={(option) => `${option.value}`}
                             value={selectedDockerRegistryType}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: registryOptions,
-                                Control: registryControls,
-                            }}
                             onChange={handleRegistryTypeChange}
                             isDisabled={!!id}
                         />

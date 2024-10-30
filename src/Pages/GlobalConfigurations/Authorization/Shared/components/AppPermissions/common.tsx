@@ -16,12 +16,11 @@
 
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
-import { Checkbox, CHECKBOX_VALUE, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, noop, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { components } from 'react-select'
 import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { EntityTypes } from '../../../constants'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
 
 export const WorkflowGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
@@ -113,17 +112,11 @@ export const ClusterValueContainer = (props) => {
     } else {
         count = `${length} environment${length !== 1 ? 's' : ''}`
     }
+
     return (
         <components.ValueContainer {...props}>
-            {length > 0 ? (
-                <>
-                    {!props.selectProps.menuIsOpen && count}
-                    {React.cloneElement(props.children[1])}
-                </>
-            ) : (
-                // eslint-disable-next-line react/jsx-no-useless-fragment
-                <>{props.children}</>
-            )}
+            {!props.selectProps.menuIsOpen && (length > 0 ? count : props.selectProps.placeholder)}
+            {React.cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }

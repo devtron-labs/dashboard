@@ -20,6 +20,12 @@ import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
+import {
+    useMainContext,
+    LogResizeButton,
+    IS_PLATFORM_MAC_OS,
+    UseRegisterShortcutProvider,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
@@ -27,7 +33,7 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
-import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
 
 export default function TerminalView({
     terminalRef,
@@ -36,6 +42,7 @@ export default function TerminalView({
     setSocketConnection,
     isTerminalTab = true,
     renderConnectionStrip,
+    metadata,
     registerLinkMatcher,
     terminalMessageData,
     clearTerminal,
@@ -46,6 +53,7 @@ export default function TerminalView({
     const termDivRef = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
+    const [fullScreenView, setFullScreenView] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const fitAddon = useRef(null)
     const { isSuperAdmin } = useMainContext()
@@ -234,6 +242,11 @@ export default function TerminalView({
         }
     }, [firstMessageReceived, isTerminalTab])
 
+    const handleToggleFullscreen = () => {
+        setFullScreenView((prev) => !prev)
+        terminalRef.current?.focus()
+    }
+
     useEffect(() => {
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
@@ -262,17 +275,45 @@ export default function TerminalView({
         }
     }, [clearTerminal])
 
+    // NOTE: by default events from textarea are also ignored
+    // since terminal is a textarea we need to override the ignoreTags property
     return (
-        <div className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
-            {renderConnectionStrip()}
+        <UseRegisterShortcutProvider ignoreTags={['input']}>
             <div
-                ref={termDivRef}
-                id="terminal-id"
-                data-testid="terminal-editor-container"
-                className="mt-8 mb-4 terminal-component ml-20"
+                className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`}
+                data-testid={dataTestId}
             >
-                <CopyToast showCopyToast={popupText} />
+                {renderConnectionStrip()}
+                {fullScreenView && (
+                    <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                        <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
+                        {Object.entries(metadata).map(([key, value], index, arr) => (
+                            <React.Fragment key={key}>
+                                <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
+                                    {key}:&nbsp;{value || '-'}
+                                </span>
+                                {index < arr.length - 1 && <div className="dc__divider h12" />}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                )}
+                <div
+                    ref={termDivRef}
+                    id="terminal-id"
+                    data-testid="terminal-editor-container"
+                    className={`mt-8 mb-4 terminal-component ${
+                        fullScreenView ? 'terminal-component--fullscreen' : ''
+                    } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                >
+                    <CopyToast showCopyToast={popupText} />
+                    <LogResizeButton
+                        shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
+                        showOnlyWhenPathIncludesLogs={false}
+                        fullScreenView={fullScreenView}
+                        setFullScreenView={handleToggleFullscreen}
+                    />
+                </div>
             </div>
-        </div>
+        </UseRegisterShortcutProvider>
     )
 }

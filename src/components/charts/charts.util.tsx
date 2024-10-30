@@ -116,6 +116,7 @@ export const QueryParams = {
     IncludeDeprecated: 'includeDeprecated',
     AppStoreName: 'appStoreName',
     RegistryId: 'registryId',
+    SearchKey: 'searchKey',
 }
 
 export const PaginationParams = {
@@ -137,14 +138,5 @@ export const renderAdditionalErrorInfo = (
                 </span>
             </>
         )
-    )
-}
-
-export const renderToastMessage = (title: string, description: string) => {
-    return (
-        <>
-            {title}
-            {!!description && <p className="m-0 cr-5">{description}</p>}
-        </>
     )
 }

@@ -16,17 +16,20 @@
 
 /* eslint-disable no-param-reassign */
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
+import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
     OptionType,
     ReactSelectInputAction,
     showError,
+    TabGroup,
     useAsync,
     useMainContext,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EntityTypes, ActionTypes } from '../../../constants'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
+import { ActionTypes } from '../../../constants'
+import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
@@ -189,12 +192,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsList((appList) => {
-            return missingProjects.reduce((_appList, projectId) => {
+        setAppsList((appList) =>
+            missingProjects.reduce((_appList, projectId) => {
                 _appList.set(projectId, { loading: true, result: [], error: null })
                 return _appList
-            }, appList)
-        })
+            }, appList),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
@@ -227,12 +230,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsListHelmApps((appListHelmApps) => {
-            return missingProjects.reduce((_appListHelmApps, projectId) => {
+        setAppsListHelmApps((appListHelmApps) =>
+            missingProjects.reduce((_appListHelmApps, projectId) => {
                 _appListHelmApps.set(projectId, { loading: true, result: [], error: null })
                 return _appListHelmApps
-            }, appListHelmApps)
-        })
+            }, appListHelmApps),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.HELM_APPS)
 
@@ -328,7 +331,7 @@ const AppPermissions = () => {
 
         return [
             ...defaultValueArr,
-            ...(selectedCluster.environments?.map((env) => ({
+            ...(selectedCluster?.environments?.map((env) => ({
                 label: env.environmentName,
                 value: env.environmentIdentifier,
                 namespace: env.namespace,
@@ -720,9 +723,10 @@ const AppPermissions = () => {
         const { value } = option || { value: '' }
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
-                const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
-                    return [...acc, ..._option.options]
-                }, [])
+                const allWorkflowOptions = workflowList?.options?.reduce(
+                    (acc, _option) => [...acc, ..._option.options],
+                    [],
+                )
                 tempPermissions[index].workflow = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
                 tempPermissions[index].workflowError = null
             } else {
@@ -889,23 +893,24 @@ const AppPermissions = () => {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            <ul className="tab-list dc__border-bottom-n1">
-                {navLinksConfig.map(
-                    ({ isHidden, label, tabName }) =>
-                        !isHidden && (
-                            <li className="tab-list__tab" key={tabName}>
-                                <NavLink
-                                    to={_getNavLinkUrl(tabName)}
-                                    data-testid={tabName}
-                                    className="tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize"
-                                    activeClassName="active"
-                                >
-                                    {label}
-                                </NavLink>
-                            </li>
-                        ),
-                )}
-            </ul>
+            <div className="dc__border-bottom-n1">
+                <TabGroup
+                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName }) =>
+                        !isHidden
+                            ? {
+                                  id: tabName,
+                                  label,
+                                  tabType: 'navLink',
+                                  props: {
+                                      to: _getNavLinkUrl(tabName),
+                                      'data-testid': tabName,
+                                  },
+                              }
+                            : [],
+                    )}
+                    alignActiveBorderWithContainer
+                />
+            </div>
             <div>
                 <Switch>
                     {appPermissionDetailConfig.map(

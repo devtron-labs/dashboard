@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
-import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
+import { Component } from 'react'
+import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION, HEADER_TEXT } from '../../config'
 import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {
@@ -33,38 +32,36 @@ export default class Notifications extends Component<NotificationsProps, {}> {
         return (
             <div className="notification-page">
                 <div className="notification-page__header">
-                    <h2 className="form__title">Notifications</h2>
-                    <p className="form__subtitle">
-                        Manage notifications for build and deployment pipelines.&nbsp;
-                        <a
-                            className="dc__link"
-                            rel="noreferrer noopener"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
-                            target="_blank"
-                        >
-                            Learn more about notifications
-                        </a>
-                    </p>
-                    <ul className="tab-list">
-                        <li className="tab-list__tab">
-                            <NavLink
-                                data-testid="notifications-link-button"
-                                to={`${this.props.match.path}/channels`}
-                                className="tab-list__tab-link"
-                            >
-                                Notifications
-                            </NavLink>
-                        </li>
-                        <li className="tab-list__tab">
-                            <NavLink
-                                data-testid="configurations-link-button"
-                                to={`${this.props.match.path}/configurations`}
-                                className="tab-list__tab-link"
-                            >
-                                Configurations
-                            </NavLink>
-                        </li>
-                    </ul>
+                    <FeatureTitleWithInfo
+                        title={HEADER_TEXT.NOTIFICATIONS.title}
+                        renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
+                        docLink={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
+                        showInfoIconTippy
+                        dataTestId="notifications-feature-title"
+                    />
+                    <TabGroup
+                        tabs={[
+                            {
+                                id: 'notifications-tab',
+                                label: 'Notifications',
+                                tabType: 'navLink',
+                                props: {
+                                    to: `${this.props.match.path}/channels`,
+                                    'data-testid': 'notifications-link-button',
+                                },
+                            },
+                            {
+                                id: 'configurations-tab',
+                                label: 'Configurations',
+                                tabType: 'navLink',
+                                props: {
+                                    to: `${this.props.match.path}/configurations`,
+                                    'data-testid': 'configurations-link-button',
+                                },
+                            },
+                        ]}
+                        alignActiveBorderWithContainer
+                    />
                 </div>
                 <ErrorBoundary>
                     <Switch>

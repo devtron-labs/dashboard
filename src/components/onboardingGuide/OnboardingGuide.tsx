@@ -16,10 +16,11 @@
 
 import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+import { AppListConstants, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { AppListConstants, ModuleNameMap, SERVER_MODE, URLS } from '../../config'
+import { SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import GuideCommonHeader from './GuideCommonHeader'

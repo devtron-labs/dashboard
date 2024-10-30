@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+import { useState, useMemo, Component, useRef } from 'react'
 import {
     showError,
     Progressing,
@@ -24,9 +24,12 @@ import {
     sortCallback,
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
+    FeatureTitleWithInfo,
+    DeleteComponent,
+    ToastVariantType,
+    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
-import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
@@ -47,19 +50,11 @@ import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environm
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
-import {
-    DOCUMENTATION,
-    SERVER_MODE,
-    ViewType,
-    URLS,
-    CONFIGURATION_TYPES,
-    AppCreationType,
-} from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
-import Environment from './Environment'
+import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -109,12 +104,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) {
             clearInterval(this.timerRef)
         }
-        Promise.all([
-            getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
-                ? { result: undefined }
-                : getEnvironmentList(),
-        ])
+        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? { result: undefined } : getEnvironmentList()])
             .then(([clusterRes, envResponse]) => {
                 const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
@@ -249,16 +239,20 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             return <Reload className="dc__align-reload-center" />
         }
 
-        const moduleBasedTitle = `Clusters${
-            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments'
-        }`
+        const moduleBasedTitle = `Clusters${window._env_.K8S_CLIENT ? '' : ' and Environments'}`
         return (
             <section className="global-configuration__component flex-1">
                 <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
-                    <h2 className="form__title">{moduleBasedTitle}</h2>
+                    <FeatureTitleWithInfo
+                        title={moduleBasedTitle}
+                        renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
+                        docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        showInfoIconTippy
+                        additionalContainerClasses="mb-20"
+                    />
                     <button
                         type="button"
-                        className="flex cta h-32 lh-n fcb-5"
+                        className="flex cta h-32 lh-n fcb-5 mb-20"
                         onClick={() =>
                             this.setState({
                                 showAddCluster: true,
@@ -272,17 +266,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         Add cluster
                     </button>
                 </div>
-                <p className="form__subtitle">
-                    Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                        rel="noopener noreferer noreferrer"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
-                </p>
                 {this.state.clusters.map(
                     (cluster) =>
                         cluster.id && (
@@ -372,7 +355,6 @@ const Cluster = ({
     })
     const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
-    const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
 
     const isDefaultCluster = (): boolean => {
@@ -514,7 +496,10 @@ const Cluster = ({
             const payload = {}
             const { result } = await retryClusterInstall(clusterId, payload)
             if (result) {
-                toast.success('Successfully triggered')
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: 'Successfully triggered',
+                })
             }
             reload()
         } catch (error) {
@@ -537,9 +522,9 @@ const Cluster = ({
     const getEnvironmentPayload = () => {
         return {
             id: environment.id,
-            environment_name: environment.environment_name,
-            cluster_id: environment.cluster_id,
-            prometheus_endpoint: environment.prometheus_endpoint,
+            environment_name: environment.environmentName,
+            cluster_id: environment.clusterId,
+            prometheus_endpoint: environment.prometheusEndpoint,
             namespace: environment.namespace || '',
             active: true,
             default: environment.isProduction,
@@ -558,11 +543,14 @@ const Cluster = ({
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
             payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } 
+        }
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password')
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please add both username and password',
+                })
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''
@@ -590,18 +578,6 @@ const Cluster = ({
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
-
-    const outsideClickHandler = (evt): void => {
-        if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
-            setShowWindow(false)
-        }
-    }
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     const envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
@@ -631,10 +607,10 @@ const Cluster = ({
     const addCluster = () => {
         setEnvironment({
             id: null,
-            environment_name: null,
-            cluster_id: clusterId,
+            environmentName: null,
+            clusterId,
             namespace: null,
-            prometheus_url,
+            prometheusEndpoint: prometheus_url,
             isProduction: null,
             description: null,
         })
@@ -668,7 +644,7 @@ const Cluster = ({
         toggleEditMode((t) => !t)
     }
 
-    const subTitle: string = isVirtualCluster ? 'Virtual cluster' : server_url
+    const subTitle: string = isVirtualCluster ? 'Isolated cluster' : server_url
 
     return (
         <>
@@ -734,10 +710,7 @@ const Cluster = ({
                         }}
                     />
                 )}
-                {serverMode !== SERVER_MODE.EA_ONLY &&
-                !window._env_.K8S_CLIENT &&
-                Array.isArray(newEnvs) &&
-                newEnvs.length > 1 ? (
+                {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div />
@@ -765,10 +738,10 @@ const Cluster = ({
                                             onClick={() =>
                                                 setEnvironment({
                                                     id,
-                                                    environment_name,
-                                                    cluster_id: clusterId,
+                                                    environmentName: environment_name,
+                                                    clusterId,
                                                     namespace,
-                                                    prometheus_url,
+                                                    prometheusEndpoint: prometheus_url,
                                                     isProduction,
                                                     description,
                                                 })
@@ -834,7 +807,7 @@ const Cluster = ({
                                 setDeleting={clusterDelete}
                                 deleteComponent={deleteEnvironment}
                                 payload={getEnvironmentPayload()}
-                                title={environment.environment_name}
+                                title={environment.environmentName}
                                 toggleConfirmation={toggleConfirmation}
                                 component={DeleteComponentsName.Environment}
                                 confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
@@ -878,18 +851,13 @@ const Cluster = ({
                 )}
             </article>
             {showWindow && (
-                <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <div className="h-100 bcn-0" ref={editLabelRef}>
-                        <Environment
-                            reload={reload}
-                            cluster_name={cluster_name}
-                            {...environment}
-                            hideClusterDrawer={hideClusterDrawer}
-                            isNamespaceMandatory={!isVirtualCluster}
-                            isVirtual={isVirtualCluster}
-                        />
-                    </div>
-                </Drawer>
+                <ClusterEnvironmentDrawer
+                    reload={reload}
+                    cluster_name={cluster_name}
+                    {...environment}
+                    hideClusterDrawer={hideClusterDrawer}
+                    isVirtual={isVirtualCluster}
+                />
             )}
         </>
     )
