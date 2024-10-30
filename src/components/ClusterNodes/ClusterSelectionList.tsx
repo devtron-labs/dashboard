@@ -47,6 +47,10 @@ const getClusterMapData = (data: ClusterDetail[]): ClusterTreeMapData['data'] =>
         value: nodeCount ?? 0,
     }))
 
+const parseSearchParams = (searchParams: URLSearchParams) => ({
+    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
+})
+
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
     isSuperAdmin,
@@ -57,15 +61,18 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     const location = useLocation()
     const history = useHistory()
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
-    const [clusterFilter, setClusterFilter] = useState<ClusterFiltersType>(ClusterFiltersType.ALL_CLUSTERS)
 
-    const { searchKey, handleSearch, clearFilters } = useUrlFilters()
+    const { searchKey, clusterFilter, updateSearchParams, handleSearch, clearFilters } = useUrlFilters<
+        void,
+        { clusterFilter: ClusterFiltersType }
+    >({ parseSearchParams })
 
     const filteredList = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
         return clusterOptions.filter((option) => {
             const filterCondition =
                 clusterFilter === ClusterFiltersType.ALL_CLUSTERS ||
+                !option.status ||
                 option.status === ClusterStatusByFilter[clusterFilter]
 
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
@@ -120,6 +127,10 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     const handleRefresh = () => {
         refreshData()
         setLastSyncTime(dayjs())
+    }
+
+    const setClusterFilter = (_clusterFilter: ClusterFiltersType) => {
+        updateSearchParams({ clusterFilter: _clusterFilter })
     }
 
     const getOpenTerminalHandler = (clusterData) => () =>
