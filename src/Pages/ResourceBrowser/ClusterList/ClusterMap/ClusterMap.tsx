@@ -31,7 +31,7 @@ const ClusterTreeMapContent = ({
         <Tooltip
             alwaysShowTippyOnHover
             content={
-                <div className="flexbox-col dc__gap-8 px-10 py-6 fs-12 lh-18">
+                <div className="flexbox-col dc__gap-8 fs-12 lh-18">
                     <div className="flexbox-col dc__gap-2">
                         <span className="fw-6 cn-0">{name}</span>
                         <span className="cn-50">{`${value} Nodes`}</span>
