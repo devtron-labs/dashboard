@@ -84,6 +84,7 @@ const ResourceList = () => {
                 'name',
                 'id',
                 'nodeErrors',
+                'isProd',
             ) as ClusterOptionType[]),
         [clusterList],
     )
@@ -95,6 +96,7 @@ const ResourceList = () => {
                 label: '',
                 value: clusterId,
                 errorInConnecting: '',
+                isProd: false,
             },
         [clusterId, clusterOptions],
     )

@@ -125,6 +125,7 @@ export interface SidebarType {
 
 export interface ClusterOptionType extends OptionType {
     errorInConnecting: string
+    isProd: boolean
 }
 
 export interface ResourceFilterOptionsProps {
