@@ -65,8 +65,8 @@ const ClusterTreeMapContent = ({
 
 export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapProps) =>
     treeMapData.length ? (
-        <div className="cluster-map pb-16 px-20 bcn-50">
-            <div className="w-100 p-12 bcn-0 dc__border br-4 flexbox dc__align-items-center dc__gap-6">
+        <div className="cluster-map pb-16 px-20">
+            <div className="w-100 p-12 dc__border-n1 br-8 flexbox dc__align-items-center dc__gap-6">
                 {isLoading ? (
                     <div className="w-100 flexbox-col dc__gap-4">
                         <div className="shimmer-loading h-16" />
