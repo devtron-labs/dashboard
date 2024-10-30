@@ -44,7 +44,7 @@ const getClusterMapData = (data: ClusterDetail[]): ClusterTreeMapData['data'] =>
         name,
         status: status as ClusterTreeMapData['data'][0]['status'],
         href: `${URLS.RESOURCE_BROWSER}/${id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-        value: nodeCount,
+        value: nodeCount ?? 0,
     }))
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
@@ -73,29 +73,40 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }, [searchKey, clusterOptions, clusterFilter])
 
     const treeMapData = useMemo<ClusterTreeMapData[]>(() => {
-        const healthyUnhealthyClusters = filteredList.filter(
-            ({ status }) => status !== ClusterStatusType.CONNECTION_FAILED,
+        const { prodClusters, nonProdClusters } = filteredList.reduce(
+            (acc, curr) => {
+                if (curr.status && curr.status !== ClusterStatusType.CONNECTION_FAILED) {
+                    if (curr.isProd) {
+                        acc.prodClusters.push(curr)
+                    } else {
+                        acc.nonProdClusters.push(curr)
+                    }
+                }
+
+                return acc
+            },
+            { prodClusters: [], nonProdClusters: [] },
         )
 
-        const productionClusters = healthyUnhealthyClusters.filter(({ isProd }) => isProd)
-        const nonProductionClusters = healthyUnhealthyClusters.filter(({ isProd }) => !isProd)
+        const productionClustersData = getClusterMapData(prodClusters)
+        const nonProductionClustersData = getClusterMapData(nonProdClusters)
 
         return [
-            ...(productionClusters.length
+            ...(productionClustersData.length
                 ? [
                       {
                           id: 0,
                           label: 'Production Clusters',
-                          data: getClusterMapData(productionClusters),
+                          data: productionClustersData,
                       },
                   ]
                 : []),
-            ...(nonProductionClusters.length
+            ...(nonProductionClustersData.length
                 ? [
                       {
                           id: 1,
                           label: 'Non-Production Clusters',
-                          data: getClusterMapData(nonProductionClusters),
+                          data: nonProductionClustersData,
                       },
                   ]
                 : []),
@@ -225,7 +236,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     return (
-        <div className="cluster-list-main-container flexbox-col bcn-0 h-100">
+        <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 bcn-50">
                 <div className="flex dc__gap-12">
                     <SearchBar
