@@ -276,25 +276,25 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 </div>
             </div>
             <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
-            <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
-                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
-                    <div>Cluster</div>
-                    <div data-testid="cluster-list-connection-status">Status</div>
-                    <div>Type</div>
-                    <div>Nodes</div>
-                    <div>NODE Errors</div>
-                    <div>K8S version</div>
-                    <div>CPU Capacity</div>
-                    <div>Memory Capacity</div>
+            {!filteredList.length ? (
+                <div className="flex-grow-1">
+                    <ClusterNodeEmptyState actionHandler={handleClearFilters} />
                 </div>
-                {!filteredList.length ? (
-                    <div className="flex-grow-1">
-                        <ClusterNodeEmptyState actionHandler={handleClearFilters} />
+            ) : (
+                <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
+                        <div>Cluster</div>
+                        <div data-testid="cluster-list-connection-status">Status</div>
+                        <div>Type</div>
+                        <div>Nodes</div>
+                        <div>NODE Errors</div>
+                        <div>K8S version</div>
+                        <div>CPU Capacity</div>
+                        <div>Memory Capacity</div>
                     </div>
-                ) : (
-                    filteredList.map((clusterData) => renderClusterRow(clusterData))
-                )}
-            </div>
+                    {filteredList.map((clusterData) => renderClusterRow(clusterData))}
+                </div>
+            )}
         </div>
     )
 }
