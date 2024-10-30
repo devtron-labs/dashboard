@@ -4,6 +4,8 @@ import { followCursor } from 'tippy.js'
 
 import { ConditionalWrap, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ClusterStatusType } from '@Components/ClusterNodes/types'
+
 import { getVisibleSvgTextWithEllipsis } from './utils'
 import { ClusterMapProps } from './types'
 
@@ -29,10 +31,14 @@ const ClusterTreeMapContent = ({
         <Tooltip
             alwaysShowTippyOnHover
             content={
-                <div className="flexbox-col dc__gap-4">
-                    <span>{name}</span>
-                    <span>{value}</span>
-                    <span className="dc__capitalize">{status}</span>
+                <div className="flexbox-col dc__gap-8 px-10 py-6 fs-12 lh-18">
+                    <div className="flexbox-col dc__gap-2">
+                        <span className="fw-6 cn-0">{name}</span>
+                        <span className="cn-50">{`${value} Nodes`}</span>
+                    </div>
+                    <span className={`dc__capitalize ${status === ClusterStatusType.HEALTHY ? 'cg-3' : 'cr-3'}`}>
+                        {status}
+                    </span>
                 </div>
             }
             followCursor

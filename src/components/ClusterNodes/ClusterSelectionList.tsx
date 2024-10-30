@@ -131,16 +131,20 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             return <ClusterStatus status={status} />
         }
 
-        return errorInNodeListing ? (
-            <>
-                <Error className="icon-dim-16 dc__no-shrink" />
-                <span>Failed</span>
-            </>
-        ) : (
-            <>
-                <Success className="icon-dim-16 dc__no-shrink" />
-                <span>Connected</span>
-            </>
+        return (
+            <div className="flexbox dc__align-items-center dc__gap-8">
+                {errorInNodeListing ? (
+                    <>
+                        <Error className="icon-dim-16 dc__no-shrink" />
+                        <span>Failed</span>
+                    </>
+                ) : (
+                    <>
+                        <Success className="icon-dim-16 dc__no-shrink" />
+                        <span>Connected</span>
+                    </>
+                )}
+            </div>
         )
     }
 
@@ -181,7 +185,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     alwaysShowTippyOnHover={!!clusterData.errorInNodeListing}
                     content={clusterData.errorInNodeListing}
                 >
-                    <div className="flexbox dc__align-items-center dc__gap-8">{renderClusterStatus(clusterData)}</div>
+                    {renderClusterStatus(clusterData)}
                 </Tooltip>
                 <div className="child-shimmer-loading">
                     {hideDataOnLoad(clusterData.isProd ? 'Production' : 'Non Production')}
