@@ -26,6 +26,7 @@ import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
     ExternalLink,
+    ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
@@ -49,11 +50,13 @@ import {
     ComponentSizeType,
     ButtonComponentType,
     ButtonStyleType,
+    ImageWithFallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -128,60 +131,67 @@ export const NoMatchingResults = (): JSX.Element => {
     return <GenericFilterEmptyState />
 }
 
-const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => {
-    const handleOpenExternalLink = () => {
-        window.open(selectedExternalLink.externalLinkURL, '_blank')
-    }
+const ExternalLinkFallbackImage = ({ dimension, src, alt }: ExternalLinkFallbackImageProps) => (
+    <ImageWithFallback
+        imageProps={{
+            className: `dc__no-shrink icon-dim-${dimension}`,
+            height: dimension,
+            width: dimension,
+            src: src,
+            alt: alt,
+            onError: onImageLoadError,
+        }}
+        fallbackImage={ICWebpage}
+    />
+)
 
-    return (
-        <VisibleModal2 close={handleCloseModal}>
-            <div
-                className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bcn-0"
-                onClick={stopPropagation}
-            >
-                <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
-                    <div className="flexbox dc__gap-8 dc__align-items-center">
-                        <img
-                            className="icon-dim-20"
-                            src={selectedExternalLink.icon}
-                            alt={selectedExternalLink.label}
-                            onError={onImageLoadError}
-                        />
-                        <span className="cn-9 fs-16 fw-6 lh-24">{selectedExternalLink.label}</span>
-                    </div>
-                    <div className="flexbox dc__gap-8">
-                        <Button
-                            ariaLabel="external-link-open"
-                            dataTestId="external-link-open"
-                            icon={<ICArrowOut className="scn-6" />}
-                            variant={ButtonVariantType.borderLess}
-                            size={ComponentSizeType.xs}
-                            component={ButtonComponentType.button}
-                            style={ButtonStyleType.neutral}
-                            onClick={handleOpenExternalLink}
-                            showAriaLabelInTippy={false}
-                        />
-                        <Button
-                            ariaLabel="external-link-modal-close"
-                            dataTestId="external-link-modal-close"
-                            icon={<ICClose />}
-                            variant={ButtonVariantType.borderLess}
-                            size={ComponentSizeType.xs}
-                            component={ButtonComponentType.button}
-                            style={ButtonStyleType.negativeGrey}
-                            onClick={handleCloseModal}
-                            showAriaLabelInTippy={false}
-                        />
-                    </div>
+const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => (
+    <VisibleModal2 close={handleCloseModal}>
+        <div
+            className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bcn-0"
+            onClick={stopPropagation}
+        >
+            <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
+                <div className="flexbox dc__gap-8 dc__align-items-center">
+                    <ExternalLinkFallbackImage
+                        dimension={20}
+                        src={selectedExternalLink.icon}
+                        alt={selectedExternalLink.label}
+                    />
+                    <h2 className="cn-9 fs-16 fw-6 lh-24 dc__truncate m-0-imp">{selectedExternalLink.label}</h2>
                 </div>
-                <iframe
-                    className="flex-grow-1 dc__no-border dc__bottom-radius-8"
-                    src={selectedExternalLink.externalLinkURL}
-                />
+                <div className="flexbox dc__gap-8">
+                    <Button
+                        ariaLabel="external-link-open"
+                        dataTestId="external-link-open"
+                        icon={<ICArrowOut className="scn-6" />}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.xs}
+                        component={ButtonComponentType.button}
+                        style={ButtonStyleType.neutral}
+                        onClick={getHandleOpenURL(selectedExternalLink.externalLinkURL)}
+                        showAriaLabelInTippy={false}
+                    />
+                    <Button
+                        ariaLabel="external-link-modal-close"
+                        dataTestId="external-link-modal-close"
+                        icon={<ICClose />}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.xs}
+                        component={ButtonComponentType.button}
+                        style={ButtonStyleType.negativeGrey}
+                        onClick={handleCloseModal}
+                        showAriaLabelInTippy={false}
+                    />
+                </div>
             </div>
-        </VisibleModal2>
-    )
-}
+            <iframe
+                className="flex-grow-1 dc__no-border dc__bottom-radius-8"
+                src={selectedExternalLink.externalLinkURL}
+            />
+        </div>
+    </VisibleModal2>
+)
 
 export const AppLevelExternalLinks = ({
     appDetails,
@@ -236,6 +246,7 @@ export const AppLevelExternalLinks = ({
 
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
         const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
+        const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
         return (
             <ConditionalWrap
                 key={`${linkOption.label}-${idx}`}
@@ -257,14 +268,9 @@ export const AppLevelExternalLinks = ({
                     <div
                         className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center"
                         role="button"
-                        onClick={() => handleOpenModal(linkOption, externalLinkURL)}
+                        onClick={handleTextClick}
                     >
-                        <img
-                            className="icon-dim-16"
-                            src={linkOption.icon}
-                            alt={linkOption.label}
-                            onError={onImageLoadError}
-                        />
+                        <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
                         <span
                             className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
                             data-testid="overview_external_link_value"

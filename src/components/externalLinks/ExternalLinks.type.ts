@@ -233,3 +233,9 @@ export enum LinkValidationKeys {
     identifiers = 'identifiers',
     urlTemplate = 'urlTemplate',
 }
+
+export interface ExternalLinkFallbackImageProps {
+    dimension: number
+    src: string
+    alt: string
+}
