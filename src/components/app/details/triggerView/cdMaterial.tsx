@@ -16,7 +16,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -112,7 +112,7 @@ import {
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { getInitialState, getWfrId } from './cdMaterials.utils'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE, URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
@@ -190,7 +190,7 @@ const CDMaterial = ({
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
-    const { path, params } = useRouteMatch()
+    const { pathname } = useLocation()
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
     // Add dep here
@@ -281,7 +281,7 @@ const CDMaterial = ({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.diffView
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
 
     const {
         pipelineDeploymentConfigLoading,
@@ -348,6 +348,7 @@ const CDMaterial = ({
         abortDeployRef.current = new AbortController()
         return () => {
             abortDeployRef.current.abort()
+            history.replace(pathname.split(URLS.APP_DIFF_VIEW)[0])
         }
     }, [])
 
@@ -754,11 +755,9 @@ const CDMaterial = ({
             ...searchParams,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
-            diffView: 'true',
         })
 
         if (modeParamValue === 'list') {
-            newParams.delete('diffView')
             newParams.delete('sortOrder')
             newParams.delete('sortBy')
         }
@@ -766,8 +765,8 @@ const CDMaterial = ({
         history.push({
             pathname:
                 modeParamValue === 'review-config'
-                    ? `${generatePath(path, params)}/${EnvResourceType.DeploymentTemplate}`
-                    : generatePath(path, params),
+                    ? `${pathname}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
+                    : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
             search: newParams.toString(),
         })
     }
