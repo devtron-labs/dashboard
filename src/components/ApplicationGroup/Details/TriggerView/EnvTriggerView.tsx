@@ -1316,7 +1316,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const toggleWebhookModal = (id, _webhookTimeStampOrder) => {
         setWebhookPayloadLoading(true)
-        getCIWebhookRes(id).then((result) => {
+        getCIWebhookRes(id, _webhookTimeStampOrder).then((result) => {
             setShowWebhookModal(true)
             setWebhookPayloads(result?.result)
             setWebhookPayloadLoading(false)
