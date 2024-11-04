@@ -193,7 +193,7 @@ const AppListFilters = ({
                 )}
                 <Tooltip
                     content="Remove environment filters to use cluster filter"
-                    alwaysShowTippyOnHover={!!environment.length}
+                    alwaysShowTippyOnHover={!(isExternalArgo || isExternalFlux) && !!environment.length}
                     wordBreak={false}
                 >
                     <div className="flexbox dc__position-rel">
