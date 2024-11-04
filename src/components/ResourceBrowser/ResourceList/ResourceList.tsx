@@ -28,8 +28,8 @@ import {
     getResourceGroupListRaw,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { ClusterOptionType, URLParams } from '../Types'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, FIXED_TABS_INDICES } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
@@ -132,16 +132,16 @@ const ResourceList = () => {
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
-        const _tabs = getTabsBasedOnRole(
+        const _tabs = getTabsBasedOnRole({
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            node && getDynamicTabData(),
-            isTerminalNodeType,
-            isOverviewNodeType,
-            isMonitoringNodeType,
-        )
+            dynamicTabData: node && getDynamicTabData(),
+            isTerminalSelected: isTerminalNodeType,
+            isOverviewSelected: isOverviewNodeType,
+            isMonitoringDashBoardSelected: isMonitoringNodeType,
+        })
         initTabs(
             _tabs,
             reInit,
@@ -182,8 +182,7 @@ const ResourceList = () => {
             return
         }
 
-        // TODO: Add component check as well
-        if (isMonitoringNodeType) {
+        if (isMonitoringNodeType && MonitoringDashboard) {
             if (
                 tabs[FIXED_TABS_INDICES.MONITORING_DASHBOARD] &&
                 !tabs[FIXED_TABS_INDICES.MONITORING_DASHBOARD].isSelected
