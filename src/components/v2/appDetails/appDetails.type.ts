@@ -477,6 +477,7 @@ export interface ManifestViewRefType {
          */
         normalizedLiveManifest: string
         guiSchema: Record<string, string>
+        lockedKeys: string[] | null
     }
     id: string
 }

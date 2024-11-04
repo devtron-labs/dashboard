@@ -178,6 +178,7 @@ const NodeDetailComponent = ({
             modifiedManifest: '',
             normalizedLiveManifest: '',
             guiSchema: {},
+            lockedKeys: null,
         },
         id: '',
     })
