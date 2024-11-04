@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    CIMaterialType,
     ComponentSizeType,
     Progressing,
-    SourceTypeMap,
     VisibleModal,
-    showError,
     stopPropagation,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 import CIMaterial from './ciMaterial'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { CIMaterialModalProps, CIMaterialRouterProps, RegexValueType } from './types'
-import BranchRegexModal from './BranchRegexModal'
-import { TriggerViewContext } from './config'
-import { getRegexValue } from './cdMaterials.utils'
+import { CIMaterialModalProps, CIMaterialRouterProps } from './types'
 
 export const CIMaterialModal = ({
     loader,
@@ -46,10 +39,7 @@ export const CIMaterialModal = ({
     ...props
 }: CIMaterialModalProps) => {
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
-    const context = React.useContext(TriggerViewContext)
-    const [savingRegexValue, setSavingRegexValue] = useState(false)
     const selectedCIPipeline = props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId)
-    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getRegexValue(props.material))
 
     usePrompt({ shouldPrompt: isLoading })
 
@@ -68,91 +58,6 @@ export const CIMaterialModal = ({
             props.setSelectedEnv(_selectedEnv)
         }
     }, [selectedCIPipeline])
-
-    const isRegexValueInvalid = (_cm): void => {
-        const regExp = new RegExp(_cm.source.regex)
-        const regVal = regexValue[_cm.gitMaterialId]
-        if (!regExp.test(regVal.value)) {
-            const _regexVal = {
-                ...regexValue,
-                [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
-            }
-            setRegexValue(_regexVal)
-        }
-    }
-
-    const onClickNextButton = async () => {
-        setSavingRegexValue(true)
-        const payload: any = {
-            appId: Number(props.match.params.appId ?? props.appId),
-            id: +props.workflowId,
-            ciPipelineMaterial: [],
-        }
-
-        // Populate the ciPipelineMaterial with flatten object
-        if (selectedCIPipeline?.ciMaterial?.length) {
-            payload.ciPipelineMaterial = selectedCIPipeline.ciMaterial.map((_cm) => {
-                const regVal = regexValue[_cm.gitMaterialId]
-                let _updatedCM
-
-                if (regVal?.value && _cm.source.regex) {
-                    isRegexValueInvalid(_cm)
-
-                    _updatedCM = {
-                        ..._cm,
-                        type: SourceTypeMap.BranchFixed,
-                        value: regVal.value,
-                        regex: _cm.source.regex,
-                    }
-                } else {
-                    // Maintain the flattened object structure for unchanged values
-                    _updatedCM = {
-                        ..._cm,
-                        ..._cm.source,
-                    }
-                }
-
-                // Deleting as it's not required in the request payload
-                delete _updatedCM.source
-
-                return _updatedCM
-            })
-        }
-
-        try {
-            const response = await savePipeline(payload, true)
-            if (response) {
-                await props.getWorkflows()
-                context.onClickCIMaterial(props.pipelineId.toString(), props.pipelineName)
-            }
-        } catch (error) {
-            showError(error)
-        } finally {
-            setSavingRegexValue(false)
-        }
-    }
-
-    const handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
-        setRegexValue((prevState) => ({
-            ...prevState,
-            [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
-        }))
-    }
-
-    const renderBranchRegexModal = () => (
-        <BranchRegexModal
-            material={props.material}
-            selectedCIPipeline={selectedCIPipeline}
-            showWebhookModal={props.showWebhookModal}
-            title={props.title}
-            isChangeBranchClicked={props.isChangeBranchClicked}
-            onClickNextButton={onClickNextButton}
-            handleRegexInputValue={handleRegexInputValue}
-            regexValue={regexValue}
-            onCloseBranchRegexModal={props.onCloseBranchRegexModal}
-            savingRegexValue={savingRegexValue}
-        />
-    )
 
     const renderBranchCIModal = () => (
         <VisibleModal className="" close={closeCIModal}>
@@ -183,7 +88,7 @@ export const CIMaterialModal = ({
         </VisibleModal>
     )
 
-    return props.showMaterialRegexModal ? renderBranchRegexModal() : renderBranchCIModal()
+    return renderBranchCIModal()
 }
 
 export default CIMaterialModal

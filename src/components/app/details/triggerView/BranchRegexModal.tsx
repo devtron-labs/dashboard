@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react'
 import {
     CustomInput,
-    VisibleModal,
     stopPropagation,
     InfoColourBar,
     SourceTypeMap,
@@ -25,13 +23,13 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ButtonStyleType,
+    VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon } from '@Components/common'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { BranchRegexModalProps } from './types'
-import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 
@@ -48,8 +46,6 @@ const BranchRegexModal = ({
     hideHeaderFooter,
     savingRegexValue,
 }: BranchRegexModalProps) => {
-    const triggerViewContext = useContext(TriggerViewContext)
-
     const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
             (_ciMaterial) =>
@@ -57,10 +53,6 @@ const BranchRegexModal = ({
         )
 
         return <span className="fw-6 cn-9">{ciMaterial?.source?.regex || ''}</span>
-    }
-
-    const onClickCloseCIModal = () => {
-        triggerViewContext.closeCIModal()
     }
 
     const renderBranchRegexMaterialHeader = () => {
@@ -86,7 +78,7 @@ const BranchRegexModal = ({
                 </div>
                 <Button
                     dataTestId="regex-modal-header-close-button"
-                    onClick={onClickCloseCIModal}
+                    onClick={onCloseBranchRegexModal}
                     ariaLabel="close-button"
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.small}
@@ -184,14 +176,14 @@ const BranchRegexModal = ({
     }
 
     return (
-        <VisibleModal className="visible-modal__body">
+        <VisibleModal2 className="visible-modal__body">
             <div onClick={stopPropagation} className="ci-trigger__branch-regex-wrapper modal__body w-600 p-0 fs-13">
                 {renderBranchRegexMaterialHeader()}
                 {renderRegexInfo()}
                 {renderBranchRegexContent()}
                 {!showWebhookModal && !hideHeaderFooter && renderMaterialRegexFooterNextButton()}
             </div>
-        </VisibleModal>
+        </VisibleModal2>
     )
 }
 

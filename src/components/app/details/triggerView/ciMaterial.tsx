@@ -24,8 +24,11 @@ import {
     ToastVariantType,
     Button,
     ComponentSizeType,
+    CIMaterialType,
+    showError,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CIMaterialProps, CIMaterialState } from './types'
+import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
@@ -38,16 +41,26 @@ import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
+import BranchRegexModal from './BranchRegexModal'
+import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
-
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
     constructor(props) {
         super(props)
-
+        const regexValue: Record<number, RegexValueType> = {}
+        this.props.material.forEach((mat) => {
+            regexValue[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+            }
+        })
         this.state = {
+            regexValue,
+            savingRegexValue: false,
+            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
             runtimeParamsErrorState: false,
@@ -56,6 +69,11 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
+        if (this.props.isJobView && this.props.environmentLists?.length > 0) {
+            const envId = this.state.selectedCIPipeline?.environmentId || 0
+            const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+            this.props.setSelectedEnv(_selectedEnv)
+        }
     }
 
     async getSecurityModuleStatus(): Promise<void> {
@@ -233,6 +251,21 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
+    renderBranchRegexModal = () => (
+        <BranchRegexModal
+            material={this.props.material}
+            selectedCIPipeline={this.state.selectedCIPipeline}
+            showWebhookModal={this.props.showWebhookModal}
+            title={this.props.title}
+            isChangeBranchClicked={this.props.isChangeBranchClicked}
+            onClickNextButton={this.onClickNextButton}
+            handleRegexInputValue={this.handleRegexInputValue}
+            regexValue={this.state.regexValue}
+            onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
+            savingRegexValue={this.state.savingRegexValue}
+        />
+    )
+
     renderCIModal() {
         const selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         const isMaterialActive = this.props.material.some((material) => material.active)
@@ -277,9 +310,89 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                    {this.props.showMaterialRegexModal && this.renderBranchRegexModal()}
                 </>
             )
         }
+    }
+
+    isRegexValueInvalid = (_cm): void => {
+        const regExp = new RegExp(_cm.source.regex)
+        const regVal = this.state.regexValue[_cm.gitMaterialId]
+        if (!regExp.test(regVal.value)) {
+            const _regexVal = {
+                ...this.state.regexValue,
+                [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
+            }
+            this.setState({
+                regexValue: _regexVal,
+            })
+        }
+    }
+
+    onClickNextButton = async () => {
+        // setSavingRegexValue(true)
+        this.setState({ savingRegexValue: true })
+        const payload: any = {
+            appId: Number(this.props.match.params.appId ?? this.props.appId),
+            id: +this.props.workflowId,
+            ciPipelineMaterial: [],
+        }
+
+        // Populate the ciPipelineMaterial with flatten object
+        if (this.state.selectedCIPipeline?.ciMaterial?.length) {
+            payload.ciPipelineMaterial = this.state.selectedCIPipeline.ciMaterial.map((_cm) => {
+                const regVal = this.state.regexValue[_cm.gitMaterialId]
+                let _updatedCM
+
+                if (regVal?.value && _cm.source.regex) {
+                    this.isRegexValueInvalid(_cm)
+
+                    _updatedCM = {
+                        ..._cm,
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal.value,
+                        regex: _cm.source.regex,
+                    }
+                } else {
+                    // Maintain the flattened object structure for unchanged values
+                    _updatedCM = {
+                        ..._cm,
+                        ..._cm.source,
+                    }
+                }
+
+                // Deleting as it's not required in the request payload
+                delete _updatedCM.source
+
+                return _updatedCM
+            })
+        }
+
+        try {
+            const response = await savePipeline(payload, true)
+            if (response) {
+                await this.props.getWorkflows()
+                this.context.onClickCIMaterial(this.props.pipelineId.toString(), this.props.pipelineName)
+            }
+        } catch (error) {
+            showError(error)
+        } finally {
+            this.setState({
+                savingRegexValue: false,
+            })
+        }
+    }
+
+    handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
+        this.setState((prevState) => {
+            return {
+                regexValue: {
+                    ...prevState.regexValue,
+                    [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
+                },
+            }
+        })
     }
 
     render() {

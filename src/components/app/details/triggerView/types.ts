@@ -199,6 +199,9 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
     runtimeParamsErrorState: boolean
+    savingRegexValue: boolean
+    regexValue: Record<number, RegexValueType>
+    selectedCIPipeline: CiPipeline
 }
 
 export interface DownStreams {
@@ -546,6 +549,7 @@ export interface CiPipeline {
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
+    environmentId?: number
 }
 
 export interface CiPipelineResult {
