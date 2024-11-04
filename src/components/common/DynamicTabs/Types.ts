@@ -76,6 +76,7 @@ export interface PopulateTabDataPropsType {
      */
     isAlive?: boolean
     /**
+     * @description Would remove the title/name from tab heading, but that does not mean name is not required, since it is used in other calculations
      * @default false
      */
     hideName?: boolean

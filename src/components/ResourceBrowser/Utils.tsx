@@ -27,10 +27,15 @@ import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
-    ClusterOptionType,
+    JUMP_TO_KIND_SHORT_NAMES,
+    K8S_EMPTY_GROUP,
+    ORDERED_AGGREGATORS,
+    SIDEBAR_KEYS,
     FIXED_TABS_INDICES,
+} from './Constants'
+import {
+    GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
@@ -273,23 +278,24 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getTabsBasedOnRole = (
-    selectedCluster: ClusterOptionType,
-    namespace: string,
-    isSuperAdmin: boolean,
-    dynamicTabData: InitTabType,
+const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
+    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+export const getTabsBasedOnRole = ({
+    selectedCluster,
+    namespace,
+    isSuperAdmin,
+    dynamicTabData,
     isTerminalSelected = false,
     isOverviewSelected = false,
-    isMonitoringDashBoardSelected: boolean = false,
-): InitTabType[] => {
+    isMonitoringDashBoardSelected = false,
+}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
             position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
@@ -298,9 +304,7 @@ export const getTabsBasedOnRole = (
         {
             idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
             isSelected:
                 (!isSuperAdmin || !isTerminalSelected) &&
                 !dynamicTabData &&
@@ -314,7 +318,7 @@ export const getTabsBasedOnRole = (
         ...(getMonitoringDashboardTabConfig
             ? [
                   getMonitoringDashboardTabConfig(
-                      `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
                       FIXED_TABS_INDICES.MONITORING_DASHBOARD,
                   ),

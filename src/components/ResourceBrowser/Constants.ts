@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { RBSidebarKeysType } from './Types'
+
+const MONITORING_DASHBOARD_TAB_INDEX = importComponentFromFELibrary('MONITORING_DASHBOARD_TAB_INDEX', null, 'function')
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -174,16 +178,7 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS: {
-    nodes: string
-    events: string
-    namespaces: string
-    eventGVK: GVKType
-    namespaceGVK: GVKType
-    nodeGVK: GVKType
-    overviewGVK: GVKType
-    monitoringGVK: GVKType
-} = {
+export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -273,3 +268,10 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const FIXED_TABS_INDICES = {
+    OVERVIEW: 0,
+    K8S_RESOURCE_LIST: 1,
+    MONITORING_DASHBOARD: MONITORING_DASHBOARD_TAB_INDEX || 3,
+    ADMIN_TERMINAL: MONITORING_DASHBOARD_TAB_INDEX ? 3 : 2,
+}
