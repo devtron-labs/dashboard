@@ -62,7 +62,6 @@ import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
-    TOAST_INFO,
 } from '../../../../../../config/constantMessaging'
 import { MODES } from '../../../../../../config'
 import {
@@ -71,7 +70,6 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
-import { TOAST_MESSAGES } from '@Components/workflowEditor/workflowEditor.constants'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -487,14 +485,12 @@ const ManifestComponent = ({
         if (!modifiedManifestString) {
             setLoading(false)
             setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+        } else if (!isSuperAdmin && checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
+            setLoading(false)
+            setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+            setShowLockedDiffModal(true)
         } else {
-            if (!isSuperAdmin && checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
-                setLoading(false)
-                setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
-                setShowLockedDiffModal(true)
-            } else {
-                handleCallApplyChangesAPI(modifiedManifestString).then(noop).catch(noop)
-            }
+            handleCallApplyChangesAPI(modifiedManifestString).then(noop).catch(noop)
         }
     }
 
