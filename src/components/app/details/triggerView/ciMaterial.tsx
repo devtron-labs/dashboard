@@ -32,12 +32,12 @@ import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.s
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
-import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
@@ -205,6 +205,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
                         size={ComponentSizeType.xl}
+                        endIcon={<Play />}
                     />
                 </AllowedWithWarningTippy>
             )

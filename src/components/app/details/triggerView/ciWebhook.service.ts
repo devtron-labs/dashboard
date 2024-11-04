@@ -15,13 +15,14 @@
  */
 
 import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { TIME_STAMP_ORDER } from './Constants'
 
-export function getCIWebhookRes(pipelineMaterialId): Promise<any> {
-    const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}?limit=1000&offset=0&timeSort=DESC`
+export function getCIWebhookRes(pipelineMaterialId: number, timestampOrder = TIME_STAMP_ORDER.DESCENDING): Promise<any> {
+    const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}?limit=1000&offset=0&timeSort=${timestampOrder}`
     return get(URL)
 }
 
-export function getCIWebhookPayload(pipelineMaterialId, parsedDataId): Promise<any> {
+export function getCIWebhookPayload(pipelineMaterialId: number, parsedDataId): Promise<any> {
     const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}/${parsedDataId}`
     return get(URL)
 }

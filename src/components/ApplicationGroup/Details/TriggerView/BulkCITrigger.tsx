@@ -51,7 +51,6 @@ import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../.
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
-import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { HandleRuntimeParamChange, RegexValueType } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
@@ -64,6 +63,7 @@ import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { BULK_ERROR_MESSAGES } from './constants'
+import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -463,10 +463,10 @@ const BulkCITrigger = ({
                 toggleWebhookModal={toggleWebhookModal}
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
-                workflowId={selectedApp.workFlowId}
+                workflowId={+selectedApp.workFlowId}
                 onClickShowBranchRegexModal={showBranchEditModal}
                 fromAppGrouping
-                appId={selectedApp.appId}
+                appId={selectedApp.appId.toString()}
                 fromBulkCITrigger
                 hideSearchHeader={selectedApp.hideSearchHeader}
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}

@@ -17,9 +17,12 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CIMaterialType,
+    ComponentSizeType,
     Progressing,
-    ServerErrors,
     SourceTypeMap,
     VisibleModal,
     showError,
@@ -32,6 +35,7 @@ import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.s
 import { CIMaterialModalProps, CIMaterialRouterProps, RegexValueType } from './types'
 import BranchRegexModal from './BranchRegexModal'
 import { TriggerViewContext } from './config'
+import { getRegexValue } from './cdMaterials.utils'
 
 export const CIMaterialModal = ({
     loader,
@@ -45,21 +49,8 @@ export const CIMaterialModal = ({
     const context = React.useContext(TriggerViewContext)
     const [savingRegexValue, setSavingRegexValue] = useState(false)
     const selectedCIPipeline = props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId)
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getRegexValue(props.material))
 
-    const isValidRegex = (pattern: string, value: string): boolean => new RegExp(pattern).test(value)
-
-    const _regexValue: Record<number, RegexValueType> = props.material.reduce(
-        (acc, mat) => {
-            acc[mat.gitMaterialId] = {
-                value: mat.value,
-                isInvalid: mat.regex ? !isValidRegex(mat.regex, mat.value) : false,
-            }
-            return acc
-        },
-        {} as Record<number, RegexValueType>,
-    )
-
-    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(_regexValue)
     usePrompt({ shouldPrompt: isLoading })
 
     useEffect(
@@ -90,7 +81,7 @@ export const CIMaterialModal = ({
         }
     }
 
-    const onClickNextButton = () => {
+    const onClickNextButton = async () => {
         setSavingRegexValue(true)
         const payload: any = {
             appId: Number(props.match.params.appId ?? props.appId),
@@ -128,19 +119,17 @@ export const CIMaterialModal = ({
             })
         }
 
-        savePipeline(payload, true)
-            .then((response) => {
-                if (response) {
-                    props.getWorkflows()
-                    context.onClickCIMaterial(props.pipelineId.toString(), props.pipelineName)
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-            .finally(() => {
-                setSavingRegexValue(false)
-            })
+        try {
+            const response = await savePipeline(payload, true)
+            if (response) {
+                await props.getWorkflows()
+                context.onClickCIMaterial(props.pipelineId.toString(), props.pipelineName)
+            }
+        } catch (error) {
+            showError(error)
+        } finally {
+            setSavingRegexValue(false)
+        }
     }
 
     const handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
@@ -172,21 +161,22 @@ export const CIMaterialModal = ({
                 {loader ? (
                     <>
                         <div className="trigger-modal__header flex right">
-                            <button
-                                type="button"
-                                aria-label="close-modal"
-                                className="dc__transparent"
+                            <Button
+                                ariaLabel="close-button"
+                                variant={ButtonVariantType.borderLess}
+                                icon={<CloseIcon />}
                                 onClick={closeCIModal}
-                            >
-                                <CloseIcon />
-                            </button>
+                                size={ComponentSizeType.small}
+                                style={ButtonStyleType.negativeGrey}
+                                dataTestId="ci-material-close-button"
+                            />
                         </div>
                         <div style={{ height: 'calc(100% - 55px)' }}>
                             <Progressing pageLoader size={32} />
                         </div>
                     </>
                 ) : (
-                    <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={+ciNodeId} />
+                    <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={ciNodeId} />
                 )}
             </div>
             )

@@ -29,7 +29,6 @@ import {
     handleUTCTime,
     createGitCommitUrl,
     CIMaterialType,
-    Environment,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
@@ -124,7 +123,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showWebhookModal: false,
             webhookPayloads: undefined,
             isWebhookPayloadLoading: false,
-            webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING,
+            webhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING,
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
@@ -1091,16 +1090,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickWebhookTimeStamp = () => {
-        if (this.state.webhhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
-            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
-        } else if (this.state.webhhookTimeStampOrder === TIME_STAMP_ORDER.ASCENDING) {
-            this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
+        if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
+            this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
+        } else if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.ASCENDING) {
+            this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
         }
     }
 
     toggleWebhookModal = (id) => {
         this.setState({ isWebhookPayloadLoading: true })
-        getCIWebhookRes(id).then((result) => {
+        getCIWebhookRes(id, this.state.webhookTimeStampOrder).then((result) => {
             this.setState({
                 showWebhookModal: true,
                 webhookPayloads: result?.result,
@@ -1183,14 +1182,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             pipelineName={this.state.ciPipelineName}
                             isLoading={this.state.isLoading}
                             title={this.state.ciPipelineName}
-                            pipelineId={this.state.ciNodeId}
+                            pipelineId={this.state.ciNodeId.toString()}
                             showWebhookModal={this.state.showWebhookModal}
                             hideWebhookModal={this.hideWebhookModal}
                             toggleWebhookModal={this.toggleWebhookModal}
                             webhookPayloads={this.state.webhookPayloads}
                             isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
                             onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
-                            webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
+                            webhookTimeStampOrder={this.state.webhookTimeStampOrder}
                             showMaterialRegexModal={this.state.showMaterialRegexModal}
                             onCloseBranchRegexModal={this.onCloseBranchRegexModal}
                             filteredCIPipelines={this.state.filteredCIPipelines}

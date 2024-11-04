@@ -59,7 +59,7 @@ const BranchRegexModal = ({
         return <span className="fw-6 cn-9">{ciMaterial?.source?.regex || ''}</span>
     }
 
-    const _closeCIModal = () => {
+    const onClickCloseCIModal = () => {
         triggerViewContext.closeCIModal()
     }
 
@@ -86,13 +86,13 @@ const BranchRegexModal = ({
                 </div>
                 <Button
                     dataTestId="regex-modal-header-close-button"
-                    onClick={_closeCIModal}
+                    onClick={onClickCloseCIModal}
                     ariaLabel="close-button"
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.small}
                     showAriaLabelInTippy={false}
                     icon={<Close />}
-                    style={ButtonStyleType.neutral}
+                    style={ButtonStyleType.negativeGrey}
                 />
             </div>
         )

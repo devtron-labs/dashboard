@@ -138,8 +138,8 @@ export default function EnvironmentOverview({
 
     async function getDeploymentWindowEnvOverrideMetaData() {
         const appEnvTuples = (selectedAppDetails ? [selectedAppDetails] : selectedAppDetailsList).map((appDetail) => ({
-            appId: +appDetail.appId,
-            envId: +appDetail.envId,
+            appId: Number(appDetail.appId),
+            envId: Number(envId),
         }))
         if (appEnvTuples.length) {
             setIsDeploymentLoading(true)

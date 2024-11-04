@@ -1975,14 +1975,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             pipelineName={selectedCINode?.name}
                             isLoading={isCDLoading}
                             title={selectedCINode?.name}
-                            pipelineId={selectedCINode?.id}
+                            pipelineId={selectedCINode?.id?.toString()}
                             showWebhookModal={showWebhookModal}
                             hideWebhookModal={hideWebhookModal}
                             toggleWebhookModal={toggleWebhookModal}
                             webhookPayloads={webhookPayloads}
                             isWebhookPayloadLoading={isWebhookPayloadLoading}
                             onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                            webhhookTimeStampOrder={webhookTimeStampOrder}
+                            webhookTimeStampOrder={webhookTimeStampOrder}
                             showMaterialRegexModal={showMaterialRegexModal}
                             onCloseBranchRegexModal={onCloseBranchRegexModal}
                             filteredCIPipelines={filteredCIPipelines.get(_appID)}

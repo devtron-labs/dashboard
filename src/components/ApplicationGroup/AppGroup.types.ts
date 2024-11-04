@@ -30,11 +30,11 @@ import {
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -110,7 +110,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
     showWebhookModal: boolean
     toggleWebhookModal: (id, webhookTimeStampOrder) => void
-    webhookPayloads: WebhookPayloads
+    webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
     hideWebhookModal: (e?) => void
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
