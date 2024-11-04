@@ -437,6 +437,10 @@ a:focus {
     right: 0;
 }
 
+.dc__right-3--neg {
+    right: -3px;
+}
+
 .dc__right-10 {
     right: 10px;
 }
@@ -4640,6 +4644,10 @@ textarea::placeholder {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.dc__cursor-col-resize {
+    cursor: col-resize;
 }
 
 .focus-within-border-b5:focus-within {
