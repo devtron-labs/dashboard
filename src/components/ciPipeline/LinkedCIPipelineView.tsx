@@ -93,7 +93,11 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
             .then((response) => {
                 this.setState({ ...response, loadingData: false }, () => {
-                    this.generateSourceUrl()
+                    this.generateSourceUrl().catch(() => {
+                        this.setState({
+                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                        })
+                    })
                 })
             })
             .catch((error: ServerErrors) => {
@@ -342,7 +346,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                                 to={this.state.sourcePipelineURL}
                                 target="_blank"
                                 className="cta cta--workflow flex flex-1 dc__no-decor"
-                                onClick={(event) => this.generateSourceUrl()}
                             >
                                 {this.state.form.isOffendingMandatoryPlugin && (
                                     <Warning className="icon-dim-14 warning-icon-y5-imp mr-4" />

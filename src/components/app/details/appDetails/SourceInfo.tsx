@@ -16,16 +16,18 @@
 
 import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import {
-    ConditionalWrap,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     getIsManualApprovalConfigured,
     handleUTCTime,
     ReleaseMode,
-    showError,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
@@ -119,19 +121,6 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const conditionalScalePodsButton = (children) => {
-        return (
-            <Tippy
-                className="default-tt w-200"
-                arrow={false}
-                placement="bottom-end"
-                content="Application deployment requiring approval cannot be hibernated."
-            >
-                <div>{children}</div>
-            </Tippy>
-        )
-    }
-
     const getIsApprovalConfigured = (): boolean => {
         try {
             const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
@@ -212,47 +201,58 @@ export const SourceInfo = ({
                 {!loadingResourceTree && environment && (
                     <>
                         {!isdeploymentAppDeleting && (
-                            <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                            <div style={{ marginLeft: 'auto' }} className="flexbox dc__gap-6">
                                 {!isVirtualEnvironment && showUrlInfo && (
-                                    <button
-                                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                                    <Button
+                                        dataTestId="app-details-urls"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        text="URLs"
+                                        startIcon={<LinkIcon />}
                                         onClick={onClickShowUrlInfo}
-                                        data-testid="app-details-urls"
-                                    >
-                                        <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                                        URLs
-                                    </button>
+                                        component={ButtonComponentType.button}
+                                        style={ButtonStyleType.neutral}
+                                    />
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
-                                        <button
-                                            data-testid="app-details-hibernate-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                            onClick={onClickShowHibernateModal}
-                                            disabled={isApprovalConfigured}
-                                        >
+                                    <Button
+                                        dataTestId="app-details-hibernate-modal-button"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        text={isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
+                                        startIcon={
                                             <ScaleDown
-                                                className="icon-dim-16 mr-6 rotate"
-                                                style={{
-                                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
-                                                }}
+                                                className={`${isHibernated ? 'dc__flip-180' : ''} dc__transition--transform`}
                                             />
-                                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
-                                        </button>
-                                    </ConditionalWrap>
+                                        }
+                                        onClick={onClickShowHibernateModal}
+                                        component={ButtonComponentType.button}
+                                        disabled={isApprovalConfigured}
+                                        style={ButtonStyleType.neutral}
+                                        showTooltip={isApprovalConfigured}
+                                        tooltipProps={{
+                                            content: 'Application deployment requiring approval cannot be hibernated.',
+                                            placement: 'bottom-end',
+                                        }}
+                                    />
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
-                                        <button
-                                            data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                            onClick={() => setRotateModal(true)}
-                                            disabled={isApprovalConfigured}
-                                        >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
-                                            Restart workloads
-                                        </button>
-                                    </ConditionalWrap>
+                                    <Button
+                                        dataTestId="app-details-rotate-pods-modal-button"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        onClick={() => setRotateModal(true)}
+                                        disabled={isApprovalConfigured}
+                                        startIcon={<RotateIcon />}
+                                        text="Restart workloads"
+                                        component={ButtonComponentType.button}
+                                        style={ButtonStyleType.neutral}
+                                        showTooltip={isApprovalConfigured}
+                                        tooltipProps={{
+                                            content: 'Application deployment requiring approval cannot be hibernated.',
+                                            placement: 'bottom-end',
+                                        }}
+                                    />
                                 )}
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
