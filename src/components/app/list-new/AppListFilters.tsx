@@ -52,11 +52,8 @@ const AppListFilters = ({
         const clusterList = appListFiltersResponse?.isFullMode
             ? appListFiltersResponse?.appListFilters.result.clusters
             : appListFiltersResponse?.clusterList.result
-        if (!clusterList) return false
-        if (isExternalArgo || isExternalFlux) {
-            return clusterList.find((clusterItem) => clusterItem.id === +option.value)?.isVirtualCluster
-        }
-        return false
+        if (!clusterList || (!isExternalArgo && !isExternalFlux)) return false
+        return clusterList.find((clusterItem) => clusterItem.id === +option.value)?.isVirtualCluster
     }
 
     const getIsAppStatusDisabled = (option: SelectPickerOptionType): boolean =>
