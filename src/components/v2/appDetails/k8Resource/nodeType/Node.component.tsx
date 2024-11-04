@@ -318,11 +318,7 @@ const NodeComponent = ({
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
                                 <SortableTableHeaderCell
-                                    disabled={false}
                                     isSortable={false}
-                                    isSorted={null}
-                                    sortOrder={null}
-                                    triggerSorting={noop}
                                     title={node.kind}
                                 />
                             </div>
@@ -330,11 +326,7 @@ const NodeComponent = ({
                                 (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
                                 <div className="fw-6">
                                     <SortableTableHeaderCell
-                                        disabled={false}
                                         isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
                                         title="Links"
                                     />
                                 </div>
@@ -555,11 +547,7 @@ const NodeComponent = ({
                                     className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                                 >
                                     <SortableTableHeaderCell
-                                        disabled={false}
                                         isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
                                         title={cell}
                                     />
                                 </div>
