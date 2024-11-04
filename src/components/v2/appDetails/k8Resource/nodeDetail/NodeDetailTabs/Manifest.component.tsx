@@ -34,7 +34,6 @@ import {
     ConfigurationType,
     YAMLStringify,
     InfoColourBar,
-    noop,
     logExceptionToSentry,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -451,7 +450,7 @@ const ManifestComponent = ({
         }
     }, [manifest, hideManagedFields])
 
-    const handleApplyChanges = () => {
+    const handleApplyChanges = async () => {
         setLoading(true)
         setLoadingMsg('Applying changes')
         setShowDecodedData(false)
@@ -477,7 +476,7 @@ const ManifestComponent = ({
             setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
             setShowLockedDiffModal(true)
         } else {
-            handleCallApplyChangesAPI(modifiedManifestString).then(noop).catch(noop)
+            await handleCallApplyChangesAPI(modifiedManifestString)
         }
     }
 
