@@ -182,7 +182,7 @@ const CDMaterial = ({
     handleBulkRuntimeParamChange,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
-    showPluginWarningBeforeTrigger = false,
+    showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
     consequence,
     configurePluginURL,
     isTriggerBlockedDueToPlugin,
@@ -214,6 +214,7 @@ const CDMaterial = ({
     const abortDeployRef = useRef(null)
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
+    const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
     // This check assumes we have isPreOrPostCD as true
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
@@ -1711,8 +1712,7 @@ const CDMaterial = ({
                     )}
                 >
                     {AllowedWithWarningTippy &&
-                    showPluginWarningBeforeTrigger &&
-                    (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD) ? (
+                    showPluginWarningBeforeTrigger ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}
