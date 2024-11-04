@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom'
 import { ResponsiveContainer, Treemap, TreemapProps } from 'recharts'
 import { followCursor } from 'tippy.js'
 
-import { ConditionalWrap, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ClusterStatusType } from '@Components/ClusterNodes/types'
+import { ClusterStatusType, ConditionalWrap, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getVisibleSvgTextWithEllipsis } from './utils'
 import { ClusterMapProps } from './types'
@@ -53,7 +51,7 @@ const ClusterTreeMapContent = ({
                     className={`cluster-map__rect ${status === 'unhealthy' ? 'cluster-map__rect--unhealthy' : ''}`}
                 />
                 <text x={x + 8} y={y + 22} className="cluster-map__text fcn-9 fs-13 fw-6">
-                    {getVisibleSvgTextWithEllipsis(name, width, 13, 600)}
+                    {getVisibleSvgTextWithEllipsis({ text: name, maxWidth: width, fontSize: 13, fontWeight: 600 })}
                 </text>
                 <text x={x + 8} y={y + 38} className="cluster-map__text fcn-9 fs-12 fw-4">
                     {value}

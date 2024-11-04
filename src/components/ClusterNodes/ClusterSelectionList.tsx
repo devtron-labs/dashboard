@@ -16,7 +16,14 @@
 
 import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
-import { GenericEmptyState, SearchBar, useUrlFilters, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GenericEmptyState,
+    SearchBar,
+    useUrlFilters,
+    Tooltip,
+    ClusterFiltersType,
+    ClusterStatusType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
@@ -26,7 +33,7 @@ import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import { ClusterMap, ClusterTreeMapData } from '@Pages/ResourceBrowser'
-import { ClusterDetail, ClusterFiltersType, ClusterStatusType } from './types'
+import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
@@ -36,7 +43,7 @@ import { ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
-const ClusterStatus = importComponentFromFELibrary('ClusterStatus', null, 'function')
+const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 
 const getClusterMapData = (data: ClusterDetail[]): ClusterTreeMapData['data'] =>
@@ -77,7 +84,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
-    }, [searchKey, clusterOptions, clusterFilter])
+    }, [searchKey, clusterOptions, `${clusterFilter}`])
 
     const treeMapData = useMemo<ClusterTreeMapData[]>(() => {
         const { prodClusters, nonProdClusters } = filteredList.reduce(
@@ -149,8 +156,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
-        if (ClusterStatus && status) {
-            return <ClusterStatus status={status} />
+        if (ClusterStatusCell && status) {
+            return <ClusterStatusCell status={status} />
         }
 
         return (
