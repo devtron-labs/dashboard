@@ -1061,10 +1061,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.6.0-patch-1":
-  version "0.6.0-patch-1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.6.0-patch-1.tgz#f8f87d7f5f080e9199d70869be46e51bf9b03457"
-  integrity sha512-12tcyovuN1tr4ZwR2LEDLcednMUaqa3fHVUmNqKPkv3434+e2OIEAw5yezRU24XVsPVkWZcIFl3+MsnK2lIO0A==
+"@devtron-labs/devtron-fe-common-lib@0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.6.2.tgz#45c953b787a389485c4f360ce3b89ec00bf6f0f1"
+  integrity sha512-riqhjWWqNjnTaF4n59DUwr0tMRef0RZMqPAwqUjl7rvBvl2siUrnA/a93yBetqdVLsL2gNS7NnAuI92IvcCUFQ==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -3735,9 +3735,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001646:
-  version "1.0.30001660"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001660.tgz"
-  integrity sha512-GacvNTTuATm26qC74pt+ad1fW15mlQ/zuTzzY1ZoIzECTP8HURDfF43kNxPgf7H1jmelCBQTTbBNxdSXOA7Bqg==
+  version "1.0.30001667"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001667.tgz"
+  integrity sha512-7LTwJjcRkzKFmtqGsibMeuXmvFDfZq/nzIjnmgCGzKKRVzjD72selLDK1oPF/Oxzmt4fNcPvTDvGqSDG4tCALw==
 
 chai@^4.3.10:
   version "4.5.0"
@@ -4538,9 +4538,9 @@ ejs@^3.1.10, ejs@^3.1.6:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.4:
-  version "1.5.25"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.25.tgz"
-  integrity sha512-kMb204zvK3PsSlgvvwzI3wBIcAw15tRkYk+NQdsjdDtcQWTp2RABbMQ9rUBy8KNEOM+/E6ep+XC3AykiWZld4g==
+  version "1.5.32"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.32.tgz"
+  integrity sha512-M+7ph0VGBQqqpTT2YrabjNKSQ2fEl9PVx6AK3N558gDH9NO8O6XN9SXXFWRo9u9PbEg/bWq+tjXQr+eXmxubCw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"

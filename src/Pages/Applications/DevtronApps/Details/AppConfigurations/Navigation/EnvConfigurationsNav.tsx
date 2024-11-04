@@ -182,7 +182,7 @@ export const EnvConfigurationsNav = ({
     }
 
     /** Collapsible List Config. */
-    const collapsibleListConfig: CollapsibleListConfig[] = [
+    const collapsibleListConfig: CollapsibleListConfig<'navLink'>[] = [
         {
             header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
@@ -229,7 +229,10 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.secrets,
+            items: updatedEnvConfig.secrets.map((secret) => {
+                const { title, subtitle, href, iconConfig } = secret
+                return { title, subtitle, href, iconConfig }
+            }),
             noItemsText: 'No secrets',
             isExpanded: expandedIds?.secrets,
         },
@@ -373,7 +376,11 @@ export const EnvConfigurationsNav = ({
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}
-                        <CollapsibleList config={collapsibleListConfig} onCollapseBtnClick={onCollapseBtnClick} />
+                        <CollapsibleList
+                            config={collapsibleListConfig}
+                            tabType="navLink"
+                            onCollapseBtnClick={onCollapseBtnClick}
+                        />
                     </>
                 )}
             </div>
