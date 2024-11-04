@@ -27,13 +27,7 @@ import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import {
-    JUMP_TO_KIND_SHORT_NAMES,
-    K8S_EMPTY_GROUP,
-    ORDERED_AGGREGATORS,
-    SIDEBAR_KEYS,
-    FIXED_TABS_INDICES,
-} from './Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
@@ -51,6 +45,8 @@ const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const MONITORING_DASHBOARD_TAB_INDEX = importComponentFromFELibrary('MONITORING_DASHBOARD_TAB_INDEX', null, 'function')
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -281,6 +277,13 @@ export const updateQueryString = (
 const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
     `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
+export const getFixedTabIndices = () => ({
+    OVERVIEW: 0,
+    K8S_RESOURCE_LIST: 1,
+    MONITORING_DASHBOARD: MONITORING_DASHBOARD_TAB_INDEX || 3,
+    ADMIN_TERMINAL: MONITORING_DASHBOARD_TAB_INDEX ? 3 : 2,
+})
+
 export const getTabsBasedOnRole = ({
     selectedCluster,
     namespace,
@@ -297,7 +300,7 @@ export const getTabsBasedOnRole = ({
             name: AppDetailsTabs.cluster_overview,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            position: FIXED_TABS_INDICES.OVERVIEW,
+            position: getFixedTabIndices().OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
         },
@@ -310,7 +313,7 @@ export const getTabsBasedOnRole = ({
                 !dynamicTabData &&
                 !isOverviewSelected &&
                 !isMonitoringDashBoardSelected,
-            position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
+            position: getFixedTabIndices().K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -320,7 +323,7 @@ export const getTabsBasedOnRole = ({
                   getMonitoringDashboardTabConfig(
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
-                      FIXED_TABS_INDICES.MONITORING_DASHBOARD,
+                      getFixedTabIndices().MONITORING_DASHBOARD,
                   ),
               ]
             : []),
@@ -332,7 +335,7 @@ export const getTabsBasedOnRole = ({
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      position: FIXED_TABS_INDICES.ADMIN_TERMINAL,
+                      position: getFixedTabIndices().ADMIN_TERMINAL,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,
