@@ -218,7 +218,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
                 const userPermissionPayload = createUserPermissionPayload({
-                    id: result.id,
+                    id: result.userId,
                     userIdentifier: result.userIdentifier,
                     userRoleGroups: [],
                     serverMode: SERVER_MODE.FULL,
