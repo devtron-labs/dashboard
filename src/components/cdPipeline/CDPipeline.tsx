@@ -562,6 +562,7 @@ export default function CDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: YAMLStringify(pipelineConfigFromRes.strategies[i].config),
                     selection: YAMLStringify(allStrategies.current[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),

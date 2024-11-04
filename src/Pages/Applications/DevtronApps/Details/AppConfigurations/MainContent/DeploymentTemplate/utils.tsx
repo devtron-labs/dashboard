@@ -133,14 +133,15 @@ export const getCurrentTemplateWithLockedKeys = ({
 
 export const getLockedDiffModalDocuments = (isApprovalView: boolean, state: DeploymentTemplateStateType) => ({
     unedited: state.publishedTemplateData.originalTemplate,
-    edited: isApprovalView
-        ? state.draftTemplateData.originalTemplate
-        : YAML.parse(
-              getCurrentTemplateWithLockedKeys({
-                  currentEditorTemplateData: state.currentEditorTemplateData,
-                  wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
-              }),
-          ),
+    edited:
+        (isApprovalView
+            ? state.draftTemplateData.originalTemplate
+            : YAML.parse(
+                  getCurrentTemplateWithLockedKeys({
+                      currentEditorTemplateData: state.currentEditorTemplateData,
+                      wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
+                  }),
+              )) ?? {},
 })
 
 export const getDeploymentTemplateResourceName = (environmentName: string): string => {
