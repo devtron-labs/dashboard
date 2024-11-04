@@ -171,6 +171,7 @@ const NodeDetailComponent = ({
             activeManifestEditorData: '',
             modifiedManifest: '',
             guiSchema: {},
+            lockedKeys: null,
         },
         id: '',
     })
