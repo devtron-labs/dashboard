@@ -176,7 +176,7 @@ export default function BulkCDTrigger({
         let _isPartialActionAllowed = false
         for (const appDetails of appList) {
             if (_cdMaterialResponse[appDetails.appId]) {
-                appEnvMap.push({ appId: appDetails.appId, envId: appDetails.envId })
+                appEnvMap.push({ appId: appDetails.appId, envId: currentEnv})
             }
         }
         const { result } = await getDeploymentWindowStateAppGroup(appEnvMap)
