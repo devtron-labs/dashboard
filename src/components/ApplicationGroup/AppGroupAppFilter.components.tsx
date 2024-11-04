@@ -63,7 +63,7 @@ export const ValueContainer = (props): JSX.Element => {
                             <span data-testid="app-group-selector-text" className="cn-9 ml-2">
                                 {selectorText}
                             </span>
-                            <ShortcutKeyBadge shortcutKey="F" rootClassName='dc__position-rel-imp'/>
+                            <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
                         </div>
                     ) : (
                         <>
