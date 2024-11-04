@@ -62,6 +62,7 @@ import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
+    TOAST_INFO,
 } from '../../../../../../config/constantMessaging'
 import { MODES } from '../../../../../../config'
 import {
@@ -70,6 +71,7 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
+import { TOAST_MESSAGES } from '@Components/workflowEditor/workflowEditor.constants'
 
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
 const getLockedManifestKeys = importComponentFromFELibrary('getLockedManifestKeys', null, 'function')
@@ -405,6 +407,10 @@ const ManifestComponent = ({
             )
                 .then((response) => {
                     const _manifest = JSON.stringify(response?.result?.manifest)
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Manifest is updated',
+                    })
                     if (_manifest) {
                         setManifest(_manifest)
                         setActiveManifestEditorData(_manifest)
