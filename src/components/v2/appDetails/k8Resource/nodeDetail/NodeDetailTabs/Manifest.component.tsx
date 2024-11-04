@@ -482,7 +482,7 @@ const ManifestComponent = ({
             setLoading(false)
             setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
         } else {
-            if (checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
+            if (!isSuperAdmin && checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
                 setLoading(false)
                 setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
                 setShowLockedDiffModal(true)
