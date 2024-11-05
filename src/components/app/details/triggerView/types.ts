@@ -350,7 +350,6 @@ export interface TriggerViewState {
     isLoading: boolean
     invalidateCache: boolean
     hostURLConfig: HostURLConfig
-    showWebhookModal: boolean
     webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
     workflowId: number
@@ -377,11 +376,7 @@ export interface CIMaterialProps
         Pick<
             TriggerViewState,
             | 'workflowId'
-            | 'showWebhookModal'
             | 'isLoading'
-            | 'webhookPayloads'
-            | 'isWebhookPayloadLoading'
-            | 'webhookTimeStampOrder'
             | 'showMaterialRegexModal'
             | 'filteredCIPipelines'
             | 'isChangeBranchClicked'
@@ -393,8 +388,7 @@ export interface CIMaterialProps
     pipelineId: string
     title: string
     pipelineName: string
-    toggleWebhookModal: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
-    hideWebhookModal: (e?) => void
+    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
     onClickWebhookTimeStamp: () => void
     onCloseBranchRegexModal?: () => void
     onClickShowBranchRegexModal: () => void
@@ -659,7 +653,6 @@ export interface WorkflowDisplay {
 export interface BranchRegexModalProps {
     material: CIMaterialType[]
     selectedCIPipeline
-    showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
@@ -768,7 +761,7 @@ export interface WebhookReceivedFiltersType {
 
 export interface CiWebhookModalProps
     extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
-        Pick<CIMaterialProps, 'appId' | 'isJobView' | 'fromAppGrouping'> {
+        Pick<CIMaterialProps, 'isJobView' | 'fromAppGrouping'> {
     ciPipelineMaterialId: number
     ciPipelineId: number
     fromBulkCITrigger?: boolean
@@ -778,4 +771,14 @@ export interface CIWebhookPayload {
     payloadId: number
     payloadJson: string
     selectorsData: WebhookReceivedFiltersType[]
+}
+
+export interface WebhookReceivedPayloadModalType
+    extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'> {
+    fromBulkCITrigger?: boolean
+    title: string
+    material: CDMaterialType[]
+    pipelineId: string
+    fromAppGrouping?: boolean
+    isJobView?: boolean
 }

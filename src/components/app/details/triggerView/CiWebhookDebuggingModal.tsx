@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
-import { generatePath, NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -33,7 +33,7 @@ import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as InfoOutlined } from '@Icons/ic-info-outlined.svg'
 import { getCIWebhookPayload } from './ciWebhook.service'
 import { getCIPipelineURL } from '../../../common'
-import { Moment12HourFormat } from '../../../../config'
+import { Moment12HourFormat, URLS } from '../../../../config'
 import './triggerView.scss'
 import { CiWebhookModalProps, CIWebhookPayload, WebhookPayload, WebhookReceivedFiltersType } from './types'
 
@@ -45,7 +45,6 @@ export const CiWebhookModal = ({
     workflowId,
     fromAppGrouping,
     fromBulkCITrigger,
-    appId,
     isJobView,
 }: CiWebhookModalProps) => {
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -53,9 +52,8 @@ export const CiWebhookModal = ({
     const [selectedPassedCountRatio, setSelectedPassedCountRatio] = useState<string>('')
     const location = useLocation()
     const history = useHistory()
-    const { path } = useRouteMatch()
+    const { url } = useRouteMatch()
     const params = useParams<{ appId: string; envId: string; ciPipelineId: string }>()
-    const payloadId = webhookPayloads?.payloads ? webhookPayloads.payloads[0]?.parsedDataId : ''
 
     const getCIWebhookPayloadRes = async (pipelineMaterialId: number, webhookPayload: WebhookPayload) => {
         setIsPayloadLoading(true)
@@ -72,10 +70,10 @@ export const CiWebhookModal = ({
     }
 
     useEffect(() => {
-        if (payloadId) {
-            history.push(`${generatePath(path, { ...params })}/payloadId/${payloadId}`)
+        if (webhookPayloads?.payloads[0]?.parsedDataId) {
+            history.push(`${url}/${webhookPayloads?.payloads[0]?.parsedDataId}`)
         }
-    }, [payloadId])
+    }, [webhookPayloads])
 
     useEffect(() => {
         if (ciPipelineMaterialId && webhookPayloads?.payloads) {
@@ -89,8 +87,9 @@ export const CiWebhookModal = ({
         return `${matchedFiltersCount}/${totalFilters}`
     }
 
-    const renderPassedText = (passedCount: string) => (
-        <div className="flex left lh-18">Passed {passedCount} filters</div>
+    const renderPassedText = useCallback(
+        (passedCount: string) => <div className="flex left lh-18">Passed {passedCount} filters</div>,
+        [],
     )
 
     const onEditShowEditableCiModal = (_ciPipelineId: number, _workflowId: string) => {
@@ -98,13 +97,13 @@ export const CiWebhookModal = ({
             window.open(
                 window.location.href.replace(
                     location.pathname,
-                    getCIPipelineURL(appId, _workflowId, true, _ciPipelineId, isJobView, false),
+                    getCIPipelineURL(params.appId, _workflowId, true, _ciPipelineId, isJobView, false),
                 ),
                 '_blank',
                 'noreferrer',
             )
         } else {
-            history.push(`/app/${appId}/edit/workflow/${_workflowId}/ci-pipeline/${_ciPipelineId}`)
+            history.push(`/app/${params.appId}/edit/workflow/${_workflowId}/ci-pipeline/${_ciPipelineId}`)
         }
     }
 
@@ -119,11 +118,13 @@ export const CiWebhookModal = ({
         </div>
     )
 
+    const memoizedPayloads = useMemo(() => webhookPayloads?.payloads || [], [webhookPayloads])
+
     const renderSidebar = () => (
         <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
             <div className="p-8">
-                {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
+                {memoizedPayloads?.map((webhookPayload: WebhookPayload) => {
                     const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                     const webhookPayloadId = webhookPayload.parsedDataId
                     const isActive = location.pathname.split('/').pop() === String(webhookPayloadId)
@@ -136,9 +137,9 @@ export const CiWebhookModal = ({
                                 activeClassName="active"
                                 key={webhookPayloadId}
                                 data-testid={`payload-id-${webhookPayloadId}-anchor`}
-                                to={`${generatePath(path, { ...params })}/payloadId/${webhookPayloadId}`}
+                                to={`${url.split(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID)[0]}${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}/${webhookPayloadId}`}
                                 className="dc__no-decor"
-                                type="button"
+                                type="butt`on"
                                 aria-label="View webhook payload"
                                 onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                             >
@@ -147,7 +148,7 @@ export const CiWebhookModal = ({
                                         className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'failed'}`}
                                     />
                                     <div>
-                                        <span className={`lh-20 ${isActive ? 'cb-5 fw-6' : 'cn-5'}`}>
+                                        <span className={`lh-20 ${isActive ? 'cb-5 fw-6' : 'cn-9'}`}>
                                             {moment(webhookPayload.eventTime).format(Moment12HourFormat)}
                                         </span>
                                         <div className="cn-7 fs-12">

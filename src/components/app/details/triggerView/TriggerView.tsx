@@ -34,7 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
+import { withRouter, NavLink, Route, Switch, Redirect } from 'react-router-dom'
 import {
     getCIMaterialList,
     triggerCINode,
@@ -89,6 +89,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
+import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -120,7 +121,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isLoading: false,
             invalidateCache: false,
             hostURLConfig: undefined,
-            showWebhookModal: false,
             webhookPayloads: undefined,
             isWebhookPayloadLoading: false,
             webhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING,
@@ -1083,11 +1083,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflowStatus()
     }
 
-    hideWebhookModal = () => {
-        this.setState({
-            showWebhookModal: false,
-        })
-    }
 
     onClickWebhookTimeStamp = () => {
         if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
@@ -1097,11 +1092,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    toggleWebhookModal = (id) => {
+    getWebhookPayload = (id) => {
         this.setState({ isWebhookPayloadLoading: true })
         getCIWebhookRes(id, this.state.webhookTimeStampOrder).then((result) => {
             this.setState({
-                showWebhookModal: true,
                 webhookPayloads: result?.result,
                 isWebhookPayloadLoading: false,
             })
@@ -1172,6 +1166,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const material = nd?.[this.state.materialType] || []
             return (
                 <Switch>
+                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/payloadId/:payloadId(\\d+)?`}>
+                        <WebhookReceivedPayloadModal
+                            workflowId={this.state.workflowId}
+                            webhookPayloads={this.state.webhookPayloads}
+                            isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                            material={material}
+                            pipelineId={this.state.ciNodeId.toString()}
+                            title={this.state.ciPipelineName}
+                            isJobView={this.props.isJobView}                          />
+                    </Route>
                     <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
                         <CIMaterialModal
                             workflowId={this.state.workflowId}
@@ -1183,13 +1187,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isLoading={this.state.isLoading}
                             title={this.state.ciPipelineName}
                             pipelineId={this.state.ciNodeId.toString()}
-                            showWebhookModal={this.state.showWebhookModal}
-                            hideWebhookModal={this.hideWebhookModal}
-                            toggleWebhookModal={this.toggleWebhookModal}
-                            webhookPayloads={this.state.webhookPayloads}
-                            isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                            getWebhookPayload={this.getWebhookPayload}
                             onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
-                            webhookTimeStampOrder={this.state.webhookTimeStampOrder}
                             showMaterialRegexModal={this.state.showMaterialRegexModal}
                             onCloseBranchRegexModal={this.onCloseBranchRegexModal}
                             filteredCIPipelines={this.state.filteredCIPipelines}
@@ -1215,6 +1214,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             resetAbortController={this.resetAbortController}
                         />
                     </Route>
+                    <Redirect to={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`} />
                 </Switch>
             )
         }

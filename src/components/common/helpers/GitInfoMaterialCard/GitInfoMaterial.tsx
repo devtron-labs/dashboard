@@ -30,8 +30,7 @@ import {
     ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -39,9 +38,7 @@ import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
-import { URLS } from '@Config/routes'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CiWebhookModal } from '../../../app/details/triggerView/CiWebhookDebuggingModal'
 import EmptyStateCIMaterial from '../../../app/details/triggerView/EmptyStateCIMaterial'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { getCIPipelineURL } from '../workflowURL'
@@ -59,15 +56,10 @@ export const GitInfoMaterial = ({
     pipelineId,
     pipelineName,
     selectedMaterial,
-    showWebhookModal,
-    toggleWebhookModal,
-    webhookPayloads,
-    isWebhookPayloadLoading,
-    hideWebhookModal,
+    getWebhookPayload,
     workflowId,
     onClickShowBranchRegexModal,
     fromAppGrouping,
-    appId,
     // Only coming from BulkCI
     appName = null,
     fromBulkCITrigger,
@@ -85,13 +77,13 @@ export const GitInfoMaterial = ({
     const { push } = useHistory()
     const location = useLocation()
     const { url } = useRouteMatch()
+    const { appId } = useParams<{ appId: string }>()
     const triggerViewContext = useContext(TriggerViewContext)
 
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [showAllCommits, setShowAllCommits] = useState(false)
     const [showExcludePopUp, setShowExcludePopUp] = useState(false)
-    const _showWebhookModal = location.pathname.includes(URLS.PAYLOAD_ID) || showWebhookModal
 
     useEffect(() => {
         if (!selectedMaterial || !selectedMaterial.searchText) {
@@ -106,12 +98,6 @@ export const GitInfoMaterial = ({
 
     const onClickCloseButton = (): void => {
         triggerViewContext.closeCIModal()
-        hideWebhookModal()
-    }
-
-    const onClickBackButton = (): void => {
-        push(url.replace(`/${URLS.PAYLOAD_ID}`, ''))
-        hideWebhookModal()
     }
 
     function renderMaterialHeader() {
@@ -123,21 +109,8 @@ export const GitInfoMaterial = ({
                     data-testid="build-deploy-pipeline-name-heading"
                     className="modal__title flex left fs-16 dc__gap-12"
                 >
-                    {_showWebhookModal ? (
-                        <Button
-                            dataTestId={`${dataTestId}-back-button`}
-                            ariaLabel="Back"
-                            icon={<LeftIcon />}
-                            variant={ButtonVariantType.borderLess}
-                            size={ComponentSizeType.xs}
-                            showAriaLabelInTippy={false}
-                            style={ButtonStyleType.neutral}
-                            onClick={onClickBackButton}
-                        />
-                    ) : null}
                     <div className="flex left">
                         <span className="dc__mxw-250 dc__truncate">{title}</span>
-                        {_showWebhookModal ? <span className="fs-16">&nbsp;/ All received webhooks </span> : null}
                     </div>
                 </h2>
 
@@ -222,19 +195,15 @@ export const GitInfoMaterial = ({
             onClick={onClickHeader}
         >
             <BranchFixed className=" mr-8 icon-color-n9 mw-14" />
-            {_showWebhookModal ? (
-                'Select commit to build'
-            ) : (
-                <Tippy
-                    className="default-tt dc__word-break-all"
-                    arrow={false}
-                    placement="top"
-                    content={_selectedMaterial.value}
-                    interactive
-                >
-                    <div className="dc__ellipsis-right">{_selectedMaterial.value}</div>
-                </Tippy>
-            )}
+            <Tippy
+                className="default-tt dc__word-break-all"
+                arrow={false}
+                placement="top"
+                content={_selectedMaterial.value}
+                interactive
+            >
+                <div className="dc__ellipsis-right">{_selectedMaterial.value}</div>
+            </Tippy>
             {_selectedMaterial.regex && (
                 <Button
                     dataTestId={dataTestId}
@@ -282,8 +251,8 @@ export const GitInfoMaterial = ({
     }
 
     const onClickShowWebhookModal = () => {
-        toggleWebhookModal(selectedMaterial.id)
-        push(`${url}/payloadId`)
+        getWebhookPayload(selectedMaterial.id)
+        push(`${url}/payloadId/`)
     }
 
     const toggleShowExcludePopUp = () => {
@@ -440,22 +409,6 @@ export const GitInfoMaterial = ({
         )
     }
 
-    const renderWebhookModal = () => (
-        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
-            <CiWebhookModal
-                webhookPayloads={webhookPayloads}
-                ciPipelineMaterialId={material[0].id}
-                ciPipelineId={+pipelineId}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                workflowId={workflowId}
-                fromAppGrouping={fromAppGrouping}
-                fromBulkCITrigger={fromBulkCITrigger}
-                appId={appId}
-                isJobView={isJobView}
-            />
-        </div>
-    )
-
     const redirectToCIPipeline = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId.toString(), true, pipelineId, false, isJobCI)
         if (fromAppGrouping) {
@@ -467,19 +420,13 @@ export const GitInfoMaterial = ({
 
     return (
         <>
-            {(!fromBulkCITrigger || _showWebhookModal) && renderMaterialHeader()}
+            {!fromBulkCITrigger && renderMaterialHeader()}
             {BuildTriggerBlockedState && isCITriggerBlocked ? (
                 <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
             ) : (
-                <div className={`m-lr-0 ${_showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
-                    {_showWebhookModal ? (
-                        renderWebhookModal()
-                    ) : (
-                        <>
-                            {!fromBulkCITrigger && renderMaterialSource()}
-                            {renderMaterialHistory(selectedMaterial)}
-                        </>
-                    )}
+                <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
+                    {!fromBulkCITrigger && renderMaterialSource()}
+                    {renderMaterialHistory(selectedMaterial)}
                 </div>
             )}
         </>

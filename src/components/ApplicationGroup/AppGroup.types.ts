@@ -108,11 +108,9 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    showWebhookModal: boolean
-    toggleWebhookModal: (id, webhookTimeStampOrder) => void
+    getWebhookPayload: (id, webhookTimeStampOrder) => void
     webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
-    hideWebhookModal: (e?) => void
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
     isLoading: boolean

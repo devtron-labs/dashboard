@@ -2,15 +2,10 @@ import { CIMaterialProps, TriggerViewState } from '@Components/app/details/trigg
 import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface GitInfoMaterialProps
-    extends Pick<
-            TriggerViewState,
-            'workflowId' | 'showWebhookModal' | 'webhookPayloads' | 'isWebhookPayloadLoading' | 'webhookTimeStampOrder'
-        >,
+    extends Pick<TriggerViewState, 'workflowId'>,
         Pick<
             CIMaterialProps,
-            | 'appId'
-            | 'toggleWebhookModal'
-            | 'hideWebhookModal'
+            | 'getWebhookPayload'
             | 'onClickShowBranchRegexModal'
             | 'fromAppGrouping'
             | 'isJobView'

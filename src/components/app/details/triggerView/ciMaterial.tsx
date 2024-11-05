@@ -255,7 +255,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         <BranchRegexModal
             material={this.props.material}
             selectedCIPipeline={this.state.selectedCIPipeline}
-            showWebhookModal={this.props.showWebhookModal}
             title={this.props.title}
             isChangeBranchClicked={this.props.isChangeBranchClicked}
             onClickNextButton={this.onClickNextButton}
@@ -286,15 +285,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         pipelineId={this.props.pipelineId}
                         pipelineName={this.props.pipelineName}
                         selectedMaterial={selectedMaterial}
-                        showWebhookModal={this.props.showWebhookModal}
-                        hideWebhookModal={this.props.hideWebhookModal}
-                        toggleWebhookModal={this.props.toggleWebhookModal}
-                        webhookPayloads={this.props.webhookPayloads}
-                        isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
+                        getWebhookPayload={this.props.getWebhookPayload}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         fromAppGrouping={this.props.fromAppGrouping}
-                        appId={this.props.appId}
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
@@ -306,9 +300,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
                         handleRuntimeParamError={this.handleRuntimeParamError}
                     />
-                    {this.props.isCITriggerBlocked || this.props.showWebhookModal
-                        ? null
-                        : this.renderMaterialStartBuild(canTrigger)}
+                    {this.props.isCITriggerBlocked ? null : this.renderMaterialStartBuild(canTrigger)}
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     {this.props.showMaterialRegexModal && this.renderBranchRegexModal()}
                 </>

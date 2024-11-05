@@ -36,7 +36,6 @@ import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 const BranchRegexModal = ({
     material,
     selectedCIPipeline,
-    showWebhookModal,
     title,
     isChangeBranchClicked,
     onClickNextButton,
@@ -159,7 +158,7 @@ const BranchRegexModal = ({
                     text="Cancel"
                     dataTestId="branch-regex-save-next-button"
                     onClick={onCloseBranchRegexModal}
-                    size={ComponentSizeType.xl}
+                    size={ComponentSizeType.medium}
                     style={ButtonStyleType.neutral}
                 />
                 <Button
@@ -169,7 +168,7 @@ const BranchRegexModal = ({
                     onClick={onClickNextButton}
                     disabled={isDisabled || savingRegexValue}
                     isLoading={savingRegexValue}
-                    size={ComponentSizeType.xl}
+                    size={ComponentSizeType.medium}
                 />
             </div>
         )
@@ -181,7 +180,7 @@ const BranchRegexModal = ({
                 {renderBranchRegexMaterialHeader()}
                 {renderRegexInfo()}
                 {renderBranchRegexContent()}
-                {!showWebhookModal && !hideHeaderFooter && renderMaterialRegexFooterNextButton()}
+                {renderMaterialRegexFooterNextButton()}
             </div>
         </VisibleModal2>
     )

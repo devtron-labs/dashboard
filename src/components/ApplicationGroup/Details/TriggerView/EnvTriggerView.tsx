@@ -158,7 +158,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
-    const [showWebhookModal, setShowWebhookModal] = useState(false)
     const [isWebhookPayloadLoading, setWebhookPayloadLoading] = useState(false)
     const [invalidateCache, setInvalidateCache] = useState(false)
     const [webhookPayloads, setWebhookPayloads] = useState(null)
@@ -1303,7 +1302,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (e) {
             stopPropagation(e)
         }
-        setShowWebhookModal(false)
     }
 
     const onClickWebhookTimeStamp = () => {
@@ -1314,10 +1312,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }
 
-    const toggleWebhookModal = (id, _webhookTimeStampOrder) => {
+    const getWebhookPayload = (id, _webhookTimeStampOrder) => {
         setWebhookPayloadLoading(true)
         getCIWebhookRes(id, _webhookTimeStampOrder).then((result) => {
-            setShowWebhookModal(true)
             setWebhookPayloads(result?.result)
             setWebhookPayloadLoading(false)
         })
@@ -1976,13 +1973,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isLoading={isCDLoading}
                             title={selectedCINode?.name}
                             pipelineId={selectedCINode?.id?.toString()}
-                            showWebhookModal={showWebhookModal}
-                            hideWebhookModal={hideWebhookModal}
-                            toggleWebhookModal={toggleWebhookModal}
-                            webhookPayloads={webhookPayloads}
-                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            getWebhookPayload={getWebhookPayload}
                             onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                            webhookTimeStampOrder={webhookTimeStampOrder}
                             showMaterialRegexModal={showMaterialRegexModal}
                             onCloseBranchRegexModal={onCloseBranchRegexModal}
                             filteredCIPipelines={filteredCIPipelines.get(_appID)}
@@ -2054,9 +2046,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 closePopup={hideBulkCIModal}
                 updateBulkInputMaterial={updateBulkCIInputMaterial}
                 onClickTriggerBulkCI={onClickTriggerBulkCI}
-                showWebhookModal={showWebhookModal}
-                hideWebhookModal={hideWebhookModal}
-                toggleWebhookModal={toggleWebhookModal}
+                getWebhookPayload={getWebhookPayload}
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}

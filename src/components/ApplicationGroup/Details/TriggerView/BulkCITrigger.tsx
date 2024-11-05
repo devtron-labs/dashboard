@@ -64,6 +64,7 @@ import { getIsAppUnorthodox } from './utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { BULK_ERROR_MESSAGES } from './constants'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
+import { useRouteMatch } from 'react-router-dom'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -75,11 +76,7 @@ const BulkCITrigger = ({
     closePopup,
     updateBulkInputMaterial,
     onClickTriggerBulkCI,
-    showWebhookModal,
-    toggleWebhookModal,
-    webhookPayloads,
-    isWebhookPayloadLoading,
-    hideWebhookModal,
+    getWebhookPayload,
     isShowRegexModal,
     responseList,
     isLoading,
@@ -98,6 +95,8 @@ const BulkCITrigger = ({
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
+    const { url } = useRouteMatch()
+    const showWebhookModal = url.includes(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID)
 
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -264,10 +263,6 @@ const BulkCITrigger = ({
     }
 
     const renderHeaderSection = (): JSX.Element | null => {
-        if (showWebhookModal) {
-            return null
-        }
-
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
@@ -400,7 +395,6 @@ const BulkCITrigger = ({
                     <BranchRegexModal
                         material={selectedMaterialList}
                         selectedCIPipeline={selectedCIPipeline}
-                        showWebhookModal={false}
                         title={selectedApp.ciPipelineName}
                         isChangeBranchClicked={isChangeBranchClicked}
                         onClickNextButton={saveBranchName}
@@ -458,15 +452,10 @@ const BulkCITrigger = ({
                 pipelineId={selectedApp.ciPipelineId}
                 pipelineName={selectedApp.ciPipelineName}
                 selectedMaterial={selectedMaterial}
-                showWebhookModal={showWebhookModal}
-                hideWebhookModal={hideWebhookModal}
-                toggleWebhookModal={toggleWebhookModal}
-                webhookPayloads={webhookPayloads}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                getWebhookPayload={getWebhookPayload}
                 workflowId={+selectedApp.workFlowId}
                 onClickShowBranchRegexModal={showBranchEditModal}
                 fromAppGrouping
-                appId={selectedApp.appId.toString()}
                 fromBulkCITrigger
                 hideSearchHeader={selectedApp.hideSearchHeader}
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
