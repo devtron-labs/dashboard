@@ -38,6 +38,7 @@ import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
+import { URLS } from '@Config/routes'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import EmptyStateCIMaterial from '../../../app/details/triggerView/EmptyStateCIMaterial'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
@@ -252,7 +253,7 @@ export const GitInfoMaterial = ({
 
     const onClickShowWebhookModal = () => {
         getWebhookPayload(selectedMaterial.id)
-        push(`${url}/payloadId/`)
+        push(`${url}/${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}`)
     }
 
     const toggleShowExcludePopUp = () => {

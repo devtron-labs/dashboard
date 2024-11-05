@@ -1166,7 +1166,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const material = nd?.[this.state.materialType] || []
             return (
                 <Switch>
-                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/payloadId/:payloadId(\\d+)?`}>
+                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}/:payloadId(\\d+)?`}>
                         <WebhookReceivedPayloadModal
                             workflowId={this.state.workflowId}
                             webhookPayloads={this.state.webhookPayloads}
@@ -1174,7 +1174,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             material={material}
                             pipelineId={this.state.ciNodeId.toString()}
                             title={this.state.ciPipelineName}
-                            isJobView={this.props.isJobView}                          />
+                            isJobView={this.props.isJobView}   
+                            getWebhookPayload={this.getWebhookPayload}                       />
                     </Route>
                     <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
                         <CIMaterialModal

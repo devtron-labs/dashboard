@@ -70,7 +70,7 @@ export const CiWebhookModal = ({
     }
 
     useEffect(() => {
-        if (webhookPayloads?.payloads[0]?.parsedDataId) {
+        if (webhookPayloads?.payloads && webhookPayloads.payloads[0]?.parsedDataId) {
             history.push(`${url}/${webhookPayloads?.payloads[0]?.parsedDataId}`)
         }
     }, [webhookPayloads])

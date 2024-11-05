@@ -24,7 +24,7 @@ export const CI_MATERIAL_EMPTY_STATE_MESSAGING = {
     FailedToFetchSubtitle: 'Sorry! We could not fetch available materials. Please try again.',
     ClearSearch: 'Clear search',
     Retry: 'Retry',
-    WebhookModalCTA: 'View all incoming webhook payloads',
+    WebhookModalCTA: 'View All Received webhooks',
     NoCommitEligibleCommit: 'No recent eligible commit found',
     NoCommitEligibleCommitSubtitle:
         'Commits that contain changes only in excluded files or folders are not eligible for build.',

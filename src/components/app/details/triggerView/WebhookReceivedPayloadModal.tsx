@@ -8,7 +8,7 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { TriggerViewContext } from './config'
@@ -25,6 +25,7 @@ export const WebhookReceivedPayloadModal = ({
     workflowId,
     fromAppGrouping = false,
     isJobView = false,
+    getWebhookPayload,
 }: WebhookReceivedPayloadModalType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -32,6 +33,10 @@ export const WebhookReceivedPayloadModal = ({
     const onClickBackButton = (): void => {
         push(url.replace(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID, ''))
     }
+
+    useEffect(() => {
+        getWebhookPayload(workflowId)
+    }, [])
 
     const onClickCloseButton = (): void => {
         triggerViewContext.closeCIModal()

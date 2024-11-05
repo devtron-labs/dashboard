@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonComponentType, ButtonVariantType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
@@ -24,6 +23,7 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
+import { useRouteMatch } from 'react-router-dom'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -45,6 +45,7 @@ export default function EmptyStateCIMaterial({
     showAllCommits,
     toggleExclude,
 }: EmptyStateCIMaterialProps) {
+    const { url } = useRouteMatch()
     const getData = () => {
         if (isRepoError) {
             return {
@@ -149,9 +150,12 @@ export default function EmptyStateCIMaterial({
 
     const handleMaterialLoadingButton = () => {
         return (
-            <span className="dc__link cursor" onClick={toggleWebHookModal}>
-                {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-            </span>
+            <Button
+                dataTestId="webhook-modal-cta"
+                onClick={toggleWebHookModal}
+                text={CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
+                variant={ButtonVariantType.text}
+            />
         )
     }
 
