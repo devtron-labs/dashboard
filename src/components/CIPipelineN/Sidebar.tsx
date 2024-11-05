@@ -89,6 +89,8 @@ export const Sidebar = ({
     const showMandatoryWarning = (): boolean => {
         return (
             !!MandatoryPluginWarning &&
+            // mandatory plugins are applicable for Job CI but not Jobs
+            !isJobView &&
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
