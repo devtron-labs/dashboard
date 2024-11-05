@@ -25,6 +25,7 @@ import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import IndexStore from './index.store'
 import NodeTreeTabList from './k8Resource/NodeTreeTabList'
+import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 const NodeTreeDetailTab = ({
     appDetails,
@@ -33,7 +34,7 @@ const NodeTreeDetailTab = ({
     isDevtronApp = false,
     isExternalApp,
     isDeploymentBlocked,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -71,7 +72,10 @@ const NodeTreeDetailTab = ({
                     />
                     <Switch>
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
+                            path={[
+                                `${path}/${URLS.APP_DETAILS_K8}/:nodeType/${URLS.APP_DIFF_VIEW}/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`,
+                                `${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`,
+                            ]}
                             render={() => {
                                 return (
                                     <K8ResourceComponent

@@ -48,5 +48,6 @@
 | SERVICE_WORKER_TIMEOUT                       | "1"        | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle |
 | TRIGGER_API_TIMEOUT                          | 60000      | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD                   |
 | FEATURE_STEP_WISE_LOGS_ENABLE                      | true         | Would segregate logs into tasks     |
+| FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS | "true" | Would hide the user direct permissions for non-super admin users in User Permissions |
 
 # DASHBOARD CONFIG SECRET

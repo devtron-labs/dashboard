@@ -20,7 +20,7 @@ export const PipelineConfigDiff = ({
 
     // Extracting resourceType and resourceName from the pathname.
     // No route parameters are used here; they are only appended when the diff is opened.
-    const [resourceType, resourceName] = pathname.split(`${URLS.APP_TRIGGER}/`)[1].split('/')
+    const [resourceType, resourceName] = pathname.split(`${URLS.APP_DIFF_VIEW}/`)[1].split('/')
 
     // METHODS
     const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')
