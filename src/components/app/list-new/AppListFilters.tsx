@@ -48,6 +48,17 @@ const AppListFilters = ({
         isExternalFlux,
     })
 
+    const getIsClusterOptionDisabled = (option: SelectPickerOptionType): boolean => {
+        const clusterList = appListFiltersResponse?.isFullMode
+            ? appListFiltersResponse?.appListFilters.result.clusters
+            : appListFiltersResponse?.clusterList.result
+        if (!clusterList || (!isExternalArgo && !isExternalFlux)) return false
+        return clusterList.find((clusterItem) => clusterItem.id === +option.value)?.isVirtualCluster
+    }
+
+    const getIsAppStatusDisabled = (option: SelectPickerOptionType): boolean =>
+        appType === AppListConstants.AppType.HELM_APPS && option.label === AppStatuses.NOT_DEPLOYED
+
     const selectedAppStatus = appStatus.map((status) => ({ label: status, value: status })) || []
 
     const selectedProjects =
@@ -80,10 +91,7 @@ const AppListFilters = ({
             value: templateTypeItem,
         })) || []
 
-    const appStatusFilters: SelectPickerOptionType[] =
-        appType === AppListConstants.AppType.HELM_APPS
-            ? structuredClone(APP_STATUS_FILTER_OPTIONS).filter((status) => status.label !== AppStatuses.NOT_DEPLOYED)
-            : structuredClone(APP_STATUS_FILTER_OPTIONS)
+    const appStatusFilters: SelectPickerOptionType[] = structuredClone(APP_STATUS_FILTER_OPTIONS)
 
     const showExportCsvButton =
         isSuperAdmin && appType === AppListConstants.AppType.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY
@@ -122,6 +130,7 @@ const AppListFilters = ({
                                     handleApplyFilter={handleUpdateFilters(AppListUrlFilters.appStatus)}
                                     isDisabled={false}
                                     isLoading={false}
+                                    isOptionDisabled={getIsAppStatusDisabled}
                                 />
                                 <div className="dc__border-right h-16" />
                             </>
@@ -184,7 +193,7 @@ const AppListFilters = ({
                 )}
                 <Tooltip
                     content="Remove environment filters to use cluster filter"
-                    alwaysShowTippyOnHover={!!environment.length}
+                    alwaysShowTippyOnHover={!(isExternalArgo || isExternalFlux) && !!environment.length}
                     wordBreak={false}
                 >
                     <div className="flexbox dc__position-rel">
@@ -193,11 +202,12 @@ const AppListFilters = ({
                             inputId="app-list-cluster-filter"
                             options={clusterOptions}
                             appliedFilterOptions={selectedClusters}
-                            isDisabled={!!environment.length}
+                            isDisabled={!(isExternalArgo || isExternalFlux) && !!environment.length}
                             isLoading={appListFiltersLoading}
                             handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                             optionListError={appListFiltersError}
                             reloadOptionList={reloadAppListFilters}
+                            isOptionDisabled={getIsClusterOptionDisabled}
                         />
                         {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                     </div>
