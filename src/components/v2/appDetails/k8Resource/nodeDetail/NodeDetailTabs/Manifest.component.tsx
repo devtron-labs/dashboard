@@ -640,7 +640,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flex-grow-1`}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22' }}
         >
@@ -652,7 +652,7 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className="bcn-0 h-100">
+                <div className="bcn-0 flexbox-col flex-grow-1 dc__overflow-scroll">
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
                             msg="Manifest not available"
