@@ -30,6 +30,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
+import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -53,16 +54,17 @@ export const ValueContainer = (props): JSX.Element => {
             {!props.selectProps.inputValue ? (
                 <>
                     {!props.selectProps.menuIsOpen ? (
-                        <>
+                        <div className="flexbox dc__gap-4 dc__align-items-center">
                             {selectedAppsLength > 0 ? (
-                                <ShowIconFilterApplied className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
                             ) : (
-                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
                             )}
                             <span data-testid="app-group-selector-text" className="cn-9 ml-2">
                                 {selectorText}
                             </span>
-                        </>
+                            <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
+                        </div>
                     ) : (
                         <>
                             <Search className="icon-dim-16 mr-4 mw-18" />
