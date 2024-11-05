@@ -1,10 +1,8 @@
 import {
     DEFAULT_BASE_PAGE_SIZE,
     GenericFilterEmptyState,
-    noop,
     Pagination,
     SortableTableHeaderCell,
-    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExposureListProps } from '../security.types'
 
@@ -29,30 +27,9 @@ const ExposureList = ({
         <>
             <div className="w-100">
                 <div className="fs-12 fw-6 lh-20 cn-7 pl-20 pr-20 dc__border-bottom px-20 vulnerability-exp-table-row h-36">
-                    <SortableTableHeaderCell
-                        title="NAME"
-                        isSortable={false}
-                        isSorted
-                        triggerSorting={noop}
-                        disabled={false}
-                        sortOrder={SortingOrder.ASC}
-                    />
-                    <SortableTableHeaderCell
-                        title="ENVIRONMENT"
-                        isSortable={false}
-                        isSorted
-                        triggerSorting={noop}
-                        disabled
-                        sortOrder={SortingOrder.ASC}
-                    />
-                    <SortableTableHeaderCell
-                        title="POLICY"
-                        isSortable={false}
-                        isSorted
-                        triggerSorting={noop}
-                        disabled
-                        sortOrder={SortingOrder.ASC}
-                    />
+                    <SortableTableHeaderCell title="NAME" isSortable={false} />
+                    <SortableTableHeaderCell title="ENVIRONMENT" isSortable={false} />
+                    <SortableTableHeaderCell title="POLICY" isSortable={false} />
                 </div>
                 {appListResponse.result.scanList.map((cve) => (
                     <div

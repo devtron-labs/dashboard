@@ -104,14 +104,6 @@
             }
 
             .resource-filter-options-container {
-                .resource-filter-options-wrapper {
-                    .resource-filter-select__input-container {
-                        input {
-                            max-width: 150px;
-                        }
-                    }
-                }
-
                 &__search-box {
                     width: 250px;
                     .resource-search-shortcut-key {

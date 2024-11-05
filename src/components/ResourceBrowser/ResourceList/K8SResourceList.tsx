@@ -33,6 +33,7 @@ import {
     useStateFilters,
     ClipboardButton,
     Tooltip,
+    useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -146,6 +147,14 @@ export const K8SResourceList = ({
         result.data = result.data.map((data, index) => ({ id: index, ...data }))
         return result
     }, [_resourceList])
+
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: (resourceList?.headers ?? []).map((columnName, index) => ({
+            id: columnName,
+            minWidth: index === 0 ? 120 : null,
+            width: index === 0 ? 350 : 180,
+        })),
+    })
 
     const showPaginatedView = resourceList?.data?.length >= pageSize
 
@@ -278,8 +287,6 @@ export const K8SResourceList = ({
 
         return `f-${statusPostfix}`
     }
-
-    const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
 
     const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
         <div
@@ -442,6 +449,9 @@ export const K8SResourceList = ({
                         isSorted={sortBy === columnName}
                         sortOrder={sortOrder}
                         disabled={false}
+                        id={columnName}
+                        handleResize={handleResize}
+                        isResizable
                     />
                 ))}
             </div>
