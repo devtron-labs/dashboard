@@ -203,7 +203,7 @@ export default function ClusterForm({
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
-            isProd: { value: isProd, error: '' },
+            isProd: { value: isProd.toString(), error: '' },
         },
         {
             cluster_name: {
