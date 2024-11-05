@@ -167,6 +167,7 @@ export const updateManifestResourceHelmApps = (
     updatedManifest: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
+    signal?: AbortSignal,
 ) => {
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource, updatedManifest)

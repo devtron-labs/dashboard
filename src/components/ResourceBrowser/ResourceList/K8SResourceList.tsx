@@ -26,7 +26,6 @@ import {
     Pagination,
     useSearchString,
     Nodes,
-    showError,
     getIsRequestAborted,
     noop,
     SortableTableHeaderCell,
@@ -34,6 +33,14 @@ import {
     ClipboardButton,
     Tooltip,
     useResizableTableConfig,
+    BulkSelection,
+    useBulkSelection,
+    BulkOperationModalState,
+    BulkSelectionEvents,
+    Checkbox,
+    CHECKBOX_VALUE,
+    BulkOperationModalProps,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -49,8 +56,14 @@ import {
     SEARCH_QUERY_PARAM_KEY,
     DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
-import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
+import { deleteResource, getResourceList, getResourceListPayload, restartWorkload } from '../ResourceBrowser.service'
+import {
+    K8SResourceListType,
+    ResourceDetailDataType,
+    ResourceDetailType,
+    ResourceListPayloadType,
+    URLParams,
+} from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -73,6 +86,9 @@ const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'function',
 )
 
+const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
+const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
+
 export const K8SResourceList = ({
     selectedResource,
     selectedCluster,
@@ -81,6 +97,7 @@ export const K8SResourceList = ({
     isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
+    clusterName,
 }: K8SResourceListType) => {
     // HOOKS
     const { searchParams } = useSearchString()
@@ -94,11 +111,13 @@ export const K8SResourceList = ({
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
+    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
 
     // REFS
     const resourceListRef = useRef<HTMLDivElement>(null)
     const searchWorkerRef = useRef(null)
     const abortControllerRef = useRef(new AbortController())
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
 
@@ -107,6 +126,14 @@ export const K8SResourceList = ({
     /* NOTE: _filters is an object */
     const _filters = getFilterOptionsFromSearchParams?.(location.search)
     const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
+
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        handleBulkSelection,
+        setIdentifiers,
+        isBulkSelectionApplied,
+        getSelectedIdentifiersCount,
+    } = useBulkSelection<Record<number, ResourceDetailDataType>>()
 
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () =>
@@ -156,7 +183,7 @@ export const K8SResourceList = ({
         })),
     })
 
-    const showPaginatedView = resourceList?.data?.length >= pageSize
+    const showPaginatedView = filteredResourceList?.length > pageSize
 
     /**
      * Initial Sort Key
@@ -199,6 +226,15 @@ export const K8SResourceList = ({
         setResourceListOffset(0)
         setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
+
+    useEffect(() => {
+        setIdentifiers(
+            (filteredResourceList?.slice(resourceListOffset, resourceListOffset + pageSize).reduce((acc, curr) => {
+                acc[curr.id as number] = curr
+                return acc
+            }, {}) as Record<number, ResourceDetailDataType>) ?? {},
+        )
+    }, [resourceListOffset, filteredResourceList, pageSize])
 
     const handleFilterChanges = (_searchText: string, debounceResult = false) => {
         if (!searchWorkerRef.current) {
@@ -288,9 +324,104 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
+    const getHandleCheckedForId = (resourceData: ResourceDetailDataType) => () => {
+        const id = Number(resourceData.id)
+
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else if (bulkSelectionState[id]) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else {
+            handleBulkSelection({
+                action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                data: {
+                    identifierObject: {
+                        ...bulkSelectionState,
+                        [id]: resourceData,
+                    },
+                },
+            })
+        }
+    }
+
+    const getBulkOperationModalStateSetter = (state: BulkOperationModalState) => () => {
+        setBulkOperationModalState(state)
+    }
+
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
+
+    const handleReloadDataAfterBulkDelete = () => {
+        handleClearBulkSelection()
+        reloadResourceListData()
+    }
+
+    const getBulkOperations = (): BulkOperationModalProps['operations'] => {
+        if (bulkOperationModalState === 'closed') {
+            return []
+        }
+
+        const selections = (isBulkSelectionApplied ? filteredResourceList : Object.values(bulkSelectionState)) ?? []
+
+        if (bulkOperationModalState === 'restart') {
+            return selections?.map((selection) => ({
+                id: selection.id,
+                name: selection.name as string,
+                namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
+                operation: async (signal: AbortSignal = null) => {
+                    const payload = {
+                        clusterId: Number(clusterId),
+                        group: selectedResource?.gvk?.Group,
+                        kind: selectedResource?.gvk?.Kind,
+                        version: selectedResource?.gvk?.Version,
+                        namespace: selection.namespace as string,
+                        containers: [],
+                        name: selection.name as string,
+                    }
+
+                    await restartWorkload(payload, signal)
+                },
+            }))
+        }
+
+        return selections.map((selection) => ({
+            id: selection.id,
+            name: selection.name as string,
+            namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
+            operation: async (signal: AbortSignal, shouldForceDelete: boolean) => {
+                const resourceDeletePayload: ResourceListPayloadType = {
+                    clusterId: Number(clusterId),
+                    k8sRequest: {
+                        resourceIdentifier: {
+                            groupVersionKind: selection.gvk as GVKType,
+                            namespace: String(selection.namespace),
+                            name: String(selection.name),
+                        },
+                        forceDelete: shouldForceDelete,
+                    },
+                }
+
+                await deleteResource(resourceDeletePayload, signal)
+            },
+        }))
+    }
+
     const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
         <div
-            key={`${resourceData.id}-${resourceData.name}`}
+            key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
             className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
             style={{ gridTemplateColumns }}
         >
@@ -301,6 +432,12 @@ export const K8SResourceList = ({
                         className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                         data-testid="created-resource-name"
                     >
+                        <Checkbox
+                            isChecked={!!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied}
+                            onChange={getHandleCheckedForId(resourceData)}
+                            rootClassName="mb-0"
+                            value={CHECKBOX_VALUE.CHECKED}
+                        />
                         <Tooltip content={resourceData.name}>
                             <button
                                 type="button"
@@ -418,10 +555,6 @@ export const K8SResourceList = ({
         setResourceListOffset(0)
     }
 
-    if (resourceListDataError) {
-        showError(resourceListDataError)
-    }
-
     const triggerSortingHandler = (columnName: string) => () => {
         resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
         handleSorting(columnName)
@@ -440,20 +573,42 @@ export const K8SResourceList = ({
                 className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                 style={{ gridTemplateColumns }}
             >
-                {resourceList?.headers.map((columnName) => (
-                    <SortableTableHeaderCell
-                        key={columnName}
-                        showTippyOnTruncate
-                        title={columnName}
-                        triggerSorting={triggerSortingHandler(columnName)}
-                        isSorted={sortBy === columnName}
-                        sortOrder={sortOrder}
-                        disabled={false}
-                        id={columnName}
-                        handleResize={handleResize}
-                        isResizable
-                    />
-                ))}
+                {resourceList?.headers.map((columnName, index) => {
+                    if (index === 0) {
+                        return (
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                <BulkSelection showPagination={showPaginatedView} />
+                                <SortableTableHeaderCell
+                                    key={columnName}
+                                    showTippyOnTruncate
+                                    title={columnName}
+                                    triggerSorting={triggerSortingHandler(columnName)}
+                                    isSorted={sortBy === columnName}
+                                    sortOrder={sortOrder}
+                                    disabled={false}
+                                    id={columnName}
+                                    handleResize={handleResize}
+                                    isResizable
+                                />
+                            </div>
+                        )
+                    }
+
+                    return (
+                        <SortableTableHeaderCell
+                            key={columnName}
+                            showTippyOnTruncate
+                            title={columnName}
+                            triggerSorting={triggerSortingHandler(columnName)}
+                            isSorted={sortBy === columnName}
+                            sortOrder={sortOrder}
+                            disabled={false}
+                            id={columnName}
+                            handleResize={handleResize}
+                            isResizable
+                        />
+                    )
+                })}
             </div>
             {filteredResourceList
                 .slice(resourceListOffset, resourceListOffset + pageSize)
@@ -499,6 +654,7 @@ export const K8SResourceList = ({
             className={`resource-list-container dc__border-left flexbox-col dc__overflow-hidden ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
+            ref={parentRef}
         >
             <ResourceFilterOptions
                 key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
@@ -520,6 +676,33 @@ export const K8SResourceList = ({
                 renderList()
             )}
             {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
+
+            {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                <RBBulkSelectionActionWidget
+                    parentRef={parentRef}
+                    count={isBulkSelectionApplied ? filteredResourceList?.length ?? 0 : getSelectedIdentifiersCount()}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                    handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
+                    handleOpenRestartWorkloadModal={getBulkOperationModalStateSetter('restart')}
+                    showBulkRestartOption={
+                        window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                            .map((feat: string) => feat.trim().toUpperCase())
+                            .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
+                    }
+                />
+            )}
+
+            {RBBulkOperations && bulkOperationModalState !== 'closed' && (
+                <RBBulkOperations
+                    clusterName={clusterName}
+                    operationType={bulkOperationModalState}
+                    handleModalClose={getBulkOperationModalStateSetter('closed')}
+                    handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
+                    operations={getBulkOperations()}
+                    resourceKind={selectedResource.gvk.Kind.toLowerCase()}
+                    {...(bulkOperationModalState === 'delete' ? { shouldAllowForceOperation: true } : {})}
+                />
+            )}
         </div>
     )
 }
