@@ -71,7 +71,7 @@ const BaseResourceList = ({
     isOpen: boolean
     renderRefreshBar
     updateK8sResourceTab
-    children: ReactNode
+    children?: ReactNode
     nodeType
     group
 }) => {
