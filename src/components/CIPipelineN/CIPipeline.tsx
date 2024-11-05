@@ -241,7 +241,8 @@ export default function CIPipeline({
         }
     }
 
-    const areMandatoryPluginPossible = !!processPluginData
+    // mandatory plugins are applicable for job ci but not jobs
+    const areMandatoryPluginPossible = !isJobView && !!processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
