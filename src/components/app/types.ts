@@ -439,6 +439,7 @@ export enum Nodes {
     Namespace = 'Namespace',
     Overview = 'Overview',
     MonitoringDashboard = 'MonitoringDashboard',
+    UpgradeCluster = 'UpgradeCluster',
 }
 /**
  * @deprecated - use from fe-common

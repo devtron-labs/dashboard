@@ -23,6 +23,8 @@ import {
     InfoIconTippy,
     EditableTextArea,
     ResourceKindType,
+    Button,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -43,6 +45,7 @@ import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluste
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
+import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 
@@ -78,7 +81,7 @@ const tippyForMetricsApi = () => {
     )
 }
 
-function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps) {
+function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -374,6 +377,22 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
             </>
         )
     }
+
+    const handleOpenScanCluster = () => {
+        const URL = `${getURLBasedOnSidebarGVK(
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            clusterId,
+            namespace,
+        )}?sample-version=1`
+
+        addTab(
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            URL,
+        ).then(() => history.push(URL))
+    }
+
     const renderSideInfoData = () => {
         return (
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
@@ -421,6 +440,8 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                         </div>
                     </div>
                 </div>
+
+                <Button text="Scan cluster" onClick={handleOpenScanCluster} variant={ButtonVariantType.text} dataTestId="scan-cluster-button" />
             </aside>
         )
     }
