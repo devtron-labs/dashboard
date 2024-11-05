@@ -241,7 +241,7 @@ export default function CIPipeline({
         }
     }
 
-    const areMandatoryPluginPossible = !isJobCard && !!processPluginData
+    const areMandatoryPluginPossible = !!processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (

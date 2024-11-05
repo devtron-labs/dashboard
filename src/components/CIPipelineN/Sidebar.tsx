@@ -89,7 +89,6 @@ export const Sidebar = ({
     const showMandatoryWarning = (): boolean => {
         return (
             !!MandatoryPluginWarning &&
-            !isJobCard &&
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
