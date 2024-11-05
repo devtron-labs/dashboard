@@ -30,7 +30,7 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { ResourceDetailDataType, ResourceDetailType } from '../Types'
+import { ResourceDetailDataType, ResourceDetailType, ResourceFilterOptionsProps } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 
@@ -55,6 +55,7 @@ const BaseResourceList = ({
     children,
     nodeType,
     group,
+    areFiltersHidden = false,
 }: {
     isLoading: boolean
     resourceListError: ServerErrors
@@ -74,7 +75,7 @@ const BaseResourceList = ({
     children?: ReactNode
     nodeType
     group
-}) => {
+} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden'>>) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -409,6 +410,7 @@ const BaseResourceList = ({
                 isSearchInputDisabled={isLoading}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
+                areFiltersHidden={areFiltersHidden}
             />
             {renderContent()}
             {children}

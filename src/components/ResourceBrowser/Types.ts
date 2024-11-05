@@ -141,9 +141,10 @@ export interface ResourceFilterOptionsProps {
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
+    areFiltersHidden: boolean
 }
 
-export interface K8SResourceListType extends ResourceFilterOptionsProps {
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
 }
