@@ -23,6 +23,7 @@ import {
     OptionType,
     DeploymentAppTypes,
     ConfigurationType,
+    FormProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -157,6 +158,7 @@ const NodeDetailComponent = ({
     const [manifestFormConfigurationType, setManifestFormConfigurationType] = useState<ConfigurationType>(
         ConfigurationType.YAML,
     )
+    const [manifestErrors, setManifestErrors] = useState<Parameters<FormProps['onError']>[0]>([])
     const [unableToParseManifest, setUnableToParseManifest] = useState<boolean>(false)
 
     // States uplifted from Manifest Component
@@ -278,6 +280,10 @@ const NodeDetailComponent = ({
         }
     }
 
+    const handleManifestGUIError: ManifestActionPropsType['handleManifestGUIErrors'] = (errors = []) => {
+        setManifestErrors(errors)
+    }
+
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
         updateTabUrl?.(_url)
@@ -323,6 +329,8 @@ const NodeDetailComponent = ({
                 ) >= 0
             ))
 
+    const doesManifestGUIContainsError = manifestErrors.length > 0
+
     // Assign extracted containers to selected resource before passing further
     if (selectedResource) {
         selectedResource.containers = resourceContainers
@@ -354,7 +362,10 @@ const NodeDetailComponent = ({
 
     const handleManifestApplyChanges = () => setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
 
-    const handleManifestCancel = () => setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    const handleManifestCancel = () => {
+        handleManifestGUIError([])
+        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    }
 
     const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
 
@@ -416,14 +427,15 @@ const NodeDetailComponent = ({
                                     <ToggleManifestConfigurationMode
                                         mode={manifestFormConfigurationType}
                                         handleToggle={handleToggleManifestConfigurationMode}
-                                        isDisabled={unableToParseManifest}
+                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
                                     />
                                 )}
 
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                    className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
                                     onClick={handleManifestApplyChanges}
+                                    disabled={doesManifestGUIContainsError}
                                 >
                                     <>
                                         <ICCheck className="icon-dim-16 scb-5" />
@@ -568,6 +580,7 @@ const NodeDetailComponent = ({
                             handleSwitchToYAMLMode={handleSwitchToYAMLMode}
                             manifestFormConfigurationType={manifestFormConfigurationType}
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
+                            handleManifestGUIErrors={handleManifestGUIError}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

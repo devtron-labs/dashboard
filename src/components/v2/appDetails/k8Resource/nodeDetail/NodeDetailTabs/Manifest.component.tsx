@@ -88,6 +88,7 @@ const ManifestComponent = ({
     manifestFormConfigurationType,
     handleSwitchToYAMLMode,
     handleUpdateUnableToParseManifest,
+    handleManifestGUIErrors,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -340,6 +341,7 @@ const ManifestComponent = ({
     }
 
     const handleGUIViewValueChange: FormProps['onChange'] = (data) => {
+        handleManifestGUIErrors(data.errors || [])
         handleEditorValueChange(YAMLStringify(data.formData))
     }
 

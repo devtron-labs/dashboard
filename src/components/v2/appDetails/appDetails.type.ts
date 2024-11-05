@@ -22,6 +22,7 @@ import {
     iNode as CommoniNode,
     ApiResourceGroupType,
     ConfigurationType,
+    FormProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
@@ -495,6 +496,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     handleSwitchToYAMLMode: () => void
     manifestFormConfigurationType: ConfigurationType
     handleUpdateUnableToParseManifest: (value: boolean) => void
+    handleManifestGUIErrors: FormProps['onError']
 }
 
 export interface NodeTreeDetailTabProps {
