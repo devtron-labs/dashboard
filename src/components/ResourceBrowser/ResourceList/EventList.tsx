@@ -34,7 +34,9 @@ export const EventList = ({
     setWidgetEventDetails,
 }: EventListType) => (
     <div className="dc__overflow-scroll">
-        <div className="event-list-row dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
+        <div
+            className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
+        >
             {Object.values(EVENT_LIST.headerKeys).map((title) => (
                 <Tooltip key={title} content={title}>
                     <span className="dc__ellipsis-right">{title}</span>
@@ -61,7 +63,7 @@ export const EventList = ({
                 return (
                     <div
                         key={Object.values(eventData).join('-')}
-                        className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class"
+                        className={`event-list-row${ExplainEventButton ? '__explain' : ''} cn-9 fs-13 dc__border-bottom-n1 px-20 py-12 hover-class`}
                     >
                         <div
                             className={`app-summary__status-name dc__highlight-text f-${(eventData.type as string)?.toLowerCase()}`}
