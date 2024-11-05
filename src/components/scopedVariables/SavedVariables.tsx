@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import { URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS, useStateFilters } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import SavedVariablesContent from './SavedVariablesContent'
@@ -38,7 +38,7 @@ export default function SavedVariablesView({
     reloadScopedVariables,
     setScopedVariables,
 }: SavedVariablesViewProps) {
-    const [searchText, setSearchText] = useState<string>('')
+    const { searchKey, handleSearch, clearFilters } = useStateFilters()
     const [variablesList, setVariablesList] = useState<VariableType[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
     // No need to make it a state since editor here is read only and we don't need to update it
@@ -59,12 +59,11 @@ export default function SavedVariablesView({
 
     const handleActivateEditView = () => setShowEditView(true)
 
-    const onSearch = (query: string) => {
-        setSearchText(query)
+    useEffect(() => {
         const filteredVariables = scopedVariablesData?.spec?.filter(
             (variable) =>
-                variable.name.toLowerCase().includes(query.toLowerCase()) ||
-                variable.shortDescription?.toLowerCase().includes(query.toLowerCase()),
+                variable.name.toLowerCase().includes(searchKey.toLowerCase()) ||
+                variable.shortDescription?.toLowerCase().includes(searchKey.toLowerCase()),
         )
 
         const variables = filteredVariables?.map((variable) => ({
@@ -72,10 +71,9 @@ export default function SavedVariablesView({
             description: variable.shortDescription,
             isSensitive: variable.isSensitive,
         }))
-        setVariablesList(variables)
-    }
 
-    const handleClearFilters = () => onSearch('')
+        setVariablesList(variables)
+    }, [searchKey])
 
     if (showEditView) {
         return (
@@ -114,14 +112,13 @@ export default function SavedVariablesView({
             <Switch>
                 <Route path={`${URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}/:currentView?`} exact>
                     <SavedVariablesContent
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        onSearch={onSearch}
+                        searchKey={searchKey}
+                        onSearch={handleSearch}
                         readFile={readFile}
                         handleActivateEditView={handleActivateEditView}
                         scopedVariablesYAML={scopedVariablesYAML}
                         variablesList={variablesList}
-                        handleClearFilters={handleClearFilters}
+                        handleClearFilters={clearFilters}
                     />
                 </Route>
 

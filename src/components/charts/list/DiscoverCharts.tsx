@@ -167,7 +167,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
-            setChartActiveMap(chartRepos.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.active }), {}))
+            setChartActiveMap(
+                chartRepos.reduce((acc, curr) => {
+                    acc[curr.name] = curr.active
+                    return acc
+                }, {}),
+            )
         } catch (err) {
             showError(err)
         } finally {

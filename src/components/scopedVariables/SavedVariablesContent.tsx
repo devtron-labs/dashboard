@@ -81,8 +81,7 @@ const YAMLEditorDropdownItem = ({ item, scopedVariablesYAML }: YAMLEditorDropdow
 }
 
 const SavedVariablesContent = ({
-    searchText,
-    setSearchText,
+    searchKey,
     onSearch,
     readFile,
     handleActivateEditView,
@@ -173,9 +172,8 @@ const SavedVariablesContent = ({
     return (
         <>
             <Descriptor
-                searchText={searchText}
-                setSearchText={setSearchText}
                 showUploadButton
+                searchKey={searchKey}
                 onSearch={currentView === ScopedVariablesFileViewType.SAVED ? onSearch : null}
                 readFile={readFile}
             >

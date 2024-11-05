@@ -297,7 +297,7 @@ const ChartForm = ({
             : {}),
     }
 
-    const isFormInvalid = () => {
+    const isFormValid = () => {
         let isValid = true
 
         if (state.name.error.length > 0 || state.url.error.length > 0) {
@@ -323,8 +323,7 @@ const ChartForm = ({
     }
 
     async function onClickValidate() {
-        const isValid = isFormInvalid()
-        if (!isValid) {
+        if (!isFormValid()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some Required Fields are missing',
@@ -359,8 +358,7 @@ const ChartForm = ({
     }
 
     async function onClickSave(e) {
-        const isValid = isFormInvalid()
-        if (!isValid) {
+        if (!isFormValid()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some Required Fields are missing',
