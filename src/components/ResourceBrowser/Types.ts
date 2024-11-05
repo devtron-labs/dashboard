@@ -252,6 +252,7 @@ export interface RBSidebarKeysType {
     nodeGVK: GVKType
     overviewGVK: GVKType
     monitoringGVK: GVKType
+    upgradeClusterGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
