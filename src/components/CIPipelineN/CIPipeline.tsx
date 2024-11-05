@@ -249,7 +249,7 @@ export default function CIPipeline({
         /**
          * ids required to fetch in case we have a plugin in step
          */
-        requiredPluginIds?: PluginDetailPayloadType['pluginId'],
+        requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ): Promise<void> => {
         if (areMandatoryPluginPossible) {
             let branchName = ''

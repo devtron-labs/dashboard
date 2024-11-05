@@ -78,6 +78,6 @@ export interface BuildCDProps
     releaseMode: ReleaseMode
     getMandatoryPluginData: (
         form: PipelineFormType,
-        requiredPluginIds?: PluginDetailPayloadType['pluginId'],
+        requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ) => Promise<void>
 }
