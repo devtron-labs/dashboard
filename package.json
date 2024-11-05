@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.6.0-patch-1",
+        "@devtron-labs/devtron-fe-common-lib": "0.6.2-beta-3",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
