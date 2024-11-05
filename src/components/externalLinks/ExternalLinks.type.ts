@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import React, { ImgHTMLAttributes, ReactElement } from 'react'
+import { ResponseType, AppDetails as CommonAppDetails } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
@@ -234,8 +234,14 @@ export enum LinkValidationKeys {
     urlTemplate = 'urlTemplate',
 }
 
-export interface ExternalLinkFallbackImageProps {
+export interface ExternalLinkFallbackImageProps extends Pick<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt'> {
     dimension: number
-    src: string
-    alt: string
+}
+
+export interface ExternalLinkChipProps {
+    linkOption: OptionTypeWithIcon
+    idx: number
+    details: AppDetails | CommonAppDetails
+    handleOpenModal: (linkOption: OptionTypeWithIcon, externalLinkURL: string) => void
+    isOverviewPage: boolean
 }

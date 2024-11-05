@@ -26,6 +26,7 @@ import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
     ExternalLink,
+    ExternalLinkChipProps,
     ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
@@ -139,7 +140,6 @@ const ExternalLinkFallbackImage = ({ dimension, src, alt }: ExternalLinkFallback
             width: dimension,
             src: src,
             alt: alt,
-            onError: onImageLoadError,
         }}
         fallbackImage={ICWebpage}
     />
@@ -197,6 +197,54 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
     </VisibleModal2>
 )
 
+const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
+    const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
+    const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
+    return (
+        <ConditionalWrap
+            key={`${linkOption.label}-${idx}`}
+            condition={!!linkOption.description}
+            wrap={(children) => (
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300"
+                    placement={isOverviewPage ? 'bottom' : 'top'}
+                    iconPath={linkOption.icon}
+                    heading={linkOption.label}
+                    infoText={linkOption.description}
+                >
+                    <div>{children}</div>
+                </TippyCustomized>
+            )}
+        >
+            <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
+                <div
+                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center"
+                    role="button"
+                    onClick={handleTextClick}
+                >
+                    <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
+                    <span
+                        className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
+                        data-testid="overview_external_link_value"
+                    >
+                        {linkOption.label}
+                    </span>
+                </div>
+                <a
+                    key={linkOption.label}
+                    href={getParsedURL(true, linkOption.value.toString(), details)}
+                    target="_blank"
+                    className="flex p-4 open-link-button"
+                    rel="noreferrer"
+                >
+                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink" />
+                </a>
+            </div>
+        </ConditionalWrap>
+    )
+}
+
 export const AppLevelExternalLinks = ({
     appDetails,
     helmAppDetails,
@@ -248,54 +296,6 @@ export const AppLevelExternalLinks = ({
         }
     }, [externalLinks, monitoringTools])
 
-    const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
-        const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
-        const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
-        return (
-            <ConditionalWrap
-                key={`${linkOption.label}-${idx}`}
-                condition={!!linkOption.description}
-                wrap={(children) => (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement={isOverviewPage ? 'bottom' : 'top'}
-                        iconPath={linkOption.icon}
-                        heading={linkOption.label}
-                        infoText={linkOption.description}
-                    >
-                        <div>{children}</div>
-                    </TippyCustomized>
-                )}
-            >
-                <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
-                    <div
-                        className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center"
-                        role="button"
-                        onClick={handleTextClick}
-                    >
-                        <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
-                        <span
-                            className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
-                            data-testid="overview_external_link_value"
-                        >
-                            {linkOption.label}
-                        </span>
-                    </div>
-                    <a
-                        key={linkOption.label}
-                        href={getParsedURL(true, linkOption.value.toString(), details)}
-                        target="_blank"
-                        className="flex p-4 open-link-button"
-                        rel="noreferrer"
-                    >
-                        <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink" />
-                    </a>
-                </div>
-            </ConditionalWrap>
-        )
-    }
-
     if (isOverviewPage && appLevelExternalLinks.length === 0) {
         return (
             <div className="flex left flex-wrap" data-testid="overview-no-external-links">
@@ -318,7 +318,15 @@ export const AppLevelExternalLinks = ({
                         </div>
                     )}
                     <div className="flex left flex-wrap dc__gap-8">
-                        {appLevelExternalLinks.map((link, idx) => getExternalLinkChip(link, idx))}
+                        {appLevelExternalLinks.map((link, idx) => (
+                            <ExternalLinkChip
+                                linkOption={link}
+                                idx={idx}
+                                handleOpenModal={handleOpenModal}
+                                isOverviewPage={isOverviewPage}
+                                details={details}
+                            />
+                        ))}
                     </div>
                 </div>
             )}
@@ -333,7 +341,18 @@ export const AppLevelExternalLinks = ({
 }
 
 export const getExternalLinkIcon = (link) => {
-    return <img src={link} alt={link} onError={onImageLoadError} />
+    return (
+        <ImageWithFallback
+            imageProps={{
+                className: 'dc__no-shrink',
+                height: 20,
+                width: 20,
+                src: link,
+                alt: link,
+            }}
+            fallbackImage={ICWebpage}
+        />
+    )
 }
 
 export const NodeLevelExternalLinks = ({
