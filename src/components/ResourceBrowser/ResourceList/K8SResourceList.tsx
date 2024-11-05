@@ -399,7 +399,7 @@ export const K8SResourceList = ({
                     clusterId: Number(clusterId),
                     k8sRequest: {
                         resourceIdentifier: {
-                            groupVersionKind: selection.gvk as GVKType,
+                            groupVersionKind: selectedResource.gvk as GVKType,
                             namespace: String(selection.namespace),
                             name: String(selection.name),
                         },
