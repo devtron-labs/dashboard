@@ -164,7 +164,7 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
                     <Button
                         ariaLabel="external-link-open"
                         dataTestId="external-link-open"
-                        icon={<ICArrowOut className="scn-6" />}
+                        icon={<ICArrowOut />}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.xs}
                         component={ButtonComponentType.button}
@@ -188,6 +188,10 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
             <iframe
                 className="flex-grow-1 dc__no-border dc__bottom-radius-8"
                 src={selectedExternalLink.externalLinkURL}
+                height="100%"
+                width="100%"
+                sandbox="allow-same-origin allow-scripts"
+                referrerPolicy="no-referrer"
             />
         </div>
     </VisibleModal2>
