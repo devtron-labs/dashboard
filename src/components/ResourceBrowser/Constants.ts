@@ -204,6 +204,11 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.MonitoringDashboard,
     },
+    upgradeClusterGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.UpgradeCluster,
+    },
 }
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {

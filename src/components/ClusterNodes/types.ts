@@ -388,6 +388,7 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
     selectedCluster: ClusterOptionType
+    addTab: ReturnType<typeof useTabs>['addTab']
 }
 
 export type SearchTextType = (typeof NODE_SEARCH_TEXT)[keyof typeof NODE_SEARCH_TEXT]

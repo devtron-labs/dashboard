@@ -108,22 +108,40 @@ const ResourceList = () => {
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+    const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+    const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+    const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+
     const fixedTabIndices = getFixedTabIndices()
 
-    const getDynamicTabData = () => {
-        const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-        const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-        return {
-            idPrefix: isNodeTypeNode
-                ? K8S_EMPTY_GROUP
-                : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
-            name: node,
-            kind: nodeType,
-            url,
-            isSelected: true,
-            position: Number.MAX_SAFE_INTEGER,
+    const getDynamicTabIdPrefix = () => {
+        if (isUpgradeClusterNodeType) {
+            return SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
         }
+
+        if (isNodeTypeNode) {
+            return K8S_EMPTY_GROUP
+        }
+
+        return `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`
     }
+
+    const getNodeName = () => {
+        if (isUpgradeClusterNodeType) {
+            return SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+        }
+
+        return node
+    }
+
+    const getDynamicTabData = () => ({
+        idPrefix: getDynamicTabIdPrefix(),
+        name: getNodeName(),
+        kind: nodeType || '',
+        url,
+        isSelected: true,
+        position: Number.MAX_SAFE_INTEGER,
+    })
 
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => {
@@ -138,7 +156,7 @@ const ResourceList = () => {
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            dynamicTabData: node && getDynamicTabData(),
+            dynamicTabData: (node || isUpgradeClusterNodeType) && getDynamicTabData(),
             isTerminalSelected: isTerminalNodeType,
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
@@ -154,10 +172,11 @@ const ResourceList = () => {
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffectAfterMount(() => {
+        // TODO: Add component check
         /* NOTE: tab selection is interactively done through dynamic tab button clicks
          * but to ensure consistency with url changes and user moving back through browser history,
          * correct active tab state is ensured by this effect */
-        if (node) {
+        if (node || isUpgradeClusterNodeType) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
             /* NOTE if the corresponding tab exists return */
@@ -283,6 +302,14 @@ const ResourceList = () => {
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
+        if (isUpgradeClusterNodeType) {
+            return (
+                <div>
+                    <h3>UPGRADE CLUSTER</h3>
+                </div>
+            )
+        }
+
         if (!node) {
             return null
         }
@@ -317,6 +344,7 @@ const ResourceList = () => {
             key={tabs[fixedTabIndices.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
+            addTab={addTab}
         />,
         <K8SResourceTabComponent
             key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
