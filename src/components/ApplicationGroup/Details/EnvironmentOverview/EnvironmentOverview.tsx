@@ -98,30 +98,11 @@ export default function EnvironmentOverview({
         Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
-    // NOTE: there is a slim chance that the api is called before httpProtocol is set
-    const httpProtocol = useRef('')
     const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(
         ({ type, isActive }) =>
             (type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive) ||
             (type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && !isActive),
     )
-
-    useEffect(() => {
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-                const protocol = entry.nextHopProtocol
-                if (protocol && entry.initiatorType === 'fetch') {
-                    httpProtocol.current = protocol
-                    observer.disconnect()
-                }
-            })
-        })
-
-        observer.observe({ type: 'resource', buffered: true })
-        return () => {
-            observer.disconnect()
-        }
-    }, [])
 
     const { searchParams } = useSearchString()
     const history = useHistory()
@@ -443,7 +424,6 @@ export default function EnvironmentOverview({
                     setRestartLoader={setRestartLoader}
                     restartLoader={restartLoader}
                     hibernateInfoMap={hibernateInfoMap}
-                    httpProtocol={httpProtocol.current}
                     isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
                 />
             )
@@ -461,7 +441,6 @@ export default function EnvironmentOverview({
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                     isDeploymentWindowLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
-                    httpProtocol={httpProtocol.current}
                     openedHibernateModalType={openedHibernateModalType}
                     isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
                 />
@@ -488,7 +467,6 @@ export default function EnvironmentOverview({
                     sourceEnvironmentName={appListData.environment}
                     selectedAppDetailsList={selectedApps}
                     handleCloseClonePipelineModal={() => setOpenClonePipelineConfig(null)}
-                    httpProtocol={httpProtocol}
                 />
             )
         }
@@ -521,7 +499,6 @@ export default function EnvironmentOverview({
                                 <ClonePipelineButton
                                     sourceEnvironmentName={appListData.environment}
                                     selectedAppDetailsList={selectedAppDetailsList}
-                                    httpProtocol={httpProtocol.current}
                                 />
                             )}
                             <button
