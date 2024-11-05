@@ -48,6 +48,7 @@ import {
     ProcessPluginDataParamsType,
     ProcessPluginDataReturnType,
     ResourceKindType,
+    getEnvironmentListMinPublic,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -71,7 +72,6 @@ import {
     saveCDPipeline,
     updateCDPipeline,
 } from './cdPipeline.service'
-import { getEnvironmentListMinPublic } from '../../services/service'
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
