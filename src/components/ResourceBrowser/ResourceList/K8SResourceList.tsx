@@ -80,6 +80,8 @@ export const K8SResourceList = ({
     isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
+    setWidgetEventDetails,
+    handleResourceClick,
 }: K8SResourceListType) => {
     // HOOKS
     const { searchParams } = useSearchString()
@@ -230,35 +232,6 @@ export const K8SResourceList = ({
             /* NOTE: if resourceListOffset is 0 setState is noop */
             setResourceListOffset(0)
         }
-    }
-
-    const handleResourceClick = (e) => {
-        const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam: string
-        let kind: string
-        let resourceName: string
-        let _group: string
-        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
-        if (origin === 'event') {
-            const [_kind, _resourceName] = name.split('/')
-            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-            resourceParam = `${_kind}/${_group}/${_resourceName}`
-            kind = _kind
-            resourceName = _resourceName
-        } else {
-            kind = selectedResource.gvk.Kind.toLowerCase()
-            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
-            resourceName = name
-            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
-        }
-
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
-        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab(idPrefix, kind, resourceName, _url)
-            .then(() => push(_url))
-            .catch(noop)
     }
 
     const handleNodeClick = (e) => {
@@ -465,6 +438,7 @@ export const K8SResourceList = ({
                         paginatedView={showPaginatedView}
                         syncError={showStaleDataWarning}
                         searchText={searchText}
+                        setWidgetEventDetails={setWidgetEventDetails}
                     />
                 ) : (
                     renderResourceList()

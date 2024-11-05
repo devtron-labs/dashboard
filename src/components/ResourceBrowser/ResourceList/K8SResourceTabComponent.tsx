@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { SIDEBAR_KEYS } from '../Constants'
@@ -26,6 +26,8 @@ import ConnectingToClusterState from './ConnectingToClusterState'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 
 const K8SResourceTabComponent = ({
+    selectedResource,
+    setSelectedResource,
     selectedCluster,
     renderRefreshBar,
     isSuperAdmin,
@@ -34,13 +36,10 @@ const K8SResourceTabComponent = ({
     showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
+    setWidgetEventDetails,
+    handleResourceClick,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
-    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
-        gvk: SIDEBAR_KEYS.nodeGVK,
-        namespaced: false,
-        isGrouped: false,
-    })
 
     const abortControllerRef = useRef(new AbortController())
 
@@ -95,6 +94,8 @@ const K8SResourceTabComponent = ({
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
                     updateK8sResourceTab={updateK8sResourceTab}
+                    setWidgetEventDetails={setWidgetEventDetails}
+                    handleResourceClick={handleResourceClick}
                 />
             )}
         </div>

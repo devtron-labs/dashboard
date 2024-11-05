@@ -21,6 +21,7 @@ import {
     OptionType,
     ApiResourceGroupType,
     GVKType,
+    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
@@ -144,6 +145,8 @@ export interface ResourceFilterOptionsProps {
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
+    setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -172,7 +175,7 @@ export interface ResourceListEmptyStateType {
     actionHandler?: () => void
 }
 
-export interface EventListType {
+export interface EventListType extends Pick<K8SResourceListType, 'setWidgetEventDetails'> {
     listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: ResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -203,7 +206,9 @@ export interface K8sObjectOptionType extends OptionType {
     groupName: string
 }
 
-export interface K8SResourceTabComponentProps {
+export interface K8SResourceTabComponentProps
+    extends Pick<K8SResourceListType, 'setWidgetEventDetails' | 'handleResourceClick'>,
+        Pick<SidebarType, 'selectedResource' | 'setSelectedResource'> {
     selectedCluster: ClusterOptionType
     isSuperAdmin: boolean
     renderRefreshBar: () => JSX.Element

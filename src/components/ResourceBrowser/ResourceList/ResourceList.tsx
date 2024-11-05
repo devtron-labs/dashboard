@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     getUserRole,
@@ -27,11 +27,13 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    WidgetEventDetails,
+    ApiResourceGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
-import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
+import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -46,11 +48,14 @@ import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 
+const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
+
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
-    const { replace } = useHistory()
+    const { replace, push } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
+    const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
         initTabs,
@@ -64,7 +69,13 @@ const ResourceList = () => {
         getTabId,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
+    const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
+        gvk: SIDEBAR_KEYS.nodeGVK,
+        namespaced: false,
+        isGrouped: false,
+    })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
@@ -189,6 +200,9 @@ const ResourceList = () => {
             return
         }
 
+        // Close holmesGPT Response Widget on cluster change
+        setWidgetEventDetails(null)
+
         /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
@@ -293,6 +307,35 @@ const ResourceList = () => {
         )
     }
 
+    const handleResourceClick = (e) => {
+        const { name, tab, namespace: currentNamespace, origin } = e.currentTarget.dataset
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+        let _group: string
+        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
+        if (origin === 'event') {
+            const [_kind, _resourceName] = name.split('/')
+            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            resourceParam = `${_kind}/${_group}/${_resourceName}`
+            kind = _kind
+            resourceName = _resourceName
+        } else {
+            kind = selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
+            resourceName = name
+            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
+        }
+
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
     const fixedTabComponents = [
         <ClusterOverview
             key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
@@ -302,6 +345,8 @@ const ResourceList = () => {
         <K8SResourceTabComponent
             key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
+            selectedResource={selectedResource}
+            setSelectedResource={setSelectedResource}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
@@ -313,6 +358,8 @@ const ResourceList = () => {
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            setWidgetEventDetails={setWidgetEventDetails}
+            handleResourceClick={handleResourceClick}
         />,
         ...(isSuperAdmin &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
@@ -367,12 +414,20 @@ const ResourceList = () => {
                             </div>
                         )
                     })}
+                {EventsAIResponseWidget && widgetEventDetails && (
+                    <EventsAIResponseWidget
+                        parentRef={resourceBrowserRef}
+                        handleResourceClick={handleResourceClick}
+                        widgetEventDetails={widgetEventDetails}
+                        setWidgetEventDetails={setWidgetEventDetails}
+                    />
+                )}
             </>
         )
     }
 
     return (
-        <div className="resource-browser-container h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
