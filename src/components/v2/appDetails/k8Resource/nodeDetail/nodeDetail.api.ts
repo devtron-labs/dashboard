@@ -164,7 +164,6 @@ export function createBody(appDetails: AppDetails, nodeName: string, nodeType: s
     return requestBody
 }
 
-// TODO: Need to thoroughly review this code util and its replacements
 export const getResourceRequestPayload = ({
     appDetails,
     nodeName,
