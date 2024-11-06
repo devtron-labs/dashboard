@@ -105,6 +105,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 showGenericNullState
                 addTab={addTab}
                 hideDeleteResource
+                hideBulkSelection
             />
         </div>
     )

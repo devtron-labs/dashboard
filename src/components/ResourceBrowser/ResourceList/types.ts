@@ -35,6 +35,7 @@ export interface BaseResourceListProps
     setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
     children?: ReactNode
     showGenericNullState?: boolean
+    hideBulkSelection?: boolean
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps

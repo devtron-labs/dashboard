@@ -18,6 +18,8 @@ import {
     BulkSelection,
     Checkbox,
     CHECKBOX_VALUE,
+    BulkSelectionProvider,
+    SelectAllDialogStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -49,7 +51,7 @@ const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
 const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
 
-const BaseResourceList = ({
+const BaseResourceListContent = ({
     isLoading,
     resourceListError,
     resourceList,
@@ -72,6 +74,7 @@ const BaseResourceList = ({
     searchPlaceholder,
     showGenericNullState,
     addTab,
+    hideBulkSelection = false,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -374,12 +377,14 @@ const BaseResourceList = ({
                         className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                         data-testid="created-resource-name"
                     >
-                        <Checkbox
-                            isChecked={!!bulkOperationModalState[resourceData.id as number] || isBulkSelectionApplied}
-                            onChange={getHandleCheckedForId(resourceData)}
-                            rootClassName="mb-0"
-                            value={CHECKBOX_VALUE.CHECKED}
-                        />
+                        {!hideBulkSelection && (
+                            <Checkbox
+                                isChecked={!!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied}
+                                onChange={getHandleCheckedForId(resourceData)}
+                                rootClassName="mb-0"
+                                value={CHECKBOX_VALUE.CHECKED}
+                            />
+                        )}
                         <Tooltip content={resourceData.name}>
                             <button
                                 type="button"
@@ -526,7 +531,9 @@ const BaseResourceList = ({
                         >
                             {resourceList?.headers.map((columnName, index) => (
                                 <div className="flexbox dc__gap-8 dc__align-items-center">
-                                    {index === 0 && <BulkSelection showPagination={showPaginatedView} />}
+                                    {!hideBulkSelection && index === 0 && (
+                                        <BulkSelection showPagination={showPaginatedView} />
+                                    )}
                                     <SortableTableHeaderCell
                                         key={columnName}
                                         showTippyOnTruncate
@@ -584,33 +591,54 @@ const BaseResourceList = ({
             />
             {renderContent()}
             {children}
-            {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
-                <RBBulkSelectionActionWidget
-                    parentRef={parentRef}
-                    count={isBulkSelectionApplied ? filteredResourceList?.length ?? 0 : getSelectedIdentifiersCount()}
-                    handleClearBulkSelection={handleClearBulkSelection}
-                    handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
-                    handleOpenRestartWorkloadModal={getBulkOperationModalStateSetter('restart')}
-                    showBulkRestartOption={
-                        window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
-                            .map((feat: string) => feat.trim().toUpperCase())
-                            .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
-                    }
-                />
-            )}
+            {!hideBulkSelection && (
+                <>
+                    {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                        <RBBulkSelectionActionWidget
+                            parentRef={parentRef}
+                            count={
+                                isBulkSelectionApplied
+                                    ? filteredResourceList?.length ?? 0
+                                    : getSelectedIdentifiersCount()
+                            }
+                            handleClearBulkSelection={handleClearBulkSelection}
+                            handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
+                            handleOpenRestartWorkloadModal={getBulkOperationModalStateSetter('restart')}
+                            showBulkRestartOption={
+                                window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                                    .map((feat: string) => feat.trim().toUpperCase())
+                                    .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
+                            }
+                        />
+                    )}
 
-            {RBBulkOperations && bulkOperationModalState !== 'closed' && (
-                <RBBulkOperations
-                    clusterName={clusterName}
-                    operationType={bulkOperationModalState}
-                    handleModalClose={getBulkOperationModalStateSetter('closed')}
-                    handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
-                    operations={getBulkOperations()}
-                    resourceKind={selectedResource.gvk.Kind.toLowerCase()}
-                    {...(bulkOperationModalState === 'delete' ? { shouldAllowForceOperation: true } : {})}
-                />
+                    {RBBulkOperations && bulkOperationModalState !== 'closed' && (
+                        <RBBulkOperations
+                            clusterName={clusterName}
+                            operationType={bulkOperationModalState}
+                            handleModalClose={getBulkOperationModalStateSetter('closed')}
+                            handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
+                            operations={getBulkOperations()}
+                            resourceKind={selectedResource.gvk.Kind.toLowerCase()}
+                            {...(bulkOperationModalState === 'delete' ? { shouldAllowForceOperation: true } : {})}
+                        />
+                    )}
+                </>
             )}
         </div>
+    )
+}
+
+const BaseResourceList = (props: BaseResourceListProps) => {
+    const { selectedResource } = props
+
+    return (
+        <BulkSelectionProvider
+            key={JSON.stringify(selectedResource)}
+            getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+        >
+            <BaseResourceListContent {...props} />
+        </BulkSelectionProvider>
     )
 }
 
