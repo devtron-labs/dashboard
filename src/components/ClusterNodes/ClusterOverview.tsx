@@ -39,7 +39,7 @@ import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } 
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
@@ -383,7 +383,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             SIDEBAR_KEYS.upgradeClusterGVK.Kind,
             clusterId,
             namespace,
-        )}?sample-version=1`
+        )}?${TARGET_K8S_VERSION_SEARCH_KEY}=1.22`
 
         addTab(
             SIDEBAR_KEYS.upgradeClusterGVK.Kind,

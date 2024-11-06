@@ -45,8 +45,10 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -302,12 +304,8 @@ const ResourceList = () => {
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
-        if (isUpgradeClusterNodeType) {
-            return (
-                <div>
-                    <h3>UPGRADE CLUSTER</h3>
-                </div>
-            )
+        if (isUpgradeClusterNodeType && isFELibAvailable) {
+            return <ClusterUpgradeCompatibilityInfo clusterId={clusterId} selectedCluster={selectedCluster} />
         }
 
         if (!node) {

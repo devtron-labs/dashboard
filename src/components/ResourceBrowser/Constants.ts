@@ -270,3 +270,5 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion' as const
