@@ -184,6 +184,7 @@ export const updateManifestResourceHelmApps = (
     updatedManifest: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
+    signal?: AbortSignal,
 ) => {
     return put(
         Routes.MANIFEST,
@@ -195,6 +196,7 @@ export const updateManifestResourceHelmApps = (
             selectedResource,
             updatedManifest,
         }),
+        { signal },
     )
 }
 
