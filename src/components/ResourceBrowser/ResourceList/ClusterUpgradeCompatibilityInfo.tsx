@@ -49,7 +49,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 <div className="flex column">
                     <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8">Scanning resources</h2>
                     <p className="fs-13 fw-4 lh-20 w-300 text-center">
-                        Checking resources for upgrade compatibility with Kubernetes version {targetK8sVersion}
+                        Checking resources for upgrade compatibility with Kubernetes version v{targetK8sVersion}
                     </p>
                 </div>
             </div>
