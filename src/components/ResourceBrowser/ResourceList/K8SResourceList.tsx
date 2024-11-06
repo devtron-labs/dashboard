@@ -566,25 +566,9 @@ export const K8SResourceList = ({
                 className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                 style={{ gridTemplateColumns }}
             >
-                {resourceList?.headers.map((columnName, index) => {
-                    if (index === 0) {
-                        return (
-                            <div className="flexbox dc__gap-8 dc__align-items-center">
-                                <BulkSelection showPagination={showPaginatedView} />
-                                <SortableTableHeaderCell
-                                    key={columnName}
-                                    showTippyOnTruncate
-                                    title={columnName}
-                                    triggerSorting={triggerSortingHandler(columnName)}
-                                    isSorted={sortBy === columnName}
-                                    sortOrder={sortOrder}
-                                    disabled={false}
-                                />
-                            </div>
-                        )
-                    }
-
-                    return (
+                {resourceList?.headers.map((columnName, index) => (
+                    <div className="flexbox dc__gap-8 dc__align-items-center">
+                        {index === 0 && <BulkSelection showPagination={showPaginatedView} />}
                         <SortableTableHeaderCell
                             key={columnName}
                             showTippyOnTruncate
@@ -594,8 +578,8 @@ export const K8SResourceList = ({
                             sortOrder={sortOrder}
                             disabled={false}
                         />
-                    )
-                })}
+                    </div>
+                ))}
             </div>
             {filteredResourceList
                 .slice(resourceListOffset, resourceListOffset + pageSize)

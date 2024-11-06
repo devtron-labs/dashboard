@@ -166,7 +166,7 @@ export const updateManifestResourceHelmApps = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource, updatedManifest)
         : createBody(ad, nodeName, nodeType, updatedManifest)
-    return put(Routes.MANIFEST, requestData)
+    return put(Routes.MANIFEST, requestData, signal ? { signal } : {})
 }
 
 function getEventHelmApps(

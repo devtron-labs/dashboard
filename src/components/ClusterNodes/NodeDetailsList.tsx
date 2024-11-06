@@ -280,15 +280,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         getNodeListData()
     }, [clusterId])
 
-    useEffect(() => {
-        setIdentifiers(
-            filteredFlattenNodeList.slice(nodeListOffset, nodeListOffset + pageSize).reduce((acc, curr) => {
-                acc[curr.id] = curr
-                return acc
-            }, {}),
-        )
-    }, [nodeListOffset, pageSize, filteredFlattenNodeList])
-
     const handleClearBulkSelection = () => {
         handleBulkSelection({
             action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
@@ -447,26 +438,9 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
     }
 
-    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
-        if (column.label.toUpperCase() === 'NODE') {
-            return (
-                <div className="flexbox dc__gap-8 dc__align-items-center">
-                    <BulkSelection showPagination={showPaginatedView} />
-                    <SortableTableHeaderCell
-                        key={column.label}
-                        showTippyOnTruncate
-                        disabled={false}
-                        triggerSorting={handleSortClick(column)}
-                        title={column.label}
-                        isSorted={sortByColumn.value === column.value}
-                        sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-                        isSortable={!!column.isSortingAllowed}
-                    />
-                </div>
-            )
-        }
-
-        return (
+    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
+        <div className="flexbox dc__gap-8 dc__align-items-center">
+            {column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
             <SortableTableHeaderCell
                 key={column.label}
                 showTippyOnTruncate
@@ -477,8 +451,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
                 isSortable={!!column.isSortingAllowed}
             />
-        )
-    }
+        </div>
+    )
 
     const getBulkOperations = () => {
         if (bulkOperationModalState === 'closed') {
