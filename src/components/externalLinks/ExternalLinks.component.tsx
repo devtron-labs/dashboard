@@ -218,9 +218,9 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
             )}
         >
             <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
-                <div
-                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center"
-                    role="button"
+                <button
+                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles"
+                    type='button'
                     onClick={handleTextClick}
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
@@ -230,7 +230,7 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                     >
                         {linkOption.label}
                     </span>
-                </div>
+                </button>
                 <a
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value.toString(), details)}
