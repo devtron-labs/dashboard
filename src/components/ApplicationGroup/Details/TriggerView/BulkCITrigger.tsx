@@ -452,7 +452,6 @@ const BulkCITrigger = ({
                 pipelineId={selectedApp.ciPipelineId}
                 pipelineName={selectedApp.ciPipelineName}
                 selectedMaterial={selectedMaterial}
-                getWebhookPayload={getWebhookPayload}
                 workflowId={+selectedApp.workFlowId}
                 onClickShowBranchRegexModal={showBranchEditModal}
                 fromAppGrouping

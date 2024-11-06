@@ -285,7 +285,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         pipelineId={this.props.pipelineId}
                         pipelineName={this.props.pipelineName}
                         selectedMaterial={selectedMaterial}
-                        getWebhookPayload={this.props.getWebhookPayload}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         fromAppGrouping={this.props.fromAppGrouping}

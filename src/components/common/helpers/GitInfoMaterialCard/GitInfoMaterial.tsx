@@ -30,7 +30,7 @@ import {
     ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -38,13 +38,14 @@ import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
-import { URLS } from '@Config/routes'
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import EmptyStateCIMaterial from '../../../app/details/triggerView/EmptyStateCIMaterial'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { getCIPipelineURL } from '../workflowURL'
 import { importComponentFromFELibrary } from '../Helpers'
 import { GitInfoMaterialProps } from './types'
+import { ReceivedWebhookRedirectButton } from './ReceivedWebhookRedirectButton'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
@@ -57,7 +58,6 @@ export const GitInfoMaterial = ({
     pipelineId,
     pipelineName,
     selectedMaterial,
-    getWebhookPayload,
     workflowId,
     onClickShowBranchRegexModal,
     fromAppGrouping,
@@ -77,7 +77,6 @@ export const GitInfoMaterial = ({
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
-    const { url } = useRouteMatch()
     const { appId } = useParams<{ appId: string }>()
     const triggerViewContext = useContext(TriggerViewContext)
 
@@ -251,11 +250,6 @@ export const GitInfoMaterial = ({
         triggerViewContext.onClickCIMaterial(pipelineId, pipelineName)
     }
 
-    const onClickShowWebhookModal = () => {
-        getWebhookPayload(selectedMaterial.id)
-        push(`${url}/${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}`)
-    }
-
     const toggleShowExcludePopUp = () => {
         setShowExcludePopUp(not)
     }
@@ -324,6 +318,26 @@ export const GitInfoMaterial = ({
         return `${headingPrefix} ${headingSuffix}`
     }
 
+    const renderWebhookHeader = () =>
+        selectedMaterial.type === SourceTypeMap.WEBHOOK && (
+            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5">
+                <Info className="icon-dim-16" />
+                <div className="flex left dc__gap-4 cn-9">
+                    <span className="lh-20 cn-9">Showing results matching</span>
+                    <CiPipelineSourceConfig
+                        sourceType={selectedMaterial.type}
+                        sourceValue={selectedMaterial.value}
+                        showTooltip
+                        baseText="configured filters"
+                        showIcons={false}
+                        rootClassName="cn-9"
+                    />
+                    <span className="lh-20">.</span>
+                    <ReceivedWebhookRedirectButton />
+                </div>
+            </div>
+        )
+
     function renderMaterialHistory(_selectedMaterial: CIMaterialType) {
         const anyCommit = _selectedMaterial.history?.length > 0
         const isWebhook = _selectedMaterial.type === SourceTypeMap.WEBHOOK
@@ -352,7 +366,6 @@ export const GitInfoMaterial = ({
                             dockerFileErrorMsg={_selectedMaterial.dockerFileErrorMsg}
                             repoUrl={_selectedMaterial.gitURL}
                             isMaterialLoading={_selectedMaterial.isMaterialLoading}
-                            toggleWebHookModal={onClickShowWebhookModal}
                             onRetry={onRetry}
                             anyCommit={anyCommit}
                             noSearchResults={_selectedMaterial.noSearchResult}
@@ -381,25 +394,9 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="select-material select-material--trigger-view">
+            <div className="dc__flex-1 dc__window-bg select-material select-material--trigger-view">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
-
-                {selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-                    <div className="cn-7 fs-13 fw-6 pl-20 flex left py-14">
-                        <span className="lh-20">Showing results matching</span> &nbsp;
-                        <CiPipelineSourceConfig
-                            sourceType={selectedMaterial.type}
-                            sourceValue={selectedMaterial.value}
-                            showTooltip
-                            baseText="configured filters"
-                            showIcons={false}
-                        />
-                        .&nbsp;
-                        <span className="dc__link cursor lh-20" onClick={onClickShowWebhookModal}>
-                            View all received webhooks
-                        </span>
-                    </div>
-                )}
+                {renderWebhookHeader()}
                 <MaterialHistory
                     material={selectedMaterial}
                     pipelineName={pipelineName}
@@ -425,7 +422,7 @@ export const GitInfoMaterial = ({
             {BuildTriggerBlockedState && isCITriggerBlocked ? (
                 <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
             ) : (
-                <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
+                <div className={`m-lr-0 h-100 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {!fromBulkCITrigger && renderMaterialSource()}
                     {renderMaterialHistory(selectedMaterial)}
                 </div>

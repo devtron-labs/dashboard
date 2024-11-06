@@ -5,7 +5,6 @@ export interface GitInfoMaterialProps
     extends Pick<TriggerViewState, 'workflowId'>,
         Pick<
             CIMaterialProps,
-            | 'getWebhookPayload'
             | 'onClickShowBranchRegexModal'
             | 'fromAppGrouping'
             | 'isJobView'

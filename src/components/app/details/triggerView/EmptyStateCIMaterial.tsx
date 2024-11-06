@@ -24,6 +24,7 @@ import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
 import { useRouteMatch } from 'react-router-dom'
+import { ReceivedWebhookRedirectButton } from '@Components/common/helpers/GitInfoMaterialCard/ReceivedWebhookRedirectButton'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -39,13 +40,11 @@ export default function EmptyStateCIMaterial({
     isWebHook,
     noSearchResults,
     noSearchResultsMsg,
-    toggleWebHookModal,
     clearSearch,
     handleGoToWorkFlowEditor,
     showAllCommits,
     toggleExclude,
 }: EmptyStateCIMaterialProps) {
-    const { url } = useRouteMatch()
     const getData = () => {
         if (isRepoError) {
             return {
@@ -150,12 +149,7 @@ export default function EmptyStateCIMaterial({
 
     const handleMaterialLoadingButton = () => {
         return (
-            <Button
-                dataTestId="webhook-modal-cta"
-                onClick={toggleWebHookModal}
-                text={CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-                variant={ButtonVariantType.text}
-            />
+            <ReceivedWebhookRedirectButton />
         )
     }
 

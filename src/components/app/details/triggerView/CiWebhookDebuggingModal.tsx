@@ -27,6 +27,8 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    useSearchString,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -69,14 +71,22 @@ export const CiWebhookModal = ({
         }
     }
 
+    const { queryParams, searchParams } = useSearchString()
+
     useEffect(() => {
         if (webhookPayloads?.payloads && webhookPayloads.payloads[0]?.parsedDataId) {
-            history.push(`${url}/${webhookPayloads?.payloads[0]?.parsedDataId}`)
+            queryParams.set(
+                URLS.WEBHOOK_RECEIVED_PAYLOAD_ID,
+                searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]
+                    ? searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]
+                    : webhookPayloads.payloads[0].parsedDataId.toString(),
+            )
+            history.replace({ search: queryParams.toString() })
         }
     }, [webhookPayloads])
 
     useEffect(() => {
-        if (ciPipelineMaterialId && webhookPayloads?.payloads) {
+        if (ciPipelineMaterialId && webhookPayloads?.payloads?.[0]) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayloads?.payloads[0])
         }
@@ -119,7 +129,6 @@ export const CiWebhookModal = ({
     )
 
     const memoizedPayloads = useMemo(() => webhookPayloads?.payloads || [], [webhookPayloads])
-
     const renderSidebar = () => (
         <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
@@ -127,7 +136,7 @@ export const CiWebhookModal = ({
                 {memoizedPayloads?.map((webhookPayload: WebhookPayload) => {
                     const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                     const webhookPayloadId = webhookPayload.parsedDataId
-                    const isActive = location.pathname.split('/').pop() === String(webhookPayloadId)
+                    const isActive = searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID] === String(webhookPayloadId)
                     return (
                         <div
                             key={webhookPayloadId}
@@ -137,9 +146,11 @@ export const CiWebhookModal = ({
                                 activeClassName="active"
                                 key={webhookPayloadId}
                                 data-testid={`payload-id-${webhookPayloadId}-anchor`}
-                                to={`${url.split(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID)[0]}${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}/${webhookPayloadId}`}
+                                to={getUrlWithSearchParams(url, {
+                                    [URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]: webhookPayloadId,
+                                })}
                                 className="dc__no-decor"
-                                type="butt`on"
+                                type="button"
                                 aria-label="View webhook payload"
                                 onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                             >
@@ -272,7 +283,7 @@ export const CiWebhookModal = ({
     const renderWebHookModal = () => (
         <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header fs-13 cn-9">
             {renderSidebar()}
-            {!webhookPayloads?.payloads?.length ? renderNoWebhookPayloadView : renderWebhookPayloadContent()}
+            {webhookPayloads?.payloads?.length ? renderWebhookPayloadContent() : renderNoWebhookPayloadView()}
         </div>
     )
 

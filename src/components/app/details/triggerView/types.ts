@@ -706,7 +706,6 @@ export interface EmptyStateCIMaterialProps {
     isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void
     clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
     showAllCommits?: boolean

@@ -31,7 +31,7 @@ export const WebhookReceivedPayloadModal = ({
     const { url } = useRouteMatch()
     const triggerViewContext = useContext(TriggerViewContext)
     const onClickBackButton = (): void => {
-        push(url.replace(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID, ''))
+        push(url.split(`/${URLS.WEBHOOK_MODAL}`)[0])
     }
 
     useEffect(() => {
@@ -98,7 +98,10 @@ export const WebhookReceivedPayloadModal = ({
     )
     return (
         <VisibleModal className="">
-            <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
+            <div
+                className="modal-body--ci-material h-100 w-100 flexbox-col dc__overflow-hidden"
+                onClick={stopPropagation}
+            >
                 {renderWebhookMaterialHeader()}
                 {renderWebhookModal()}
             </div>

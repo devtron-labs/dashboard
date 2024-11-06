@@ -280,8 +280,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }
                     }
                     if (this.props.location.pathname.includes('build')) {
-                        const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/')
-                        const ciNodeId = this.props.location.pathname.substring(lastIndexBeforeId + 1)
+                        // extracting ciNodeId from URL
+                        const ciNodeId = this.props.location.pathname.match(/build\/(\d+)/)?.[1] ?? null
                         const ciNode = wf
                             .flatMap((workflow) => workflow.nodes)
                             .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
@@ -691,7 +691,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController.abort()
         this.abortController = new AbortController()
-        this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
+        if (!this.props.location.pathname.includes(URLS.WEBHOOK_MODAL)) {
+            this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
+        }
 
         Promise.all([
             this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
@@ -1160,13 +1162,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.abortCIBuild = new AbortController()
     }
 
+
     renderCIMaterial = () => {
         if (this.state.ciNodeId) {
             const nd: CommonNodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
             return (
                 <Switch>
-                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_RECEIVED_PAYLOAD_ID}/:payloadId(\\d+)?`}>
+                    <Route
+                        path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
+                    >
                         <WebhookReceivedPayloadModal
                             workflowId={this.state.workflowId}
                             webhookPayloads={this.state.webhookPayloads}
@@ -1174,10 +1179,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             material={material}
                             pipelineId={this.state.ciNodeId.toString()}
                             title={this.state.ciPipelineName}
-                            isJobView={this.props.isJobView}   
-                            getWebhookPayload={this.getWebhookPayload}                       />
+                            isJobView={this.props.isJobView}
+                            getWebhookPayload={this.getWebhookPayload}
+                        />
                     </Route>
-                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
+                    <Route exact path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
                         <CIMaterialModal
                             workflowId={this.state.workflowId}
                             history={this.props.history}
@@ -1215,7 +1221,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             resetAbortController={this.resetAbortController}
                         />
                     </Route>
-                    <Redirect to={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`} />
                 </Switch>
             )
         }
