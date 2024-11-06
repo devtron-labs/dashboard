@@ -141,7 +141,15 @@ export interface ResourceFilterOptionsProps {
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
+    /**
+     * If true, the filters are hidden except search
+     */
     areFiltersHidden: boolean
+    /**
+     * Placeholder override for the search bar
+     *
+     * @default undefined
+     */
     searchPlaceholder?: string
 }
 
@@ -157,6 +165,11 @@ export interface ResourceBrowserActionMenuType {
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
+    /**
+     * If true, the delete resource option is hidden in pop up menu
+     *
+     * @default false
+     */
     hideDeleteResource?: boolean
 }
 

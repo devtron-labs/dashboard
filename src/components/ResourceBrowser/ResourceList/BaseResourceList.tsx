@@ -14,7 +14,7 @@ import {
     GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import WebWorker from '@Components/app/WebWorker'
 import searchWorker from '@Config/searchWorker'
@@ -48,7 +48,6 @@ const BaseResourceList = ({
     showStaleDataWarning,
     selectedResource,
     reloadResourceListData,
-    handleNodeClick,
     selectedNamespace,
     setSelectedNamespace,
     selectedCluster,
@@ -73,6 +72,7 @@ const BaseResourceList = ({
 
     const location = useLocation()
     const { replace, push } = useHistory()
+    const { url } = useRouteMatch()
 
     const { searchParams } = useSearchString()
 
@@ -228,6 +228,14 @@ const BaseResourceList = ({
         }`
         const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
         addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
+    const handleNodeClick = (e) => {
+        const { name } = e.currentTarget.dataset
+        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
+        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
             .then(() => push(_url))
             .catch(noop)
     }

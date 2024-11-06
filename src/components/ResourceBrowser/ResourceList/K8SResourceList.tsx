@@ -15,10 +15,10 @@
  */
 
 import { useMemo, useRef, useState } from 'react'
-import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, useLocation } from 'react-router-dom'
+import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
 import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
@@ -42,8 +42,6 @@ export const K8SResourceList = ({
     updateK8sResourceTab,
 }: K8SResourceListType) => {
     // HOOKS
-    const { push } = useHistory()
-    const { url } = useRouteMatch()
     const location = useLocation()
     const { clusterId, nodeType, group } = useParams<URLParams>()
 
@@ -97,14 +95,6 @@ export const K8SResourceList = ({
         return result
     }, [_resourceList])
 
-    const handleNodeClick = (e) => {
-        const { name } = e.currentTarget.dataset
-        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
-            .then(() => push(_url))
-            .catch(noop)
-    }
-
     return (
         <BaseResourceList
             isLoading={resourceListLoader}
@@ -114,7 +104,6 @@ export const K8SResourceList = ({
             showStaleDataWarning={showStaleDataWarning}
             selectedResource={selectedResource}
             reloadResourceListData={reloadResourceListData}
-            handleNodeClick={handleNodeClick}
             selectedNamespace={selectedNamespace}
             setSelectedNamespace={setSelectedNamespace}
             selectedCluster={selectedCluster}

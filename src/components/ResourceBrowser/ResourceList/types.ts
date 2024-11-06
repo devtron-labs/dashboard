@@ -30,7 +30,6 @@ export interface BaseResourceListProps
     resourceList: ResourceDetailType
     clusterId: string
     reloadResourceListData: () => void
-    handleNodeClick: (e) => void
     selectedNamespace: typeof ALL_NAMESPACE_OPTION
     setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
     children?: ReactNode

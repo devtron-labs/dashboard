@@ -67,7 +67,7 @@ const ClusterUpgradeCompatibilityInfo = ({
 
     return (
         <div className="resource-browser">
-            <div className="dc__overflow-scroll">
+            <div className="dc__overflow-scroll p-8">
                 <CollapsibleList config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
             <BaseResourceList
@@ -86,7 +86,6 @@ const ClusterUpgradeCompatibilityInfo = ({
                 selectedCluster={selectedCluster}
                 isOpen
                 reloadResourceListData={refetchCompatibilityList}
-                handleNodeClick={noop}
                 setSelectedNamespace={noop}
                 renderRefreshBar={noop}
                 updateK8sResourceTab={noop}

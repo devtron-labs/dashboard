@@ -65,12 +65,6 @@ export interface NodeDetailsType {
     taints?: NodeTaintType[]
 }
 
-export enum ClusterFiltersType {
-    ALL_CLUSTERS = 'all',
-    HEALTHY = 'healthy',
-    UNHEALTHY = 'unhealthy',
-}
-
 export interface ClusterCapacityType {
     name: string
     nodeCount: number
