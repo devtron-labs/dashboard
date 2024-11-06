@@ -201,12 +201,17 @@ const NodeComponent = ({
             node.name
         }/${_tabName.toLowerCase()}`
 
-        const searchString = location.search && containerName ? `${location.search}&container=${containerName}` : location.search
+        const getSearchString = () => {
+            if (containerName) {
+                return location.search ? `${location.search}&container=${containerName}` : `?container=${containerName}`
+            }
+            return location.search
+        }
 
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
 
         if (isAdded) {
-            history.push({pathname: _url, search: searchString})
+            history.push({ pathname: _url, search: getSearchString() })
         } else {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
