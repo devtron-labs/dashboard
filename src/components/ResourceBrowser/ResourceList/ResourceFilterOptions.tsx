@@ -52,6 +52,7 @@ const ResourceFilterOptions = ({
     renderRefreshBar,
     updateK8sResourceTab,
     areFiltersHidden = false,
+    searchPlaceholder,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -131,7 +132,7 @@ const ResourceFilterOptions = ({
                 <div className="resource-filter-options-container__search-box dc__position-rel">
                     <SearchBar
                         inputProps={{
-                            placeholder: `Search ${selectedResource?.gvk?.Kind || ''}`,
+                            placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
                             disabled: isSearchInputDisabled,
                             onBlur: handleInputBlur,
                             onFocus: handleInputFocus,

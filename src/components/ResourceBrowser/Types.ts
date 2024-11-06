@@ -142,6 +142,7 @@ export interface ResourceFilterOptionsProps {
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
     areFiltersHidden: boolean
+    searchPlaceholder?: string
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {

@@ -56,6 +56,7 @@ const BaseResourceList = ({
     nodeType,
     group,
     areFiltersHidden = false,
+    searchPlaceholder,
 }: {
     isLoading: boolean
     resourceListError: ServerErrors
@@ -75,7 +76,7 @@ const BaseResourceList = ({
     children?: ReactNode
     nodeType
     group
-} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden'>>) => {
+} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -411,6 +412,7 @@ const BaseResourceList = ({
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
                 areFiltersHidden={areFiltersHidden}
+                searchPlaceholder={searchPlaceholder}
             />
             {renderContent()}
             {children}
