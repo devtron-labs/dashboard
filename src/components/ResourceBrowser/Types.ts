@@ -273,3 +273,7 @@ export interface GetTabsBasedOnRoleParamsType {
      */
     isMonitoringDashBoardSelected?: boolean
 }
+
+export enum ResourceListQueryParamsType {
+    VERSION = 'version',
+}

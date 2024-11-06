@@ -15,6 +15,7 @@
  */
 
 import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { RBSidebarKeysType } from './Types'
@@ -209,6 +210,13 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.UpgradeCluster,
     },
+}
+
+export const UPGRADE_CLUSTER_CONSTANTS = {
+    DYNAMIC_TITLE: 'Upgrade Cluster',
+    ICON_PATH: ICArrowUpCircle,
+    ID_PREFIX: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+    NAME: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
 }
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {

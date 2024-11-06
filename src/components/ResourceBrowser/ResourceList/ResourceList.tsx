@@ -27,9 +27,10 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    InitTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
@@ -47,6 +48,7 @@ import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -116,7 +118,7 @@ const ResourceList = () => {
 
     const getDynamicTabIdPrefix = () => {
         if (isUpgradeClusterNodeType) {
-            return SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+            return UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX
         }
 
         if (isNodeTypeNode) {
@@ -128,19 +130,21 @@ const ResourceList = () => {
 
     const getNodeName = () => {
         if (isUpgradeClusterNodeType) {
-            return SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+            return UPGRADE_CLUSTER_CONSTANTS.NAME
         }
 
         return node
     }
 
-    const getDynamicTabData = () => ({
+    const getDynamicTabData = (): InitTabType => ({
         idPrefix: getDynamicTabIdPrefix(),
         name: getNodeName(),
         kind: nodeType || '',
         url,
         isSelected: true,
         position: Number.MAX_SAFE_INTEGER,
+        dynamicTitle: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+        iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
     })
 
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
@@ -172,11 +176,10 @@ const ResourceList = () => {
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffectAfterMount(() => {
-        // TODO: Add component check
         /* NOTE: tab selection is interactively done through dynamic tab button clicks
          * but to ensure consistency with url changes and user moving back through browser history,
          * correct active tab state is ensured by this effect */
-        if (node || isUpgradeClusterNodeType) {
+        if (node || (isUpgradeClusterNodeType && isFELibAvailable)) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
             /* NOTE if the corresponding tab exists return */
@@ -189,7 +192,18 @@ const ResourceList = () => {
             }
             /* NOTE: even though addTab updates selection it will override url;
              * thus to prevent that if found markTabActive and don't let this get called */
-            addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            addTab(
+                idPrefix,
+                kind,
+                name,
+                _url,
+                undefined,
+                undefined,
+                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+            )
+                .then(noop)
+                .catch(noop)
             return
         }
 

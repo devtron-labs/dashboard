@@ -206,13 +206,15 @@ export function useTabs(persistanceKey: string) {
         url: string,
         showNameOnSelect = false,
         position = Number.MAX_SAFE_INTEGER,
+        iconPath = '',
+        dynamicTitle = '',
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
         }
 
         return new Promise((resolve) => {
-            const title = `${kind}/${name}`
+            const title = dynamicTitle || `${kind}/${name}`
             const _id = `${idPrefix}-${title}`
 
             setTabs((prevTabs) => {
@@ -242,6 +244,7 @@ export function useTabs(persistanceKey: string) {
                             title,
                             position,
                             showNameOnSelect,
+                            iconPath,
                         }),
                     )
                 }
