@@ -425,7 +425,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        hideTimer={isOverviewNodeType || isMonitoringNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
