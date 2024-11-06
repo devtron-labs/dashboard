@@ -164,7 +164,7 @@ const ManifestComponent = ({
     }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id, guiSchema])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema || !isExternalApp) {
+        if (!getManifestGUISchema || isExternalApp) {
             return
         }
 
