@@ -38,9 +38,11 @@ export const EventList = ({
             className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
         >
             {Object.values(EVENT_LIST.headerKeys).map((title) => (
-                <Tooltip key={title} content={title}>
-                    <span className="dc__ellipsis-right">{title}</span>
-                </Tooltip>
+                <div>
+                    <Tooltip key={title} content={title} alwaysShowTippyOnHover>
+                        <span className="dc__ellipsis-right">{title}</span>
+                    </Tooltip>
+                </div>
             ))}
         </div>
         <div
