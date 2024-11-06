@@ -21,6 +21,7 @@ const ClusterUpgradeCompatibilityInfo = ({
     clusterId,
     selectedCluster,
     updateTabUrl,
+    addTab,
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
 
@@ -79,12 +80,12 @@ const ClusterUpgradeCompatibilityInfo = ({
                 showStaleDataWarning={false}
                 selectedResource={{
                     gvk: SIDEBAR_KEYS.upgradeClusterGVK,
+                    namespaced: false,
                 }}
                 selectedNamespace={ALL_NAMESPACE_OPTION}
                 selectedCluster={selectedCluster}
                 isOpen
                 reloadResourceListData={refetchCompatibilityList}
-                handleResourceClick={noop}
                 handleNodeClick={noop}
                 setSelectedNamespace={noop}
                 renderRefreshBar={noop}
@@ -92,6 +93,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 nodeType={null}
                 group={null}
                 showGenericNullState
+                addTab={addTab}
             />
         </div>
     )

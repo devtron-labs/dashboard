@@ -11,6 +11,8 @@ import {
     useStateFilters,
     useSearchString,
     GenericFilterEmptyState,
+    noop,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -22,6 +24,7 @@ import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     ALL_NAMESPACE_OPTION,
     DEFAULT_K8SLIST_PAGE_SIZE,
+    K8S_EMPTY_GROUP,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
@@ -31,7 +34,7 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { ResourceDetailDataType, ResourceDetailType, ResourceFilterOptionsProps } from '../Types'
+import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, ResourceFilterOptionsProps } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 
@@ -44,7 +47,6 @@ const BaseResourceList = ({
     clusterId,
     showStaleDataWarning,
     selectedResource,
-    handleResourceClick,
     reloadResourceListData,
     handleNodeClick,
     selectedNamespace,
@@ -59,27 +61,31 @@ const BaseResourceList = ({
     areFiltersHidden = false,
     searchPlaceholder,
     showGenericNullState,
+    addTab,
 }: {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: ResourceDetailType
     clusterId: string
-    showStaleDataWarning
-    selectedResource
-    handleResourceClick
     reloadResourceListData
     handleNodeClick
     selectedNamespace
     setSelectedNamespace
-    selectedCluster
-    isOpen: boolean
-    renderRefreshBar
-    updateK8sResourceTab
     children?: ReactNode
     nodeType
     group
     showGenericNullState?: boolean
-} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>) => {
+} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>> &
+    Pick<
+        K8SResourceListType,
+        | 'addTab'
+        | 'isOpen'
+        | 'renderRefreshBar'
+        | 'updateK8sResourceTab'
+        | 'selectedCluster'
+        | 'selectedResource'
+        | 'showStaleDataWarning'
+    >) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -219,6 +225,35 @@ const BaseResourceList = ({
         return `f-${statusPostfix}`
     }
 
+    const handleResourceClick = (e) => {
+        const { name, tab, namespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const _group: string = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
+
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+
+        if (origin === 'event') {
+            const [_kind, _resourceName] = name.split('/')
+            resourceParam = `${_kind}/${_group}/${_resourceName}`
+            kind = _kind
+            resourceName = _resourceName
+        } else {
+            kind = kindFromResource ?? selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${_group}/${name}`
+            resourceName = name
+        }
+
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
     const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => (
         <div
             // Added id as the name is not always unique
@@ -239,6 +274,7 @@ const BaseResourceList = ({
                                 className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
                                 data-name={resourceData.name}
                                 data-namespace={resourceData.namespace}
+                                data-kind={resourceData.kind}
                                 onClick={handleResourceClick}
                                 aria-label={`Select ${resourceData.name}`}
                             >
@@ -265,7 +301,14 @@ const BaseResourceList = ({
                             clusterId={clusterId}
                             resourceData={resourceData}
                             getResourceListData={reloadResourceListData as () => Promise<void>}
-                            selectedResource={selectedResource}
+                            selectedResource={{
+                                ...selectedResource,
+                                gvk: {
+                                    Group: resourceData.group ?? selectedResource.gvk.Group,
+                                    Kind: resourceData.kind ?? selectedResource.gvk.Kind,
+                                    Version: resourceData.version ?? selectedResource.gvk.Version,
+                                } as GVKType,
+                            }}
                             handleResourceClick={handleResourceClick}
                         />
                     </div>

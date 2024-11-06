@@ -310,6 +310,7 @@ const ResourceList = () => {
                     clusterId={clusterId}
                     selectedCluster={selectedCluster}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    addTab={addTab}
                 />
             )
         }

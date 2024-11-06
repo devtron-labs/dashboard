@@ -1,7 +1,8 @@
+import { useTabs } from '@Components/common/DynamicTabs'
 import { ClusterOptionType } from '../Types'
 
-export interface ClusterUpgradeCompatibilityInfoProps {
+export interface ClusterUpgradeCompatibilityInfoProps
+    extends Pick<ReturnType<typeof useTabs>, 'addTab' | 'updateTabUrl'> {
     clusterId: string
     selectedCluster: ClusterOptionType
-    updateTabUrl: (url: string, dynamicTitle?: string) => void
 }

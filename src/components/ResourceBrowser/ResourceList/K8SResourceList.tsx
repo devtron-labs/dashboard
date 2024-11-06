@@ -22,7 +22,6 @@ import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constant
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
 import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
-import { URLS } from '../../../config'
 import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import BaseResourceList from './BaseResourceList'
 
@@ -98,35 +97,6 @@ export const K8SResourceList = ({
         return result
     }, [_resourceList])
 
-    const handleResourceClick = (e) => {
-        const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam: string
-        let kind: string
-        let resourceName: string
-        let _group: string
-        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
-        if (origin === 'event') {
-            const [_kind, _resourceName] = name.split('/')
-            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-            resourceParam = `${_kind}/${_group}/${_resourceName}`
-            kind = _kind
-            resourceName = _resourceName
-        } else {
-            kind = selectedResource.gvk.Kind.toLowerCase()
-            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
-            resourceName = name
-            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
-        }
-
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
-        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab(idPrefix, kind, resourceName, _url)
-            .then(() => push(_url))
-            .catch(noop)
-    }
-
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
@@ -143,7 +113,6 @@ export const K8SResourceList = ({
             clusterId={clusterId}
             showStaleDataWarning={showStaleDataWarning}
             selectedResource={selectedResource}
-            handleResourceClick={handleResourceClick}
             reloadResourceListData={reloadResourceListData}
             handleNodeClick={handleNodeClick}
             selectedNamespace={selectedNamespace}
@@ -154,6 +123,7 @@ export const K8SResourceList = ({
             updateK8sResourceTab={updateK8sResourceTab}
             nodeType={nodeType}
             group={group}
+            addTab={addTab}
         >
             {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </BaseResourceList>
