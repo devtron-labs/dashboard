@@ -79,7 +79,7 @@ export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapPr
                         >
                             {label && (
                                 <Tooltip content={label}>
-                                    <p className="m-0 fs-12 lh-16 fw-6 cn-9">{label}</p>
+                                    <p className="m-0 fs-12 lh-16 fw-6 cn-9 dc__truncate">{label}</p>
                                 </Tooltip>
                             )}
                             <div className="cluster-map__container">
