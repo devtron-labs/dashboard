@@ -24,11 +24,9 @@ import {
     ToastManager,
     ToastVariantType,
     SortableTableHeaderCell,
-    noop,
     Tooltip,
     TabGroup,
     ComponentSizeType,
-    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
