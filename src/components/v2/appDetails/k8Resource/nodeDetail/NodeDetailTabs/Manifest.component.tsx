@@ -403,6 +403,7 @@ const ManifestComponent = ({
                 selectedResource,
             )
                 .then((response) => {
+                    setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
                     const _manifest = JSON.stringify(response?.result?.manifest)
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -414,12 +415,11 @@ const ManifestComponent = ({
                         setModifiedManifest(_manifest)
                         setErrorText('')
                     }
-                    setManifestCodeEditorMode(ManifestCodeEditorMode.READ)
                     setLoading(false)
                 })
                 .catch((err) => {
-                    setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
                     setLoading(false)
+                    setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
                     if (err.code === 403) {
                         ToastManager.showToast({
                             variant: ToastVariantType.notAuthorized,
@@ -470,11 +470,11 @@ const ManifestComponent = ({
         }
         if (!modifiedManifestString) {
             setLoading(false)
-            setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+            setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
         } else if (!isSuperAdmin && checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
             setLoading(false)
-            setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
             setShowLockedDiffModal(true)
+            setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
         } else {
             await handleCallApplyChangesAPI(modifiedManifestString)
         }
