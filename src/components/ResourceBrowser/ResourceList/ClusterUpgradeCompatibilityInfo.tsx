@@ -106,6 +106,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 addTab={addTab}
                 hideDeleteResource
                 hideBulkSelection
+                shouldOverrideSelectedResourceKind
             />
         </div>
     )

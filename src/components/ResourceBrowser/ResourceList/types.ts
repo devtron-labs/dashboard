@@ -36,6 +36,12 @@ export interface BaseResourceListProps
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean
+    /**
+     * If true, the kind from the API is used instead of the selected resource
+     *
+     * @default false
+     */
+    shouldOverrideSelectedResourceKind?: boolean
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps

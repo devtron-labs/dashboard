@@ -75,6 +75,7 @@ const BaseResourceListContent = ({
     showGenericNullState,
     addTab,
     hideBulkSelection = false,
+    shouldOverrideSelectedResourceKind = false,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -328,6 +329,7 @@ const BaseResourceListContent = ({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const lowercaseKindFromResource = kindFromResource.toLowerCase()
         const _group: string = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
 
@@ -337,11 +339,13 @@ const BaseResourceListContent = ({
 
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            resourceParam = `${_kind}/${_group}/${_resourceName}`
+            resourceParam = `${shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
         } else {
-            kind = kindFromResource ?? selectedResource.gvk.Kind.toLowerCase()
+            kind = shouldOverrideSelectedResourceKind
+                ? lowercaseKindFromResource
+                : selectedResource.gvk.Kind.toLowerCase()
             resourceParam = `${kind}/${_group}/${name}`
             resourceName = name
         }
