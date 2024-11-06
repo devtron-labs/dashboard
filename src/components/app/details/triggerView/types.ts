@@ -764,6 +764,7 @@ export interface CiWebhookModalProps
     ciPipelineMaterialId: number
     ciPipelineId: number
     fromBulkCITrigger?: boolean
+    appId: string
 }
 
 export interface CIWebhookPayload {
@@ -781,4 +782,5 @@ export interface WebhookReceivedPayloadModalType
     pipelineId: string
     fromAppGrouping?: boolean
     isJobView?: boolean
+    appId: string
 }

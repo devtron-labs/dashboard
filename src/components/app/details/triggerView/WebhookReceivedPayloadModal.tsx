@@ -26,6 +26,7 @@ export const WebhookReceivedPayloadModal = ({
     fromAppGrouping = false,
     isJobView = false,
     getWebhookPayload,
+    appId,
 }: WebhookReceivedPayloadModalType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -93,6 +94,7 @@ export const WebhookReceivedPayloadModal = ({
                 fromAppGrouping={fromAppGrouping}
                 fromBulkCITrigger={fromBulkCITrigger}
                 isJobView={isJobView}
+                appId={appId}
             />
         </div>
     )

@@ -1181,6 +1181,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             title={this.state.ciPipelineName}
                             isJobView={this.props.isJobView}
                             getWebhookPayload={this.getWebhookPayload}
+                            appId={this.props.match.params.appId}
                         />
                     </Route>
                     <Route exact path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>

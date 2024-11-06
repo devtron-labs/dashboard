@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -48,6 +48,7 @@ export const CiWebhookModal = ({
     fromAppGrouping,
     fromBulkCITrigger,
     isJobView,
+    appId,
 }: CiWebhookModalProps) => {
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayload, setWebhookIncomingPayload] = useState<CIWebhookPayload | null>(null)
@@ -55,7 +56,6 @@ export const CiWebhookModal = ({
     const location = useLocation()
     const history = useHistory()
     const { url } = useRouteMatch()
-    const params = useParams<{ appId: string; envId: string; ciPipelineId: string }>()
 
     const getCIWebhookPayloadRes = async (pipelineMaterialId: number, webhookPayload: WebhookPayload) => {
         setIsPayloadLoading(true)
@@ -107,13 +107,13 @@ export const CiWebhookModal = ({
             window.open(
                 window.location.href.replace(
                     location.pathname,
-                    getCIPipelineURL(params.appId, _workflowId, true, _ciPipelineId, isJobView, false),
+                    getCIPipelineURL(appId, _workflowId, true, _ciPipelineId, isJobView, false),
                 ),
                 '_blank',
                 'noreferrer',
             )
         } else {
-            history.push(`/app/${params.appId}/edit/workflow/${_workflowId}/ci-pipeline/${_ciPipelineId}`)
+            history.push(`/app/${appId}/edit/workflow/${_workflowId}/ci-pipeline/${_ciPipelineId}`)
         }
     }
 
