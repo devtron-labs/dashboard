@@ -386,9 +386,9 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
         )}?${TARGET_K8S_VERSION_SEARCH_KEY}=1.22`
 
         addTab(
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
             URL,
         ).then(() => history.push(URL))
     }
