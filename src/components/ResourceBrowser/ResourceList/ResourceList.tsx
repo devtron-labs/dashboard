@@ -80,11 +80,11 @@ const ResourceList = () => {
 
     const clusterList = clusterListData?.result || null
 
-    const clusterOptions: ClusterOptionType[] = useMemo(
+    const clusterOptions = useMemo(
         () =>
             clusterList &&
             (convertToOptionsList(
-                sortObjectArrayAlphabetically(clusterList, 'name'),
+                sortObjectArrayAlphabetically(clusterList, 'name').filter(({ isVirtualCluster }) => !isVirtualCluster),
                 'name',
                 'id',
                 'nodeErrors',

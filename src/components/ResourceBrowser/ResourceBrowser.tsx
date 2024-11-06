@@ -59,12 +59,7 @@ const ResourceBrowser: React.FC = () => {
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
-            (
-                sortObjectArrayAlphabetically(
-                    detailClusterList?.result || clusterListMinData?.result || [],
-                    'name',
-                ) as ClusterDetail[]
-            ).filter(
+            sortObjectArrayAlphabetically(detailClusterList?.result || clusterListMinData?.result || [], 'name').filter(
                 (option) =>
                     !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
                     !option.isVirtualCluster,
