@@ -89,6 +89,7 @@ const ManifestComponent = ({
     handleSwitchToYAMLMode,
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
+    manifestGUIFormRef,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -578,6 +579,7 @@ const ManifestComponent = ({
                         // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
                         manifestYAMLString={trimedManifestEditorData}
                         handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                        manifestGUIFormRef={manifestGUIFormRef}
                     />
                 </>
             )

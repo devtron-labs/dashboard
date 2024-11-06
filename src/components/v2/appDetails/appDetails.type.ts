@@ -497,6 +497,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     manifestFormConfigurationType: ConfigurationType
     handleUpdateUnableToParseManifest: (value: boolean) => void
     handleManifestGUIErrors: FormProps['onError']
+    manifestGUIFormRef: FormProps['ref']
 }
 
 export interface NodeTreeDetailTabProps {
