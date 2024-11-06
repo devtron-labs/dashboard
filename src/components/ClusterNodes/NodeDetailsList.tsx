@@ -674,7 +674,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         <div ref={parentRef} data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left flexbox-col">
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             {clusterDetailsLoader ? (
-                <div className="dc__border-left h-100">
+                <div className="h-100">
                     <Progressing pageLoader size={32} />
                 </div>
             ) : (
