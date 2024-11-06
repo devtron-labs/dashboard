@@ -143,7 +143,9 @@ export interface ResourceFilterOptionsProps {
     renderRefreshBar?: () => JSX.Element
 }
 
-export interface K8SResourceListType extends ResourceFilterOptionsProps {
+export interface K8SResourceListType
+    extends ResourceFilterOptionsProps,
+        Pick<K8SResourceTabComponentProps, 'clusterName'> {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
 }
@@ -214,6 +216,7 @@ export interface K8SResourceTabComponentProps {
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
+    clusterName: string
 }
 
 export interface AdminTerminalProps {

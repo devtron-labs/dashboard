@@ -374,6 +374,7 @@ const ResourceList = () => {
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            clusterName={selectedCluster.label}
         />,
         ...(MonitoringDashboard
             ? [
