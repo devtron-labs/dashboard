@@ -34,7 +34,13 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, ResourceFilterOptionsProps } from '../Types'
+import {
+    K8SResourceListType,
+    ResourceBrowserActionMenuType,
+    ResourceDetailDataType,
+    ResourceDetailType,
+    ResourceFilterOptionsProps,
+} from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 
@@ -59,6 +65,7 @@ const BaseResourceList = ({
     nodeType,
     group,
     areFiltersHidden = false,
+    hideDeleteResource = false,
     searchPlaceholder,
     showGenericNullState,
     addTab,
@@ -68,7 +75,7 @@ const BaseResourceList = ({
     resourceList: ResourceDetailType
     clusterId: string
     reloadResourceListData
-    handleNodeClick
+    handleNodeClick: (e) => VoidFunction
     selectedNamespace
     setSelectedNamespace
     children?: ReactNode
@@ -76,6 +83,7 @@ const BaseResourceList = ({
     group
     showGenericNullState?: boolean
 } & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>> &
+    Pick<ResourceBrowserActionMenuType, 'hideDeleteResource'> &
     Pick<
         K8SResourceListType,
         | 'addTab'
@@ -310,6 +318,7 @@ const BaseResourceList = ({
                                 } as GVKType,
                             }}
                             handleResourceClick={handleResourceClick}
+                            hideDeleteResource={hideDeleteResource}
                         />
                     </div>
                 ) : (

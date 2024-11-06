@@ -157,6 +157,7 @@ export interface ResourceBrowserActionMenuType {
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
+    hideDeleteResource?: boolean
 }
 
 export interface DeleteResourcePopupType {

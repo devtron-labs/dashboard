@@ -94,6 +94,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 group={null}
                 showGenericNullState
                 addTab={addTab}
+                hideDeleteResource
             />
         </div>
     )
