@@ -1,7 +1,6 @@
 import {
     Pagination,
     Progressing,
-    showError,
     SortableTableHeaderCell,
     ConditionalWrap,
     highlightSearchText,
@@ -12,6 +11,13 @@ import {
     GenericFilterEmptyState,
     noop,
     GVKType,
+    useBulkSelection,
+    BulkSelectionEvents,
+    BulkOperationModalState,
+    BulkOperationModalProps,
+    BulkSelection,
+    Checkbox,
+    CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -33,18 +39,22 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { ResourceDetailDataType, ResourceDetailType } from '../Types'
+import { ResourceDetailDataType, ResourceDetailType, ResourceListPayloadType } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { BaseResourceListProps } from './types'
+import { deleteResource, restartWorkload } from '../ResourceBrowser.service'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
+const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
 
 const BaseResourceList = ({
     isLoading,
     resourceListError,
     resourceList,
     clusterId,
+    clusterName,
     showStaleDataWarning,
     selectedResource,
     reloadResourceListData,
@@ -66,9 +76,11 @@ const BaseResourceList = ({
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
+    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
 
     const searchWorkerRef = useRef(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const location = useLocation()
     const { replace, push } = useHistory()
@@ -76,8 +88,16 @@ const BaseResourceList = ({
 
     const { searchParams } = useSearchString()
 
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        handleBulkSelection,
+        setIdentifiers,
+        isBulkSelectionApplied,
+        getSelectedIdentifiersCount,
+    } = useBulkSelection<Record<number, ResourceDetailDataType>>()
+
     const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
-    const showPaginatedView = resourceList?.data?.length >= pageSize
+    const showPaginatedView = filteredResourceList?.length > pageSize
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
     const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
 
@@ -117,6 +137,34 @@ const BaseResourceList = ({
         handleSorting(columnName)
     }
 
+    const handleFilterChanges = (_searchText: string, debounceResult = false) => {
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
+        }
+
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: resourceList?.data || [],
+                sortBy,
+                sortOrder,
+                debounceResult,
+                origin: new URL(window.__BASE_URL__, window.location.href).origin,
+            },
+        })
+    }
+
+    useEffect(() => {
+        setIdentifiers(
+            (filteredResourceList?.slice(resourceListOffset, resourceListOffset + pageSize).reduce((acc, curr) => {
+                acc[curr.id as number] = curr
+                return acc
+            }, {}) as Record<number, ResourceDetailDataType>) ?? {},
+        )
+    }, [resourceListOffset, filteredResourceList, pageSize])
+
     useEffect(
         () => () => {
             if (!searchWorkerRef.current) {
@@ -140,25 +188,6 @@ const BaseResourceList = ({
         setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
-    const handleFilterChanges = (_searchText: string, debounceResult = false) => {
-        if (!searchWorkerRef.current) {
-            searchWorkerRef.current = new WebWorker(searchWorker)
-            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
-        }
-
-        searchWorkerRef.current.postMessage({
-            type: 'start',
-            payload: {
-                searchText: _searchText,
-                list: resourceList?.data || [],
-                sortBy,
-                sortOrder,
-                debounceResult,
-                origin: new URL(window.__BASE_URL__, window.location.href).origin,
-            },
-        })
-    }
-
     useEffect(() => {
         if (!resourceList) {
             setFilteredResourceList(null)
@@ -168,6 +197,101 @@ const BaseResourceList = ({
         handleFilterChanges(searchText)
         setResourceListOffset(0)
     }, [resourceList, sortBy, sortOrder])
+
+    const getHandleCheckedForId = (resourceData: ResourceDetailDataType) => () => {
+        const id = Number(resourceData.id)
+
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else if (bulkSelectionState[id]) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else {
+            handleBulkSelection({
+                action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                data: {
+                    identifierObject: {
+                        ...bulkSelectionState,
+                        [id]: resourceData,
+                    },
+                },
+            })
+        }
+    }
+
+    const getBulkOperationModalStateSetter = (state: BulkOperationModalState) => () => {
+        setBulkOperationModalState(state)
+    }
+
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
+
+    const handleReloadDataAfterBulkDelete = () => {
+        handleClearBulkSelection()
+        reloadResourceListData()
+    }
+
+    const getBulkOperations = (): BulkOperationModalProps['operations'] => {
+        if (bulkOperationModalState === 'closed') {
+            return []
+        }
+
+        const selections = (isBulkSelectionApplied ? filteredResourceList : Object.values(bulkSelectionState)) ?? []
+
+        if (bulkOperationModalState === 'restart') {
+            return selections?.map((selection) => ({
+                id: selection.id,
+                name: selection.name as string,
+                namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
+                operation: async (signal: AbortSignal = null) => {
+                    const payload = {
+                        clusterId: Number(clusterId),
+                        group: selectedResource?.gvk?.Group,
+                        kind: selectedResource?.gvk?.Kind,
+                        version: selectedResource?.gvk?.Version,
+                        namespace: selection.namespace as string,
+                        containers: [],
+                        name: selection.name as string,
+                    }
+
+                    await restartWorkload(payload, signal)
+                },
+            }))
+        }
+
+        return selections.map((selection) => ({
+            id: selection.id,
+            name: selection.name as string,
+            namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
+            operation: async (signal: AbortSignal, shouldForceDelete: boolean) => {
+                const resourceDeletePayload: ResourceListPayloadType = {
+                    clusterId: Number(clusterId),
+                    k8sRequest: {
+                        resourceIdentifier: {
+                            groupVersionKind: selectedResource.gvk as GVKType,
+                            namespace: String(selection.namespace),
+                            name: String(selection.name),
+                        },
+                        forceDelete: shouldForceDelete,
+                    },
+                }
+
+                await deleteResource(resourceDeletePayload, signal)
+            },
+        }))
+    }
 
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
@@ -187,10 +311,6 @@ const BaseResourceList = ({
         updateK8sResourceTab(pathname)
         push(pathname)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
-    }
-
-    if (resourceListError) {
-        showError(resourceListError)
     }
 
     const getStatusClass = (status: string) => {
@@ -240,10 +360,10 @@ const BaseResourceList = ({
             .catch(noop)
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => (
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
         <div
             // Added id as the name is not always unique
-            key={`${resourceData.id}-${resourceData.name}-${index}`}
+            key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
             className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
             style={{ gridTemplateColumns }}
         >
@@ -254,6 +374,12 @@ const BaseResourceList = ({
                         className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                         data-testid="created-resource-name"
                     >
+                        <Checkbox
+                            isChecked={!!bulkOperationModalState[resourceData.id as number] || isBulkSelectionApplied}
+                            onChange={getHandleCheckedForId(resourceData)}
+                            rootClassName="mb-0"
+                            value={CHECKBOX_VALUE.CHECKED}
+                        />
                         <Tooltip content={resourceData.name}>
                             <button
                                 type="button"
@@ -395,24 +521,27 @@ const BaseResourceList = ({
                         )} dc__overflow-scroll`}
                     >
                         <div
-                            className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                            className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                             style={{ gridTemplateColumns }}
                         >
-                            {resourceList?.headers.map((columnName) => (
-                                <SortableTableHeaderCell
-                                    key={columnName}
-                                    showTippyOnTruncate
-                                    title={columnName}
-                                    triggerSorting={triggerSortingHandler(columnName)}
-                                    isSorted={sortBy === columnName}
-                                    sortOrder={sortOrder}
-                                    disabled={false}
-                                />
+                            {resourceList?.headers.map((columnName, index) => (
+                                <div className="flexbox dc__gap-8 dc__align-items-center">
+                                    {index === 0 && <BulkSelection showPagination={showPaginatedView} />}
+                                    <SortableTableHeaderCell
+                                        key={columnName}
+                                        showTippyOnTruncate
+                                        title={columnName}
+                                        triggerSorting={triggerSortingHandler(columnName)}
+                                        isSorted={sortBy === columnName}
+                                        sortOrder={sortOrder}
+                                        disabled={false}
+                                    />
+                                </div>
                             ))}
                         </div>
                         {filteredResourceList
                             .slice(resourceListOffset, resourceListOffset + pageSize)
-                            .map((clusterData, index) => renderResourceRow(clusterData, index))}
+                            .map((clusterData) => renderResourceRow(clusterData))}
                     </div>
                 )}
                 {showPaginatedView && (
@@ -435,6 +564,7 @@ const BaseResourceList = ({
             className={`resource-list-container dc__border-left flexbox-col dc__overflow-hidden ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
+            ref={parentRef}
         >
             <ResourceFilterOptions
                 key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
@@ -454,6 +584,32 @@ const BaseResourceList = ({
             />
             {renderContent()}
             {children}
+            {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                <RBBulkSelectionActionWidget
+                    parentRef={parentRef}
+                    count={isBulkSelectionApplied ? filteredResourceList?.length ?? 0 : getSelectedIdentifiersCount()}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                    handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
+                    handleOpenRestartWorkloadModal={getBulkOperationModalStateSetter('restart')}
+                    showBulkRestartOption={
+                        window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                            .map((feat: string) => feat.trim().toUpperCase())
+                            .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
+                    }
+                />
+            )}
+
+            {RBBulkOperations && bulkOperationModalState !== 'closed' && (
+                <RBBulkOperations
+                    clusterName={clusterName}
+                    operationType={bulkOperationModalState}
+                    handleModalClose={getBulkOperationModalStateSetter('closed')}
+                    handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
+                    operations={getBulkOperations()}
+                    resourceKind={selectedResource.gvk.Kind.toLowerCase()}
+                    {...(bulkOperationModalState === 'delete' ? { shouldAllowForceOperation: true } : {})}
+                />
+            )}
         </div>
     )
 }

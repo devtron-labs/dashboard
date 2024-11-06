@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-import { ApiResourceType, get, post, ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResourceType,
+    get,
+    post,
+    ResponseType,
+    ApiResourceGroupType,
+    showError,
+    getIsRequestAborted,
+    convertJSONPointerToJSONPath,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { applyOperation, escapePathComponent } from 'fast-json-patch'
+import { JSONPath } from 'jsonpath-plus'
+import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType, ResourceListResponse } from './Types'
@@ -25,13 +41,22 @@ export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLU
 export const namespaceListByClusterId = (clusterId: string): Promise<ResponseType> =>
     get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
 
-export const getResourceList = (
+export const getResourceList = async (
     resourceListPayload: ResourceListPayloadType,
     signal?: AbortSignal,
-): Promise<ResourceListResponse> =>
-    post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
-        signal,
-    })
+): Promise<ResourceListResponse> => {
+    try {
+        return await post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
+            signal,
+        })
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+            throw err
+        }
+    }
+    return null
+}
 
 export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<ApiResourceType>> =>
     get(`${Routes.API_RESOURCE}/${clusterId}`, {
@@ -41,8 +66,10 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
 export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> =>
     post(Routes.K8S_RESOURCE_CREATE, resourceListPayload)
 
-export const deleteResource = (resourceListPayload: ResourceListPayloadType): Promise<CreateResourceResponse> =>
-    post(Routes.DELETE_RESOURCE, resourceListPayload)
+export const deleteResource = (
+    resourceListPayload: ResourceListPayloadType,
+    signal?: AbortSignal,
+): Promise<CreateResourceResponse> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
 
 export const getResourceListPayload = (
     clusterId: string,
@@ -61,3 +88,74 @@ export const getResourceListPayload = (
     },
     ...filters,
 })
+
+export const restartWorkload = async (resource: SelectedResourceType, signal: AbortSignal) => {
+    const {
+        result: {
+            manifestResponse: { manifest },
+        },
+    } = await getManifestResource(null, '', '', true, resource, signal)
+
+    if (!manifest) {
+        return
+    }
+
+    const metadataPath = '/spec/template/metadata'
+    const annotationsPath = `${metadataPath}/annotations`
+    const restartLabel = 'devtron/restart'
+
+    const jsonpathProps = {
+        json: manifest,
+        wrap: false,
+        resultType: 'value',
+    } as const
+
+    const dateString = new Date().toISOString()
+
+    if (!JSONPath({ path: convertJSONPointerToJSONPath(metadataPath), ...jsonpathProps })) {
+        applyOperation(
+            manifest,
+            {
+                op: 'add',
+                path: metadataPath,
+                value: {
+                    annotations: {
+                        [restartLabel]: dateString,
+                    },
+                },
+            },
+            false,
+            true,
+        )
+    } else if (
+        !JSONPath({
+            path: convertJSONPointerToJSONPath(annotationsPath),
+            ...jsonpathProps,
+        })
+    ) {
+        applyOperation(
+            manifest,
+            {
+                op: 'add',
+                path: annotationsPath,
+                value: { [restartLabel]: dateString },
+            },
+            false,
+            true,
+        )
+    } else {
+        applyOperation(
+            manifest,
+            {
+                op: 'add',
+                // NOTE: we only need to escape / in restartLabel when making a path out of it
+                path: `${annotationsPath}/${escapePathComponent(restartLabel)}t`,
+                value: dateString,
+            },
+            false,
+            true,
+        )
+    }
+
+    await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
+}

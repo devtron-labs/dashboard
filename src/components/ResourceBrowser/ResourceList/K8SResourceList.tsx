@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
+import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
 import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
-import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import BaseResourceList from './BaseResourceList'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -40,6 +40,7 @@ export const K8SResourceList = ({
     isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
+    clusterName,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
@@ -101,6 +102,7 @@ export const K8SResourceList = ({
             resourceListError={resourceListDataError}
             resourceList={resourceList}
             clusterId={clusterId}
+            clusterName={clusterName}
             showStaleDataWarning={showStaleDataWarning}
             selectedResource={selectedResource}
             reloadResourceListData={reloadResourceListData}

@@ -23,6 +23,7 @@ export interface BaseResourceListProps
             | 'selectedCluster'
             | 'selectedResource'
             | 'showStaleDataWarning'
+            | 'clusterName'
         >,
         Pick<URLParams, 'nodeType' | 'group'> {
     isLoading: boolean

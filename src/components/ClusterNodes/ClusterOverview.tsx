@@ -35,18 +35,18 @@ import {
     ClusterDescriptionResponse,
     ClusterCapacityResponse,
 } from './types'
+import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
-import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
@@ -390,10 +390,14 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
         ), { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion })
 
         addTab(
+            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
             upgradeClusterLowerCaseKind,
-            upgradeClusterLowerCaseKind,
-            upgradeClusterLowerCaseKind,
+            UPGRADE_CLUSTER_CONSTANTS.NAME,
             URL,
+            undefined,
+            undefined,
+            UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
+            UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE,
         ).then(() => history.push(URL))
     }
 

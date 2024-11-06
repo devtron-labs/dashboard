@@ -87,6 +87,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 resourceListError={null}
                 resourceList={resourceListForCurrentData}
                 clusterId={clusterId}
+                clusterName={clusterName}
                 showStaleDataWarning={false}
                 selectedResource={{
                     gvk: SIDEBAR_KEYS.upgradeClusterGVK,
