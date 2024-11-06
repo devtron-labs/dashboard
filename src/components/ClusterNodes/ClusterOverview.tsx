@@ -23,8 +23,7 @@ import {
     InfoIconTippy,
     EditableTextArea,
     ResourceKindType,
-    Button,
-    ButtonVariantType,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -33,6 +32,8 @@ import {
     ERROR_TYPE,
     ClusterDetailsType,
     ClusterCapacityType,
+    ClusterDescriptionResponse,
+    ClusterCapacityResponse,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
@@ -48,6 +49,7 @@ import { importComponentFromFELibrary } from '../common'
 import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
+const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 
 /* TODO: move into utils */
 const metricsApiTippyContent = () => (
@@ -129,7 +131,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
         }
     }
 
-    const setClusterNoteDetails = (clusterNoteResponse) => {
+    const setClusterNoteDetails = (clusterNoteResponse: PromiseSettledResult<ClusterDescriptionResponse>) => {
         if (clusterNoteResponse.status === 'fulfilled') {
             let _moment: moment.Moment
             const _clusterNote = clusterNoteResponse.value.result.clusterNote
@@ -164,7 +166,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
         }
     }
 
-    const setClusterCapacityDetails = (clusterCapacityResponse) => {
+    const setClusterCapacityDetails = (clusterCapacityResponse: PromiseSettledResult<ClusterCapacityResponse>) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
             const _errorList = []
@@ -378,17 +380,19 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
         )
     }
 
-    const handleOpenScanCluster = () => {
-        const URL = `${getURLBasedOnSidebarGVK(
+    const handleOpenScanClusterTab = (selectedVersion: string) => {
+        const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+
+        const URL = getUrlWithSearchParams(getURLBasedOnSidebarGVK(
             SIDEBAR_KEYS.upgradeClusterGVK.Kind,
             clusterId,
             namespace,
-        )}?sample-version=1`
+        ), { version: selectedVersion })
 
         addTab(
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            upgradeClusterLowerCaseKind,
+            upgradeClusterLowerCaseKind,
+            upgradeClusterLowerCaseKind,
             URL,
         ).then(() => history.push(URL))
     }
@@ -441,7 +445,22 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                     </div>
                 </div>
 
-                <Button text="Scan cluster" onClick={handleOpenScanCluster} variant={ButtonVariantType.text} dataTestId="scan-cluster-button" />
+                <div className="dc__border-top-n1" />
+
+                <div className="flexbox-col dc__gap-12">
+                    <div className="flexbox-col dc__gap-4">
+                        <span className="fs-13 fw-4 lh-20 cn-7">Kubernetes version</span>
+                        <span className="cn-9 fs-13 fw-6 lh-20 dc__truncate">{clusterCapacityData?.serverVersion || '-'}</span>
+                    </div>
+
+                    {MigrateClusterVersionInfoBar && (
+                        <MigrateClusterVersionInfoBar
+                            handleOpenScanClusterTab={handleOpenScanClusterTab}
+                            clusterName={clusterDetails?.clusterName}
+                            currentVersion={clusterCapacityData?.serverVersion}
+                        />
+                    )}
+                </div>
             </aside>
         )
     }
