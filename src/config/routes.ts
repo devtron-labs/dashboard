@@ -48,6 +48,7 @@ export const URLS = {
     APP_DETAILS_K8: 'k8s-resources', // for V2
     APP_DETAILS_LOG: 'log-analyzer', // for V2
     APP_DETAILS_DEFAULT: 'default-view',
+    APP_DIFF_VIEW: 'diff-view',
     APP_TRIGGER: 'trigger',
     APP_OVERVIEW: 'overview',
     APP_CI_DETAILS: 'ci-details',

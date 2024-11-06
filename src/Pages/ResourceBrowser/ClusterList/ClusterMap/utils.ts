@@ -25,7 +25,7 @@ export const getVisibleSvgTextWithEllipsis = (() => {
     let svgInstance: SVGSVGElement | null = null
     let textElementInstance: SVGTextElement | null = null
 
-    return (text: string = '', maxWidth: number = 0, fontSize = 16, fontWeight = 400) => {
+    return ({ text = '', maxWidth = 0, fontSize = 16, fontWeight = 400 }) => {
         if (!svgInstance || !textElementInstance) {
             const { svg, textElement } = createMeasurementSvg(fontSize, fontWeight)
             svgInstance = svg

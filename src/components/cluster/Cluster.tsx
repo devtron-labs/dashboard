@@ -309,7 +309,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
                             isVirtualCluster={false}
-                            isProd="false"
+                            isProd={false}
                         />
                     </Drawer>
                 )}
@@ -848,7 +848,7 @@ const Cluster = ({
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
-                                isProd={isProd.toString()}
+                                isProd={isProd}
                             />
                         </div>
                     </Drawer>

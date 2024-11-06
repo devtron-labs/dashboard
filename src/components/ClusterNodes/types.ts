@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ApiResourceGroupType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -69,12 +69,6 @@ export enum ClusterFiltersType {
     ALL_CLUSTERS = 'all',
     HEALTHY = 'healthy',
     UNHEALTHY = 'unhealthy',
-}
-
-export enum ClusterStatusType {
-    HEALTHY = 'healthy',
-    UNHEALTHY = 'unhealthy',
-    CONNECTION_FAILED = 'connection failed',
 }
 
 export interface ClusterCapacityType {

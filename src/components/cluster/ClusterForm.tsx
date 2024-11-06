@@ -57,6 +57,7 @@ import {
     DEFAULT_CLUSTER_ID,
     SSHAuthenticationType,
     RemoteConnectionTypeCluster,
+    ClusterFormProps,
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
@@ -132,8 +133,8 @@ export default function ClusterForm({
     isClusterDetails,
     toggleClusterDetails,
     isVirtualCluster,
-    isProd
-}) {
+    isProd,
+}: ClusterFormProps) {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheus_url)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -202,7 +203,7 @@ export default function ClusterForm({
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
-            isProd: { value: isProd, error: '' },
+            isProd: { value: isProd.toString(), error: '' },
         },
         {
             cluster_name: {
@@ -463,7 +464,7 @@ export default function ClusterForm({
                 cert_data: state.tlsClientCert.value,
                 cert_auth_data: state.certificateAuthorityData.value,
             },
-            isProd: state.isProd.value === "true",
+            isProd: state.isProd.value === 'true',
             active,
             remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod, SSHConnectionType),
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -768,8 +769,8 @@ export default function ClusterForm({
                     value={state.isProd.value}
                     onChange={handleOnChange}
                 >
-                    <RadioGroupItem value={'true'}>Production</RadioGroupItem>
-                    <RadioGroupItem value={'false'}>Non - Production</RadioGroupItem>
+                    <RadioGroupItem value="true">Production</RadioGroupItem>
+                    <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>

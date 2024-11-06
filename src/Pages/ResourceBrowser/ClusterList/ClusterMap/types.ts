@@ -1,4 +1,4 @@
-import { ClusterStatusType } from '@Components/ClusterNodes/types'
+import { ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 
 interface MapData {
     name: string
