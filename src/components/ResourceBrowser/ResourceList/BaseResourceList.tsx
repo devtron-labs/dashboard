@@ -1,7 +1,6 @@
 import {
     Pagination,
     Progressing,
-    ServerErrors,
     showError,
     SortableTableHeaderCell,
     ConditionalWrap,
@@ -16,7 +15,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import WebWorker from '@Components/app/WebWorker'
 import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
@@ -34,15 +33,10 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import {
-    K8SResourceListType,
-    ResourceBrowserActionMenuType,
-    ResourceDetailDataType,
-    ResourceDetailType,
-    ResourceFilterOptionsProps,
-} from '../Types'
+import { ResourceDetailDataType, ResourceDetailType } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import { BaseResourceListProps } from './types'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 
@@ -69,31 +63,7 @@ const BaseResourceList = ({
     searchPlaceholder,
     showGenericNullState,
     addTab,
-}: {
-    isLoading: boolean
-    resourceListError: ServerErrors
-    resourceList: ResourceDetailType
-    clusterId: string
-    reloadResourceListData
-    handleNodeClick: (e) => VoidFunction
-    selectedNamespace
-    setSelectedNamespace
-    children?: ReactNode
-    nodeType
-    group
-    showGenericNullState?: boolean
-} & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>> &
-    Pick<ResourceBrowserActionMenuType, 'hideDeleteResource'> &
-    Pick<
-        K8SResourceListType,
-        | 'addTab'
-        | 'isOpen'
-        | 'renderRefreshBar'
-        | 'updateK8sResourceTab'
-        | 'selectedCluster'
-        | 'selectedResource'
-        | 'showStaleDataWarning'
-    >) => {
+}: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)

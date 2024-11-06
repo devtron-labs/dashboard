@@ -104,7 +104,7 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
-export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' } as const
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',
