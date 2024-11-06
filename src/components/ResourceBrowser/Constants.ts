@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { RBSidebarKeysType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -174,15 +175,7 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS: {
-    nodes: string
-    events: string
-    namespaces: string
-    eventGVK: GVKType
-    namespaceGVK: GVKType
-    nodeGVK: GVKType
-    overviewGVK: GVKType
-} = {
+export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -204,7 +197,12 @@ export const SIDEBAR_KEYS: {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview as Nodes,
+        Kind: Nodes.Overview,
+    },
+    monitoringGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.MonitoringDashboard,
     },
 }
 

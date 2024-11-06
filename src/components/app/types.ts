@@ -438,6 +438,7 @@ export enum Nodes {
     Event = 'Event',
     Namespace = 'Namespace',
     Overview = 'Overview',
+    MonitoringDashboard = 'MonitoringDashboard',
 }
 /**
  * @deprecated - use from fe-common

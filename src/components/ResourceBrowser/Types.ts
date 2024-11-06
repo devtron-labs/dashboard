@@ -21,6 +21,7 @@ import {
     OptionType,
     ApiResourceGroupType,
     GVKType,
+    InitTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
@@ -231,12 +232,6 @@ export interface SidebarChildButtonPropsType {
     onClick: React.MouseEventHandler<HTMLButtonElement>
 }
 
-export enum FIXED_TABS_INDICES {
-    OVERVIEW = 0,
-    K8S_RESOURCE_LIST,
-    ADMIN_TERMINAL,
-}
-
 export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
@@ -246,4 +241,34 @@ export interface ClusterSelectorType {
 export interface CreateResourceButtonType {
     clusterId: string
     closeModal: CreateResourceType['closePopup']
+}
+
+export interface RBSidebarKeysType {
+    nodes: string
+    events: string
+    namespaces: string
+    eventGVK: GVKType
+    namespaceGVK: GVKType
+    nodeGVK: GVKType
+    overviewGVK: GVKType
+    monitoringGVK: GVKType
+}
+
+export interface GetTabsBasedOnRoleParamsType {
+    selectedCluster: ClusterOptionType
+    namespace: string
+    isSuperAdmin: boolean
+    dynamicTabData: InitTabType
+    /**
+     * @default false
+     */
+    isTerminalSelected?: boolean
+    /**
+     * @default false
+     */
+    isOverviewSelected?: boolean
+    /**
+     * @default false
+     */
+    isMonitoringDashBoardSelected?: boolean
 }
