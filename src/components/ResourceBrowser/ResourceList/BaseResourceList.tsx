@@ -219,9 +219,10 @@ const BaseResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
+    const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => (
         <div
-            key={`${resourceData.id}-${resourceData.name}`}
+            // Added id as the name is not always unique
+            key={`${resourceData.id}-${resourceData.name}-${index}`}
             className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
             style={{ gridTemplateColumns }}
         >
@@ -381,7 +382,7 @@ const BaseResourceList = ({
                         </div>
                         {filteredResourceList
                             .slice(resourceListOffset, resourceListOffset + pageSize)
-                            .map((clusterData) => renderResourceRow(clusterData))}
+                            .map((clusterData, index) => renderResourceRow(clusterData, index))}
                     </div>
                 )}
                 {showPaginatedView && (
