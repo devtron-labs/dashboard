@@ -200,27 +200,30 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
 const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
     const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
+
+    const getTippyForLink = (children) => (
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300"
+            placement={isOverviewPage ? 'bottom' : 'top'}
+            iconPath={linkOption.icon}
+            heading={linkOption.label}
+            infoText={linkOption.description}
+        >
+            <div>{children}</div>
+        </TippyCustomized>
+    )
+
     return (
         <ConditionalWrap
             key={`${linkOption.label}-${idx}`}
             condition={!!linkOption.description}
-            wrap={(children) => (
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300"
-                    placement={isOverviewPage ? 'bottom' : 'top'}
-                    iconPath={linkOption.icon}
-                    heading={linkOption.label}
-                    infoText={linkOption.description}
-                >
-                    <div>{children}</div>
-                </TippyCustomized>
-            )}
+            wrap={(children) => getTippyForLink(children)}
         >
             <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
                 <button
                     className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles"
-                    type='button'
+                    type="button"
                     onClick={handleTextClick}
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
@@ -320,6 +323,7 @@ export const AppLevelExternalLinks = ({
                     <div className="flex left flex-wrap dc__gap-8">
                         {appLevelExternalLinks.map((link, idx) => (
                             <ExternalLinkChip
+                                key={`${link.label}-${idx}`}
                                 linkOption={link}
                                 idx={idx}
                                 handleOpenModal={handleOpenModal}
