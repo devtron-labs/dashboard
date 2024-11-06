@@ -440,7 +440,7 @@ const NodeDetailComponent = ({
                         <div className="ml-4 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && (
+                                {ToggleManifestConfigurationMode && !isExternalApp && (
                                     <ToggleManifestConfigurationMode
                                         mode={manifestFormConfigurationType}
                                         handleToggle={handleToggleManifestConfigurationMode}
@@ -599,6 +599,7 @@ const NodeDetailComponent = ({
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

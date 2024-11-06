@@ -90,6 +90,7 @@ const ManifestComponent = ({
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
     manifestGUIFormRef,
+    isExternalApp,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -163,7 +164,7 @@ const ManifestComponent = ({
     }, [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, id, guiSchema])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema) {
+        if (!getManifestGUISchema || !isExternalApp) {
             return
         }
 
