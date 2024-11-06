@@ -39,5 +39,6 @@ export interface BaseResourceListProps
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ReturnType<typeof useTabs>, 'addTab' | 'updateTabUrl'> {
     clusterId: string
+    clusterName: string
     selectedCluster: ClusterOptionType
 }

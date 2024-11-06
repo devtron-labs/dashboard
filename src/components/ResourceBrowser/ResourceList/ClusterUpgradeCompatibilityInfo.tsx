@@ -2,11 +2,13 @@ import {
     CollapsibleList,
     ErrorScreenManager,
     GenericEmptyState,
+    ImageType,
     noop,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { StyledProgressBar } from '@Components/common/formFields/Widgets/Widgets'
+import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import BaseResourceList from './BaseResourceList'
 import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
@@ -19,6 +21,7 @@ const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
 
 const ClusterUpgradeCompatibilityInfo = ({
     clusterId,
+    clusterName,
     selectedCluster,
     updateTabUrl,
     addTab,
@@ -62,7 +65,14 @@ const ClusterUpgradeCompatibilityInfo = ({
     }
 
     if (!compatibilityInfoData?.length) {
-        return <GenericEmptyState title="Upgrade information in unavailable at the moment" />
+        return (
+            <GenericEmptyState
+                imageType={ImageType.Large}
+                SvgImage={NoOffendingPipeline}
+                title={`Safe to upgrade ‘${clusterName}’ to ‘v${targetK8sVersion}’`}
+                subTitle={`API versions of all resources in this cluster are compatible with Kubernetes v${targetK8sVersion}`}
+            />
+        )
     }
 
     return (

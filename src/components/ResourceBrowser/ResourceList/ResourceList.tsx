@@ -308,6 +308,7 @@ const ResourceList = () => {
             return (
                 <ClusterUpgradeCompatibilityInfo
                     clusterId={clusterId}
+                    clusterName={selectedCluster.label}
                     selectedCluster={selectedCluster}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                     addTab={addTab}
