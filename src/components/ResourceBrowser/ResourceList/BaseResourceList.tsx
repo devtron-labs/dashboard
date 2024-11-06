@@ -424,11 +424,13 @@ const BaseResourceListContent = ({
                             getResourceListData={reloadResourceListData as () => Promise<void>}
                             selectedResource={{
                                 ...selectedResource,
-                                gvk: {
-                                    Group: resourceData.group ?? selectedResource.gvk.Group,
-                                    Kind: resourceData.kind ?? selectedResource.gvk.Kind,
-                                    Version: resourceData.version ?? selectedResource.gvk.Version,
-                                } as GVKType,
+                                ...(shouldOverrideSelectedResourceKind && {
+                                    gvk: {
+                                        Group: resourceData.group ?? selectedResource.gvk.Group,
+                                        Kind: resourceData.kind ?? selectedResource.gvk.Kind,
+                                        Version: resourceData.version ?? selectedResource.gvk.Version,
+                                    } as GVKType,
+                                }),
                             }}
                             handleResourceClick={handleResourceClick}
                             hideDeleteResource={hideDeleteResource}
