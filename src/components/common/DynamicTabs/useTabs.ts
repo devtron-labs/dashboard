@@ -214,7 +214,7 @@ export function useTabs(persistanceKey: string) {
         }
 
         return new Promise((resolve) => {
-            const title = dynamicTitle || `${kind}/${name}`
+            const title = `${kind}/${name}`
             const _id = `${idPrefix}-${title}`
 
             setTabs((prevTabs) => {
@@ -245,6 +245,7 @@ export function useTabs(persistanceKey: string) {
                             position,
                             showNameOnSelect,
                             iconPath,
+                            dynamicTitle,
                         }),
                     )
                 }
