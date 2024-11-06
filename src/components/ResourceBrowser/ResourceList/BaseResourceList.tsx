@@ -10,6 +10,7 @@ import {
     Tooltip,
     useStateFilters,
     useSearchString,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -57,6 +58,7 @@ const BaseResourceList = ({
     group,
     areFiltersHidden = false,
     searchPlaceholder,
+    showGenericNullState,
 }: {
     isLoading: boolean
     resourceListError: ServerErrors
@@ -76,6 +78,7 @@ const BaseResourceList = ({
     children?: ReactNode
     nodeType
     group
+    showGenericNullState?: boolean
 } & Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -316,6 +319,10 @@ const BaseResourceList = ({
         }
 
         if (filteredResourceList?.length === 0 || resourceListError) {
+            if (showGenericNullState) {
+                return <GenericFilterEmptyState />
+            }
+
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
 

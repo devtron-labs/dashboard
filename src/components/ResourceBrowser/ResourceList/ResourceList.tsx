@@ -305,7 +305,13 @@ const ResourceList = () => {
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (isUpgradeClusterNodeType && isFELibAvailable) {
-            return <ClusterUpgradeCompatibilityInfo clusterId={clusterId} selectedCluster={selectedCluster} />
+            return (
+                <ClusterUpgradeCompatibilityInfo
+                    clusterId={clusterId}
+                    selectedCluster={selectedCluster}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
+                />
+            )
         }
 
         if (!node) {
