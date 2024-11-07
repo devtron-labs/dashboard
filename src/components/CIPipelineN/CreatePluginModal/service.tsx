@@ -16,7 +16,7 @@ import { getCreatePluginPayload } from './utils'
 
 export const getParentPluginList = async (appId: number): Promise<ParentPluginListItemType[]> => {
     try {
-        const { result } = await getParentPluginListService(appId)
+        const { result } = await getParentPluginListService({ appId })
         if (!result) {
             return []
         }

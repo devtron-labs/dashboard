@@ -449,7 +449,7 @@ const NodeDetailComponent = ({
             label: capitalizeFirstLetter(tab),
             tabType: 'navLink',
             props: {
-                to: `${url}/${tab.toLowerCase()}`,
+                to: `${url}/${tab.toLowerCase()}${location.search}`,
                 ['data-testid']: `${tab.toLowerCase()}-nav-link`,
             }
         }
