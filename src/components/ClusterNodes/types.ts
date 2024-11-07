@@ -16,7 +16,12 @@
 
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType, ApiResourceGroupType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResponseType,
+    ApiResourceGroupType,
+    ClusterStatusType,
+    K8sResourceDetailDataType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -74,6 +79,8 @@ export interface ClusterCapacityType {
     serverVersion: string
     nodeDetails?: NodeDetailsType[]
     nodeErrors: Record<string, string>[]
+    status?: ClusterStatusType
+    isProd: boolean
 }
 
 export interface ClusterDetail extends ClusterCapacityType {
