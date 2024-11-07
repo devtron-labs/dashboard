@@ -141,10 +141,20 @@ export interface ResourceFilterOptionsProps {
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
+    /**
+     * If true, the filters are hidden except search
+     */
+    areFiltersHidden: boolean
+    /**
+     * Placeholder override for the search bar
+     *
+     * @default undefined
+     */
+    searchPlaceholder?: string
 }
 
 export interface K8SResourceListType
-    extends ResourceFilterOptionsProps,
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'>,
         Pick<K8SResourceTabComponentProps, 'clusterName'> {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
@@ -157,6 +167,12 @@ export interface ResourceBrowserActionMenuType {
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
+    /**
+     * If true, the delete resource option is hidden in pop up menu
+     *
+     * @default false
+     */
+    hideDeleteResource?: boolean
 }
 
 export interface DeleteResourcePopupType {
@@ -275,8 +291,4 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
-}
-
-export enum ResourceListQueryParamsType {
-    VERSION = 'version',
 }

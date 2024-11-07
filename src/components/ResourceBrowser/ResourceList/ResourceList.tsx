@@ -46,6 +46,7 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -316,11 +317,18 @@ const ResourceList = () => {
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
-        if (isUpgradeClusterNodeType) {
+        const k8sObjectMapRawData = k8SObjectMapRaw?.result.apiResources || null
+
+        if (isUpgradeClusterNodeType && isFELibAvailable) {
             return (
-                <div>
-                    <h3>UPGRADE CLUSTER</h3>
-                </div>
+                <ClusterUpgradeCompatibilityInfo
+                    clusterId={clusterId}
+                    clusterName={selectedCluster.label}
+                    selectedCluster={selectedCluster}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    addTab={addTab}
+                    k8SObjectMapRaw={k8sObjectMapRawData}
+                />
             )
         }
 
@@ -333,7 +341,7 @@ const ResourceList = () => {
                 key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
-                k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                k8SObjectMapRaw={k8sObjectMapRawData}
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
@@ -342,7 +350,7 @@ const ResourceList = () => {
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
-                    k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                    k8SObjectMapRaw={k8sObjectMapRawData}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
@@ -420,7 +428,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        hideTimer={isOverviewNodeType || isMonitoringNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}

@@ -105,7 +105,7 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
-export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' } as const
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',
@@ -278,3 +278,5 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion' as const

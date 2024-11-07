@@ -41,13 +41,12 @@ import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } 
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
-import { ResourceListQueryParamsType } from '@Components/ResourceBrowser/Types'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
@@ -388,7 +387,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             SIDEBAR_KEYS.upgradeClusterGVK.Kind,
             clusterId,
             namespace,
-        ), { [ResourceListQueryParamsType.VERSION]: selectedVersion })
+        ), { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion })
 
         addTab(
             UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
