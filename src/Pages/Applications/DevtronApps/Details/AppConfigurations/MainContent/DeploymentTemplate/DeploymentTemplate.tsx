@@ -35,8 +35,9 @@ import {
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
     ResponseType,
     OverrideMergeStrategyType,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt, useParams } from 'react-router-dom'
+import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -44,12 +45,11 @@ import { URLS } from '@Config/routes'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import noArtifact from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
 import {
-    DeploymentTemplateActionState,
-    DeploymentTemplateActionType,
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
+    GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
     HandleInitializeTemplatesWithoutDraftParamsType,
     UpdateBaseDTPayloadType,
@@ -60,13 +60,11 @@ import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import {
-    deploymentTemplateReducer,
     getAreTemplateChangesPresent,
     getCompareFromEditorConfig,
     getCurrentEditorPayloadForScopedVariables,
     getCurrentEditorState,
     getDeleteProtectedOverridePayload,
-    getDeploymentTemplateInitialState,
     getDeploymentTemplateResourceName,
     getEditorTemplateAndLockedKeys,
     getLockedDiffModalDocuments,
@@ -95,16 +93,17 @@ import NoOverrideEmptyState from '../NoOverrideEmptyState'
 import CompareConfigView from '../CompareConfigView'
 import NoPublishedVersionEmptyState from '../NoPublishedVersionEmptyState'
 import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
+import {
+    DeploymentTemplateActionState,
+    DeploymentTemplateActionType,
+    deploymentTemplateReducer,
+    getDeploymentTemplateInitialState,
+} from './deploymentTemplateReducer'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function')
-const getLockConfigEligibleAndIneligibleChanges: (props: {
-    documents: Record<'edited' | 'unedited', object>
-    lockedConfigKeysWithLockType: { config: string[]; allowed: boolean }
-}) => {
-    eligibleChanges: Record<string, any>
-    ineligibleChanges: Record<string, any>
-} = importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
+const getLockConfigEligibleAndIneligibleChanges: GetLockConfigEligibleAndIneligibleChangesType =
+    importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
 const ProtectedDeploymentTemplateCTA = importComponentFromFELibrary('ProtectedDeploymentTemplateCTA', null, 'function')
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -124,11 +123,12 @@ const DeploymentTemplate = ({
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
+    const location = useLocation()
     const { isSuperAdmin } = useMainContext()
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
         deploymentTemplateReducer,
-        getDeploymentTemplateInitialState({ isSuperAdmin, isEnvView: !!envId }),
+        getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
     const {
@@ -161,6 +161,8 @@ const DeploymentTemplate = ({
         isLoadingInitialData,
         initialLoadError,
         resolvedPublishedTemplate,
+        areCommentsPresent,
+        wasGuiOrHideLockedKeysEdited,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -174,7 +176,7 @@ const DeploymentTemplate = ({
         isDraftAvailable &&
         ((configHeaderTab === ConfigHeaderTabType.VALUES &&
             selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED) ||
-            (configHeaderTab === ConfigHeaderTabType.DRY_RUN && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
+            (isDryRunView && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
     )
     const isCompareView = !!(
         isProtected &&
@@ -213,10 +215,9 @@ const DeploymentTemplate = ({
 
     const showNoPublishedVersionEmptyState = isPublishedValuesView && !isPublishedConfigPresent
 
-    const isEditMode = isProtected
-        ? configHeaderTab === ConfigHeaderTabType.VALUES &&
-          selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-        : configHeaderTab === ConfigHeaderTabType.VALUES
+    const isEditMode =
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        (!isProtected || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
@@ -229,7 +230,16 @@ const DeploymentTemplate = ({
         !isSuperAdmin &&
         !hasNoGlobalConfig
 
-    const areChangesPresent: boolean = useMemo(() => getAreTemplateChangesPresent(state), [currentEditorTemplateData])
+    const disableCodeEditor = resolveScopedVariables || !isEditMode
+
+    const isUpdateView = envId
+        ? currentEditorTemplateData?.environmentConfig?.id > 0
+        : !!currentEditorTemplateData?.chartConfig?.id
+
+    const areChangesPresent: boolean = useMemo(
+        () => getAreTemplateChangesPresent(state),
+        [currentEditorTemplateData, wasGuiOrHideLockedKeysEdited],
+    )
 
     usePrompt({
         shouldPrompt: areChangesPresent,
@@ -340,9 +350,9 @@ const DeploymentTemplate = ({
                     : structuredClone(GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE),
             ])
 
-            const areNoVariablesPresent = shouldFetchPublishedTemplate
-                ? !publishedTemplate.areVariablesPresent && !currentEditorTemplate.areVariablesPresent
-                : !currentEditorTemplate.areVariablesPresent
+            const areNoVariablesPresent =
+                !currentEditorTemplate.areVariablesPresent &&
+                (!shouldFetchPublishedTemplate || !publishedTemplate.areVariablesPresent)
 
             if (areNoVariablesPresent) {
                 ToastManager.showToast({
@@ -396,6 +406,15 @@ const DeploymentTemplate = ({
         })
     }
 
+    const handleUpdateAreCommentsPresent = (value: boolean) => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT,
+            payload: {
+                areCommentsPresent: value,
+            },
+        })
+    }
+
     const handleResolveScopedVariables = async () => {
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
@@ -409,7 +428,7 @@ const DeploymentTemplate = ({
     }
 
     const handleEditorChange = (template: string) => {
-        if (resolveScopedVariables || !isEditMode) {
+        if (disableCodeEditor) {
             return
         }
 
@@ -572,7 +591,6 @@ const DeploymentTemplate = ({
             return handleFetchGlobalDeploymentTemplate(chartInfo, lockedConfigKeys)
         }
 
-        // Question: Can chartInfo be null?
         const {
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
         } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
@@ -653,6 +671,7 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
+                envId,
             },
         })
     }
@@ -758,7 +777,6 @@ const DeploymentTemplate = ({
                     removedPatches: [],
                     originalTemplateState: draftTemplateState,
                 },
-                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab:
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
@@ -820,7 +838,6 @@ const DeploymentTemplate = ({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {
                 isSuperAdmin,
-                isEnvView: !!envId,
             },
         })
 
@@ -852,17 +869,20 @@ const DeploymentTemplate = ({
     // NOTE: This is a hack ideally BE should not even take data for this, they should only need action
     const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave(false, true)
 
+    /**
+     * @description - This function returns a method to save deployment template which is based on whether it is base or env override
+     * In case of base deployment template, it checks if it is an update or create based on chartConfig.id, if this is present then it is an update
+     * In case of env override, it checks if it is an update or create based on environmentConfig.id, if this is present then it is an update
+     */
     const getSaveAPIService = (): ((
         payload: ReturnType<typeof prepareDataToSave>,
         abortSignal?: AbortSignal,
     ) => Promise<ResponseType<any>>) => {
         if (!envId) {
-            return currentEditorTemplateData.chartConfig.id
-                ? updateBaseDeploymentTemplate
-                : createBaseDeploymentTemplate
+            return isUpdateView ? updateBaseDeploymentTemplate : createBaseDeploymentTemplate
         }
 
-        return currentEditorTemplateData.environmentConfig && currentEditorTemplateData.environmentConfig.id > 0
+        return isUpdateView
             ? updateEnvDeploymentTemplate
             : (payload, abortSignal) =>
                   createEnvDeploymentTemplate(+appId, +envId, payload as UpdateEnvironmentDTPayloadType, abortSignal)
@@ -870,12 +890,10 @@ const DeploymentTemplate = ({
 
     const getSuccessToastMessage = (): string => {
         if (!envId) {
-            return currentEditorTemplateData.chartConfig.id ? 'Updated' : 'Saved'
+            return isUpdateView ? 'Updated' : 'Saved'
         }
 
-        return currentEditorTemplateData.environmentConfig && currentEditorTemplateData.environmentConfig.id > 0
-            ? 'Updated override'
-            : 'Overridden'
+        return isUpdateView ? 'Updated override' : 'Overridden'
     }
 
     const handleSaveTemplate = async () => {
@@ -885,7 +903,6 @@ const DeploymentTemplate = ({
 
         try {
             const apiService = getSaveAPIService()
-            // TODO: Test concurrency, maybe should re-compute all the values
             const response = await apiService(prepareDataToSave(true), null)
 
             const isLockConfigError = !!response?.result?.isLockConfigError
@@ -909,7 +926,7 @@ const DeploymentTemplate = ({
                 description: 'Changes will be reflected after next deployment.',
             })
         } catch (error) {
-            const isProtectionError = error.code === 423
+            const isProtectionError = error.code === API_STATUS_CODES.LOCKED
 
             showError(error)
             dispatch({
@@ -1007,12 +1024,13 @@ const DeploymentTemplate = ({
         })
 
         try {
-            const selectedChartTemplateDetails = await handleFetchGlobalDeploymentTemplate(selectedChart)
+            const selectedChartTemplateDetails = await handleFetchDeploymentTemplate(selectedChart)
             dispatch({
                 type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
                 payload: {
                     selectedChart,
                     selectedChartTemplateDetails,
+                    isEnvView: !!envId,
                 },
             })
         } catch (error) {
@@ -1212,6 +1230,8 @@ const DeploymentTemplate = ({
             showApprovalPendingEditorInCompareView,
         })?.isAppMetricsEnabled
 
+    const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
+
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
             lockedConfigData: {
@@ -1220,7 +1240,7 @@ const DeploymentTemplate = ({
                 handleSetHideLockedKeys,
             },
             configHeaderTab,
-            isOverridden: currentEditorTemplateData?.isOverridden,
+            isOverridden: publishedTemplateData?.isOverridden,
             isPublishedValuesView,
             isPublishedConfigPresent,
             handleDeleteOverride: handleOverride,
@@ -1230,6 +1250,8 @@ const DeploymentTemplate = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             showDeleteOverrideDraftEmptyState,
+            isProtected,
+            isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1255,10 +1277,9 @@ const DeploymentTemplate = ({
         if (showDeleteOverrideDraftEmptyState) {
             return (
                 <GenericEmptyState
-                    image={noArtifact}
-                    title="This file is not overridden"
-                    // TODO: This message seems wrong connect with product once
-                    subTitle="Published override for this file will be available here"
+                    image={deleteOverrideEmptyStateImage}
+                    title="Delete override requested"
+                    subTitle="This override will be deleted on approval"
                 />
             )
         }
@@ -1277,6 +1298,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
+                    className="dc__overflow-scroll"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1328,7 +1350,7 @@ const DeploymentTemplate = ({
                 editMode={editMode}
                 hideLockedKeys={hideLockedKeys}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                readOnly={isPublishedValuesView || resolveScopedVariables || isInheritedView}
+                readOnly={disableCodeEditor}
                 selectedChart={getCurrentTemplateSelectedChart()}
                 guiSchema={getCurrentTemplateGUISchema()}
                 schema={getCurrentEditorSchema()}
@@ -1435,7 +1457,7 @@ const DeploymentTemplate = ({
     const renderValuesView = () => (
         <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <div className="variables-widget-position">
+                <div className="app-config-variable-widget-position">
                     <FloatingVariablesSuggestions
                         zIndex={100}
                         appId={appId}
@@ -1454,16 +1476,18 @@ const DeploymentTemplate = ({
     const renderHeader = () => {
         if (showReadMe) {
             return (
-                <div className="flexbox dc__gap-8 px-12 py-6 dc__border-bottom">
+                <div className="flexbox dc__align-items-center dc__gap-8 px-12 py-6 dc__border-bottom">
                     <Button
-                        text="Readme"
-                        startIcon={<ICClose />}
+                        icon={<ICClose />}
                         onClick={handleDisableReadmeView}
                         dataTestId="close-readme-view-btn"
                         size={ComponentSizeType.xs}
                         style={ButtonStyleType.negativeGrey}
-                        variant={ButtonVariantType.text}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Close Readme"
+                        showAriaLabelInTippy={false}
                     />
+                    <span className="cn-9 fs-13 fw-6 lh-20">Readme</span>
                 </div>
             )
         }
@@ -1487,7 +1511,7 @@ const DeploymentTemplate = ({
                         selectedProtectionViewTab={selectedProtectionViewTab}
                         handleProtectionViewTabChange={handleUpdateProtectedTabSelection}
                         handleToggleCommentsView={handleToggleDraftComments}
-                        areCommentsPresent={draftTemplateData?.latestDraft?.commentsCount > 0}
+                        areCommentsPresent={areCommentsPresent}
                         showMergePatchesButton={getShouldShowMergePatchesButton()}
                         shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
@@ -1626,11 +1650,12 @@ const DeploymentTemplate = ({
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         toggleDraftComments={handleToggleDraftComments}
+                        handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
                     />
                 )}
             </div>
 
-            <Prompt when={areChangesPresent} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+            <Prompt when={areChangesPresent} message={getPromptMessage} />
         </>
     )
 }

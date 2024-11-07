@@ -48,6 +48,7 @@ import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
+const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
 
 const NodeComponent = ({
     handleFocusTabs,
@@ -286,6 +287,7 @@ const NodeComponent = ({
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+            const nodeStatus = getNodeStatus(node)
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -316,11 +318,7 @@ const NodeComponent = ({
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
                                 <SortableTableHeaderCell
-                                    disabled={false}
                                     isSortable={false}
-                                    isSorted={null}
-                                    sortOrder={null}
-                                    triggerSorting={noop}
                                     title={node.kind}
                                 />
                             </div>
@@ -328,11 +326,7 @@ const NodeComponent = ({
                                 (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
                                 <div className="fw-6">
                                     <SortableTableHeaderCell
-                                        disabled={false}
                                         isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
                                         title="Links"
                                     />
                                 </div>
@@ -410,12 +404,7 @@ const NodeComponent = ({
                                                 {node.kind !== NodeType.Containers && (
                                                     <>
                                                         <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
-                                                            <>
-                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                            </>
-                                                        )}
+                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
                                                     </>
                                                 )}
                                             </>
@@ -423,16 +412,19 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
-                                    <span
-                                        data-testid="node-resource-status"
-                                        className={`app-summary__status-name f-${(
-                                            node?.status ||
-                                            node?.health?.status ||
-                                            ''
-                                        ).toLowerCase()}`}
-                                    >
-                                        {getNodeStatus(node)}
-                                    </span>
+                                    {nodeStatus && (
+                                        <span
+                                            data-testid="node-resource-status"
+                                            className={`app-summary__status-name f-${(
+                                                node?.status ||
+                                                node?.health?.status ||
+                                                ''
+                                            ).toLowerCase()}`}
+                                        >
+                                            {nodeStatus}
+                                        </span>
+                                    )}
+                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE && renderConfigDriftDetectedText && renderConfigDriftDetectedText(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
@@ -555,11 +547,7 @@ const NodeComponent = ({
                                     className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                                 >
                                     <SortableTableHeaderCell
-                                        disabled={false}
                                         isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
                                         title={cell}
                                     />
                                 </div>

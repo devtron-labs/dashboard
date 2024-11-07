@@ -7,26 +7,22 @@ import {
     ProtectConfigTabsType,
     PopupMenu,
     BaseURLParams,
-    InfoIconTippy,
-    OverrideMergeStrategyType,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
-    OverrideStrategyTippyContent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import { DOCUMENTATION } from '@Config/constants'
-import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
-import { ConfigToolbarProps } from './types'
-import { PopupMenuItem } from './utils'
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
+import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
+import { PopupMenuItem } from './utils'
+import { ConfigToolbarProps } from './types'
+import SelectMergeStrategy from './SelectMergeStrategy'
 
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')
-const SelectMergeStrategy = importComponentFromFELibrary('SelectMergeStrategy', null, 'function')
 const ConfigApproversInfoTippy = importComponentFromFELibrary('ConfigApproversInfoTippy', null, 'function')
 const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
     'ProtectConfigShowCommentsButton',
@@ -105,6 +101,7 @@ const ConfigToolbar = ({
     parsingError = '',
     restoreLastSavedYAML,
     isPublishedConfigPresent = true,
+    headerMessage,
     showDeleteOverrideDraftEmptyState,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
@@ -133,54 +130,65 @@ const ConfigToolbar = ({
     )
 
     const showProtectedTabs =
-        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && ProtectionViewTabGroup
+        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && !!ProtectionViewTabGroup
 
     const getLHSActionNodes = (): JSX.Element => {
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-6">
-                    <ICInfoOutlineGrey className="p-2 icon-dim-16 dc__no-shrink" />
+                    <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
                     <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
                     <BaseConfigurationNavigation baseConfigurationURL={baseConfigurationURL} />
                 </div>
             )
         }
 
-        if (!isProtected || !isDraftPresent) {
-            return null
-        }
-
         return (
-            <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
-                {ProtectionViewTabGroup && (
-                    <>
-                        <ProtectionViewTabGroup
-                            selectedTab={selectedProtectionViewTab}
-                            handleProtectionViewTabChange={handleProtectionViewTabChange}
-                            isApprovalPending={isApprovalPending}
-                            isDisabled={isDisabled}
-                            parsingError={parsingError}
-                            restoreLastSavedYAML={restoreLastSavedYAML}
-                        />
-
-                        <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
-                    </>
+            <>
+                {headerMessage && configHeaderTab === ConfigHeaderTabType.VALUES && !showProtectedTabs && (
+                    <div className="flexbox dc__align-items-center dc__gap-6">
+                        <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
+                        <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
+                    </div>
                 )}
+                {showProtectedTabs && (
+                    <div className="flexbox dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                        {ProtectionViewTabGroup && (
+                            <>
+                                <ProtectionViewTabGroup
+                                    selectedTab={selectedProtectionViewTab}
+                                    handleProtectionViewTabChange={handleProtectionViewTabChange}
+                                    isApprovalPending={isApprovalPending}
+                                    isDisabled={isDisabled}
+                                    parsingError={parsingError}
+                                    restoreLastSavedYAML={restoreLastSavedYAML}
+                                />
 
-                {/* Data should always be valid in case we are in approval view */}
-                {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
-                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
-                        <div>
-                            <MergePatchWithTemplateCheckbox
-                                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                                handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                                // Will remove this check if merging is happening on ui
-                                isDisabled={isDisabled}
-                            />
-                        </div>
-                    </InvalidYAMLTippyWrapper>
+                                <div className="flexbox dc__border-right-n1 dc__align-self-stretch" />
+                            </>
+                        )}
+
+                        {/* Data should always be valid in case we are in approval view */}
+                        {isCompareView && MergePatchWithTemplateCheckbox && showMergePatchesButton && (
+                            <InvalidYAMLTippyWrapper
+                                parsingError={parsingError}
+                                restoreLastSavedYAML={restoreLastSavedYAML}
+                            >
+                                <div>
+                                    <MergePatchWithTemplateCheckbox
+                                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                                        handleToggleShowTemplateMergedWithPatch={
+                                            handleToggleShowTemplateMergedWithPatch
+                                        }
+                                        // Will remove this check if merging is happening on ui
+                                        isDisabled={isDisabled}
+                                    />
+                                </div>
+                            </InvalidYAMLTippyWrapper>
+                        )}
+                    </div>
                 )}
-            </div>
+            </>
         )
     }
 
@@ -223,12 +231,11 @@ const ConfigToolbar = ({
                                 onClick={handleEnableReadmeView}
                                 disabled={isDisabled}
                                 dataTestId="config-readme-button"
-                                ariaLabel="Show Readme view"
+                                ariaLabel="View Readme"
                                 variant={ButtonVariantType.borderLess}
                                 style={ButtonStyleType.neutral}
                                 icon={<ICBookOpen className="scn-7" />}
                                 size={ComponentSizeType.xs}
-                                showAriaLabelInTippy={false}
                             />
                         </div>
                     </InvalidYAMLTippyWrapper>
@@ -258,30 +265,15 @@ const ConfigToolbar = ({
         return (
             <>
                 {!!children && <div className="dc__border-right-n1 h-16" />}
-
-                {SelectMergeStrategy ? (
-                    <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
-                        <div>
-                            <SelectMergeStrategy
-                                mergeStrategy={mergeStrategy}
-                                handleMergeStrategyChange={handleMergeStrategyChange}
-                                isDisabled={isDisabled}
-                            />
-                        </div>
-                    </InvalidYAMLTippyWrapper>
-                ) : (
-                    <div className="flexbox dc__gap-4">
-                        <InfoIconTippy
-                            heading="Merge strategy"
-                            additionalContent={<OverrideStrategyTippyContent />}
-                            documentationLink={DOCUMENTATION.HOME_PAGE}
+                <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
+                    <div>
+                        <SelectMergeStrategy
+                            mergeStrategy={mergeStrategy}
+                            handleMergeStrategyChange={handleMergeStrategyChange}
+                            isDisabled={isDisabled}
                         />
-
-                        <span className="cn-7 fs-12 fw-4 lh-16">Merge strategy</span>
-                        {/* TODO: can make a constant for label text from enum */}
-                        <span className="cn-9 fs-12 fw-6 lh-20">{OverrideMergeStrategyType.REPLACE}</span>
                     </div>
-                )}
+                </InvalidYAMLTippyWrapper>
             </>
         )
     }
@@ -299,13 +291,19 @@ const ConfigToolbar = ({
 
         return (
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex dc__no-shrink" isKebab>
+                <PopupMenu.Button
+                    rootClassName="flex dc__no-shrink icon-dim-20 p-0 dc__no-background dc__no-border dc__outline-none-imp dc__tab-focus dc__hover-n50"
+                    isKebab
+                    dataTestId="config-more-options-popup"
+                >
                     <ICMore className="icon-dim-16 fcn-6 dc__flip-90" data-testid="config-more-options-popup" />
                 </PopupMenu.Button>
 
                 <PopupMenu.Body
                     rootClassName={
-                        popupConfig.popupNodeType ? '' : 'dc__border pt-4 pb-4 dc__mxw-200 dc__gap-4 flexbox-col'
+                        popupConfig.popupNodeType
+                            ? ''
+                            : 'br-4 py-4 dc__overflow-hidden dc__border dc__box-shadow--menu mt-8 mw-120'
                     }
                 >
                     <div className="flexbox-col dc__gap-4">
@@ -316,16 +314,19 @@ const ConfigToolbar = ({
                                 <Fragment key={groupName}>
                                     {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
 
-                                    {groupItems.map(({ text, onClick, dataTestId, disabled, icon }) => (
-                                        <PopupMenuItem
-                                            key={text}
-                                            text={text}
-                                            onClick={onClick}
-                                            dataTestId={dataTestId}
-                                            disabled={disabled}
-                                            icon={icon}
-                                        />
-                                    ))}
+                                    <div className="flexbox-col">
+                                        {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
+                                            <PopupMenuItem
+                                                key={text}
+                                                text={text}
+                                                onClick={onClick}
+                                                dataTestId={dataTestId}
+                                                disabled={disabled}
+                                                icon={icon}
+                                                variant={variant}
+                                            />
+                                        ))}
+                                    </div>
                                 </Fragment>
                             )
                         })}
@@ -337,7 +338,7 @@ const ConfigToolbar = ({
 
     return (
         <div
-            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 ${!showProtectedTabs ? 'py-6' : ''}`}
+            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
         >
             <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
                 {getLHSActionNodes()}

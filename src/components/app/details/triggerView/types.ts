@@ -40,8 +40,9 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
-    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { WorkflowDimensions } from './config'
@@ -147,18 +148,11 @@ export enum FilterConditionViews {
 
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
-    checkingDiff: boolean
     showSearch: boolean
-    diffFound: boolean
-    diffOptions: Record<string, boolean>
-    showConfigDiffView: boolean
     loadingMore: boolean
     showOlderImages: boolean
     selectedConfigToDeploy: ConfigToDeployOptionType
     isRollbackTrigger: boolean
-    recentDeploymentConfig: any
-    latestDeploymentConfig: any
-    specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number, boolean>
@@ -221,8 +215,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
         action: any
         metadataField: string
     }
-    selectedEnv?: Environment
-    setSelectedEnv?: (selectedEnv: Environment) => void
+    selectedEnv?: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     environmentLists?: any[]
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange
@@ -413,7 +407,7 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
-    selectedEnv?: Environment
+    selectedEnv?: EnvironmentWithSelectPickerType
     environmentLists?: any[]
     appReleaseTags?: string[]
     tagsEditable?: boolean

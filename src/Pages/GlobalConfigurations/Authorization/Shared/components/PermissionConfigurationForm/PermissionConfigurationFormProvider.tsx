@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
+import { ActionTypes, PermissionType } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import {
     ChartGroupPermissionsFilter,

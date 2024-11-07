@@ -365,6 +365,10 @@ a:focus {
     top: 9px;
 }
 
+.dc__top-12 {
+    top: 12px;
+}
+
 .dc__top-22 {
     top: 22px;
 }
@@ -433,8 +437,16 @@ a:focus {
     right: 0;
 }
 
+.dc__right-3--neg {
+    right: -3px;
+}
+
 .dc__right-10 {
     right: 10px;
+}
+
+.dc__right-12 {
+    right: 12px;
 }
 
 .dc__left-0 {
@@ -443,6 +455,10 @@ a:focus {
 
 .dc__left-6 {
     left: 6px;
+}
+
+.dc__left-12 {
+    left: 12px;
 }
 
 .dc__left-30 {
@@ -1162,6 +1178,11 @@ button.anchor {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
         }
+    }
+
+    &.drifted {
+        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.missing {
@@ -2403,6 +2424,10 @@ button.anchor {
     font-weight: normal !important;
 }
 
+.fw-6-imp {
+    font-weight: 600 !important;
+}
+
 .dc__hide-section {
     display: none;
 
@@ -2956,6 +2981,10 @@ textarea,
 
 .mw-84 {
     min-width: 84px;
+}
+
+.mw-120 {
+    min-width: 120px;
 }
 
 .mw-140 {
@@ -4427,12 +4456,20 @@ textarea::placeholder {
     z-index: 5;
 }
 
+.dc__zi-6 {
+    z-index: 6;
+}
+
 .dc__zi-10 {
     z-index: 10;
 }
 
 .dc__zi-11 {
     z-index: 11;
+}
+
+.dc__zi-13 {
+    z-index: 13;
 }
 
 .dc__zi-20 {
@@ -4607,6 +4644,10 @@ textarea::placeholder {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.dc__cursor-col-resize {
+    cursor: col-resize;
 }
 
 .focus-within-border-b5:focus-within {
@@ -4821,6 +4862,16 @@ textarea::placeholder {
     background: linear-gradient(14deg, var(--N50) 48.93%, #d4e6f7 80.3%);
 }
 
+@mixin nav-item-icon-svg-styles($color) {
+    svg.dc__nav-item__start-icon *[stroke^='#'] {
+        stroke: $color;
+    }
+
+    svg.dc__nav-item__start-icon *[fill^='#'] {
+        fill: $color;
+    }
+}
+
 .dc__nav-item {
     &.active {
         color: var(--B500);
@@ -4831,6 +4882,8 @@ textarea::placeholder {
             color: var(--B500);
             background: var(--B100);
         }
+
+        @include nav-item-icon-svg-styles(var(--B500));
     }
 
     &:hover {
@@ -4842,6 +4895,8 @@ textarea::placeholder {
     &__text {
         max-width: 192px;
     }
+
+    @include nav-item-icon-svg-styles(var(--N700));
 }
 
 .bw-1_5 {
@@ -4921,6 +4976,10 @@ textarea::placeholder {
     display: grid;
 }
 
+.dc__contents {
+    display: contents
+}
+
 .cd-material {
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
@@ -4940,4 +4999,92 @@ textarea::placeholder {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+.code-editor__warning {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
+}
+
+.security-policy--whitelist,
+.security-policy--whitelisted {
+    color: var(--G500);
+    text-transform: capitalize;
+}
+
+.security-policy--block {
+    color: var(--R500);
+    text-transform: capitalize;
+}
+.dc__transparent-div {
+    position: fixed;
+    background: transparent;
+    top: 0px;
+    left: 0px;
+    right: 0;
+    height: 100vh;
+    z-index: var(--transparent-div-index);
+
+    &--command-bar {
+        z-index: 24;
+    }
+}
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(255, 131, 0, 0.4);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    }
+}
+
+.badge {
+    font-size: 10px;
+    border-radius: 10px;
+    background-color: var(--B500);
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--white);
+    padding: 2px 10px;
+    margin-left: 10px;
+}
+
+.app-config-variable-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
 }

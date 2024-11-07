@@ -78,16 +78,7 @@ const UserPermissionTable = ({
                     sortOrder={sortOrder}
                     disabled={isActionsDisabled}
                 />
-                {showStatus && (
-                    <SortableTableHeaderCell
-                        title="User groups"
-                        triggerSorting={null}
-                        isSorted={null}
-                        sortOrder={null}
-                        disabled={null}
-                        isSortable={false}
-                    />
-                )}
+                {showStatus && <SortableTableHeaderCell title="User groups" isSortable={false} />}
                 <SortableTableHeaderCell
                     title="Last Login"
                     triggerSorting={sortByLastLogin}

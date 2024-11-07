@@ -85,8 +85,3 @@ export const parseVulnerabilityExposureSearchParams = (searchParams: URLSearchPa
     [VulnerabilityExposureFilterKeys.environment]: searchParams.getAll(VulnerabilityExposureFilterKeys.environment),
     [VulnerabilityExposureSearchParams.cveName]: searchParams.get(VulnerabilityExposureSearchParams.cveName) ?? '',
 })
-
-
-
-
-

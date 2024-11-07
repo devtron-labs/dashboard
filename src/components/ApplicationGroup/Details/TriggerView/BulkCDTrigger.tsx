@@ -42,7 +42,6 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { components } from 'react-select'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -58,7 +57,6 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
@@ -593,19 +591,6 @@ export default function BulkCDTrigger({
             }
 
             setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
-        }
-
-        const imageTaggingControls = {
-            IndicatorSeparator: null,
-            Option: releaseTagOption,
-            Control: (props) => {
-                return (
-                    <components.Control {...props}>
-                        <Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />
-                        {props.children}
-                    </components.Control>
-                )
-            },
         }
 
         const updateBulkCDMaterialsItem = (singleCDMaterialResponse) => {

@@ -25,6 +25,7 @@ import {
     SelectPickerVariantType,
     versionComparatorBySortOrder,
     InvalidYAMLTippyWrapper,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
@@ -34,7 +35,6 @@ import { CHART_TYPE_TAB_KEYS, CHART_TYPE_TAB, CHART_DOCUMENTATION_LINK } from '.
 
 const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
 
-// NOTE: Have migrated directly
 const ChartSelectorDropdown = ({
     charts,
     chartsMetadata,
@@ -96,7 +96,7 @@ const ChartSelectorDropdown = ({
 
     if (!isUnSet) {
         return (
-            <span className="fs-13 fw-6 cn-9 flex" data-testid="select-chart-type-dropdown">
+            <span className="fs-12 fw-6 cn-9 dc__truncate dc__mxw-150" data-testid="select-chart-type-dropdown">
                 {selectedChart?.name}
             </span>
         )
@@ -105,15 +105,17 @@ const ChartSelectorDropdown = ({
     return (
         <PopupMenu onToggleCallback={setPopupState} autoClose>
             <PopupMenu.Button isKebab dataTestId="select-chart-type-dropdown">
-                <span className="fs-13 fw-6 cn-9 flex pointer">
-                    {selectedChart?.name || 'Select Chart'}
+                <div className="flex pointer">
+                    <span className="fs-12 fw-6 cn-9 dc__truncate dc__mxw-150">
+                        {selectedChart?.name || 'Select Chart'}
+                    </span>
                     <Dropdown
-                        className="icon-dim-20 ml-2 rotate fcn-9 pointer"
+                        className="icon-dim-12 ml-2 rotate fcn-9 pointer"
                         style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }}
                     />
-                </span>
+                </div>
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="dc__overflow-scroll mh-350 w-400 dc__border br-4">
+            <PopupMenu.Body rootClassName="dc__overflow-scroll mxh-350 w-400 dc__border br-4">
                 <>
                     {customCharts.length > 0 && (
                         <div
@@ -159,7 +161,7 @@ const ChartSelectorDropdown = ({
                             >
                                 <div>
                                     <span
-                                        className={`fs-13 fw-6 ${
+                                        className={`fs-13 fw-6 dc__word-break ${
                                             chart.name === selectedChart?.name ? ' cb-5' : 'cn-9'
                                         }`}
                                     >
@@ -170,7 +172,7 @@ const ChartSelectorDropdown = ({
                                     )}
                                 </div>
                                 {(chartsMetadata?.[chart.name]?.chartDescription || chart.description) && (
-                                    <div className="fs-12 fw-4 cn-7 lh-18 mt-4">
+                                    <div className="fs-12 fw-4 cn-7 lh-18 mt-4 dc__word-break">
                                         {chartsMetadata?.[chart.name]?.chartDescription ||
                                             chart.description.substring(0, 250)}
                                         &nbsp;
@@ -196,7 +198,6 @@ const ChartSelectorDropdown = ({
     )
 }
 
-// Mostly migrated just changed react-select to SelectPicker
 const DTChartSelector = ({
     isUnSet,
     disableVersionSelect,
@@ -237,20 +238,23 @@ const DTChartSelector = ({
         }
 
         if (disableVersionSelect) {
-            return <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
+            return <span className="fs-12 fw-6 cn-9 dc__mxw-100 dc__truncate">{selectedChart?.version}</span>
         }
 
         return (
-            <SelectPicker
-                // TODO: When label is extended
-                inputId="dt-chart-version-select"
-                classNamePrefix="select-chart-version"
-                options={options}
-                value={selectedOption}
-                onChange={onSelectChartVersion}
-                isSearchable={false}
-                variant={SelectPickerVariantType.BORDER_LESS}
-            />
+            <div className="dc__mxw-100 w-100">
+                <SelectPicker
+                    // TODO: When label is extended
+                    inputId="dt-chart-version-select"
+                    classNamePrefix="select-chart-version"
+                    options={options}
+                    value={selectedOption}
+                    onChange={onSelectChartVersion}
+                    isSearchable={false}
+                    variant={SelectPickerVariantType.BORDER_LESS}
+                    size={ComponentSizeType.small}
+                />
+            </div>
         )
     }
 
