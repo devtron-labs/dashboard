@@ -197,6 +197,7 @@ interface ResourceTree {
     // lastSnapshotTime and wfrId are only available for isolated
     lastSnapshotTime?: string
     wfrId?: number
+    hasDrift?: boolean
 }
 
 interface Node {
@@ -226,6 +227,7 @@ interface Node {
     }[]
     images?: string[]
     url?: string
+    hasDrift?: boolean
 }
 
 export interface Pod extends Node {
