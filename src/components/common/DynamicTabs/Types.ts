@@ -16,31 +16,8 @@
 
 import { ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
+import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { useTabs } from './useTabs'
-
-interface CommonTabArgsType {
-    name: string
-    kind?: string
-    url: string
-    isSelected: boolean
-    title?: string
-    isDeleted?: boolean
-    position: number
-    iconPath?: string
-    dynamicTitle?: string
-    showNameOnSelect?: boolean
-    isAlive?: boolean
-    lastSyncMoment?: Dayjs
-    componentKey?: string
-}
-
-export interface InitTabType extends CommonTabArgsType {
-    idPrefix: string
-}
-
-export interface DynamicTabType extends CommonTabArgsType {
-    id: string
-}
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
@@ -49,7 +26,7 @@ export interface DynamicTabsProps {
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
     refreshData: () => void
-    isOverview: boolean
+    hideTimer: boolean
 }
 
 export interface TabsDataType {
@@ -76,4 +53,31 @@ export interface TimerType {
 export type ParsedTabsData = {
     key: string
     data: DynamicTabType[]
+}
+
+export interface PopulateTabDataPropsType {
+    id: string
+    name: string
+    url: string
+    isSelected: boolean
+    title: string
+    position: number
+    showNameOnSelect: boolean
+    /**
+     * @default ''
+     */
+    iconPath?: string
+    /**
+     * @default ''
+     */
+    dynamicTitle?: string
+    /**
+     * @default false
+     */
+    isAlive?: boolean
+    /**
+     * @description Would remove the title/name from tab heading, but that does not mean name is not required, since it is used in other calculations
+     * @default false
+     */
+    hideName?: boolean
 }

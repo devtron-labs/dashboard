@@ -67,8 +67,8 @@ export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<R
 export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> =>
     put(`${Routes.NODE_CAPACITY}/drain`, requestPayload)
 
-export const deleteNodeCapacity = (requestPayload: NodeActionRequest): Promise<ResponseType> =>
-    trash(Routes.NODE_CAPACITY, requestPayload)
+export const deleteNodeCapacity = (requestPayload: NodeActionRequest, signal?: AbortSignal): Promise<ResponseType> =>
+    trash(Routes.NODE_CAPACITY, requestPayload, signal ? { signal } : {})
 
 export const updateNodeManifest = (
     clusterId: string,

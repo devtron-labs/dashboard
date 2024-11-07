@@ -57,6 +57,7 @@ import {
     DEFAULT_CLUSTER_ID,
     SSHAuthenticationType,
     RemoteConnectionTypeCluster,
+    ClusterFormProps,
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
@@ -132,7 +133,8 @@ export default function ClusterForm({
     isClusterDetails,
     toggleClusterDetails,
     isVirtualCluster,
-}) {
+    isProd,
+}: ClusterFormProps) {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheus_url)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -201,6 +203,7 @@ export default function ClusterForm({
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
+            isProd: { value: isProd.toString(), error: '' },
         },
         {
             cluster_name: {
@@ -454,11 +457,14 @@ export default function ClusterForm({
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
-                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value.trim() : '',
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER
+                        ? state.token.value.trim()
+                        : '',
                 tls_key: state.tlsClientKey.value,
                 cert_data: state.tlsClientCert.value,
                 cert_auth_data: state.certificateAuthorityData.value,
             },
+            isProd: state.isProd.value === 'true',
             active,
             remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod, SSHConnectionType),
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -757,6 +763,15 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
+                <RadioGroup
+                    name="isProd"
+                    className="radio-group-no-border"
+                    value={state.isProd.value}
+                    onChange={handleOnChange}
+                >
+                    <RadioGroupItem value="true">Production</RadioGroupItem>
+                    <RadioGroupItem value="false">Non - Production</RadioGroupItem>
+                </RadioGroup>
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
                         <hr />

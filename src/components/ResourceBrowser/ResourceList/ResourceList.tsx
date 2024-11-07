@@ -30,14 +30,14 @@ import {
     WidgetEventDetails,
     ApiResourceGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
+import { ClusterOptionType, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getTabsBasedOnRole } from '../Utils'
+import { getFixedTabIndices, getTabsBasedOnRole } from '../Utils'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -49,6 +49,7 @@ import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
+const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -87,14 +88,15 @@ const ResourceList = () => {
 
     const clusterList = clusterListData?.result || null
 
-    const clusterOptions: ClusterOptionType[] = useMemo(
+    const clusterOptions = useMemo(
         () =>
             clusterList &&
             (convertToOptionsList(
-                sortObjectArrayAlphabetically(clusterList, 'name'),
+                sortObjectArrayAlphabetically(clusterList, 'name').filter(({ isVirtualCluster }) => !isVirtualCluster),
                 'name',
                 'id',
                 'nodeErrors',
+                'isProd',
             ) as ClusterOptionType[]),
         [clusterList],
     )
@@ -106,6 +108,7 @@ const ResourceList = () => {
                 label: '',
                 value: clusterId,
                 errorInConnecting: '',
+                isProd: false,
             },
         [clusterId, clusterOptions],
     )
@@ -113,7 +116,9 @@ const ResourceList = () => {
     const isSuperAdmin = !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+    const fixedTabIndices = getFixedTabIndices()
 
     const getDynamicTabData = () => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -138,15 +143,16 @@ const ResourceList = () => {
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
-        const _tabs = getTabsBasedOnRole(
+        const _tabs = getTabsBasedOnRole({
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            node && getDynamicTabData(),
-            isTerminalNodeType,
-            isOverviewNodeType,
-        )
+            dynamicTabData: node && getDynamicTabData(),
+            isTerminalSelected: isTerminalNodeType,
+            isOverviewSelected: isOverviewNodeType,
+            isMonitoringDashBoardSelected: isMonitoringNodeType,
+        })
         initTabs(
             _tabs,
             reInit,
@@ -177,21 +183,33 @@ const ResourceList = () => {
             addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
             return
         }
+
+        // These checks are wrong since tabs are sorted by position so index is not fixed
         /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
         if (isOverviewNodeType) {
-            if (tabs[FIXED_TABS_INDICES.OVERVIEW] && !tabs[FIXED_TABS_INDICES.OVERVIEW].isSelected) {
-                markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+            if (tabs[fixedTabIndices.OVERVIEW] && !tabs[fixedTabIndices.OVERVIEW].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.OVERVIEW].id)
             }
             return
         }
+
+        if (isMonitoringNodeType && MonitoringDashboard) {
+            if (tabs[fixedTabIndices.MONITORING_DASHBOARD] && !tabs[fixedTabIndices.MONITORING_DASHBOARD].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.MONITORING_DASHBOARD].id)
+            }
+
+            return
+        }
+
         if (isTerminalNodeType) {
-            if (tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL] && !tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isSelected) {
-                markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].id)
+            if (tabs[fixedTabIndices.ADMIN_TERMINAL] && !tabs[fixedTabIndices.ADMIN_TERMINAL].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.ADMIN_TERMINAL].id)
             }
             return
         }
-        if (tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST] && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+
+        if (tabs[fixedTabIndices.K8S_RESOURCE_LIST] && !tabs[fixedTabIndices.K8S_RESOURCE_LIST].isSelected) {
+            markTabActiveById(tabs[fixedTabIndices.K8S_RESOURCE_LIST].id)
         }
     }, [location.pathname])
 
@@ -262,7 +280,7 @@ const ResourceList = () => {
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
-        const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
+        const terminalTab = tabs[fixedTabIndices.ADMIN_TERMINAL]
         if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
@@ -270,10 +288,10 @@ const ResourceList = () => {
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
-        updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)
+        updateTabLastSyncMoment(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)
 
-    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
-        updateTabUrl(id, _url, dynamicTitle)
+    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string, retainSearchParams?: boolean) =>
+        updateTabUrl(id, _url, dynamicTitle, retainSearchParams)
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
@@ -338,35 +356,45 @@ const ResourceList = () => {
 
     const fixedTabComponents = [
         <ClusterOverview
-            key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
+            key={tabs[fixedTabIndices.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
         />,
         <K8SResourceTabComponent
-            key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
+            key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
             selectedResource={selectedResource}
             setSelectedResource={setSelectedResource}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
-                tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
+                tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
-            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected}
+            isOpen={!!tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.isSelected}
             showStaleDataWarning={isDataStale}
-            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
+            updateK8sResourceTab={getUpdateTabUrlForId(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             setWidgetEventDetails={setWidgetEventDetails}
             handleResourceClick={handleResourceClick}
+            clusterName={selectedCluster.label}
         />,
+        ...(MonitoringDashboard
+            ? [
+                  isMonitoringNodeType ? (
+                      <MonitoringDashboard key={fixedTabIndices.MONITORING_DASHBOARD} />
+                  ) : (
+                      <div key={fixedTabIndices.MONITORING_DASHBOARD} />
+                  ),
+              ]
+            : []),
         ...(isSuperAdmin &&
-        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
-        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
+        tabs[fixedTabIndices.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
+        tabs[fixedTabIndices.ADMIN_TERMINAL].isAlive
             ? [
                   <AdminTerminal
-                      key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
+                      key={tabs[fixedTabIndices.ADMIN_TERMINAL].componentKey}
                       isSuperAdmin={isSuperAdmin}
                       updateTerminalTabUrl={updateTerminalTabUrl}
                   />,
@@ -396,7 +424,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        isOverview={isOverviewNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}

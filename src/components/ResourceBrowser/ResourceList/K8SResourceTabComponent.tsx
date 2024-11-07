@@ -16,7 +16,12 @@
 
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    abortPreviousRequests,
+    BulkSelectionProvider,
+    SelectAllDialogStatus,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { SIDEBAR_KEYS } from '../Constants'
@@ -38,6 +43,7 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTabLastSyncMoment,
     setWidgetEventDetails,
     handleResourceClick,
+    clusterName,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
 
@@ -78,26 +84,34 @@ const K8SResourceTabComponent = ({
             />
             {/* NOTE: if we directly use nodeType for this check
              * component will mount/dismount on every tab change */}
-            {selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind ? (
-                <NodeDetailsList
-                    isSuperAdmin={isSuperAdmin}
-                    addTab={addTab}
-                    renderRefreshBar={renderRefreshBar}
-                    showStaleDataWarning={showStaleDataWarning}
-                />
-            ) : (
-                <K8SResourceList
-                    selectedResource={selectedResource}
-                    selectedCluster={selectedCluster}
-                    addTab={addTab}
-                    isOpen={isOpen}
-                    renderRefreshBar={renderRefreshBar}
-                    showStaleDataWarning={showStaleDataWarning}
-                    updateK8sResourceTab={updateK8sResourceTab}
-                    setWidgetEventDetails={setWidgetEventDetails}
-                    handleResourceClick={handleResourceClick}
-                />
-            )}
+            <BulkSelectionProvider
+                key={JSON.stringify(selectedResource)}
+                // TODO: do we need a dialog for this ?
+                getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+            >
+                {selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind ? (
+                    <NodeDetailsList
+                        clusterName={clusterName}
+                        isSuperAdmin={isSuperAdmin}
+                        addTab={addTab}
+                        renderRefreshBar={renderRefreshBar}
+                        showStaleDataWarning={showStaleDataWarning}
+                    />
+                ) : (
+                    <K8SResourceList
+                        clusterName={clusterName}
+                        selectedResource={selectedResource}
+                        selectedCluster={selectedCluster}
+                        addTab={addTab}
+                        isOpen={isOpen}
+                        renderRefreshBar={renderRefreshBar}
+                        showStaleDataWarning={showStaleDataWarning}
+                        updateK8sResourceTab={updateK8sResourceTab}
+                        setWidgetEventDetails={setWidgetEventDetails}
+                        handleResourceClick={handleResourceClick}
+                    />
+                )}
+            </BulkSelectionProvider>
         </div>
     )
 }

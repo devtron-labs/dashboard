@@ -15,7 +15,12 @@
  */
 
 import { Moment } from 'moment'
-import { decode, DeploymentAppTypes, K8sResourcePayloadAppType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    decode,
+    DeploymentAppTypes,
+    K8sResourcePayloadAppType,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
@@ -472,10 +477,10 @@ export const getTrimmedManifestData = (
         const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
         const trimmedManifestData = { ...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata }
 
-        return returnAsString ? JSON.stringify(trimmedManifestData) : trimmedManifestData
+        return returnAsString ? YAMLStringify(trimmedManifestData) : trimmedManifestData
     }
 
-    return returnAsString ? JSON.stringify(manifestData) : manifestData
+    return returnAsString ? YAMLStringify(manifestData) : manifestData
 }
 
 export const getK8sResourcePayloadAppType = (appType: string): K8sResourcePayloadAppType => {
@@ -499,7 +504,7 @@ export const getDecodedEncodedSecretManifestData = (
         ...manifestData,
         [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
     }
-    return returnAsString ? JSON.stringify(encodedData) : manifestData
+    return returnAsString ? YAMLStringify(encodedData) : manifestData
 }
 
 export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sResourcePayloadDeploymentType => {

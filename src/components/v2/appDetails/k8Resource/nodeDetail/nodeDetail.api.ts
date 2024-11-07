@@ -17,7 +17,12 @@
 import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps } from '@devtron-labs/devtron-fe-common-lib'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
-import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType } from './nodeDetail.type'
+import {
+    AppDetailsAppIdentifierProps,
+    EphemeralContainerProps,
+    GetResourceRequestPayloadParamsType,
+    ParamsType,
+} from './nodeDetail.type'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
 import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 
@@ -49,9 +54,14 @@ export const getManifestResource = (
     selectedResource?: SelectedResourceType,
     signal?: AbortSignal,
 ) => {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource)
-        : createBody(ad, podName, nodeType)
+    const requestData = getResourceRequestPayload({
+        appDetails: ad,
+        nodeName: podName,
+        nodeType,
+        isResourceBrowserView,
+        selectedResource,
+    })
+
     return post(Routes.MANIFEST, requestData, { signal })
 }
 
@@ -154,6 +164,19 @@ export function createBody(appDetails: AppDetails, nodeName: string, nodeType: s
     return requestBody
 }
 
+export const getResourceRequestPayload = ({
+    appDetails,
+    nodeName,
+    nodeType,
+    isResourceBrowserView,
+    selectedResource,
+    updatedManifest,
+}: GetResourceRequestPayloadParamsType) => {
+    return isResourceBrowserView
+        ? createResourceRequestBody(selectedResource, updatedManifest)
+        : createBody(appDetails, nodeName, nodeType, updatedManifest)
+}
+
 export const updateManifestResourceHelmApps = (
     ad: AppDetails,
     nodeName: string,
@@ -161,25 +184,39 @@ export const updateManifestResourceHelmApps = (
     updatedManifest: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
+    signal?: AbortSignal,
 ) => {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource, updatedManifest)
-        : createBody(ad, nodeName, nodeType, updatedManifest)
-    return put(Routes.MANIFEST, requestData)
+    return put(
+        Routes.MANIFEST,
+        getResourceRequestPayload({
+            appDetails: ad,
+            nodeName,
+            nodeType,
+            isResourceBrowserView,
+            selectedResource,
+            updatedManifest,
+        }),
+        { signal },
+    )
 }
 
-function getEventHelmApps(
+const getEventHelmApps = (
     ad: AppDetails,
     nodeName: string,
     nodeType: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
-) {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource)
-        : createBody(ad, nodeName, nodeType)
-    return post(Routes.EVENTS, requestData)
-}
+) =>
+    post(
+        Routes.EVENTS,
+        getResourceRequestPayload({
+            appDetails: ad,
+            nodeName,
+            nodeType,
+            selectedResource,
+            isResourceBrowserView,
+        }),
+    )
 
 const getFilterWithValue = (type: string, value: string, unit?: string) => {
     switch (type) {
@@ -297,12 +334,17 @@ export const createResource = (
     nodeType: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
-) => {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource)
-        : createBody(ad, podName, nodeType)
-    return post(Routes.CREATE_RESOURCE, requestData)
-}
+) =>
+    post(
+        Routes.CREATE_RESOURCE,
+        getResourceRequestPayload({
+            appDetails: ad,
+            nodeName: podName,
+            nodeType,
+            isResourceBrowserView,
+            selectedResource,
+        }),
+    )
 
 const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string) => {
     let url: string = Routes.EPHEMERAL_CONTAINERS
