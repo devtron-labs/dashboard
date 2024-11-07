@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, ConsequenceType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
@@ -49,10 +49,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     isJobView?: boolean
     index?: number
     isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
+    ciBlockState?: ConsequenceType
     filteredCIPipelines?: any[]
     environmentLists?: any[]
 }
