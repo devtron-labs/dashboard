@@ -21,6 +21,8 @@ import {
     Node as CommonNode,
     iNode as CommoniNode,
     ApiResourceGroupType,
+    ConfigurationType,
+    FormProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
@@ -470,6 +472,7 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
+        guiSchema: Record<string, string>
     }
     id: string
 }
@@ -481,8 +484,7 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-
-export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pick<NodeDetailPropsType, 'isExternalApp'> {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
@@ -491,6 +493,11 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
     manifestCodeEditorMode: ManifestCodeEditorMode
     setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
+    handleSwitchToYAMLMode: () => void
+    manifestFormConfigurationType: ConfigurationType
+    handleUpdateUnableToParseManifest: (value: boolean) => void
+    handleManifestGUIErrors: FormProps['onError']
+    manifestGUIFormRef: FormProps['ref']
 }
 
 export interface NodeTreeDetailTabProps {
