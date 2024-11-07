@@ -565,7 +565,7 @@ const BaseResourceListContent = ({
                             style={{ gridTemplateColumns }}
                         >
                             {resourceList?.headers.map((columnName, index) => (
-                                <div className="flexbox dc__gap-8 dc__align-items-center">
+                                <div className="flexbox dc__gap-8 dc__align-items-center" key={columnName}>
                                     {!hideBulkSelection && index === 0 && (
                                         <BulkSelection showPagination={showPaginatedView} />
                                     )}
