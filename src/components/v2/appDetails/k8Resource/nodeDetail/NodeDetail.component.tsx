@@ -382,6 +382,7 @@ const NodeDetailComponent = ({
 
     const handleManifestCancel = () => {
         handleManifestGUIError([])
+        handleUpdateUnableToParseManifest(false)
         setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
     }
 
