@@ -4,7 +4,6 @@ import { Dispatch, ReactNode, SetStateAction } from 'react'
 import {
     ClusterOptionType,
     K8SResourceListType,
-    ResourceBrowserActionMenuType,
     ResourceDetailType,
     ResourceFilterOptionsProps,
     URLParams,
@@ -13,7 +12,6 @@ import { ALL_NAMESPACE_OPTION } from '../Constants'
 
 export interface BaseResourceListProps
     extends Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>,
-        Pick<ResourceBrowserActionMenuType, 'hideDeleteResource'>,
         Pick<
             K8SResourceListType,
             | 'addTab'
@@ -42,6 +40,12 @@ export interface BaseResourceListProps
      * @default false
      */
     shouldOverrideSelectedResourceKind?: boolean
+    /**
+     * If true, the actions menu are hidden
+     *
+     * @default false
+     */
+    hideActionsMenu?: boolean
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps

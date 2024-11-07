@@ -70,7 +70,7 @@ const BaseResourceListContent = ({
     nodeType,
     group,
     areFiltersHidden = false,
-    hideDeleteResource = false,
+    hideActionsMenu = false,
     searchPlaceholder,
     showGenericNullState,
     addTab,
@@ -378,7 +378,7 @@ const BaseResourceListContent = ({
                 columnName === 'name' ? (
                     <div
                         key={`${resourceData.id}-${columnName}`}
-                        className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                        className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${hideActionsMenu ? 'pr-8' : ''}`}
                         data-testid="created-resource-name"
                     >
                         {!hideBulkSelection && (
@@ -418,23 +418,24 @@ const BaseResourceListContent = ({
                             content={String(resourceData.name)}
                             rootClassName="p-4 dc__visible-hover--child"
                         />
-                        <ResourceBrowserActionMenu
-                            clusterId={clusterId}
-                            resourceData={resourceData}
-                            getResourceListData={reloadResourceListData as () => Promise<void>}
-                            selectedResource={{
-                                ...selectedResource,
-                                ...(shouldOverrideSelectedResourceKind && {
-                                    gvk: {
-                                        Group: resourceData.group ?? selectedResource.gvk.Group,
-                                        Kind: resourceData.kind ?? selectedResource.gvk.Kind,
-                                        Version: resourceData.version ?? selectedResource.gvk.Version,
-                                    } as GVKType,
-                                }),
-                            }}
-                            handleResourceClick={handleResourceClick}
-                            hideDeleteResource={hideDeleteResource}
-                        />
+                        {!hideActionsMenu && (
+                            <ResourceBrowserActionMenu
+                                clusterId={clusterId}
+                                resourceData={resourceData}
+                                getResourceListData={reloadResourceListData as () => Promise<void>}
+                                selectedResource={{
+                                    ...selectedResource,
+                                    ...(shouldOverrideSelectedResourceKind && {
+                                        gvk: {
+                                            Group: resourceData.group ?? selectedResource.gvk.Group,
+                                            Kind: resourceData.kind ?? selectedResource.gvk.Kind,
+                                            Version: resourceData.version ?? selectedResource.gvk.Version,
+                                        } as GVKType,
+                                    }),
+                                }}
+                                handleResourceClick={handleResourceClick}
+                            />
+                        )}
                     </div>
                 ) : (
                     <div
