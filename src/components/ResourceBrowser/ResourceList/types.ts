@@ -2,7 +2,6 @@ import { useTabs } from '@Components/common/DynamicTabs'
 import { ApiResourceGroupType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import {
-    ClusterOptionType,
     K8SResourceListType,
     ResourceBrowserActionMenuType,
     ResourceDetailType,
@@ -47,8 +46,4 @@ export interface BaseResourceListProps
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ReturnType<typeof useTabs>, 'addTab' | 'updateTabUrl'>,
-        Pick<BaseResourceListProps, 'k8SObjectMapRaw'> {
-    clusterId: string
-    clusterName: string
-    selectedCluster: ClusterOptionType
-}
+        Pick<BaseResourceListProps, 'k8SObjectMapRaw' | 'clusterId' | 'clusterName' | 'selectedCluster'> {}
