@@ -20,6 +20,8 @@ import {
     CHECKBOX_VALUE,
     BulkSelectionProvider,
     SelectAllDialogStatus,
+    K8sResourceDetailType,
+    K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -41,7 +43,7 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { ResourceDetailDataType, ResourceDetailType, ResourceListPayloadType } from '../Types'
+import { ResourceListPayloadType } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { BaseResourceListProps } from './types'
@@ -78,7 +80,7 @@ const BaseResourceListContent = ({
     shouldOverrideSelectedResourceKind = false,
     k8SObjectMapRaw,
 }: BaseResourceListProps) => {
-    const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
+    const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
@@ -99,7 +101,7 @@ const BaseResourceListContent = ({
         setIdentifiers,
         isBulkSelectionApplied,
         getSelectedIdentifiersCount,
-    } = useBulkSelection<Record<number, ResourceDetailDataType>>()
+    } = useBulkSelection<Record<number, K8sResourceDetailDataType>>()
 
     const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
     const showPaginatedView = filteredResourceList?.length > pageSize
@@ -178,7 +180,7 @@ const BaseResourceListContent = ({
             (filteredResourceList?.slice(resourceListOffset, resourceListOffset + pageSize).reduce((acc, curr) => {
                 acc[curr.id as number] = curr
                 return acc
-            }, {}) as Record<number, ResourceDetailDataType>) ?? {},
+            }, {}) as Record<number, K8sResourceDetailDataType>) ?? {},
         )
     }, [resourceListOffset, filteredResourceList, pageSize])
 
@@ -215,7 +217,7 @@ const BaseResourceListContent = ({
         setResourceListOffset(0)
     }, [resourceList, sortBy, sortOrder])
 
-    const getHandleCheckedForId = (resourceData: ResourceDetailDataType) => () => {
+    const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const id = Number(resourceData.id)
 
         if (isBulkSelectionApplied) {
@@ -323,10 +325,11 @@ const BaseResourceListContent = ({
     }
 
     const emptyStateActionHandler = () => {
-        setSearchText('')
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(pathname)
+        updateK8sResourceTab(pathname, '', false)
         push(pathname)
+        setFilteredResourceList(resourceList?.data ?? null)
+        setResourceListOffset(0)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
     }
 
@@ -384,7 +387,7 @@ const BaseResourceListContent = ({
             .catch(noop)
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
+    const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         // This should be used only if shouldOverrideSelectedResourceKind is true
         const gvkFromRawData = kindToGvkMapFromRawMap[(resourceData.kind as string).toLowerCase()] ?? ({} as GVKType)
 

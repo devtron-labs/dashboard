@@ -150,11 +150,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return value
     }
 
-    const handleClearFilters = () => {
-        clearFilters()
-        setClusterFilter(ClusterFiltersType.ALL_CLUSTERS)
-    }
-
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
         if (ClusterStatusCell && status) {
             return <ClusterStatusCell status={status} />
@@ -296,7 +291,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
             {!filteredList.length ? (
                 <div className="flex-grow-1">
-                    <ClusterNodeEmptyState actionHandler={handleClearFilters} />
+                    <ClusterNodeEmptyState actionHandler={clearFilters} />
                 </div>
             ) : (
                 <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">

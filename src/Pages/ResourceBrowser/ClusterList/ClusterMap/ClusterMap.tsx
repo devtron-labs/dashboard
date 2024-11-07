@@ -72,11 +72,7 @@ export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapPr
                     </div>
                 ) : (
                     treeMapData.map(({ id, label, data }) => (
-                        <div
-                            key={id}
-                            className="flexbox-col dc__gap-4"
-                            style={{ flexGrow: data.length, minWidth: '0' }}
-                        >
+                        <div key={id} className="flexbox-col dc__gap-4" style={{ flex: data.length, minWidth: '0' }}>
                             {label && (
                                 <Tooltip content={label}>
                                     <p className="m-0 fs-12 lh-16 fw-6 cn-9 dc__truncate">{label}</p>

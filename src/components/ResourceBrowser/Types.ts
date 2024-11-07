@@ -22,23 +22,12 @@ import {
     ApiResourceGroupType,
     GVKType,
     InitTabType,
+    K8sResourceDetailType,
+    K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
-
-export type ResourceDetailDataType = {
-    [key: string]: string | number | object
-}
-
-export interface ResourceDetailType {
-    headers: string[]
-    data: ResourceDetailDataType[]
-}
-
-export interface ResourceListResponse extends ResponseType {
-    result?: ResourceDetailType
-}
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -114,11 +103,10 @@ export interface CreateResourceType {
     clusterId: string
 }
 
-export interface SidebarType {
+export interface SidebarType extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab'> {
     apiResources: ApiResourceGroupType[]
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     isClusterError?: boolean
@@ -129,9 +117,9 @@ export interface ClusterOptionType extends OptionType {
     isProd: boolean
 }
 
-export interface ResourceFilterOptionsProps {
+export interface ResourceFilterOptionsProps extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab'> {
     selectedResource: ApiResourceGroupType
-    resourceList?: ResourceDetailType
+    resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
     selectedNamespace?: OptionType
     setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
@@ -139,7 +127,6 @@ export interface ResourceFilterOptionsProps {
     isOpen: boolean
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
     /**
      * If true, the filters are hidden except search
@@ -162,7 +149,7 @@ export interface K8SResourceListType
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    resourceData: ResourceDetailDataType
+    resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
@@ -175,13 +162,12 @@ export interface ResourceBrowserActionMenuType {
     hideDeleteResource?: boolean
 }
 
-export interface DeleteResourcePopupType {
-    clusterId: string
-    resourceData: ResourceDetailDataType
-    selectedResource: ApiResourceGroupType
+export interface DeleteResourcePopupType
+    extends Pick<
+        ResourceBrowserActionMenuType,
+        'clusterId' | 'resourceData' | 'selectedResource' | 'getResourceListData' | 'removeTabByIdentifier'
+    > {
     toggleDeleteDialog: () => void
-    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    getResourceListData?: () => Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
@@ -194,7 +180,7 @@ export interface ResourceListEmptyStateType {
 
 export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
-    filteredData: ResourceDetailType['data']
+    filteredData: K8sResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     paginatedView: boolean
     syncError: boolean
@@ -229,7 +215,7 @@ export interface K8SResourceTabComponentProps {
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTab: (url: string, dynamicTitle?: string, retainSearchParams?: boolean) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     clusterName: string

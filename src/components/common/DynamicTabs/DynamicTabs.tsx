@@ -90,7 +90,7 @@ const DynamicTabs = ({
                 aria-label={`Select tab ${_title}`}
             >
                 <div
-                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
+                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''} ${!shouldRenderTitle ? 'dynamic-tab__resource--no-title' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
                     {shouldRenderTitle && (

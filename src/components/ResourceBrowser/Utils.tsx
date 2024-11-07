@@ -22,6 +22,7 @@ import {
     DATE_TIME_FORMAT_STRING,
     GVKType,
     InitTabType,
+    K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
@@ -34,7 +35,6 @@ import {
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    ResourceDetailDataType,
 } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -108,12 +108,12 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     return _k8SObjectMap
 }
 
-export const sortEventListData = (eventList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
+export const sortEventListData = (eventList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] => {
     if (!eventList?.length) {
         return []
     }
-    const warningEvents: ResourceDetailDataType[] = []
-    const otherEvents: ResourceDetailDataType[] = []
+    const warningEvents: K8sResourceDetailDataType[] = []
+    const otherEvents: K8sResourceDetailDataType[] = []
     eventList.forEach((event) => {
         if (event.type === 'Warning') {
             warningEvents.push(event)
@@ -122,12 +122,12 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
         }
     })
     return [
-        ...warningEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
-        ...otherEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
+        ...warningEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
+        ...otherEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] =>
+export const removeDefaultForStorageClass = (storageList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] =>
     storageList.map((storage) =>
         (storage.name as string).includes('(default)')
             ? {
@@ -373,7 +373,7 @@ export const getResourceFromK8SObjectMap = (map: ApiResourceGroupType[], nodeTyp
 
 export const getRenderNodeButton =
     (
-        resourceData: ResourceDetailDataType,
+        resourceData: K8sResourceDetailDataType,
         columnName: string,
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
