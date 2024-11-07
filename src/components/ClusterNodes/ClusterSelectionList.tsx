@@ -45,6 +45,7 @@ import './clusterNodes.scss'
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const getClusterMapData = (data: ClusterDetail[]): ClusterTreeMapData['data'] =>
     data.map(({ name, id, nodeCount, status }) => ({
@@ -201,6 +202,11 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                                     </div>
                                 </Tooltip>
                             )}
+
+                            {CompareClusterButton && (
+                                <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
+                            )}
+
                             {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
                         </div>
                     </div>

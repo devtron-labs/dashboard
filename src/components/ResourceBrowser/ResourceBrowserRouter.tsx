@@ -16,9 +16,12 @@
 
 import React from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { importComponentFromFELibrary } from '@Components/common'
 import ResourceBrowser from './ResourceBrowser'
 import ResourceList from './ResourceList'
 import './ResourceBrowser.scss'
+
+const CompareClusterRoute = importComponentFromFELibrary('CompareClusterRoute', null, 'function')
 
 const ResourceBrowserRouter: React.FC = () => {
     const { path } = useRouteMatch()
@@ -32,6 +35,8 @@ const ResourceBrowserRouter: React.FC = () => {
             <Route path={path} exact>
                 <ResourceBrowser />
             </Route>
+
+            {CompareClusterRoute && <CompareClusterRoute />}
 
             <Redirect to={path} />
         </Switch>

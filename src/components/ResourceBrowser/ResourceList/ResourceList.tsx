@@ -47,6 +47,7 @@ import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -356,6 +357,13 @@ const ResourceList = () => {
             : []),
     ]
 
+    const renderPageHeaderActionButtons = () => (
+        <div className="flexbox dc__align-items-center dc__gap-8">
+            {CompareClusterButton && !!clusterId && <CompareClusterButton sourceClusterId={clusterId} />}
+            {renderCreateResourceButton(clusterId, closeResourceModal)()}
+        </div>
+    )
+
     const renderMainBody = () => {
         if (error) {
             return <ErrorScreenManager code={error.code} />
@@ -406,7 +414,7 @@ const ResourceList = () => {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 headerName=""
-                renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
+                renderActionButtons={renderPageHeaderActionButtons}
             />
             {renderMainBody()}
         </div>
