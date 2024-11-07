@@ -155,7 +155,8 @@ if (!window || !window._env_) {
         FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS: false,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
-        FEATURE_PROMO_EMBEDDED_IFRAME_URL:''
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL:'',
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset'
     }
 }
 

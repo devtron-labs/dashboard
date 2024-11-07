@@ -93,6 +93,8 @@ const ManifestComponent = ({
     handleSwitchToYAMLMode,
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
+    manifestGUIFormRef,
+    isExternalApp,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -181,7 +183,7 @@ const ManifestComponent = ({
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema) {
+        if (!getManifestGUISchema || isExternalApp) {
             return
         }
 
@@ -650,6 +652,7 @@ const ManifestComponent = ({
                         // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
                         manifestYAMLString={trimedManifestEditorData}
                         handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                        manifestGUIFormRef={manifestGUIFormRef}
                     />
                 </>
             )

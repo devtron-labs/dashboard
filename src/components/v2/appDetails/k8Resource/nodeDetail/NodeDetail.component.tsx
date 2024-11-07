@@ -24,6 +24,8 @@ import {
     DeploymentAppTypes,
     ConfigurationType,
     FormProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -175,6 +177,8 @@ const NodeDetailComponent = ({
         },
         id: '',
     })
+
+    const manifestGUIFormRef: FormProps['ref'] = useRef(null)
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
@@ -361,7 +365,20 @@ const NodeDetailComponent = ({
         return Object.values(params).join('/')
     }
 
-    const handleManifestApplyChanges = () => setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    const handleManifestApplyChanges = () => {
+        const isFormValid = !manifestGUIFormRef.current?.validateForm || manifestGUIFormRef.current.validateForm()
+
+        if (!isFormValid) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Validation failed for some input fields, please rectify and apply changes again.',
+            })
+
+            return
+        }
+
+        setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    }
 
     const handleManifestCancel = () => {
         handleManifestGUIError([])
@@ -424,7 +441,7 @@ const NodeDetailComponent = ({
                         <div className="ml-4 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && (
+                                {ToggleManifestConfigurationMode && !isExternalApp && (
                                     <ToggleManifestConfigurationMode
                                         mode={manifestFormConfigurationType}
                                         handleToggle={handleToggleManifestConfigurationMode}
@@ -582,6 +599,8 @@ const NodeDetailComponent = ({
                             manifestFormConfigurationType={manifestFormConfigurationType}
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                             handleManifestGUIErrors={handleManifestGUIError}
+                            manifestGUIFormRef={manifestGUIFormRef}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

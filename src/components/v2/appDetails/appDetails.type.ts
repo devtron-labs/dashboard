@@ -485,7 +485,7 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pick<NodeDetailPropsType, 'isExternalApp'> {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
@@ -498,6 +498,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     manifestFormConfigurationType: ConfigurationType
     handleUpdateUnableToParseManifest: (value: boolean) => void
     handleManifestGUIErrors: FormProps['onError']
+    manifestGUIFormRef: FormProps['ref']
 }
 
 export interface NodeTreeDetailTabProps {
