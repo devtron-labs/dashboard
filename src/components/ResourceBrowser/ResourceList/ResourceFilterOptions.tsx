@@ -24,11 +24,11 @@ import {
     SearchBar,
     Option,
     Tooltip,
+    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
 import { ResourceValueContainerWithIcon } from './ResourceList.component'
 import {
-    ALL_NAMESPACE_OPTION,
     FILTER_SELECT_COMMON_STYLES,
     NAMESPACE_NOT_APPLICABLE_OPTION,
     NAMESPACE_NOT_APPLICABLE_TEXT,

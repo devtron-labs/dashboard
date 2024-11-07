@@ -27,9 +27,10 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'

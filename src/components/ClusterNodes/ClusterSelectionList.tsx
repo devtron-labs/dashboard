@@ -23,6 +23,7 @@ import {
     Tooltip,
     ClusterFiltersType,
     ClusterStatusType,
+    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -37,7 +38,7 @@ import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
 import { ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'

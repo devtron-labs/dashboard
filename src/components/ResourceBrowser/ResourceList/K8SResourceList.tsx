@@ -44,13 +44,14 @@ import {
     CHECKBOX_VALUE,
     BulkOperationModalProps,
     GVKType,
+    ALL_NAMESPACE_OPTION,
+    getK8sResourceListPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
-    ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
@@ -59,7 +60,7 @@ import {
     SEARCH_QUERY_PARAM_KEY,
     DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
-import { deleteResource, getResourceListPayload, restartWorkload } from '../ResourceBrowser.service'
+import { deleteResource, restartWorkload } from '../ResourceBrowser.service'
 import { K8SResourceListType, ResourceListPayloadType, URLParams } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
@@ -137,7 +138,7 @@ export const K8SResourceList = ({
             abortPreviousRequests(
                 () =>
                     getK8sResourceList(
-                        getResourceListPayload(
+                        getK8sResourceListPayload(
                             clusterId,
                             selectedNamespace.value.toLowerCase(),
                             selectedResource,

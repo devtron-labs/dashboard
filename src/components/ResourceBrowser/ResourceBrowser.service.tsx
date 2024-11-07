@@ -19,7 +19,6 @@ import {
     get,
     post,
     ResponseType,
-    ApiResourceGroupType,
     convertJSONPointerToJSONPath,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
@@ -32,7 +31,6 @@ import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType } from './Types'
-import { ALL_NAMESPACE_OPTION } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
 
@@ -51,24 +49,6 @@ export const deleteResource = (
     resourceListPayload: ResourceListPayloadType,
     signal?: AbortSignal,
 ): Promise<CreateResourceResponse> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
-
-export const getResourceListPayload = (
-    clusterId: string,
-    namespace: string,
-    selectedResource: ApiResourceGroupType,
-    filters: object,
-) => ({
-    clusterId: +clusterId,
-    k8sRequest: {
-        resourceIdentifier: {
-            groupVersionKind: selectedResource.gvk,
-            ...(selectedResource.namespaced && {
-                namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
-            }),
-        },
-    },
-    ...filters,
-})
 
 export const restartWorkload = async (resource: SelectedResourceType, signal: AbortSignal) => {
     const {
