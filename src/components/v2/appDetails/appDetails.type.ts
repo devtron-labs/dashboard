@@ -473,6 +473,7 @@ export interface ManifestViewRefType {
         activeManifestEditorData: string
         modifiedManifest: string
         guiSchema: Record<string, string>
+        lockedKeys: string[] | null
     }
     id: string
 }

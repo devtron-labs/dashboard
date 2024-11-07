@@ -103,11 +103,10 @@ export interface CreateResourceType {
     clusterId: string
 }
 
-export interface SidebarType {
+export interface SidebarType extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab'> {
     apiResources: ApiResourceGroupType[]
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     isClusterError?: boolean
@@ -118,7 +117,7 @@ export interface ClusterOptionType extends OptionType {
     isProd: boolean
 }
 
-export interface ResourceFilterOptionsProps {
+export interface ResourceFilterOptionsProps extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab'> {
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
@@ -128,7 +127,6 @@ export interface ResourceFilterOptionsProps {
     isOpen: boolean
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
 }
 
@@ -201,7 +199,7 @@ export interface K8SResourceTabComponentProps {
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTab: (url: string, dynamicTitle?: string, retainSearchParams?: boolean) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     clusterName: string

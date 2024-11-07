@@ -516,10 +516,11 @@ export const K8SResourceList = ({
     )
 
     const emptyStateActionHandler = () => {
-        setSearchText('')
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(pathname)
+        updateK8sResourceTab(pathname, '', false)
         push(pathname)
+        setFilteredResourceList(resourceList?.data ?? null)
+        setResourceListOffset(0)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
     }
 

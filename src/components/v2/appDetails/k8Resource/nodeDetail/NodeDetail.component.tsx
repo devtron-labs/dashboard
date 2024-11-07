@@ -173,6 +173,7 @@ const NodeDetailComponent = ({
             activeManifestEditorData: '',
             modifiedManifest: '',
             guiSchema: {},
+            lockedKeys: null,
         },
         id: '',
     })
@@ -381,6 +382,7 @@ const NodeDetailComponent = ({
 
     const handleManifestCancel = () => {
         handleManifestGUIError([])
+        handleUpdateUnableToParseManifest(false)
         setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
     }
 

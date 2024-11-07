@@ -277,8 +277,8 @@ const ResourceList = () => {
     const updateK8sResourceTabLastSyncMoment = () =>
         updateTabLastSyncMoment(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)
 
-    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
-        updateTabUrl(id, _url, dynamicTitle)
+    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string, retainSearchParams?: boolean) =>
+        updateTabUrl(id, _url, dynamicTitle, retainSearchParams)
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
