@@ -9,6 +9,7 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 import { StyledProgressBar } from '@Components/common/formFields/Widgets/Widgets'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import { URLS } from '@Config/routes'
 import BaseResourceList from './BaseResourceList'
 import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
@@ -46,9 +47,9 @@ const ClusterUpgradeCompatibilityInfo = ({
         return (
             <div className="flex column h-100 dc__gap-20">
                 <StyledProgressBar resetProgress={false} />
-                <div className="flex column">
-                    <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8">Scanning resources</h2>
-                    <p className="fs-13 fw-4 lh-20 w-300 text-center">
+                <div className="flex column dc__gap-8">
+                    <h2 className="fs-16 fw-6 lh-24 mt-20">Scanning resources</h2>
+                    <p className="fs-13 fw-4 lh-20 w-300 text-center m-0">
                         Checking resources for upgrade compatibility with Kubernetes version v{targetK8sVersion}
                     </p>
                 </div>
@@ -57,7 +58,13 @@ const ClusterUpgradeCompatibilityInfo = ({
     }
 
     if (compatibilityError) {
-        return <ErrorScreenManager code={compatibilityError.code} reload={refetchCompatibilityList} />
+        return (
+            <ErrorScreenManager
+                code={compatibilityError.code}
+                reload={refetchCompatibilityList}
+                redirectURL={URLS.RESOURCE_BROWSER}
+            />
+        )
     }
 
     if (!targetK8sVersion) {
