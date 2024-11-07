@@ -1,10 +1,20 @@
-import { ConfigHeaderTabType, ConfigToolbarPopupMenuConfigType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConfigHeaderTabType,
+    ConfigToolbarPopupMenuConfigType,
+    DeploymentTemplateHistoryType,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigHeaderTabConfigType, ConfigToolbarProps, GetConfigToolbarPopupConfigProps } from './types'
+import {
+    CompareConfigViewEditorConfigType,
+    ConfigHeaderTabConfigType,
+    ConfigToolbarProps,
+    GetConfigToolbarPopupConfigProps,
+} from './types'
 
 const getToggleViewLockedKeysPopupButtonConfig = importComponentFromFELibrary(
     'getToggleViewLockedKeysPopupButtonConfig',
@@ -67,10 +77,16 @@ export const getConfigHeaderTabConfig = (
     }
 }
 
-// TODO: Ask for button variant
-export const PopupMenuItem = ({ text, onClick, dataTestId, disabled, icon }: ConfigToolbarPopupMenuConfigType) => (
+export const PopupMenuItem = ({
+    text,
+    onClick,
+    dataTestId,
+    disabled,
+    icon,
+    variant,
+}: ConfigToolbarPopupMenuConfigType) => (
     <button
-        className={`dc__transparent py-6 px-8 flexbox dc__gap-8 dc__align-items-center dc__hover-n50 ${disabled ? 'dc__disabled' : ''}`}
+        className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
         onClick={onClick}
         data-testid={dataTestId}
         disabled={disabled}
@@ -91,11 +107,15 @@ export const getConfigToolbarPopupConfig = ({
     isPublishedValuesView,
     isPublishedConfigPresent,
     handleDeleteOverride,
+    handleDelete,
     handleDiscardDraft,
     unableToParseData,
     isLoading,
     isDraftAvailable,
     handleShowEditHistory,
+    isProtected = false,
+    isDeletable = false,
+    isDeleteOverrideDraftPresent = false,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -104,7 +124,7 @@ export const getConfigToolbarPopupConfig = ({
     const firstConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
     const secondConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
 
-    if (lockedConfigData && getToggleViewLockedKeysPopupButtonConfig && !showDeleteOverrideDraftEmptyState) {
+    if (getToggleViewLockedKeysPopupButtonConfig && lockedConfigData && !showDeleteOverrideDraftEmptyState) {
         const lockedKeysConfig = getToggleViewLockedKeysPopupButtonConfig(
             lockedConfigData.areLockedKeysPresent,
             lockedConfigData.hideLockedKeys,
@@ -117,7 +137,7 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (getEditHistoryPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         const activityHistoryConfig = getEditHistoryPopupButtonConfig(handleShowEditHistory, isLoading)
         if (activityHistoryConfig) {
             firstConfigSegment.push(activityHistoryConfig)
@@ -131,13 +151,25 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !isDeleteOverrideDraftPresent) {
         secondConfigSegment.push({
             text: 'Delete override',
             onClick: handleDeleteOverride,
             dataTestId: 'delete-override',
             disabled: isLoading,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+            variant: 'negative',
+        })
+    }
+
+    if (isDeletable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+        secondConfigSegment.push({
+            text: `Delete${isProtected ? '...' : ''}`,
+            onClick: handleDelete,
+            dataTestId: 'delete-config-map-secret',
+            disabled: isLoading,
+            icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
+            variant: 'negative',
         })
     }
 
@@ -146,3 +178,17 @@ export const getConfigToolbarPopupConfig = ({
         ...(secondConfigSegment.length && { secondConfigSegment }),
     }
 }
+
+export const getCompareViewHistoryDiffConfigProps = (
+    showDisplayName: boolean,
+    editorTemplate: Record<string | number, unknown>,
+    editorConfig: CompareConfigViewEditorConfigType,
+):
+    | DeploymentTemplateHistoryType['baseTemplateConfiguration']
+    | DeploymentTemplateHistoryType['currentConfiguration'] => ({
+    codeEditorValue: {
+        displayName: showDisplayName ? 'Data' : '',
+        ...(editorTemplate && { value: JSON.stringify(editorTemplate) }),
+    },
+    values: editorConfig,
+})

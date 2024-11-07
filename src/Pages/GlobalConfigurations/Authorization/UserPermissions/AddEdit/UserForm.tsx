@@ -61,7 +61,7 @@ const createOption = (label: string) => ({
 })
 
 const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
-    const { serverMode } = useMainContext()
+    const { serverMode, isSuperAdmin } = useMainContext()
 
     const { isAutoAssignFlowEnabled } = useAuthorizationContext()
 
@@ -373,7 +373,14 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     {!isAddMode && isAutoAssignFlowEnabled && (
                         <UserAutoAssignedRoleGroupsTable roleGroups={_userData.userRoleGroups} />
                     )}
-                    {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
+                    {!isAutoAssignFlowEnabled && (
+                        <PermissionConfigurationForm
+                            showUserPermissionGroupSelector
+                            hideDirectPermissions={
+                                window._env_.FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS && !isSuperAdmin
+                            }
+                        />
+                    )}
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
                     <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>

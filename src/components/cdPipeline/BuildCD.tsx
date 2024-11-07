@@ -32,23 +32,17 @@ import {
     CDFormType,
     ToastVariantType,
     ToastManager,
+    ComponentSizeType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import yamlJsParser from 'yaml'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, TriggerType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import {
-    DropdownIndicator,
-    EnvFormatOptions,
-    formatHighlightedTextDescription,
-    GroupHeading,
-    groupStyle,
-} from '../v2/common/ReactSelect.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
@@ -64,22 +58,24 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
 import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ICCheck } from '../../assets/icons/ic-check.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { BuildCDProps } from './types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
-const validateUserApprovalConfig: (userApprovalConfig: UserApprovalConfigType) => PipelineFormDataErrorType['userApprovalConfig'] =
-    importComponentFromFELibrary(
-        'validateUserApprovalConfig',
-        () => ({
-            isValid: true,
-        }),
-        'function',
-    )
+const validateUserApprovalConfig: (
+    userApprovalConfig: UserApprovalConfigType,
+) => PipelineFormDataErrorType['userApprovalConfig'] = importComponentFromFELibrary(
+    'validateUserApprovalConfig',
+    () => ({
+        isValid: true,
+    }),
+    'function',
+)
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
@@ -94,7 +90,8 @@ export default function BuildCD({
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
     releaseMode,
-}) {
+    getMandatoryPluginData,
+}: BuildCDProps) {
     const {
         formData,
         setFormData,
@@ -154,7 +151,7 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const selectEnvironment = (selection: Environment): void => {
+    const selectEnvironment = async (selection: EnvironmentWithSelectPickerType) => {
         const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
@@ -200,8 +197,6 @@ export default function BuildCD({
             _form.isDigestEnforcedForEnv = _form.environments.find(
                 (env) => env.id == selection.id,
             )?.isDigestEnforcedForEnv
-            setFormDataErrorObj(_formDataErrorObj)
-            setFormData(_form)
         } else {
             const list = _form.environments.map((item) => {
                 return {
@@ -214,8 +209,15 @@ export default function BuildCD({
             _form.environments = list
             setIsVirtualEnvironment(false)
             _formDataErrorObj.envNameError = validationRules.environment(_form.environmentId)
-            setFormData(_form)
-            setFormDataErrorObj(_formDataErrorObj)
+        }
+
+        setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
+
+        try {
+            await getMandatoryPluginData(_form)
+        } catch (error) {
+            showError(error)
         }
     }
 
@@ -340,7 +342,11 @@ export default function BuildCD({
         formDataError.containerRegistryError = validationRules.containerRegistry(
             selectedRegistry.id || formData.containerRegistryName,
         )
-        form.selectedRegistry = selectedRegistry
+        form.selectedRegistry = {
+            ...selectedRegistry,
+            value: selectedRegistry.id,
+            label: selectedRegistry.id,
+        } as RegistryPayloadWithSelectType
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
@@ -378,12 +384,13 @@ export default function BuildCD({
 
     const renderEnvSelector = () => {
         const envId = formData.environmentId
-        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
-
-        const groupHeading = (props) => {
-            return <GroupHeading {...props} />
+        const _environment = formData.environments.find((env) => env.id == envId)
+        const selectedEnv: EnvironmentWithSelectPickerType = _environment && {
+            ..._environment,
+            label: _environment.name,
+            value: _environment.id.toString(),
         }
+        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const renderVirtualEnvironmentInfo = () => {
             if (isVirtualEnvironment && VirtualEnvSelectionInfoText) {
@@ -391,44 +398,38 @@ export default function BuildCD({
             }
         }
 
-        const singleOption = (props) => {
-            return <EnvFormatOptions {...props} environmentfieldName="name" />
-        }
-
-        const handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
-            return formatHighlightedTextDescription(opt, inputValue, 'name')
-        }
+        const getEnvListOptions = () =>
+            envList.map((_elm) => ({
+                label: `Cluster: ${_elm.label}`,
+                options: _elm.options.map((_option) => ({
+                    ..._option,
+                    label: _option?.name,
+                    value: _option?.id.toString(),
+                })),
+            }))
 
         return (
             <>
-                <div className="form__label dc__required-field">Environment</div>
-                <ReactSelect
+                <SelectPicker
+                    label="Environment"
+                    required
+                    inputId="environment"
                     menuPosition={isAdvanced ? null : 'fixed'}
-                    closeMenuOnScroll
                     isDisabled={!!cdPipelineId}
                     classNamePrefix="cd-pipeline-environment-dropdown"
                     placeholder="Select Environment"
+                    autoFocus
                     options={
                         releaseMode === ReleaseMode.MIGRATE_HELM
-                            ? envList.filter((env) => !env.isVirtualEnvironment)
-                            : envList
+                            ? getEnvListOptions().filter((env) =>
+                                  env.options.filter((_env) => !_env.isVirtualEnvironment),
+                              )
+                            : getEnvListOptions()
                     }
                     value={selectedEnv}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    isMulti={false}
-                    onChange={(selected: any) => selectEnvironment(selected)}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        SingleValue: singleOption,
-                        GroupHeading: groupHeading,
-                    }}
-                    styles={{
-                        ...groupStyle(),
-                        control: (base) => ({ ...base, border: '1px solid #d6dbdf', minHeight: 36, height: 36 }),
-                    }}
-                    formatOptionLabel={handleFormatHighlightedText}
+                    getOptionValue={(option) => option.value as unknown as string}
+                    onChange={selectEnvironment}
+                    size={ComponentSizeType.large}
                 />
                 {isEnvUsedState && (
                     <span className="form__error">
@@ -678,7 +679,7 @@ export default function BuildCD({
                         handleStrategy(selected.value)
                     }}
                 />
-                {isWebhookCD && !parentPipelineId ? renderWebhookInfo(): null}
+                {isWebhookCD && !parentPipelineId ? renderWebhookInfo() : null}
             </>
         )
     }
@@ -761,7 +762,7 @@ export default function BuildCD({
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
                                         height={300}
-                                        value={strategy.jsonStr}
+                                        value={strategy.yamlStr}
                                         mode="yaml"
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
@@ -803,8 +804,8 @@ export default function BuildCD({
                     getBuildCDManualApproval(
                         formData.userApprovalConfig,
                         formDataErrorObj.userApprovalConfig,
-                        handleUpdateUserApprovalConfig
-                )}
+                        handleUpdateUserApprovalConfig,
+                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

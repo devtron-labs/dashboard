@@ -44,11 +44,16 @@ import {
     TabProps,
     ToastVariantType,
     ToastManager,
+    MandatoryPluginDataType,
+    ProcessPluginDataParamsType,
+    ProcessPluginDataReturnType,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     FloatingVariablesSuggestions,
     getPluginIdsFromBuildStage,
@@ -99,9 +104,12 @@ import {
     gitOpsRepoNotConfiguredWithEnforcedEnv,
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
-import { CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
+    importComponentFromFELibrary('processPluginData', null, 'function')
+const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
     null,
@@ -258,6 +266,7 @@ export default function CDPipeline({
     )
     const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
+    const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -283,15 +292,65 @@ export default function CDPipeline({
         setAvailableTags(tags)
     }
 
-    useEffect(() => {
-        getInit()
-    }, [])
-
-    useEffect(() => {
-        if (formData.environmentId) {
-            getConfigMapSecrets()
+    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
+        if (!form) {
+            return
         }
-    }, [formData.environmentId])
+
+        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
+        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
+        const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
+
+        if (processPluginData) {
+            await getMandatoryPluginData(form, uniquePluginIds)
+            return
+        }
+
+        if (uniquePluginIds.length === 0) {
+            return
+        }
+
+        const {
+            pluginStore: { parentPluginStore, pluginVersionStore },
+        } = await getPluginsDetail({
+            appId: +appId,
+            pluginIds: uniquePluginIds,
+            shouldShowError: false,
+        })
+
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+    }
+
+    const getEnvCDPipelineName = (form) => {
+        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
+            .then(([cpPipelineName, envList]) => {
+                form.name = cpPipelineName.result
+                let list = envList.result || []
+                list = list.map((env) => {
+                    return {
+                        id: env.id,
+                        clusterId: env.cluster_id,
+                        clusterName: env.cluster_name,
+                        name: env.environment_name,
+                        namespace: env.namespace || '',
+                        active: false,
+                        isClusterCdActive: env.isClusterCdActive,
+                        description: env.description,
+                        isVirtualEnvironment: env.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
+                    }
+                })
+                sortObjectArrayAlphabetically(list, 'name')
+                form.environments = list
+                setFormData(form)
+                setPageState(ViewType.FORM)
+                setIsAdvanced(false)
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
 
     const getInit = () => {
         Promise.all([
@@ -344,39 +403,18 @@ export default function CDPipeline({
             })
     }
 
+    useEffect(() => {
+        getInit()
+    }, [])
+
+    useEffect(() => {
+        if (formData.environmentId) {
+            getConfigMapSecrets()
+        }
+    }, [formData.environmentId])
+
     const handleShowGitOpsRepoConfiguredWarning = () => {
         setGitOpsRepoConfiguredWarning({ show: false, text: '' })
-    }
-
-    const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
-            .then(([cpPipelineName, envList]) => {
-                form.name = cpPipelineName.result
-                let list = envList.result || []
-                list = list.map((env) => {
-                    return {
-                        id: env.id,
-                        clusterId: env.cluster_id,
-                        clusterName: env.cluster_name,
-                        name: env.environment_name,
-                        namespace: env.namespace || '',
-                        active: false,
-                        isClusterCdActive: env.isClusterCdActive,
-                        description: env.description,
-                        isVirtualEnvironment: env.isVirtualEnvironment,
-                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
-                    }
-                })
-                sortObjectArrayAlphabetically(list, 'name')
-                form.environments = list
-                setFormData(form)
-                setPageState(ViewType.FORM)
-                setIsAdvanced(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
     }
 
     const calculateLastStepDetail = (
@@ -407,23 +445,25 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
-        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
-        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
-        const pluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
-        if (pluginIds.length === 0) {
+    const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
+        if (!processPluginData) {
             return
         }
 
-        const {
-            pluginStore: { parentPluginStore, pluginVersionStore },
-        } = await getPluginsDetail({
-            appId: +appId,
-            pluginIds,
-            shouldShowError: false,
-        })
+        const { mandatoryPluginData: processedPluginData, pluginDataStore: updatedPluginDataStore } =
+            await processPluginData({
+                formData: form,
+                pluginDataStoreState: pluginDataStore,
+                appId: +appId,
+                appName,
+                envName: form.environmentName,
+                requiredPluginIds,
+                resourceKind: ResourceKindType.cdPipeline,
+            })
 
-        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+        setMandatoryPluginData(processedPluginData)
+        // The method itself adds over existing plugins, so no need to worry about of overriding
+        handlePluginDataStoreUpdate(updatedPluginDataStore)
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
@@ -450,7 +490,7 @@ export default function CDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
-                await handlePopulatePluginDataStore(result.form)
+                await handlePopulatePluginDataStore(form)
                 setFormData({
                     ...form,
                     clusterId: result.form?.clusterId,
@@ -522,6 +562,7 @@ export default function CDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: YAMLStringify(pipelineConfigFromRes.strategies[i].config),
                     selection: YAMLStringify(allStrategies.current[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -582,6 +623,9 @@ export default function CDPipeline({
                 }
             }
         }
+        const _dockerRegistries: RegistryPayloadType = dockerRegistries.find(
+            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+        )
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -624,9 +668,11 @@ export default function CDPipeline({
             pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                 ? GeneratedHelmPush.PUSH
                 : GeneratedHelmPush.DO_NOT_PUSH
-        form.selectedRegistry = dockerRegistries.find(
-            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
-        )
+        form.selectedRegistry = {
+            ..._dockerRegistries,
+            value: _dockerRegistries?.id,
+            label: _dockerRegistries?.id,
+        }
     }
 
     const responseCode = () => {
@@ -791,11 +837,22 @@ export default function CDPipeline({
         setFormData(_form)
     }
 
+    const handleValidateMandatoryPlugins: PipelineContext['handleValidateMandatoryPlugins'] = ({
+        newFormData = formData,
+        newPluginDataStore = pluginDataStore,
+    }) => {
+        if (!validatePlugins || !mandatoryPluginData?.pluginData?.length) {
+            return
+        }
+
+        setMandatoryPluginData(validatePlugins(newFormData, mandatoryPluginData.pluginData, newPluginDataStore))
+    }
+
     const validateStage = (
         stageName: string,
         _formData: PipelineFormType,
-        formDataErrorObject?,
-        _clonedPluginDataStore?: typeof pluginDataStore,
+        formDataErrorObject?: typeof formDataErrorObj,
+        clonedPluginDataStore: typeof pluginDataStore = pluginDataStore,
     ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
@@ -831,6 +888,11 @@ export default function CDPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
+
+            handleValidateMandatoryPlugins({
+                newFormData: _formData,
+                newPluginDataStore: clonedPluginDataStore,
+            })
 
             _formDataErrorObj[stageName].isValid = isStageValid
         }
@@ -1033,7 +1095,7 @@ export default function CDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                //For now we are removing check for error code 422 which is of deployment window, 
+                //For now we are removing check for error code 422 which is of deployment window,
                 // so in that case force delete modal would be shown.
                 // This should be done at BE and when done we will revert our changes
                 if (!force && error.code != 403 && error.code != 412) {
@@ -1066,13 +1128,17 @@ export default function CDPipeline({
     }
 
     const getNavLink = (toLink: string, stageName: string): TabProps => {
-        const showAlert = !formDataErrorObj[stageName].isValid
+        const showWarning =
+            mandatoryPluginData &&
+            ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
 
         return {
             id: `${CDDeploymentTabText[stageName]}-tab`,
             label: CDDeploymentTabText[stageName],
             tabType: 'navLink',
-            showError: showAlert,
+            showError: !formDataErrorObj[stageName].isValid,
+            showWarning,
             props: {
                 to: `${toLink}?${urlParams}`,
                 replace: true,
@@ -1103,10 +1169,14 @@ export default function CDPipeline({
                     <button
                         type="button"
                         data-testid="create-build-pipeline-advanced-options-button"
-                        className="cta cta--workflow cancel mr-16 flex"
+                        className="cta cta--workflow cancel mr-16 flex dc__gap-6"
                         onClick={handleAdvanceClick}
                     >
                         Advanced options
+                        {mandatoryPluginData &&
+                            (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                                <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
+                            )}
                     </button>
                 )
             )
@@ -1165,6 +1235,8 @@ export default function CDPipeline({
             handleUpdateAvailableTags,
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
+            handleValidateMandatoryPlugins,
+            mandatoryPluginData,
         }
     }, [
         formData,
@@ -1178,6 +1250,7 @@ export default function CDPipeline({
         isVirtualEnvironment,
         pluginDataStore,
         availableTags,
+        mandatoryPluginData,
     ])
 
     const renderCDPipelineBody = () => {
@@ -1243,6 +1316,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
+                                    getMandatoryPluginData={getMandatoryPluginData}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

@@ -30,7 +30,7 @@ import {
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
-import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { GUIViewProps, GUIViewModelType, ViewErrorType } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
@@ -194,8 +194,8 @@ const GUIView = ({
     return (
         <>
             {isUnSet && (
-                <div className="bcy-1 fs-12 fw-4 cn-9 en-2 bw-1 dc__no-left-border dc__no-right-border flexbox pt-8 pr-16 pb-8 pl-16 h-32 lh-16">
-                    <WarningIcon className="warning-icon-y7 icon-dim-16 mr-8" />
+                <div className="flexbox dc__gap-8 dc__align-items-center code-editor__warning">
+                    <ICWarningY5 className="icon-dim-16" />
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
             )}
@@ -216,11 +216,10 @@ const GUIView = ({
                 )}
             </div>
 
-            {/* In case of readOnly makes no sense */}
             {!state.error && (
                 <InfoColourBar
                     message="To modify additional configurations"
-                    classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
+                    classname="dc__content-start ev-2 bw-1 dc__no-border-radius dc__no-bottom-border dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
                     Icon={Help}
                     iconClass="fcv-5 icon-dim-20"
                     renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}

@@ -20,15 +20,17 @@ import {
     CIBuildConfigType,
     CIBuildType,
     DockerConfigOverrideType,
-    MandatoryPluginDataType,
     VariableType,
     CommonNodeAttr,
     WorkflowType,
     Material,
-    Environment,
+    SelectPickerOptionType,
+    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
-import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
+import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
@@ -116,10 +118,32 @@ export interface CIConfigDiffViewProps {
     gitMaterials: any
 }
 
+export interface CurrentMaterialType {
+    gitProviderId: number
+    url: string
+    checkoutPath: string
+    active: boolean
+    fetchSubmodules: boolean
+    includeExcludeFilePath: string
+    isExcludeRepoChecked: boolean
+    name?: string
+    id?: number
+}
+
+export interface SelectedGitMaterialType extends CurrentMaterialType, OptionTypeWithIcon {}
+
+export interface SourceConfigType {
+    appName: string
+    appType: number
+    description: string
+    teamId: number
+    templateId: number
+    material: SelectedGitMaterialType[]
+}
 export interface CIConfigFormProps {
     parentReloading: boolean
     dockerRegistries: any
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     ciConfig: CiPipelineResult
     reload: (skipPageReload?: boolean, redirection?: boolean) => Promise<void>
     appId: string
@@ -160,11 +184,13 @@ export interface BuilderIdOptionType extends OptionType {
     BuilderLangEnvParam: string
 }
 
-export interface VersionsOptionType extends OptionType {
+export interface VersionsOptionType extends OptionTypeWithIcon {
     infoText?: string
+    value: string
 }
 
-export interface LanguageOptionType extends OptionType {
+export interface LanguageOptionType extends SelectPickerOptionType {
+    value: string
     icon: string
 }
 
@@ -237,7 +263,7 @@ export interface TemplateDataType {
 export interface CIDockerFileConfigProps {
     configOverrideView: boolean
     ciConfig: CiPipelineResult
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     allowOverride: boolean
     selectedCIPipeline: CIPipelineDataType
     currentMaterial: any
@@ -340,16 +366,15 @@ export interface TargetPlatformSelectorType {
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
-    mandatoryPluginData?: MandatoryPluginDataType
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
             postBuildStage: Map<string, VariableType>[]
         }>
     >
-    environments?: any[]
-    selectedEnv?: Environment
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
+    environments?: EnvironmentWithSelectPickerType[]
+    selectedEnv?: EnvironmentWithSelectPickerType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
 }
 
 export interface TaskListType {
@@ -365,7 +390,7 @@ export interface TaskListType {
 
 export interface BuildContextProps {
     isDefaultBuildContext: boolean
-    sourceConfig: any
+    sourceConfig: SourceConfigType
     selectedBuildContextGitMaterial: any
     currentMaterial: any
     setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
@@ -405,12 +430,22 @@ export interface CIBuildTypeOptionType {
     addDivider: boolean
 }
 
+export interface MaterialOptionType extends SelectPickerOptionType {
+    checkoutPath: string
+    fetchSubmodules: boolean
+    filterPattern: string
+    id: number
+    isUsedInCiConfig: boolean
+    name: string
+    url: string
+}
+
 export interface CreateDockerFileLanguageOptionsProps {
     editorData: TemplateDataType
     editorValue: string
     handleGitRepoChange: (selectedMaterial) => void
-    materialOptions: any[]
-    selectedMaterial: any
+    materialOptions: MaterialOptionType[]
+    selectedMaterial: MaterialOptionType
     languageFrameworks: Map<string, FrameworkOptionType[]>
     selectedLanguage: LanguageOptionType
     resetChanges: () => void

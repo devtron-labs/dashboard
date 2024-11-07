@@ -25,8 +25,9 @@ import {
     CommonNodeAttr,
     WorkflowType,
     getUrlWithSearchParams,
+    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CdPipelineResult, CiPipelineResult, WorkflowResult, CiPipeline } from '../app/details/triggerView/types'
+import { CdPipelineResult, CiPipelineResult, WorkflowResult } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
@@ -197,7 +198,7 @@ export const getEnvAppList = (
     signal?: AbortSignal,
 ): Promise<EnvAppType> => {
     const options = signal ? { signal } : null
-    const { searchKey = '', cluster = [], offset = 0, pageSize = 20 } = filterConfig ?? {}
+    const { searchKey = '', cluster = [], offset, pageSize } = filterConfig ?? {}
     const params: GetEnvAppListParamsType = {
         envName: searchKey,
         clusterIds: cluster?.join(),

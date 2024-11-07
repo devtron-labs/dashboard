@@ -137,7 +137,7 @@ import {
     EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/Secret.utils'
+import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
@@ -254,7 +254,7 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (!isExternalApp) {
+        if (!isUpdateAppView && !isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
@@ -1626,7 +1626,7 @@ const ChartValuesView = ({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
-                    <div className="chart-values-view__details dc__border-right dc__overflow-scroll">
+                    <div className="flexbox-col dc__gap-12 chart-values-view__details dc__border-right dc__overflow-scroll">
                         {isCreateValueView && (
                             <ValueNameInput
                                 valueName={valueName}

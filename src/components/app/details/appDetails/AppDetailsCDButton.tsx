@@ -18,12 +18,16 @@ import React from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import {
     ACTION_STATE,
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
     DeploymentNodeType,
     VisibleModal,
     stopPropagation,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getCTAClass, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
@@ -33,6 +37,7 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { getDeployButtonStyle } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -70,21 +75,16 @@ const AppDetailsCDButton = ({
     }
 
     const renderDeployButton = () => (
-        <button
-            className={`${getCTAClass(deploymentUserActionState)} h-32`}
-            data-testid="deploy-button"
+        <Button
+            dataTestId="deploy-button"
+            size={ComponentSizeType.small}
+            variant={ButtonVariantType.primary}
+            text={BUTTON_TITLE[DeploymentNodeType.CD]}
+            startIcon={deploymentUserActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : <DeployIcon />}
             onClick={onClickDeployButton}
-            type="button"
-        >
-            {deploymentUserActionState === ACTION_STATE.BLOCKED ? (
-                <InfoOutline className="icon-dim-16 mr-6" />
-            ) : (
-                <DeployIcon
-                    className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
-                />
-            )}
-            {BUTTON_TITLE[DeploymentNodeType.CD]}
-        </button>
+            component={ButtonComponentType.button}
+            style={getDeployButtonStyle(deploymentUserActionState)}
+        />
     )
 
     const node = {
@@ -113,7 +113,7 @@ const AppDetailsCDButton = ({
     const renderCDModal = () =>
         (mode === URL_PARAM_MODE_TYPE.LIST || mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
             <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
+                <div className="modal-body--cd-material h-100 contains-diff-view flexbox-col" onClick={stopPropagation}>
                     <CDMaterial
                         materialType={MATERIAL_TYPE.inputMaterialList}
                         appId={appId}

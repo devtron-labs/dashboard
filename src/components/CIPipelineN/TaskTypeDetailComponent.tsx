@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     Checkbox,
@@ -25,8 +25,8 @@ import {
     ScriptType,
     CustomInput,
     ClipboardButton,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import OutputDirectoryPath from './OutputDirectoryPath'
@@ -37,10 +37,8 @@ import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
-import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const TaskTypeDetailComponent = () => {
@@ -211,16 +209,11 @@ export const TaskTypeDetailComponent = () => {
         }
     }
 
-    const menuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                    Type to enter a custom value. Press Enter to accept.
-                </div>
-                {props.children}
-            </components.MenuList>
-        )
-    }
+    const renderMenuListFooter = () => (
+        <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+            Type to enter a custom value. Press Enter to accept.
+        </div>
+    )
 
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
@@ -234,26 +227,17 @@ export const TaskTypeDetailComponent = () => {
                     />
 
                     <div className="dc__position-rel">
-                        <CreatableSelect
-                            tabIndex={1}
+                        <SelectPicker
+                            inputId="containerImage"
                             value={selectedContainerImage}
                             options={containerImageOptions}
                             placeholder="Select container image or input value"
                             onChange={handleContainerImageSelector}
-                            styles={containerImageSelectStyles}
                             classNamePrefix="select"
-                            components={{
-                                MenuList: menuList,
-                                Option,
-                                IndicatorSeparator: null,
-                                ValueContainer,
-                            }}
-                            noOptionsMessage={(): string => {
-                                return 'No matching options'
-                            }}
                             onBlur={handleCreatableBlur}
-                            isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
+                            isCreatable
+                            renderMenuListFooter={renderMenuListFooter}
                         />
                         {selectedContainerImage?.label && (
                             <div className="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20">

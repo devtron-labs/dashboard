@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -51,9 +51,6 @@ export const Routes = {
     V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
-    SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
@@ -472,12 +469,6 @@ export enum SERVER_MODE {
 
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
-export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = 'devtron-app', // devtron app work flow
-    HELM_APPS = 'helm-app', // helm app work flow
-    JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
-}
-
 export enum APP_TYPE {
     HELM_CHART = 'helm-chart',
     DEVTRON_APPS = 'app',
@@ -568,6 +559,8 @@ export interface RegistryPayloadType {
         }
     }
 }
+
+export interface RegistryPayloadWithSelectType extends RegistryPayloadType, SelectPickerOptionType {}
 
 export const RegistryType = {
     DOCKER_HUB: 'docker-hub',
@@ -921,6 +914,9 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,
     PERMISSION_DENIED: 403,

@@ -17,12 +17,12 @@
 import moment from 'moment'
 import React from 'react'
 import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType } from '@devtron-labs/devtron-fe-common-lib'
+import CreatableSelect from 'react-select/creatable'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -120,6 +120,7 @@ export const ThroughputSelect = (props) => {
     return (
         <CreatableSelect
             className=""
+            inputId="throughput-select"
             placeholder="Status Code"
             value={{ label: props.status, value: props.status }}
             options={[
@@ -448,5 +449,16 @@ export class ParamsAndEnvContext extends EnvironmentSelection {
             return +params.envId
         }
         return _envList[0].environmentId
+    }
+}
+
+export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType => {
+    switch (actionState) {
+        case ACTION_STATE.BLOCKED:
+            return ButtonStyleType.negative
+        case ACTION_STATE.PARTIAL:
+            return ButtonStyleType.warning
+        default:
+            return ButtonStyleType.default
     }
 }

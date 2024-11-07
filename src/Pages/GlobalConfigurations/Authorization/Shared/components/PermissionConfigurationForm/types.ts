@@ -26,6 +26,12 @@ import {
 
 export type PermissionConfigurationFormProps = {
     showUserPermissionGroupSelector: boolean
+    /**
+     * If true, direct permissions are hidden
+     *
+     * @default false
+     */
+    hideDirectPermissions?: boolean
 }
 
 export interface PermissionConfigurationFormContext {

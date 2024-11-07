@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -11,26 +11,17 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getAppChartRefForAppAndEnv } from '@Services/service'
-import { importComponentFromFELibrary } from '@Components/common'
 import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { CMSecretComponentType, CMSecretWrapperProps } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
-import { ConfigMapSecretContainer } from './ConfigMapSecret.container'
-import { CM_SECRET_COMPONENT_NAME } from './ConfigMapSecret.constants'
+import { CM_SECRET_COMPONENT_NAME } from './constants'
+import { CMSecretComponentType, CMSecretWrapperProps } from './types'
 
-import './ConfigMapSecret.scss'
-
-const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
+import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
+import { ConfigMapSecretFormProvider } from './ConfigMapSecretFormContext'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS
-    const {
-        componentType = CMSecretComponentType.ConfigMap,
-        parentState,
-        setParentState,
-        isProtected,
-        onErrorRedirectURL,
-    } = props
+    const { componentType = CMSecretComponentType.ConfigMap, parentState, setParentState, onErrorRedirectURL } = props
 
     // HOOKS
     const { appId, envId, name } = useParams<{ appId: string; envId: string; name: string }>()
@@ -39,62 +30,40 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
-    const [initLoading, initResult, initError] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        getAppChartRefForAppAndEnv(+appId, +envId),
-                        isProtected && getAllDrafts
-                            ? getAllDrafts(appId, envId ?? -1, componentType, abortControllerRef.current.signal)
-                            : null,
-                    ]),
-                abortControllerRef,
-            ),
+    const [appChartRefLoading, appChartRefRes, appChartRefErr, reload] = useAsync(
+        () => abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId), abortControllerRef),
         [componentType],
     )
 
     useEffect(() => {
-        if (initResult) {
+        if (appChartRefRes) {
             setParentState?.(ComponentStates.loaded)
         }
-        if (initError && !getIsRequestAborted(initError)) {
+        if (appChartRefErr && !getIsRequestAborted(appChartRefErr)) {
             setParentState?.(ComponentStates.failed)
-            showError(initError)
+            showError(appChartRefErr)
         }
 
         return () => {
             setParentState?.(ComponentStates.loading)
         }
-    }, [initResult, initError])
+    }, [appChartRefRes, appChartRefErr])
 
-    const draftDataMap = useMemo(() => {
-        if (initResult?.[1]?.result?.length) {
-            const _draftDataMap = initResult[1].result.reduce(
-                (acc, curr) => ({ ...acc, [curr.resourceName]: curr }),
-                {},
-            )
-
-            return _draftDataMap
-        }
-
-        return null
-    }, [initResult])
-
-    if (parentState === ComponentStates.loading || initLoading || !!getIsRequestAborted(initError)) {
-        return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    if (parentState === ComponentStates.loading || appChartRefLoading || getIsRequestAborted(appChartRefErr)) {
+        return <Progressing fullHeight pageLoader />
     }
 
-    if (initError) {
-        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} />
+    if (appChartRefErr) {
+        return <ErrorScreenManager code={appChartRefErr.code} redirectURL={onErrorRedirectURL} reload={reload} />
     }
 
     return (
-        <ConfigMapSecretContainer
-            key={`${CM_SECRET_COMPONENT_NAME[componentType]}-${name}`}
-            draftDataMap={draftDataMap}
-            appChartRef={initResult[0]?.result}
-            {...props}
-        />
+        <ConfigMapSecretFormProvider>
+            <ConfigMapSecretContainer
+                key={`${CM_SECRET_COMPONENT_NAME[componentType]}-${name}`}
+                appChartRef={appChartRefRes?.result}
+                {...props}
+            />
+        </ConfigMapSecretFormProvider>
     )
 }
