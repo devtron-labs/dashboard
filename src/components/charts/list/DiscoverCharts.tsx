@@ -120,6 +120,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isGrid, setIsGrid] = useState<boolean>(true)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
+    const [chartActiveMap, setChartActiveMap] = useState({})
 
     const [showSourcePopoUp, setShowSourcePopoUp] = useState<boolean>(false)
     const [chartLists, setChartLists] = useState<ChartListType[]>([])
@@ -166,6 +167,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
+            setChartActiveMap(
+                chartRepos.reduce((acc, curr) => {
+                    acc[curr.name] = curr.active
+                    return acc
+                }, {}),
+            )
         } catch (err) {
             showError(err)
         } finally {
@@ -392,6 +399,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                             setFilteredChartList={setFilteredChartList}
                             isLoading={isLoading}
                             setShowSourcePopoUp={setShowSourcePopoUp}
+                            chartActiveMap={chartActiveMap}
+                            setChartActiveMap={setChartActiveMap}
                         />
                     )}
                 </div>

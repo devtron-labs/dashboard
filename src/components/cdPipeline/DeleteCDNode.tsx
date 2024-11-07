@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
@@ -32,17 +31,7 @@ const DeleteCDNode = ({
     forceDeleteData,
     deleteTitleName,
     isLoading,
-    showConfirmationBar,
 }: Readonly<DeleteCDNodeProps>) => {
-    const [deleteInput, setDeleteInput] = useState<string>('')
-    const deleteTitle = showConfirmationBar
-        ? `Delete Pipeline for '${deleteTitleName}' ?`
-        : `Delete '${deleteTitleName}' ?`
-
-    const handleDeleteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setDeleteInput(e.target.value)
-    }
-
     const onClickHideNonCascadeDeletePopup = () => {
         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
     }
@@ -79,25 +68,14 @@ const DeleteCDNode = ({
 
     return (
         <DeleteDialog
-            title={deleteTitle}
-            description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
+            title={`Delete pipeline for '${deleteTitleName}' environment ?`}
+            description={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
             delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)}
             closeDelete={hideDeleteModal}
             apiCallInProgress={isLoading}
-            disabled={showConfirmationBar && deleteInput !== deleteTitleName}
-        >
-            {showConfirmationBar && (
-                <CustomInput
-                    disabled={isLoading}
-                    rootClassName="mt-12"
-                    data-testId="delete-dialog-input"
-                    placeholder={`Please type ${deleteTitleName} to confirm`}
-                    value={deleteInput}
-                    name="delete-input"
-                    onChange={handleDeleteInputChange}
-                />
-            )}
-        </DeleteDialog>
+            showDeleteConfirmation
+            deleteConfirmationText={deleteTitleName}
+        />
     )
 }
 
