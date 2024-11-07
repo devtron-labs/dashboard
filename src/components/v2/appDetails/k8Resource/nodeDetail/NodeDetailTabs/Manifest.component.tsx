@@ -205,7 +205,7 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys) {
+        if (!getLockedManifestKeys || isExternalApp) {
             return
         }
 
