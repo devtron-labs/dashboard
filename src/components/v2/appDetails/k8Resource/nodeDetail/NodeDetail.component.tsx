@@ -22,6 +22,10 @@ import {
     CHECKBOX_VALUE,
     OptionType,
     DeploymentAppTypes,
+    ConfigurationType,
+    FormProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -34,6 +38,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import {
     AppType,
+    ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
     NodeDetailPropsType,
@@ -56,6 +61,13 @@ import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-del
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 import { EDITOR_VIEW } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const ToggleManifestConfigurationMode = importComponentFromFELibrary(
+    'ToggleManifestConfigurationMode',
+    null,
+    'function',
+)
 
 const NodeDetailComponent = ({
     loadingResources,
@@ -140,8 +152,16 @@ const NodeDetailComponent = ({
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
-    const [selectedContainerName, setSelectedContainerName] = useState<OptionType>(({label: _selectedContainer, value: _selectedContainer}))
+    const [selectedContainerName, setSelectedContainerName] = useState<OptionType>({
+        label: _selectedContainer,
+        value: _selectedContainer,
+    })
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
+    const [manifestFormConfigurationType, setManifestFormConfigurationType] = useState<ConfigurationType>(
+        ConfigurationType.YAML,
+    )
+    const [manifestErrors, setManifestErrors] = useState<Parameters<FormProps['onError']>[0]>([])
+    const [unableToParseManifest, setUnableToParseManifest] = useState<boolean>(false)
 
     // States uplifted from Manifest Component
     const manifestViewRef = useRef<ManifestViewRefType>({
@@ -152,9 +172,12 @@ const NodeDetailComponent = ({
             manifest: '',
             activeManifestEditorData: '',
             modifiedManifest: '',
+            guiSchema: {},
         },
         id: '',
     })
+
+    const manifestGUIFormRef: FormProps['ref'] = useRef(null)
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
@@ -261,6 +284,10 @@ const NodeDetailComponent = ({
         }
     }
 
+    const handleManifestGUIError: ManifestActionPropsType['handleManifestGUIErrors'] = (errors = []) => {
+        setManifestErrors(errors)
+    }
+
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
         updateTabUrl?.(_url)
@@ -306,6 +333,8 @@ const NodeDetailComponent = ({
                 ) >= 0
             ))
 
+    const doesManifestGUIContainsError = manifestErrors.length > 0
+
     // Assign extracted containers to selected resource before passing further
     if (selectedResource) {
         selectedResource.containers = resourceContainers
@@ -323,7 +352,7 @@ const NodeDetailComponent = ({
     }
 
     const switchSelectedContainer = (containerName: string) => {
-        setSelectedContainerName({label: containerName, value: containerName})
+        setSelectedContainerName({ label: containerName, value: containerName })
         setSelectedContainer(selectedContainer.set(selectedContainerValue, containerName))
     }
 
@@ -335,9 +364,25 @@ const NodeDetailComponent = ({
         return Object.values(params).join('/')
     }
 
-    const handleManifestApplyChanges = () => setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    const handleManifestApplyChanges = () => {
+        const isFormValid = !manifestGUIFormRef.current?.validateForm || manifestGUIFormRef.current.validateForm()
 
-    const handleManifestCancel = () => setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+        if (!isFormValid) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Validation failed for some input fields, please rectify and apply changes again.',
+            })
+
+            return
+        }
+
+        setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    }
+
+    const handleManifestCancel = () => {
+        handleManifestGUIError([])
+        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    }
 
     const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
 
@@ -366,6 +411,22 @@ const NodeDetailComponent = ({
         )
     }
 
+    const handleToggleManifestConfigurationMode = () => {
+        setManifestFormConfigurationType((prev) =>
+            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
+        )
+    }
+
+    const handleSwitchToYAMLMode = () => {
+        setManifestFormConfigurationType(ConfigurationType.YAML)
+    }
+
+    const handleUpdateUnableToParseManifest: ManifestActionPropsType['handleUpdateUnableToParseManifest'] = (
+        value: boolean,
+    ) => {
+        setUnableToParseManifest(value)
+    }
+
     const renderManifestTabHeader = () => (
         <>
             {(isExternalApp ||
@@ -379,10 +440,19 @@ const NodeDetailComponent = ({
                         <div className="ml-4 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
+                                {ToggleManifestConfigurationMode && !isExternalApp && (
+                                    <ToggleManifestConfigurationMode
+                                        mode={manifestFormConfigurationType}
+                                        handleToggle={handleToggleManifestConfigurationMode}
+                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
+                                    />
+                                )}
+
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                    className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
                                     onClick={handleManifestApplyChanges}
+                                    disabled={doesManifestGUIContainsError}
                                 >
                                     <>
                                         <ICCheck className="icon-dim-16 scb-5" />
@@ -524,6 +594,12 @@ const NodeDetailComponent = ({
                             setShowManifestCompareView={setShowManifestCompareView}
                             manifestCodeEditorMode={manifestCodeEditorMode}
                             setManifestCodeEditorMode={setManifestCodeEditorMode}
+                            handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                            manifestFormConfigurationType={manifestFormConfigurationType}
+                            handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
+                            handleManifestGUIErrors={handleManifestGUIError}
+                            manifestGUIFormRef={manifestGUIFormRef}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

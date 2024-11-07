@@ -234,7 +234,6 @@ export const Routes = {
     POD_EVENTS: 'pod/events',
     UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
-    K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',

@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { Options, OptionsBase } from '../../appDetails.type'
+import { AppDetails, Options, OptionsBase, SelectedResourceType } from '../../appDetails.type'
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
@@ -138,4 +138,13 @@ export interface EphemeralContainerProps {
     fluxTemplateType: string
     isResourceBrowserView: boolean
     params: ParamsType
+}
+
+export interface GetResourceRequestPayloadParamsType {
+    appDetails: AppDetails
+    nodeName: string
+    nodeType: string
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+    updatedManifest?: string
 }
