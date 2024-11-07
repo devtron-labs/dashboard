@@ -111,7 +111,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 group={null}
                 showGenericNullState
                 addTab={addTab}
-                hideDeleteResource
+                hideActionsMenu
                 hideBulkSelection
                 shouldOverrideSelectedResourceKind
             />
