@@ -350,7 +350,7 @@ export const GitInfoMaterial = ({
 
         if (materialError || !anyCommit) {
             return (
-                <div className="select-material select-material--trigger-view">
+                <div className="select-material">
                     {showHeader && renderMaterialHistoryHeader(_selectedMaterial)}
 
                     <div className="select-material__empty-state-container flex dc__position-rel">
@@ -394,7 +394,7 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="dc__flex-1 dc__window-bg select-material select-material--trigger-view">
+            <div className="dc__flex-1 dc__window-bg select-material dc__overflow-hidden h-100 pb-160">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
                 <MaterialHistory

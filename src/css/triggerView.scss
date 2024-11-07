@@ -48,25 +48,12 @@
 }
 
 .material-list__item {
-    cursor: pointer;
-    padding: 16px;
     min-height: 76px;
 }
 
 .material-info {
     display: flex;
     justify-content: space-between;
-}
-
-.material-info__name {
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 4px;
 }
 
 .material-selected {
