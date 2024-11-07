@@ -34,7 +34,7 @@ import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { GUIViewProps, GUIViewModelType, ViewErrorType } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
-import { getRenderActionButton, makeObjectFromJsonPathArray } from './utils'
+import { makeObjectFromJsonPathArray, getRenderActionButton } from './utils'
 import { GUIViewModel, ViewError } from './GUIViewModel'
 import GUIViewCheckbox from './GUIViewCheckbox'
 
