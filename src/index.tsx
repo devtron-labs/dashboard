@@ -156,7 +156,8 @@ if (!window || !window._env_) {
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
         FEATURE_PROMO_EMBEDDED_IFRAME_URL:'',
-        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset'
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployment,rollout,daemonset,statefulset',
+        FEATURE_RB_SYNC_CLUSTER_ENABLE: true,
     }
 }
 
