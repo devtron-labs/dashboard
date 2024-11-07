@@ -70,12 +70,13 @@ const BaseResourceListContent = ({
     nodeType,
     group,
     areFiltersHidden = false,
-    hideActionsMenu = false,
+    hideDeleteResource = false,
     searchPlaceholder,
     showGenericNullState,
     addTab,
     hideBulkSelection = false,
     shouldOverrideSelectedResourceKind = false,
+    k8SObjectMapRaw,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -104,6 +105,18 @@ const BaseResourceListContent = ({
     const showPaginatedView = filteredResourceList?.length > pageSize
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
     const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
+
+    const kindToGvkMapFromRawMap = useMemo(
+        () =>
+            (k8SObjectMapRaw ?? [])
+                .flatMap((value) => value.gvk)
+                .reduce<Record<string, GVKType>>((acc, gvk) => {
+                    acc[gvk.Kind.toLowerCase()] = gvk
+
+                    return acc
+                }, {}),
+        [k8SObjectMapRaw],
+    )
 
     /**
      * Initial Sort Key
@@ -330,7 +343,10 @@ const BaseResourceListContent = ({
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin, kind: kindFromResource } = e.currentTarget.dataset
         const lowercaseKindFromResource = kindFromResource.toLowerCase()
-        const _group: string = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+        const _group: string =
+            (shouldOverrideSelectedResourceKind
+                ? kindToGvkMapFromRawMap[lowercaseKindFromResource]?.Group?.toLowerCase()
+                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
 
         let resourceParam: string
@@ -339,8 +355,9 @@ const BaseResourceListContent = ({
 
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            resourceParam = `${shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind}/${_group}/${_resourceName}`
-            kind = _kind
+            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
+            resourceParam = `${eventKind}/${_group}/${_resourceName}`
+            kind = eventKind
             resourceName = _resourceName
         } else {
             kind = shouldOverrideSelectedResourceKind
@@ -367,58 +384,63 @@ const BaseResourceListContent = ({
             .catch(noop)
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => (
-        <div
-            // Added id as the name is not always unique
-            key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
-            className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
-            style={{ gridTemplateColumns }}
-        >
-            {resourceList?.headers.map((columnName) =>
-                columnName === 'name' ? (
-                    <div
-                        key={`${resourceData.id}-${columnName}`}
-                        className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${hideActionsMenu ? 'pr-8' : ''}`}
-                        data-testid="created-resource-name"
-                    >
-                        {!hideBulkSelection && (
-                            <Checkbox
-                                isChecked={!!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied}
-                                onChange={getHandleCheckedForId(resourceData)}
-                                rootClassName="mb-0"
-                                value={CHECKBOX_VALUE.CHECKED}
-                            />
-                        )}
-                        <Tooltip content={resourceData.name}>
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
-                                data-name={resourceData.name}
-                                data-namespace={resourceData.namespace}
-                                data-kind={resourceData.kind}
-                                onClick={handleResourceClick}
-                                aria-label={`Select ${resourceData.name}`}
-                            >
-                                <span
-                                    className="dc__link cursor"
-                                    // eslint-disable-next-line react/no-danger
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(
-                                            highlightSearchText({
-                                                searchText,
-                                                text: String(resourceData.name),
-                                                highlightClasses: 'p-0 fw-6 bcy-2',
-                                            }),
-                                        ),
-                                    }}
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
+        // This should be used only if shouldOverrideSelectedResourceKind is true
+        const gvkFromRawData = kindToGvkMapFromRawMap[(resourceData.kind as string).toLowerCase()] ?? ({} as GVKType)
+
+        return (
+            <div
+                // Added id as the name is not always unique
+                key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
+                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+                style={{ gridTemplateColumns }}
+            >
+                {resourceList?.headers.map((columnName) =>
+                    columnName === 'name' ? (
+                        <div
+                            key={`${resourceData.id}-${columnName}`}
+                            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                            data-testid="created-resource-name"
+                        >
+                            {!hideBulkSelection && (
+                                <Checkbox
+                                    isChecked={
+                                        !!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied
+                                    }
+                                    onChange={getHandleCheckedForId(resourceData)}
+                                    rootClassName="mb-0"
+                                    value={CHECKBOX_VALUE.CHECKED}
                                 />
-                            </button>
-                        </Tooltip>
-                        <ClipboardButton
-                            content={String(resourceData.name)}
-                            rootClassName="p-4 dc__visible-hover--child"
-                        />
-                        {!hideActionsMenu && (
+                            )}
+                            <Tooltip content={resourceData.name}>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                    data-name={resourceData.name}
+                                    data-namespace={resourceData.namespace}
+                                    data-kind={resourceData.kind}
+                                    onClick={handleResourceClick}
+                                    aria-label={`Select ${resourceData.name}`}
+                                >
+                                    <span
+                                        className="dc__link cursor"
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: String(resourceData.name),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </button>
+                            </Tooltip>
+                            <ClipboardButton
+                                content={String(resourceData.name)}
+                                rootClassName="p-4 dc__visible-hover--child"
+                            />
                             <ResourceBrowserActionMenu
                                 clusterId={clusterId}
                                 resourceData={resourceData}
@@ -427,60 +449,63 @@ const BaseResourceListContent = ({
                                     ...selectedResource,
                                     ...(shouldOverrideSelectedResourceKind && {
                                         gvk: {
-                                            Group: resourceData.group ?? selectedResource.gvk.Group,
-                                            Kind: resourceData.kind ?? selectedResource.gvk.Kind,
-                                            Version: resourceData.version ?? selectedResource.gvk.Version,
+                                            Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
+                                            Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
+                                            Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
                                         } as GVKType,
                                     }),
                                 }}
                                 handleResourceClick={handleResourceClick}
+                                hideDeleteResource={hideDeleteResource}
                             />
-                        )}
-                    </div>
-                ) : (
-                    <div
-                        key={`${resourceData.id}-${columnName}`}
-                        className={`flexbox dc__align-items-center ${
-                            columnName === 'status'
-                                ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
-                                : ''
-                        }`}
-                    >
-                        <ConditionalWrap
-                            condition={columnName === 'node'}
-                            wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
+                        </div>
+                    ) : (
+                        <div
+                            key={`${resourceData.id}-${columnName}`}
+                            className={`flexbox dc__align-items-center ${
+                                columnName === 'status'
+                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
+                                    : ''
+                            }`}
                         >
-                            <Tooltip content={resourceData[columnName]}>
-                                <span
-                                    className="dc__truncate"
-                                    data-testid={`${columnName}-count`}
-                                    // eslint-disable-next-line react/no-danger
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(
-                                            highlightSearchText({
-                                                searchText,
-                                                text: renderResourceValue(resourceData[columnName]?.toString()),
-                                                highlightClasses: 'p-0 fw-6 bcy-2',
-                                            }),
-                                        ),
-                                    }}
-                                />
-                            </Tooltip>
-                            <span>
-                                {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
-                                    <PodRestartIcon
-                                        clusterId={clusterId}
-                                        name={resourceData.name}
-                                        namespace={resourceData.namespace}
+                            <ConditionalWrap
+                                condition={columnName === 'node'}
+                                wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
+                            >
+                                <Tooltip content={resourceData[columnName]}>
+                                    <span
+                                        className="dc__truncate"
+                                        data-testid={`${columnName}-count`}
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: renderResourceValue(resourceData[columnName]?.toString()),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
                                     />
-                                )}
-                            </span>
-                        </ConditionalWrap>
-                    </div>
-                ),
-            )}
-        </div>
-    )
+                                </Tooltip>
+                                <span>
+                                    {columnName === 'restarts' &&
+                                        Number(resourceData.restarts) !== 0 &&
+                                        PodRestartIcon && (
+                                            <PodRestartIcon
+                                                clusterId={clusterId}
+                                                name={resourceData.name}
+                                                namespace={resourceData.namespace}
+                                            />
+                                        )}
+                                </span>
+                            </ConditionalWrap>
+                        </div>
+                    ),
+                )}
+            </div>
+        )
+    }
 
     const renderContent = () => {
         if (!resourceListError && (isLoading || !resourceList || !filteredResourceList)) {

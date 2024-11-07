@@ -26,6 +26,7 @@ const ClusterUpgradeCompatibilityInfo = ({
     selectedCluster,
     updateTabUrl,
     addTab,
+    k8SObjectMapRaw,
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
 
@@ -111,9 +112,10 @@ const ClusterUpgradeCompatibilityInfo = ({
                 group={null}
                 showGenericNullState
                 addTab={addTab}
-                hideActionsMenu
+                hideDeleteResource
                 hideBulkSelection
                 shouldOverrideSelectedResourceKind
+                k8SObjectMapRaw={k8SObjectMapRaw}
             />
         </div>
     )

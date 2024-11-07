@@ -1,9 +1,10 @@
 import { useTabs } from '@Components/common/DynamicTabs'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceGroupType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import {
     ClusterOptionType,
     K8SResourceListType,
+    ResourceBrowserActionMenuType,
     ResourceDetailType,
     ResourceFilterOptionsProps,
     URLParams,
@@ -12,6 +13,7 @@ import { ALL_NAMESPACE_OPTION } from '../Constants'
 
 export interface BaseResourceListProps
     extends Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>,
+        Pick<ResourceBrowserActionMenuType, 'hideDeleteResource'>,
         Pick<
             K8SResourceListType,
             | 'addTab'
@@ -40,16 +42,12 @@ export interface BaseResourceListProps
      * @default false
      */
     shouldOverrideSelectedResourceKind?: boolean
-    /**
-     * If true, the actions menu are hidden
-     *
-     * @default false
-     */
-    hideActionsMenu?: boolean
+    k8SObjectMapRaw?: ApiResourceGroupType[]
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<ReturnType<typeof useTabs>, 'addTab' | 'updateTabUrl'> {
+    extends Pick<ReturnType<typeof useTabs>, 'addTab' | 'updateTabUrl'>,
+        Pick<BaseResourceListProps, 'k8SObjectMapRaw'> {
     clusterId: string
     clusterName: string
     selectedCluster: ClusterOptionType

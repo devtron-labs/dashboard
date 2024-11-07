@@ -317,6 +317,8 @@ const ResourceList = () => {
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
+        const k8sObjectMapRawData = k8SObjectMapRaw?.result.apiResources || null
+
         if (isUpgradeClusterNodeType && isFELibAvailable) {
             return (
                 <ClusterUpgradeCompatibilityInfo
@@ -325,6 +327,7 @@ const ResourceList = () => {
                     selectedCluster={selectedCluster}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                     addTab={addTab}
+                    k8SObjectMapRaw={k8sObjectMapRawData}
                 />
             )
         }
@@ -338,7 +341,7 @@ const ResourceList = () => {
                 key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
-                k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                k8SObjectMapRaw={k8sObjectMapRawData}
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
@@ -347,7 +350,7 @@ const ResourceList = () => {
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
-                    k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                    k8SObjectMapRaw={k8sObjectMapRawData}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}

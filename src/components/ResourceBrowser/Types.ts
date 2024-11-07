@@ -167,6 +167,12 @@ export interface ResourceBrowserActionMenuType {
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
+    /**
+     * If true, the delete resource option is hidden in pop up menu
+     *
+     * @default false
+     */
+    hideDeleteResource?: boolean
 }
 
 export interface DeleteResourcePopupType {

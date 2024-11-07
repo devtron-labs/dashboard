@@ -65,6 +65,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     getResourceListData,
     handleResourceClick,
     removeTabByIdentifier,
+    hideDeleteResource,
 }) => {
     const { installedModuleMap } = useMainContext()
 
@@ -168,14 +169,16 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                         {showResourceScanModal && OpenSecurityModalButton && (
                             <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
                         )}
-                        <span
-                            className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                            onClick={toggleDeleteDialog}
-                            data-testid="delete-option-link"
-                        >
-                            <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                            {RESOURCE_ACTION_MENU.delete}
-                        </span>
+                        {!hideDeleteResource && (
+                            <span
+                                className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                                onClick={toggleDeleteDialog}
+                                data-testid="delete-option-link"
+                            >
+                                <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                                {RESOURCE_ACTION_MENU.delete}
+                            </span>
+                        )}
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
