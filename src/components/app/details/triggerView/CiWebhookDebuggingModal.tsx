@@ -156,7 +156,7 @@ export const CiWebhookModal = ({
                             >
                                 <div className="flex left top dc__gap-8">
                                     <div
-                                        className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'failed'}`}
+                                        className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'not-ready'}`}
                                     />
                                     <div>
                                         <span className={`lh-20 ${isActive ? 'cb-5 fw-6' : 'cn-9'}`}>

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { SourceTypeMap } from '../../../../config'
+import { ReactComponent as Refresh } from '@Icons/ic-restore.svg'
+import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { MaterialSourceProps } from './types'
-import { CIMaterialType, CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonStyleType, ButtonVariantType, CIMaterialType, CiPipelineSourceConfig, ComponentSizeType, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon } from '@Components/common'
 
 export default function MaterialSource({
@@ -82,7 +80,7 @@ export default function MaterialSource({
         return (
             <button
                 type="button"
-                className="material-refresh"
+                className="material-refresh dc__unset-button-styles"
                 disabled={mat.isMaterialLoading}
                 data-id={mat.gitMaterialId}
                 onClick={handleRefreshAction}
@@ -129,7 +127,7 @@ export default function MaterialSource({
                             </div>
                         </div>
                         {refreshMaterial ? (
-                            <div className="material-info">
+                            <div className="material-info w-100">
                                 {renderMaterialUpdateInfo(mat)}
                                 {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
                             </div>
