@@ -156,6 +156,7 @@ export const EVENT_LIST = {
         count: 'Count',
         age: 'Age',
         lastSeen: 'Last Seen',
+        gptWidgetButton: '',
     },
     dataKeys: {
         involvedObject: 'involved object',

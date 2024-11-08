@@ -1,8 +1,14 @@
 import { useTabs } from '@Components/common/DynamicTabs'
-import { ApiResourceGroupType, K8sResourceDetailType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { K8sResourceDetailType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
-import { K8SResourceListType, ResourceBrowserActionMenuType, ResourceFilterOptionsProps, URLParams } from '../Types'
+import {
+    K8SResourceListType,
+    ResourceBrowserActionMenuType,
+    ResourceFilterOptionsProps,
+    SidebarType,
+    URLParams,
+} from '../Types'
 import { ALL_NAMESPACE_OPTION } from '../Constants'
 
 export interface BaseResourceListProps
@@ -13,12 +19,15 @@ export interface BaseResourceListProps
             | 'addTab'
             | 'isOpen'
             | 'renderRefreshBar'
-            | 'updateK8sResourceTab'
             | 'selectedCluster'
             | 'selectedResource'
             | 'showStaleDataWarning'
             | 'clusterName'
+            | 'setWidgetEventDetails'
+            | 'handleResourceClick'
+            | 'lowercaseKindToResourceGroupMap'
         >,
+        Pick<SidebarType, 'updateK8sResourceTab'>,
         Pick<URLParams, 'nodeType' | 'group'> {
     isLoading: boolean
     resourceListError: ServerErrors
@@ -36,10 +45,12 @@ export interface BaseResourceListProps
      * @default false
      */
     shouldOverrideSelectedResourceKind?: boolean
-    k8SObjectMapRaw?: ApiResourceGroupType[]
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ReturnType<typeof useTabs>, 'addTab'>,
         Pick<ClusterListType, 'updateTabUrl'>,
-        Pick<BaseResourceListProps, 'k8SObjectMapRaw' | 'clusterId' | 'clusterName' | 'selectedCluster'> {}
+        Pick<
+            BaseResourceListProps,
+            'lowercaseKindToResourceGroupMap' | 'clusterId' | 'clusterName' | 'selectedCluster' | 'handleResourceClick'
+        > {}

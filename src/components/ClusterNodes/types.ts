@@ -16,16 +16,11 @@
 
 import React from 'react'
 import { MultiValue } from 'react-select'
-import {
-    ResponseType,
-    ApiResourceGroupType,
-    ClusterStatusType,
-    K8sResourceDetailDataType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ClusterStatusType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ClusterOptionType } from '../ResourceBrowser/Types'
+import { ClusterOptionType, K8SResourceListType } from '../ResourceBrowser/Types'
 import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
@@ -196,9 +191,8 @@ export interface ColumnMetadataType {
     isDisabled?: boolean
 }
 
-export interface ClusterListType {
+export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     isSuperAdmin: boolean
-    k8SObjectMapRaw: ApiResourceGroupType[]
     addTab?: ReturnType<typeof useTabs>['addTab']
     updateTabUrl: (url: string) => void
 }

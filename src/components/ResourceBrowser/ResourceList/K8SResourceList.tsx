@@ -47,7 +47,10 @@ export const K8SResourceList = ({
     isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
+    setWidgetEventDetails,
+    handleResourceClick,
     clusterName,
+    lowercaseKindToResourceGroupMap,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
@@ -127,6 +130,9 @@ export const K8SResourceList = ({
             nodeType={nodeType}
             group={group}
             addTab={addTab}
+            setWidgetEventDetails={setWidgetEventDetails}
+            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+            handleResourceClick={handleResourceClick}
         >
             {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </BaseResourceList>

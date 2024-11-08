@@ -360,17 +360,6 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }
 
-export const getResourceFromK8SObjectMap = (map: ApiResourceGroupType[], nodeType: string) => {
-    const resource = map?.find((value) => value.gvk.Kind.toLowerCase() === nodeType.toLowerCase())
-    return (
-        resource && {
-            gvk: resource.gvk,
-            namespaced: resource.namespaced,
-            isGrouped: false,
-        }
-    )
-}
-
 export const getRenderNodeButton =
     (
         resourceData: K8sResourceDetailDataType,

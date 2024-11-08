@@ -79,7 +79,9 @@ const BaseResourceListContent = ({
     addTab,
     hideBulkSelection = false,
     shouldOverrideSelectedResourceKind = false,
-    k8SObjectMapRaw,
+    setWidgetEventDetails,
+    lowercaseKindToResourceGroupMap,
+    handleResourceClick: onResourceClick,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -108,18 +110,6 @@ const BaseResourceListContent = ({
     const showPaginatedView = filteredResourceList?.length > pageSize
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
     const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
-
-    const kindToGvkMapFromRawMap = useMemo(
-        () =>
-            (k8SObjectMapRaw ?? [])
-                .flatMap((value) => value.gvk)
-                .reduce<Record<string, GVKType>>((acc, gvk) => {
-                    acc[gvk.Kind.toLowerCase()] = gvk
-
-                    return acc
-                }, {}),
-        [k8SObjectMapRaw],
-    )
 
     /**
      * Initial Sort Key
@@ -344,41 +334,7 @@ const BaseResourceListContent = ({
         return `f-${statusPostfix}`
     }
 
-    const handleResourceClick = (e) => {
-        const { name, tab, namespace, origin, kind: kindFromResource } = e.currentTarget.dataset
-        const lowercaseKindFromResource = kindFromResource.toLowerCase()
-        const _group: string =
-            (shouldOverrideSelectedResourceKind
-                ? kindToGvkMapFromRawMap[lowercaseKindFromResource]?.Group?.toLowerCase()
-                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
-        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
-
-        let resourceParam: string
-        let kind: string
-        let resourceName: string
-
-        if (origin === 'event') {
-            const [_kind, _resourceName] = name.split('/')
-            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
-            resourceParam = `${eventKind}/${_group}/${_resourceName}`
-            kind = eventKind
-            resourceName = _resourceName
-        } else {
-            kind = shouldOverrideSelectedResourceKind
-                ? lowercaseKindFromResource
-                : selectedResource.gvk.Kind.toLowerCase()
-            resourceParam = `${kind}/${_group}/${name}`
-            resourceName = name
-        }
-
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
-        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab(idPrefix, kind, resourceName, _url)
-            .then(() => push(_url))
-            .catch(noop)
-    }
+    const handleResourceClick = (e) => onResourceClick(e, shouldOverrideSelectedResourceKind)
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
@@ -389,9 +345,9 @@ const BaseResourceListContent = ({
     }
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
-        const lowercaseKind = (resourceData.kind as string).toLowerCase()
+        const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // This should be used only if shouldOverrideSelectedResourceKind is true
-        const gvkFromRawData = kindToGvkMapFromRawMap[lowercaseKind] ?? ({} as GVKType)
+        const gvkFromRawData = lowercaseKindToResourceGroupMap[lowercaseKind]?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
 
@@ -558,6 +514,7 @@ const BaseResourceListContent = ({
                         paginatedView={showPaginatedView}
                         syncError={showStaleDataWarning}
                         searchText={searchText}
+                        setWidgetEventDetails={setWidgetEventDetails}
                     />
                 ) : (
                     <div

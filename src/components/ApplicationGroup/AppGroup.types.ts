@@ -28,10 +28,12 @@ import {
     GVKType,
     RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
+    NodeType,
+    Nodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
-import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
+import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'

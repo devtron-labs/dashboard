@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     getUserRole,
@@ -27,9 +27,11 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    WidgetEventDetails,
+    ApiResourceGroupType,
     InitTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterOptionType, URLParams } from '../Types'
+import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -48,14 +50,16 @@ import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 
+const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
-    const { replace } = useHistory()
+    const { replace, push } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
+    const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
         initTabs,
@@ -69,7 +73,13 @@ const ResourceList = () => {
         getTabId,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
+    const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
+        gvk: SIDEBAR_KEYS.nodeGVK,
+        namespaced: false,
+        isGrouped: false,
+    })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
@@ -104,6 +114,19 @@ const ResourceList = () => {
                 isProd: false,
             },
         [clusterId, clusterOptions],
+    )
+
+    const lowercaseKindToResourceGroupMap = useMemo(
+        () =>
+            (k8SObjectMapRaw?.result.apiResources ?? []).reduce<K8SResourceListType['lowercaseKindToResourceGroupMap']>(
+                (acc, resourceGroup) => {
+                    acc[resourceGroup.gvk.Kind.toLowerCase()] = resourceGroup
+
+                    return acc
+                },
+                {},
+            ),
+        [k8SObjectMapRaw],
     )
 
     const isSuperAdmin = !!userRole?.result.superAdmin
@@ -242,6 +265,9 @@ const ResourceList = () => {
             return
         }
 
+        // Close holmesGPT Response Widget on cluster change
+        setWidgetEventDetails(null)
+
         /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
@@ -316,9 +342,43 @@ const ResourceList = () => {
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
-    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
-        const k8sObjectMapRawData = k8SObjectMapRaw?.result.apiResources || null
+    const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
+        const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
+        const _group: string =
+            (shouldOverrideSelectedResourceKind
+                ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
+                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+
+        if (origin === 'event') {
+            const [_kind, _resourceName] = name.split('/')
+            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
+            resourceParam = `${eventKind}/${_group}/${_resourceName}`
+            kind = eventKind
+            resourceName = _resourceName
+        } else {
+            kind = shouldOverrideSelectedResourceKind
+                ? lowercaseKindFromResource
+                : selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${_group}/${name}`
+            resourceName = name
+        }
+
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
+    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (isUpgradeClusterNodeType && isFELibAvailable) {
             return (
                 <ClusterUpgradeCompatibilityInfo
@@ -327,7 +387,8 @@ const ResourceList = () => {
                     selectedCluster={selectedCluster}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                     addTab={addTab}
-                    k8SObjectMapRaw={k8sObjectMapRawData}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                    handleResourceClick={handleResourceClick}
                 />
             )
         }
@@ -341,7 +402,7 @@ const ResourceList = () => {
                 key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
-                k8SObjectMapRaw={k8sObjectMapRawData}
+                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
@@ -350,7 +411,7 @@ const ResourceList = () => {
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
-                    k8SObjectMapRaw={k8sObjectMapRawData}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
@@ -371,6 +432,8 @@ const ResourceList = () => {
         <K8SResourceTabComponent
             key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
+            selectedResource={selectedResource}
+            setSelectedResource={setSelectedResource}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
@@ -382,7 +445,10 @@ const ResourceList = () => {
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            setWidgetEventDetails={setWidgetEventDetails}
+            handleResourceClick={handleResourceClick}
             clusterName={selectedCluster.label}
+            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard
             ? [
@@ -446,12 +512,20 @@ const ResourceList = () => {
                             </div>
                         )
                     })}
+                {EventsAIResponseWidget && widgetEventDetails && (
+                    <EventsAIResponseWidget
+                        parentRef={resourceBrowserRef}
+                        handleResourceClick={handleResourceClick}
+                        widgetEventDetails={widgetEventDetails}
+                        setWidgetEventDetails={setWidgetEventDetails}
+                    />
+                )}
             </>
         )
     }
 
     return (
-        <div className="resource-browser-container h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}

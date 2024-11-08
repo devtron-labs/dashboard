@@ -26,7 +26,8 @@ const ClusterUpgradeCompatibilityInfo = ({
     selectedCluster,
     updateTabUrl,
     addTab,
-    k8SObjectMapRaw,
+    lowercaseKindToResourceGroupMap,
+    handleResourceClick,
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
 
@@ -108,6 +109,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 setSelectedNamespace={noop}
                 renderRefreshBar={noop}
                 updateK8sResourceTab={noop}
+                setWidgetEventDetails={noop}
                 nodeType={null}
                 group={null}
                 showGenericNullState
@@ -115,7 +117,8 @@ const ClusterUpgradeCompatibilityInfo = ({
                 hideDeleteResource
                 hideBulkSelection
                 shouldOverrideSelectedResourceKind
-                k8SObjectMapRaw={k8SObjectMapRaw}
+                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                handleResourceClick={handleResourceClick}
             />
         </div>
     )

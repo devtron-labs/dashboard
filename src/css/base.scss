@@ -3186,6 +3186,10 @@ textarea,
     width: 356px;
 }
 
+.w-360 {
+    width: 360px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -5113,4 +5117,12 @@ textarea::placeholder {
 
 .read-only-expression.dark {
     background-color: #0C0F21;
+}
+
+.dc__text-wrap {
+    text-wrap: wrap;
+}
+
+.dc__open-sans {
+    font-family: 'Open Sans';
 }
