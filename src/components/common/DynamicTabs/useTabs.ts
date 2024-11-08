@@ -206,6 +206,8 @@ export function useTabs(persistanceKey: string) {
         url: string,
         showNameOnSelect = false,
         position = Number.MAX_SAFE_INTEGER,
+        iconPath = '',
+        dynamicTitle = '',
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
@@ -242,6 +244,8 @@ export function useTabs(persistanceKey: string) {
                             title,
                             position,
                             showNameOnSelect,
+                            iconPath,
+                            dynamicTitle,
                         }),
                     )
                 }

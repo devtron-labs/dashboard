@@ -274,7 +274,7 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
+export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
     `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
 export const getFixedTabIndices = () => ({
@@ -294,6 +294,7 @@ export const getTabsBasedOnRole = ({
     isMonitoringDashBoardSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
+
     const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
