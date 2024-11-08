@@ -29,8 +29,6 @@ import {
     ComponentSizeType,
     useSearchString,
     getUrlWithSearchParams,
-    GenericEmptyState,
-    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -50,7 +48,6 @@ export const CiWebhookModal = ({
     fromBulkCITrigger,
     isJobView,
     appId,
-    gitMaterialName,
 }: CiWebhookModalProps) => {
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayload, setWebhookIncomingPayload] = useState<CIWebhookPayload | null>(null)
@@ -280,32 +277,6 @@ export const CiWebhookModal = ({
             <div className="flex h-100 payload-wrapper-no-header">
                 <Progressing pageLoader styles={{ height: '100%' }} />
             </div>
-        )
-    }
-
-    const renderNoWebhook = () => (
-        <div>
-            <div className="flex left dc__gap-4">
-                <div className="fs-16">No webhook received from</div>
-                <Button
-                    dataTestId="ci-pipeline-back-button"
-                    text={`/${gitMaterialName.substring(0, 10)}...`}
-                    variant={ButtonVariantType.text}
-                    component={ButtonComponentType.link}
-                    size={ComponentSizeType.large}
-                    linkProps={{ to: `/app/${appId}/trigger/build/${ciPipelineId}` }}
-                />
-            </div>
-        </div>
-    )
-
-    if (!webhookPayloads?.payloads?.length) {
-        return (
-            <GenericEmptyState
-                title={renderNoWebhook()}
-                subTitle="All webhook payloads received from the repository will be available here"
-                classname="h-100"
-            />
         )
     }
 

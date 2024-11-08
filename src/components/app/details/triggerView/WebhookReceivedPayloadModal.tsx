@@ -4,6 +4,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    GenericEmptyState,
     stopPropagation,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -34,6 +35,7 @@ export const WebhookReceivedPayloadModal = ({
     const onClickBackButton = (): void => {
         push(url.split(`/${URLS.WEBHOOK_MODAL}`)[0])
     }
+    const webhookRepoName = webhookPayloads?.repositoryUrl.replace('.git', '').split('/').pop()
 
     useEffect(() => {
         if (workflowId) {
@@ -85,22 +87,49 @@ export const WebhookReceivedPayloadModal = ({
         )
     }
 
-    const renderWebhookModal = () => (
-        <div className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
-            <CiWebhookModal
-                webhookPayloads={webhookPayloads}
-                ciPipelineMaterialId={+material[0].id}
-                ciPipelineId={+pipelineId}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                workflowId={workflowId}
-                fromAppGrouping={fromAppGrouping}
-                fromBulkCITrigger={fromBulkCITrigger}
-                isJobView={isJobView}
-                appId={appId}
-                gitMaterialName={material[0].gitMaterialName} // webhook works only for single repo
-            />
+    const renderNoWebhook = () => (
+        <div>
+            <div className="flex left">
+                <span className="fs-16 mr-4">No webhook received from</span>
+                <a
+                    href={webhookPayloads?.repositoryUrl}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    className="dc__link dc__mxw-90"
+                >
+                    /{webhookRepoName.substring(0, 8)}
+                    {webhookRepoName.length > 8 ? '...' : ''}
+                </a>
+            </div>
         </div>
     )
+
+    const renderWebhookModal = () => {
+        if (!webhookPayloads?.payloads?.length) {
+            return (
+                <GenericEmptyState
+                    title={renderNoWebhook()}
+                    subTitle="All webhook payloads received from the repository will be available here"
+                    classname="h-100"
+                />
+            )
+        }
+        return (
+            <div className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+                <CiWebhookModal
+                    webhookPayloads={webhookPayloads}
+                    ciPipelineMaterialId={+material[0].id}
+                    ciPipelineId={+pipelineId}
+                    isWebhookPayloadLoading={isWebhookPayloadLoading}
+                    workflowId={workflowId}
+                    fromAppGrouping={fromAppGrouping}
+                    fromBulkCITrigger={fromBulkCITrigger}
+                    isJobView={isJobView}
+                    appId={appId}
+                />
+            </div>
+        )
+    }
     return (
         <VisibleModal>
             <div

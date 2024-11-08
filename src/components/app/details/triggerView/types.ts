@@ -710,7 +710,6 @@ export interface CiWebhookModalProps
     ciPipelineId: number
     fromBulkCITrigger?: boolean
     appId: string
-    gitMaterialName: string
 }
 
 export interface CIWebhookPayload {
