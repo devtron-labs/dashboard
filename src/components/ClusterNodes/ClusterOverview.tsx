@@ -23,6 +23,7 @@ import {
     InfoIconTippy,
     EditableTextArea,
     ResourceKindType,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -31,13 +32,16 @@ import {
     ERROR_TYPE,
     ClusterDetailsType,
     ClusterCapacityType,
+    ClusterDescriptionResponse,
+    ClusterCapacityResponse,
 } from './types'
+import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
@@ -45,6 +49,7 @@ import ConnectingToClusterState from '../ResourceBrowser/ResourceList/Connecting
 import { importComponentFromFELibrary } from '../common'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
+const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 
 /* TODO: move into utils */
 const metricsApiTippyContent = () => (
@@ -78,7 +83,7 @@ const tippyForMetricsApi = () => {
     )
 }
 
-function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps) {
+function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -126,7 +131,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
         }
     }
 
-    const setClusterNoteDetails = (clusterNoteResponse) => {
+    const setClusterNoteDetails = (clusterNoteResponse: PromiseSettledResult<ClusterDescriptionResponse>) => {
         if (clusterNoteResponse.status === 'fulfilled') {
             let _moment: moment.Moment
             const _clusterNote = clusterNoteResponse.value.result.clusterNote
@@ -161,7 +166,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
         }
     }
 
-    const setClusterCapacityDetails = (clusterCapacityResponse) => {
+    const setClusterCapacityDetails = (clusterCapacityResponse: PromiseSettledResult<ClusterCapacityResponse>) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
             const _errorList = []
@@ -374,6 +379,28 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
             </>
         )
     }
+
+    const handleOpenScanClusterTab = (selectedVersion: string) => {
+        const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+
+        const URL = getUrlWithSearchParams(getURLBasedOnSidebarGVK(
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
+            clusterId,
+            namespace,
+        ), { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion })
+
+        addTab(
+            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+            upgradeClusterLowerCaseKind,
+            UPGRADE_CLUSTER_CONSTANTS.NAME,
+            URL,
+            undefined,
+            undefined,
+            UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
+            UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE,
+        ).then(() => history.push(URL))
+    }
+
     const renderSideInfoData = () => {
         return (
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
@@ -420,6 +447,23 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                             )}
                         </div>
                     </div>
+                </div>
+
+                <div className="dc__border-top-n1" />
+
+                <div className="flexbox-col dc__gap-12">
+                    <div className="flexbox-col dc__gap-4">
+                        <span className="fs-13 fw-4 lh-20 cn-7">Kubernetes version</span>
+                        <span className="cn-9 fs-13 fw-6 lh-20 dc__truncate">{clusterCapacityData?.serverVersion || '-'}</span>
+                    </div>
+
+                    {MigrateClusterVersionInfoBar && (
+                        <MigrateClusterVersionInfoBar
+                            handleOpenScanClusterTab={handleOpenScanClusterTab}
+                            clusterName={clusterDetails?.clusterName}
+                            currentVersion={clusterCapacityData?.serverVersion}
+                        />
+                    )}
                 </div>
             </aside>
         )

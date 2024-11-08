@@ -44,6 +44,7 @@ const K8SResourceTabComponent = ({
     setWidgetEventDetails,
     handleResourceClick,
     clusterName,
+    lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
 
@@ -84,12 +85,12 @@ const K8SResourceTabComponent = ({
             />
             {/* NOTE: if we directly use nodeType for this check
              * component will mount/dismount on every tab change */}
-            <BulkSelectionProvider
-                key={JSON.stringify(selectedResource)}
-                // TODO: do we need a dialog for this ?
-                getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
-            >
-                {selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind ? (
+            {selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind ? (
+                <BulkSelectionProvider
+                    key={JSON.stringify(selectedResource)}
+                    // TODO: do we need a dialog for this ?
+                    getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+                >
                     <NodeDetailsList
                         clusterName={clusterName}
                         isSuperAdmin={isSuperAdmin}
@@ -97,21 +98,22 @@ const K8SResourceTabComponent = ({
                         renderRefreshBar={renderRefreshBar}
                         showStaleDataWarning={showStaleDataWarning}
                     />
-                ) : (
-                    <K8SResourceList
-                        clusterName={clusterName}
-                        selectedResource={selectedResource}
-                        selectedCluster={selectedCluster}
-                        addTab={addTab}
-                        isOpen={isOpen}
-                        renderRefreshBar={renderRefreshBar}
-                        showStaleDataWarning={showStaleDataWarning}
-                        updateK8sResourceTab={updateK8sResourceTab}
-                        setWidgetEventDetails={setWidgetEventDetails}
-                        handleResourceClick={handleResourceClick}
-                    />
-                )}
-            </BulkSelectionProvider>
+                </BulkSelectionProvider>
+            ) : (
+                <K8SResourceList
+                    clusterName={clusterName}
+                    selectedResource={selectedResource}
+                    selectedCluster={selectedCluster}
+                    addTab={addTab}
+                    isOpen={isOpen}
+                    renderRefreshBar={renderRefreshBar}
+                    showStaleDataWarning={showStaleDataWarning}
+                    updateK8sResourceTab={updateK8sResourceTab}
+                    setWidgetEventDetails={setWidgetEventDetails}
+                    handleResourceClick={handleResourceClick}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                />
+            )}
         </div>
     )
 }

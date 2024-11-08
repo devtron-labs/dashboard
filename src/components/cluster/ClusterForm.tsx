@@ -133,7 +133,7 @@ export default function ClusterForm({
     isClusterDetails,
     toggleClusterDetails,
     isVirtualCluster,
-    isProd,
+    isProd = false,
 }: ClusterFormProps) {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheus_url)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({

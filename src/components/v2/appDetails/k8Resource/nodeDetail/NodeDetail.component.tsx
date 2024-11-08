@@ -52,7 +52,6 @@ import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
-import { getResourceFromK8SObjectMap } from '../../../../ResourceBrowser/Utils'
 import './nodeDetail.css'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
@@ -72,7 +71,7 @@ const ToggleManifestConfigurationMode = importComponentFromFELibrary(
 const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
-    k8SObjectMapRaw,
+    lowercaseKindToResourceGroupMap,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
@@ -116,8 +115,8 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
-        [k8SObjectMapRaw, params.nodeType],
+        () => lowercaseKindToResourceGroupMap[params.nodeType.toLowerCase()],
+        [lowercaseKindToResourceGroupMap, params.nodeType],
     )
 
     const selectedResource = {

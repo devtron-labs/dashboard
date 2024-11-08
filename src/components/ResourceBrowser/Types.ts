@@ -104,12 +104,14 @@ export interface CreateResourceType {
     clusterId: string
 }
 
-export interface SidebarType
-    extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab' | 'selectedResource' | 'setSelectedResource'> {
+export interface SidebarType {
     apiResources: ApiResourceGroupType[]
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     isClusterError?: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle?: string, retainSearchParams?: boolean) => void
+    selectedResource: ApiResourceGroupType
+    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -117,7 +119,7 @@ export interface ClusterOptionType extends OptionType {
     isProd: boolean
 }
 
-export interface ResourceFilterOptionsProps extends Pick<K8SResourceTabComponentProps, 'updateK8sResourceTab'> {
+export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
@@ -128,15 +130,25 @@ export interface ResourceFilterOptionsProps extends Pick<K8SResourceTabComponent
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
+    /**
+     * If true, the filters are hidden except search
+     */
+    areFiltersHidden: boolean
+    /**
+     * Placeholder override for the search bar
+     *
+     * @default undefined
+     */
+    searchPlaceholder?: string
 }
 
-export interface K8SResourceListType
-    extends ResourceFilterOptionsProps,
-        Pick<K8SResourceTabComponentProps, 'clusterName'> {
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
     setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
+    lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
+    clusterName: string
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -146,6 +158,12 @@ export interface ResourceBrowserActionMenuType {
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
+    /**
+     * If true, the delete resource option is hidden in pop up menu
+     *
+     * @default false
+     */
+    hideDeleteResource?: boolean
 }
 
 export interface DeleteResourcePopupType
@@ -196,18 +214,18 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<K8SResourceListType, 'setWidgetEventDetails' | 'handleResourceClick'> {
-    selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
+    extends Pick<SidebarType, 'selectedResource' | 'setSelectedResource' | 'updateK8sResourceTab'>,
+        Pick<
+            K8SResourceListType,
+            'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
+        > {
     selectedCluster: ClusterOptionType
     isSuperAdmin: boolean
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle?: string, retainSearchParams?: boolean) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
-    clusterName: string
 }
 
 export interface AdminTerminalProps {
@@ -246,6 +264,7 @@ export interface RBSidebarKeysType {
     nodeGVK: GVKType
     overviewGVK: GVKType
     monitoringGVK: GVKType
+    upgradeClusterGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {

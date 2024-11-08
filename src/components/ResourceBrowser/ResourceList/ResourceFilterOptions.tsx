@@ -51,6 +51,8 @@ const ResourceFilterOptions = ({
     isSearchInputDisabled,
     renderRefreshBar,
     updateK8sResourceTab,
+    areFiltersHidden = false,
+    searchPlaceholder,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -130,7 +132,7 @@ const ResourceFilterOptions = ({
                 <div className="resource-filter-options-container__search-box dc__position-rel">
                     <SearchBar
                         inputProps={{
-                            placeholder: `Search ${selectedResource?.gvk?.Kind || ''}`,
+                            placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
                             disabled: isSearchInputDisabled,
                             onBlur: handleInputBlur,
                             onFocus: handleInputFocus,
@@ -149,37 +151,45 @@ const ResourceFilterOptions = ({
                     )}
                 </div>
                 <div className="flex-grow-1" />
-                {FilterButton && (
-                    <FilterButton
-                        clusterName={selectedCluster?.label || ''}
-                        updateTabUrl={updateK8sResourceTab}
-                        showModal={showFilterModal}
-                        setShowModal={setShowFilterModal}
-                    />
+                {!areFiltersHidden && (
+                    <>
+                        {FilterButton && (
+                            <FilterButton
+                                clusterName={selectedCluster?.label || ''}
+                                updateTabUrl={updateK8sResourceTab}
+                                showModal={showFilterModal}
+                                setShowModal={setShowFilterModal}
+                            />
+                        )}
+                        <Tooltip
+                            alwaysShowTippyOnHover={!!selectedResource && !selectedResource.namespaced}
+                            content={NAMESPACE_NOT_APPLICABLE_TEXT}
+                        >
+                            <div className="resource-filter-options-wrapper flex">
+                                <ReactSelect
+                                    placeholder="Select Namespace"
+                                    className="w-220 ml-8"
+                                    classNamePrefix="resource-filter-select"
+                                    options={namespaceOptions}
+                                    value={
+                                        selectedResource?.namespaced
+                                            ? selectedNamespace
+                                            : NAMESPACE_NOT_APPLICABLE_OPTION
+                                    }
+                                    onChange={handleNamespaceChange}
+                                    blurInputOnSelect
+                                    isDisabled={!selectedResource?.namespaced}
+                                    styles={FILTER_SELECT_COMMON_STYLES}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option,
+                                        ValueContainer: ResourceValueContainerWithIcon,
+                                    }}
+                                />
+                            </div>
+                        </Tooltip>
+                    </>
                 )}
-                <Tooltip
-                    alwaysShowTippyOnHover={!!selectedResource && !selectedResource.namespaced}
-                    content={NAMESPACE_NOT_APPLICABLE_TEXT}
-                >
-                    <div className="resource-filter-options-wrapper flex">
-                        <ReactSelect
-                            placeholder="Select Namespace"
-                            className="w-220 ml-8"
-                            classNamePrefix="resource-filter-select"
-                            options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
-                            onChange={handleNamespaceChange}
-                            blurInputOnSelect
-                            isDisabled={!selectedResource?.namespaced}
-                            styles={FILTER_SELECT_COMMON_STYLES}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                                ValueContainer: ResourceValueContainerWithIcon,
-                            }}
-                        />
-                    </div>
-                </Tooltip>
             </div>
         </>
     )

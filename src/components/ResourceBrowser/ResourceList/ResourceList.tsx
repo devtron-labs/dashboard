@@ -29,9 +29,10 @@ import {
     noop,
     WidgetEventDetails,
     ApiResourceGroupType,
+    InitTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterOptionType, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
@@ -47,9 +48,11 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -113,27 +116,60 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
+    const lowercaseKindToResourceGroupMap = useMemo(
+        () =>
+            (k8SObjectMapRaw?.result.apiResources ?? []).reduce<K8SResourceListType['lowercaseKindToResourceGroupMap']>(
+                (acc, resourceGroup) => {
+                    acc[resourceGroup.gvk.Kind.toLowerCase()] = resourceGroup
+
+                    return acc
+                },
+                {},
+            ),
+        [k8SObjectMapRaw],
+    )
+
     const isSuperAdmin = !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+    const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+    const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+    const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+
     const fixedTabIndices = getFixedTabIndices()
 
-    const getDynamicTabData = () => {
-        const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-        const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-        return {
-            idPrefix: isNodeTypeNode
-                ? K8S_EMPTY_GROUP
-                : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
-            name: node,
-            kind: nodeType,
-            url,
-            isSelected: true,
-            position: Number.MAX_SAFE_INTEGER,
+    const getDynamicTabIdPrefix = () => {
+        if (isUpgradeClusterNodeType) {
+            return UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX
         }
+
+        if (isNodeTypeNode) {
+            return K8S_EMPTY_GROUP
+        }
+
+        return `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`
     }
+
+    const getNodeName = () => {
+        if (isUpgradeClusterNodeType) {
+            return UPGRADE_CLUSTER_CONSTANTS.NAME
+        }
+
+        return node
+    }
+
+    const getDynamicTabData = (): InitTabType => ({
+        idPrefix: getDynamicTabIdPrefix(),
+        name: getNodeName(),
+        kind: nodeType || '',
+        url,
+        isSelected: true,
+        position: Number.MAX_SAFE_INTEGER,
+        dynamicTitle: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+        iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+    })
 
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => {
@@ -148,7 +184,7 @@ const ResourceList = () => {
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            dynamicTabData: node && getDynamicTabData(),
+            dynamicTabData: (node || isUpgradeClusterNodeType) && getDynamicTabData(),
             isTerminalSelected: isTerminalNodeType,
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
@@ -167,7 +203,7 @@ const ResourceList = () => {
         /* NOTE: tab selection is interactively done through dynamic tab button clicks
          * but to ensure consistency with url changes and user moving back through browser history,
          * correct active tab state is ensured by this effect */
-        if (node) {
+        if (node || (isUpgradeClusterNodeType && isFELibAvailable)) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
             /* NOTE if the corresponding tab exists return */
@@ -180,7 +216,18 @@ const ResourceList = () => {
             }
             /* NOTE: even though addTab updates selection it will override url;
              * thus to prevent that if found markTabActive and don't let this get called */
-            addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            addTab(
+                idPrefix,
+                kind,
+                name,
+                _url,
+                undefined,
+                undefined,
+                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+            )
+                .then(noop)
+                .catch(noop)
             return
         }
 
@@ -295,54 +342,31 @@ const ResourceList = () => {
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
-    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
-        if (!node) {
-            return null
-        }
+    const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
+        const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const lowercaseKindFromResource = kindFromResource.toLowerCase()
+        const _group: string =
+            (shouldOverrideSelectedResourceKind
+                ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
+                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
-        return nodeType.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() ? (
-            <NodeDetails
-                key={dynamicActiveTab.componentKey}
-                isSuperAdmin={isSuperAdmin}
-                addTab={addTab}
-                k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                updateTabUrl={getUpdateTabUrlForId(tabId)}
-            />
-        ) : (
-            <div className="resource-details-container flexbox-col">
-                <NodeDetailComponent
-                    key={dynamicActiveTab.componentKey}
-                    loadingResources={rawGVKLoader}
-                    isResourceBrowserView
-                    k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    logSearchTerms={logSearchTerms}
-                    setLogSearchTerms={setLogSearchTerms}
-                    removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
-                    updateTabUrl={getUpdateTabUrlForId(tabId)}
-                    clusterName={selectedCluster.label}
-                />
-            </div>
-        )
-    }
-
-    const handleResourceClick = (e) => {
-        const { name, tab, namespace: currentNamespace, origin } = e.currentTarget.dataset
         let resourceParam: string
         let kind: string
         let resourceName: string
-        let _group: string
-        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
+
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-            resourceParam = `${_kind}/${_group}/${_resourceName}`
-            kind = _kind
+            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
+            resourceParam = `${eventKind}/${_group}/${_resourceName}`
+            kind = eventKind
             resourceName = _resourceName
         } else {
-            kind = selectedResource.gvk.Kind.toLowerCase()
-            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
+            kind = shouldOverrideSelectedResourceKind
+                ? lowercaseKindFromResource
+                : selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${_group}/${name}`
             resourceName = name
-            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
@@ -354,11 +378,56 @@ const ResourceList = () => {
             .catch(noop)
     }
 
+    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
+        if (isUpgradeClusterNodeType && isFELibAvailable) {
+            return (
+                <ClusterUpgradeCompatibilityInfo
+                    clusterId={clusterId}
+                    clusterName={selectedCluster.label}
+                    selectedCluster={selectedCluster}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    addTab={addTab}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                    handleResourceClick={handleResourceClick}
+                />
+            )
+        }
+
+        if (!node) {
+            return null
+        }
+
+        return nodeType.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() ? (
+            <NodeDetails
+                key={dynamicActiveTab.componentKey}
+                isSuperAdmin={isSuperAdmin}
+                addTab={addTab}
+                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                updateTabUrl={getUpdateTabUrlForId(tabId)}
+            />
+        ) : (
+            <div className="resource-details-container flexbox-col">
+                <NodeDetailComponent
+                    key={dynamicActiveTab.componentKey}
+                    loadingResources={rawGVKLoader}
+                    isResourceBrowserView
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                    logSearchTerms={logSearchTerms}
+                    setLogSearchTerms={setLogSearchTerms}
+                    removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    clusterName={selectedCluster.label}
+                />
+            </div>
+        )
+    }
+
     const fixedTabComponents = [
         <ClusterOverview
             key={tabs[fixedTabIndices.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
+            addTab={addTab}
         />,
         <K8SResourceTabComponent
             key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
@@ -379,6 +448,7 @@ const ResourceList = () => {
             setWidgetEventDetails={setWidgetEventDetails}
             handleResourceClick={handleResourceClick}
             clusterName={selectedCluster.label}
+            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard
             ? [
@@ -424,7 +494,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        hideTimer={isOverviewNodeType || isMonitoringNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
