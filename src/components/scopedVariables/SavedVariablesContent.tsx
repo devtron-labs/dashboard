@@ -81,11 +81,13 @@ const YAMLEditorDropdownItem = ({ item, scopedVariablesYAML }: YAMLEditorDropdow
 }
 
 const SavedVariablesContent = ({
-    handleSearch,
+    searchKey,
+    onSearch,
     readFile,
     handleActivateEditView,
     scopedVariablesYAML,
     variablesList,
+    handleClearFilters,
 }: SavedVariablesContentProps) => {
     const history = useHistory()
     const { path } = useRouteMatch()
@@ -154,7 +156,7 @@ const SavedVariablesContent = ({
     const renderView = () => {
         switch (currentView) {
             case ScopedVariablesFileViewType.SAVED:
-                return <VariablesList variablesList={variablesList} />
+                return <VariablesList variablesList={variablesList} handleClearFilters={handleClearFilters} />
             case ScopedVariablesFileViewType.ENVIRONMENT_LIST: {
                 if (!isEnvironmentListEnabled) {
                     return renderYAMLView()
@@ -171,7 +173,8 @@ const SavedVariablesContent = ({
         <>
             <Descriptor
                 showUploadButton
-                onSearch={currentView === ScopedVariablesFileViewType.SAVED ? handleSearch : null}
+                searchKey={searchKey}
+                onSearch={currentView === ScopedVariablesFileViewType.SAVED ? onSearch : null}
                 readFile={readFile}
             >
                 <div className="dc__border-bottom bcn-0 pt-0 pb-0 pl-20 pr-20 flexbox dc__align-self-stretch dc__align-items-center">

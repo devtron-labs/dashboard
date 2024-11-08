@@ -27,7 +27,7 @@ import {
 import { ReactComponent as ICVisibilityOn } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ICVisibilityOff } from '../../assets/icons/ic-visibility-off.svg'
 
-export default function VariablesList({ variablesList }: { variablesList: VariableType[] }) {
+export default function VariablesList({ variablesList, handleClearFilters }: { variablesList: VariableType[], handleClearFilters: () => void }) {
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
         <div className={classes}>
             {tooltip ? (
@@ -51,7 +51,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     )
 
     if (!variablesList?.length) {
-        return <GenericFilterEmptyState />
+        return <GenericFilterEmptyState handleClearFilters={handleClearFilters} />
     }
 
     return (
