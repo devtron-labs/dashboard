@@ -36,8 +36,10 @@ export const WebhookReceivedPayloadModal = ({
     }
 
     useEffect(() => {
-        getWebhookPayload(workflowId)
-    }, [])
+        if (workflowId) {
+            getWebhookPayload(workflowId)
+        }
+    }, [workflowId])
 
     const onClickCloseButton = (): void => {
         triggerViewContext.closeCIModal()
@@ -84,7 +86,7 @@ export const WebhookReceivedPayloadModal = ({
     }
 
     const renderWebhookModal = () => (
-        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+        <div className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
             <CiWebhookModal
                 webhookPayloads={webhookPayloads}
                 ciPipelineMaterialId={+material[0].id}
@@ -95,11 +97,12 @@ export const WebhookReceivedPayloadModal = ({
                 fromBulkCITrigger={fromBulkCITrigger}
                 isJobView={isJobView}
                 appId={appId}
+                gitMaterialName={material[0].gitMaterialName} // webhook works only for single repo
             />
         </div>
     )
     return (
-        <VisibleModal className="">
+        <VisibleModal>
             <div
                 className="modal-body--ci-material h-100 w-100 flexbox-col dc__overflow-hidden"
                 onClick={stopPropagation}

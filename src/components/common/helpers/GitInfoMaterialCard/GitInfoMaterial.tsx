@@ -29,6 +29,7 @@ import {
     Button,
     ButtonStyleType,
     CommonNodeAttr,
+    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
@@ -81,19 +82,12 @@ export const GitInfoMaterial = ({
     const { appId } = useParams<{ appId: string }>()
     const triggerViewContext = useContext(TriggerViewContext)
 
-    const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
+    const { searchKey, handleSearch, clearFilters } = useStateFilters()
+
     const [showAllCommits, setShowAllCommits] = useState(false)
     const [showExcludePopUp, setShowExcludePopUp] = useState(false)
 
     useEffect(() => {
-        if (!selectedMaterial || !selectedMaterial.searchText) {
-            setSearchText('')
-            setSearchApplied(false)
-        } else if (selectedMaterial.searchText) {
-            setSearchText(selectedMaterial.searchText)
-            setSearchApplied(true)
-        }
         setShowAllCommits(selectedMaterial?.showAllCommits ?? false)
     }, [selectedMaterial])
 
@@ -136,15 +130,7 @@ export const GitInfoMaterial = ({
             selectedMaterial.gitMaterialId,
             _searchText,
         )
-    }
-
-    const clearSearch = (e): void => {
-        stopPropagation(e)
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
-        }
-        setSearchText('')
+        handleSearch(_searchText)
     }
 
     function renderMaterialSource() {
@@ -177,7 +163,7 @@ export const GitInfoMaterial = ({
                     material={material}
                     selectMaterial={triggerViewContext.selectMaterial}
                     refreshMaterial={refreshMaterial}
-                    clearSearch={clearSearch}
+                    clearSearch={clearFilters}
                 />
             </div>
         )
@@ -219,10 +205,9 @@ export const GitInfoMaterial = ({
         </div>
     )
 
-    const handleFilterKeyPress = (_searchText: string): void => {
-        setSearchText(_searchText)
-        handleFilterChanges(_searchText)
-    }
+    // const handleFilterKeyPress = (_searchText: string): void => {
+    //     handleFilterChanges(_searchText)
+    // }
 
     const goToWorkFlowEditor = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId.toString(), true, pipelineId, isJobView, isJobCI)
@@ -235,9 +220,9 @@ export const GitInfoMaterial = ({
 
     const renderSearch = (): JSX.Element => (
         <SearchBar
-            initialSearchText={searchText}
+            initialSearchText={searchKey}
             containerClassName="w-250"
-            handleEnter={handleFilterKeyPress}
+            handleEnter={handleFilterChanges}
             inputProps={{
                 placeholder: 'Search by commit hash',
                 autoFocus: true,
@@ -260,7 +245,7 @@ export const GitInfoMaterial = ({
             stopPropagation(e)
         }
         setShowAllCommits(!showAllCommits)
-        clearSearch(e)
+        clearFilters()
         triggerViewContext.getFilteredMaterial(+pipelineId, selectedMaterial.gitMaterialId, !showAllCommits)
     }
 
@@ -371,7 +356,7 @@ export const GitInfoMaterial = ({
                             anyCommit={anyCommit}
                             noSearchResults={_selectedMaterial.noSearchResult}
                             noSearchResultsMsg={_selectedMaterial.noSearchResultsMsg}
-                            clearSearch={clearSearch}
+                            clearSearch={clearFilters}
                             handleGoToWorkFlowEditor={goToWorkFlowEditor}
                             showAllCommits={showAllCommits}
                             toggleExclude={toggleExclude}

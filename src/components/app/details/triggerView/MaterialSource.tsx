@@ -17,7 +17,7 @@
 import { ReactComponent as Refresh } from '@Icons/ic-restore.svg'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { MaterialSourceProps } from './types'
-import { Button, ButtonStyleType, ButtonVariantType, CIMaterialType, CiPipelineSourceConfig, ComponentSizeType, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, CiPipelineSourceConfig, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon } from '@Components/common'
 
 export default function MaterialSource({

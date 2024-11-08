@@ -710,6 +710,7 @@ export interface CiWebhookModalProps
     ciPipelineId: number
     fromBulkCITrigger?: boolean
     appId: string
+    gitMaterialName: string
 }
 
 export interface CIWebhookPayload {
@@ -723,7 +724,7 @@ export interface WebhookReceivedPayloadModalType
         Pick<CIMaterialProps, 'getWebhookPayload'> {
     fromBulkCITrigger?: boolean
     title: string
-    material: CDMaterialType[]
+    material: CIMaterialType[]
     pipelineId: string
     fromAppGrouping?: boolean
     isJobView?: boolean

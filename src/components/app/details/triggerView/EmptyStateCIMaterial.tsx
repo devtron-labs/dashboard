@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, ButtonComponentType, ButtonVariantType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
@@ -23,7 +23,6 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { useRouteMatch } from 'react-router-dom'
 import { ReceivedWebhookRedirectButton } from '@Components/common/helpers/GitInfoMaterialCard/ReceivedWebhookRedirectButton'
 
 export default function EmptyStateCIMaterial({

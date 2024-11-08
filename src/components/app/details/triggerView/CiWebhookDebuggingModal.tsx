@@ -29,10 +29,11 @@ import {
     ComponentSizeType,
     useSearchString,
     getUrlWithSearchParams,
+    GenericEmptyState,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { ReactComponent as InfoOutlined } from '@Icons/ic-info-outlined.svg'
 import { getCIWebhookPayload } from './ciWebhook.service'
 import { getCIPipelineURL } from '../../../common'
 import { Moment12HourFormat, URLS } from '../../../../config'
@@ -49,6 +50,7 @@ export const CiWebhookModal = ({
     fromBulkCITrigger,
     isJobView,
     appId,
+    gitMaterialName,
 }: CiWebhookModalProps) => {
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayload, setWebhookIncomingPayload] = useState<CIWebhookPayload | null>(null)
@@ -259,13 +261,6 @@ export const CiWebhookModal = ({
         </div>
     )
 
-    const renderNoWebhookPayloadView = () => (
-        <div className="bcn-1 empty-payload flex column mt-20 mr-20 w-100">
-            <InfoOutlined className="fcn-5 " />
-            <div>Payload data not available</div>
-        </div>
-    )
-
     const renderWebhookPayloadContent = () => (
         <div
             className={` bcn-0 dc__top-0 dc__right-0 timestamp-detail-container ${
@@ -280,13 +275,6 @@ export const CiWebhookModal = ({
         </div>
     )
 
-    const renderWebHookModal = () => (
-        <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header fs-13 cn-9">
-            {renderSidebar()}
-            {webhookPayloads?.payloads?.length ? renderWebhookPayloadContent() : renderNoWebhookPayloadView()}
-        </div>
-    )
-
     if (isWebhookPayloadLoading) {
         return (
             <div className="flex h-100 payload-wrapper-no-header">
@@ -295,5 +283,36 @@ export const CiWebhookModal = ({
         )
     }
 
-    return renderWebHookModal()
+    const renderNoWebhook = () => (
+        <div>
+            <div className="flex left dc__gap-4">
+                <div className="fs-16">No webhook received from</div>
+                <Button
+                    dataTestId="ci-pipeline-back-button"
+                    text={`/${gitMaterialName.substring(0, 10)}...`}
+                    variant={ButtonVariantType.text}
+                    component={ButtonComponentType.link}
+                    size={ComponentSizeType.large}
+                    linkProps={{ to: `/app/${appId}/trigger/build/${ciPipelineId}` }}
+                />
+            </div>
+        </div>
+    )
+
+    if (!webhookPayloads?.payloads?.length) {
+        return (
+            <GenericEmptyState
+                title={renderNoWebhook()}
+                subTitle="All webhook payloads received from the repository will be available here"
+                classname="h-100"
+            />
+        )
+    }
+
+    return (
+        <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header fs-13 cn-9">
+            {renderSidebar()}
+            {renderWebhookPayloadContent()}
+        </div>
+    )
 }
