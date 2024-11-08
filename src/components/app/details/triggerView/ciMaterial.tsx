@@ -27,6 +27,7 @@ import {
     CIMaterialType,
     showError,
     SourceTypeMap,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -43,6 +44,7 @@ import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import BranchRegexModal from './BranchRegexModal'
 import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
+import { CIPipeline } from '../cIDetails/types'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
@@ -60,17 +62,18 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue,
             savingRegexValue: false,
-            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
             runtimeParamsErrorState: false,
         }
     }
 
+    selectedCIPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.pipelineId)
+
     componentDidMount() {
         this.getSecurityModuleStatus()
         if (this.props.isJobView && this.props.environmentLists?.length > 0) {
-            const envId = this.state.selectedCIPipeline?.environmentId || 0
+            const envId = this.selectedCIPipeline?.environmentId || 0
             const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
             this.props.setSelectedEnv(_selectedEnv)
         }
@@ -210,12 +213,23 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCTAButton = (canTrigger) => {
+        const nodeType: CommonNodeAttr['type'] = 'CI'
+
         if (AllowedWithWarningTippy && this.props.ciBlockState && !this.props.isJobView) {
             return (
                 <AllowedWithWarningTippy
                     consequence={this.props.ciBlockState}
-                    onConfigure={this.redirectToCIPipeline}
-                    onStart={this.handleStartBuildAction}
+                    configurePluginURL={getCIPipelineURL(
+                        this.props.appId,
+                        this.props.workflowId.toString(),
+                        true,
+                        this.props.pipelineId,
+                        false,
+                        this.props.isJobCI,
+                    )}
+                    showTriggerButton
+                    onTrigger={this.handleStartBuildAction}
+                    nodeType={nodeType}
                 >
                     <Button
                         dataTestId="ci-trigger-start-build-button"
@@ -254,7 +268,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderBranchRegexModal = () => (
         <BranchRegexModal
             material={this.props.material}
-            selectedCIPipeline={this.state.selectedCIPipeline}
+            selectedCIPipeline={this.selectedCIPipeline}
             title={this.props.title}
             isChangeBranchClicked={this.props.isChangeBranchClicked}
             onClickNextButton={this.onClickNextButton}
@@ -331,8 +345,8 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
 
         // Populate the ciPipelineMaterial with flatten object
-        if (this.state.selectedCIPipeline?.ciMaterial?.length) {
-            payload.ciPipelineMaterial = this.state.selectedCIPipeline.ciMaterial.map((_cm) => {
+        if (this.selectedCIPipeline?.ciMaterial?.length) {
+            payload.ciPipelineMaterial = this.selectedCIPipeline.ciMaterial.map((_cm) => {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
                 let _updatedCM
 

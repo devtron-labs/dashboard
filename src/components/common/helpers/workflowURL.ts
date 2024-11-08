@@ -22,22 +22,30 @@ export function getCDPipelineURL(
     ciPipelineId: string,
     isWebhookParent: boolean,
     cdPipelineId: string = null,
+    shouldComputeCompleteURL: boolean = false,
 ) {
-    return `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
+    const prefix = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
+    const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
+
+    if (shouldComputeCompleteURL) {
+        return `${prefix}${suffix}`
+    }
+
+    return suffix
 }
 
 export function getCIPipelineURL(
     appId: string,
     workflowId: string,
-    isGitNotConfigured: boolean,
+    addPrefix: boolean,
     ciPipelineId: string | number = null,
     isJobView?: boolean,
     isCIJob?: boolean,
 ) {
     let prefixURL = ''
-    if (isGitNotConfigured) {
+    if (addPrefix) {
         prefixURL = `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
@@ -53,8 +61,14 @@ export function getLinkedCIPipelineURL(
     appId: string | number,
     workflowId: string | number,
     ciPipelineId: string | number = null,
+    addPrefix: boolean = false,
 ) {
-    return `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
+    const suffix = `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
+    if (addPrefix) {
+        return `/app/${appId}/edit/workflow/${suffix}`
+    }
+
+    return suffix
 }
 
 export function getWebhookDetailsURL(workflowId: string | number, ciPipelineId: string | number = null) {

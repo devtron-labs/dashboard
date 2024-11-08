@@ -28,6 +28,7 @@ import {
     ButtonVariantType,
     Button,
     ButtonStyleType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
@@ -47,7 +48,7 @@ import { importComponentFromFELibrary } from '../Helpers'
 import { GitInfoMaterialProps } from './types'
 import { ReceivedWebhookRedirectButton } from './ReceivedWebhookRedirectButton'
 
-const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
@@ -406,21 +407,23 @@ export const GitInfoMaterial = ({
             </div>
         )
     }
-
-    const redirectToCIPipeline = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId.toString(), true, pipelineId, false, isJobCI)
-        if (fromAppGrouping) {
-            window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
-        } else {
-            push(ciPipelineURL)
-        }
-    }
+    const nodeType: CommonNodeAttr['type'] = 'CI'
 
     return (
         <>
             {!fromBulkCITrigger && renderMaterialHeader()}
-            {BuildTriggerBlockedState && isCITriggerBlocked ? (
-                <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
+            {MissingPluginBlockState && isCITriggerBlocked ? (
+                <MissingPluginBlockState
+                    configurePluginURL={getCIPipelineURL(
+                        appId,
+                        workflowId.toString(),
+                        true,
+                        pipelineId,
+                        false,
+                        isJobCI,
+                    )}
+                    nodeType={nodeType}
+                />
             ) : (
                 <div className={`m-lr-0 h-100 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {!fromBulkCITrigger && renderMaterialSource()}

@@ -32,6 +32,7 @@ import {
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    BlockedStateData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch, Redirect } from 'react-router-dom'
@@ -43,10 +44,12 @@ import {
     getGitMaterialByCommitHash,
 } from '../../service'
 import {
+    getCDPipelineURL,
     getCIPipelineURL,
     importComponentFromFELibrary,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
+    withAppContext,
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
@@ -92,7 +95,11 @@ import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
@@ -702,18 +709,19 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       ciNodeId,
                       this.props.match.params.appId,
                       getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
+                      this.props.appContext.currentAppName,
                   )
-                : { result: null },
+                : null,
             getRuntimeParams?.(ciNodeId) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that
-                if (resp[1].result) {
+                if (resp[1]) {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.ciBlockState = processConsequenceData(resp[1].result)
-                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1])
+                                node.isTriggerBlocked = resp[1].isCITriggerBlocked
                                 return node
                             }
                             return node
@@ -955,6 +963,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 buttonProps: {
                                     text: 'Edit Pipeline',
                                     dataTestId: 'edit-pipeline-btn',
+                                    onClick: this.redirectToCIPipeline,
                                 },
                             })
                         } else {
@@ -1209,8 +1218,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isCacheAvailable={nd?.storageConfigured}
                             appId={this.props.match.params.appId}
                             isJobView={this.props.isJobView}
-                            isCITriggerBlocked={nd?.isCITriggerBlocked}
-                            ciBlockState={nd?.ciBlockState}
+                            isCITriggerBlocked={nd?.isTriggerBlocked}
+                            ciBlockState={nd?.pluginBlockState}
                             selectedEnv={this.state.selectedEnv}
                             setSelectedEnv={this.setSelectedEnv}
                             environmentLists={this.state.environmentLists}
@@ -1245,10 +1254,50 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as CommonNodeAttr)
     }
 
+    renderCDMaterialContent = (cdNode: CommonNodeAttr) => {
+        const selectedWorkflow = this.state.workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
+        const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
+        const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
+        const configurePluginURL = getCDPipelineURL(
+            this.props.match.params.appId,
+            selectedWorkflow.id,
+            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+            doesWorkflowContainsWebhook,
+            cdNode.id,
+            true,
+        )
+
+        return (
+            <CDMaterial
+                materialType={this.state.materialType}
+                appId={Number(this.props.match.params.appId)}
+                pipelineId={this.state.cdNodeId}
+                stageType={DeploymentNodeType[this.state.nodeType]}
+                envName={cdNode?.environmentName}
+                envId={cdNode?.environmentId}
+                closeCDModal={this.closeCDModal}
+                triggerType={cdNode.triggerType}
+                isVirtualEnvironment={cdNode.isVirtualEnvironment}
+                parentEnvironmentName={cdNode.parentEnvironmentName}
+                isLoading={this.state.isLoading}
+                ciPipelineId={cdNode.connectingCiPipelineId}
+                isSaveLoading={this.state.isSaveLoading}
+                deploymentAppType={cdNode?.deploymentAppType}
+                showPluginWarningBeforeTrigger={cdNode?.showPluginWarning}
+                consequence={cdNode?.pluginBlockState}
+                configurePluginURL={configurePluginURL}
+                isTriggerBlockedDueToPlugin={cdNode?.showPluginWarning && cdNode?.isTriggerBlocked}
+            />
+        )
+    }
+
     renderCDMaterial() {
         if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node')) {
-            const node: CommonNodeAttr = this.getCDNode()
-            const material = node[this.state.materialType] || []
+            const cdNode: CommonNodeAttr = this.getCDNode()
+            if (!cdNode.id) {
+                return null
+            }
+            const material = cdNode[this.state.materialType] || []
 
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
@@ -1260,7 +1309,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     >
                         {this.state.isLoading ? (
                             <>
-                                <div className="trigger-modal__header flex right">
+                                <div className="trigger-modal__header flexbox dc__content-space">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
                                         <CloseIcon />
                                     </button>
@@ -1270,22 +1319,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 </div>
                             </>
                         ) : (
-                            <CDMaterial
-                                materialType={this.state.materialType}
-                                appId={Number(this.props.match.params.appId)}
-                                pipelineId={this.state.cdNodeId}
-                                stageType={DeploymentNodeType[this.state.nodeType]}
-                                envName={node?.environmentName}
-                                envId={node?.environmentId}
-                                closeCDModal={this.closeCDModal}
-                                triggerType={node.triggerType}
-                                isVirtualEnvironment={node.isVirtualEnvironment}
-                                parentEnvironmentName={node.parentEnvironmentName}
-                                isLoading={this.state.isLoading}
-                                ciPipelineId={node.connectingCiPipelineId}
-                                isSaveLoading={this.state.isSaveLoading}
-                                deploymentAppType={node?.deploymentAppType}
-                            />
+                            this.renderCDMaterialContent(cdNode)
                         )}
                     </div>
                 </VisibleModal>
@@ -1447,4 +1481,4 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 }
 
-export default withRouter(TriggerView)
+export default withRouter(withAppContext(TriggerView))

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { WorkflowNodeType, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
@@ -34,6 +34,7 @@ export const WebhookNode = ({
     handleSelectedNodeChange,
     selectedNode,
     isLastNode,
+    isReadonlyView = false,
 }: WebhookNodeProps) => {
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
@@ -56,16 +57,15 @@ export const WebhookNode = ({
         }
     }
 
+    const renderWrapWithLink = (children: ReactElement) => (
+        <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
+            {children}
+        </Link>
+    )
+
     const renderWebhookCard = (): JSX.Element => {
         return (
-            <ConditionalWrap
-                condition={!!to}
-                wrap={(children) => (
-                    <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
-                        {children}
-                    </Link>
-                )}
-            >
+            <ConditionalWrap condition={!!to} wrap={renderWrapWithLink}>
                 <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
                     <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
                         <div className="workflow-node__full-width-minus-Icon p-12">
@@ -75,7 +75,7 @@ export const WebhookNode = ({
 
                         <Webhook className="icon-dim-20 mr-12" />
 
-                        {toggleCDMenu && selectedNodeKey !== currentNodeKey && (
+                        {!isReadonlyView && toggleCDMenu && selectedNodeKey !== currentNodeKey && (
                             <ToggleCDSelectButton
                                 addNewPipelineBlocked={addNewPipelineBlocked}
                                 onClickAddNode={addNewCD}

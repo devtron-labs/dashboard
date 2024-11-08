@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
+import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
 import {
     TippyCustomized,
     TippyTheme,
@@ -24,7 +24,6 @@ import {
     ToastManager,
     ToastVariantType,
     SortableTableHeaderCell,
-    noop,
     Tooltip,
     TabGroup,
     ComponentSizeType,
@@ -60,6 +59,7 @@ const NodeComponent = ({
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
+    const location = useLocation()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
@@ -201,14 +201,17 @@ const NodeComponent = ({
             node.name
         }/${_tabName.toLowerCase()}`
 
-        if (containerName) {
-            _url = `${_url}?container=${containerName}`
+        const getSearchString = () => {
+            if (containerName) {
+                return location.search ? `${location.search}&container=${containerName}` : `?container=${containerName}`
+            }
+            return location.search
         }
 
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
 
         if (isAdded) {
-            history.push(_url)
+            history.push({ pathname: _url, search: getSearchString() })
         } else {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -317,18 +320,12 @@ const NodeComponent = ({
                     {showHeader && !!_currentNodeHeader && (
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
-                                <SortableTableHeaderCell
-                                    isSortable={false}
-                                    title={node.kind}
-                                />
+                                <SortableTableHeaderCell isSortable={false} title={node.kind} />
                             </div>
                             {((node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
                                 (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
                                 <div className="fw-6">
-                                    <SortableTableHeaderCell
-                                        isSortable={false}
-                                        title="Links"
-                                    />
+                                    <SortableTableHeaderCell isSortable={false} title="Links" />
                                 </div>
                             )}
                         </div>
@@ -361,15 +358,9 @@ const NodeComponent = ({
                                             node.kind.toLowerCase() == NodeType.Pod.toLowerCase() ? 'mw-264' : 'mw-152'
                                         }`}
                                     >
-                                        <button
-                                            type="button"
-                                            className="dc__unset-button-styles"
-                                            onClick={stopPropagation}
-                                        >
-                                            <div className="pl-8 pr-8">
-                                                <ClipboardButton content={node.name} />
-                                            </div>
-                                        </button>
+                                        <div className="px-8">
+                                            <ClipboardButton content={node.name} />
+                                        </div>
                                         {!appDetails.isVirtualEnvironment && (
                                             <>
                                                 <div
@@ -424,7 +415,9 @@ const NodeComponent = ({
                                             {nodeStatus}
                                         </span>
                                     )}
-                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE && renderConfigDriftDetectedText && renderConfigDriftDetectedText(node)}
+                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                                        renderConfigDriftDetectedText &&
+                                        renderConfigDriftDetectedText(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
@@ -546,10 +539,7 @@ const NodeComponent = ({
                                     key={`gpt_${index}`}
                                     className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                                 >
-                                    <SortableTableHeaderCell
-                                        isSortable={false}
-                                        title={cell}
-                                    />
+                                    <SortableTableHeaderCell isSortable={false} title={cell} />
                                 </div>
                             )
                         })}
