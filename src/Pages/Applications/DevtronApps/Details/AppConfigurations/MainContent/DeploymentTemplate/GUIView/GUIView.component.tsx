@@ -55,10 +55,17 @@ const GUIView = ({
     const [formData, setFormData] = useState(null)
     const [uncheckedPathsList, setUncheckedPathsList] = useState([])
     const modelRef = useRef<GUIViewModelType>(null)
+    // NOTE: need this ref since we need the updated formData on unmount;
+    // if we directly use formData in cleanup function of unmount; we will have a stale reference of formData
+    const formDataRef = useRef<object>(null)
 
     useEffect(() => {
         try {
-            setFormData(YAML.parse(value))
+            const parsedValue = YAML.parse(value)
+
+            setFormData(parsedValue)
+            formDataRef.current = parsedValue
+
             if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current) {
                 modelRef.current = new GUIViewModel(guiSchema, value)
                 setUncheckedPathsList(modelRef.current.getUncheckedNodes())
@@ -73,6 +80,16 @@ const GUIView = ({
             }
         }
     }, [value, guiSchema, mergeStrategy])
+
+    useEffect(
+        () => () => {
+            if (modelRef.current) {
+                const newData = modelRef.current.syncCheckedFieldsInJson(formDataRef.current)
+                editorOnChange?.(YAML.stringify(newData))
+            }
+        },
+        [],
+    )
 
     const state = useMemo(() => {
         try {

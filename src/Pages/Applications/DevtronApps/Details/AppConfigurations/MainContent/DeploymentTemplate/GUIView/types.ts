@@ -41,6 +41,7 @@ export type GUIViewModelType = {
     getUncheckedNodes: () => string[]
     postOrder: (props: TraversalType) => void
     inOrder: (props: TraversalType) => void
+    syncCheckedFieldsInJson: (json: object) => object
 }
 
 export type ViewErrorType = Record<'title' | 'subTitle', string>

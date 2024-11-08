@@ -1,7 +1,13 @@
 import { JSONPath } from 'jsonpath-plus'
 import YAML from 'yaml'
 import { applyOperation, Operation } from 'fast-json-patch'
-import { convertJSONPointerToJSONPath, noop, RJSFFormSchema } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    buildObjectFromPath,
+    convertJSONPointerToJSONPath,
+    joinObjects,
+    noop,
+    RJSFFormSchema,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NodeEntityType, NodeType, TraversalType, UpdateNodeForPathDataType } from './types'
 
 export function ViewError(title: string, subTitle: string) {
@@ -195,7 +201,7 @@ function getNullValueFromType(type: NodeType['fieldType']) {
     switch (type) {
         case 'number':
         case 'integer':
-            return 0
+            return null
         case 'string':
             return ''
         case 'boolean':
@@ -210,8 +216,11 @@ function getNullValueFromType(type: NodeType['fieldType']) {
     }
 }
 
-function updateNodeWherePathMatches(node: NodeType, { path, json }: UpdateNodeForPathDataType) {
-    if (node.path === path) {
+// NOTE: the reason we are replacing * with 0 is that this operation is only used if no corresponding key is found
+const getPointerFromNodePath = (path: NodeType['path']) => path.replace(/\*/g, '0')
+
+function updateNodeWherePathMatches(node: NodeType, data: UpdateNodeForPathDataType) {
+    if (node.path === data.path) {
         if (node.type !== NodeEntityType.LEAF) {
             throw new Error('None leaf is being updated!')
         }
@@ -220,14 +229,15 @@ function updateNodeWherePathMatches(node: NodeType, { path, json }: UpdateNodeFo
 
         if (node.isChecked) {
             this.totalCheckedCount += 1
-            applyJsonPatchOperationAndMutateJson(json, {
-                op: 'add',
-                path: node.path,
-                value: getNullValueFromType(node.fieldType),
-            })
+            // NOTE: if we are updating isChecked status; either we will add a new key or delete an existing key
+            // eslint-disable-next-line no-param-reassign
+            data.json = joinObjects([
+                data.json,
+                buildObjectFromPath(getPointerFromNodePath(node.path), getNullValueFromType(node.fieldType)),
+            ])
         } else {
             this.totalCheckedCount -= 1
-            applyJsonPatchOperationAndMutateJson(json, { op: 'remove', path: node.path })
+            applyJsonPatchOperationAndMutateJson(data.json, { op: 'remove', path: node.path })
         }
     }
 
@@ -243,6 +253,32 @@ function addPathToListIfUnchecked(node: NodeType, data: Array<string>) {
     }
 }
 
+function syncCheckedFields(node: NodeType, data: Record<'json', object>) {
+    if (node.type !== NodeEntityType.LEAF) {
+        return
+    }
+
+    const path = convertJSONPointerToJSONPath(node.path)
+    const doesFieldExists = !!JSONPath({ json: data.json, path, resultType: 'pointer', wrap: false })
+
+    if (node.isChecked && !doesFieldExists) {
+        // eslint-disable-next-line no-param-reassign
+        data.json = joinObjects([
+            data.json,
+            buildObjectFromPath(getPointerFromNodePath(node.path), getNullValueFromType(node.fieldType)),
+        ])
+    } else if (!node.isChecked && doesFieldExists) {
+        applyJsonPatchOperationAndMutateJson(data.json, { op: 'remove', path: node.path })
+    }
+}
+
+GUIViewModel.prototype.syncCheckedFieldsInJson = function syncCheckedFieldsInJson(json: object) {
+    const clone = structuredClone(json)
+    const data = { json: clone }
+    postOrder({ node: this.root, wf: syncCheckedFields.bind(this), data })
+    return data.json
+}
+
 GUIViewModel.prototype.getUncheckedNodes = function getUncheckedNodes(): string[] {
     const list = []
     inOrder({ node: this.root, wf: addPathToListIfUnchecked.bind(this), data: list })
@@ -251,8 +287,9 @@ GUIViewModel.prototype.getUncheckedNodes = function getUncheckedNodes(): string[
 
 GUIViewModel.prototype.updateNodeForPath = function updateNodeForPath({ path, json }: UpdateNodeForPathDataType) {
     const clone = structuredClone(json)
-    postOrder({ node: this.root, wf: updateNodeWherePathMatches.bind(this), data: { path, json: clone } })
-    return clone
+    const data = { path, json: clone }
+    postOrder({ node: this.root, wf: updateNodeWherePathMatches.bind(this), data })
+    return data.json
 }
 
 GUIViewModel.prototype.inOrder = inOrder
