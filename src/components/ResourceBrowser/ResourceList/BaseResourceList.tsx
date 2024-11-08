@@ -22,6 +22,7 @@ import {
     SelectAllDialogStatus,
     K8sResourceDetailType,
     K8sResourceDetailDataType,
+    Nodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -388,8 +389,11 @@ const BaseResourceListContent = ({
     }
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
+        const lowercaseKind = (resourceData.kind as string).toLowerCase()
         // This should be used only if shouldOverrideSelectedResourceKind is true
-        const gvkFromRawData = kindToGvkMapFromRawMap[(resourceData.kind as string).toLowerCase()] ?? ({} as GVKType)
+        const gvkFromRawData = kindToGvkMapFromRawMap[lowercaseKind] ?? ({} as GVKType)
+        // Redirection and actions are not possible for Events since the required data for the same is not available
+        const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
 
         return (
             <div
@@ -402,7 +406,7 @@ const BaseResourceListContent = ({
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                            className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
@@ -415,52 +419,56 @@ const BaseResourceListContent = ({
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <Tooltip content={resourceData.name}>
-                                <button
-                                    type="button"
-                                    className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
-                                    data-name={resourceData.name}
-                                    data-namespace={resourceData.namespace}
-                                    data-kind={resourceData.kind}
-                                    onClick={handleResourceClick}
-                                    aria-label={`Select ${resourceData.name}`}
-                                >
-                                    <span
-                                        className="dc__link cursor"
-                                        // eslint-disable-next-line react/no-danger
-                                        dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(
-                                                highlightSearchText({
-                                                    searchText,
-                                                    text: String(resourceData.name),
-                                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                                }),
-                                            ),
-                                        }}
-                                    />
-                                </button>
-                            </Tooltip>
-                            <ClipboardButton
-                                content={String(resourceData.name)}
-                                rootClassName="p-4 dc__visible-hover--child"
-                            />
-                            <ResourceBrowserActionMenu
-                                clusterId={clusterId}
-                                resourceData={resourceData}
-                                getResourceListData={reloadResourceListData as () => Promise<void>}
-                                selectedResource={{
-                                    ...selectedResource,
-                                    ...(shouldOverrideSelectedResourceKind && {
-                                        gvk: {
-                                            Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
-                                            Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
-                                            Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
-                                        } as GVKType,
-                                    }),
-                                }}
-                                handleResourceClick={handleResourceClick}
-                                hideDeleteResource={hideDeleteResource}
-                            />
+                            <div className="flex left dc__gap-4">
+                                <Tooltip content={resourceData.name}>
+                                    <button
+                                        type="button"
+                                        className="dc__unset-button-styles dc__align-left dc__truncate"
+                                        data-name={resourceData.name}
+                                        data-namespace={resourceData.namespace}
+                                        data-kind={resourceData.kind}
+                                        onClick={shouldShowRedirectionAndActions ? handleResourceClick : null}
+                                        aria-label={`Select ${resourceData.name}`}
+                                    >
+                                        <span
+                                            className={shouldShowRedirectionAndActions ? 'dc__link cursor' : ''}
+                                            // eslint-disable-next-line react/no-danger
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(
+                                                    highlightSearchText({
+                                                        searchText,
+                                                        text: String(resourceData.name),
+                                                        highlightClasses: 'p-0 fw-6 bcy-2',
+                                                    }),
+                                                ),
+                                            }}
+                                        />
+                                    </button>
+                                </Tooltip>
+                                <ClipboardButton
+                                    content={String(resourceData.name)}
+                                    rootClassName="p-4 dc__visible-hover--child"
+                                />
+                            </div>
+                            {shouldShowRedirectionAndActions && (
+                                <ResourceBrowserActionMenu
+                                    clusterId={clusterId}
+                                    resourceData={resourceData}
+                                    getResourceListData={reloadResourceListData as () => Promise<void>}
+                                    selectedResource={{
+                                        ...selectedResource,
+                                        ...(shouldOverrideSelectedResourceKind && {
+                                            gvk: {
+                                                Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
+                                                Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
+                                                Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
+                                            } as GVKType,
+                                        }),
+                                    }}
+                                    handleResourceClick={handleResourceClick}
+                                    hideDeleteResource={hideDeleteResource}
+                                />
+                            )}
                         </div>
                     ) : (
                         <div
