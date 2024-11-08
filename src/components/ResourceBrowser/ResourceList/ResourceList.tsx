@@ -344,7 +344,7 @@ const ResourceList = () => {
 
     const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
         const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
-        const lowercaseKindFromResource = kindFromResource.toLowerCase()
+        const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
         const _group: string =
             (shouldOverrideSelectedResourceKind
                 ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()

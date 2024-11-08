@@ -345,7 +345,7 @@ const BaseResourceListContent = ({
     }
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
-        const lowercaseKind = (resourceData.kind as string).toLowerCase()
+        const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // This should be used only if shouldOverrideSelectedResourceKind is true
         const gvkFromRawData = lowercaseKindToResourceGroupMap[lowercaseKind]?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
