@@ -24,12 +24,13 @@ import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-ob
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, useSearchString, ALL_RESOURCE_KIND_FILTER } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
+    const filterType = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
@@ -76,7 +77,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         return (
             <NavLink
                 data-testid={`resource-tab-${tab.name.replace(' ', '').toLowerCase()}`}
-                to={tab.url}
+                to={`${tab.url}?filterType=${filterType}`}
                 className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp"
             >
                 <div
