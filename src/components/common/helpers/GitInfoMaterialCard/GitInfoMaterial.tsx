@@ -205,10 +205,6 @@ export const GitInfoMaterial = ({
         </div>
     )
 
-    // const handleFilterKeyPress = (_searchText: string): void => {
-    //     handleFilterChanges(_searchText)
-    // }
-
     const goToWorkFlowEditor = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId.toString(), true, pipelineId, isJobView, isJobCI)
         if (fromAppGrouping) {
@@ -380,7 +376,7 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="dc__flex-1 dc__window-bg select-material dc__overflow-hidden h-100 pb-160">
+            <div className="dc__window-bg select-material select-material--trigger-view dc__overflow-hidden">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
                 <MaterialHistory
@@ -410,7 +406,7 @@ export const GitInfoMaterial = ({
                     nodeType={nodeType}
                 />
             ) : (
-                <div className={`m-lr-0 h-100 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
+                <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {!fromBulkCITrigger && renderMaterialSource()}
                     {renderMaterialHistory(selectedMaterial)}
                 </div>
