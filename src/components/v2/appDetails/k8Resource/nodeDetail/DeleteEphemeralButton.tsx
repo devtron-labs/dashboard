@@ -38,32 +38,31 @@ export const DeleteEphemeralButton = ({
         return payload
     }
 
-    const deleteEphemeralContainer = () => {
-        deleteEphemeralUrl({
-            requestData: getPayload(),
-            clusterId,
-            environmentId,
-            namespace,
-            appName,
-            appId,
-            appType,
-            fluxTemplateType,
-            isResourceBrowserView,
-            params,
-        })
-            .then((response: any) => {
-                const containerNameRes = response.result
-                const updatedContainers = containers?.filter((con) => con.name !== containerNameRes) || []
-                switchSelectedContainer(updatedContainers?.[0]?.name || '')
-                setContainers(updatedContainers)
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Deleted successfully',
-                })
+    const deleteEphemeralContainer = async () => {
+        try {
+            const { result } = await deleteEphemeralUrl({
+                requestData: getPayload(),
+                clusterId,
+                environmentId,
+                namespace,
+                appName,
+                appId,
+                appType,
+                fluxTemplateType,
+                isResourceBrowserView,
+                params,
             })
-            .catch((error) => {
-                showError(error)
+
+            const updatedContainers = containers?.filter((con) => con.name !== result) || []
+            switchSelectedContainer(updatedContainers?.[0]?.name || '')
+            setContainers(updatedContainers)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deleted successfully',
             })
+        } catch (error) {
+            showError(error)
+        }
     }
 
     return (
