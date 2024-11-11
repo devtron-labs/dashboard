@@ -35,7 +35,10 @@ export const WebhookReceivedPayloadModal = ({
     const onClickBackButton = (): void => {
         push(url.split(`/${URLS.WEBHOOK_MODAL}`)[0])
     }
-    const webhookRepoName = webhookPayloads?.repositoryUrl.replace('.git', '').split('/').pop()
+    const webhookRepoName = (webhookPayloads?.repositoryUrl ?? material[0].gitMaterialUrl)
+        .replace('.git', '')
+        .split('/')
+        .pop()
 
     useEffect(() => {
         if (workflowId) {
