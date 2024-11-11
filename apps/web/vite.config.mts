@@ -90,21 +90,23 @@ const jsToBottomNoModule = () => {
     }
 }
 
+const serverOptions = {
+    port: 3000,
+    proxy: {
+        '/orchestrator': {
+            target: TARGET_URL,
+            changeOrigin: true,
+        },
+        '/grafana': TARGET_URL,
+    },
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
     const baseConfig = {
         base: '/dashboard',
-        preview: {
-            port: 3000,
-            proxy: {
-                '/orchestrator': {
-                    target: TARGET_URL,
-                    changeOrigin: true,
-                },
-                '/grafana': TARGET_URL,
-            },
-        },
+        preview: serverOptions,
         build: {
             rollupOptions: {
                 output: {
@@ -177,16 +179,7 @@ export default defineConfig(({ mode }) => {
         //         exclude: [],
         //     },
         // },
-        server: {
-            port: 3000,
-            proxy: {
-                '/orchestrator': {
-                    target: TARGET_URL,
-                    changeOrigin: true,
-                },
-                '/grafana': TARGET_URL,
-            },
-        },
+        server: serverOptions,
     }
     if (mode === 'development') {
         console.log(mode)
