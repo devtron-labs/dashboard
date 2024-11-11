@@ -28,6 +28,7 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { useTabs } from '../../common/DynamicTabs/useTabs'
+import { ClusterListType } from '@Components/ClusterNodes/types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -365,18 +366,17 @@ export interface LogSearchTermType {
     isExternalApp?: boolean
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType {
+export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
-    k8SObjectMapRaw?: ApiResourceGroupType[]
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
     clusterName?: string
 }
 
-export interface LogsComponentProps extends NodeDetailPropsType {
+export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
@@ -473,6 +473,7 @@ export interface ManifestViewRefType {
         activeManifestEditorData: string
         modifiedManifest: string
         guiSchema: Record<string, string>
+        lockedKeys: string[] | null
     }
     id: string
 }

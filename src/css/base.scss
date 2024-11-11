@@ -3186,6 +3186,10 @@ textarea,
     width: 356px;
 }
 
+.w-360 {
+    width: 360px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -5088,4 +5092,41 @@ textarea::placeholder {
     position: absolute;
     bottom: 120px;
     right: 110px;
+}
+
+
+.read-only-expression {
+    counter-reset: line;
+}
+
+.read-only-expression span {
+    display: block;
+    // JUST A HACK, since need span for setting line number
+    width: 1px;
+}
+
+.read-only-expression span:before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    padding: 0 8px;
+    color: var(--N700);
+    width: 24px;
+    margin-right: 8px;
+}
+
+.read-only-expression.dark span:before {
+    color: var(--N400);
+}
+
+.read-only-expression.dark {
+    background-color: #0C0F21;
+}
+
+.dc__text-wrap {
+    text-wrap: wrap;
+}
+
+.dc__open-sans {
+    font-family: 'Open Sans';
 }

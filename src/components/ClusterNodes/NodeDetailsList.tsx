@@ -519,7 +519,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         if (column.value === 'k8sVersion') {
             return (
                 <Tooltip content={nodeData[column.value]}>
-                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                    <span className="dc__truncate">{nodeData[column.value]}</span>
                 </Tooltip>
             )
         }
@@ -532,7 +532,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 nodeData['errorCount'] > 0 && (
                     <>
                         <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>
+                        <span className="cr-5 dc__truncate">{nodeData['errorCount'] || '-'}</span>
                     </>
                 )
             )
@@ -568,14 +568,14 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             <div
                 key={`${nodeData.id}-${bulkSelectionState[nodeData.id]}-${isBulkSelectionApplied}`}
                 ref={nodeListRef}
-                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
+                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 node-list-row dc__align-items-center dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
                 style={{ gridTemplateColumns }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
+                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent py-9">
                             <Checkbox
                                 isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
                                 onChange={getHandleCheckedForId(nodeData)}
@@ -606,11 +606,11 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right list-title pt-12 pb-12 ${
+                            className={`py-12 ${
                                 column.value === 'status' ? `${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}` : ''
                             }`}
                         >
-                            {renderNodeRow(column, nodeData)}
+                            <span className="dc__truncate">{renderNodeRow(column, nodeData)}</span>
                         </div>
                     )
                 })}

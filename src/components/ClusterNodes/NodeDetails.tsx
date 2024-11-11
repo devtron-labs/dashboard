@@ -76,11 +76,10 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: ClusterListType) => {
+const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -172,11 +171,12 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
     }, [location.search])
 
     const selectedResource = useMemo((): { gvk: GVKType; namespaced: boolean } => {
-        if (!k8SObjectMapRaw) {
+        const resourceGroupData = lowercaseKindToResourceGroupMap[Nodes.Pod.toLowerCase()]
+        if (!resourceGroupData) {
             return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
         }
-        return getResourceFromK8SObjectMap(k8SObjectMapRaw, 'pod')
-    }, [k8SObjectMapRaw])
+        return resourceGroupData
+    }, [lowercaseKindToResourceGroupMap])
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)

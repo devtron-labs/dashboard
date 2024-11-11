@@ -213,6 +213,22 @@
                 display: grid;
                 grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
                 column-gap: 16px;
+
+                &__explain {
+                    display: grid;
+                    grid-template-columns: 80px minmax(200px, auto) 130px 150px 150px repeat(4, 70px);
+                    column-gap: 16px;
+
+                    &:hover {
+                        .explain-ai-button {
+                            visibility: visible;
+                        }
+                    }
+                }
+            }
+
+            .explain-ai-button {
+                visibility: hidden;
             }
 
             .node-actions-menu-icon {

@@ -15,6 +15,7 @@
  */
 
 import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { RBSidebarKeysType } from './Types'
@@ -154,6 +155,7 @@ export const EVENT_LIST = {
         count: 'Count',
         age: 'Age',
         lastSeen: 'Last Seen',
+        gptWidgetButton: '',
     },
     dataKeys: {
         involvedObject: 'involved object',
@@ -203,6 +205,18 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.MonitoringDashboard,
     },
+    upgradeClusterGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.UpgradeCluster,
+    },
+}
+
+export const UPGRADE_CLUSTER_CONSTANTS = {
+    DYNAMIC_TITLE: 'Upgrade Cluster',
+    ICON_PATH: ICArrowUpCircle,
+    ID_PREFIX: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+    NAME: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
 }
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
@@ -264,3 +278,5 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'
