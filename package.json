@@ -5,7 +5,7 @@
         "prepare": "husky install",
         "lint": "pnpm run -r lint",
         "build:prod": "pnpm run -r build",
-        "build:libs": "pnpm filter './packages/**' build"
+        "build:libs": "pnpm --filter './packages/**' build"
     },
 	"devDependencies": {
 		"husky": "^7.0.4"

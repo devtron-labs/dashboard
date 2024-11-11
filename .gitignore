@@ -40,3 +40,5 @@ package-lock.json
 
 *storybook.log
 storybook-static
+
+pnpm-lock.json
