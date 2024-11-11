@@ -22,7 +22,6 @@ import {
     TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
-    multiSelectStyles,
     Reload,
     RadioGroup,
     RadioGroupItem,
@@ -49,11 +48,9 @@ import {
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import {
     getClusterListMinWithoutAuth,
     getDockerRegistryList,
@@ -514,11 +511,13 @@ const DockerForm = ({
     _ignoredClusterIdsCsv = _ignoredClusterIdsCsv.filter((clusterIds) => !!clusterIds)
 
     let _appliedClusterIdsCsv = ipsConfig?.appliedClusterIdsCsv
-        ? ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
-              if (clusterId || clusterlistMap.get(clusterId)) {
-                  return clusterlistMap.get(clusterId)
-              }
-          })
+        ? ipsConfig.appliedClusterIdsCsv.indexOf('-1') >= 0
+            ? clusterOption
+            : ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
+                  if (clusterId || clusterlistMap.get(clusterId)) {
+                      return clusterlistMap.get(clusterId)
+                  }
+              })
         : []
 
     _appliedClusterIdsCsv = _appliedClusterIdsCsv.filter((clusterIds) => !!clusterIds)
@@ -830,7 +829,10 @@ const DockerForm = ({
                               credentialsType === CredentialType.CUSTOM_CREDENTIAL
                                   ? JSON.stringify(customCredential)
                                   : credentialValue,
-                          appliedClusterIdsCsv,
+                          appliedClusterIdsCsv:
+                              whiteList.length && whiteList.findIndex((cluster) => cluster.value === '-1') >= 0
+                                  ? '-1'
+                                  : appliedClusterIdsCsv,
                           ignoredClusterIdsCsv:
                               whiteList.length === 0 &&
                               (blackList.length === 0 || blackList.findIndex((cluster) => cluster.value === '-1') >= 0)
@@ -1191,46 +1193,6 @@ const DockerForm = ({
                 handleOCIRegistryHelmPullAction(!showHelmPull)
                 break
         }
-    }
-
-    const registryOptions = (props) => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle()
-        return (
-            <components.Option {...props}>
-                <div style={{ display: 'flex' }}>
-                    <div className={`dc__registry-icon dc__git-logo mr-5 ${props.data.value}`} />
-                    {props.label}
-                </div>
-            </components.Option>
-        )
-    }
-    const registryControls = (props) => {
-        let value = ''
-        if (props.hasValue) {
-            value = props.getValue()[0].value
-        }
-        return (
-            <components.Control {...props}>
-                <div className={`dc__registry-icon dc__git-logo ml-5 ${value}`} />
-                {props.children}
-            </components.Control>
-        )
-    }
-
-    const _multiSelectStyles = {
-        ...multiSelectStyles,
-        menu: (base, state) => ({
-            ...base,
-            marginTop: 'auto',
-        }),
-        menuList: (base) => {
-            return {
-                ...base,
-                position: 'relative',
-                maxHeight: '250px',
-                paddingBottom: '4px',
-            }
-        },
     }
 
     const appliedClusterList = whiteList?.map((_ac) => {
@@ -1831,8 +1793,7 @@ const DockerForm = ({
     }
 
     // For EA Mode GCR is not available as it is not OCI compliant
-    const EA_MODE_REGISTRY_TYPE_MAP: EAModeRegistryType = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
-    delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
+    const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(Object.entries(REGISTRY_TYPE_MAP).filter(([key,_]) => key !== 'gcr'))
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
             <div className="pl-20 pr-20 pt-20 pb-20">
@@ -1853,8 +1814,6 @@ const DockerForm = ({
                                     ? Object.values(EA_MODE_REGISTRY_TYPE_MAP)
                                     : Object.values(REGISTRY_TYPE_MAP)
                             }
-                            getOptionLabel={(option) => `${option.label}`}
-                            getOptionValue={(option) => `${option.value}`}
                             value={selectedDockerRegistryType}
                             onChange={handleRegistryTypeChange}
                             isDisabled={!!id}

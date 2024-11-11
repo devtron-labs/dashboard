@@ -51,6 +51,7 @@ import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStack
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
+import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -294,12 +295,13 @@ export function getWorkflowList(appId, filteredEnvIds?: string) {
     return get(URL)
 }
 
-export function getWorkflowViewList(appId, filteredEnvIds?: string) {
-    let filteredEnvParams = ''
-    if (filteredEnvIds) {
-        filteredEnvParams = `?envIds=${filteredEnvIds}`
+export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: OffendingWorkflowQueryParamType = null) {
+    const queryParams = {
+        envIds: filteredEnvIds,
+        offending,
     }
-    return get(`${Routes.WORKFLOW}/view/${appId}${filteredEnvParams}`)
+
+    return get(getUrlWithSearchParams(`${Routes.WORKFLOW}/view/${appId}`, queryParams))
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {

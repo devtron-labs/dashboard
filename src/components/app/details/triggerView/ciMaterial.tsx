@@ -27,6 +27,7 @@ import {
     SourceTypeMap,
     ToastManager,
     ToastVariantType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -212,12 +213,23 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCTAButton = (canTrigger) => {
+        const nodeType: CommonNodeAttr['type'] = 'CI'
+
         if (AllowedWithWarningTippy && this.props.ciBlockState && !this.props.isJobView) {
             return (
                 <AllowedWithWarningTippy
                     consequence={this.props.ciBlockState}
-                    onConfigure={this.redirectToCIPipeline}
-                    onStart={this.handleStartBuildAction}
+                    configurePluginURL={getCIPipelineURL(
+                        this.props.appId,
+                        this.props.workflowId.toString(),
+                        true,
+                        this.props.pipelineId,
+                        false,
+                        this.props.isJobCI,
+                    )}
+                    showTriggerButton
+                    onTrigger={this.handleStartBuildAction}
+                    nodeType={nodeType}
                 >
                     <ButtonWithLoader
                         rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
