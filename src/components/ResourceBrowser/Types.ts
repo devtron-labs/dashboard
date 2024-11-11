@@ -17,7 +17,6 @@
 import React from 'react'
 import {
     K8SObjectBaseType,
-    ResponseType,
     OptionType,
     ApiResourceGroupType,
     GVKType,
@@ -80,10 +79,6 @@ export interface ResourceType {
     name: string
     isUpdate: boolean
     error: string
-}
-
-export interface CreateResourceResponse extends ResponseType {
-    result?: ResourceType[]
 }
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
