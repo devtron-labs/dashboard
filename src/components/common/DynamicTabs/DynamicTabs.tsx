@@ -128,20 +128,20 @@ const DynamicTabs = ({
         )
     }
 
+    const getTippyFromConfig = (tippyConfig) => (
+        <div className="flexbox-col dc__gap-8 w-200">
+            <div className="fs-12 fw-6 lh-18">{tippyConfig.title}</div>
+            {tippyConfig.descriptions.map((description) => (
+                <div className="fw-4" key={`${description.info}-${description.value}`}>
+                    <div className="fs-11 lh-16">{description.info}</div>
+                    <div className="fs-12 lh-18">{description.value}</div>
+                </div>
+            ))}
+        </div>
+    )
+
     const renderTab = (tab: DynamicTabType, idx: number, isFixed: boolean, tippyConfig?: any) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive && !tab.hideName
-
-        const getTippyFromConfig = () => (
-            <div className="flexbox-col dc__gap-8 w-200">
-                <div className="fs-12 fw-6 lh-18">{tippyConfig.title}</div>
-                {tippyConfig.descriptions.map((description) => (
-                    <div className="fw-4">
-                        <div className="fs-11 lh-16">{description.info}</div>
-                        <div className="fs-12 lh-18">{description.value}</div>
-                    </div>
-                ))}
-            </div>
-        )
 
         const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
             <Tippy
@@ -150,7 +150,7 @@ const DynamicTabs = ({
                 placement="top"
                 duration={[600, 0]}
                 moveTransition="transform 0.1s ease-out"
-                content={tippyConfig ? getTippyFromConfig() : getTabTippyContent(tab.title)}
+                content={tippyConfig ? getTippyFromConfig(tippyConfig) : getTabTippyContent(tab.title)}
             >
                 {children}
             </Tippy>

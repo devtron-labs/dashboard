@@ -401,7 +401,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             undefined,
             undefined,
             UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
-            UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE,
+            `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
             {
                 title: 'Upgrade compatibility',
                 descriptions: [
@@ -411,7 +411,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                     },
                     {
                         info: 'Target Version',
-                        value: selectedVersion,
+                        value: `v${selectedVersion}`,
                     },
                 ]
             }
