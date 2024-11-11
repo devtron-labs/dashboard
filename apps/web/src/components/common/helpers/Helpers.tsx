@@ -29,6 +29,7 @@ import {
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
     SeverityCount,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -51,7 +52,14 @@ import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
 
-let module
+const PACKAGE = import('@devtron-labs/devtron-fe-lib')
+
+let module: Awaited<typeof PACKAGE>
+
+PACKAGE.then((mod) => {
+    module = mod
+}).catch(noop)
+
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
 export type IntersectionOptions = {
@@ -804,13 +812,6 @@ export const convertToOptionsList = (
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         let component = defaultComponent || null
-        if (!module) {
-            const path = '../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js'
-            const modules = import.meta.glob(`../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js`, {
-                eager: true,
-            })
-            module = modules[path]
-        }
         if (module) {
             if (type === 'function') {
                 component = module[componentName]
