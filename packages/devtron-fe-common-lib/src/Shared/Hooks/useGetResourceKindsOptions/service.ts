@@ -18,11 +18,11 @@ import { ResponseType, Teams } from '@Common/Types'
 import { getTeamListMin } from '@Common/Common.service'
 import { get } from '@Common/Api'
 import { ClusterType } from '@Shared/Services'
-import { EnvironmentType, EnvListMinDTO } from '@Shared/types'
+import { EnvListMinDTO } from '@Shared/types'
 import { EnvironmentTypeEnum } from '@Shared/constants'
 import { ROUTES } from '@Common/Constants'
 import { stringComparatorBySortOrder } from '@Shared/Helpers'
-import { AppsGroupedByProjectsType, ClusterDTO } from './types'
+import { AppsGroupedByProjectsType, ClusterDTO, EnvironmentsGroupedByClustersType } from './types'
 
 export const getAppOptionsGroupedByProjects = async (): Promise<AppsGroupedByProjectsType> => {
     const { result } = (await get(ROUTES.APP_LIST_MIN)) as ResponseType<AppsGroupedByProjectsType>
@@ -70,14 +70,14 @@ export const getClusterOptions = async (): Promise<ClusterType[]> => {
         .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
 }
 
-export const getEnvironmentOptions = async (): Promise<EnvironmentType[]> => {
+export const getEnvironmentOptionsGroupedByClusters = async (): Promise<EnvironmentsGroupedByClustersType> => {
     const { result } = (await get(ROUTES.ENVIRONMENT_LIST_MIN)) as ResponseType<EnvListMinDTO[]>
 
     if (!result) {
         return []
     }
 
-    return result
+    const sortedEnvList = result
         .map(
             ({
                 id,
@@ -96,4 +96,23 @@ export const getEnvironmentOptions = async (): Promise<EnvironmentType[]> => {
             }),
         )
         .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+
+    const envGroupedByCluster = Object.values(
+        sortedEnvList.reduce<
+            Record<EnvironmentsGroupedByClustersType[number]['clusterName'], EnvironmentsGroupedByClustersType[number]>
+        >((acc, env) => {
+            if (!acc[env.cluster]) {
+                acc[env.cluster] = {
+                    clusterName: env.cluster,
+                    envList: [],
+                }
+            }
+
+            acc[env.cluster].envList.push(env)
+
+            return acc
+        }, {}),
+    ).sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
+
+    return envGroupedByCluster
 }

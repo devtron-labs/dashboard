@@ -74,7 +74,7 @@ export enum BuildInfraProfileVariants {
     CUSTOM = 'CUSTOM',
 }
 
-export interface DescriptorProps {
+export interface BuildInfraDescriptorProps {
     /**
      * In case we want to restrict the max-width
      */

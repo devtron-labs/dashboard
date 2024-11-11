@@ -32,6 +32,7 @@ import { ReactComponent as DropDownIcon } from '../../../Assets/Icon/ic-chevron-
 import AnnouncementBanner from '../AnnouncementBanner/AnnouncementBanner'
 import { useMainContext, useUserEmail } from '../../Providers'
 import { InfoIconTippy } from '../InfoIconTippy'
+import { IframePromoButton } from './IframePromoButton'
 
 const PageHeader = ({
     headerName,
@@ -121,8 +122,8 @@ const PageHeader = ({
 
     const renderLogoutHelpSection = () => (
         <>
-            <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                <span className="icon-dim-24 fcn-9 mr-4 ml-16">
+            <div className="flex left cursor dc__gap-8" onClick={onClickHelp}>
+                <span className="icon-dim-24 fcn-9">
                     <Question />
                 </span>
                 <span className="fs-13 cn-9" data-testid="go-to-get-started">
@@ -155,6 +156,8 @@ const PageHeader = ({
     const renderBetaTag = (): JSX.Element => (
         <span className="fs-12 fw-4 lh-18 pt-1 pb-1 pl-6 pr-6 ml-8 cn-9 bcy-5 br-4">Beta</span>
     )
+
+    const renderIframeButton = () => <IframePromoButton />
 
     return (
         <div
@@ -220,7 +223,8 @@ const PageHeader = ({
                     {markAsBeta && renderBetaTag()}
                 </div>
                 {showTabs && (
-                    <div className="flex left">
+                    <div className="flex left dc__gap-12">
+                        {renderIframeButton()}
                         {typeof renderActionButtons === 'function' && renderActionButtons()}
                         {renderLogoutHelpSection()}
                     </div>
@@ -258,8 +262,9 @@ const PageHeader = ({
                 />
             )}
             {!showTabs && (
-                <div className="flex left">
+                <div className="flex left dc__gap-12">
                     {typeof renderActionButtons === 'function' && renderActionButtons()}
+                    {renderIframeButton()}
                     {renderLogoutHelpSection()}
                 </div>
             )}

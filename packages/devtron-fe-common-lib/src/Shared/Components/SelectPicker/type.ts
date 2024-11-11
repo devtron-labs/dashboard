@@ -73,6 +73,17 @@ declare module 'react-select/base' {
          * Imp Note: The menu open/close needs to handled by the consumer in this case
          */
         renderCustomOptions?: () => ReactElement
+        /**
+         * Icon to be rendered in the control
+         */
+        icon?: ReactElement
+        /**
+         * If true, the selected option icon is shown in the container.
+         * startIcon has higher priority than endIcon.
+         *
+         * @default 'true'
+         */
+        showSelectedOptionIcon?: boolean
     }
 }
 
@@ -108,13 +119,18 @@ export type SelectPickerProps<OptionValue = number | string, IsMulti extends boo
     | 'autoFocus'
     | 'onBlur'
     | 'onKeyDown'
+    | 'formatOptionLabel'
     | 'onInputChange'
     | 'inputValue'
 > &
     Partial<
         Pick<
             SelectProps<OptionValue, IsMulti>,
-            'renderMenuListFooter' | 'shouldRenderCustomOptions' | 'renderCustomOptions'
+            | 'renderMenuListFooter'
+            | 'shouldRenderCustomOptions'
+            | 'renderCustomOptions'
+            | 'icon'
+            | 'showSelectedOptionIcon'
         >
     > &
     Required<Pick<SelectProps<OptionValue, IsMulti>, 'inputId'>> &
@@ -129,10 +145,6 @@ export type SelectPickerProps<OptionValue = number | string, IsMulti extends boo
         >
     > & {
         /**
-         * Icon to be rendered in the control
-         */
-        icon?: ReactElement
-        /**
          * Error message for the select
          */
         error?: ReactNode
@@ -145,22 +157,15 @@ export type SelectPickerProps<OptionValue = number | string, IsMulti extends boo
          */
         label?: ReactNode
         /**
-         * If true, the selected option icon is shown in the container.
-         * startIcon has higher priority than endIcon.
-         *
-         * @default 'true'
-         */
-        showSelectedOptionIcon?: boolean
-        /**
          * Custom selected options count for use cases like filters
          */
         customSelectedOptionsCount?: number
         /**
-         * Height of the dropdown
+         * Size of select
          *
          * @default 'ComponentSizeType.medium'
          */
-        size?: Extract<ComponentSizeType, ComponentSizeType.medium | ComponentSizeType.large>
+        size?: Extract<ComponentSizeType, ComponentSizeType.medium | ComponentSizeType.large | ComponentSizeType.small>
         /**
          * Content to be shown in a tippy when disabled
          */
@@ -225,6 +230,14 @@ export type SelectPickerProps<OptionValue = number | string, IsMulti extends boo
          * @default false
          */
         isCreatable?: boolean
+        /**
+         * If false, the no options message is not shown
+         *
+         * Note: Handling for the menu distortion needs to be handled explicitly in this case
+         *
+         * @default true
+         */
+        shouldShowNoOptionsMessage?: boolean
     } & (IsMulti extends true
         ? {
               isMulti: IsMulti | boolean
@@ -266,6 +279,8 @@ export interface FilterSelectPickerProps
             | 'shouldMenuAlignRight'
             | 'optionListError'
             | 'reloadOptionList'
+            | 'getOptionValue'
+            | 'isOptionDisabled'
         > {
     appliedFilterOptions: SelectPickerOptionType[]
     handleApplyFilter: (filtersToApply: SelectPickerOptionType<number | string>[]) => void

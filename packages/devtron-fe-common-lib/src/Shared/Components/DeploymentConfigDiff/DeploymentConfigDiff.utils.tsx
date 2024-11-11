@@ -1,6 +1,7 @@
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
+import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { stringComparatorBySortOrder } from '@Shared/Helpers'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '@Shared/constants'
 import {
@@ -14,6 +15,7 @@ import {
 } from '@Shared/Components'
 import { deepEqual } from '@Common/Helper'
 
+import { ManifestTemplateDTO } from '@Pages/Applications'
 import {
     ConfigMapSecretDataConfigDatumDTO,
     ConfigMapSecretDataDTO,
@@ -21,7 +23,6 @@ import {
     DeploymentTemplateDTO,
     DraftState,
     EnvResourceType,
-    ManifestTemplateDTO,
     PipelineConfigDataDTO,
     TemplateListDTO,
     TemplateListType,
@@ -37,6 +38,22 @@ export const getDeploymentTemplateData = (data: DeploymentTemplateDTO) => {
         data?.data ||
         null
     )
+}
+
+const getDeploymentTemplateAppMetricsAndTemplateVersion = (
+    data: DeploymentTemplateDTO,
+    templateOptions: TemplateListDTO[],
+) => {
+    const parsedDraftData = JSON.parse(data?.deploymentDraftData?.configData[0].draftMetadata.data || null)
+    const draftTemplateVersion = templateOptions?.find(
+        ({ chartRefId }) => parsedDraftData?.chartRefId === chartRefId,
+    )?.chartVersion
+
+    return {
+        isAppMetricsEnabled:
+            parsedDraftData || data ? parsedDraftData?.isAppMetricsEnabled || data?.isAppMetricsEnabled || false : null,
+        templateVersion: draftTemplateVersion || data?.templateVersion,
+    }
 }
 
 /**
@@ -337,7 +354,7 @@ const getDiffViewData = (
     }
 }
 
-const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null) => {
+const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null, templateOptions: TemplateListDTO[]) => {
     const _data = getDeploymentTemplateData(data)
     const codeEditorValue = {
         displayName: 'data',
@@ -346,8 +363,7 @@ const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null) =
 
     const diffViewData = prepareHistoryData(
         {
-            ...(data || {}),
-            isAppMetricsEnabled: data ? data.isAppMetricsEnabled || false : null,
+            ...getDeploymentTemplateAppMetricsAndTemplateVersion(data, templateOptions),
             codeEditorValue,
         },
         DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE,
@@ -515,12 +531,39 @@ const getConfigMapSecretData = (
     return deploymentConfig
 }
 
-const getDeploymentTemplateResolvedData = (deploymentTemplate: DeploymentTemplateDTO) => {
+const getDeploymentTemplateResolvedData = (deploymentTemplate: DeploymentTemplateDTO): DeploymentTemplateDTO => {
     try {
         if (deploymentTemplate.deploymentDraftData) {
-            return JSON.parse(deploymentTemplate.deploymentDraftData.configData[0].draftMetadata.draftResolvedValue)
+            const parsedDraftResolvedData = JSON.parse(
+                deploymentTemplate.deploymentDraftData.configData[0].draftMetadata.draftResolvedValue,
+            )
+
+            return {
+                ...deploymentTemplate,
+                deploymentDraftData: {
+                    ...deploymentTemplate.deploymentDraftData,
+                    configData: [
+                        {
+                            ...deploymentTemplate.deploymentDraftData.configData[0],
+                            draftMetadata: {
+                                ...deploymentTemplate.deploymentDraftData.configData[0].draftMetadata,
+                                data: JSON.stringify({
+                                    ...JSON.parse(
+                                        deploymentTemplate.deploymentDraftData.configData[0].draftMetadata.data,
+                                    ),
+                                    envOverrideValues: parsedDraftResolvedData,
+                                }),
+                            },
+                        },
+                    ],
+                },
+            }
         }
-        return deploymentTemplate.resolvedValue
+
+        return {
+            ...deploymentTemplate,
+            data: deploymentTemplate.resolvedValue,
+        }
     } catch {
         return null
     }
@@ -544,19 +587,9 @@ const getConfigDataWithResolvedDeploymentTemplate = (
         return data
     }
 
-    const deploymentTemplateResolvedData = getDeploymentTemplateResolvedData(data.deploymentTemplate)
-
     return {
         ...data,
-        deploymentTemplate: {
-            ...data.deploymentTemplate,
-            ...(deploymentTemplateResolvedData
-                ? {
-                      data: deploymentTemplateResolvedData,
-                      deploymentDraftData: null,
-                  }
-                : {}),
-        },
+        deploymentTemplate: getDeploymentTemplateResolvedData(data.deploymentTemplate),
     }
 }
 
@@ -578,6 +611,8 @@ export const getAppEnvDeploymentConfigList = <ManifestView extends boolean = fal
     getNavItemHref,
     isManifestView,
     convertVariables = false,
+    compareToTemplateOptions,
+    compareWithTemplateOptions,
 }: AppEnvDeploymentConfigListParams<ManifestView>): {
     configList: DeploymentConfigDiffProps['configList']
     navList: DeploymentConfigDiffProps['navList']
@@ -592,8 +627,14 @@ export const getAppEnvDeploymentConfigList = <ManifestView extends boolean = fal
             compareList as AppEnvDeploymentConfigListParams<false>['compareList'],
             convertVariables,
         )
-        const currentDeploymentData = getDeploymentTemplateDiffViewData(compareToObject.deploymentTemplate)
-        const compareDeploymentData = getDeploymentTemplateDiffViewData(compareWithObject.deploymentTemplate)
+        const currentDeploymentData = getDeploymentTemplateDiffViewData(
+            compareToObject.deploymentTemplate,
+            compareToTemplateOptions,
+        )
+        const compareDeploymentData = getDeploymentTemplateDiffViewData(
+            compareWithObject.deploymentTemplate,
+            compareWithTemplateOptions,
+        )
 
         const deploymentTemplateData = {
             id: EnvResourceType.DeploymentTemplate,
@@ -667,6 +708,7 @@ export const getAppEnvDeploymentConfigList = <ManifestView extends boolean = fal
                     const element = document.querySelector(`#${deploymentTemplateData.id}`)
                     element?.scrollIntoView({ block: 'start' })
                 },
+                Icon: ICFileCode,
             },
             ...(pipelineConfigData
                 ? [
@@ -678,6 +720,7 @@ export const getAppEnvDeploymentConfigList = <ManifestView extends boolean = fal
                               const element = document.querySelector(`#${pipelineConfigData.id}`)
                               element?.scrollIntoView({ block: 'start' })
                           },
+                          Icon: ICFileCode,
                       },
                   ]
                 : []),

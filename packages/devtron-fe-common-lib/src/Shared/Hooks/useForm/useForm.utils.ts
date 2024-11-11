@@ -11,16 +11,16 @@ import { UseFormValidation } from './useForm.types'
 export const checkValidation = <T extends Record<keyof T, any> = {}>(
     value: T[keyof T],
     validation: UseFormValidation,
-): string | string[] | null => {
+): string[] | null => {
     if (
-        (typeof validation?.required === 'object' ? validation.required.value : validation.required) &&
+        validation?.required &&
+        (typeof validation.required === 'object' ? validation.required.value : validation.required) &&
         (value === null || value === undefined || value === '')
     ) {
-        return typeof validation?.required === 'object' ? validation.required.message : 'This is a required field'
+        return [typeof validation.required === 'object' ? validation.required.message : 'This is a required field']
     }
 
     const errors = []
-
     const pattern = validation?.pattern
     if (Array.isArray(pattern)) {
         const error = pattern.reduce<string[]>((acc, p) => {

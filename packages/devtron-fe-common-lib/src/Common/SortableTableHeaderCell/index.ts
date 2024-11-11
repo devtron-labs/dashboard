@@ -15,4 +15,5 @@
  */
 
 export { default as SortableTableHeaderCell } from './SortableTableHeaderCell'
+export { default as useResizableTableConfig } from './useResizableTableConfig'
 export type { SortableTableHeaderCellProps } from './types'

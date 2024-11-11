@@ -38,4 +38,10 @@ export interface DescriptorProps extends FeatureDescriptionModalProps {
     docLinkText?: string
     dataTestId?: string
     additionalContent?: ReactNode
+    /**
+     * If true, the info icon is displayed which when clicked shows the feature description modal
+     *
+     * @default false
+     */
+    showInfoIcon?: boolean
 }

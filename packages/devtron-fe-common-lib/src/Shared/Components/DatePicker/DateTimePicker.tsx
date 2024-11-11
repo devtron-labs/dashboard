@@ -69,9 +69,11 @@ const DateTimePicker = ({
 
     return (
         <div className="date-time-picker">
-            <label className={`form__label ${required ? 'dc__required-field' : ''}`} htmlFor={id}>
-                {label}
-            </label>
+            {label && (
+                <label className={`form__label ${required ? 'dc__required-field' : ''}`} htmlFor={id}>
+                    {label}
+                </label>
+            )}
             <div className="flex left dc__gap-8">
                 <SingleDatePicker
                     id={id}

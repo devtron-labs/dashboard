@@ -21,9 +21,9 @@ import ReactGA from 'react-ga4'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { configureMonacoYaml } from 'monaco-yaml'
 
+import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as Info } from '../../Assets/Icon/ic-info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../Assets/Icon/ic-error-exclamation.svg'
-import { ReactComponent as WarningIcon } from '../../Assets/Icon/ic-warning.svg'
 import './codeEditor.scss'
 import 'monaco-editor'
 
@@ -348,7 +348,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                     <CodeEditorPlaceholder customLoader={customLoader} />
                 ) : (
                     <>
-                        {shebang && <div className="shebang">{shebang}</div>}
+                        {shebang && <div className="code-editor__shebang">{shebang}</div>}
                         {state.diffMode ? (
                             <MonacoDiffEditor
                                 original={
@@ -452,7 +452,7 @@ const ValidationError = () => {
 
 const Warning: React.FC<InformationBarProps> = (props) => (
     <div className={`code-editor__warning ${props.className || ''}`}>
-        <WarningIcon className="code-editor__information-info-icon" />
+        <ICWarningY5 className="code-editor__information-info-icon" />
         {props.text}
         {props.children}
     </div>
@@ -476,7 +476,7 @@ const Information: React.FC<InformationBarProps> = (props) => (
 
 const Clipboard = () => {
     const { state } = useCodeEditorContext()
-    return <ClipboardButton content={state.code} rootClassName="bcn-1" iconSize={20} />
+    return <ClipboardButton content={state.code} iconSize={16} />
 }
 
 const SplitPane = ({}) => {

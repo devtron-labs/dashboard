@@ -15,26 +15,27 @@
  */
 
 /* eslint-disable eqeqeq */
-import { useEffect, useState } from 'react'
+import { ALL_RESOURCE_KIND_FILTER } from '@Shared/constants'
 import { ReactComponent as ICCaretDown } from '@Icons/ic-caret-down.svg'
 import { PopupMenu, StyledRadioGroup as RadioGroup } from '../../../Common'
-import { NodeStatus, StatusFilterButtonType } from './types'
-import { IndexStore } from '../../Store'
-
+import { NodeFilters, NodeStatus, StatusFilterButtonType } from './types'
 import './StatusFilterButtonComponent.scss'
 
-export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: StatusFilterButtonType) => {
-    const [selectedTab, setSelectedTab] = useState('all')
-
+export const StatusFilterButtonComponent = ({ nodes, selectedTab, handleFilterClick }: StatusFilterButtonType) => {
     const maxInlineFilterCount = 4
     let allNodeCount: number = 0
     let healthyNodeCount: number = 0
     let progressingNodeCount: number = 0
     let failedNodeCount: number = 0
     let missingNodeCount: number = 0
+    let driftedNodeCount: number = 0
 
     nodes?.forEach((_node) => {
         const _nodeHealth = _node.health?.status
+
+        if (_node.hasDrift) {
+            driftedNodeCount += 1
+        }
 
         if (_nodeHealth?.toLowerCase() === NodeStatus.Healthy) {
             healthyNodeCount += 1
@@ -48,8 +49,12 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
         allNodeCount += 1
     })
 
+    const handleInlineFilterClick = (e) => {
+        handleFilterClick(e.target.value)
+    }
+
     const filterOptions = [
-        { status: 'all', count: allNodeCount, isSelected: selectedTab == 'all' },
+        { status: ALL_RESOURCE_KIND_FILTER, count: allNodeCount, isSelected: selectedTab == ALL_RESOURCE_KIND_FILTER },
         { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
         { status: NodeStatus.Degraded, count: failedNodeCount, isSelected: NodeStatus.Degraded == selectedTab },
         {
@@ -58,6 +63,11 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
             isSelected: NodeStatus.Progressing == selectedTab,
         },
         { status: NodeStatus.Healthy, count: healthyNodeCount, isSelected: NodeStatus.Healthy == selectedTab },
+        window._env_.FEATURE_CONFIG_DRIFT_ENABLE && {
+            status: NodeFilters.drifted,
+            count: driftedNodeCount,
+            isSelected: selectedTab === NodeFilters.drifted,
+        },
     ]
     const validFilterOptions = filterOptions.filter(({ count }) => count > 0)
     const displayedInlineFilters = validFilterOptions.slice(
@@ -66,27 +76,6 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
     )
     const overflowFilters =
         validFilterOptions.length > maxInlineFilterCount ? validFilterOptions.slice(maxInlineFilterCount) : null
-
-    useEffect(() => {
-        if (
-            (selectedTab === NodeStatus.Healthy && healthyNodeCount === 0) ||
-            (selectedTab === NodeStatus.Degraded && failedNodeCount === 0) ||
-            (selectedTab === NodeStatus.Progressing && progressingNodeCount === 0) ||
-            (selectedTab === NodeStatus.Missing && missingNodeCount === 0)
-        ) {
-            setSelectedTab('all')
-        } else if (handleFilterClick) {
-            handleFilterClick(selectedTab)
-        } else {
-            IndexStore.updateFilterType(selectedTab.toUpperCase())
-        }
-    }, [nodes, selectedTab])
-
-    const handleTabSwitch = (event): void => {
-        setSelectedTab(event.target.value)
-    }
-
-    const handleMenuOptionClick = (status: string) => () => setSelectedTab(status)
 
     const renderOverflowFilters = () =>
         overflowFilters ? (
@@ -103,7 +92,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
                             key={filter.status}
                             type="button"
                             className={`dc__transparent w-100 py-6 px-8 flex left dc__gap-8 fs-13 lh-20 fw-4 cn-9 ${filter.isSelected ? 'bcb-1' : 'bcn-0 dc__hover-n50'}`}
-                            onClick={handleMenuOptionClick(filter.status)}
+                            onClick={() => handleFilterClick(filter.status)}
                         >
                             <span
                                 className={`dc__app-summary__icon icon-dim-16 ${filter.status} ${filter.status}--node`}
@@ -124,7 +113,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
                 name="status-filter-button"
                 initialTab={selectedTab}
                 disabled={false}
-                onChange={handleTabSwitch}
+                onChange={handleInlineFilterClick}
             >
                 {displayedInlineFilters.map((filter, index) => (
                     <RadioGroup.Radio

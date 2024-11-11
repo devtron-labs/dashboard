@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 
 import { ComponentSizeType } from '@Shared/constants'
+import { Tooltip } from '@Common/Tooltip'
 
 import { TabGroupProps, TabProps } from './TabGroup.types'
 import { getClassNameBySizeMap, tabGroupClassMap } from './TabGroup.utils'
@@ -23,6 +24,8 @@ const Tab = ({
     showWarning,
     disabled,
     description,
+    shouldWrapTooltip,
+    tooltipProps,
 }: TabProps & Pick<TabGroupProps, 'size' | 'alignActiveBorderWithContainer' | 'hideTopPadding'>) => {
     const { tabClassName, iconClassName, badgeClassName } = getClassNameBySizeMap({
         hideTopPadding,
@@ -34,7 +37,7 @@ const Tab = ({
             React.MouseEvent<HTMLAnchorElement, MouseEvent> &
             React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
-        if (active || e.currentTarget.classList.contains('active')) {
+        if (active || e.currentTarget.classList.contains('active') || (tabType === 'navLink' && disabled)) {
             e.preventDefault()
         }
         props?.onClick?.(e)
@@ -100,13 +103,19 @@ const Tab = ({
         }
     }
 
-    return (
+    const renderTabContainer = () => (
         <li
-            className={`tab-group__tab lh-20 ${active ? 'tab-group__tab--active cb-5 fw-6' : 'cn-9 fw-4'} ${alignActiveBorderWithContainer ? 'tab-group__tab--align-active-border' : ''} ${tabType === 'block' ? 'tab-group__tab--block' : 'cursor'}`}
+            className={`tab-group__tab lh-20 ${active ? 'tab-group__tab--active cb-5 fw-6' : 'cn-9 fw-4'} ${alignActiveBorderWithContainer ? 'tab-group__tab--align-active-border' : ''} ${tabType === 'block' ? 'tab-group__tab--block' : ''} ${disabled ? 'dc__disabled' : 'cursor'}`}
         >
             {getTabComponent()}
         </li>
     )
+
+    if (shouldWrapTooltip) {
+        return <Tooltip {...tooltipProps}>{renderTabContainer()}</Tooltip>
+    }
+
+    return renderTabContainer()
 }
 
 export const TabGroup = ({

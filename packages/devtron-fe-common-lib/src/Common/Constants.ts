@@ -24,6 +24,7 @@ export const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION_VERSION = '/v/v0.7'
 export const DISCORD_LINK = 'https://discord.devtron.ai/'
 export const DOCUMENTATION = {
+    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/app-details/app-metrics`,
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/overview#manage-tags`,
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/install/installation-configuration#configuration-of-blob-storage`,
@@ -65,11 +66,13 @@ export const URLS = {
     GLOBAL_CONFIG_SCOPED_VARIABLES: '/global-config/scoped-variables',
     GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST: '/global-config/deployment-charts',
     NETWORK_STATUS_INTERFACE: '/network-status-interface',
+    CONFIG_DRIFT: 'config-drift',
 }
 
 export const ROUTES = {
     APP: 'app',
     APP_ARTIFACT_PROMOTE_MATERIAL: 'app/artifact/promotion-request/material',
+    APP_TEMPLATE_DATA: 'app/template/data',
     PROJECT_LIST_MIN: 'team/autocomplete',
     USER_CHECK_ROLE: 'user/check/roles',
     IMAGE_TAGGING: 'app/image-tagging',
@@ -507,6 +510,7 @@ export const API_STATUS_CODES = {
     PERMISSION_DENIED: 403,
     NOT_FOUND: 404,
     EXPECTATION_FAILED: 417,
+    LOCKED: 423,
 }
 
 export enum SERVER_MODE {

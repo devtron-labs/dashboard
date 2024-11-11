@@ -148,19 +148,32 @@ export enum AppEnvDeploymentConfigType {
     DEFAULT_VERSION = 'DefaultVersion',
 }
 
+export enum DraftState {
+    Init = 1,
+    Discarded = 2,
+    Published = 3,
+    AwaitApproval = 4,
+}
+
+export enum DraftAction {
+    Add = 1,
+    Update = 2,
+    Delete = 3,
+}
+
 export interface DraftMetadataDTO {
     appId: number
     envId: number
     resource: number
     resourceName: string
-    action: number
+    action: DraftAction
     data: string
     userComment: string
     changeProposed: boolean
     protectNotificationConfig: { [key: string]: null }
     draftId: number
     draftVersionId: number
-    draftState: number
+    draftState: DraftState
     draftResolvedValue: string
     approvers: string[]
     canApprove: boolean
@@ -169,24 +182,38 @@ export interface DraftMetadataDTO {
     isAppAdmin: boolean
 }
 
+export enum CMSecretExternalType {
+    Internal = '',
+    KubernetesConfigMap = 'KubernetesConfigMap',
+    KubernetesSecret = 'KubernetesSecret',
+    AWSSecretsManager = 'AWSSecretsManager',
+    AWSSystemManager = 'AWSSystemManager',
+    HashiCorpVault = 'HashiCorpVault',
+    ESO_GoogleSecretsManager = 'ESO_GoogleSecretsManager',
+    ESO_AWSSecretsManager = 'ESO_AWSSecretsManager',
+    ESO_AzureSecretsManager = 'ESO_AzureSecretsManager',
+    ESO_HashiCorpVault = 'ESO_HashiCorpVault',
+}
+
 export interface ConfigDatum {
     name: string
     type: string
     external: boolean
-    data: Record<string, string>
-    defaultData: Record<string, string>
+    data: Record<string, any>
+    defaultData: Record<string, any>
     global: boolean
-    externalType: string
-    esoSecretData: {}
-    defaultESOSecretData: {}
-    secretData: Record<string, string>
-    defaultSecretData: Record<string, string>
+    externalType: CMSecretExternalType
+    esoSecretData: Record<string, any>
+    defaultESOSecretData: Record<string, any>
+    secretData: Record<string, any>[]
+    defaultSecretData: Record<string, any>[]
     roleARN: string
     subPath: boolean
     filePermission: string
     overridden: boolean
-    mountPath?: string
-    defaultMountPath?: string
+    mountPath: string
+    defaultMountPath: string
+    esoSubPath: string[]
 }
 
 export interface ConfigMapSecretDataConfigDatumDTO extends ConfigDatum {
@@ -279,19 +306,6 @@ export interface TemplateListDTO {
     status?: string
     pipelineId?: number
     wfrId?: number
-}
-
-export interface ManifestTemplateDTO {
-    data: string
-    resolvedData: string
-    variableSnapshot: null
-}
-
-export enum DraftState {
-    Init = 1,
-    Discarded = 2,
-    Published = 3,
-    AwaitApproval = 4,
 }
 
 export enum EnvResourceType {

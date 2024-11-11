@@ -16,14 +16,13 @@
 
 import { useCallback, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import {
     ClipboardButton,
     GenericEmptyState,
     Tooltip,
     extractImage,
-    IS_PLATFORM_MAC_OS,
     useSuperAdmin,
+    useRegisterShortcut,
 } from '../../../Common'
 import { EMPTY_STATE_STATUS } from '../../constants'
 import { ReactComponent as DropDownIcon } from '../../../Assets/Icon/ic-chevron-down.svg'
@@ -34,69 +33,56 @@ import { ReactComponent as ZoomIn } from '../../../Assets/Icon/ic-fullscreen.svg
 import { ReactComponent as ZoomOut } from '../../../Assets/Icon/ic-exit-fullscreen.svg'
 import './cicdHistory.scss'
 
-export const LogResizeButton = withShortcut(
-    ({
-        shortcutCombo = ['F'],
-        showOnlyWhenPathIncludesLogs = true,
-        fullScreenView,
-        setFullScreenView,
-        shortcut,
-    }: LogResizeButtonType & IWithShortcut): JSX.Element => {
-        const { pathname } = useLocation()
+export const LogResizeButton = ({
+    shortcutCombo = ['Shift', 'F'],
+    showOnlyWhenPathIncludesLogs = true,
+    fullScreenView,
+    setFullScreenView,
+}: LogResizeButtonType): JSX.Element => {
+    const { pathname } = useLocation()
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
-        const toggleFullScreen = useCallback((): void => {
-            setFullScreenView(!fullScreenView)
-        }, [fullScreenView])
+    const toggleFullScreen = useCallback((): void => {
+        setFullScreenView(!fullScreenView)
+    }, [fullScreenView])
 
-        const showButton = !showOnlyWhenPathIncludesLogs || pathname.includes('/logs')
-        const doesShortcutContainCmdKey = shortcutCombo.some((key) => key === 'Control') && IS_PLATFORM_MAC_OS
+    const showButton = !showOnlyWhenPathIncludesLogs || pathname.includes('/logs')
 
-        useEffect(() => {
-            const combo = shortcutCombo
-                .map((key) => {
-                    if (key === 'Control') {
-                        return IS_PLATFORM_MAC_OS ? 'cmd' : 'ctrl'
-                    }
-                    return key.toLowerCase()
-                })
-                .join('+')
+    useEffect(() => {
+        if (showButton && shortcutCombo.length) {
+            registerShortcut({ callback: toggleFullScreen, keys: shortcutCombo })
+        }
 
-            // FIXME: disabling shortcut for macos since pressing cmd breaks shortcuts through react-keybind
-            if (showButton && shortcutCombo.length && !doesShortcutContainCmdKey) {
-                shortcut.registerShortcut(toggleFullScreen, [combo], 'ToggleFullscreen', 'Enter/Exit fullscreen')
-            }
+        return () => {
+            unregisterShortcut(shortcutCombo)
+        }
+    }, [showButton, toggleFullScreen])
 
-            return () => {
-                shortcut.unregisterShortcut([combo])
-            }
-        }, [showButton, toggleFullScreen])
-
-        return (
-            showButton && (
-                <Tooltip
-                    placement="left"
-                    shortcutKeyCombo={{
-                        text: fullScreenView ? 'Exit fullscreen' : 'Enter fullscreen',
-                        combo: doesShortcutContainCmdKey ? null : shortcutCombo,
-                    }}
+    return (
+        showButton && (
+            <Tooltip
+                placement="left"
+                shortcutKeyCombo={{
+                    text: fullScreenView ? 'Exit fullscreen' : 'Enter fullscreen',
+                    combo: shortcutCombo,
+                }}
+            >
+                <button
+                    type="button"
+                    aria-label="Enter/Exit fullscreen view"
+                    className="zoom dc__zi-4 flex dc__no-border log-resize-button"
+                    onClick={toggleFullScreen}
                 >
-                    <button
-                        type="button"
-                        aria-label="Enter/Exit fullscreen view"
-                        className="zoom dc__zi-4 flex dc__no-border log-resize-button"
-                        onClick={toggleFullScreen}
-                    >
-                        {fullScreenView ? (
-                            <ZoomOut className="icon-dim-16 dc__no-shrink" />
-                        ) : (
-                            <ZoomIn className="icon-dim-16 dc__no-shrink" />
-                        )}
-                    </button>
-                </Tooltip>
-            )
+                    {fullScreenView ? (
+                        <ZoomOut className="icon-dim-16 dc__no-shrink" />
+                    ) : (
+                        <ZoomIn className="icon-dim-16 dc__no-shrink" />
+                    )}
+                </button>
+            </Tooltip>
         )
-    },
-)
+    )
+}
 
 export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): JSX.Element => (
     <div style={style} className="dc__element-scroller flex column top br-4">

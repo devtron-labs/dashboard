@@ -15,7 +15,7 @@
  */
 
 import { MutableRefObject } from 'react'
-import { VariableType } from '../../../Common'
+import { ConsequenceType, VariableType } from '../../../Common'
 import { BaseFilterQueryParams } from '../../types'
 import { ImageWithFallbackProps } from '../ImageWithFallback'
 import { getPluginStoreData } from './service'
@@ -30,7 +30,9 @@ export interface PluginAPIBaseQueryParamsType {
 }
 
 export interface GetPluginTagsPayloadType extends PluginAPIBaseQueryParamsType {}
-export interface GetParentPluginListPayloadType extends PluginAPIBaseQueryParamsType {}
+export interface GetParentPluginListPayloadType extends PluginAPIBaseQueryParamsType {
+    type?: 'ALL'
+}
 
 export interface PluginTagNamesDTO {
     tagNames: string[]
@@ -73,7 +75,7 @@ export interface ParentPluginDTO {
     pluginIdentifier: string
 }
 
-export interface MinParentPluginDTO extends Pick<ParentPluginDTO, 'id' | 'name' | 'icon'> {}
+export interface MinParentPluginDTO extends Pick<ParentPluginDTO, 'id' | 'name' | 'icon' | 'pluginIdentifier'> {}
 
 export interface PluginDetailDTO {
     parentPlugins: ParentPluginDTO[]
@@ -84,6 +86,7 @@ export interface PluginDetailServiceParamsType {
     appId: number
     pluginIds?: number[]
     parentPluginIds?: number[]
+    parentPluginIdentifiers?: string[]
     /**
      * @default true
      */
@@ -94,13 +97,14 @@ export interface PluginDetailServiceParamsType {
 export interface PluginDetailPayloadType extends Pick<PluginDetailServiceParamsType, 'appId'> {
     pluginId?: PluginDetailServiceParamsType['pluginIds']
     parentPluginId?: PluginDetailServiceParamsType['parentPluginIds']
+    parentPluginIdentifier?: PluginDetailServiceParamsType['parentPluginIdentifiers'][number]
 }
 
 export interface PluginListFiltersType extends Pick<BaseFilterQueryParams<unknown>, 'searchKey'> {
     selectedTags: string[]
 }
 
-interface ParentPluginType
+export interface ParentPluginType
     extends Pick<ParentPluginDTO, 'id' | 'name' | 'description' | 'type' | 'icon' | 'pluginIdentifier'> {
     latestVersionId: MinimalPluginVersionDataDTO['id']
     pluginVersions: MinimalPluginVersionDataDTO[]
@@ -108,10 +112,7 @@ interface ParentPluginType
 
 interface DetailedPluginVersionType
     extends Pick<MinimalPluginVersionDataDTO, 'id' | 'description' | 'name' | 'pluginVersion'>,
-        Pick<
-            DetailedPluginVersionDTO,
-            'tags' | 'isLatest' | 'inputVariables' | 'outputVariables' | 'updatedBy' | 'docLink'
-        >,
+        Pick<DetailedPluginVersionDTO, 'tags' | 'inputVariables' | 'outputVariables' | 'updatedBy' | 'docLink'>,
         Pick<ParentPluginType, 'icon' | 'type' | 'pluginIdentifier'> {
     parentPluginId: ParentPluginType['id']
 }
@@ -248,4 +249,21 @@ export interface PluginTagsContainerProps {
 
 export interface PluginImageContainerProps extends Pick<ImageWithFallbackProps, 'imageProps'> {
     fallbackImageClassName?: string
+}
+
+export enum PipelineStageTaskActionModalType {
+    DELETE = 'DELETE',
+    MOVE_PLUGIN = 'MOVE_PLUGIN',
+}
+
+export interface PipelineStageTaskActionModalStateType {
+    type: PipelineStageTaskActionModalType
+    pluginId: PluginDetailType['id']
+    taskIndex: number
+}
+
+export interface MandatoryPluginBaseStateType {
+    isOffendingMandatoryPlugin: boolean
+    isTriggerBlocked: boolean
+    pluginBlockState: ConsequenceType
 }

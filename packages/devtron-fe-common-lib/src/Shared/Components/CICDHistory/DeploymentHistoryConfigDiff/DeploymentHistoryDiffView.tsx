@@ -15,7 +15,7 @@
  */
 
 import { useParams } from 'react-router-dom'
-import { Fragment, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { yamlComparatorBySortOrder } from '@Shared/Helpers'
 import { MODES, Toggle, YAMLStringify } from '../../../../Common'
@@ -67,7 +67,7 @@ const DeploymentHistoryDiffView = ({
             : baseTemplateConfiguration?.codeEditorValue?.value
 
         return YAMLStringify(JSON.parse(editorValue), {
-            sortMapEntries: (a, b) => yamlComparatorBySortOrder(a, b, sortOrder),
+            sortMapEntries: sortBy ? (a, b) => yamlComparatorBySortOrder(a, b, sortOrder) : null,
         })
     }, [convertVariables, baseTemplateConfiguration, sortOrder, isDeleteDraft])
 
@@ -111,11 +111,11 @@ const DeploymentHistoryDiffView = ({
         singleValue: DeploymentHistorySingleValue,
         dataTestId: string,
     ) => (
-        <div className={parentClassName}>
-            <div className="cn-6 pt-8 pl-16 pr-16 lh-16" data-testid={dataTestId}>
+        <div className={`${parentClassName} px-16 py-8`}>
+            <div className="cn-6 lh-16" data-testid={dataTestId}>
                 {singleValue.displayName}
             </div>
-            <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{singleValue.value}</div>
+            <div className="cn-9 fs-13 lh-20 dc__word-break">{singleValue.value}</div>
         </div>
     )
 
@@ -150,7 +150,7 @@ const DeploymentHistoryDiffView = ({
                             const changeBGColor = previousConfigAvailable && currentValue?.value !== baseValue?.value
                             return (
                                 // eslint-disable-next-line react/no-array-index-key
-                                <Fragment key={`deployment-history-diff-view-${index}`}>
+                                <div key={`deployment-history-diff-view-${index}`} className="dc__contents">
                                     {!isUnpublished && currentValue?.value ? (
                                         renderDetailedValue(
                                             !isDeleteDraft && changeBGColor ? 'code-editor-red-diff' : '',
@@ -169,7 +169,7 @@ const DeploymentHistoryDiffView = ({
                                     ) : (
                                         <div className={isDeleteDraft ? 'code-editor-red-diff' : ''} />
                                     )}
-                                </Fragment>
+                                </div>
                             )
                         },
                     )}

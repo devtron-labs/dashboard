@@ -85,6 +85,12 @@ export type ButtonProps = (
      * @default false
      */
     disabled?: boolean
+    /**
+     * Determines if the button should expand to fill the full width of its container.
+     *
+     * @default false
+     */
+    fullWidth?: boolean
 } & (
         | {
               /**

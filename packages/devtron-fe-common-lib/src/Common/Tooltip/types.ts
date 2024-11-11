@@ -1,14 +1,5 @@
-import { IS_PLATFORM_MAC_OS } from '@Common/Constants'
+import { SupportedKeyboardKeysType } from '@Common/Hooks/UseRegisterShortcut/types'
 import { TippyProps } from '@tippyjs/react'
-
-export const KEYBOARD_KEYS_MAP = {
-    Control: IS_PLATFORM_MAC_OS ? '⌘' : 'Ctrl',
-    Shift: '⇧',
-    F: 'F',
-    E: 'E',
-} as const
-
-export type SupportedKeyboardKeysType = keyof typeof KEYBOARD_KEYS_MAP
 
 type BaseTooltipProps =
     | {

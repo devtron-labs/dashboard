@@ -67,7 +67,7 @@ export const SelectPickerDropdownIndicator = <OptionValue,>(
 
     return (
         <components.DropdownIndicator {...props}>
-            <ICCaretDown className={`icon-dim-16 ${isDisabled ? 'scn-3' : 'scn-6'} dc__no-shrink`} />
+            <ICCaretDown className={isDisabled ? 'scn-3' : 'scn-6'} />
         </components.DropdownIndicator>
     )
 }
@@ -76,17 +76,16 @@ export const SelectPickerClearIndicator = <OptionValue,>(
     props: ClearIndicatorProps<SelectPickerOptionType<OptionValue>>,
 ) => (
     <components.ClearIndicator {...props}>
-        <ICClose className="icon-dim-16 icon-use-fill-n6 dc__no-shrink" />
+        <ICClose className="icon-use-fill-n6" />
     </components.ClearIndicator>
 )
 
-export const SelectPickerControl = <OptionValue, IsMulti extends boolean>({
-    icon,
-    showSelectedOptionIcon,
-    ...props
-}: ControlProps<SelectPickerOptionType<OptionValue>> &
-    Pick<SelectPickerProps<OptionValue, IsMulti>, 'icon' | 'showSelectedOptionIcon'>) => {
-    const { children, getValue } = props
+export const SelectPickerControl = <OptionValue,>(props: ControlProps<SelectPickerOptionType<OptionValue>>) => {
+    const {
+        children,
+        getValue,
+        selectProps: { icon, showSelectedOptionIcon },
+    } = props
     const { startIcon, endIcon } = getValue()?.[0] ?? {}
 
     let iconToDisplay: SelectPickerOptionType<OptionValue>['startIcon'] = icon
@@ -121,6 +120,7 @@ export const SelectPickerValueContainer = <OptionValue, IsMulti extends boolean>
             <div className="flex left">
                 <components.ValueContainer {...props} />
             </div>
+            {/* Size will not work here need to go in details later when prioritized */}
             {showSelectedOptionsCount && selectedOptionsLength > 0 && (
                 <div className="bcb-50 dc__border eb-2 dc__border-radius-4-imp pl-5 pr-5 cb-5 fs-12 fw-6 lh-18 dc__truncate dc__no-shrink">
                     {selectedOptionsLength}
@@ -170,9 +170,9 @@ export const SelectPickerOption = <OptionValue, IsMulti extends boolean>({
                             disabled={isDisabled}
                         />
                     )}
-                    <div className={`flex left ${showDescription ? 'top' : ''} dc__gap-8`}>
+                    <div className={`flex left w-100 ${showDescription ? 'top' : ''} dc__gap-8`}>
                         {startIcon && (
-                            <div className="dc__no-shrink icon-dim-20 flex dc__fill-available-space">{startIcon}</div>
+                            <div className="dc__no-shrink icon-dim-16 flex dc__fill-available-space">{startIcon}</div>
                         )}
                         <div className="flex-grow-1">
                             <h4 className={`m-0 fs-13 ${isCreatableOption ? 'cb-5' : 'cn-9'} fw-4 lh-20 dc__truncate`}>
@@ -191,7 +191,7 @@ export const SelectPickerOption = <OptionValue, IsMulti extends boolean>({
                                 ))}
                         </div>
                         {endIcon && (
-                            <div className="dc__no-shrink icon-dim-20 flex dc__fill-available-space">{endIcon}</div>
+                            <div className="dc__no-shrink icon-dim-16 flex dc__fill-available-space">{endIcon}</div>
                         )}
                     </div>
                 </div>
@@ -227,7 +227,7 @@ export const SelectPickerMultiValueLabel = <OptionValue, IsMulti extends boolean
     Pick<SelectPickerProps<OptionValue, IsMulti>['multiSelectProps'], 'getIsOptionValid'>) => {
     const { data, selectProps } = props
     const isOptionValid = getIsOptionValid(data)
-    const iconToDisplay = isOptionValid ? data.startIcon || data.endIcon : <ICErrorExclamation />
+    const iconToDisplay = isOptionValid ? ((data.startIcon || data.endIcon) ?? null) : <ICErrorExclamation />
 
     return (
         <div className="flex dc__gap-4 mw-0 dc__truncate">

@@ -1,7 +1,35 @@
 import React from 'react'
 import { TippyProps } from '@tippyjs/react'
 
-export interface CollapsibleListItem {
+interface ButtonTab {
+    /**
+     * Is tab active ( for button tab )
+     */
+    isActive: boolean
+    /**
+     * The callback function to handle click events on the button.
+     */
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+    href?: never
+}
+
+interface NavLinkTab {
+    /**
+     * The URL of the nav link.
+     */
+    href: string
+    /**
+     * The callback function to handle click events on the nav link.
+     */
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    isActive?: never
+}
+
+export type TabOptions = 'button' | 'navLink'
+
+type ConditionalTabType<TabType extends TabOptions> = TabType extends 'button' ? ButtonTab : NavLinkTab
+
+export type CollapsibleListItem<TabType extends TabOptions> = ConditionalTabType<TabType> & {
     /**
      * The title of the list item.
      */
@@ -31,17 +59,9 @@ export interface CollapsibleListItem {
          */
         tooltipProps?: TippyProps
     }
-    /**
-     * The URL of the nav link.
-     */
-    href?: string
-    /**
-     * The callback function to handle click events on the nav link.
-     */
-    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }
 
-export interface CollapsibleListConfig {
+export interface CollapsibleListConfig<TabType extends 'button' | 'navLink'> {
     /**
      * The unique identifier for the collapsible list.
      */
@@ -79,18 +99,22 @@ export interface CollapsibleListConfig {
     /**
      * An array of items to be displayed in the collapsible list.
      */
-    items: CollapsibleListItem[]
+    items: CollapsibleListItem<TabType>[]
     /**
      * Boolean indicating whether the list is expanded or not.
      */
     isExpanded?: boolean
 }
 
-export interface CollapsibleListProps {
+export interface CollapsibleListProps<TabType extends TabOptions> {
     /**
      * An array of collapsible list configurations.
      */
-    config: CollapsibleListConfig[]
+    config: CollapsibleListConfig<TabType>[]
+    /**
+     * Type of tab list: button or navLink
+     */
+    tabType: TabType
     /**
      * Function to handle the collapse button click event.
      *

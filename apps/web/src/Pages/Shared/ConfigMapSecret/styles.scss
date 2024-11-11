@@ -1,0 +1,83 @@
+.configmap-secret-form {
+    &__name-container {
+        grid-template-columns: 300px 1fr;
+    }
+
+    &__mount-data {
+        width: fit-content;
+        border: none;
+        gap: 20px;
+
+        .radio__button {
+            margin: 0;
+        }
+
+        .form__radio-item {
+            border: none;
+
+            &-content {
+                padding: 0;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+    }
+
+    &__checkbox {
+        .form__checkbox-container {
+            align-self: flex-start;
+        }
+    }
+
+    &__code-editor {
+        .form__error {
+            margin: 0;
+        }
+    }
+}
+
+.configmap-secret-container {
+    &.with-comment-drawer {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 300px;
+        background-color: var(--window-bg);
+        position: absolute;
+        left: 56px;
+        top: 77px;
+        right: 0;
+        height: calc(100% - 77px);
+        animation: comments-view-opening;
+        animation-duration: 200ms;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+
+    @keyframes comments-view-opening {
+        0% {
+            grid-template-columns: 1fr 0;
+        }
+
+        100% {
+            grid-template-columns: 1fr 300px;
+        }
+    }
+
+    &__approval-tippy {
+        .tippy-box {
+            top: 50px;
+        }
+    }
+
+    &__display-values-container {
+        grid-template-columns: 150px 1fr;
+        row-gap: 12px;
+        column-gap: 8px;
+    }
+}
+
+// TODO: remove when issue for svg button height is fixed
+.cm-cs-empty-state.empty-state svg {
+    height: 100%;
+    width: 100%;
+}

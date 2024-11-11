@@ -56,6 +56,7 @@ export interface ForceDeleteDialogType {
 export interface ConfirmationDialogType {
     className?: string
     children: any
+    close?: (e) => void
 }
 export interface ConfirmationDialogIconType {
     src: string

@@ -15,11 +15,13 @@
  */
 
 import { Tooltip } from '@Common/Tooltip'
-import { ReactComponent as SortIcon } from '../../Assets/Icon/ic-arrow-up-down.svg'
-import { ReactComponent as SortArrowDown } from '../../Assets/Icon/ic-sort-arrow-down.svg'
+import Draggable, { DraggableProps } from 'react-draggable'
+import { ReactComponent as SortIcon } from '@Icons/ic-arrow-up-down.svg'
+import { ReactComponent as SortArrowDown } from '@Icons/ic-sort-arrow-down.svg'
 import { SortingOrder } from '../Constants'
 import { noop } from '../Helper'
 import { SortableTableHeaderCellProps } from './types'
+import './sortableTableHeaderCell.scss'
 
 /**
  * Reusable component for the table header cell with support for sorting icons
@@ -34,6 +36,23 @@ import { SortableTableHeaderCellProps } from './types'
  *   disabled={isDisabled}
  * />
  * ```
+ *
+ * @example Non-sortable cell
+ * ```tsx
+ * <SortableTableHeaderCell
+ *   isSortable={false}
+ *   title="Header Cell"
+ * />
+ * ```
+ *
+ * * @example Resizable cell (Layout to be controlled externally using useResizableTableConfig)
+ * ```tsx
+ * <SortableTableHeaderCell
+ *   isSortable={false}
+ *   isResizable
+ *   title="Header Cell"
+ * />
+ * ```
  */
 const SortableTableHeaderCell = ({
     isSorted,
@@ -43,7 +62,12 @@ const SortableTableHeaderCell = ({
     disabled,
     isSortable = true,
     showTippyOnTruncate = false,
+    id,
+    handleResize,
+    isResizable,
 }: SortableTableHeaderCellProps) => {
+    const isCellResizable = !!(isResizable && id && handleResize)
+
     const renderSortIcon = () => {
         if (!isSortable) {
             return null
@@ -60,18 +84,46 @@ const SortableTableHeaderCell = ({
         return <SortIcon className="icon-dim-12 mw-12 scn-7 dc__no-shrink" />
     }
 
+    const handleDrag: DraggableProps['onDrag'] = (_, data) => {
+        if (isCellResizable) {
+            handleResize(id, data.deltaX)
+        }
+    }
+
     return (
-        <button
-            type="button"
-            className={`dc__transparent p-0 cn-7 flex dc__content-start dc__gap-4 dc__select-text ${!isSortable ? 'cursor-default' : ''}`}
-            onClick={isSortable ? triggerSorting : noop}
-            disabled={disabled}
-        >
-            <Tooltip showOnTruncate={showTippyOnTruncate} content={title}>
-                <span className="dc__uppercase dc__ellipsis-right">{title}</span>
-            </Tooltip>
-            {renderSortIcon()}
-        </button>
+        <div className="flex dc__content-space dc__gap-6 dc__position-rel">
+            <button
+                type="button"
+                className={`dc__transparent p-0 cn-7 flex dc__content-start dc__gap-4 dc__select-text ${!isSortable ? 'cursor-default' : ''} dc__position-rel`}
+                onClick={isSortable ? triggerSorting : noop}
+                disabled={disabled}
+            >
+                <Tooltip showOnTruncate={showTippyOnTruncate} content={title}>
+                    <span className="dc__uppercase dc__truncate">{title}</span>
+                </Tooltip>
+                {renderSortIcon()}
+            </button>
+            {isCellResizable && (
+                <Draggable
+                    handle=".sortable-table-header__resize-btn"
+                    defaultClassNameDragging="sortable-table-header__resize-btn--dragging"
+                    position={{
+                        x: 0,
+                        y: 0,
+                    }}
+                    axis="none"
+                    onDrag={handleDrag}
+                    bounds={{
+                        top: 0,
+                        bottom: 0,
+                    }}
+                >
+                    <div className="sortable-table-header__resize-btn flex h-100 dc__no-shrink px-2 dc__position-abs dc__cursor-col-resize dc__right-3--neg">
+                        <div className="dc__divider h-16" />
+                    </div>
+                </Draggable>
+            )}
+        </div>
     )
 }
 

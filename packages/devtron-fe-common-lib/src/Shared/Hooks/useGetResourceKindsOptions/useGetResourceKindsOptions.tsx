@@ -17,7 +17,12 @@
 import { useMemo } from 'react'
 import { ResourceKindType } from '@Shared/types'
 import { useAsync } from '@Common/Helper'
-import { getAppOptionsGroupedByProjects, getClusterOptions, getEnvironmentOptions, getProjectOptions } from './service'
+import {
+    getAppOptionsGroupedByProjects,
+    getClusterOptions,
+    getEnvironmentOptionsGroupedByClusters,
+    getProjectOptions,
+} from './service'
 import { UseGetResourceKindOptionsReturnType, UseGetResourceKindsOptionsProps } from './types'
 import { getResourcesToFetchMap } from './utils'
 
@@ -43,7 +48,7 @@ const useGetResourceKindsOptions = ({
                 resourcesToFetchMap[ResourceKindType.devtronApplication] ? getAppOptionsGroupedByProjects() : null,
                 resourcesToFetchMap[ResourceKindType.project] ? getProjectOptions() : null,
                 resourcesToFetchMap[ResourceKindType.cluster] ? getClusterOptions() : null,
-                resourcesToFetchMap[ResourceKindType.environment] ? getEnvironmentOptions() : null,
+                resourcesToFetchMap[ResourceKindType.environment] ? getEnvironmentOptionsGroupedByClusters() : null,
             ]),
         [resourcesToFetchMap],
         resourcesToFetch.length > 0,

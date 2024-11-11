@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import {
-    ConditionalWrap,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     getIsManualApprovalConfigured,
     handleUTCTime,
     ReleaseMode,
-    showError,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
@@ -40,7 +42,6 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import { getLastExecutionByAppArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -51,6 +52,7 @@ import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/e
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
+const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -119,19 +121,6 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const conditionalScalePodsButton = (children) => {
-        return (
-            <Tippy
-                className="default-tt w-200"
-                arrow={false}
-                placement="bottom-end"
-                content="Application deployment requiring approval cannot be hibernated."
-            >
-                <div>{children}</div>
-            </Tippy>
-        )
-    }
-
     const getIsApprovalConfigured = (): boolean => {
         try {
             const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
@@ -145,10 +134,9 @@ export const SourceInfo = ({
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = getIsApprovalConfigured()
-        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime ? handleUTCTime(
-            appDetails.resourceTree.lastSnapshotTime,
-            true,
-        ) : ''
+        const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
+            ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
+            : ''
 
         return (
             <div className="flex left w-100">
@@ -169,6 +157,15 @@ export const SourceInfo = ({
                             <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
+                )}
+                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
+                    <div className="pl-8">
+                        <ConfigSyncStatusButton
+                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                            appId={appDetails.appId}
+                            envId={envId}
+                        />
+                    </div>
                 )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -204,47 +201,58 @@ export const SourceInfo = ({
                 {!loadingResourceTree && environment && (
                     <>
                         {!isdeploymentAppDeleting && (
-                            <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                            <div style={{ marginLeft: 'auto' }} className="flexbox dc__gap-6">
                                 {!isVirtualEnvironment && showUrlInfo && (
-                                    <button
-                                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                                    <Button
+                                        dataTestId="app-details-urls"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        text="URLs"
+                                        startIcon={<LinkIcon />}
                                         onClick={onClickShowUrlInfo}
-                                        data-testid="app-details-urls"
-                                    >
-                                        <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                                        URLs
-                                    </button>
+                                        component={ButtonComponentType.button}
+                                        style={ButtonStyleType.neutral}
+                                    />
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
-                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
-                                        <button
-                                            data-testid="app-details-hibernate-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                            onClick={onClickShowHibernateModal}
-                                            disabled={isApprovalConfigured}
-                                        >
+                                    <Button
+                                        dataTestId="app-details-hibernate-modal-button"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        text={isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
+                                        startIcon={
                                             <ScaleDown
-                                                className="icon-dim-16 mr-6 rotate"
-                                                style={{
-                                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
-                                                }}
+                                                className={`${isHibernated ? 'dc__flip-180' : ''} dc__transition--transform`}
                                             />
-                                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
-                                        </button>
-                                    </ConditionalWrap>
+                                        }
+                                        onClick={onClickShowHibernateModal}
+                                        component={ButtonComponentType.button}
+                                        disabled={isApprovalConfigured}
+                                        style={ButtonStyleType.neutral}
+                                        showTooltip={isApprovalConfigured}
+                                        tooltipProps={{
+                                            content: 'Application deployment requiring approval cannot be hibernated.',
+                                            placement: 'bottom-end',
+                                        }}
+                                    />
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap condition={isApprovalConfigured} wrap={conditionalScalePodsButton}>
-                                        <button
-                                            data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                            onClick={() => setRotateModal(true)}
-                                            disabled={isApprovalConfigured}
-                                        >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
-                                            Restart workloads
-                                        </button>
-                                    </ConditionalWrap>
+                                    <Button
+                                        dataTestId="app-details-rotate-pods-modal-button"
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.secondary}
+                                        onClick={() => setRotateModal(true)}
+                                        disabled={isApprovalConfigured}
+                                        startIcon={<RotateIcon />}
+                                        text="Restart workloads"
+                                        component={ButtonComponentType.button}
+                                        style={ButtonStyleType.neutral}
+                                        showTooltip={isApprovalConfigured}
+                                        tooltipProps={{
+                                            content: 'Application deployment requiring approval cannot be hibernated.',
+                                            placement: 'bottom-end',
+                                        }}
+                                    />
                                 )}
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
@@ -293,15 +301,15 @@ export const SourceInfo = ({
                   environment && (
                       <div className="flex left w-100">
                           {status && (
-                            <AppStatusCard
-                                // TODO: Fix and remove
-                                // @ts-ignore
-                                appDetails={appDetails}
-                                status={status}
-                                cardLoading={cardLoading}
-                                setDetailed={setDetailed}
-                                message={message}
-                            />
+                              <AppStatusCard
+                                  // TODO: Fix and remove
+                                  // @ts-ignore
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
                           )}
                           {!helmMigratedAppNotTriggered && (
                               <>
@@ -328,8 +336,7 @@ export const SourceInfo = ({
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                       cardLoading={cardLoading}
                                       hideDetails={
-                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM ||
-                                          isIsolatedEnv
+                                          appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
                                       refetchDeploymentStatus={refetchDeploymentStatus}

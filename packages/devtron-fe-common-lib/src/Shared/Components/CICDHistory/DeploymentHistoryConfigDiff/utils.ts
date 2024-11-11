@@ -31,8 +31,8 @@ export const getPipelineDeploymentsOptions = ({
     wfrId,
     renderRunSource,
     resourceId,
-    runSource,
-}: Required<Pick<DeploymentHistoryConfigDiffProps, 'renderRunSource' | 'runSource' | 'resourceId'>> & {
+    triggerHistory,
+}: Required<Pick<DeploymentHistoryConfigDiffProps, 'renderRunSource' | 'resourceId' | 'triggerHistory'>> & {
     pipelineDeployments: History[]
     wfrId: number
 }) => {
@@ -50,7 +50,7 @@ export const getPipelineDeploymentsOptions = ({
                 artifact,
                 renderRunSource,
                 resourceId,
-                runSource,
+                runSource: triggerHistory.get(id).runSource,
             }),
             startIcon: renderPipelineDeploymentStatusIcon(status),
         }),

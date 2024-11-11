@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    ControlProps,
-    GroupHeadingProps,
-    MultiValueProps,
-    OptionProps,
-    ValueContainerProps,
-    MenuPlacement,
-} from 'react-select'
+import { GroupHeadingProps, MultiValueProps, OptionProps, ValueContainerProps, MenuPlacement } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { ReactElement, useCallback, useMemo } from 'react'
 
@@ -213,9 +206,10 @@ const SelectPicker = <OptionValue, IsMulti extends boolean>({
     isCreatable = false,
     onCreateOption,
     closeMenuOnSelect = false,
+    shouldShowNoOptionsMessage = true,
     ...props
 }: SelectPickerProps<OptionValue, IsMulti>) => {
-    const { inputId, required, isDisabled, controlShouldRenderValue = true, value, options } = props
+    const { inputId, required, isDisabled, controlShouldRenderValue = true, value, options, getOptionValue } = props
     const { isGroupHeadingSelectable = false, getIsOptionValid = () => true } = multiSelectProps
 
     // Only large variant is supported for multi select picker
@@ -252,17 +246,11 @@ const SelectPicker = <OptionValue, IsMulti extends boolean>({
                 value as SelectPickerOptionType<OptionValue>[],
                 trimmedInput as OptionValue,
                 null,
+                getOptionValue,
             ) &&
-            !getSelectPickerOptionByValue<OptionValue>(options, trimmedInput as OptionValue, null)
+            !getSelectPickerOptionByValue<OptionValue>(options, trimmedInput as OptionValue, null, getOptionValue)
         )
     }
-
-    const renderControl = useCallback(
-        (controlProps: ControlProps<SelectPickerOptionType<OptionValue>>) => (
-            <SelectPickerControl {...controlProps} icon={icon} showSelectedOptionIcon={shouldShowSelectedOptionIcon} />
-        ),
-        [icon, shouldShowSelectedOptionIcon],
-    )
 
     const renderValueContainer = useCallback(
         (valueContainerProps: ValueContainerProps<SelectPickerOptionType<OptionValue>>) => (
@@ -298,7 +286,11 @@ const SelectPicker = <OptionValue, IsMulti extends boolean>({
             return <GenericSectionErrorState reload={reloadOptionList} />
         }
 
-        return <p className="m-0 cn-7 fs-13 fw-4 lh-20 py-6 px-8">No options</p>
+        if (shouldShowNoOptionsMessage) {
+            return <p className="m-0 cn-7 fs-13 fw-4 lh-20 py-6 px-8">No options</p>
+        }
+
+        return null
     }
 
     const renderDisabledTippy = (children: ReactElement) => (
@@ -381,7 +373,7 @@ const SelectPicker = <OptionValue, IsMulti extends boolean>({
                                 IndicatorSeparator: null,
                                 LoadingIndicator: SelectPickerLoadingIndicator,
                                 DropdownIndicator: SelectPickerDropdownIndicator,
-                                Control: renderControl,
+                                Control: SelectPickerControl,
                                 Option: renderOption,
                                 MenuList: SelectPickerMenuList,
                                 ClearIndicator: SelectPickerClearIndicator,
@@ -399,6 +391,8 @@ const SelectPicker = <OptionValue, IsMulti extends boolean>({
                             renderMenuListFooter={!optionListError && renderMenuListFooter}
                             inputValue={inputValue}
                             onInputChange={onInputChange}
+                            icon={icon}
+                            showSelectedOptionIcon={shouldShowSelectedOptionIcon}
                         />
                     </div>
                 </ConditionalWrap>

@@ -15,7 +15,7 @@
  */
 
 import { OptionType } from '@Common/Types'
-import { CDMaterialSidebarType } from './types'
+import { CDMaterialSidebarType, ConfigKeysWithLockType, ConfigurationType } from './types'
 
 export const ARTIFACT_STATUS = {
     PROGRESSING: 'Progressing',
@@ -490,3 +490,12 @@ export const CD_MATERIAL_SIDEBAR_TABS: OptionType<CDMaterialSidebarType, CDMater
 }))
 
 export const TRIGGER_STATUS_PROGRESSING = ['progressing', 'initiating', 'running', 'starting']
+
+export const CONFIGURATION_TYPE_VALUES = Object.values(ConfigurationType)
+
+export const DEFAULT_LOCKED_KEYS_CONFIG: Readonly<ConfigKeysWithLockType> = {
+    config: [],
+    allowed: false,
+}
+
+export const ALL_RESOURCE_KIND_FILTER = 'all'

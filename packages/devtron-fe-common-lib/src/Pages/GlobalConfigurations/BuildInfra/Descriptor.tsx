@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DescriptorProps } from './types'
+import { BuildInfraDescriptorProps } from './types'
 import { BreadCrumb, DOCUMENTATION } from '../../../Common'
 import { BUILD_INFRA_TEXT } from './constants'
 import { InfoIconTippy } from '../../../Shared'
@@ -25,7 +25,7 @@ const Descriptor = ({
     children,
     tippyInfoText,
     tippyAdditionalContent,
-}: DescriptorProps) => (
+}: BuildInfraDescriptorProps) => (
     <div className={`flexbox dc__content-space dc__align-items-center w-100 ${additionalContainerClasses ?? ''}`}>
         <div className="flexbox dc__align-items-center dc__gap-4">
             <BreadCrumb breadcrumbs={breadCrumbs} />

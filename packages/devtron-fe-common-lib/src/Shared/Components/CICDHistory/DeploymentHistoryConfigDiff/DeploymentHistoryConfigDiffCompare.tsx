@@ -26,7 +26,7 @@ export const DeploymentHistoryConfigDiffCompare = ({
     previousWfrId,
     convertVariables,
     setConvertVariables,
-    runSource,
+    triggerHistory,
     renderRunSource,
     resourceId,
     isCompareDeploymentConfigNotAvailable,
@@ -60,7 +60,7 @@ export const DeploymentHistoryConfigDiffCompare = ({
     const { currentDeployment, pipelineDeploymentsOptions } = getPipelineDeploymentsOptions({
         pipelineDeployments,
         wfrId,
-        runSource,
+        triggerHistory,
         renderRunSource,
         resourceId,
     })

@@ -5,8 +5,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ReactComponent as ICFilter } from '@Icons/ic-filter.svg'
 import { ReactComponent as ICFilterApplied } from '@Icons/ic-filter-applied.svg'
+import { ComponentSizeType } from '@Shared/constants'
 import SelectPicker from './SelectPicker.component'
 import { FilterSelectPickerProps, SelectPickerOptionType, SelectPickerProps } from './type'
+import { Button } from '../Button'
 
 const FilterSelectPicker = ({
     appliedFilterOptions,
@@ -58,14 +60,13 @@ const FilterSelectPicker = ({
 
         return (
             <div className="p-8 dc__border-top-n1">
-                <button
-                    type="button"
-                    className="dc__unset-button-styles w-100 br-4 h-28 flex bcb-5 cn-0 fw-6 lh-28 fs-12 h-28 br-4 pt-5 pr-12 pb-5 pl-12"
+                <Button
+                    text="Apply"
+                    dataTestId="filter-select-picker-apply"
                     onClick={handleApplyClick}
-                    aria-label="Apply filters"
-                >
-                    Apply
-                </button>
+                    size={ComponentSizeType.small}
+                    fullWidth
+                />
             </div>
         )
     }

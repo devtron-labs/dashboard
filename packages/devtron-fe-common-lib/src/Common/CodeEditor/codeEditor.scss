@@ -105,18 +105,6 @@
     min-height: 300px;
 }
 
-.code-editor__warning {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: var(--Y700);
-    height: auto;
-    padding: 8px 16px;
-    border-bottom: 1px solid #d6dbdf;
-    background-color: var(--Y100);
-}
-
 .code-editor__information {
     font-size: 12px;
     font-weight: 400;
@@ -170,4 +158,10 @@
     & > .visible {
         z-index: 9;
     }
+}
+
+.code-editor__shebang {
+    padding: 0 52px;
+    color: #151515;
+    opacity: 0.6;
 }

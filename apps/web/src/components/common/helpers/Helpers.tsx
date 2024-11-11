@@ -29,7 +29,6 @@ import {
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
     SeverityCount,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -52,14 +51,7 @@ import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
 
-const PACKAGE = import('@devtron-labs/devtron-fe-lib')
-
-let module: Awaited<typeof PACKAGE>
-
-PACKAGE.then((mod) => {
-    module = mod
-}).catch(noop)
-
+let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
 export type IntersectionOptions = {
@@ -809,9 +801,16 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
     try {
         let component = defaultComponent || null
+        if (!module) {
+            const path = '../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js'
+            const modules = import.meta.glob(`../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js`, {
+                eager: true,
+            })
+            module = modules[path]
+        }
         if (module) {
             if (type === 'function') {
                 component = module[componentName]
@@ -1222,4 +1221,17 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
         )
     }
     return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
+}
+
+// FIXME: Ideally whole branch calculations should be in fe-lib
+export const getParsedBranchValuesForPlugin = (branchName: string): string => {
+    if (!branchName) {
+        return ''
+    }
+
+    if (window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE) {
+        return `[${branchName}]`
+    }
+
+    return branchName
 }

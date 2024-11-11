@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -18,7 +18,8 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getOptions } from '@Components/deploymentConfig/service'
+import { URLS } from '@Config/routes'
+import { getTemplateOptions } from '@Services/service'
 
 import {
     PipelineConfigDiffQueryParams,
@@ -43,8 +44,7 @@ export const usePipelineDeploymentConfig = ({
     wfrId,
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
-    const { path, params } = useRouteMatch()
-    const { search } = useLocation()
+    const { pathname, search } = useLocation()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
@@ -59,7 +59,7 @@ export const usePipelineDeploymentConfig = ({
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
         useAsync(
             () =>
-                getOptions(appId, envId).then(
+                getTemplateOptions(appId, envId).then(
                     ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
                 ),
             [envId],
@@ -176,7 +176,7 @@ export const usePipelineDeploymentConfig = ({
     }
 
     const getNavItemHref = (resourceType: EnvResourceType, resourceName: string) =>
-        `${generatePath(path, params)}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
+        `${pathname.split(`/${URLS.APP_DIFF_VIEW}/`)[0]}/${URLS.APP_DIFF_VIEW}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
     const pipelineDeploymentConfig = useMemo(() => {
         if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {

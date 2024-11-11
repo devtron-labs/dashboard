@@ -33,6 +33,8 @@ const PluginCard = ({
         pluginDataStore.pluginVersionStore[latestPluginId]
 
     const handleSelection = (e: React.MouseEvent | React.KeyboardEvent) => {
+        // Added to ensure that the event is not bubbled to the div in case of click on the checkbox
+        e.preventDefault()
         if ('key' in e && e.key !== 'Enter' && e.key !== ' ') {
             return
         }

@@ -24,8 +24,8 @@ import { CommitChipCell } from '@Shared/Components/CommitChipCell'
 import { ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 import { ReactComponent as ICPulsateStatus } from '@Icons/ic-pulsate-status.svg'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
-import { getDeploymentStageTitle } from '@Pages/App'
 import { ToastManager, ToastVariantType } from '@Shared/Services'
+import { getDeploymentStageTitle } from '@Pages/Applications'
 import {
     ConfirmationDialog,
     DATE_TIME_FORMATS,
@@ -601,7 +601,6 @@ const HistoryLogs: React.FC<HistoryLogsProps> = ({
                                 setFullScreenView={setFullScreenView}
                                 resourceId={resourceId}
                                 renderRunSource={renderRunSource}
-                                runSource={triggerDetails.runSource}
                             />
                         </Route>
                     )}

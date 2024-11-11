@@ -35,6 +35,7 @@ const FeatureTitleWithInfo = ({
     docLinkText = 'View Documentation',
     dataTestId = 'feature-title-with-info',
     additionalContent,
+    showInfoIcon = false,
 }: DescriptorProps) => {
     const [showFeatureDescriptionModal, setShowFeatureDescriptionModal] = useState(false)
     const onClickInfoIcon = () => {
@@ -64,10 +65,14 @@ const FeatureTitleWithInfo = ({
                 </div>
             )
         }
-        if (breadCrumbs?.length > 0) {
+        if (breadCrumbs?.length > 0 || showInfoIcon) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-4">
-                    <BreadCrumb breadcrumbs={breadCrumbs} />
+                    {showInfoIcon && breadCrumbs?.length === 0 ? (
+                        <span className="fs-16 fw-6 cn-9 lh-32">{title}</span>
+                    ) : (
+                        <BreadCrumb breadcrumbs={breadCrumbs} />
+                    )}
                     <ICHelpOutline className={`${iconClassName} icon-dim-20 cursor fcn-6`} onClick={onClickInfoIcon} />
                 </div>
             )

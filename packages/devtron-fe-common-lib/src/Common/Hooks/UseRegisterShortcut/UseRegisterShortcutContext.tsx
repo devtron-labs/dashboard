@@ -17,4 +17,4 @@
 import { createContext } from 'react'
 import { UseRegisterShortcutContextType } from './types'
 
-export const context = createContext<UseRegisterShortcutContextType>(null)
+export const UseRegisterShortcutContext = createContext<UseRegisterShortcutContextType>(null)

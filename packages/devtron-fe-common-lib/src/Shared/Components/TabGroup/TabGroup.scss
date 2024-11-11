@@ -33,7 +33,7 @@
             bottom: -1px;
         }
 
-        &:hover:not(.tab-group__tab--block) {
+        &:hover:not(.tab-group__tab--block):not(.dc__disabled) {
             color: var(--B500);
             @include svg-styles(var(--B500));
         }
@@ -76,7 +76,7 @@
                 color: var(--N900);
             }
 
-            &:hover {
+            &:hover:not([aria-disabled="true"]) {
                 color: var(--B500);
             }
         }

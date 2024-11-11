@@ -41,6 +41,7 @@ import {
     RuntimeParamsListItemType,
     ToastManager,
     ToastVariantType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -74,6 +75,8 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -308,6 +311,11 @@ export default function BulkCDTrigger({
             }
         }
 
+        if (!_cdMaterialFunctionsList.length) {
+            setLoading(false)
+            return
+        }
+
         ApiQueuingWithBatch(_cdMaterialFunctionsList, httpProtocol)
             .then(async (responses: any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
@@ -319,6 +327,7 @@ export default function BulkCDTrigger({
                 setLoading(false)
             })
             .catch((error) => {
+                setLoading(false)
                 showError(error)
             })
     }
@@ -371,6 +380,18 @@ export default function BulkCDTrigger({
     }
 
     const renderEmptyView = (): JSX.Element => {
+        if (selectedApp.isTriggerBlockedDueToPlugin) {
+            const commonNodeAttrType: CommonNodeAttr['type'] =
+                selectedApp.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={selectedApp.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                />
+            )
+        }
+
         if (unauthorizedAppList[selectedApp.appId]) {
             return (
                 <EmptyView
@@ -387,6 +408,76 @@ export default function BulkCDTrigger({
                 subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
+    }
+
+    const renderAppWarningAndErrors = (app: BulkCDDetailType) => {
+        const commonNodeAttrType: CommonNodeAttr['type'] =
+            app.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+        const warningMessage = app.warningMessage || appDeploymentWindowMap[app.appId]?.warningMessage
+
+        const isAppSelected = selectedApp.appId === app.appId
+
+        if (unauthorizedAppList[app.appId]) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4 dc__no-shrink" />
+                    <span className="cy-7 fw-4 fs-12 dc__truncate">{BULK_CD_MESSAGING.unauthorized.title}</span>
+                </div>
+            )
+        }
+
+        if (tagNotFoundWarningsMap.has(app.appId)) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <Error
+                        className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp"
+                    />
+
+                    <span className="fw-4 fs-12 cr-5 dc__truncate">
+                        {tagNotFoundWarningsMap.get(app.appId)}
+                    </span>
+                </div>
+            )
+        }
+
+        if (app.isTriggerBlockedDueToPlugin) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                    shouldRenderAdditionalInfo={isAppSelected}
+                />
+            )
+        }
+
+        if (!!warningMessage && !app.showPluginWarning) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <Error
+                        className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7"
+                    />
+
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">
+                        {warningMessage}
+                    </span>
+                </div>
+            )
+        }
+
+        if (app.showPluginWarning) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                    shouldRenderAdditionalInfo={isAppSelected}
+                />
+            )   
+        }
+
+        return null
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -473,6 +564,7 @@ export default function BulkCDTrigger({
             materials: updatedMaterials ?? appListData.material,
             approvalUsers: appListData.approvalUsers,
             requestedUserId: appListData.requestedUserId,
+            // FIXME: Not using anywhere
             userApprovalConfig: appListData.userApprovalConfig,
             appReleaseTagNames: appListData.appReleaseTags,
             tagsEditable: appListData.tagsEditable,
@@ -613,7 +705,7 @@ export default function BulkCDTrigger({
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0 dc__zi-1">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs
@@ -652,41 +744,14 @@ export default function BulkCDTrigger({
                     {appList.map((app, index) => (
                         <div
                             key={`app-${app.appId}`}
-                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor ${
+                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor w-100 ${
                                 app.appId === selectedApp.appId ? 'dc__window-bg' : ''
                             }`}
                             data-index={index}
                             onClick={changeApp}
                         >
                             {app.name}
-                            {(app.warningMessage ||
-                                tagNotFoundWarningsMap.has(app.appId) ||
-                                appDeploymentWindowMap[app.appId]?.warningMessage) && (
-                                <span
-                                    className={`flex left top fw-4 m-0 fs-12 ${
-                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
-                                    }`}
-                                >
-                                    <Error
-                                        className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
-                                            tagNotFoundWarningsMap.has(app.appId)
-                                                ? 'alert-icon-r5-imp'
-                                                : 'warning-icon-y7'
-                                        }`}
-                                    />
-                                    <p className="m-0">
-                                        {app.warningMessage ||
-                                            appDeploymentWindowMap[app.appId]?.warningMessage ||
-                                            tagNotFoundWarningsMap.get(app.appId)}
-                                    </p>
-                                </span>
-                            )}
-                            {unauthorizedAppList[app.appId] && (
-                                <span className="flex left cy-7 fw-4 fs-12">
-                                    <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.unauthorized.title}
-                                </span>
-                            )}
+                            {renderAppWarningAndErrors(app)}
                         </div>
                     ))}
                 </div>

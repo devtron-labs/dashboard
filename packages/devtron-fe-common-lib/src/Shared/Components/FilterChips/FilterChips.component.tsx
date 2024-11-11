@@ -15,7 +15,7 @@
  */
 
 import { ReactComponent as CloseIcon } from '../../../Assets/Icon/ic-close.svg'
-import { noop } from '../../../Common'
+import { noop, Tooltip } from '../../../Common'
 import { FilterChipProps, FilterChipsProps } from './types'
 
 const FilterChip = ({
@@ -45,7 +45,9 @@ const FilterChip = ({
                         <span className="dc__divider h-24" />
                     </>
                 )}
-                <span className="dc__ellipsis-right">{valueToDisplay}</span>
+                <Tooltip content={valueToDisplay}>
+                    <span className="dc__ellipsis-right dc__word-break dc__mxw-150">{valueToDisplay}</span>
+                </Tooltip>
                 {showRemoveIcon && (
                     <button
                         type="button"

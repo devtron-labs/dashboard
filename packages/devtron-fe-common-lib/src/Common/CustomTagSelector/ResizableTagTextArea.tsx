@@ -35,7 +35,7 @@ export const ResizableTagTextArea = ({
     disabled,
     disableOnBlurResizeToMinHeight,
 }: ResizableTagTextAreaProps) => {
-    const [text, setText] = useState('')
+    const [text, setText] = useState(value ?? '')
 
     useEffect(() => {
         setText(value)
@@ -47,7 +47,6 @@ export const ResizableTagTextArea = ({
     }
 
     const reInitHeight = () => {
-        if (document.activeElement !== refVar.current) return
         refVar.current.style.height = `${minHeight}px`
         if (dependentRef) {
             dependentRef.current.style.height = `${minHeight}px`
@@ -67,6 +66,10 @@ export const ResizableTagTextArea = ({
             dependentRef.current.style.height = `${nextHeight}px`
         }
     }
+
+    useEffect(() => {
+        reInitHeight()
+    }, [])
 
     useThrottledEffect(reInitHeight, 500, [text])
 

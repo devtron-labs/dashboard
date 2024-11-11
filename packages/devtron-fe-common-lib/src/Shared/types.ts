@@ -140,6 +140,7 @@ export interface Node {
     port: number
     canBeHibernated: boolean
     isHibernated: boolean
+    hasDrift?: boolean
 }
 
 // eslint-disable-next-line no-use-before-define
@@ -439,6 +440,7 @@ export enum ResourceKindType {
     installation = 'installation',
     environment = 'environment',
     cdPipeline = 'cd-pipeline',
+    ciPipeline = 'ci-pipeline',
     project = 'project',
 }
 
@@ -461,6 +463,8 @@ export interface SeverityCount {
 }
 export enum PolicyKindType {
     lockConfiguration = 'lock-configuration',
+    imagePromotion = 'image-promotion',
+    plugins = 'plugin',
 }
 
 export interface LastExecutionResultType {
@@ -671,6 +675,21 @@ export type BaseFilterQueryParams<T> = {
      */
     showAll?: boolean
 } & SortingParams<T>
+
+export enum ConfigurationType {
+    GUI = 'GUI',
+    YAML = 'YAML',
+}
+
+export interface BaseURLParams {
+    appId: string
+    envId: string
+}
+
+export interface ConfigKeysWithLockType {
+    config: string[]
+    allowed: boolean
+}
 
 export type DataAttributes = Record<`data-${string}`, unknown>
 

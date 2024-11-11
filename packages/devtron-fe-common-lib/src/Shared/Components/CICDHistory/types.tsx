@@ -15,6 +15,7 @@
  */
 
 import { CSSProperties, ReactElement } from 'react'
+import { SupportedKeyboardKeysType } from '@Common/Hooks/UseRegisterShortcut/types'
 import {
     OptionType,
     UserApprovalMetadataType,
@@ -27,7 +28,6 @@ import {
     PaginationProps,
     useScrollable,
     SortingOrder,
-    SupportedKeyboardKeysType,
 } from '../../../Common'
 import { DeploymentStageType } from '../../constants'
 import { AggregationKeys, GitTriggers, Node, NodeType, ResourceKindType, ResourceVersionType } from '../../types'
@@ -519,10 +519,13 @@ export interface DeploymentHistorySidebarType {
 export interface AppStatusDetailsChartType {
     filterRemoveHealth?: boolean
     showFooter: boolean
+    showConfigDriftInfo?: boolean
+    onClose?: () => void
 }
 
 export interface StatusFilterButtonType {
     nodes: Array<Node>
+    selectedTab: string
     handleFilterClick?: (selectedFilter: string) => void
 }
 
@@ -533,6 +536,10 @@ export enum NodeStatus {
     Missing = 'missing',
     Suspended = 'suspended',
     Unknown = 'unknown',
+}
+
+export enum NodeFilters {
+    drifted = 'drifted',
 }
 
 type NodesMap = {

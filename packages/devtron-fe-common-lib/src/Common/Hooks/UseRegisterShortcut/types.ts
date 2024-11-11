@@ -14,11 +14,66 @@
  * limitations under the License.
  */
 
+import { IS_PLATFORM_MAC_OS } from '@Common/Constants'
+
+export const KEYBOARD_KEYS_MAP = {
+    Control: 'Ctrl',
+    Shift: '⇧',
+    Meta: IS_PLATFORM_MAC_OS ? '⌘' : 'Win',
+    Alt: IS_PLATFORM_MAC_OS ? '⌥' : 'Alt',
+    F: 'F',
+    E: 'E',
+    R: 'R',
+    K: 'K',
+} as const
+
+export type SupportedKeyboardKeysType = keyof typeof KEYBOARD_KEYS_MAP
+
+export interface ShortcutType {
+    keys: SupportedKeyboardKeysType[]
+    callbackStack: Array<() => void>
+    description?: string
+}
+
+interface RegisterShortcutType extends Pick<ShortcutType, 'keys' | 'description'> {
+    callback: ShortcutType['callbackStack'][number]
+}
+
 export interface UseRegisterShortcutContextType {
-    registerShortcut: boolean
-    setRegisterShortcut: (allowShortcut: boolean) => void
+    /**
+     * This method registers a shortcut with its corresponding callback
+     *
+     * If keys is undefined or null this method will throw an error
+     */
+    registerShortcut: (props: RegisterShortcutType) => void
+    /**
+     * This method unregisters the provided shortcut if found
+     *
+     * If keys is undefined or null this method will throw an error
+     */
+    unregisterShortcut: (keys: ShortcutType['keys']) => void
+    /**
+     * Globally disable all shortcuts with this function
+     */
+    setDisableShortcuts: (shouldDisable: boolean) => void
+    /**
+     * Programmatically trigger a shortcut if already registered
+     */
+    triggerShortcut: (keys: ShortcutType['keys']) => void
 }
 
 export interface UseRegisterShortcutProviderType {
-    children: React.ReactElement
+    children: React.ReactNode
+    /**
+     * Defines how long after holding the keys down do we trigger the callback in milliseconds
+     */
+    shortcutTimeout?: number
+    /**
+     * Defines which html tags to ignore as source of an event
+     */
+    ignoreTags?: string[]
+    /**
+     * If true, call preventDefault on the event
+     */
+    preventDefault?: boolean
 }

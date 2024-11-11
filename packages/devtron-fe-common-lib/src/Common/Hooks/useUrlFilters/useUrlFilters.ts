@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { DEFAULT_BASE_PAGE_SIZE, EXCLUDED_FALSY_VALUES, SortingOrder } from '../../Constants'
 import { DEFAULT_PAGE_NUMBER, URL_FILTER_KEYS } from './constants'
 import { UseUrlFiltersProps, UseUrlFiltersReturnType } from './types'
+import { setItemInLocalStorageIfKeyExists } from './utils'
 
 const { PAGE_SIZE, PAGE_NUMBER, SEARCH_KEY, SORT_BY, SORT_ORDER } = URL_FILTER_KEYS
 
@@ -42,10 +43,19 @@ const { PAGE_SIZE, PAGE_NUMBER, SEARCH_KEY, SORT_BY, SORT_ORDER } = URL_FILTER_K
 const useUrlFilters = <T = string, K = unknown>({
     initialSortKey,
     parseSearchParams,
+    localStorageKey,
 }: UseUrlFiltersProps<T, K> = {}): UseUrlFiltersReturnType<T, K> => {
     const location = useLocation()
     const history = useHistory()
     const searchParams = new URLSearchParams(location.search)
+
+    const getParsedSearchParams: UseUrlFiltersProps<T, K>['parseSearchParams'] = (searchParamsToParse) => {
+        if (parseSearchParams) {
+            return parseSearchParams(searchParamsToParse)
+        }
+
+        return {} as K
+    }
 
     const { pageSize, pageNumber, searchKey, sortBy, sortOrder, parsedParams } = useMemo(() => {
         const _pageSize = searchParams.get(PAGE_SIZE)
@@ -58,7 +68,7 @@ const useUrlFilters = <T = string, K = unknown>({
         // Fallback to ascending order
         const sortByOrder = Object.values(SortingOrder).includes(_sortOrder) ? _sortOrder : SortingOrder.ASC
 
-        const _parsedParams = parseSearchParams ? parseSearchParams(searchParams) : ({} as K)
+        const _parsedParams = getParsedSearchParams(searchParams)
 
         return {
             pageSize: Number(_pageSize) || DEFAULT_BASE_PAGE_SIZE,
@@ -126,6 +136,7 @@ const useUrlFilters = <T = string, K = unknown>({
 
     const clearFilters = () => {
         history.replace({ search: '' })
+        setItemInLocalStorageIfKeyExists(localStorageKey, '')
     }
 
     const updateSearchParams = (paramsToSerialize: Partial<K>) => {
@@ -143,9 +154,23 @@ const useUrlFilters = <T = string, K = unknown>({
                 searchParams.delete(key)
             }
         })
+        // Skipping primary params => pageSize, pageNumber, searchKey, sortBy, sortOrder
+        setItemInLocalStorageIfKeyExists(localStorageKey, JSON.stringify(getParsedSearchParams(searchParams)))
         // Not replacing the params as it is being done by _resetPageNumber
         _resetPageNumber()
     }
+
+    useEffect(() => {
+        // if we have search string, set secondary params in local storage accordingly
+        if (location.search) {
+            localStorage.setItem(localStorageKey, JSON.stringify(parsedParams))
+            return
+        }
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        if (localStorageValue) {
+            updateSearchParams(JSON.parse(localStorageValue))
+        }
+    }, [])
 
     return {
         pageSize,

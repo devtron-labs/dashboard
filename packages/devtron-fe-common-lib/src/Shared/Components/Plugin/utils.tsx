@@ -84,7 +84,6 @@ export const parsePluginDetailsDTOIntoPluginStore = (pluginData: ParentPluginDTO
                     plugin.type === PluginCreationType.SHARED ? pluginVersionData.updatedBy : DEFAULT_PLUGIN_CREATED_BY,
                 outputVariables: pluginVersionData.outputVariables || [],
                 inputVariables: pluginVersionData.inputVariables || [],
-                isLatest: pluginVersionData.isLatest || false,
                 tags: sortedUniqueTags,
                 parentPluginId: plugin.id,
                 icon: plugin.icon || '',

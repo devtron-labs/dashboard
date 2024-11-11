@@ -75,7 +75,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
     )
 
     return (
-        <ConfirmationDialog className="confirmation-dialog__body--w-400">
+        <ConfirmationDialog className="confirmation-dialog__body--w-400" close={props.closeDelete}>
             <ConfirmationDialog.Icon src={warn} />
             <ConfirmationDialog.Body title={props.title}>
                 <div className="fs-13 cn-7 lh-1-54 w-100">
@@ -88,7 +88,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
                             onChange={handleConfirmationTextChange}
                             label={getLabel()}
                             inputWrapClassName="mt-12 w-100"
-                            placeholder={`Type ${deleteConfirmationText} to confirm`}
+                            placeholder="Type to confirm"
                             isRequiredField
                             onKeyDown={handleKeyDown}
                             autoFocus

@@ -16,7 +16,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -77,6 +77,7 @@ import {
     AppDetailsPayload,
     ResponseType,
     ApiResponseResultType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -111,7 +112,7 @@ import {
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { getInitialState, getWfrId } from './cdMaterials.utils'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE, URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
@@ -149,6 +150,8 @@ const getSecurityScan: ({
     'function',
 )
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -179,11 +182,15 @@ const CDMaterial = ({
     handleBulkRuntimeParamChange,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
+    showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
+    consequence,
+    configurePluginURL,
+    isTriggerBlockedDueToPlugin,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
-    const { path, params } = useRouteMatch()
+    const { pathname } = useLocation()
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
     // Add dep here
@@ -196,17 +203,21 @@ const CDMaterial = ({
     const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
-    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
     // It is derived from materialResult and can be fixed as a constant fix this
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
+    const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
     const abortDeployRef = useRef(null)
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
+    const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
+    // This check assumes we have isPreOrPostCD as true
+    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
+        stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -244,7 +255,7 @@ const CDMaterial = ({
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
-        !!pipelineId,
+        !!pipelineId && !isTriggerBlockedDueToPlugin,
     )
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
@@ -270,7 +281,7 @@ const CDMaterial = ({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.diffView
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
 
     const {
         pipelineDeploymentConfigLoading,
@@ -337,6 +348,7 @@ const CDMaterial = ({
         abortDeployRef.current = new AbortController()
         return () => {
             abortDeployRef.current.abort()
+            history.replace(pathname.split(URLS.APP_DIFF_VIEW)[0])
         }
     }, [])
 
@@ -743,11 +755,9 @@ const CDMaterial = ({
             ...searchParams,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
-            diffView: 'true',
         })
 
         if (modeParamValue === 'list') {
-            newParams.delete('diffView')
             newParams.delete('sortOrder')
             newParams.delete('sortBy')
         }
@@ -755,8 +765,8 @@ const CDMaterial = ({
         history.push({
             pathname:
                 modeParamValue === 'review-config'
-                    ? `${generatePath(path, params)}/${EnvResourceType.DeploymentTemplate}`
-                    : generatePath(path, params),
+                    ? `${pathname}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
+                    : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
             search: newParams.toString(),
         })
     }
@@ -1063,6 +1073,15 @@ const CDMaterial = ({
         consumedImagePresent?: boolean,
         noEligibleImages?: boolean,
     ) => {
+        if (isTriggerBlockedDueToPlugin && MissingPluginBlockState) {
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={configurePluginURL}
+                    nodeType={allowWarningWithTippyNodeTypeProp}
+                />
+            )
+        }
+
         if (
             resourceFilters?.length &&
             noEligibleImages &&
@@ -1603,6 +1622,11 @@ const CDMaterial = ({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
+            if (!showPluginWarningOverlay && showPluginWarningBeforeTrigger) {
+                setShowPluginWarningOverlay(true)
+                return
+            }
+
             if (
                 deploymentWindowMetadata.userActionState &&
                 deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
@@ -1615,11 +1639,32 @@ const CDMaterial = ({
         }
     }
 
+    const renderTriggerDeployButton = (disableDeployButton: boolean) => (
+        <button
+            data-testid="cd-trigger-deploy-button"
+            disabled={deploymentLoading || isSaveLoading}
+            className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
+            onClick={(e) => onClickDeploy(e, disableDeployButton)}
+            type="button"
+        >
+            {deploymentLoading || isSaveLoading ? (
+                <Progressing />
+            ) : (
+                <>
+                    {getDeployButtonIcon()}
+                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
+                        ? 'Deployment is blocked'
+                        : CDButtonLabelMap[stageType]}
+                    {isVirtualEnvironment && ' to isolated env'}
+                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
+                        <InfoOutline className="icon-dim-16 ml-5" />
+                    )}
+                </>
+            )}
+        </button>
+    )
+
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
-        const buttonLabel =
-            deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
-                ? 'Deployment is blocked'
-                : CDButtonLabelMap[stageType]
         const disableDeployButton =
             isDeployButtonDisabled() ||
             (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
@@ -1665,26 +1710,22 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    <button
-                        data-testid="cd-trigger-deploy-button"
-                        disabled={deploymentLoading || isSaveLoading}
-                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
-                        onClick={(e) => onClickDeploy(e, disableDeployButton)}
-                        type="button"
-                    >
-                        {deploymentLoading || isSaveLoading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                {getDeployButtonIcon()}
-                                {buttonLabel}
-                                {isVirtualEnvironment && ' to isolated env'}
-                                {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
-                                    <InfoOutline className="icon-dim-16 ml-5" />
-                                )}
-                            </>
-                        )}
-                    </button>
+                    {AllowedWithWarningTippy &&
+                    showPluginWarningBeforeTrigger ? (
+                        <AllowedWithWarningTippy
+                            consequence={consequence}
+                            configurePluginURL={configurePluginURL}
+                            showTriggerButton
+                            onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
+                            nodeType={allowWarningWithTippyNodeTypeProp}
+                            visible={showPluginWarningOverlay}
+                            onClose={handleClosePluginWarningOverlay}
+                        >
+                            {renderTriggerDeployButton(disableDeployButton)}
+                        </AllowedWithWarningTippy>
+                    ) : (
+                        renderTriggerDeployButton(disableDeployButton)
+                    )}
                 </ConditionalWrap>
             </div>
         )
@@ -1711,8 +1752,13 @@ const CDMaterial = ({
         </div>
     )
 
+    const handleClosePluginWarningOverlay = () => {
+        setShowPluginWarningOverlay(false)
+    }
+
     const handleConfirmationClose = (e) => {
         e.stopPropagation()
+        handleClosePluginWarningOverlay()
         setShowDeploymentWindowConfirmation(false)
     }
 

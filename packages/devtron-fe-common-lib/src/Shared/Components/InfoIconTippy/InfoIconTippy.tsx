@@ -26,13 +26,15 @@ const InfoIconTippy = ({
     documentationLink,
     documentationLinkText,
     additionalContent,
-    iconClassName = 'icon-dim-16',
+    iconClassName = 'icon-dim-16 dc__no-shrink',
     placement = 'bottom',
     dataTestid = 'info-tippy-button',
     children,
+    headingInfo,
 }: InfoIconTippyProps) => (
     <TippyCustomized
         theme={TippyTheme.white}
+        headingInfo={headingInfo}
         className="w-300 h-100 dc__no-text-transform"
         placement={placement}
         Icon={HelpIcon}
@@ -49,7 +51,7 @@ const InfoIconTippy = ({
         {children || (
             <button
                 type="button"
-                className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus"
+                className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus dc__no-shrink"
                 aria-label="Info Icon"
                 data-testid={dataTestid}
             >

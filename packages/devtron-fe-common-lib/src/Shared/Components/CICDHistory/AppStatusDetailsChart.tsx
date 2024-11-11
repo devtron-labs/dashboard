@@ -14,48 +14,70 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
+import { useHistory } from 'react-router-dom'
+import { URLS } from '@Common/Constants'
 import { ReactComponent as InfoIcon } from '../../../Assets/Icon/ic-info-filled.svg'
 import { ReactComponent as Chat } from '../../../Assets/Icon/ic-chat-circle-dots.svg'
-import { AppStatusDetailsChartType, AggregatedNodes, STATUS_SORTING_ORDER } from './types'
+import { AppStatusDetailsChartType, AggregatedNodes, STATUS_SORTING_ORDER, NodeFilters } from './types'
 import { StatusFilterButtonComponent } from './StatusFilterButtonComponent'
-import { DEPLOYMENT_STATUS, APP_STATUS_HEADERS } from '../../constants'
+import { DEPLOYMENT_STATUS, APP_STATUS_HEADERS, ComponentSizeType, ALL_RESOURCE_KIND_FILTER } from '../../constants'
 import { IndexStore } from '../../Store'
 import { aggregateNodes } from '../../Helpers'
+import { Button, ButtonStyleType, ButtonVariantType } from '../Button'
 
-const AppStatusDetailsChart = ({ filterRemoveHealth = false, showFooter }: AppStatusDetailsChartType) => {
+const AppStatusDetailsChart = ({
+    filterRemoveHealth = false,
+    showFooter,
+    showConfigDriftInfo = false,
+    onClose,
+}: AppStatusDetailsChartType) => {
+    const history = useHistory()
     const _appDetails = IndexStore.getAppDetails()
-    const [currentFilter, setCurrentFilter] = useState('')
+    const [currentFilter, setCurrentFilter] = useState<string>(ALL_RESOURCE_KIND_FILTER)
+    const [flattenedNodes, setFlattenedNodes] = useState([])
+
+    const { appId, environmentId: envId } = _appDetails
+
+    const handleCompareDesiredManifest = () => {
+        onClose()
+        history.push(`${URLS.APP}/${appId}${URLS.DETAILS}/${envId}/${URLS.APP_DETAILS_K8}/${URLS.CONFIG_DRIFT}`)
+    }
 
     const nodes: AggregatedNodes = useMemo(
         () => aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || []),
         [_appDetails],
     )
-    const nodesKeyArray = Object.keys(nodes?.nodes || {})
-    let flattenedNodes = []
-    if (nodesKeyArray.length > 0) {
-        for (let index = 0; index < nodesKeyArray.length; index++) {
-            const element = nodes.nodes[nodesKeyArray[index]]
-            // eslint-disable-next-line no-loop-func
-            element.forEach((childElement) => {
-                if (childElement.health) {
-                    flattenedNodes.push(childElement)
-                }
-            })
-        }
-        flattenedNodes.sort(
-            (a, b) =>
-                STATUS_SORTING_ORDER[a.health.status?.toLowerCase()] -
-                STATUS_SORTING_ORDER[b.health.status?.toLowerCase()],
-        )
 
-        if (filterRemoveHealth) {
-            flattenedNodes = flattenedNodes.filter(
-                (node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY,
+    useEffect(() => {
+        const nodesKeyArray = Object.keys(nodes?.nodes || {})
+        let newFlattenedNodes = []
+        if (nodesKeyArray.length > 0) {
+            for (let index = 0; index < nodesKeyArray.length; index++) {
+                const element = nodes.nodes[nodesKeyArray[index]]
+                // eslint-disable-next-line no-loop-func
+                element.forEach((childElement) => {
+                    if (childElement.health) {
+                        newFlattenedNodes.push(childElement)
+                    }
+                })
+            }
+            newFlattenedNodes.sort(
+                (a, b) =>
+                    STATUS_SORTING_ORDER[a.health.status?.toLowerCase()] -
+                    STATUS_SORTING_ORDER[b.health.status?.toLowerCase()],
             )
+
+            if (filterRemoveHealth) {
+                newFlattenedNodes = newFlattenedNodes.filter(
+                    (node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY,
+                )
+            }
+
+            setFlattenedNodes(newFlattenedNodes)
         }
-    }
+    }, [`${nodes}`])
 
     function getNodeMessage(kind: string, name: string) {
         if (
@@ -80,7 +102,11 @@ const AppStatusDetailsChart = ({ filterRemoveHealth = false, showFooter }: AppSt
                 <div className="pt-16 pl-20 pb-8">
                     <div className="flexbox pr-20 w-100">
                         <div>
-                            <StatusFilterButtonComponent nodes={flattenedNodes} handleFilterClick={onFilterClick} />
+                            <StatusFilterButtonComponent
+                                nodes={flattenedNodes}
+                                selectedTab={currentFilter}
+                                handleFilterClick={onFilterClick}
+                            />
                         </div>
                     </div>
                 </div>
@@ -99,7 +125,8 @@ const AppStatusDetailsChart = ({ filterRemoveHealth = false, showFooter }: AppSt
                         flattenedNodes
                             .filter(
                                 (nodeDetails) =>
-                                    currentFilter === 'all' ||
+                                    currentFilter === ALL_RESOURCE_KIND_FILTER ||
+                                    (currentFilter === NodeFilters.drifted && nodeDetails.hasDrift) ||
                                     nodeDetails.health.status?.toLowerCase() === currentFilter,
                             )
                             .map((nodeDetails) => (
@@ -123,7 +150,24 @@ const AppStatusDetailsChart = ({ filterRemoveHealth = false, showFooter }: AppSt
                                     >
                                         {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
                                     </div>
-                                    <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
+                                    <div className="flexbox-col dc__gap-4">
+                                        {showConfigDriftInfo && nodeDetails.hasDrift && (
+                                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                                <span className="fs-13 fw-4 lh-20 cy-7">Config drift detected</span>
+                                                {onClose && appId && envId && (
+                                                    <Button
+                                                        dataTestId="show-config-drift"
+                                                        text="Compare with desired"
+                                                        variant={ButtonVariantType.text}
+                                                        style={ButtonStyleType.default}
+                                                        onClick={handleCompareDesiredManifest}
+                                                        size={ComponentSizeType.small}
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                        <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
+                                    </div>
                                 </div>
                             ))
                     ) : (

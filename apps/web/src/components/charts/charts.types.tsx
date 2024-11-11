@@ -365,6 +365,8 @@ export interface ChartListPopUpType {
     isLoading: boolean
     setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
     setShowSourcePopoUp: React.Dispatch<React.SetStateAction<boolean>>
+    chartActiveMap: Record<string, boolean>
+    setChartActiveMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }
 
 export interface ChartListType {

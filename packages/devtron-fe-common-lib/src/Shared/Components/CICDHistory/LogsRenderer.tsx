@@ -22,7 +22,6 @@ import { ANSI_UP_REGEX, ComponentSizeType } from '@Shared/constants'
 import { escapeRegExp } from '@Shared/Helpers'
 import { ReactComponent as ICExpandAll } from '@Icons/ic-expand-all.svg'
 import { ReactComponent as ICCollapseAll } from '@Icons/ic-collapse-all.svg'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ReactComponent as ICArrow } from '@Icons/ic-caret-down.svg'
 import {
     Progressing,
@@ -33,6 +32,7 @@ import {
     SearchBar,
     useUrlFilters,
     Tooltip,
+    useRegisterShortcut,
 } from '../../../Common'
 import LogStageAccordion from './LogStageAccordion'
 import {
@@ -173,13 +173,7 @@ const useCIEventSource = (url: string, maxLength?: number): [string[], EventSour
     return [dataVal, eventSourceRef.current, logsNotAvailableError]
 }
 
-const LogsRenderer = ({
-    triggerDetails,
-    isBlobStorageConfigured,
-    parentType,
-    fullScreenView,
-    shortcut,
-}: LogsRendererType & IWithShortcut) => {
+const LogsRenderer = ({ triggerDetails, isBlobStorageConfigured, parentType, fullScreenView }: LogsRendererType) => {
     const { pipelineId, envId, appId } = useParams<DeploymentHistoryBaseParamsType>()
     const logsURL =
         parentType === HistoryComponentType.CI
@@ -199,6 +193,8 @@ const LogsRenderer = ({
 
     const areAllStagesExpanded = useMemo(() => stageList.every((item) => item.isOpen), [stageList])
     const shortcutTippyText = areAllStagesExpanded ? 'Collapse all stages' : 'Expand all stages'
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const areStagesAvailable =
         (window._env_.FEATURE_STEP_WISE_LOGS_ENABLE && streamDataList[0]?.startsWith(LOGS_STAGE_IDENTIFIER)) || false
@@ -431,15 +427,10 @@ const LogsRenderer = ({
     }, [areAllStagesExpanded])
 
     useEffect(() => {
-        shortcut.registerShortcut(
-            handleToggleOpenAllStages,
-            ['e'],
-            'ExpandCollapseLogStages',
-            'Expand/Collapse all log stages',
-        )
+        registerShortcut({ callback: handleToggleOpenAllStages, keys: ['E'] })
 
         return () => {
-            shortcut.unregisterShortcut(['e'])
+            unregisterShortcut(['E'])
         }
     }, [handleToggleOpenAllStages])
 
@@ -623,4 +614,4 @@ const LogsRenderer = ({
         : renderLogs()
 }
 
-export default withShortcut(LogsRenderer)
+export default LogsRenderer

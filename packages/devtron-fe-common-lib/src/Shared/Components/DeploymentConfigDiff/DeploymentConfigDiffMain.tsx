@@ -229,6 +229,25 @@ export const DeploymentConfigDiffMain = ({
             )
         })
 
+    const renderContent = () => {
+        if (isLoading) {
+            return <Progressing fullHeight pageLoader />
+        }
+
+        if (errorConfig?.error) {
+            return (
+                <ErrorScreenManager
+                    code={errorConfig.code}
+                    subtitle={errorConfig.message}
+                    redirectURL={errorConfig.redirectURL}
+                    reload={errorConfig.reload}
+                />
+            )
+        }
+
+        return <div className="flexbox-col dc__gap-12 p-12">{renderDiffs()}</div>
+    }
+
     return (
         <div className="bcn-0 deployment-config-diff__main-top flexbox-col min-h-100">
             <div className="dc__border-bottom-n1 flexbox dc__align-items-center dc__position-sticky dc__top-0 bcn-0 w-100 dc__zi-11">
@@ -248,22 +267,7 @@ export const DeploymentConfigDiffMain = ({
                     )}
                 </div>
             </div>
-            <div className="deployment-config-diff__main-content dc__overflow-y-auto">
-                {errorConfig?.error && (
-                    <ErrorScreenManager
-                        code={errorConfig.code}
-                        subtitle={errorConfig.message}
-                        redirectURL={errorConfig.redirectURL}
-                        reload={errorConfig.reload}
-                    />
-                )}
-                {!errorConfig?.error &&
-                    (isLoading ? (
-                        <Progressing fullHeight size={48} />
-                    ) : (
-                        <div className="flexbox-col dc__gap-12 p-12">{renderDiffs()}</div>
-                    ))}
-            </div>
+            <div className="deployment-config-diff__main-content dc__overflow-y-auto">{renderContent()}</div>
         </div>
     )
 }

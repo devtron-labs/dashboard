@@ -2,6 +2,7 @@ import { LinkProps, NavLinkProps } from 'react-router-dom'
 
 import { ComponentSizeType } from '@Shared/constants'
 import { DataAttributes } from '@Shared/types'
+import { TooltipProps } from '@Common/Tooltip/types'
 
 type TabComponentProps<TabTypeProps> = TabTypeProps & DataAttributes
 
@@ -64,6 +65,16 @@ type ConditionalTabType =
           active?: never | false
       }
 
+type TabTooltipProps =
+    | {
+          shouldWrapTooltip: boolean
+          tooltipProps: TooltipProps
+      }
+    | {
+          shouldWrapTooltip?: never
+          tooltipProps?: never
+      }
+
 export type TabProps = {
     /**
      * Unique identifier for the tab.
@@ -105,7 +116,8 @@ export type TabProps = {
      * Disables the tab, preventing interaction and indicating an inactive state.
      */
     disabled?: boolean
-} & ConditionalTabType
+} & ConditionalTabType &
+    TabTooltipProps
 
 export interface TabGroupProps {
     /**

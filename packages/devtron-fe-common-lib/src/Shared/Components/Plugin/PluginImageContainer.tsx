@@ -21,7 +21,10 @@ import { ImageWithFallback } from '../ImageWithFallback'
 const PluginImageContainer = ({ imageProps, fallbackImageClassName }: PluginImageContainerProps) => (
     <ImageWithFallback
         fallbackImage={<ICLegoBlock className={`dc__no-shrink ${fallbackImageClassName}`} />}
-        imageProps={imageProps}
+        imageProps={{
+            loading: 'lazy',
+            ...imageProps,
+        }}
     />
 )
 

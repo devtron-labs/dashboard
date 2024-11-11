@@ -25,7 +25,6 @@ import {
     useAsync,
     useEffectAfterMount,
     PageHeader,
-    UseRegisterShortcutProvider,
     getResourceGroupListRaw,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -373,17 +372,15 @@ const ResourceList = () => {
     }
 
     return (
-        <UseRegisterShortcutProvider>
-            <div className="resource-browser-container h-100 bcn-0">
-                <PageHeader
-                    isBreadcrumbs
-                    breadCrumbs={renderBreadcrumbs}
-                    headerName=""
-                    renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
-                />
-                {renderMainBody()}
-            </div>
-        </UseRegisterShortcutProvider>
+        <div className="resource-browser-container h-100 bcn-0">
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderBreadcrumbs}
+                headerName=""
+                renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
+            />
+            {renderMainBody()}
+        </div>
     )
 }
 

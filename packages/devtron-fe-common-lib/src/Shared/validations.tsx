@@ -32,6 +32,8 @@ export const MESSAGES = {
     VALID_POSITIVE_INTEGER: 'This field should be a valid positive integer',
     MAX_SAFE_INTEGER: `Maximum allowed value is ${Number.MAX_SAFE_INTEGER}`,
     INVALID_SEMANTIC_VERSION: 'Please follow semantic versioning',
+    INVALID_DATE: 'Please enter a valid date',
+    DATE_BEFORE_CURRENT_TIME: 'The date & time cannot be before the current time',
 }
 
 const MAX_DESCRIPTION_LENGTH = 350
@@ -340,5 +342,26 @@ export const validateJSON = (json: string): ValidationResponseType => {
             isValid: false,
             message: err.message,
         }
+    }
+}
+
+export const validateDateAndTime = (date: Date): ValidationResponseType => {
+    if (date) {
+        const currentDate = new Date()
+        if (currentDate.getTime() > date.getTime()) {
+            return {
+                isValid: false,
+                message: MESSAGES.DATE_BEFORE_CURRENT_TIME,
+            }
+        }
+    } else {
+        return {
+            isValid: false,
+            message: MESSAGES.INVALID_DATE,
+        }
+    }
+
+    return {
+        isValid: true,
     }
 }

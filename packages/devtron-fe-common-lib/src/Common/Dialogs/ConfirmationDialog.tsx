@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import { stopPropagation } from '@Common/Helper'
 import { VisibleModal2 } from '../Modals/VisibleModal2'
 import {
     ConfirmationDialogBodyType,
@@ -23,9 +23,9 @@ import {
     ConfirmationDialogType,
 } from './Types'
 
-const ConfirmationDialog = ({ className = '', children }: ConfirmationDialogType) => (
-    <VisibleModal2 className="confirmation-dialog">
-        <div className={`confirmation-dialog__body ${className}`}>{children}</div>
+const ConfirmationDialog = ({ className = '', children, close }: ConfirmationDialogType) => (
+    <VisibleModal2 className="confirmation-dialog" close={close}>
+        <div onClick={stopPropagation} className={`confirmation-dialog__body ${className}`}>{children}</div>
     </VisibleModal2>
 )
 

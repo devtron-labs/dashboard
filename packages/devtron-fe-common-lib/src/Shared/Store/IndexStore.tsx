@@ -17,6 +17,7 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable array-callback-return */
 import { BehaviorSubject } from 'rxjs'
+import { NodeFilters } from '@Shared/Components'
 import { AppDetails, AppType, EnvDetails, EnvType, Node, Nodes, PodMetaData, iNode } from '../types'
 
 const _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject({} as AppDetails)
@@ -40,6 +41,10 @@ const publishFilteredNodes = () => {
         }
 
         if (_nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()) {
+            return true
+        }
+
+        if (_nodeFilter.filterType.toLowerCase() === NodeFilters.drifted && _node.hasDrift) {
             return true
         }
 

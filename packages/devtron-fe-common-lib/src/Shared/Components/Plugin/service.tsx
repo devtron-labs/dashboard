@@ -36,12 +36,14 @@ export const getPluginsDetail = async ({
     pluginIds,
     signal,
     shouldShowError = true,
+    parentPluginIdentifiers,
 }: PluginDetailServiceParamsType): Promise<Pick<GetPluginStoreDataReturnType, 'pluginStore'>> => {
     try {
         const payload: PluginDetailPayloadType = {
             appId,
             parentPluginId: parentPluginIds,
             pluginId: pluginIds,
+            parentPluginIdentifier: parentPluginIdentifiers ? `${parentPluginIdentifiers}` : null,
         }
 
         const { result } = await get<PluginDetailDTO>(
@@ -115,7 +117,13 @@ export const getAvailablePluginTags = async (appId: number): Promise<string[]> =
     }
 }
 
-export const getParentPluginList = async (appId?: number): Promise<ResponseType<MinParentPluginDTO[]>> => {
-    const queryParams: GetParentPluginListPayloadType = { appId }
-    return get<MinParentPluginDTO[]>(getUrlWithSearchParams(ROUTES.PLUGIN_LIST_MIN, queryParams))
+export const getParentPluginList = async (
+    params?: Partial<GetParentPluginListPayloadType>,
+): Promise<ResponseType<MinParentPluginDTO[]>> => {
+    const response = await get<MinParentPluginDTO[]>(getUrlWithSearchParams(ROUTES.PLUGIN_LIST_MIN, params))
+
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+    }
 }

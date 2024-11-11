@@ -18,8 +18,15 @@ import React, { ReactNode, CSSProperties, ReactElement } from 'react'
 import { Placement } from 'tippy.js'
 import { UserGroupDTO } from '@Pages/GlobalConfigurations'
 import { ImageComment, ReleaseTag } from './ImageTags.Types'
-import { ACTION_STATE, DEPLOYMENT_WINDOW_TYPE, DockerConfigOverrideType, SortingOrder, TaskErrorObj } from '.'
-import { RegistryType, RuntimeParamsListItemType, Severity } from '../Shared'
+import { MandatoryPluginBaseStateType, RegistryType, RuntimeParamsListItemType, Severity } from '../Shared'
+import {
+    ACTION_STATE,
+    ConsequenceType,
+    DEPLOYMENT_WINDOW_TYPE,
+    DockerConfigOverrideType,
+    SortingOrder,
+    TaskErrorObj,
+} from '.'
 
 /**
  * Generic response type object with support for overriding the result type
@@ -450,12 +457,12 @@ export interface ArtifactReleaseMappingType {
 }
 
 export interface CDMaterialListModalServiceUtilProps {
-    artifacts: any[],
-    offset: number,
-    artifactId?: number,
-    artifactStatus?: string,
-    disableDefaultSelection?: boolean,
-    userApprovalConfig?: UserApprovalConfigType,
+    artifacts: any[]
+    offset: number
+    artifactId?: number
+    artifactStatus?: string
+    disableDefaultSelection?: boolean
+    userApprovalConfig?: UserApprovalConfigType
 }
 
 export interface CDMaterialType {
@@ -552,7 +559,7 @@ export interface DownstreamNodesEnvironmentsType {
     environmentName: string
 }
 
-export interface CommonNodeAttr {
+export interface CommonNodeAttr extends Pick<MandatoryPluginBaseStateType, 'isTriggerBlocked' | 'pluginBlockState'> {
     connectingCiPipelineId?: number
     parents: string | number[] | string[]
     x: number
@@ -602,15 +609,10 @@ export interface CommonNodeAttr {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
-    showPluginWarning?: boolean
+    showPluginWarning: boolean
     helmPackageName?: string
     isVirtualEnvironment?: boolean
     deploymentAppType?: DeploymentAppTypes
-    isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     isGitOpsRepoNotConfigured?: boolean
@@ -771,6 +773,8 @@ export interface AppEnvironment {
     isProtected?: boolean
     pipelineId?: number
     latestCdWorkflowRunnerId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface Strategy {
@@ -791,7 +795,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface PrePostDeployStageType {
+export interface PrePostDeployStageType extends MandatoryPluginBaseStateType {
     isValid: boolean
     steps: TaskErrorObj[]
     triggerType: string
@@ -829,6 +833,8 @@ export interface CdPipeline {
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
     isProdEnv?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface ExternalCiConfig {
@@ -899,13 +905,6 @@ export interface CiPipeline {
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
-}
-
-export interface DeploymentChartVersionType {
-    chartRefId: number
-    chartVersion: string
-    chartType: string
-    type: number
 }
 
 export interface ChartVersionAndTypeSelectorProps {

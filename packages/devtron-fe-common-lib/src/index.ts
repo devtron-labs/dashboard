@@ -76,6 +76,17 @@ export interface customEnv {
     SYSTEM_CONTROLLER_LISTING_TIMEOUT?: number
     FEATURE_STEP_WISE_LOGS_ENABLE?: boolean
     FEATURE_IMAGE_PROMOTION_ENABLE?: boolean
+    FEATURE_CD_MANDATORY_PLUGINS_ENABLE?: boolean
+    /**
+     * If true, the direct permissions are hidden for non-super admins in user permissions
+     *
+     * @default false
+     */
+    FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS?: boolean
+    FEATURE_CONFIG_DRIFT_ENABLE: boolean
+    FEATURE_PROMO_EMBEDDED_BUTTON_TEXT?: string
+    FEATURE_PROMO_EMBEDDED_MODAL_TITLE?: string
+    FEATURE_PROMO_EMBEDDED_IFRAME_URL?: string
 }
 declare global {
     interface Window {

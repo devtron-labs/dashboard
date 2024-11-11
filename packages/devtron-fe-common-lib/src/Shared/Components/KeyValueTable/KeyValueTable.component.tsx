@@ -308,10 +308,8 @@ export const KeyValueTable = <K extends string>({
     const onRowDataBlur = (row: KeyValueRow<K>, key: K) => (e: React.FocusEvent<HTMLTextAreaElement>) => {
         const { value } = e.target
 
-        if (value || row.data[key === firstHeaderKey ? secondHeaderKey : firstHeaderKey].value) {
-            onChange?.(row.id, key, value)
-            onError?.(!checkAllRowsAreValid(updatedRows))
-        }
+        onChange?.(row.id, key, value)
+        onError?.(!checkAllRowsAreValid(updatedRows))
     }
 
     const renderFirstHeader = (key: K, label: string, className: string) => (

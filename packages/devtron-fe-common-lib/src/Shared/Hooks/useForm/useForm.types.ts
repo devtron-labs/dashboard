@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { BaseSyntheticEvent } from 'react'
 
 /**
  * Describes the "required" validation rule.
@@ -32,11 +32,11 @@ type ValidationPattern =
  */
 type ValidationCustom =
     | {
-          isValid: (value: string) => boolean
+          isValid: (value: any) => boolean
           message: string
       }
     | {
-          isValid: (value: string) => boolean
+          isValid: (value: any) => boolean
           message: string
       }[]
 
@@ -52,9 +52,9 @@ export interface UseFormValidation {
 
 /**
  * Represents the structure for form validation errors.
- * Maps each field to an error message or an array of error messages.
+ * Maps each field to an array of error messages.
  */
-export type UseFormErrors<T> = Partial<Record<keyof T, string | string[]>>
+export type UseFormErrors<T> = Partial<Record<keyof T, string[]>>
 
 /**
  * Represents the fields that have been modified ("dirty") in the form.
@@ -72,12 +72,22 @@ export type TouchedFields<T> = Partial<Record<keyof T, boolean>>
  * Defines the structure for form validations.
  * Maps each form field to its corresponding validation rules.
  */
-export type UseFormValidations<T extends {}> = Partial<Record<keyof T, UseFormValidation>>
+export type UseFormValidations<T extends {}> =
+    | ((formData: T) => Partial<Record<keyof T, UseFormValidation>>)
+    | Partial<Record<keyof T, UseFormValidation>>
 
 /**
  * Describes the function signature for handling form submission.
  *
  * @param data - The form data collected during submission.
- * @param e - The form event, optionally passed when the form is submitted.
+ * @param e - The event, optionally passed when `handleSubmit` is called.
  */
-export type UseFormSubmitHandler<T extends {}> = (data: T, e?: FormEvent<HTMLFormElement>) => void
+export type UseFormSubmitHandler<T extends {}> = (data: T, e?: BaseSyntheticEvent) => void
+
+/**
+ * A type defining the function signature for handling form validation errors.
+ *
+ * @param errors - An object containing the validation errors for form fields.
+ * @param e - The event, optionally passed when `handleSubmit` is called.
+ */
+export type UseFormErrorHandler<T extends {}> = (errors: UseFormErrors<T>, e?: BaseSyntheticEvent) => void

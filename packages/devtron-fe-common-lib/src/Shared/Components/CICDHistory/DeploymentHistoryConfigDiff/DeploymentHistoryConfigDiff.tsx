@@ -29,7 +29,6 @@ export const DeploymentHistoryConfigDiff = ({
     wfrId,
     triggerHistory,
     setFullScreenView,
-    runSource,
     resourceId,
     renderRunSource,
 }: DeploymentHistoryConfigDiffProps) => {
@@ -167,7 +166,7 @@ export const DeploymentHistoryConfigDiff = ({
                     setFullScreenView={setFullScreenView}
                     convertVariables={convertVariables}
                     setConvertVariables={setConvertVariables}
-                    runSource={runSource}
+                    triggerHistory={triggerHistory}
                     resourceId={resourceId}
                     renderRunSource={renderRunSource}
                     hideDiffState={hideDiffState}

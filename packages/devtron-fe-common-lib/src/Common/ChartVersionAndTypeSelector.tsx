@@ -15,10 +15,17 @@
  */
 
 import { useEffect, useState } from 'react'
-import { fetchChartTemplateVersions } from './Common.service'
-import { ChartVersionAndTypeSelectorProps, DeploymentChartVersionType } from './Types'
-import { getFilteredChartVersions, showError } from './Helper'
 import { SelectPicker, SelectPickerVariantType } from '@Shared/Components'
+import { fetchChartTemplateVersions } from './Common.service'
+import { ChartVersionAndTypeSelectorProps } from './Types'
+import { getFilteredChartVersions, showError } from './Helper'
+
+interface DeploymentChartVersionType {
+    chartRefId: number
+    chartVersion: string
+    chartType: string
+    type: number
+}
 
 // @TODO: Generalize this component to be used in CodeEditor as Chart selector toolbar
 // when the Code Editor is moved to the fe-common-lib

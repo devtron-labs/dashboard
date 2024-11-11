@@ -16,13 +16,14 @@
 
 import { useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
-import { Modal, SERVER_MODE, URLS } from '../../../../Common'
+import Button from '@Shared/Components/Button/Button.component'
+import { ReactComponent as DropDown } from '@Icons/ic-caret-down-small.svg'
+import { ReactComponent as ChartIcon } from '@Icons/ic-charts.svg'
+import { ReactComponent as AddIcon } from '@Icons/ic-add.svg'
+import { ReactComponent as JobIcon } from '@Icons/ic-k8s-job.svg'
 import PageHeader from '../PageHeader'
-import { ReactComponent as DropDown } from '../../../../Assets/Icon/ic-dropdown-filled.svg'
-import { ReactComponent as ChartIcon } from '../../../../Assets/Icon/ic-charts.svg'
-import { ReactComponent as AddIcon } from '../../../../Assets/Icon/ic-add.svg'
-import { ReactComponent as JobIcon } from '../../../../Assets/Icon/ic-k8s-job.svg'
-import { AppListConstants } from '../../../constants'
+import { Modal, SERVER_MODE, URLS } from '../../../../Common'
+import { AppListConstants, ComponentSizeType } from '../../../constants'
 import './HeaderWithCreateButton.scss'
 import { useMainContext } from '../../../Providers'
 
@@ -56,23 +57,28 @@ export const HeaderWithCreateButton = ({ headerName }: HeaderWithCreateButtonPro
 
     const renderActionButtons = () =>
         serverMode === SERVER_MODE.FULL ? (
-            <button
-                type="button"
-                className="flex cta h-32 lh-n"
+            <Button
+                text="Create"
                 onClick={handleCreateButton}
-                data-testid="create-app-button-on-header"
-            >
-                Create
-                <DropDown className="icon-dim-20" />
-            </button>
+                dataTestId="create-app-button-on-header"
+                endIcon={<DropDown className="icon-dim-20" />}
+                size={ComponentSizeType.small}
+            />
         ) : (
-            <button type="button" className="flex cta h-32 lh-n" onClick={redirectToHelmAppDiscover}>
-                Deploy helm charts
-            </button>
+            <Button
+                text="Deploy helm charts"
+                onClick={redirectToHelmAppDiscover}
+                dataTestId="deploy-helm-chart-on-header"
+                size={ComponentSizeType.small}
+            />
         )
 
     const renderCreateSelectionModal = () => (
-        <Modal rootClassName="create-modal-wrapper" onClick={handleCreateButton}>
+        <Modal
+            rootClassName={`create-modal-wrapper
+                ${window._env_.FEATURE_PROMO_EMBEDDED_BUTTON_TEXT ? 'create-modal-wrapper--try-devtron' : ''}`}
+            onClick={handleCreateButton}
+        >
             <div
                 className="create-modal-child cursor"
                 onClick={openCreateDevtronAppModel}

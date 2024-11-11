@@ -16,9 +16,9 @@
 
 // ====== Service Types: Start ====== //
 
-import { ResourceKindType } from '@Shared/types'
+import { EnvironmentType, ResourceKindType } from '@Shared/types'
 import { ServerErrors } from '@Common/ServerError'
-import { getAppOptionsGroupedByProjects, getClusterOptions, getEnvironmentOptions, getProjectOptions } from './service'
+import { getAppOptionsGroupedByProjects, getClusterOptions, getProjectOptions } from './service'
 
 export interface AppType {
     name: string
@@ -28,6 +28,11 @@ export type AppsGroupedByProjectsType = {
     projectId: number
     projectName: string
     appList: AppType[]
+}[]
+
+export type EnvironmentsGroupedByClustersType = {
+    clusterName: EnvironmentType['cluster']
+    envList: EnvironmentType[]
 }[]
 
 export interface ClusterDTO {
@@ -54,7 +59,7 @@ export interface UseGetResourceKindOptionsReturnType {
         [ResourceKindType.devtronApplication]: Awaited<ReturnType<typeof getAppOptionsGroupedByProjects>>
         [ResourceKindType.project]: Awaited<ReturnType<typeof getProjectOptions>>
         [ResourceKindType.cluster]: Awaited<ReturnType<typeof getClusterOptions>>
-        [ResourceKindType.environment]: Awaited<ReturnType<typeof getEnvironmentOptions>>
+        [ResourceKindType.environment]: EnvironmentsGroupedByClustersType
     }
     resourcesOptionsError: ServerErrors
     refetchResourcesOptions: () => void
