@@ -16,7 +16,7 @@
       ],
       "@Shared/*": [
         "./src/Shared/*"
-      ],
+      ]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,
