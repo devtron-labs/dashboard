@@ -29,7 +29,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.ai/'
+const TARGET_URL = 'https://devtron-ent-7.devtron.info/'
 
 function reactVirtualized(): PluginOption {
     return {
@@ -120,6 +120,20 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
+        ...(mode === 'development' ? {
+            resolve: {
+                alias: [
+                    {
+                        find: "@devtron-labs/devtron-fe-common-lib",
+                        replacement: "/Users/baldur/Code/work/pnpm/packages/devtron-fe-common-lib/src/index.ts"
+                    },
+                    {
+                        find: "@devtron-labs/devtron-fe-lib",
+                        replacement: "/Users/baldur/Code/work/pnpm/packages/devtron-fe-lib/src/index.ts"
+                    }
+                ]
+            },
+        } : {}),
         plugins: [
             tsconfigPaths(),
             // @TODO: Check if we can remove the config object inside the react plugin
