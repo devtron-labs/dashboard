@@ -128,8 +128,20 @@ const DynamicTabs = ({
         )
     }
 
-    const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
+    const renderTab = (tab: DynamicTabType, idx: number, isFixed: boolean, tippyConfig?: any) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive && !tab.hideName
+
+        const getTippyFromConfig = () => (
+            <div className="flexbox-col dc__gap-8 w-200">
+                <div className="fs-12 fw-6 lh-18">{tippyConfig.title}</div>
+                {tippyConfig.descriptions.map((description) => (
+                    <div className="fw-4">
+                        <div className="fs-11 lh-16">{description.info}</div>
+                        <div className="fs-12 lh-18">{description.value}</div>
+                    </div>
+                ))}
+            </div>
+        )
 
         const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
             <Tippy
@@ -138,7 +150,7 @@ const DynamicTabs = ({
                 placement="top"
                 duration={[600, 0]}
                 moveTransition="transform 0.1s ease-out"
-                content={getTabTippyContent(tab.title)}
+                content={tippyConfig ? getTippyFromConfig() : getTabTippyContent(tab.title)}
             >
                 {children}
             </Tippy>
@@ -324,7 +336,7 @@ const DynamicTabs = ({
                 <div
                     className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected || tabsData.fixedTabs[tabsData.fixedTabs.length - 1].isSelected ? '' : 'dc__border-left'}`}
                 >
-                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
+                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx, false, tab.tippyConfig))}
                 </div>
             )}
             {(tabsData.dynamicTabs.length > 0 || (!hideTimer && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (

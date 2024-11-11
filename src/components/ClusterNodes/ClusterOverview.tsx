@@ -41,7 +41,12 @@ import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } 
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../ResourceBrowser/Constants'
+import {
+    K8S_EMPTY_GROUP,
+    SIDEBAR_KEYS,
+    TARGET_K8S_VERSION_SEARCH_KEY,
+    UPGRADE_CLUSTER_CONSTANTS,
+} from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
@@ -383,11 +388,10 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
     const handleOpenScanClusterTab = (selectedVersion: string) => {
         const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
 
-        const URL = getUrlWithSearchParams(getURLBasedOnSidebarGVK(
-            SIDEBAR_KEYS.upgradeClusterGVK.Kind,
-            clusterId,
-            namespace,
-        ), { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion })
+        const URL = getUrlWithSearchParams(
+            getURLBasedOnSidebarGVK(SIDEBAR_KEYS.upgradeClusterGVK.Kind, clusterId, namespace),
+            { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
+        )
 
         addTab(
             UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
@@ -398,6 +402,19 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             undefined,
             UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
             UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE,
+            {
+                title: 'Upgrade compatibility',
+                descriptions: [
+                    {
+                        info: 'Current Version',
+                        value: clusterCapacityData?.serverVersion,
+                    },
+                    {
+                        info: 'Target Version',
+                        value: selectedVersion,
+                    },
+                ]
+            }
         ).then(() => history.push(URL))
     }
 
@@ -454,7 +471,9 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                 <div className="flexbox-col dc__gap-12">
                     <div className="flexbox-col dc__gap-4">
                         <span className="fs-13 fw-4 lh-20 cn-7">Kubernetes version</span>
-                        <span className="cn-9 fs-13 fw-6 lh-20 dc__truncate">{clusterCapacityData?.serverVersion || '-'}</span>
+                        <span className="cn-9 fs-13 fw-6 lh-20 dc__truncate">
+                            {clusterCapacityData?.serverVersion || '-'}
+                        </span>
                     </div>
 
                     {MigrateClusterVersionInfoBar && (
