@@ -17,7 +17,5 @@
 
 . "$(dirname "$0")/_/husky.sh"
 
-# TODO: add lint-staged && use pnpm -r lint (not working due to eslint & its ignorefile)
-pnpm --filter web lint
-pnpm --filter @devtron-labs/devtron-fe-common-lib lint
-pnpm --filter @devtron-labs/devtron-fe-lib lint
+pnpm -r compile
+pnpm -r lint-staged

@@ -57,7 +57,7 @@
         "yaml": "^2.4.1"
     },
     "scripts": {
-        "lint": "tsc --noEmit && eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+        "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build --sourcemap",
@@ -70,7 +70,9 @@
         "test:ci": "jest --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
         "jest": "jest",
         "storybook": "IS_STORYBOOK=true storybook dev -p 6006",
-        "build-storybook": "IS_STORYBOOK=true storybook build"
+        "build-storybook": "IS_STORYBOOK=true storybook build",
+        "lint-staged": "lint-staged",
+        "compile": "tsc --noEmit"
     },
     "browserslist": [
         ">0.2%",
@@ -118,6 +120,7 @@
         "jest-extended": "^2.0.0",
         "jest-junit": "^13.0.0",
         "jsdom-worker": "^0.2.1",
+        "lint-staged": "^12.5.0",
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
