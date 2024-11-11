@@ -6,7 +6,8 @@
         "lint": "pnpm run -r lint",
         "start": "pnpm run --filter web start",
         "build:prod": "pnpm run -r build",
-        "build:libs": "pnpm --filter './packages/**' build"
+        "build:libs": "pnpm --filter './packages/**' build",
+        "build:storybook": "pnpm --filter web build-storybook"
     },
 	"devDependencies": {
 		"husky": "^7.0.4"

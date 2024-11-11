@@ -9,7 +9,7 @@ COPY . .
 
 RUN pnpm i
 
-RUN pnpm --filter=web build-storybook
+RUN pnpm build:storybook
 
 FROM nginx:stable
 

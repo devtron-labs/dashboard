@@ -42,3 +42,4 @@ package-lock.json
 storybook-static
 
 pnpm-lock.yaml
+fe-internal-setup.sh
