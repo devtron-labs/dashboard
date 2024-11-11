@@ -23,42 +23,39 @@ export const DeleteEphemeralButton = ({
     params,
     containers,
 }: DeleteEphemeralButtonType) => {
-    const appDetails = IndexStore.getAppDetails()
-    const deleteEphemeralContainer = () => {
-        const getPayload = () => {
-            const payload: ResponsePayload = {
-                namespace: selectedNamespace,
-                clusterId: selectedClusterId,
-                podName: selectedPodName,
-                basicData: {
-                    containerName,
-                },
-            }
-            return payload
-        }
+    const { clusterId, environmentId, namespace, appName, appId, appType, fluxTemplateType } =
+        IndexStore.getAppDetails()
 
+    const getPayload = () => {
+        const payload: ResponsePayload = {
+            namespace: selectedNamespace,
+            clusterId: selectedClusterId,
+            podName: selectedPodName,
+            basicData: {
+                containerName,
+            },
+        }
+        return payload
+    }
+
+    const deleteEphemeralContainer = () => {
         deleteEphemeralUrl({
             requestData: getPayload(),
-            clusterId: appDetails.clusterId,
-            environmentId: appDetails.environmentId,
-            namespace: appDetails.namespace,
-            appName: appDetails.appName,
-            appId: appDetails.appId,
-            appType: appDetails.appType,
-            fluxTemplateType: appDetails.fluxTemplateType,
+            clusterId,
+            environmentId,
+            namespace,
+            appName,
+            appId,
+            appType,
+            fluxTemplateType,
             isResourceBrowserView,
             params,
         })
             .then((response: any) => {
-                const _containers = []
                 const containerNameRes = response.result
-                containers?.forEach((con) => {
-                    if (containerNameRes !== con.name) {
-                        _containers.push(con)
-                    }
-                })
-                switchSelectedContainer(_containers?.[0]?.name || '')
-                setContainers(_containers)
+                const updatedContainers = containers?.filter((con) => con.name !== containerNameRes) || []
+                switchSelectedContainer(updatedContainers?.[0]?.name || '')
+                setContainers(updatedContainers)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Deleted successfully',
