@@ -404,7 +404,7 @@ src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tes
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts
-src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.ts
+src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx
 src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
