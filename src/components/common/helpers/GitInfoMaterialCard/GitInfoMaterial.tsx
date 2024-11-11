@@ -376,7 +376,7 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="dc__window-bg select-material select-material--trigger-view dc__overflow-hidden">
+            <div className="dc__window-bg select-material select-material--trigger-view">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
                 <MaterialHistory
