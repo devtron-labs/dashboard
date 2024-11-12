@@ -7,6 +7,7 @@
     "scripts": {
         "prepare": "husky install",
         "lint": "pnpm run -r lint",
+        "compile": "pnpm run -r compile",
         "start": "pnpm run --filter web start",
         "build:prod": "pnpm run -r build",
         "build:libs": "pnpm --filter './packages/**' build",
