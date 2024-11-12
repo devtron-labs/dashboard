@@ -15,7 +15,7 @@
  */
 
 import React, { Fragment, useEffect, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -24,17 +24,15 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
+    ExpandedExternalLink,
     ExternalLink,
+    ExternalLinkChipProps,
+    ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
-import {
-    getMonitoringToolIcon,
-    getParsedURL,
-    MONITORING_TOOL_ICONS,
-    onImageLoadError,
-} from './ExternalLinks.utils'
+import { getMonitoringToolIcon, getParsedURL, MONITORING_TOOL_ICONS, onImageLoadError } from './ExternalLinks.utils'
 import {
     TippyCustomized,
     TippyTheme,
@@ -45,10 +43,21 @@ import {
     SelectPicker,
     SelectPickerVariantType,
     getHandleOpenURL,
+    EMPTY_STATE_STATUS,
+    VisibleModal2,
+    stopPropagation,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonComponentType,
+    ButtonStyleType,
+    ImageWithFallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
+import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -123,6 +132,122 @@ export const NoMatchingResults = (): JSX.Element => {
     return <GenericFilterEmptyState />
 }
 
+const ExternalLinkFallbackImage = ({ dimension, src, alt }: ExternalLinkFallbackImageProps) => (
+    <ImageWithFallback
+        imageProps={{
+            className: `dc__no-shrink icon-dim-${dimension}`,
+            height: dimension,
+            width: dimension,
+            src: src,
+            alt: alt,
+        }}
+        fallbackImage={ICWebpage}
+    />
+)
+
+const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => (
+    <VisibleModal2 close={handleCloseModal}>
+        <div
+            className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bcn-0"
+            onClick={stopPropagation}
+        >
+            <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
+                <div className="flexbox dc__gap-8 dc__align-items-center">
+                    <ExternalLinkFallbackImage
+                        dimension={20}
+                        src={selectedExternalLink.icon}
+                        alt={selectedExternalLink.label}
+                    />
+                    <h2 className="cn-9 fs-16 fw-6 lh-24 dc__truncate m-0-imp">{selectedExternalLink.label}</h2>
+                </div>
+                <div className="flexbox dc__gap-8">
+                    <Button
+                        ariaLabel="external-link-open"
+                        dataTestId="external-link-open"
+                        icon={<ICArrowOut />}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.xs}
+                        component={ButtonComponentType.button}
+                        style={ButtonStyleType.neutral}
+                        onClick={getHandleOpenURL(selectedExternalLink.externalLinkURL)}
+                        showAriaLabelInTippy={false}
+                    />
+                    <Button
+                        ariaLabel="external-link-modal-close"
+                        dataTestId="external-link-modal-close"
+                        icon={<ICClose />}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.xs}
+                        component={ButtonComponentType.button}
+                        style={ButtonStyleType.negativeGrey}
+                        onClick={handleCloseModal}
+                        showAriaLabelInTippy={false}
+                    />
+                </div>
+            </div>
+            <iframe
+                className="flex-grow-1 dc__no-border dc__bottom-radius-8"
+                src={selectedExternalLink.externalLinkURL}
+                height="100%"
+                width="100%"
+                sandbox="allow-same-origin allow-scripts"
+                referrerPolicy="no-referrer"
+            />
+        </div>
+    </VisibleModal2>
+)
+
+const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
+    const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
+    const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
+
+    const getTippyForLink = (children) => (
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300"
+            placement={isOverviewPage ? 'bottom' : 'top'}
+            iconPath={linkOption.icon}
+            heading={linkOption.label}
+            infoText={linkOption.description}
+        >
+            <div>{children}</div>
+        </TippyCustomized>
+    )
+
+    return (
+        <ConditionalWrap
+            key={`${linkOption.label}-${idx}`}
+            condition={!!linkOption.description}
+            wrap={(children) => getTippyForLink(children)}
+        >
+            <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
+                <button
+                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles"
+                    type="button"
+                    onClick={handleTextClick}
+                >
+                    <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
+                    <span
+                        className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
+                        data-testid="overview_external_link_value"
+                    >
+                        {linkOption.label}
+                    </span>
+                </button>
+                <a
+                    key={linkOption.label}
+                    href={getParsedURL(true, linkOption.value.toString(), details)}
+                    target="_blank"
+                    className="flex p-4 open-link-button"
+                    rel="noreferrer"
+                >
+                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink" />
+                </a>
+            </div>
+        </ConditionalWrap>
+    )
+}
+
 export const AppLevelExternalLinks = ({
     appDetails,
     helmAppDetails,
@@ -131,7 +256,16 @@ export const AppLevelExternalLinks = ({
     isOverviewPage,
 }: AppLevelExternalLinksType): JSX.Element | null => {
     const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
+    const [expandedExternalLink, setExpandedExternalLink] = useState<ExpandedExternalLink>(null)
     const details = appDetails || helmAppDetails
+
+    const handleOpenModal = (linkOption: OptionTypeWithIcon, externalLinkURL: string) => {
+        setExpandedExternalLink({ ...linkOption, externalLinkURL })
+    }
+
+    const handleCloseModal = () => {
+        setExpandedExternalLink(null)
+    }
 
     const filterAppLevelExternalLinks = (link: ExternalLink) => {
         if (isOverviewPage) {
@@ -165,45 +299,6 @@ export const AppLevelExternalLinks = ({
         }
     }, [externalLinks, monitoringTools])
 
-    const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
-        return (
-            <ConditionalWrap
-                key={`${linkOption.label}-${idx}`}
-                condition={!!linkOption.description}
-                wrap={(children) => (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement={isOverviewPage ? 'bottom' : 'top'}
-                        iconPath={linkOption.icon}
-                        heading={linkOption.label}
-                        infoText={linkOption.description}
-                    >
-                        <div>{children}</div>
-                    </TippyCustomized>
-                )}
-            >
-                <a
-                    key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value.toString(), details)}
-                    target="_blank"
-                    className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
-                    rel="noreferrer"
-                >
-                    <img
-                        className="icon-dim-16 mr-4"
-                        src={linkOption.icon}
-                        alt={linkOption.label}
-                        onError={onImageLoadError}
-                    />
-                    <span className="dc__ellipsis-right" data-testid="overview_external_link_value">
-                        {linkOption.label}
-                    </span>
-                </a>
-            </ConditionalWrap>
-        )
-    }
-
     if (isOverviewPage && appLevelExternalLinks.length === 0) {
         return (
             <div className="flex left flex-wrap" data-testid="overview-no-external-links">
@@ -214,26 +309,54 @@ export const AppLevelExternalLinks = ({
     }
 
     return (
-        appLevelExternalLinks.length > 0 && (
-            <div
-                data-testid="external-links-wrapper"
-                className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
-            >
-                {!isOverviewPage && (
-                    <div className="app-level__external-links-icon icon-dim-20">
-                        <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
+        <>
+            {appLevelExternalLinks.length > 0 && (
+                <div
+                    data-testid="external-links-wrapper"
+                    className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
+                >
+                    {!isOverviewPage && (
+                        <div className="app-level__external-links-icon icon-dim-20">
+                            <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
+                        </div>
+                    )}
+                    <div className="flex left flex-wrap dc__gap-8">
+                        {appLevelExternalLinks.map((link, idx) => (
+                            <ExternalLinkChip
+                                key={`${link.label}-${idx}`}
+                                linkOption={link}
+                                idx={idx}
+                                handleOpenModal={handleOpenModal}
+                                isOverviewPage={isOverviewPage}
+                                details={details}
+                            />
+                        ))}
                     </div>
-                )}
-                <div className="flex left flex-wrap">
-                    {appLevelExternalLinks.map((link, idx) => getExternalLinkChip(link, idx))}
                 </div>
-            </div>
-        )
+            )}
+            {expandedExternalLink && (
+                <ExternalLinkIframeModal
+                    selectedExternalLink={expandedExternalLink}
+                    handleCloseModal={handleCloseModal}
+                />
+            )}
+        </>
     )
 }
 
 export const getExternalLinkIcon = (link) => {
-    return <img src={link} alt={link} onError={onImageLoadError} />
+    return (
+        <ImageWithFallback
+            imageProps={{
+                className: 'dc__no-shrink',
+                height: 20,
+                width: 20,
+                src: link,
+                alt: link,
+            }}
+            fallbackImage={ICWebpage}
+        />
+    )
 }
 
 export const NodeLevelExternalLinks = ({

@@ -406,7 +406,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         forceDeleteData={this.state.forceDeleteData}
                         deleteTitleName={this.props.environmentName}
                         isLoading={this.state.deleteInProgress}
-                        showConfirmationBar
                     />
                 )}
                 {this.renderDeleteConformationDialog()}
