@@ -282,7 +282,7 @@ export const GitInfoMaterial = ({
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
 
         return (
-            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__window-bg top">
+            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__window-bg top dc__top-0">
                 {renderBranchChangeHeader(_selectedMaterial)}
                 {!_selectedMaterial.isRepoError && !_selectedMaterial.isBranchError && (
                     <div className="flex right dc__gap-8">
@@ -376,7 +376,7 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="dc__window-bg select-material select-material--trigger-view">
+            <div className="select-material select-material--trigger-view">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
                 <MaterialHistory
