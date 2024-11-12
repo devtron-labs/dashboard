@@ -541,10 +541,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         if (column.value === 'errorCount') {
             return (
                 nodeData['errorCount'] > 0 && (
-                    <>
-                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                    <span className="flex left dc__gap-4">
+                        <Error className="icon-dim-16 dc__no-shrink" />
                         <span className="cr-5 dc__truncate">{nodeData['errorCount'] || '-'}</span>
-                    </>
+                    </span>
                 )
             )
         }
