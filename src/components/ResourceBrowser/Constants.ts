@@ -213,7 +213,7 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
 }
 
 export const UPGRADE_CLUSTER_CONSTANTS = {
-    DYNAMIC_TITLE: 'Upgrade Cluster',
+    DYNAMIC_TITLE: 'Upgrade Compatibility',
     ICON_PATH: ICArrowUpCircle,
     ID_PREFIX: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
     NAME: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),

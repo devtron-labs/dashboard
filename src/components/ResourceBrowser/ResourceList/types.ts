@@ -53,3 +53,7 @@ export interface ClusterUpgradeCompatibilityInfoProps
             BaseResourceListProps,
             'lowercaseKindToResourceGroupMap' | 'clusterId' | 'clusterName' | 'selectedCluster' | 'handleResourceClick'
         > {}
+
+export interface ResourceListUrlFiltersType {
+    targetK8sVersion: string
+}

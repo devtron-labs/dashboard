@@ -31,6 +31,7 @@ import {
     WidgetEventDetails,
     ApiResourceGroupType,
     InitTabType,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
@@ -50,6 +51,8 @@ import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
+import { parseSearchParams } from './utils'
+import { ResourceListUrlFiltersType } from './types'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
@@ -82,6 +85,7 @@ const ResourceList = () => {
         namespaced: false,
         isGrouped: false,
     })
+    const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
@@ -169,7 +173,9 @@ const ResourceList = () => {
         url,
         isSelected: true,
         position: Number.MAX_SAFE_INTEGER,
-        dynamicTitle: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+        dynamicTitle: isUpgradeClusterNodeType
+            ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
+            : undefined,
         iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
     })
 
@@ -226,7 +232,9 @@ const ResourceList = () => {
                 undefined,
                 undefined,
                 isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
-                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE : undefined,
+                isUpgradeClusterNodeType
+                    ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
+                    : undefined,
             )
                 .then(noop)
                 .catch(noop)

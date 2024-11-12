@@ -38,6 +38,7 @@ export function useTabs(persistanceKey: string) {
         dynamicTitle = '',
         isAlive = false,
         hideName = false,
+        tippyConfig,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
         name,
@@ -53,6 +54,7 @@ export function useTabs(persistanceKey: string) {
         isAlive,
         lastSyncMoment: dayjs(),
         componentKey: getNewTabComponentKey(id),
+        tippyConfig,
     })
 
     /**
@@ -105,6 +107,7 @@ export function useTabs(persistanceKey: string) {
             dynamicTitle: _initTab.dynamicTitle,
             isAlive: !!_initTab.isAlive,
             hideName: _initTab.hideName,
+            tippyConfig: _initTab.tippyConfig,
         })
     }
 
@@ -208,6 +211,7 @@ export function useTabs(persistanceKey: string) {
         position = Number.MAX_SAFE_INTEGER,
         iconPath = '',
         dynamicTitle = '',
+        tippyConfig = null,
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
@@ -246,6 +250,7 @@ export function useTabs(persistanceKey: string) {
                             showNameOnSelect,
                             iconPath,
                             dynamicTitle,
+                            tippyConfig,
                         }),
                     )
                 }
