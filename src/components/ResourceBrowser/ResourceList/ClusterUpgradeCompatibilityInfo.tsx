@@ -4,10 +4,10 @@ import {
     GenericEmptyState,
     ImageType,
     noop,
+    Progressing,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import { StyledProgressBar } from '@Components/common/formFields/Widgets/Widgets'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import { URLS } from '@Config/routes'
 import BaseResourceList from './BaseResourceList'
@@ -47,9 +47,9 @@ const ClusterUpgradeCompatibilityInfo = ({
 
     if (isLoading) {
         return (
-            <div className="flex column h-100 dc__gap-20">
-                <StyledProgressBar resetProgress={false} />
-                <div className="flex column dc__gap-8">
+            <div className="flex column h-100">
+                <Progressing size={32} styles={{ height: 'auto' }} />
+                <div className="flex column">
                     <h2 className="fs-16 fw-6 lh-24 mt-20">Scanning resources</h2>
                     <p className="fs-13 fw-4 lh-20 w-300 text-center m-0">
                         Checking resources for upgrade compatibility with Kubernetes version v{targetK8sVersion}

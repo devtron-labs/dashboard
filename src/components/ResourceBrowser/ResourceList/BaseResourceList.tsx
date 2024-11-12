@@ -379,7 +379,7 @@ const BaseResourceListContent = ({
                                 <Tooltip content={resourceData.name}>
                                     <button
                                         type="button"
-                                        className="dc__unset-button-styles dc__align-left dc__truncate"
+                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldShowRedirectionAndActions ? 'cursor-default' : ''}`}
                                         data-name={resourceData.name}
                                         data-namespace={resourceData.namespace}
                                         data-kind={resourceData.kind}
