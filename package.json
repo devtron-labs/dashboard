@@ -1,6 +1,9 @@
 {
     "name": "devtron-frontend",
     "version": "1.0.0",
+    "author": "Devtron",
+    "license": "Apache-2.0",
+    "private": true,
     "scripts": {
         "prepare": "husky install",
         "lint": "pnpm run -r lint",
