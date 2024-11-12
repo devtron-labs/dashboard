@@ -323,6 +323,7 @@ export const getGroupedContainerOptions = (containers: Options[],isTerminal?, is
                             switchSelectedContainer={switchSelectedContainer}
                             params={params}
                             containers={containers}
+                            isExternal={_container.isExternal}
                         />
                     ),
                 })

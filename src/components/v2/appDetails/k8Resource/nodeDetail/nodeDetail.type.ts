@@ -163,4 +163,5 @@ export interface DeleteEphemeralButtonType {
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     params
     containers: Options[]
+    isExternal: boolean
 }

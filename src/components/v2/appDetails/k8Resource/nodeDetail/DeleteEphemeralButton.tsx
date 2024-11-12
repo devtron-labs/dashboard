@@ -22,6 +22,7 @@ export const DeleteEphemeralButton = ({
     setContainers,
     params,
     containers,
+    isExternal,
 }: DeleteEphemeralButtonType) => {
     const { clusterId, environmentId, namespace, appName, appId, appType, fluxTemplateType } =
         IndexStore.getAppDetails()
@@ -75,6 +76,11 @@ export const DeleteEphemeralButton = ({
             showAriaLabelInTippy={false}
             icon={<Close />}
             style={ButtonStyleType.negativeGrey}
+            disabled={isExternal}
+            showTooltip={!!isExternal}
+            tooltipProps={{
+                content: 'External Ephemeral container cannot be deleted',
+            }}
         />
     )
 }
