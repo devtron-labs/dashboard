@@ -4,6 +4,6 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {},
-  "author": "devtron-labs",
+  "author": "Devtron",
   "license": "ISC"
 }
