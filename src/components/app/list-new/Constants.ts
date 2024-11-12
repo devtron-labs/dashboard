@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '@Config/routes'
 import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
 
@@ -98,3 +98,5 @@ export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
 }
 
 export const APP_LISTING_URLS = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
+
+export const APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] = 'app-list__filters'

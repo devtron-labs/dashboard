@@ -1,7 +1,7 @@
 import requests 
 
 # token
-TOKEN = 'xoxb-606875732144-951838745444-eIemyqGMT9gCrPCjgBhpHkFb'
+TOKEN = ''
 URL = 'https://slack.com/api/files.upload'
 filepath = '../report.txt'
 file = open(filepath,"r") 
