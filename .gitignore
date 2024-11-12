@@ -39,7 +39,7 @@ playwright/.auth/
 package-lock.json
 
 *storybook.log
-storybook-static
+storybook-static/
 
 pnpm-lock.yaml
 fe-internal-setup.sh

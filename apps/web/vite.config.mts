@@ -20,7 +20,7 @@ import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin } from 'vit
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
-import path from 'node:path'
+import path, { resolve } from 'node:path'
 import url from 'node:url'
 import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
@@ -127,11 +127,11 @@ export default defineConfig(({ mode }) => {
                 alias: [
                     {
                         find: "@devtron-labs/devtron-fe-common-lib",
-                        replacement: "/Users/baldur/Code/work/pnpm/packages/devtron-fe-common-lib/src/index.ts"
+                        replacement: resolve(__dirname, '../../packages/devtron-fe-common-lib/src/index.ts')
                     },
                     {
                         find: "@devtron-labs/devtron-fe-lib",
-                        replacement: "/Users/baldur/Code/work/pnpm/packages/devtron-fe-lib/src/index.ts"
+                        replacement: resolve(__dirname, '../../packages/devtron-fe-lib/src/index.ts')
                     }
                 ]
             },
