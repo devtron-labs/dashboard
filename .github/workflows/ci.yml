@@ -27,13 +27,12 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'pnpm'
 
     - name: Install dependencies
       run: pnpm install
-
-    - name: Check compilation issues
-      run: pnpm compile
+    
+    - name: Build everything
+      run: pnpm build:prod
 
     - name: Check compilation issues
       run: pnpm lint

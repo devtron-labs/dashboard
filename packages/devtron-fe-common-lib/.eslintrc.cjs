@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const { resolve } = require("path");
+
 module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint', 'react', 'prettier', 'import'],
@@ -27,7 +29,7 @@ module.exports = {
         ecmaFeatures: {
             jsx: true,
         },
-        tsconfigRootDir: __dirname,
+        project: [resolve(__dirname, 'tsconfig.json')]
     },
     globals: {
         JSX: true,
