@@ -1,7 +1,7 @@
 # Dashboard
 
 <p align="start">
-![release](https://badgen.net/github/release/devtron-labs/devtron)
+<a href="https://github.com/devtron-labs/devtron/releases"><img src="https://img.shields.io/github/v/release/devtron-labs/devtron"></a>
 <a href="https://discord.gg/jsRG5qx2gp"><img src="https://img.shields.io/discord/687207715902193673?logo=discord&label=Discord&color=5865F2&logoColor=white" alt="Join Discord"></a>
 </p>
 
