@@ -1,47 +1,33 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Dashboard
 
-## Available Scripts
+<p align="start">
+![release](https://badgen.net/github/release/devtron-labs/devtron)
+<a href="https://discord.gg/jsRG5qx2gp"><img src="https://img.shields.io/discord/687207715902193673?logo=discord&label=Discord&color=5865F2&logoColor=white" alt="Join Discord"></a>
+</p>
 
-In the project directory, you can run:
+This is the client side web app for [devtron](https://github.com/devtron-labs/devtron).
+This web app is written in [React](https://react.dev/) frontend-library. Uses a typescript + vite for setup.
 
-### `yarn start`
+## How to run?
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This project uses `pnpm` as package manager. To install all dependencies and initialize the project just run the command `pnpm install`.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+To start a dev server run `pnpm start`.
+The above command will start a dev vite server at [http://localhost:3000](http://localhost:3000).
 
-### `yarn test`
+By default the backend pointed to by this dev server will be [https://preview.devtron.ai](https://preview.devtron.ai).
+Check out our amazing project at [https://preview.devtron.ai](https://preview.devtron.ai).
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you have a local devtron instance running through minikube/kind/microK8s, you can have that be your backend by changing the `TARGET_URL`
+in `/apps/web/vite.config.mts` to that instance's url.
 
-### `yarn run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Check out `package.json` for more scripts.
 
 ### `commit process`
 
--   Now before commiting lint will run and check for errors.
--   It will not allow to commit if there are lint errors.
--   To fix them run `yarn lint-fix` (check package.json). It is not capable of fixing everything so some fixes has to be done manually.
+- We use husky to run compile and lint-staged before commit staged changes
+- If husky finds any errors during either the compilation stage or linting stage, the attempt to commit will fail
+- If you see fixable issues. You can run `pnpm -r lint-fix`. None auto-fixable issues will have to be resolved by you manually
 
 ### Do's
 
@@ -61,109 +47,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 -   Never add checks on the basis of text.
 -   Don't use float use display instead, use display flex-box, inline, inline-block.
 -   Don't use mix type methods in a class
-
-### Sentry Config
-
--   SENTRY_AUTH_TOKEN=""
--   SENTRY_ORG="devtron-labs"
--   SENTRY_PROJECT="dashboard"
--   DSN=""
--   SENTRY_TRACES_SAMPLE_RATE="0.2"
-
-### Sentry sourcemap upload
-
-```console
-foo@bar:~$ sh sentry.sh
-```
-
-### Set custom sentry environment during production deployment, default is staging
-
-```console
-foo@bar~$ docker run -p 3000:80 -e SENTRY_ENV=my-custom-env -t artifact/tag
-```
-
-### Disable sentry error logging during production deployment, default enabled
-
-```console
-foo@bar~$ docker run -p 3000:80 -e ENTRY_ERROR_ENABLED=false -t artifact/tag
-```
-
-### Disable sentry performance monitoring during production deployment, default enabled
-
-```console
-foo@bar~$ docker run -p 3000:80 -e SENTRY_PERFORMANCE_ENABLED=false -t artifact/tag
-```
-
-### Enable Hotjar during production deployment, default disabled
-
-```console
-foo@bar~$ docker run -p 3000:80 -e HOTJAR_ENABLED=false -t artifact/tag
-```
-
-### Enable google analytics during production deployment, default disabled
-
-```console
-foo@bar~$ docker run -p 3000:80 -e GA_ENABLED=true -t artifact/tag
-```
-
-### Create test coverage report and save summary in report.txt
-
-```console
-foo@bar~$ npm run test -- --coverage --watchAll=false > report.txt
-```
-
-### Upload Summary on slack
-
-```console
-foo@bar~$ python uploadTestReport.py
-```
-
-### Run Following Scripts after release
-
-```console
-foo@bar~$ sh sentry.sh
-foo@bar~$ npm run test -- --coverage --watchAll=false > report.txt
-foo@bar~$ python uploadTestReport.py
-```
-
-### Development setup with proxy.
-
-#### **`vite.config.ts`**
-Update the `vite.config.ts` file to include the proxy configuration.
-In proxy object, add the target URL of the orchestrator and grafana.
-
-```js
-server: {
-            port: 3000,
-            proxy: {
-                '/orchestrator': {
-                    target: 'https://preview.devtron.ai/',
-                    changeOrigin: true,
-                },
-                '/grafana': 'https://preview.devtron.ai/',
-            },
-        }
-```
-
-#### **`.env.development`**
-
-```console
-VITE_GRAFANA_ORG_ID=2
-REACT_APP_EDITOR=code
-VITE_ORCHESTRATOR_ROOT=/orchestrator
-REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
-```
-
-### Development setup without proxy.
-
-#### **`.env.development`**
-
-```console
-VITE_GRAFANA_ORG_ID=2
-REACT_APP_EDITOR=code
-VITE_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
-REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
-```
 
 ## How do I make a contribution?
 
@@ -202,10 +85,4 @@ First you need to have the backend project up and running and the dashboard repo
 
 ## Code walkthrough/Project structure
 
-We have a `src` folder at the root level which holds everything related to the dashboard
-
--   `src/assets` have all the image folders like logo, icons, gif etc. These folders have, the related files
--   `src/components` have all the components used in the project further divided into folder component specific folders. Specific component folders hold their local CSS file specific to that component, service file specific to that component, and some required child component.tsx as well
--   `src/config` has config files like constants, route, etc which holds all the constants, route path constants respectively
--   `src/css has` the common CSS files
--   `src/services` have the common services used across projects
+This is a monorepo. Apps that run are located in `apps/` folder while supporting libraries are placed under `packages/`.
