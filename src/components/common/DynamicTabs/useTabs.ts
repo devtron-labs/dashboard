@@ -16,8 +16,8 @@
 
 import { useState } from 'react'
 import dayjs from 'dayjs'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import { DynamicTabType, InitTabType, ParsedTabsData } from './Types'
+import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
+import { ParsedTabsData, PopulateTabDataPropsType } from './Types'
 
 const FALLBACK_TAB = 1
 
@@ -26,33 +26,36 @@ export function useTabs(persistanceKey: string) {
 
     const getNewTabComponentKey = (id) => `${id}-${dayjs().toString()}`
 
-    const populateTabData = (
-        id: string,
-        name: string,
-        url: string,
-        isSelected: boolean,
-        title: string,
-        position: number,
-        showNameOnSelect: boolean,
+    const populateTabData = ({
+        id,
+        name,
+        url,
+        isSelected,
+        title,
+        position,
+        showNameOnSelect,
         iconPath = '',
         dynamicTitle = '',
         isAlive = false,
-    ) =>
-        ({
-            id,
-            name,
-            url,
-            isSelected,
-            title: title || name,
-            isDeleted: false,
-            position,
-            iconPath,
-            dynamicTitle,
-            showNameOnSelect,
-            isAlive,
-            lastSyncMoment: dayjs(),
-            componentKey: getNewTabComponentKey(id),
-        }) as DynamicTabType
+        hideName = false,
+        tippyConfig,
+    }: PopulateTabDataPropsType): DynamicTabType => ({
+        id,
+        name,
+        url,
+        isSelected,
+        title: title || name,
+        isDeleted: false,
+        position,
+        iconPath,
+        dynamicTitle,
+        showNameOnSelect,
+        hideName,
+        isAlive,
+        lastSyncMoment: dayjs(),
+        componentKey: getNewTabComponentKey(id),
+        tippyConfig,
+    })
 
     /**
      * To serialize tab data and store it in localStorage. The stored data can be retrieved
@@ -92,18 +95,20 @@ export function useTabs(persistanceKey: string) {
     const populateInitTab = (_initTab: InitTabType) => {
         const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
         const _id = `${_initTab.idPrefix}-${title}`
-        return populateTabData(
-            _id,
-            _initTab.name,
-            _initTab.url,
-            _initTab.isSelected,
+        return populateTabData({
+            id: _id,
+            name: _initTab.name,
+            url: _initTab.url,
+            isSelected: _initTab.isSelected,
             title,
-            _initTab.position,
-            _initTab.showNameOnSelect,
-            _initTab.iconPath,
-            _initTab.dynamicTitle,
-            !!_initTab.isAlive,
-        )
+            position: _initTab.position,
+            showNameOnSelect: _initTab.showNameOnSelect,
+            iconPath: _initTab.iconPath,
+            dynamicTitle: _initTab.dynamicTitle,
+            isAlive: !!_initTab.isAlive,
+            hideName: _initTab.hideName,
+            tippyConfig: _initTab.tippyConfig,
+        })
     }
 
     /**
@@ -204,6 +209,9 @@ export function useTabs(persistanceKey: string) {
         url: string,
         showNameOnSelect = false,
         position = Number.MAX_SAFE_INTEGER,
+        iconPath = '',
+        dynamicTitle = '',
+        tippyConfig = null,
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
@@ -231,7 +239,20 @@ export function useTabs(persistanceKey: string) {
                 })
 
                 if (!found) {
-                    _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
+                    _tabs.push(
+                        populateTabData({
+                            id: _id,
+                            name,
+                            url,
+                            isSelected: true,
+                            title,
+                            position,
+                            showNameOnSelect,
+                            iconPath,
+                            dynamicTitle,
+                            tippyConfig,
+                        }),
+                    )
                 }
                 resolve(!found)
                 localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))

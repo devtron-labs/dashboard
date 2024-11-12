@@ -3227,6 +3227,10 @@ textarea,
     width: 356px;
 }
 
+.w-360 {
+    width: 360px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -5059,6 +5063,28 @@ textarea::placeholder {
     background-color: var(--Y100);
 }
 
+.code-editor__error {
+    background-color: #fde7e7;
+    color: #862020;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+}
+
+.code-editor__information {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+    background-color: var(--B100);
+}
+
 .security-policy--whitelist,
 .security-policy--whitelisted {
     color: var(--G500);
@@ -5133,4 +5159,41 @@ textarea::placeholder {
     position: absolute;
     bottom: 120px;
     right: 110px;
+}
+
+
+.read-only-expression {
+    counter-reset: line;
+}
+
+.read-only-expression span {
+    display: block;
+    // JUST A HACK, since need span for setting line number
+    width: 1px;
+}
+
+.read-only-expression span:before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    padding: 0 8px;
+    color: var(--N700);
+    width: 24px;
+    margin-right: 8px;
+}
+
+.read-only-expression.dark span:before {
+    color: var(--N400);
+}
+
+.read-only-expression.dark {
+    background-color: #0C0F21;
+}
+
+.dc__text-wrap {
+    text-wrap: wrap;
+}
+
+.dc__open-sans {
+    font-family: 'Open Sans';
 }
