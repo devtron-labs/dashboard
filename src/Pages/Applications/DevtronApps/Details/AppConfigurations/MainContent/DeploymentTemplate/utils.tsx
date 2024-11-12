@@ -145,14 +145,15 @@ export const getLockedDiffModalDocuments = ({
 }: GetLockedDiffModalDocumentsParamsType): GetLockedDiffModalDocumentsReturnType => ({
     // In case previous override is not available we should send empty object which would be automatically handled since while parsing response we parse originalTemplate as empty object in that case
     unedited: state.publishedTemplateData.originalTemplate,
-    edited: isApprovalView
-        ? state.draftTemplateData.originalTemplate
-        : YAML.parse(
-              getCurrentTemplateWithLockedKeys({
-                  currentEditorTemplateData: state.currentEditorTemplateData,
-                  wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
-              }),
-          ),
+    edited:
+        (isApprovalView
+            ? state.draftTemplateData.originalTemplate
+            : YAML.parse(
+                  getCurrentTemplateWithLockedKeys({
+                      currentEditorTemplateData: state.currentEditorTemplateData,
+                      wasGuiOrHideLockedKeysEdited: state.wasGuiOrHideLockedKeysEdited,
+                  }),
+              )) ?? {},
 })
 
 export const getDeploymentTemplateResourceName = (environmentName: string): string => {

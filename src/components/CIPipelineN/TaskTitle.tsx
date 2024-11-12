@@ -53,7 +53,14 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
     const { pluginDataStore } = useContext(pipelineContext)
     const isInline = taskDetail.stepType === PluginType.INLINE
     const pluginId = taskDetail.pluginRefStepDetail?.pluginId
-    const { isLatest, icon, name: pluginName, pluginVersion } = pluginDataStore.pluginVersionStore?.[pluginId] || {}
+    const {
+        icon,
+        name: pluginName,
+        pluginVersion,
+        parentPluginId,
+    } = pluginDataStore.pluginVersionStore?.[pluginId] || {}
+
+    const isLatest = pluginDataStore.parentPluginStore?.[parentPluginId]?.latestVersionId === pluginId
 
     const renderPluginImageContainer = () => (
         <PluginImageContainer

@@ -38,7 +38,7 @@ import {
     OverrideMergeStrategyType,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt, useParams } from 'react-router-dom'
+import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -126,6 +126,7 @@ const DeploymentTemplate = ({
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
+    const location = useLocation()
     const { isSuperAdmin } = useMainContext()
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
@@ -1339,6 +1340,8 @@ const DeploymentTemplate = ({
             showApprovalPendingEditorInCompareView,
         })?.isAppMetricsEnabled
 
+    const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
+
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
             lockedConfigData: {
@@ -1765,7 +1768,7 @@ const DeploymentTemplate = ({
                 )}
             </div>
 
-            <Prompt when={areChangesPresent} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+            <Prompt when={areChangesPresent} message={getPromptMessage} />
         </>
     )
 }

@@ -24,6 +24,7 @@ import {
     CIMaterialType,
     SearchBar,
     SourceTypeMap,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -42,7 +43,7 @@ import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-g
 import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
-const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
@@ -441,20 +442,13 @@ export default function GitInfoMaterial({
         )
     }
 
-    const redirectToCIPipeline = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)
-        if (fromAppGrouping) {
-            window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
-        } else {
-            push(ciPipelineURL)
-        }
-    }
+    const nodeType: CommonNodeAttr['type'] = 'CI'
 
     return (
         <>
             {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
-            {BuildTriggerBlockedState && isCITriggerBlocked ? (
-                <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
+            {MissingPluginBlockState && isCITriggerBlocked ? (
+                <MissingPluginBlockState configurePluginURL={getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)} nodeType={nodeType} />
             ) : (
                 <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {showWebhookModal == true ? (

@@ -46,6 +46,7 @@ export const URLS = {
     APP_DETAILS_K8: 'k8s-resources', // for V2
     APP_DETAILS_LOG: 'log-analyzer', // for V2
     APP_DETAILS_DEFAULT: 'default-view',
+    APP_DIFF_VIEW: 'diff-view',
     APP_TRIGGER: 'trigger',
     APP_OVERVIEW: 'overview',
     APP_CI_DETAILS: 'ci-details',
@@ -93,7 +94,7 @@ export const URLS = {
     GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
     GLOBAL_CONFIG_PULL_IMAGE_DIGEST: '/global-config/pull-image-digest',
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
-    GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
+    GLOBAL_CONFIG_PLUGIN_POLICY: '/global-config/plugin-policy',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION: '/global-config/lock-deployment-configuration',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',

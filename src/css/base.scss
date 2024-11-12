@@ -26,7 +26,7 @@
     --full-screen-modal-index: 10;
     --page-header-index: 12;
     --filter-menu-index: 7;
-    --transparent-div-index: 24;
+    --transparent-div-index: 6;
     --app-list-header-index: 3;
     --navigation-index: 13;
     --tooltip-index: 7;
@@ -435,6 +435,10 @@ a:focus {
 
 .dc__right-0 {
     right: 0;
+}
+
+.dc__right-3--neg {
+    right: -3px;
 }
 
 .dc__right-10 {
@@ -1500,6 +1504,17 @@ button.anchor {
     }
 }
 
+.dc__inline-radio-group {
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .form__radio-item.disabled {
+        background-color: transparent;
+    }
+}
+
 //Tippy
 
 .tippy-box.default-tt {
@@ -2420,6 +2435,10 @@ button.anchor {
     font-weight: normal !important;
 }
 
+.fw-6-imp {
+    font-weight: 600 !important;
+}
+
 .dc__hide-section {
     display: none;
 
@@ -2542,6 +2561,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__bottom-radius-8 {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
 .dc__top-radius-8 {
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -2599,6 +2623,10 @@ button.anchor {
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-40 {
+    border-radius: 40px;
 }
 
 .dc__no-top-border {
@@ -3879,6 +3907,14 @@ textarea,
     margin-bottom: -2px;
 }
 
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -4102,6 +4138,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {
@@ -4253,10 +4293,24 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
+
+    &--fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+    &--stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
@@ -4636,6 +4690,10 @@ textarea::placeholder {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.dc__cursor-col-resize {
+    cursor: col-resize;
 }
 
 .focus-within-border-b5:focus-within {
@@ -5019,6 +5077,10 @@ textarea::placeholder {
     right: 0;
     height: 100vh;
     z-index: var(--transparent-div-index);
+
+    &--command-bar {
+        z-index: 24;
+    }
 }
 
 @-webkit-keyframes pulse {

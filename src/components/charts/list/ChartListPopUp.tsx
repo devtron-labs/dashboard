@@ -48,6 +48,8 @@ const ChartListPopUp = ({
     isLoading,
     setFilteredChartList,
     setShowSourcePopoUp,
+    chartActiveMap,
+    setChartActiveMap,
 }: ChartListPopUpType) => {
     const [searchText, setSearchText] = useState<string>('')
     const [fetching, setFetching] = useState<boolean>(false)
@@ -72,6 +74,9 @@ const ChartListPopUp = ({
         stopPropagation(event)
         setShowAddPopUp(!showAddPopUp)
     }
+
+    const toggleEnabled = (key: string) => (enabled: boolean) =>
+        setChartActiveMap({ ...chartActiveMap, [key]: enabled })
 
     const renderChartListHeaders = () => {
         return (
@@ -162,7 +167,17 @@ const ChartListPopUp = ({
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
                 {filteredChartList.map((list, index) => {
-                    return list.id != 1 && <ChartListPopUpRow index={index} list={list} />
+                    return (
+                        list.id != 1 && (
+                            <ChartListPopUpRow
+                                key={list.name}
+                                index={index}
+                                list={list}
+                                enabled={chartActiveMap[list.name]}
+                                toggleEnabled={toggleEnabled(list.name)}
+                            />
+                        )
+                    )
                 })}
                 <InfoColourBar
                     message={renderInfoText()}
