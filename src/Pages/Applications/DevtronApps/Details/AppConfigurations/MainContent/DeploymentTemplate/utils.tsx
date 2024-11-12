@@ -26,7 +26,6 @@ import {
     HandleInitializeDraftDataProps,
     OverriddenBaseDeploymentTemplateParsedDraftDTO,
     UpdateBaseDTPayloadType,
-    UpdateEnvironmentDTPayloadStrategyDetailsType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
 import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
@@ -491,11 +490,10 @@ export const getDeleteProtectedOverridePayload = (
 ): UpdateEnvironmentDTPayloadType => {
     const { baseDeploymentTemplateData, chartDetails, currentEditorTemplateData } = state
 
-    // FIXME: Need to confirm with BE once
     return {
         environmentId: +envId,
         mergeStrategy: OverrideMergeStrategyType.PATCH,
-        envOverridePatchValues: {},
+        envOverrideValues: {},
         chartRefId: chartDetails.globalChartDetails.id,
         IsOverride: false,
         isAppMetricsEnabled: baseDeploymentTemplateData.isAppMetricsEnabled,
@@ -518,23 +516,6 @@ export const getDeleteProtectedOverridePayload = (
                   schema: baseDeploymentTemplateData.schema,
               }
             : {}),
-    }
-}
-
-const getMergeStrategyPayload = (
-    mergeStrategy: OverrideMergeStrategyType,
-    validEditorObject: Record<string, string>,
-): UpdateEnvironmentDTPayloadStrategyDetailsType => {
-    if (mergeStrategy === OverrideMergeStrategyType.PATCH) {
-        return {
-            mergeStrategy,
-            envOverridePatchValues: validEditorObject,
-        }
-    }
-
-    return {
-        mergeStrategy,
-        envOverrideValues: validEditorObject,
     }
 }
 
@@ -598,13 +579,15 @@ export const getUpdateEnvironmentDTPayload = (
 
         return {
             ...baseObject,
-            ...getMergeStrategyPayload(currentEditorTemplateData.mergeStrategy, eligibleChanges),
+            mergeStrategy: currentEditorTemplateData.mergeStrategy,
+            envOverrideValues: eligibleChanges,
         }
     }
 
     return {
         ...baseObject,
-        ...getMergeStrategyPayload(currentEditorTemplateData.mergeStrategy, editorTemplateObject),
+        mergeStrategy: currentEditorTemplateData.mergeStrategy,
+        envOverrideValues: editorTemplateObject,
     }
 }
 

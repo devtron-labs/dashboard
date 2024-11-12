@@ -1687,7 +1687,11 @@ const DeploymentTemplate = ({
         }
 
         if (initialLoadError) {
-            return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
+            return (
+                <div className="w-100 h-100 flex">
+                    <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
+                </div>
+            )
         }
 
         return (

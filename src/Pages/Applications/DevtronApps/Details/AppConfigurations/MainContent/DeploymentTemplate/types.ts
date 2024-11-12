@@ -405,25 +405,15 @@ interface UpdateDTCommonPayloadType {
     schema?: Record<string, string>
 }
 
-export type UpdateEnvironmentDTPayloadStrategyDetailsType =
-    | {
-          mergeStrategy: OverrideMergeStrategyType.PATCH
-          envOverridePatchValues: Record<string, string>
-          envOverrideValues?: never
-      }
-    | {
-          mergeStrategy: Exclude<OverrideMergeStrategyType, OverrideMergeStrategyType.PATCH>
-          envOverrideValues: Record<string, string>
-          envOverridePatchValues?: never
-      }
-
 export type UpdateEnvironmentDTPayloadType = UpdateDTCommonPayloadType &
     Partial<Pick<DeploymentTemplateEditorDataStateType, 'environmentConfig'>> & {
         environmentId: number
         IsOverride: boolean
         isDraftOverriden?: boolean
         globalConfig?: Record<string, string>
-    } & UpdateEnvironmentDTPayloadStrategyDetailsType
+        envOverrideValues: Record<string, any>
+        mergeStrategy: OverrideMergeStrategyType
+    }
 
 export interface UpdateBaseDTPayloadType
     extends UpdateDTCommonPayloadType,
