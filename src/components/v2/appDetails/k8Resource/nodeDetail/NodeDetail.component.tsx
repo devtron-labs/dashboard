@@ -657,6 +657,7 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
+                    handleSuccess={getContainersFromManifest}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (

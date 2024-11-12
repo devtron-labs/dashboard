@@ -76,7 +76,7 @@ export const DeleteEphemeralButton = ({
             showAriaLabelInTippy={false}
             icon={<Close />}
             style={ButtonStyleType.negativeGrey}
-            disabled={isExternal}
+            disabled={!!isExternal}
             showTooltip={!!isExternal}
             tooltipProps={{
                 content: 'External Ephemeral container cannot be deleted',
