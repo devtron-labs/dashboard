@@ -98,7 +98,7 @@ export const GitInfoMaterial = ({
     function renderMaterialHeader() {
         return (
             <div
-                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
+                className={`ci-webhook-header flex dc__content-space pl-20 pr-16 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
             >
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
