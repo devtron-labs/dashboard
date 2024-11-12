@@ -2,6 +2,7 @@
     "name": "@devtron-labs/devtron-fe-common-lib",
     "version": "0.5.0-patch-1",
     "description": "Supporting common component library",
+    "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -12,8 +13,6 @@
         "type": "git",
         "url": "https://github.com/devtron-labs/devtron-fe-common-lib.git"
     },
-    "author": "Devtron",
-    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/devtron-labs/devtron-fe-common-lib/issues"
     },
