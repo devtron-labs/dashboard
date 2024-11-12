@@ -220,7 +220,7 @@ export const SourceInfo = ({
                                 )}
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
                                     SwapTraffic &&
-                                    appDetails.pcoId &&
+                                    !!appDetails.pcoId &&
                                     !appDetails.trafficSwitched && (
                                         <SwapTraffic
                                             appName={appDetails.appName}
