@@ -23,7 +23,7 @@
 }
 
 .payload-wrapper-no-header {
-    height: calc(100vh - 74px);
+    height: calc(100vh - 50px);
 }
 
 .payload-wrapper {
@@ -46,7 +46,6 @@
 
     .ci__filter-table__row{
         display: grid;
-        grid-template-columns: 200px auto auto 100px;
-    
+        grid-template-columns: 200px 200px auto 100px;
     }
 }
