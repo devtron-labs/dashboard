@@ -18,14 +18,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'yarn'
+        cache: 'pnpm'
 
     - name: Install dependencies
-      run: yarn install
+      run: pnpm install
 
-    - name: Check linting issues
-      run: yarn lint
+    - name: Check compilation issues
+      run: pnpm compile
+
+    - name: Check compilation issues
+      run: pnpm lint
