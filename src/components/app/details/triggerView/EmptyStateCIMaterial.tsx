@@ -17,7 +17,7 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
-import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
+import NoEligibleCommit from '../../../../assets/gif/ic-no-eligible-commit.svg'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'

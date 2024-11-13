@@ -177,10 +177,7 @@ export const GitInfoMaterial = ({
     }
 
     const renderBranchChangeHeader = (_selectedMaterial: CIMaterialType): JSX.Element => (
-        <div
-            className={`fs-13 lh-20 fw-6 flex ${selectedMaterial.regex ? 'cursor' : ''} cn-9 dc__window-bg`}
-            onClick={onClickHeader}
-        >
+        <div className={`fs-13 lh-20 fw-6 flex cn-9 ${selectedMaterial.regex ? 'cursor' : ''}`} onClick={onClickHeader}>
             <BranchFixed className=" mr-8 icon-color-n9 mw-14" />
             <Tippy
                 className="default-tt dc__word-break-all"
@@ -282,7 +279,7 @@ export const GitInfoMaterial = ({
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
 
         return (
-            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__window-bg dc__top-0">
+            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__top-0  dc__backdrop-filter-5 dc__background-opacity-75-per">
                 {renderBranchChangeHeader(_selectedMaterial)}
                 {!_selectedMaterial.isRepoError && !_selectedMaterial.isBranchError && (
                     <div className="flex right dc__gap-8">
@@ -302,7 +299,7 @@ export const GitInfoMaterial = ({
 
     const renderWebhookHeader = () =>
         selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5 dc__position-sticky dc__top-0">
+            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5 dc__background-opacity-75-per dc__position-sticky dc__top-0">
                 <Info className="icon-dim-16" />
                 <div className="flex left dc__gap-4 cn-9">
                     <span className="lh-20 cn-9">Showing results matching</span>
@@ -332,7 +329,7 @@ export const GitInfoMaterial = ({
 
         if (materialError || !anyCommit) {
             return (
-                <div className="select-material">
+                <div className="select-material select-material--trigger-view">
                     {showHeader && renderMaterialHistoryHeader(_selectedMaterial)}
 
                     <div className="select-material__empty-state-container flex dc__position-rel">

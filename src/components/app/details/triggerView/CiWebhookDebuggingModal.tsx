@@ -29,6 +29,7 @@ import {
     ComponentSizeType,
     useSearchString,
     getUrlWithSearchParams,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -193,8 +194,7 @@ export const CiWebhookModal = ({
             </div>
             {/* Here the CI model requires the CiPipelineId not the CiPipelineMaterialId */}
             <Button
-                showAriaLabelInTippy={false}
-                ariaLabel="Edit CI pipeline"
+                ariaLabel="Edit filters"
                 icon={<Edit />}
                 variant={ButtonVariantType.borderLess}
                 style={ButtonStyleType.neutral}
@@ -206,11 +206,11 @@ export const CiWebhookModal = ({
     )
 
     const getWebhookIncomingPayload = () =>
-        webhookIncomingPayload?.selectorsData.sort((a, b) => sortCallback('selectorName', a, b))
+        webhookIncomingPayload?.selectorsData?.sort((a, b) => sortCallback('selectorName', a, b))
 
     const renderFilterTableContent = () => (
         <div className="w-100">
-            <div className="cn-7 fw-6 dc__border-bottom ci__filter-table__row dc__uppercase py-8 fs-12">
+            <div className="cn-7 fw-6 dc__border-bottom ci__filter-table__row dc__uppercase py-8 fs-12 dc__gap-12">
                 <div className="lh-20">Selector/Key</div>
                 <div className="lh-20">Selector value in payload</div>
                 <div className="lh-20">Configured filter</div>
@@ -218,11 +218,17 @@ export const CiWebhookModal = ({
             </div>
 
             {getWebhookIncomingPayload()?.map((selectedData: WebhookReceivedFiltersType) => (
-                <div key={`${selectedData?.selectorName}`} className="ci__filter-table__row py-10 lh-20">
-                    <div>{selectedData?.selectorName}</div>
-                    <div>{selectedData?.selectorValue}</div>
-                    <div>{selectedData?.selectorCondition}</div>
-                    <div className={selectedData?.match === false ? `dc__deprecated-warn-text` : `cg-5`}>
+                <div key={`${selectedData?.selectorName}`} className="ci__filter-table__row py-10 lh-20 dc__gap-12">
+                    <Tooltip content={selectedData?.selectorName}>
+                        <span className="dc__truncate dc__word-break">{selectedData?.selectorName}</span>
+                    </Tooltip>
+                    <Tooltip content={selectedData?.selectorValue}>
+                        <span className="dc__truncate dc__word-break">{selectedData?.selectorValue}</span>
+                    </Tooltip>
+                    <Tooltip content={selectedData?.selectorCondition}>
+                        <span className="dc__truncate dc__word-break">{selectedData?.selectorCondition}</span>
+                    </Tooltip>
+                    <div className={selectedData?.match === false ? `cr-5` : `cg-5`}>
                         {selectedData?.match === false ? 'Failed' : 'Passed'}
                     </div>
                 </div>
