@@ -72,7 +72,7 @@ const GUIView = ({
             setFormData(parsedValue)
             formDataRef.current = parsedValue
 
-            if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current) {
+            if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current && ConfigurableGUIViewModel) {
                 modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
                 setUncheckedPathsList(modelRef.current.getUncheckedNodes())
             }
@@ -236,7 +236,7 @@ const GUIView = ({
                 }}
             >
                 {renderForm()}
-                {modelRef.current && (
+                {modelRef.current && ConfigurableGUIViewPanel && (
                     <ConfigurableGUIViewPanel node={modelRef.current.root} updateNodeForPath={updateNodeForPath} />
                 )}
             </div>
