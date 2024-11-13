@@ -15,8 +15,9 @@ const PluginVersionSelect = ({ handlePluginVersionChange }: PluginVersionSelectP
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)
 
     const selectedPluginId = formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId
-    const { parentPluginId, id, isLatest, pluginVersion } = pluginDataStore.pluginVersionStore[selectedPluginId]
-    const pluginVersionList = pluginDataStore.parentPluginStore[parentPluginId].pluginVersions
+    const { parentPluginId, id, pluginVersion } = pluginDataStore.pluginVersionStore[selectedPluginId]
+    const { pluginVersions: pluginVersionList, latestVersionId } = pluginDataStore.parentPluginStore[parentPluginId]
+    const isLatest = latestVersionId === selectedPluginId
     const options: SelectPickerOptionType[] = pluginVersionList.map((plugin) =>
         getPluginVersionSelectOption(plugin.pluginVersion, plugin.id, plugin.isLatest),
     )

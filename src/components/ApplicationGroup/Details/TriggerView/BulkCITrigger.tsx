@@ -32,9 +32,12 @@ import {
     SourceTypeMap,
     ToastManager,
     ToastVariantType,
+    BlockedStateData,
+    PromiseAllStatusType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
@@ -65,7 +68,11 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 import { BULK_ERROR_MESSAGES } from './constants'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
@@ -170,10 +177,7 @@ const BulkCITrigger = ({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res.value?.['result']
                     })
-                    // These two handlers should be imported from elsewhere
-                    if (getCIBlockState) {
-                        await getPolicyEnforcementData(_materialListMap)
-                    }
+                    await getPolicyEnforcementData(_materialListMap)
                     if (getRuntimeParams) {
                         await getRuntimeParamsData(_materialListMap)
                     }
@@ -226,6 +230,10 @@ const BulkCITrigger = ({
     }
 
     const getPolicyEnforcementData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
+        if (!getCIBlockState) {
+            return null
+        }
+
         const policyPromiseFunctionList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return () => null
@@ -236,23 +244,24 @@ const BulkCITrigger = ({
                     (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
                     material.value !== '--'
                 ) {
-                    branchNames += `${branchNames ? ',' : ''}${material.value}`
+                    branchNames += `${branchNames ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
                 }
             }
-            return !branchNames
-                ? () => null
-                : () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+
+            return () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames, appDetails.name)
         })
 
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
-                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, true)
+                const responses = await ApiQueuingWithBatch<BlockedStateData>(
+                    policyPromiseFunctionList,
+                    true,
+                )
                 responses.forEach((res, index) => {
-                    policyListMap[appList[index]?.appId] = res.value?.['result']
-                        ? processConsequenceData(res.value['result'])
-                        : null
+                    if (res.status === PromiseAllStatusType.FULFILLED) {
+                        policyListMap[appList[index]?.appId] = res.value ? processConsequenceData(res.value) : null
+                    }
                 })
                 setAppPolicy(policyListMap)
             } catch (error) {
@@ -571,6 +580,8 @@ const BulkCITrigger = ({
     }
 
     const renderAppName = (app: BulkCIDetailType, index: number): JSX.Element | null => {
+        const nodeType: CommonNodeAttr['type'] = 'CI'
+
         return (
             <div
                 className={`fw-6 fs-13 cn-9 pt-12 ${app.appId === selectedApp.appId ? 'pb-12' : ''}`}
@@ -591,7 +602,19 @@ const BulkCITrigger = ({
                     </span>
                 )}
                 {appPolicy[app.appId] && PolicyEnforcementMessage && (
-                    <PolicyEnforcementMessage consequence={appPolicy[app.appId]} />
+                    <PolicyEnforcementMessage
+                        consequence={appPolicy[app.appId]}
+                        configurePluginURL={getCIPipelineURL(
+                            String(app.appId),
+                            app.workFlowId,
+                            true,
+                            app.ciPipelineId,
+                            false,
+                            app.isJobCI,
+                        )}
+                        nodeType={nodeType}
+                        shouldRenderAdditionalInfo={app.appId === selectedApp.appId}
+                    />
                 )}
             </div>
         )
@@ -669,11 +692,12 @@ const BulkCITrigger = ({
     const isStartBuildDisabled = (): boolean => {
         return appList.some(
             (app) =>
-                app.errorMessage &&
-                (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
-                    !app.material.some(
-                        (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
-                    )),
+                appPolicy[app.appId]?.action === ConsequenceAction.BLOCK ||
+                (app.errorMessage &&
+                    (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
+                        !app.material.some(
+                            (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
+                        ))),
         )
     }
 

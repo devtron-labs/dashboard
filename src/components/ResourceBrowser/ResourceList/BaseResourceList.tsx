@@ -23,6 +23,7 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
     Nodes,
+    useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -106,7 +107,14 @@ const BaseResourceListContent = ({
         getSelectedIdentifiersCount,
     } = useBulkSelection<Record<number, K8sResourceDetailDataType>>()
 
-    const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: (resourceList?.headers ?? []).map((columnName, index) => ({
+            id: columnName,
+            minWidth: index === 0 ? 120 : null,
+            width: index === 0 ? 350 : 180,
+        })),
+    })
+
     const showPaginatedView = filteredResourceList?.length > pageSize
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
     const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
@@ -379,7 +387,7 @@ const BaseResourceListContent = ({
                                 <Tooltip content={resourceData.name}>
                                     <button
                                         type="button"
-                                        className="dc__unset-button-styles dc__align-left dc__truncate"
+                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldShowRedirectionAndActions ? 'cursor-default' : ''}`}
                                         data-name={resourceData.name}
                                         data-namespace={resourceData.namespace}
                                         data-kind={resourceData.kind}
@@ -542,6 +550,9 @@ const BaseResourceListContent = ({
                                         isSorted={sortBy === columnName}
                                         sortOrder={sortOrder}
                                         disabled={false}
+                                        id={columnName}
+                                        handleResize={handleResize}
+                                        isResizable
                                     />
                                 </div>
                             ))}

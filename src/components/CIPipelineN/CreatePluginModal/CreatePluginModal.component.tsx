@@ -30,7 +30,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-import { importComponentFromFELibrary } from '@Components/common'
 import CreatePluginFormContent from './CreatePluginFormContent'
 import {
     CreatePluginFormType,
@@ -47,8 +46,6 @@ import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import { getDefaultPluginFormData, validateDocumentationLink, validateTags } from './utils'
 import './CreatePluginModal.scss'
 
-const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-
 const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const { appId } = useParams<CreatePluginModalURLParamsType>()
     const {
@@ -63,7 +60,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handlePluginDataStoreUpdate,
         calculateLastStepDetail,
         validateStage,
-        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
 
     const currentStepData: StepType = formData[activeStageName].steps[selectedTaskIndex]
@@ -305,8 +301,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             },
             {} as Record<string, string>,
         )
-        const { parentPluginId, inputVariables, outputVariables } =
-            updatedPluginDataStore.pluginVersionStore[pluginVersionId]
+        const { inputVariables, outputVariables } = updatedPluginDataStore.pluginVersionStore[pluginVersionId]
 
         const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
         selectedTask.name = pluginForm.name
@@ -325,14 +320,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             outputVariables: outputVariables || [],
             conditionDetails: [],
         }
-        selectedTask.isMandatory = isRequired?.(
-            clonedFormData,
-            mandatoryPluginsMap,
-            activeStageName,
-            parentPluginId,
-            updatedPluginDataStore,
-            false,
-        )
         calculateLastStepDetail(false, clonedFormData, activeStageName)
         validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, updatedPluginDataStore)
         validateStage(BuildStageVariable.PostBuild, clonedFormData, undefined, updatedPluginDataStore)

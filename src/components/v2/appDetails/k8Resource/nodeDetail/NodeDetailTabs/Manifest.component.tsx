@@ -70,12 +70,12 @@ import {
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
 
+const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
 const getLockedManifestKeys = importComponentFromFELibrary('getLockedManifestKeys', null, 'function')
 const ManifestGUIView = importComponentFromFELibrary('ManifestGUIView', null, 'function')
 const checkForIneligibleChanges = importComponentFromFELibrary('checkForIneligibleChanges', null, 'function')
 const ShowIneligibleChangesModal = importComponentFromFELibrary('ShowIneligibleChangesModal', null, 'function')
-
 const ManifestComponent = ({
     selectedTab,
     hideManagedFields,
@@ -112,6 +112,7 @@ const ManifestComponent = ({
     const [error, setError] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
     const [manifest, setManifest] = useState('')
+    const [normalizedLiveManifest, setNormalizedLiveManifest] = useState<string>('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
 
@@ -143,6 +144,7 @@ const ManifestComponent = ({
         setDesiredManifest(manifestViewRef.current.data.desiredManifest)
         setManifest(manifestViewRef.current.data.manifest)
         setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
+        setNormalizedLiveManifest(manifestViewRef.current.data.normalizedLiveManifest)
         setGUISchema(manifestViewRef.current.data.guiSchema)
         setLockedKeys(manifestViewRef.current.data.lockedKeys)
 
@@ -152,6 +154,14 @@ const ManifestComponent = ({
             setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
         }
     }
+
+    const isConfigDriftEnabled = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+
+    const _selectedResource = isResourceBrowserView
+        ? selectedResource
+        : appDetails.resourceTree.nodes.filter(
+              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+          )[0]
 
     const isReadOnlyView = showManifestCompareView || !isEditMode
 
@@ -164,6 +174,7 @@ const ManifestComponent = ({
                 manifest,
                 activeManifestEditorData,
                 modifiedManifest,
+                normalizedLiveManifest,
                 guiSchema,
                 lockedKeys,
             },
@@ -177,9 +188,10 @@ const ManifestComponent = ({
         activeManifestEditorData,
         manifest,
         modifiedManifest,
+        normalizedLiveManifest,
         id,
         guiSchema,
-        lockedKeys
+        lockedKeys,
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
@@ -233,11 +245,6 @@ const ManifestComponent = ({
             return () => {}
         }
         const abortController = new AbortController()
-        const _selectedResource = isResourceBrowserView
-            ? selectedResource
-            : appDetails.resourceTree.nodes.filter(
-                  (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
-              )[0]
         setShowInfoText(
             _selectedResource &&
                 !_selectedResource.group &&
@@ -288,8 +295,15 @@ const ManifestComponent = ({
                 ])
                     .then((response) => {
                         setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
-                        const _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
-                        setDesiredManifest(response[1]?.result?.manifest || '')
+                        const _manifest = JSON.stringify(
+                            response[0]?.result?.liveState || response[0]?.result?.manifestResponse?.manifest || '',
+                        )
+                        setDesiredManifest(
+                            JSON.stringify(response[0]?.result?.predictedLiveState) ||
+                                response[1]?.result?.manifest ||
+                                '',
+                        )
+                        setNormalizedLiveManifest(JSON.stringify(response[0]?.result?.normalizedLiveState) || '')
 
                         if (_manifest) {
                             setManifest(_manifest)
@@ -437,9 +451,10 @@ const ManifestComponent = ({
                     } else {
                         showError(err)
                     }
-                }).finally(resolve)
+                })
+                .finally(resolve)
         })
-
+    
     const uneditedManifest = useMemo(() => {
         try {
             const object = YAML.parse(manifest)
@@ -452,6 +467,7 @@ const ManifestComponent = ({
         }
     }, [manifest, hideManagedFields])
 
+
     const handleApplyChanges = async () => {
         setLoading(true)
         setLoadingMsg('Applying changes')
@@ -460,9 +476,12 @@ const ManifestComponent = ({
 
         let modifiedManifestString: string = ''
         let modifiedManifestDocument: object = null
+
         try {
             if (!modifiedManifest) {
                 setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                // Handled for blocking API call
+                modifiedManifestString = ''
             } else {
                 modifiedManifestDocument = YAML.parse(modifiedManifest)
                 modifiedManifestString = JSON.stringify(modifiedManifestDocument)
@@ -473,7 +492,12 @@ const ManifestComponent = ({
         if (!modifiedManifestString) {
             setLoading(false)
             setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
-        } else if (!isSuperAdmin && checkForIneligibleChanges && lockedKeys && checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)) {
+        } else if (
+            !isSuperAdmin &&
+            checkForIneligibleChanges &&
+            lockedKeys &&
+            checkForIneligibleChanges(uneditedManifest, modifiedManifestDocument, lockedKeys)
+        ) {
             setLoading(false)
             setShowLockedDiffModal(true)
             setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
@@ -543,6 +567,7 @@ const ManifestComponent = ({
     }
 
     const handleDesiredManifestClose = () => setShowManifestCompareView(false)
+    const handleDesiredManifestOpen = () => setShowManifestCompareView(true)
 
     const handleCloseShowLockedDiffModal = () => {
         setShowLockedDiffModal(false)
@@ -589,6 +614,15 @@ const ManifestComponent = ({
                 </ConditionalWrap>
             )
         }
+    }
+
+    const getCodeEditorValue = () => {
+        // In case of devtron apps we compare normalized values
+        if (isConfigDriftEnabled && appDetails?.appType === AppType.DEVTRON_APP && showManifestCompareView) {
+            return normalizedLiveManifest
+        }
+
+        return trimedManifestEditorData
     }
 
     const renderEditorInfo = (isCodeEditorView: boolean = false) => {
@@ -650,9 +684,8 @@ const ManifestComponent = ({
                         guiSchema={guiSchema}
                         handleChange={handleGUIViewValueChange}
                         // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
-                        manifestYAMLString={trimedManifestEditorData}
+                        manifestYAMLString={getCodeEditorValue()}
                         handleSwitchToYAMLMode={handleSwitchToYAMLMode}
-                        manifestGUIFormRef={manifestGUIFormRef}
                     />
                 </>
             )
@@ -665,9 +698,9 @@ const ManifestComponent = ({
                 diffView={showManifestCompareView}
                 theme="vs-dark--dt"
                 height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
-                value={trimedManifestEditorData}
+                value={getCodeEditorValue()}
                 mode={MODES.YAML}
-                readOnly={showManifestCompareView || !isEditMode}
+                readOnly={isReadOnlyView}
                 onChange={handleEditorValueChange}
                 loading={loading}
                 customLoader={
@@ -682,6 +715,14 @@ const ManifestComponent = ({
             >
                 {renderEditorInfo(true)}
 
+                {!loading &&
+                    !error &&
+                    isConfigDriftEnabled &&
+                    'hasDrift' in _selectedResource &&
+                    _selectedResource.hasDrift &&
+                    !showManifestCompareView &&
+                    renderOutOfSyncWarning &&
+                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
                 {showManifestCompareView && (
                     <CodeEditor.Header hideDefaultSplitHeader className="p-0">
                         <div className="dc__split-header">
@@ -727,7 +768,7 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className="bcn-0 flexbox-col flex-grow-1 dc__overflow-scroll">
+                <div className="bcn-0 flexbox-col flex-grow-1 dc__overflow-scroll h-100">
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
                             msg="Manifest not available"

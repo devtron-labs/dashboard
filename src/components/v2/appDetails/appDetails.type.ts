@@ -435,6 +435,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
+    showConfigDriftInfo?: boolean
 }
 
 export interface StatusFilterButtonType {
@@ -472,6 +473,10 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
+        /*
+         * Normalized live manifest for manifest diff view
+         */
+        normalizedLiveManifest: string
         guiSchema: Record<string, string>
         lockedKeys: string[] | null
     }

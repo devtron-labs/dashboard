@@ -22,6 +22,10 @@ import {
     CHECKBOX_VALUE,
     OptionType,
     DeploymentAppTypes,
+    TabGroup,
+    TabProps,
+    ComponentSizeType,
+    capitalizeFirstLetter,
     ConfigurationType,
     FormProps,
     ToastManager,
@@ -62,6 +66,7 @@ import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/Delete
 import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
     'ToggleManifestConfigurationMode',
     null,
@@ -138,7 +143,10 @@ const NodeDetailComponent = ({
 
     const showDesiredAndCompareManifest =
         !isResourceBrowserView &&
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                appDetails.appType === AppType.DEVTRON_APP &&
+                isFELibAvailable)) &&
         !currentResource?.['parentRefs']?.length
 
     const isResourceMissing =
@@ -171,6 +179,7 @@ const NodeDetailComponent = ({
             manifest: '',
             activeManifestEditorData: '',
             modifiedManifest: '',
+            normalizedLiveManifest: '',
             guiSchema: {},
             lockedKeys: null,
         },
@@ -500,44 +509,25 @@ const NodeDetailComponent = ({
         </>
     )
 
+    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => {
+        return {
+            id: `${idx}resourceTreeTab`,
+            label: capitalizeFirstLetter(tab),
+            tabType: 'navLink',
+            props: {
+                to: `${url}/${tab.toLowerCase()}${location.search}`,
+                ['data-testid']: `${tab.toLowerCase()}-nav-link`,
+            }
+        }
+    })
+
     return (
         <>
             <div
                 className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
-                    <div data-testid="app-resource-containor-header" className="flex left">
-                        {tabs &&
-                            tabs.length > 0 &&
-                            tabs.map((tab: string, index: number) => {
-                                return (
-                                    <div
-                                        key={`${index}resourceTreeTab`}
-                                        className={`${
-                                            tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                ? 'default-tab-row cb-5'
-                                                : 'cn-7'
-                                        } py-6 px-8 top`}
-                                    >
-                                        <NavLink
-                                            to={`${url}/${tab.toLowerCase()}`}
-                                            className=" dc__no-decor flex left cursor"
-                                        >
-                                            <span
-                                                data-testid={`${tab.toLowerCase()}-nav-link`}
-                                                className={`${
-                                                    tab.toLowerCase() === selectedTabName.toLowerCase()
-                                                        ? 'cb-5'
-                                                        : 'cn-9'
-                                                } default-tab-cell`}
-                                            >
-                                                {tab.toLowerCase()}
-                                            </span>
-                                        </NavLink>
-                                    </div>
-                                )
-                            })}
-                    </div>
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />

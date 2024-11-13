@@ -30,6 +30,7 @@ import {
     SortingOrder,
     Tooltip,
     ClipboardButton,
+    useResizableTableConfig,
     useBulkSelection,
     BulkOperationModalState,
     BulkSelectionEvents,
@@ -89,6 +90,13 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: appliedColumns.map((column, index) => ({
+            id: column.label,
+            minWidth: index === 0 ? 120 : null,
+            width: index === 0 ? 260 : index === 1 ? 180 : 120,
+        })),
+    })
 
     const parentRef = useRef<HTMLDivElement>()
 
@@ -443,6 +451,9 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             {column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
             <SortableTableHeaderCell
                 key={column.label}
+                id={column.label}
+                isResizable
+                handleResize={handleResize}
                 showTippyOnTruncate
                 disabled={false}
                 triggerSorting={handleSortClick(column)}
@@ -530,10 +541,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         if (column.value === 'errorCount') {
             return (
                 nodeData['errorCount'] > 0 && (
-                    <>
-                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                    <span className="flex left dc__gap-4">
+                        <Error className="icon-dim-16 dc__no-shrink" />
                         <span className="cr-5 dc__truncate">{nodeData['errorCount'] || '-'}</span>
-                    </>
+                    </span>
                 )
             )
         }
@@ -560,8 +571,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             history.push(url)
         }
     }
-
-    const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
 
     const renderNodeList = (nodeData: (typeof filteredFlattenNodeList)[number]): JSX.Element => {
         return (

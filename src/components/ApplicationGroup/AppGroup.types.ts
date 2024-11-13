@@ -28,12 +28,11 @@ import {
     GVKType,
     RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
-    NodeType,
-    Nodes,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CDMaterialProps, WebhookPayloads } from '../app/details/triggerView/types'
+import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads } from '../app/details/triggerView/types'
-import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
@@ -68,7 +67,7 @@ export interface BulkCDDetailTypeResponse {
     uniqueReleaseTags: string[]
 }
 
-export interface BulkCDDetailType extends BulkTriggerAppDetailType {
+export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>, Partial<Pick<CommonNodeAttr, 'showPluginWarning'>> {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType

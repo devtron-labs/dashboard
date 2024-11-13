@@ -365,6 +365,10 @@ a:focus {
     top: 9px;
 }
 
+.dc__top-12 {
+    top: 12px;
+}
+
 .dc__top-22 {
     top: 22px;
 }
@@ -433,8 +437,16 @@ a:focus {
     right: 0;
 }
 
+.dc__right-3--neg {
+    right: -3px;
+}
+
 .dc__right-10 {
     right: 10px;
+}
+
+.dc__right-12 {
+    right: 12px;
 }
 
 .dc__left-0 {
@@ -443,6 +455,10 @@ a:focus {
 
 .dc__left-6 {
     left: 6px;
+}
+
+.dc__left-12 {
+    left: 12px;
 }
 
 .dc__left-30 {
@@ -1164,6 +1180,11 @@ button.anchor {
         }
     }
 
+    &.drifted {
+        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
+        background-size: contain, contain;
+    }
+
     &.missing {
         background: url('../assets/icons/appstatus/missing.svg'), $background;
         background-size: contain, contain;
@@ -1480,6 +1501,17 @@ button.anchor {
                 }
             }
         }
+    }
+}
+
+.dc__inline-radio-group {
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .form__radio-item.disabled {
+        background-color: transparent;
     }
 }
 
@@ -2529,6 +2561,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__bottom-radius-8 {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
 .dc__top-radius-8 {
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -2586,6 +2623,10 @@ button.anchor {
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-40 {
+    border-radius: 40px;
 }
 
 .dc__no-top-border {
@@ -3870,6 +3911,14 @@ textarea,
     margin-bottom: -2px;
 }
 
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -4093,6 +4142,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {
@@ -4244,10 +4297,24 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
+
+    &--fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+    &--stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
@@ -4627,6 +4694,10 @@ textarea::placeholder {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.dc__cursor-col-resize {
+    cursor: col-resize;
 }
 
 .focus-within-border-b5:focus-within {
