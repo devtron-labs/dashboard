@@ -302,7 +302,7 @@ export const GitInfoMaterial = ({
 
     const renderWebhookHeader = () =>
         selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5 dc__position-sticky">
+            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5 dc__position-sticky dc__top-0">
                 <Info className="icon-dim-16" />
                 <div className="flex left dc__gap-4 cn-9">
                     <span className="lh-20 cn-9">Showing results matching</span>
