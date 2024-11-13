@@ -679,7 +679,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 </div>
             ) : (
                 <div
-                    className={`bcn-0 pt-16 flex-grow-1 flexbox-col dc__overflow-hidden ${showStaleDataWarning ? 'sync-error' : ''} ${
+                    className={`bcn-0 pt-16 flexbox-col h-100 ${showStaleDataWarning ? 'sync-error' : ''} ${
                         noResults ? 'no-result-container' : ''
                     }`}
                 >
