@@ -624,15 +624,19 @@ const DeploymentTemplate = ({
             active,
             namespace,
             envOverrideValues,
-            mergeStrategy = DEFAULT_MERGE_STRATEGY,
-            envOverridePatchValues = {},
+            mergeStrategy: mergeStrategyFromAPI,
+            envOverridePatchValues: envOverridePatchValuesFromAPI,
         } = environmentConfig || {}
+
+        const mergeStrategy = mergeStrategyFromAPI || DEFAULT_MERGE_STRATEGY
+        const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
 
         const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
         // If not overridden, will replace the editorTemplate, originalTemplate with envOverridePatchValues
         const mergedTemplateObject = IsOverride ? envOverrideValues || globalConfig : globalConfig
 
         const originalTemplate = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
+
         const stringifiedTemplate = YAMLStringify(originalTemplate, { simpleKeys: true })
 
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
