@@ -224,7 +224,7 @@ const GUIView = ({
         <>
             {isUnSet && (
                 <div className="flexbox dc__gap-8 dc__align-items-center code-editor__warning">
-                    <ICWarningY5 className="icon-dim-16" />
+                    <ICWarningY5 className="icon-dim-16 dc__no-shrink" />
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
             )}
@@ -237,7 +237,11 @@ const GUIView = ({
             >
                 {renderForm()}
                 {modelRef.current && ConfigurableGUIViewPanel && (
-                    <ConfigurableGUIViewPanel node={modelRef.current.root} updateNodeForPath={updateNodeForPath} />
+                    <ConfigurableGUIViewPanel
+                        disabled={readOnly}
+                        node={modelRef.current.root}
+                        updateNodeForPath={updateNodeForPath}
+                    />
                 )}
             </div>
 
@@ -246,7 +250,7 @@ const GUIView = ({
                     message="To modify additional configurations"
                     classname="dc__content-start ev-2 bw-1 dc__no-border-radius dc__no-bottom-border dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
                     Icon={Help}
-                    iconClass="fcv-5 icon-dim-20"
+                    iconClass="fcv-5 icon-dim-20 dc__no-shrink"
                     renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}
                 />
             )}
