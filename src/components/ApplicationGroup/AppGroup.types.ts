@@ -30,9 +30,9 @@ import {
     UseUrlFiltersReturnType,
     CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
 import { CDMaterialProps } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
+import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
@@ -118,7 +118,6 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     setPageViewType: React.Dispatch<React.SetStateAction<string>>
-    httpProtocol: string
 }
 
 export interface BulkCDTriggerType extends BulkRuntimeParamsType {
@@ -144,7 +143,6 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
-    httpProtocol: string
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -492,7 +490,6 @@ export interface HibernateModalProps {
     envId: string
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
-    httpProtocol: string
     isDeploymentWindowLoading: boolean
     showDefaultDrawer: boolean
     openedHibernateModalType: HibernateModalType
@@ -521,7 +518,6 @@ export interface RestartWorkloadModalProps {
     restartLoader: boolean
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
-    httpProtocol: string
     isDeploymentBlockedViaWindow: boolean
 }
 

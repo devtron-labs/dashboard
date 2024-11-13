@@ -209,6 +209,7 @@ class Login extends Component<LoginProps, LoginFormState> {
                                 href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`}
                                 className="login__google flex"
                                 onClick={this.onClickSSO}
+                                key={item.name}
                             >
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`} />

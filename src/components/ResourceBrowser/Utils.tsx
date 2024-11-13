@@ -17,25 +17,36 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResourceGroupType,
+    DATE_TIME_FORMAT_STRING,
+    GVKType,
+    InitTabType,
+    K8sResourceDetailDataType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
-import { eventAgeComparator, processK8SObjects } from '../common'
+import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
-    ClusterOptionType,
+    GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    FIXED_TABS_INDICES,
-    ResourceDetailDataType,
 } from './Types'
-import { InitTabType } from '../common/DynamicTabs/Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
+
+const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
+    'getMonitoringDashboardTabConfig',
+    null,
+    'function',
+)
+
+const MONITORING_DASHBOARD_TAB_INDEX = importComponentFromFELibrary('MONITORING_DASHBOARD_TAB_INDEX', null, 'function')
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -97,12 +108,12 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     return _k8SObjectMap
 }
 
-export const sortEventListData = (eventList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
+export const sortEventListData = (eventList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] => {
     if (!eventList?.length) {
         return []
     }
-    const warningEvents: ResourceDetailDataType[] = []
-    const otherEvents: ResourceDetailDataType[] = []
+    const warningEvents: K8sResourceDetailDataType[] = []
+    const otherEvents: K8sResourceDetailDataType[] = []
     eventList.forEach((event) => {
         if (event.type === 'Warning') {
             warningEvents.push(event)
@@ -111,12 +122,12 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
         }
     })
     return [
-        ...warningEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
-        ...otherEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
+        ...warningEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
+        ...otherEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] =>
+export const removeDefaultForStorageClass = (storageList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] =>
     storageList.map((storage) =>
         (storage.name as string).includes('(default)')
             ? {
@@ -263,39 +274,60 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getTabsBasedOnRole = (
-    selectedCluster: ClusterOptionType,
-    namespace: string,
-    isSuperAdmin: boolean,
-    dynamicTabData: InitTabType,
+export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
+    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+export const getFixedTabIndices = () => ({
+    OVERVIEW: 0,
+    K8S_RESOURCE_LIST: 1,
+    MONITORING_DASHBOARD: MONITORING_DASHBOARD_TAB_INDEX || 3,
+    ADMIN_TERMINAL: MONITORING_DASHBOARD_TAB_INDEX ? 3 : 2,
+})
+
+export const getTabsBasedOnRole = ({
+    selectedCluster,
+    namespace,
+    isSuperAdmin,
+    dynamicTabData,
     isTerminalSelected = false,
     isOverviewSelected = false,
-): InitTabType[] => {
+    isMonitoringDashBoardSelected = false,
+}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
+
     const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            position: FIXED_TABS_INDICES.OVERVIEW,
+            position: getFixedTabIndices().OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
         },
         {
             idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
-            position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
+            isSelected:
+                (!isSuperAdmin || !isTerminalSelected) &&
+                !dynamicTabData &&
+                !isOverviewSelected &&
+                !isMonitoringDashBoardSelected,
+            position: getFixedTabIndices().K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
         },
+        ...(getMonitoringDashboardTabConfig
+            ? [
+                  getMonitoringDashboardTabConfig(
+                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
+                      isMonitoringDashBoardSelected,
+                      getFixedTabIndices().MONITORING_DASHBOARD,
+                  ),
+              ]
+            : []),
         ...(!isSuperAdmin
             ? []
             : [
@@ -304,7 +336,7 @@ export const getTabsBasedOnRole = (
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      position: FIXED_TABS_INDICES.ADMIN_TERMINAL,
+                      position: getFixedTabIndices().ADMIN_TERMINAL,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,
@@ -328,20 +360,9 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }
 
-export const getResourceFromK8SObjectMap = (map: ApiResourceGroupType[], nodeType: string) => {
-    const resource = map?.find((value) => value.gvk.Kind.toLowerCase() === nodeType.toLowerCase())
-    return (
-        resource && {
-            gvk: resource.gvk,
-            namespaced: resource.namespaced,
-            isGrouped: false,
-        }
-    )
-}
-
 export const getRenderNodeButton =
     (
-        resourceData: ResourceDetailDataType,
+        resourceData: K8sResourceDetailDataType,
         columnName: string,
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>

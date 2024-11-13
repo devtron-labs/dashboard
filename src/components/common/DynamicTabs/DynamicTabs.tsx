@@ -18,11 +18,11 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
-import { stopPropagation, ConditionalWrap, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, ConditionalWrap, noop, OptionType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
-import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
+import { DynamicTabsProps, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import Timer from './DynamicTabs.timer'
@@ -48,7 +48,7 @@ const DynamicTabs = ({
     stopTabByIdentifier,
     refreshData,
     setIsDataStale,
-    isOverview,
+    hideTimer,
 }: DynamicTabsProps) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -76,7 +76,8 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive } = tab
+        const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
 
@@ -89,10 +90,10 @@ const DynamicTabs = ({
                 aria-label={`Select tab ${_title}`}
             >
                 <div
-                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
+                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''} ${!shouldRenderTitle ? 'dynamic-tab__resource--no-title' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
-                    {(!showNameOnSelect || isAlive || isSelected) && (
+                    {shouldRenderTitle && (
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}
                         </span>
@@ -127,8 +128,20 @@ const DynamicTabs = ({
         )
     }
 
-    const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
-        const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive
+    const getTippyFromConfig = (tippyConfig) => (
+        <div className="flexbox-col dc__gap-8 w-200">
+            <div className="fs-12 fw-6 lh-18">{tippyConfig.title}</div>
+            {tippyConfig.descriptions.map((description) => (
+                <div className="fw-4" key={`${description.info}-${description.value}`}>
+                    <div className="fs-11 lh-16">{description.info}</div>
+                    <div className="fs-12 lh-18">{description.value}</div>
+                </div>
+            ))}
+        </div>
+    )
+
+    const renderTab = (tab: DynamicTabType, idx: number, isFixed: boolean, tippyConfig?: any) => {
+        const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive && !tab.hideName
 
         const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
             <Tippy
@@ -137,7 +150,7 @@ const DynamicTabs = ({
                 placement="top"
                 duration={[600, 0]}
                 moveTransition="transform 0.1s ease-out"
-                content={getTabTippyContent(tab.title)}
+                content={tippyConfig ? getTippyFromConfig(tippyConfig) : getTabTippyContent(tab.title)}
             >
                 {children}
             </Tippy>
@@ -323,14 +336,14 @@ const DynamicTabs = ({
                 <div
                     className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected || tabsData.fixedTabs[tabsData.fixedTabs.length - 1].isSelected ? '' : 'dc__border-left'}`}
                 >
-                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
+                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx, false, tab.tippyConfig))}
                 </div>
             )}
-            {(tabsData.dynamicTabs.length > 0 || (!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
+            {(tabsData.dynamicTabs.length > 0 || (!hideTimer && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
                 <div
                     className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${tabsData.dynamicTabs[(tabsData.dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}
                 >
-                    {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
+                    {!hideTimer && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
                         <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
                     )}
 
