@@ -75,6 +75,9 @@ export enum DeploymentTemplateActionType {
     CLOSE_SAVE_CHANGES_MODAL = 'CLOSE_SAVE_CHANGES_MODAL',
     CLOSE_LOCKED_DIFF_MODAL = 'CLOSE_LOCKED_DIFF_MODAL',
     UPDATE_ARE_COMMENTS_PRESENT = 'UPDATE_ARE_COMMENTS_PRESENT',
+    INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE = 'INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE',
+    LOAD_CURRENT_EDITOR_MERGED_TEMPLATE = 'LOAD_CURRENT_EDITOR_MERGED_TEMPLATE',
+    CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -104,6 +107,7 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
+    | DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE
 
 export type DeploymentTemplateActionState =
     | {
@@ -196,6 +200,16 @@ export type DeploymentTemplateActionState =
     | {
           type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT
           payload: Pick<DeploymentTemplateStateType, 'areCommentsPresent'>
+      }
+    | {
+          type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE
+          payload: {
+              mergedTemplate: Record<string, any>
+          }
+      }
+    | {
+          type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
+          payload: Pick<DeploymentTemplateStateType['currentEditorTemplateData'], 'mergedTemplateError'>
       }
 
 export const getDeploymentTemplateInitialState = ({
@@ -304,6 +318,8 @@ const handleRestoreLastSavedTemplate = (state: DeploymentTemplateStateType): Dep
         removedPatches: state.hideLockedKeys ? removedPatches : [],
         parsingError: '',
         originalTemplateState: originalTemplateData,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
     }
 
     // When restoring would restore everything, including schema, readme, etc, that is why not using originalTemplate from currentEditorTemplate
@@ -760,6 +776,49 @@ export const deploymentTemplateReducer = (
                 ...state,
                 areCommentsPresent: action.payload.areCommentsPresent,
             }
+
+        case DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE:
+            return {
+                ...state,
+                currentEditorTemplateData: {
+                    ...state.currentEditorTemplateData,
+                    isLoadingMergedTemplate: true,
+                    mergedTemplateError: null,
+                },
+            }
+
+        case DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR:
+            return {
+                ...state,
+                currentEditorTemplateData: {
+                    ...state.currentEditorTemplateData,
+                    isLoadingMergedTemplate: false,
+                    mergedTemplateError: action.payload.mergedTemplateError,
+                },
+            }
+
+        case DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE: {
+            const { mergedTemplate: mergedTemplateObject } = action.payload
+            const mergedTemplate = YAMLStringify(mergedTemplateObject)
+            const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
+                mergedTemplate,
+                state.lockedConfigKeysWithLockType.config,
+            )
+
+            return {
+                ...state,
+                currentEditorTemplateData: {
+                    ...state.currentEditorTemplateData,
+
+                    isLoadingMergedTemplate: false,
+                    mergedTemplateError: null,
+
+                    mergedTemplateObject,
+                    mergedTemplate,
+                    mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
+                },
+            }
+        }
 
         default:
             return state
