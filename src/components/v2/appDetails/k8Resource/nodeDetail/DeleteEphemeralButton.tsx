@@ -9,8 +9,9 @@ import {
     IndexStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { useParams } from 'react-router-dom'
 import { deleteEphemeralUrl } from './nodeDetail.api'
-import { DeleteEphemeralButtonType, ResponsePayload } from './nodeDetail.type'
+import { DeleteEphemeralButtonType, ParamsType, ResponsePayload } from './nodeDetail.type'
 
 export const DeleteEphemeralButton = ({
     containerName,
@@ -20,10 +21,10 @@ export const DeleteEphemeralButton = ({
     selectedPodName,
     switchSelectedContainer,
     setContainers,
-    params,
     containers,
     isExternal,
 }: DeleteEphemeralButtonType) => {
+    const params = useParams<ParamsType>()
     const { clusterId, environmentId, namespace, appName, appId, appType, fluxTemplateType } =
         IndexStore.getAppDetails()
 
@@ -54,8 +55,8 @@ export const DeleteEphemeralButton = ({
                 params,
             })
 
-            const updatedContainers = containers?.filter((con) => con.name !== result) || []
-            switchSelectedContainer(updatedContainers?.[0]?.name || '')
+            const updatedContainers = containers.filter((con) => con.name !== result) || []
+            switchSelectedContainer(updatedContainers[0].name || '')
             setContainers(updatedContainers)
             ToastManager.showToast({
                 variant: ToastVariantType.success,

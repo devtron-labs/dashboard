@@ -162,7 +162,6 @@ export interface DeleteEphemeralButtonType {
     selectedPodName: string
     switchSelectedContainer: (string) => void
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
-    params
     containers: Options[]
     isExternal: boolean
 }

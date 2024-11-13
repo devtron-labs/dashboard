@@ -321,7 +321,6 @@ export const getGroupedContainerOptions = (containers: Options[],isTerminal?, is
                             selectedClusterId={selectedClusterId}
                             selectedPodName={selectedPodName}
                             switchSelectedContainer={switchSelectedContainer}
-                            params={params}
                             containers={containers}
                             isExternal={_container.isExternal}
                         />
