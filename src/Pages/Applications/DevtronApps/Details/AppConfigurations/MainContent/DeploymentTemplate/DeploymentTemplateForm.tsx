@@ -4,6 +4,7 @@ import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { DeploymentTemplateFormProps } from './types'
 import { GUIView as DeploymentTemplateGUIView } from './GUIView'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -100,7 +101,7 @@ const DeploymentTemplateForm = ({
             <div className="flexbox-col dc__overflow-scroll flex-grow-1">
                 <CodeEditor
                     value={editedDocument}
-                    chartVersion={selectedChart?.version.replace(/\./g, '-')}
+                    schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
                     onChange={readOnly ? noop : editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={schema}

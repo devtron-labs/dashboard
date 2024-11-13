@@ -121,7 +121,7 @@ const NavigationList = [
         href: URLS.RESOURCE_WATCHER,
         iconClass: 'nav-resource-watcher',
         icon: ResourceWatcherIcon,
-        isAvailableInEA: false,
+        isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
         hideNav: hideResourceWatcher,
     },

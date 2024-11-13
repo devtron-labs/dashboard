@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -484,3 +486,9 @@ export const defaultManifestErrorText =
     "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"
 
 export const manifestCommentsRegex = /^(.*?apiVersion:)/s
+
+export const ClusterStatusByFilter: Record<ClusterFiltersType, ClusterStatusType> = {
+    [ClusterFiltersType.HEALTHY]: ClusterStatusType.HEALTHY,
+    [ClusterFiltersType.UNHEALTHY]: ClusterStatusType.UNHEALTHY,
+    [ClusterFiltersType.ALL_CLUSTERS]: null,
+}
