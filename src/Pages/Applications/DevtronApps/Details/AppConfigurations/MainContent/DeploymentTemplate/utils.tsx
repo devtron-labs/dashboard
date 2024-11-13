@@ -361,9 +361,12 @@ export const handleInitializeDraftData = ({
         namespace,
         readme,
         schema,
-        mergeStrategy = DEFAULT_MERGE_STRATEGY,
-        envOverridePatchValues = {},
+        mergeStrategy: mergeStrategyFromDraft,
+        envOverridePatchValues: envOverridePatchValuesFromAPI,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
+
+    const mergeStrategy = mergeStrategyFromDraft || DEFAULT_MERGE_STRATEGY
+    const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
 
     const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
     const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
