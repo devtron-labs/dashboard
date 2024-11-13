@@ -257,7 +257,7 @@
 
     .external-link-chip {
         grid-template-columns: auto 0;
-        transition: grid-template-columns 0.5s ease;
+        transition: grid-template-columns 0.2s ease-out;
         &:hover {
             grid-template-columns: auto 24px;
 
@@ -268,8 +268,14 @@
     }
 
     .open-link-button {
-        transition: opacity 0.5s ease;
+        transition: opacity 0.2s ease-out;
         opacity: 0;
+
+        &:hover {
+            .arrow-out-icon > * {
+                stroke: var(--N900) !important;
+            }
+        }
     }
 }
 
