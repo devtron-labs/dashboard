@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface NavItem {
     title: string
     href: string
@@ -28,7 +30,7 @@ export const URLS = {
     JOB: '/job',
     CREATE_JOB: 'create-job',
     APPLICATION_GROUP: '/application-group',
-    RESOURCE_BROWSER: '/resource-browser',
+    RESOURCE_BROWSER: COMMON_URLS.RESOURCE_BROWSER,
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
@@ -126,6 +128,7 @@ export const URLS = {
     FLUX_APP_LIST: '/app/list/f',
     BUILD: '/build',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
+    MONITORING_DASHBOARD: 'monitoring-dashboard',
 }
 
 export enum APP_COMPOSE_STAGE {
