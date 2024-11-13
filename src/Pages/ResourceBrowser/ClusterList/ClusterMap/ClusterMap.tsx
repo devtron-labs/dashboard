@@ -64,7 +64,12 @@ const ClusterTreeMapContent = ({
 export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapProps) =>
     treeMapData.length ? (
         <div className="cluster-map pb-16 px-20">
-            <div className="w-100 p-12 dc__border-n1 br-8 flexbox dc__align-items-center dc__gap-6">
+            <div
+                className="w-100 p-12 dc__border-n1 br-8 dc__grid dc__align-items-center dc__gap-6"
+                style={{
+                    gridTemplateColumns: `repeat(${isLoading ? 1 : treeMapData.length}, 1fr)`,
+                }}
+            >
                 {isLoading ? (
                     <div className="w-100 flexbox-col dc__gap-4">
                         <div className="shimmer-loading h-16" />
@@ -72,7 +77,7 @@ export const ClusterMap = ({ treeMapData = [], isLoading = false }: ClusterMapPr
                     </div>
                 ) : (
                     treeMapData.map(({ id, label, data }) => (
-                        <div key={id} className="flexbox-col dc__gap-4" style={{ flex: data.length, minWidth: '0' }}>
+                        <div key={id} className="flexbox-col dc__gap-4" style={{ minWidth: '0' }}>
                             {label && (
                                 <Tooltip content={label}>
                                     <p className="m-0 fs-12 lh-16 fw-6 cn-9 dc__truncate">{label}</p>
