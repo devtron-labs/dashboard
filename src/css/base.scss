@@ -2591,9 +2591,19 @@ button.anchor {
     border-bottom-right-radius: 0 !important;
 }
 
+.dc__left-radius-3 {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
 .dc__left-radius-4 {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+}
+
+.dc__right-radius-3 {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .dc__right-radius-4 {
