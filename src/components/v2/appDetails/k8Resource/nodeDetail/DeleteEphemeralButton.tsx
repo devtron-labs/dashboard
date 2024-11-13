@@ -1,17 +1,9 @@
-import {
-    ToastManager,
-    ToastVariantType,
-    showError,
-    Button,
-    ButtonVariantType,
-    ComponentSizeType,
-    ButtonStyleType,
-    IndexStore,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ToastManager, ToastVariantType, showError, IndexStore } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Close } from '@Icons/ic-cross.svg'
 import { useParams } from 'react-router-dom'
 import { deleteEphemeralUrl } from './nodeDetail.api'
 import { DeleteEphemeralButtonType, ParamsType, ResponsePayload } from './nodeDetail.type'
+import '../k8resources.scss'
 
 export const DeleteEphemeralButton = ({
     containerName,
@@ -68,20 +60,16 @@ export const DeleteEphemeralButton = ({
     }
 
     return (
-        <Button
-            dataTestId="regex-modal-header-close-button"
+        // Not using button component from devtron-fe-common-lib due to icon size visibility issue
+        <button
             onClick={deleteEphemeralContainer}
-            ariaLabel="close-button"
-            variant={ButtonVariantType.borderLess}
-            size={ComponentSizeType.small}
-            showAriaLabelInTippy={false}
-            icon={<Close />}
-            style={ButtonStyleType.negativeGrey}
+            type="button"
+            aria-label="delete-button"
+            className="ephemeral-delete-button dc__unset-button-styles"
             disabled={!!isExternal}
-            showTooltip={!!isExternal}
-            tooltipProps={{
-                content: 'External Ephemeral container cannot be deleted',
-            }}
-        />
+            data-testid="ephemeral-delete-button"
+        >
+            <Close className="icon-dim-16 dc__hover-color-r500--fill" />
+        </button>
     )
 }
