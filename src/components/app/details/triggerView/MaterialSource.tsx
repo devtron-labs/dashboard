@@ -116,15 +116,13 @@ export default function MaterialSource({
                                 </div>
                                 {getGitProviderIcon(mat.gitURL)}
                             </div>
-                            <div className="branch-name">
-                                <CiPipelineSourceConfig
-                                    sourceType={mat.type}
-                                    sourceValue={mat.value}
-                                    showTooltip
-                                    regex={mat.regex}
-                                    primaryBranchAfterRegex={mat.value}
-                                />
-                            </div>
+                            <CiPipelineSourceConfig
+                                sourceType={mat.type}
+                                sourceValue={mat.value}
+                                showTooltip
+                                regex={mat.regex}
+                                primaryBranchAfterRegex={mat.value}
+                            />
                         </div>
                         {refreshMaterial ? (
                             <div className="material-info w-100">
