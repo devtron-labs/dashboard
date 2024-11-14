@@ -56,7 +56,7 @@ export type ParsedTabsData = {
 }
 
 export interface PopulateTabDataPropsType
-    extends Pick<DynamicTabType, 'tippyConfig' | 'switchedFromTabId'>,
+    extends Pick<DynamicTabType, 'tippyConfig' | 'lastActiveTabId'>,
         Required<Pick<DynamicTabType, 'shouldRemainMounted'>> {
     id: string
     /**

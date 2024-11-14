@@ -33,10 +33,10 @@ export function useTabs(persistanceKey: string) {
     const getTitleFromKindAndName = ({ kind, name }: Pick<InitTabType, 'kind' | 'name'>): string =>
         kind ? `${kind}/${name}` : name
 
-    const getSwitchedFromTabIdFromTabs = (
+    const getlastActiveTabIdFromTabs = (
         _tabs: DynamicTabType[],
         id: DynamicTabType['id'],
-    ): DynamicTabType['switchedFromTabId'] | null => {
+    ): DynamicTabType['lastActiveTabId'] | null => {
         const selectedTabId = _tabs.find((tab) => tab.isSelected)?.id ?? null
 
         return selectedTabId !== id ? selectedTabId : null
@@ -55,7 +55,7 @@ export function useTabs(persistanceKey: string) {
         isAlive = false,
         hideName = false,
         tippyConfig,
-        switchedFromTabId,
+        lastActiveTabId,
         shouldRemainMounted,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
@@ -73,7 +73,7 @@ export function useTabs(persistanceKey: string) {
         lastSyncMoment: dayjs(),
         componentKey: getNewTabComponentKey(id),
         tippyConfig,
-        switchedFromTabId,
+        lastActiveTabId,
         shouldRemainMounted,
     })
 
@@ -142,7 +142,7 @@ export function useTabs(persistanceKey: string) {
             isAlive: !!_initTab.isAlive,
             hideName: _initTab.hideName,
             tippyConfig: _initTab.tippyConfig,
-            switchedFromTabId: null,
+            lastActiveTabId: null,
             shouldRemainMounted: _initTab.shouldRemainMounted,
         })
     }
@@ -287,7 +287,7 @@ export function useTabs(persistanceKey: string) {
                             iconPath,
                             dynamicTitle,
                             tippyConfig,
-                            switchedFromTabId: getSwitchedFromTabIdFromTabs(prevTabs, _id),
+                            lastActiveTabId: getlastActiveTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
                         }),
                     )
@@ -305,10 +305,10 @@ export function useTabs(persistanceKey: string) {
                 const tabToBeRemoved = prevTabs.find((tab) => tab.id === id) ?? ({} as DynamicTabType)
 
                 if (tabToBeRemoved.isSelected) {
-                    const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.switchedFromTabId)
+                    const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.lastActiveTabId)
                     const fallbackTabIndex =
-                        // The id and switchedFromTabId can be same when the same tab is clicked again
-                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.switchedFromTabId
+                        // The id and lastActiveTabId can be same when the same tab is clicked again
+                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.lastActiveTabId
                             ? switchFromTabIndex
                             : FALLBACK_TAB
                     // Cannot use structured clone since using it reloads the whole data
@@ -380,7 +380,7 @@ export function useTabs(persistanceKey: string) {
                     isSelected: isMatch,
                     url: (isMatch && url) || tab.url,
                     ...(isMatch && {
-                        switchedFromTabId: getSwitchedFromTabIdFromTabs(prevTabs, tab.id),
+                        lastActiveTabId: getlastActiveTabIdFromTabs(prevTabs, tab.id),
                         ...(tab.showNameOnSelect && {
                             isAlive: true,
                         }),
