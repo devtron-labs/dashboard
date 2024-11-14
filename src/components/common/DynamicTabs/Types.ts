@@ -118,3 +118,10 @@ export interface AddTabParamsType
      */
     kind: string
 }
+
+export interface UpdateTabUrlParamsType extends Pick<DynamicTabType, 'id' | 'url' | 'dynamicTitle'> {
+    /**
+     * @default false
+     */
+    retainSearchParams?: boolean
+}

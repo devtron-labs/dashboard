@@ -189,7 +189,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
             } else if (_tabIndex === 2) {
                 _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
             }
-            updateTabUrl(`${location.pathname}${_searchParam}`)
+            updateTabUrl({
+                url: `${location.pathname}${_searchParam}`,
+            })
         }
     }
 

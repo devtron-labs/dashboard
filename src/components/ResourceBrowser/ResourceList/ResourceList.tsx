@@ -32,6 +32,8 @@ import {
     InitTabType,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { ClusterListType } from '@Components/ClusterNodes/types'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { URLS } from '../../../config'
@@ -337,14 +339,16 @@ const ResourceList = () => {
         if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
-        updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
+        updateTabUrl({ id: terminalTab.id, url: `${terminalTab.url.split('?')[0]}?${queryParams}` })
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
         updateTabLastSyncMoment(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)
 
-    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string, retainSearchParams?: boolean) =>
-        updateTabUrl(id, _url, dynamicTitle, retainSearchParams)
+    const getUpdateTabUrlForId =
+        (id: UpdateTabUrlParamsType['id']): ClusterListType['updateTabUrl'] =>
+        ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
+            updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
