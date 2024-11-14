@@ -1252,7 +1252,7 @@ const ChartValuesView = ({
                 {commonState.openComparison ? (
                     <Close className="option-close__icon icon-dim-16 mr-8" />
                 ) : (
-                    <Arrows className="scn-7 icon-dim-16 mr-8" />
+                    <Arrows className="scn-7 icon-dim-16 mr-8 dc__no-shrink" />
                 )}
                 {commonState.openComparison
                     ? COMPARISON_OPTION_LABELS.HideComparison

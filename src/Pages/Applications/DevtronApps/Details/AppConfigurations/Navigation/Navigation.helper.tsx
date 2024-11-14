@@ -94,7 +94,7 @@ const getIcon = (
                 className: 'default-tt',
             },
             props: {
-                className: `p-2 ${getIconClassFromConfigState(configState)}`,
+                className: `p-2 dc__no-shrink ${getIconClassFromConfigState(configState)}`,
             },
         }
     }

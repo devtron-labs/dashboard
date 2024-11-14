@@ -275,6 +275,8 @@ export default function GitInfoMaterial({
     }
 
     const renderExcludedCommitsOption = () => {
+        const hideShowIconClass = "icon-dim-16 scn-8 mr-10 dc__no-shrink"
+
         return (
             <div className="dc__position-rel cursor">
                 <div className="mw-18" onClick={toggleShowExcludePopUp}>
@@ -294,12 +296,12 @@ export default function GitInfoMaterial({
                     >
                         {showAllCommits ? (
                             <>
-                                <Hide data-testid="hide-excluded-commits" className="icon-dim-16 scn-8 mr-10" />
+                                <Hide data-testid="hide-excluded-commits" className={hideShowIconClass} />
                                 Hide excluded commits
                             </>
                         ) : (
                             <>
-                                <Show data-testid="show-excluded-commits" className="icon-dim-16 scn-8 mr-10" />
+                                <Show data-testid="show-excluded-commits" className={hideShowIconClass} />
                                 Show excluded commits
                             </>
                         )}
@@ -448,7 +450,10 @@ export default function GitInfoMaterial({
         <>
             {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
             {MissingPluginBlockState && isCITriggerBlocked ? (
-                <MissingPluginBlockState configurePluginURL={getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)} nodeType={nodeType} />
+                <MissingPluginBlockState
+                    configurePluginURL={getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)}
+                    nodeType={nodeType}
+                />
             ) : (
                 <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {showWebhookModal == true ? (
