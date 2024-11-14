@@ -630,7 +630,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        addTab(`${_group}_${namespace}`, 'pod', name, _url).then((isAdded) => {
+        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then((isAdded) => {
             if (isAdded) {
                 push(_url)
                 return

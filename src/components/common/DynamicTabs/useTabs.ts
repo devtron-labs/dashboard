@@ -17,7 +17,7 @@
 import { useState } from 'react'
 import dayjs from 'dayjs'
 import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import { ParsedTabsData, PopulateTabDataPropsType } from './Types'
+import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType } from './Types'
 
 const FALLBACK_TAB = 1
 
@@ -190,29 +190,20 @@ export function useTabs(persistanceKey: string) {
      * This function allows adding new tabs. It checks if a tab with a similar title already exists,
      * and if so, it updates the existing tab. Otherwise, it adds a new tab to the collection.
      *
-     * @param {string} idPrefix - Prefix for generating tab IDs
-     * @param {string} kind - Kind of tab
-     * @param {string} name - Name of the tab
-     * @param {string} url - URL for the tab
-     * @param {boolean} [position] - Specify the tabs position. If position is POS_INFY it's a dynamic tab.
-     * @param {string} [iconPath] - Path to the tab's icon
-     * @param {string} [dynamicTitle] - Dynamic title for the tab
-     * @param {boolean} [showNameOnSelect] - Whether to show the tab name when selected
-     * @param {boolean} [isAlive] - indicates if showNameOnSelect tabs have been selected once
      * @returns {boolean} True if the tab was successfully added
      * @returns {Promise<boolean>} - A promise resolving if the tab was found. If tab is not found a new tab is added
      */
-    const addTab = (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
+    const addTab = ({
+        idPrefix,
+        kind,
+        name,
+        url,
         showNameOnSelect = false,
         position = Number.MAX_SAFE_INTEGER,
         iconPath = '',
         dynamicTitle = '',
         tippyConfig = null,
-    ): Promise<boolean> => {
+    }: AddTabParamsType): Promise<boolean> => {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
         }

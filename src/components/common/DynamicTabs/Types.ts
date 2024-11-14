@@ -57,21 +57,45 @@ export type ParsedTabsData = {
 
 export interface PopulateTabDataPropsType extends Pick<DynamicTabType, 'tippyConfig'> {
     id: string
+    /**
+     * Name for the tab.
+     *
+     * Note: Used for the title
+     */
     name: string
+    /**
+     * URL for the tab
+     */
     url: string
     isSelected: boolean
     title: string
+    /**
+     * Specify the tabs position. If position is POS_INFY it's a dynamic tab.
+     *
+     * @default Number.MAX_SAFE_INTEGER
+     */
     position: number
+    /**
+     * Whether to show the tab name when selected
+     *
+     * @default false
+     */
     showNameOnSelect: boolean
     /**
+     * Path of the icon for the tab
+     *
      * @default ''
      */
     iconPath?: string
     /**
+     * Dynamic title for the tab
+     *
      * @default ''
      */
     dynamicTitle?: string
     /**
+     * Indicates if showNameOnSelect tabs have been selected once
+     *
      * @default false
      */
     isAlive?: boolean
@@ -80,4 +104,17 @@ export interface PopulateTabDataPropsType extends Pick<DynamicTabType, 'tippyCon
      * @default false
      */
     hideName?: boolean
+}
+
+export interface AddTabParamsType
+    extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,
+        Partial<Pick<PopulateTabDataPropsType, 'position' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>> {
+    /**
+     * Prefix for generating tab IDs
+     */
+    idPrefix: string
+    /**
+     * Kind of tab
+     */
+    kind: string
 }

@@ -347,7 +347,7 @@ const BaseResourceListContent = ({
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => push(_url))
             .catch(noop)
     }

@@ -393,16 +393,14 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
         )
 
-        addTab(
-            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-            upgradeClusterLowerCaseKind,
-            UPGRADE_CLUSTER_CONSTANTS.NAME,
-            URL,
-            undefined,
-            undefined,
-            UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
-            `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
-            {
+        addTab({
+            idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+            kind: upgradeClusterLowerCaseKind,
+            name: UPGRADE_CLUSTER_CONSTANTS.NAME,
+            url: URL,
+            iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
+            dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
+            tippyConfig: {
                 title: 'Upgrade compatibility',
                 descriptions: [
                     {
@@ -413,9 +411,9 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                         info: 'Target Version',
                         value: `v${selectedVersion}`,
                     },
-                ]
-            }
-        ).then(() => history.push(URL))
+                ],
+            },
+        }).then(() => history.push(URL))
     }
 
     const renderSideInfoData = () => {

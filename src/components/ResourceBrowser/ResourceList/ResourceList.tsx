@@ -222,18 +222,16 @@ const ResourceList = () => {
             }
             /* NOTE: even though addTab updates selection it will override url;
              * thus to prevent that if found markTabActive and don't let this get called */
-            addTab(
+            addTab({
                 idPrefix,
                 kind,
                 name,
-                _url,
-                undefined,
-                undefined,
-                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
-                isUpgradeClusterNodeType
+                url: _url,
+                iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+                dynamicTitle: isUpgradeClusterNodeType
                     ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
                     : undefined,
-            )
+            })
                 .then(noop)
                 .catch(noop)
             return
@@ -381,7 +379,7 @@ const ResourceList = () => {
             tab ? `/${tab.toLowerCase()}` : ''
         }`
         const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab(idPrefix, kind, resourceName, _url)
+        addTab({ idPrefix, kind, name: resourceName, url: _url })
             .then(() => push(_url))
             .catch(noop)
     }
