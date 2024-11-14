@@ -566,11 +566,18 @@ export const deploymentTemplateReducer = (
             return handleReApplyLockedKeys(state)
         }
 
-        case DeploymentTemplateActionType.CHANGE_TO_GUI_MODE:
+        case DeploymentTemplateActionType.CHANGE_TO_GUI_MODE: {
+            const isOverriddenWithPatchStrategy =
+                state.currentEditorTemplateData.isOverridden &&
+                state.currentEditorTemplateData.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+            const baseState = isOverriddenWithPatchStrategy ? handleReApplyLockedKeys(state) : state
+
             return {
-                ...state,
+                ...baseState,
                 editMode: ConfigurationType.GUI,
             }
+        }
 
         case DeploymentTemplateActionType.CHANGE_TO_YAML_MODE:
             return handleSwitchToYAMLMode(state)
@@ -579,11 +586,13 @@ export const deploymentTemplateReducer = (
             return {
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
+                shouldMergeTemplateWithPatches: false,
             }
 
         case DeploymentTemplateActionType.TOGGLE_SHOW_COMPARISON_WITH_MERGED_PATCHES:
             return {
                 ...state,
+                ...handleUnResolveScopedVariables(),
                 shouldMergeTemplateWithPatches: !state.shouldMergeTemplateWithPatches,
             }
 
@@ -592,6 +601,7 @@ export const deploymentTemplateReducer = (
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 selectedProtectionViewTab: action.payload.selectedProtectionViewTab,
+                shouldMergeTemplateWithPatches: false,
             }
 
         case DeploymentTemplateActionType.UPDATE_DRY_RUN_EDITOR_MODE:
@@ -667,7 +677,6 @@ export const deploymentTemplateReducer = (
 
             currentEditorTemplateData.mergeStrategy = mergeStrategy
 
-            // TODO: Need to think on this behavior with product
             if (
                 mergeStrategy === OverrideMergeStrategyType.REPLACE &&
                 !stateWithReAppliedLockedKeys.publishedTemplateData?.isOverridden &&

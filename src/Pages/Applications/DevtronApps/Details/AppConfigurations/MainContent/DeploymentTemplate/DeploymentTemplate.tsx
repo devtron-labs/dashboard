@@ -160,7 +160,6 @@ const DeploymentTemplate = ({
         showDraftComments,
         hideLockedKeys,
         editMode,
-        // TODO: Set it as false on tab change
         shouldMergeTemplateWithPatches,
         selectedProtectionViewTab,
         dryRunEditorMode,
