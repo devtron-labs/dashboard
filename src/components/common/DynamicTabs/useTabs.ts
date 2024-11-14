@@ -56,6 +56,8 @@ export function useTabs(persistanceKey: string) {
         tippyConfig,
     })
 
+    const getTabDataFromLocalStorage = () => localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
+
     /**
      * To serialize tab data and store it in localStorage. The stored data can be retrieved
      * when initializing tabs to maintain their state across page loads.
@@ -70,7 +72,7 @@ export function useTabs(persistanceKey: string) {
         if (parsedTabsData) {
             _parsedTabsData = parsedTabsData
         } else {
-            const persistedTabsData = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
+            const persistedTabsData = getTabDataFromLocalStorage()
             try {
                 _parsedTabsData = JSON.parse(persistedTabsData)
             } catch {
@@ -83,6 +85,10 @@ export function useTabs(persistanceKey: string) {
             key: persistanceKey,
             data: _tabs,
         })
+    }
+
+    const updateTabsInLocalStorage = (_tabs: DynamicTabType[]) => {
+        localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
     }
 
     /**
@@ -125,7 +131,7 @@ export function useTabs(persistanceKey: string) {
         let parsedTabsData: ParsedTabsData
         setTabs((prevTabs) => {
             if (!reInit) {
-                const persistedTabsData = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                const persistedTabsData = getTabDataFromLocalStorage()
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = persistedTabsData ? parsedTabsData.data : prevTabs
@@ -245,7 +251,7 @@ export function useTabs(persistanceKey: string) {
                     )
                 }
                 resolve(!found)
-                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+                updateTabsInLocalStorage(_tabs)
                 return _tabs
             })
         })
@@ -278,7 +284,7 @@ export function useTabs(persistanceKey: string) {
                 } else {
                     resolve('')
                 }
-                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+                updateTabsInLocalStorage(_tabs)
                 return _tabs
             })
         })
@@ -311,7 +317,7 @@ export function useTabs(persistanceKey: string) {
                 } else {
                     resolve('')
                 }
-                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+                updateTabsInLocalStorage(_tabs)
                 return _tabs
             })
         })
@@ -350,7 +356,7 @@ export function useTabs(persistanceKey: string) {
                     ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
         return isTabFound
@@ -375,7 +381,7 @@ export function useTabs(persistanceKey: string) {
                     ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
     }
@@ -403,7 +409,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
     }
@@ -426,7 +432,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
     }
@@ -447,7 +453,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
     }
@@ -462,7 +468,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
+            updateTabsInLocalStorage(_tabs)
             return _tabs
         })
     }
