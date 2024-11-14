@@ -28,7 +28,7 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
-import { PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
+import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
 import { CompareConfigViewProps } from '../types'
 
@@ -709,9 +709,9 @@ export const parseDeploymentTemplateParams =
     }
 
 export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, version: string): string => {
-    if (!version || !chartName) {
+    if (!version || !chartName || !CHART_NAME_TO_DOC_SEGMENT[chartName]) {
         return null
     }
 
-    return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${chartName.toLowerCase()}-chart_${version.replace(/\./g, '-')}`
+    return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${CHART_NAME_TO_DOC_SEGMENT[chartName]}-chart_${version.replace(/\./g, '-')}/schema.json`
 }

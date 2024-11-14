@@ -16,8 +16,8 @@ import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 // FIXME: Placeholder icon since no sense of git merge icon as of now
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
-import { ConfigDryRunProps } from './types'
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
+import { ConfigDryRunProps } from './types'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 
