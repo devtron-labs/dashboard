@@ -55,7 +55,7 @@ export type ParsedTabsData = {
     data: DynamicTabType[]
 }
 
-export interface PopulateTabDataPropsType extends Pick<DynamicTabType, 'tippyConfig'> {
+export interface PopulateTabDataPropsType extends Pick<DynamicTabType, 'tippyConfig' | 'switchedFromTabId'> {
     id: string
     /**
      * Name for the tab.
