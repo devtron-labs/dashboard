@@ -32,7 +32,6 @@ import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
-import { ClusterMap, ClusterTreeMapData } from '@Pages/ResourceBrowser'
 import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
@@ -45,11 +44,12 @@ import './clusterNodes.scss'
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
+const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
 
-const getClusterMapData = (data: ClusterDetail[]): ClusterTreeMapData['data'] =>
+const getClusterMapData = (data: ClusterDetail[]) =>
     data.map(({ name, id, nodeCount, status }) => ({
         name,
-        status: status as ClusterTreeMapData['data'][0]['status'],
+        status,
         href: `${URLS.RESOURCE_BROWSER}/${id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
         value: nodeCount ?? 0,
     }))
@@ -86,7 +86,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         })
     }, [searchKey, clusterOptions, `${clusterFilter}`])
 
-    const treeMapData = useMemo<ClusterTreeMapData[]>(() => {
+    const treeMapData = useMemo(() => {
         const { prodClusters, nonProdClusters } = filteredList.reduce(
             (acc, curr) => {
                 if (curr.status && curr.status !== ClusterStatusType.CONNECTION_FAILED) {
