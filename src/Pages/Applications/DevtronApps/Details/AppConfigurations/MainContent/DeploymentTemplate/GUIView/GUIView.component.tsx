@@ -24,7 +24,6 @@ import {
     joinObjects,
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    convertJSONPointerToJSONPath,
     OverrideMergeStrategyType,
     GUIViewError,
     GUIViewErrorType,
@@ -58,7 +57,7 @@ const GUIView = ({
     mergeStrategy,
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
-    const [uncheckedPathsList, setUncheckedPathsList] = useState<string[]>([])
+    const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<object>({})
     const modelRef = useRef<typeof ConfigurableGUIViewModel>(null)
 
     // NOTE: need this ref since we need the updated formData on unmount;
@@ -74,7 +73,7 @@ const GUIView = ({
 
             if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current && ConfigurableGUIViewModel) {
                 modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
-                setUncheckedPathsList(modelRef.current.getUncheckedNodes())
+                setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
             }
         } catch {
             handleChangeToYAMLMode()
@@ -119,18 +118,7 @@ const GUIView = ({
             if (!hideLockedKeys || !makeObjectFromJsonPathArray) {
                 return {
                     guiSchema: parsedGUISchema,
-                    uiSchema: joinObjects([
-                        HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-                        ...(makeObjectFromJsonPathArray
-                            ? uncheckedPathsList.map(
-                                  (path) =>
-                                      makeObjectFromJsonPathArray(
-                                          0,
-                                          JSONPath.toPathArray(convertJSONPointerToJSONPath(path)),
-                                      ) ?? [],
-                              )
-                            : []),
-                    ]),
+                    uiSchema: joinObjects([HIDE_SUBMIT_BUTTON_UI_SCHEMA, configurableGUIViewUISchema]),
                 }
             }
 
@@ -152,9 +140,7 @@ const GUIView = ({
                             .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
                             .map((path) => makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))),
                     ),
-                    ...uncheckedPathsList.map((path) =>
-                        makeObjectFromJsonPathArray(0, JSONPath.toPathArray(convertJSONPointerToJSONPath(path))),
-                    ),
+                    configurableGUIViewUISchema,
                 ]),
             }
         } catch (err) {
@@ -171,7 +157,7 @@ const GUIView = ({
                 },
             }
         }
-    }, [guiSchema, hideLockedKeys, uncheckedPathsList, modelRef.current?.totalCheckedCount])
+    }, [guiSchema, hideLockedKeys, configurableGUIViewUISchema])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
         editorOnChange?.(YAML.stringify(data.formData))
@@ -180,7 +166,7 @@ const GUIView = ({
     const updateNodeForPath = (path: string) => {
         if (modelRef.current) {
             const newFormData = modelRef.current.updateNodeForPath({ path, json: formData })
-            setUncheckedPathsList(modelRef.current.getUncheckedNodes())
+            setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
             editorOnChange?.(YAML.stringify(newFormData))
         }
     }
