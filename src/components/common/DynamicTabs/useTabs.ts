@@ -18,8 +18,7 @@ import { useState } from 'react'
 import dayjs from 'dayjs'
 import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType } from './Types'
-
-const FALLBACK_TAB = 1
+import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY } from './constants'
 
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
@@ -71,7 +70,7 @@ export function useTabs(persistanceKey: string) {
         if (parsedTabsData) {
             _parsedTabsData = parsedTabsData
         } else {
-            const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+            const persistedTabsData = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
             try {
                 _parsedTabsData = JSON.parse(persistedTabsData)
             } catch {
@@ -126,7 +125,7 @@ export function useTabs(persistanceKey: string) {
         let parsedTabsData: ParsedTabsData
         setTabs((prevTabs) => {
             if (!reInit) {
-                const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+                const persistedTabsData = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = persistedTabsData ? parsedTabsData.data : prevTabs
@@ -181,7 +180,7 @@ export function useTabs(persistanceKey: string) {
                 }
                 return 1
             })
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs, parsedTabsData))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs, parsedTabsData))
             return _tabs
         })
     }
@@ -246,7 +245,7 @@ export function useTabs(persistanceKey: string) {
                     )
                 }
                 resolve(!found)
-                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
                 return _tabs
             })
         })
@@ -279,7 +278,7 @@ export function useTabs(persistanceKey: string) {
                 } else {
                     resolve('')
                 }
-                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
                 return _tabs
             })
         })
@@ -312,7 +311,7 @@ export function useTabs(persistanceKey: string) {
                 } else {
                     resolve('')
                 }
-                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
                 return _tabs
             })
         })
@@ -351,7 +350,7 @@ export function useTabs(persistanceKey: string) {
                     ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
         return isTabFound
@@ -376,7 +375,7 @@ export function useTabs(persistanceKey: string) {
                     ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
     }
@@ -404,7 +403,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
     }
@@ -427,7 +426,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
     }
@@ -448,7 +447,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
     }
@@ -463,7 +462,7 @@ export function useTabs(persistanceKey: string) {
                       }
                     : tab,
             )
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs))
             return _tabs
         })
     }
