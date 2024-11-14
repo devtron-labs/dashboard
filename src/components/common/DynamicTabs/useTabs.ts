@@ -33,7 +33,14 @@ export function useTabs(persistanceKey: string) {
     const getTitleFromKindAndName = ({ kind, name }: Pick<InitTabType, 'kind' | 'name'>): string =>
         kind ? `${kind}/${name}` : name
 
-    const getSelectedTabId = (): DynamicTabType['id'] | null => tabs.find((tab) => tab.isSelected)?.id ?? null
+    const getSwitchedFromTabIdFromTabs = (
+        _tabs: DynamicTabType[],
+        id: DynamicTabType['id'],
+    ): DynamicTabType['switchedFromTabId'] | null => {
+        const selectedTabId = _tabs.find((tab) => tab.isSelected)?.id ?? null
+
+        return selectedTabId !== id ? selectedTabId : null
+    }
 
     const populateTabData = ({
         id,
@@ -280,7 +287,7 @@ export function useTabs(persistanceKey: string) {
                             iconPath,
                             dynamicTitle,
                             tippyConfig,
-                            switchedFromTabId: getSelectedTabId(),
+                            switchedFromTabId: getSwitchedFromTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
                         }),
                     )
@@ -297,7 +304,22 @@ export function useTabs(persistanceKey: string) {
             setTabs((prevTabs) => {
                 const tabToBeRemoved = prevTabs.find((tab) => tab.id === id) ?? ({} as DynamicTabType)
 
-                const _tabs =
+                if (tabToBeRemoved.isSelected) {
+                    const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.switchedFromTabId)
+                    const fallbackTabIndex =
+                        // The id and switchedFromTabId can be same when the same tab is clicked again
+                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.switchedFromTabId
+                            ? switchFromTabIndex
+                            : FALLBACK_TAB
+                    // Cannot use structured clone since using it reloads the whole data
+                    // eslint-disable-next-line no-param-reassign
+                    prevTabs[fallbackTabIndex].isSelected = true
+                    resolve(prevTabs[fallbackTabIndex].url)
+                } else {
+                    resolve('')
+                }
+
+                const updatedTabsState =
                     type === 'stop'
                         ? prevTabs.map((tab) => {
                               if (tab.id === id) {
@@ -312,20 +334,8 @@ export function useTabs(persistanceKey: string) {
                           })
                         : prevTabs.filter((tab) => tab.id !== id)
 
-                if (tabToBeRemoved.isSelected) {
-                    const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.switchedFromTabId)
-                    const fallbackTabIndex =
-                        // The id and switchedFromTabId can be same when the same tab is clicked again
-                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.switchedFromTabId
-                            ? switchFromTabIndex
-                            : FALLBACK_TAB
-                    _tabs[fallbackTabIndex].isSelected = true
-                    resolve(_tabs[fallbackTabIndex].url)
-                } else {
-                    resolve('')
-                }
-                updateTabsInLocalStorage(_tabs)
-                return _tabs
+                updateTabsInLocalStorage(updatedTabsState)
+                return updatedTabsState
             })
         })
 
@@ -370,7 +380,7 @@ export function useTabs(persistanceKey: string) {
                     isSelected: isMatch,
                     url: (isMatch && url) || tab.url,
                     ...(isMatch && {
-                        switchedFromTabId: getSelectedTabId(),
+                        switchedFromTabId: getSwitchedFromTabIdFromTabs(prevTabs, tab.id),
                         ...(tab.showNameOnSelect && {
                             isAlive: true,
                         }),
