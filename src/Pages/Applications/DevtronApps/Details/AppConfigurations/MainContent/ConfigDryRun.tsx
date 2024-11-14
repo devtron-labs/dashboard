@@ -5,6 +5,7 @@ import {
     BaseURLParams,
     CodeEditor,
     DryRunEditorMode,
+    ErrorScreenManager,
     getDeploymentManifest,
     getIsRequestAborted,
     MODES,
@@ -34,10 +35,13 @@ const ConfigDryRun = ({
     isDraftPresent,
     isPublishedConfigPresent,
     isApprovalPending,
+    errorInfo,
+    handleErrorReload,
     manifestAbortController,
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
+    // TODO: Can we move this to handleChange?
     const getDeploymentManifestWrapper = async () =>
         abortPreviousRequests(
             () =>
@@ -56,12 +60,16 @@ const ConfigDryRun = ({
     const [isManifestLoading, manifestResponse, manifestError, reloadManifest] = useAsync(
         getDeploymentManifestWrapper,
         [appId, envId, chartRefId, editorTemplate, showManifest, isLoading],
-        !!showManifest && !isLoading && !!editorTemplate,
+        !!showManifest && !isLoading && !!editorTemplate && !errorInfo,
     )
 
     const isManifestLoadingOrAborted = isManifestLoading || !!getIsRequestAborted(manifestError)
 
     const renderEditorBody = () => {
+        if (errorInfo) {
+            return <ErrorScreenManager code={errorInfo.code} reload={handleErrorReload} />
+        }
+
         if (isDraftPresent && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES && !isPublishedConfigPresent) {
             return <NoPublishedVersionEmptyState />
         }
@@ -99,6 +107,7 @@ const ConfigDryRun = ({
                     <ToggleResolveScopedVariables
                         handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                         resolveScopedVariables={resolveScopedVariables}
+                        isDisabled={!!errorInfo}
                     />
                 </div>
 

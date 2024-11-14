@@ -35,6 +35,11 @@ import {
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
     ResponseType,
     API_STATUS_CODES,
+    OverrideMergeStrategyType,
+    useUrlFilters,
+    ConfigResourceType,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -48,6 +53,7 @@ import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
 import {
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
+    DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
     HandleInitializeTemplatesWithoutDraftParamsType,
@@ -70,6 +76,7 @@ import {
     getUpdateBaseDeploymentTemplatePayload,
     getUpdateEnvironmentDTPayload,
     handleInitializeDraftData,
+    parseDeploymentTemplateParams,
 } from './utils'
 import DeleteOverrideDialog from './DeleteOverrideDialog'
 import {
@@ -109,6 +116,7 @@ const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
+const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
@@ -130,6 +138,15 @@ const DeploymentTemplate = ({
         getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
+    const { configHeaderTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<
+        never,
+        DeploymentTemplateURLConfigType
+    >({
+        parseSearchParams: parseDeploymentTemplateParams(envId),
+    })
+
+    const configHeaderTab = urlConfigHeaderTab || ConfigHeaderTabType.VALUES
+
     const {
         chartDetails,
         lockedConfigKeysWithLockType,
@@ -143,7 +160,7 @@ const DeploymentTemplate = ({
         showDraftComments,
         hideLockedKeys,
         editMode,
-        configHeaderTab,
+        // TODO: Set it as false on tab change
         shouldMergeTemplateWithPatches,
         selectedProtectionViewTab,
         dryRunEditorMode,
@@ -165,6 +182,7 @@ const DeploymentTemplate = ({
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
+    const loadMergedTemplateAbortController = useRef<AbortController>(new AbortController())
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
@@ -203,8 +221,6 @@ const DeploymentTemplate = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
 
-    const isLoadingSideEffects = isResolvingVariables || isSaving || isLoadingChangedChartDetails
-
     /**
      * There are two cases:
      * 1. In case of base config - Published config is the one that we are using currently and is always present (Even in zero state we are have a default saved config)
@@ -235,6 +251,23 @@ const DeploymentTemplate = ({
         ? currentEditorTemplateData?.environmentConfig?.id > 0
         : !!currentEditorTemplateData?.chartConfig?.id
 
+    const currentViewEditorState = getCurrentEditorState({
+        state,
+        isPublishedConfigPresent,
+        isDryRunView,
+        isDeleteOverrideDraft,
+        isInheritedView,
+        isPublishedValuesView,
+        showApprovalPendingEditorInCompareView,
+    })
+
+    // Using check from current editor state since would like to show loader only when we are fetching data for current editor
+    const { isLoadingMergedTemplate, mergedTemplateError } =
+        (currentViewEditorState as typeof currentEditorTemplateData) || {}
+
+    const isLoadingSideEffects =
+        isResolvingVariables || isSaving || isLoadingChangedChartDetails || !!isLoadingMergedTemplate
+
     const areChangesPresent: boolean = useMemo(
         () => getAreTemplateChangesPresent(state),
         [currentEditorTemplateData, wasGuiOrHideLockedKeysEdited],
@@ -261,16 +294,55 @@ const DeploymentTemplate = ({
         })
     }
 
-    const handleUpdateProtectedTabSelection = (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
-        if (tab === selectedProtectionViewTab) {
+    const handleLoadMergedTemplate = async () => {
+        if (
+            !getConfigAfterOperations ||
+            !currentEditorTemplateData?.isOverridden ||
+            currentEditorTemplateData?.mergeStrategy !== OverrideMergeStrategyType.PATCH
+        ) {
             return
         }
 
-        if (triggerGA && tab === ProtectConfigTabsType.COMPARE) {
-            ReactGA.event({
-                category: 'devtronapp-configuration-dt',
-                action: 'clicked-compare',
+        try {
+            dispatch({
+                type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE,
             })
+
+            const parsedValues = YAML.parse(currentEditorTemplateData.editorTemplate)
+            const mergedTemplate = await abortPreviousRequests(
+                () =>
+                    getConfigAfterOperations({
+                        values: parsedValues,
+                        resourceType: ConfigResourceType.DeploymentTemplate,
+                        appId: +appId,
+                        signal: loadMergedTemplateAbortController.current.signal,
+                    }),
+                loadMergedTemplateAbortController,
+            )
+
+            dispatch({
+                type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE,
+                payload: {
+                    mergedTemplate,
+                },
+            })
+        } catch (error) {
+            if (getIsRequestAborted(error)) {
+                return
+            }
+
+            dispatch({
+                type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR,
+                payload: {
+                    mergedTemplateError: error,
+                },
+            })
+        }
+    }
+
+    const handleUpdateProtectedTabSelection = async (tab: ProtectConfigTabsType, triggerGA: boolean = true) => {
+        if (tab === selectedProtectionViewTab) {
+            return
         }
 
         dispatch({
@@ -279,6 +351,16 @@ const DeploymentTemplate = ({
                 selectedProtectionViewTab: tab,
             },
         })
+
+        if (triggerGA && tab === ProtectConfigTabsType.COMPARE) {
+            ReactGA.event({
+                category: 'devtronapp-configuration-dt',
+                action: 'clicked-compare',
+            })
+
+            // Question: Should we merge events?
+            await handleLoadMergedTemplate()
+        }
     }
 
     const handleCompareFromOptionSelection = (option: SelectPickerOptionType) => {
@@ -325,10 +407,12 @@ const DeploymentTemplate = ({
                         isInheritedView,
                         isPublishedValuesView,
                         showApprovalPendingEditorInCompareView,
+                        shouldUseMergedTemplate: isDryRunView || (isCompareView && shouldMergeTemplateWithPatches),
                     }),
                     valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
                 }),
+
                 shouldFetchOriginalTemplate
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
@@ -338,11 +422,12 @@ const DeploymentTemplate = ({
                           ...(envId && { envId: +envId }),
                       })
                     : structuredClone(GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE),
+
                 shouldFetchPublishedTemplate
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: publishedTemplateData.selectedChartRefId,
-                          values: publishedTemplateData.editorTemplate,
+                          values: publishedTemplateData.mergedTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
                       })
@@ -375,6 +460,7 @@ const DeploymentTemplate = ({
                             lockedConfigKeysWithLockType.config,
                         ).editorTemplate,
                     },
+
                     resolvedOriginalTemplate: {
                         originalTemplateString: originalTemplate.resolvedData,
                         templateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
@@ -382,6 +468,7 @@ const DeploymentTemplate = ({
                             lockedConfigKeysWithLockType.config,
                         ).editorTemplate,
                     },
+
                     resolvedPublishedTemplate: {
                         originalTemplateString: publishedTemplate.resolvedData,
                         templateWithoutLockedKeys: getEditorTemplateAndLockedKeys(
@@ -484,40 +571,34 @@ const DeploymentTemplate = ({
         handleUpdateReadmeMode(false)
     }
 
-    const handleConfigHeaderTabChange = (tab: ConfigHeaderTabType) => {
+    const handleConfigHeaderTabChange = async (tab: ConfigHeaderTabType) => {
         if (configHeaderTab === tab) {
             return
         }
 
-        if (configHeaderTab === ConfigHeaderTabType.DRY_RUN) {
+        updateSearchParams({
+            configHeaderTab: tab,
+        })
+
+        if (tab === ConfigHeaderTabType.DRY_RUN) {
             ReactGA.event({
                 category: 'devtronapp-configuration-dt',
                 action: 'clicked-dry-run',
             })
+
+            await handleLoadMergedTemplate()
         }
 
         dispatch({
             type: DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB,
-            payload: {
-                configHeaderTab: tab,
-            },
         })
     }
 
-    const handleViewInheritedConfig = () => {
-        handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
+    const handleViewInheritedConfig = async () => {
+        await handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
-    const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType =>
-        getCurrentEditorState({
-            state,
-            isPublishedConfigPresent,
-            isDryRunView,
-            isDeleteOverrideDraft,
-            isInheritedView,
-            isPublishedValuesView,
-            showApprovalPendingEditorInCompareView,
-        })?.selectedChart
+    const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => currentViewEditorState?.selectedChart
 
     const getCurrentTemplateGUISchema = (): string => {
         if (!isGuiSupported) {
@@ -527,16 +608,7 @@ const DeploymentTemplate = ({
         return currentEditorTemplateData?.guiSchema || '{}'
     }
 
-    const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] =>
-        getCurrentEditorState({
-            state,
-            isPublishedConfigPresent,
-            isDryRunView,
-            isDeleteOverrideDraft,
-            isInheritedView,
-            isPublishedValuesView,
-            showApprovalPendingEditorInCompareView,
-        })?.schema
+    const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] => currentViewEditorState?.schema
 
     const handleFetchGlobalDeploymentTemplate = async (
         globalChartDetails: DeploymentChartVersionType,
@@ -576,6 +648,10 @@ const DeploymentTemplate = ({
             editorTemplateWithoutLockedKeys,
             selectedChart: globalChartDetails,
             selectedChartRefId: +globalChartDetails.id,
+
+            mergedTemplate: stringifiedTemplate,
+            mergedTemplateObject: defaultAppOverride,
+            mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
         }
     }
 
@@ -594,9 +670,26 @@ const DeploymentTemplate = ({
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
         } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
 
-        const { id, status, manualReviewed, active, namespace, envOverrideValues } = environmentConfig || {}
+        const {
+            id,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+            envOverrideValues,
+            mergeStrategy: mergeStrategyFromAPI,
+            envOverridePatchValues: envOverridePatchValuesFromAPI,
+        } = environmentConfig || {}
 
-        const originalTemplate = IsOverride ? envOverrideValues || globalConfig : globalConfig
+        const mergeStrategy = mergeStrategyFromAPI || DEFAULT_MERGE_STRATEGY
+        const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
+
+        const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+        // If not overridden, will replace the editorTemplate, originalTemplate with envOverridePatchValues
+        const mergedTemplateObject = IsOverride ? envOverrideValues || globalConfig : globalConfig
+
+        const originalTemplate = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
+
         const stringifiedTemplate = YAMLStringify(originalTemplate, { simpleKeys: true })
 
         const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
@@ -604,13 +697,16 @@ const DeploymentTemplate = ({
             lockedConfigKeys,
         )
 
+        const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
+
+        // In case of no override it same as saying we have override with no patch value
         return {
             originalTemplate,
             schema,
             readme,
             guiSchema,
             isAppMetricsEnabled: appMetrics,
-            editorTemplate: stringifiedTemplate,
+            editorTemplate: !Object.keys(originalTemplate).length ? '' : stringifiedTemplate,
             isOverridden: !!IsOverride,
             environmentConfig: {
                 id,
@@ -619,10 +715,14 @@ const DeploymentTemplate = ({
                 active,
                 namespace,
             },
-            mergeStrategy: DEFAULT_MERGE_STRATEGY,
             editorTemplateWithoutLockedKeys,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
+            mergeStrategy,
+            mergedTemplate: stringifiedFinalTemplate,
+            mergedTemplateObject,
+            mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
+                .editorTemplate,
         }
     }
 
@@ -660,6 +760,17 @@ const DeploymentTemplate = ({
             parsingError: '',
             removedPatches: [],
             originalTemplateState: publishedTemplateState,
+            isLoadingMergedTemplate: false,
+            mergedTemplateError: null,
+        }
+
+        if (!urlConfigHeaderTab) {
+            updateSearchParams({
+                configHeaderTab:
+                    envId && !publishedTemplateState.isOverridden
+                        ? ConfigHeaderTabType.INHERITED
+                        : ConfigHeaderTabType.VALUES,
+            })
         }
 
         dispatch({
@@ -670,7 +781,6 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
-                envId,
             },
         })
     }
@@ -757,6 +867,12 @@ const DeploymentTemplate = ({
         const clonedTemplateData = structuredClone(draftTemplateState)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
 
+        if (!urlConfigHeaderTab) {
+            updateSearchParams({
+                configHeaderTab: ConfigHeaderTabType.VALUES,
+            })
+        }
+
         dispatch({
             type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT,
             payload: {
@@ -775,6 +891,8 @@ const DeploymentTemplate = ({
                     parsingError: '',
                     removedPatches: [],
                     originalTemplateState: draftTemplateState,
+                    isLoadingMergedTemplate: false,
+                    mergedTemplateError: null,
                 },
                 selectedProtectionViewTab:
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
@@ -833,6 +951,10 @@ const DeploymentTemplate = ({
     }, [])
 
     const handleReload = async () => {
+        updateSearchParams({
+            configHeaderTab: null,
+        })
+
         dispatch({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {
@@ -951,7 +1073,10 @@ const DeploymentTemplate = ({
 
         if (shouldValidateLockChanges) {
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments(false, state),
+                documents: getLockedDiffModalDocuments({
+                    isApprovalView: false,
+                    state,
+                }),
                 lockedConfigKeysWithLockType,
             })
 
@@ -987,22 +1112,28 @@ const DeploymentTemplate = ({
         await handleSaveTemplate()
     }
 
+    const handleApprovalLockConfigError = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_LOCKED_DIFF_FOR_APPROVAL,
+        })
+    }
+
     /**
      * If true, it is valid, else would show locked diff modal
      */
     const handleValidateApprovalState = (): boolean => {
         if (shouldValidateLockChanges) {
             // We are going to test the draftData not the current edited data and for this the computation has already been done
-            // TODO: Test concurrent behavior for api validation
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments(true, state),
+                documents: getLockedDiffModalDocuments({
+                    isApprovalView: true,
+                    state,
+                }),
                 lockedConfigKeysWithLockType,
             })
 
             if (Object.keys(ineligibleChanges || {}).length) {
-                dispatch({
-                    type: DeploymentTemplateActionType.SHOW_LOCKED_DIFF_FOR_APPROVAL,
-                })
+                handleApprovalLockConfigError()
 
                 return false
             }
@@ -1065,27 +1196,26 @@ const DeploymentTemplate = ({
                 : resolvedEditorTemplate.originalTemplateString
         }
 
-        const currentTemplateState = getCurrentEditorState({
-            state,
-            isPublishedConfigPresent,
-            isDryRunView,
-            isDeleteOverrideDraft,
-            isInheritedView,
-            isPublishedValuesView,
-            showApprovalPendingEditorInCompareView,
-        })
-
-        if (!currentTemplateState) {
+        if (!currentViewEditorState) {
             return ''
         }
 
-        if ((currentTemplateState as typeof currentEditorTemplateData).originalTemplateState) {
-            return currentTemplateState.editorTemplate
+        const shouldUseMergedTemplate = isCompareView && shouldMergeTemplateWithPatches
+
+        if (isDryRunView || shouldUseMergedTemplate) {
+            return hideLockedKeys
+                ? currentViewEditorState.mergedTemplateWithoutLockedKeys
+                : currentViewEditorState.mergedTemplate
+        }
+
+        // This means currentTemplateState is from editable state
+        if ((currentViewEditorState as typeof currentEditorTemplateData).originalTemplateState) {
+            return currentViewEditorState.editorTemplate
         }
 
         return hideLockedKeys
-            ? (currentTemplateState as DeploymentTemplateConfigState).editorTemplateWithoutLockedKeys
-            : currentTemplateState.editorTemplate
+            ? (currentViewEditorState as DeploymentTemplateConfigState).editorTemplateWithoutLockedKeys
+            : currentViewEditorState.editorTemplate
     }
 
     /**
@@ -1102,7 +1232,8 @@ const DeploymentTemplate = ({
 
         // Question: No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
         if (currentEditorTemplateData) {
-            return YAMLStringify(currentEditorTemplateData.originalTemplate, { simpleKeys: true })
+            // TODO: Re-verify this claim
+            return currentEditorTemplateData.mergedTemplate
         }
 
         return ''
@@ -1172,10 +1303,18 @@ const DeploymentTemplate = ({
             return ''
         }
 
+        const shouldUseMergedTemplate = isCompareView && shouldMergeTemplateWithPatches
+
         if (resolveScopedVariables) {
             return hideLockedKeys
                 ? resolvedPublishedTemplate.templateWithoutLockedKeys
                 : resolvedPublishedTemplate.originalTemplateString
+        }
+
+        if (shouldUseMergedTemplate) {
+            return hideLockedKeys
+                ? publishedTemplateData.mergedTemplateWithoutLockedKeys
+                : publishedTemplateData.mergedTemplate
         }
 
         return hideLockedKeys
@@ -1183,10 +1322,23 @@ const DeploymentTemplate = ({
             : publishedTemplateData.editorTemplate
     }
 
-    // NOTE: Need to implement when we have support for merge patches
-    const getShouldShowMergePatchesButton = (): boolean => false
+    const getShouldShowMergePatchesButton = (): boolean => {
+        if (!isCompareView) {
+            return false
+        }
+
+        const isPublishedStrategyPatch =
+            publishedTemplateData?.isOverridden &&
+            publishedTemplateData?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+        return isPublishedStrategyPatch || currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+    }
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {
+        if (mergeStrategy === currentEditorTemplateData.mergeStrategy) {
+            return
+        }
+
         ReactGA.event({
             category: 'devtronapp-configuration-dt',
             action: 'clicked-merge-strategy-dropdown',
@@ -1218,16 +1370,7 @@ const DeploymentTemplate = ({
         })
     }
 
-    const getIsAppMetricsEnabledForCTA = (): boolean =>
-        !!getCurrentEditorState({
-            state,
-            isPublishedConfigPresent,
-            isDryRunView,
-            isDeleteOverrideDraft,
-            isInheritedView,
-            isPublishedValuesView,
-            showApprovalPendingEditorInCompareView,
-        })?.isAppMetricsEnabled
+    const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
 
     const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
 
@@ -1265,9 +1408,9 @@ const DeploymentTemplate = ({
     }
 
     const renderEditorComponent = () => {
-        if (isResolvingVariables || isLoadingChangedChartDetails) {
+        if (isResolvingVariables || isLoadingChangedChartDetails || !!isLoadingMergedTemplate) {
             return (
-                <div className="flex h-100 dc__overflow-scroll">
+                <div className="flex h-100 flex-grow-1 dc__overflow-scroll">
                     <Progressing pageLoader />
                 </div>
             )
@@ -1297,7 +1440,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
-                    className="dc__overflow-scroll"
+                    className="flex-grow-1 dc__overflow-scroll"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1308,7 +1451,7 @@ const DeploymentTemplate = ({
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
-                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}`}
+                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}-${shouldMergeTemplateWithPatches ? 'with-merged-values' : 'without-merged-values'}`}
                     {...getCompareFromEditorConfig({
                         envId,
                         isDeleteOverrideDraft,
@@ -1316,11 +1459,13 @@ const DeploymentTemplate = ({
                         showApprovalPendingEditorInCompareView,
                         state,
                     })}
+                    errorInfo={shouldMergeTemplateWithPatches ? mergedTemplateError : null}
+                    handleErrorReload={handleLoadMergedTemplate}
                 />
             )
         }
 
-        if (configHeaderTab === ConfigHeaderTabType.DRY_RUN) {
+        if (isDryRunView) {
             return (
                 <ConfigDryRun
                     showManifest
@@ -1336,6 +1481,8 @@ const DeploymentTemplate = ({
                     isApprovalPending={isApprovalPending}
                     isPublishedConfigPresent={isPublishedConfigPresent}
                     manifestAbortController={manifestAbortController}
+                    errorInfo={mergedTemplateError}
+                    handleErrorReload={handleLoadMergedTemplate}
                 />
             )
         }
@@ -1407,6 +1554,7 @@ const DeploymentTemplate = ({
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
                     isDryRunView={isDryRunView}
+                    handleApprovalLockConfigError={handleApprovalLockConfigError}
                 />
             )
         }
@@ -1471,6 +1619,7 @@ const DeploymentTemplate = ({
         </div>
     )
 
+    // TODO: On handle tab change to gui remove re-apply locked keys if in patch mode
     const renderHeader = () => {
         if (showReadMe) {
             return (
@@ -1575,7 +1724,11 @@ const DeploymentTemplate = ({
         }
 
         if (initialLoadError) {
-            return <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
+            return (
+                <div className="w-100 h-100 flex">
+                    <ErrorScreenManager code={initialLoadError.code} reload={handleReload} />
+                </div>
+            )
         }
 
         return (
@@ -1612,7 +1765,10 @@ const DeploymentTemplate = ({
                         showLockedDiffForApproval={showLockedDiffForApproval}
                         onSave={handleTriggerSaveFromLockedModal}
                         isSaving={isSaving}
-                        documents={getLockedDiffModalDocuments(isApprovalView, state)}
+                        documents={getLockedDiffModalDocuments({
+                            isApprovalView,
+                            state,
+                        })}
                         appId={appId}
                         envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
                     />

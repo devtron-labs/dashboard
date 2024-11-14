@@ -8,6 +8,7 @@ import {
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
@@ -189,7 +190,8 @@ export type ConfigDryRunProps = {
     isDraftPresent: boolean
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
-} & ConfigDryRunManifestProps
+} & ConfigDryRunManifestProps &
+    ConfigErrorHandlingProps
 
 export interface ToggleResolveScopedVariablesProps {
     resolveScopedVariables: boolean
@@ -258,7 +260,17 @@ type DeploymentTemplateDiffViewConfigType =
 
 export type CompareConfigViewEditorConfigType = DeploymentTemplateDiffViewConfigType | CMSecretDiffViewConfigType
 
-export interface CompareConfigViewProps {
+type ConfigErrorHandlingProps =
+    | {
+          errorInfo: ServerErrors
+          handleErrorReload: () => void
+      }
+    | {
+          errorInfo?: never
+          handleErrorReload?: never
+      }
+
+export type CompareConfigViewProps = {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
     isApprovalView: boolean
@@ -275,7 +287,7 @@ export interface CompareConfigViewProps {
      */
     editorKey?: string
     className?: string
-}
+} & ConfigErrorHandlingProps
 
 export interface BaseConfigurationNavigationProps {
     baseConfigurationURL: string

@@ -5,7 +5,7 @@ import { CollapsibleListItem, EnvResourceType } from '@devtron-labs/devtron-fe-c
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
-import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
+import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
@@ -63,6 +63,17 @@ export const getNavigationPath = (
     href?: string,
 ) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}`
 
+const getIconClassFromConfigState = (configState: ResourceConfigState) => {
+    switch (configState) {
+        case ResourceConfigState.Draft:
+            return 'scn-6'
+        case ResourceConfigState.ApprovalPending:
+            return 'scv-5'
+        default:
+            return ''
+    }
+}
+
 /**
  * Returns an object containing the appropriate icon, icon properties and tooltip properties based on the resource configuration state.
  *
@@ -75,7 +86,7 @@ const getIcon = (
 ): CollapsibleListItem<'navLink'>['iconConfig'] => {
     if (isProtected && configState !== ResourceConfigState.Published && configState !== ResourceConfigState.Unnamed) {
         return {
-            Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICEditFile,
+            Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICFileEdit,
             tooltipProps: {
                 content: configState === ResourceConfigState.ApprovalPending ? 'Approval pending' : 'Draft',
                 placement: 'right',
@@ -83,7 +94,7 @@ const getIcon = (
                 className: 'default-tt',
             },
             props: {
-                className: `p-2 ${configState === ResourceConfigState.Draft ? 'scn-6' : ''}`,
+                className: `p-2 ${getIconClassFromConfigState(configState)}`,
             },
         }
     }
