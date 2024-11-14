@@ -310,7 +310,11 @@ export function useTabs(persistanceKey: string) {
 
                 if (tabToBeRemoved.isSelected) {
                     const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.switchedFromTabId)
-                    const fallbackTabIndex = switchFromTabIndex > -1 ? switchFromTabIndex : FALLBACK_TAB
+                    const fallbackTabIndex =
+                        // The id and switchedFromTabId can be same when the same tab is clicked again
+                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.switchedFromTabId
+                            ? switchFromTabIndex
+                            : FALLBACK_TAB
                     _tabs[fallbackTabIndex].isSelected = true
                     resolve(_tabs[fallbackTabIndex].url)
                 } else {
@@ -339,35 +343,23 @@ export function useTabs(persistanceKey: string) {
     const stopTabByIdentifier = (id: string): Promise<string> => removeOrStopTabByIdentifier(id, 'stop')
 
     /**
-     * This function is used to mark a tab as active based on its identifier (id or title).
-     * It can also update the URL associated with the tab
+     * This function is used to mark a tab as active based on its Id
      *
-     * @param {string} idPrefix - Prefix for generating tab IDs
-     * @param {string} name - Name of the tab
-     * @param {string} kind - Kind of tab
+     * @param {string} id - Tab Id
      * @param {string} [url] - URL for the tab
      * @returns {boolean} - True if the tab was found and marked as active
      */
-    const markTabActiveByIdentifier = (idPrefix: string, name: string, kind?: string, url?: string): boolean => {
-        if (!name) {
+    const markTabActiveById = (id: string, url?: string): boolean => {
+        if (!id) {
             return false
         }
-
         let isTabFound = false
-        let title = name
-        if (kind) {
-            title = `${kind}/${name}`
-        }
-
-        const _id = getIdFromIdPrefixAndTitle({
-            idPrefix,
-            title,
-        })
 
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                const isMatch = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                const isMatch = tab.id === id
                 isTabFound = isMatch || isTabFound
+
                 return {
                     ...tab,
                     isSelected: isMatch,
@@ -383,37 +375,8 @@ export function useTabs(persistanceKey: string) {
             updateTabsInLocalStorage(_tabs)
             return _tabs
         })
-        return isTabFound
-    }
 
-    /**
-     * This function is used to mark a tab as active based on its Id
-     *
-     * @param {string} id - Tab Id
-     * @returns {boolean} - True if the tab was found and marked as active
-     */
-    const markTabActiveById = (id: string) => {
-        if (!id) {
-            return
-        }
-        setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) => {
-                const isMatch = tab.id === id
-                return {
-                    ...tab,
-                    isSelected: isMatch,
-                    ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
-                    ...(isMatch && {
-                        switchedFromTabId: getSelectedTabId(),
-                        ...(tab.showNameOnSelect && {
-                            isAlive: true,
-                        }),
-                    }),
-                }
-            })
-            updateTabsInLocalStorage(_tabs)
-            return _tabs
-        })
+        return isTabFound
     }
 
     /**
@@ -424,15 +387,15 @@ export function useTabs(persistanceKey: string) {
      * @param {string} kind - Kind of tab
      */
     const markTabResourceDeletedByIdentifier = (idPrefix: string, name: string, kind?: string) => {
-        let title = name
-        if (kind) {
-            title = `${kind}/${name}`
-        }
-
+        const title = getTitleFromKindAndName({
+            kind,
+            name,
+        })
         const _id = getIdFromIdPrefixAndTitle({
             idPrefix,
             title,
         })
+
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) =>
                 tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
@@ -517,7 +480,6 @@ export function useTabs(persistanceKey: string) {
         initTabs,
         addTab,
         removeTabByIdentifier,
-        markTabActiveByIdentifier,
         markTabActiveById,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
