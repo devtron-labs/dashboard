@@ -294,14 +294,15 @@ export const getTabsBasedOnRole = ({
     isMonitoringDashBoardSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
+    const fixedTabIndices = getFixedTabIndices()
 
-    const tabs = [
+    const tabs: InitTabType[] = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            position: getFixedTabIndices().OVERVIEW,
+            position: fixedTabIndices.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
         },
@@ -314,35 +315,36 @@ export const getTabsBasedOnRole = ({
                 !dynamicTabData &&
                 !isOverviewSelected &&
                 !isMonitoringDashBoardSelected,
-            position: getFixedTabIndices().K8S_RESOURCE_LIST,
+            position: fixedTabIndices.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
+            shouldRemainMounted: true,
         },
         ...(getMonitoringDashboardTabConfig
             ? [
                   getMonitoringDashboardTabConfig(
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
-                      getFixedTabIndices().MONITORING_DASHBOARD,
+                      fixedTabIndices.MONITORING_DASHBOARD,
                   ),
               ]
             : []),
-        ...(!isSuperAdmin
-            ? []
-            : [
+        ...(isSuperAdmin
+            ? [
                   {
                       idPrefix: AppDetailsTabsIdPrefix.terminal,
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      position: getFixedTabIndices().ADMIN_TERMINAL,
+                      position: fixedTabIndices.ADMIN_TERMINAL,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,
                       dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
                   },
-              ]),
+              ]
+            : []),
         ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 

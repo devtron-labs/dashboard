@@ -460,18 +460,8 @@ const ResourceList = () => {
             clusterName={selectedCluster.label}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
-        ...(MonitoringDashboard
-            ? [
-                  isMonitoringNodeType ? (
-                      <MonitoringDashboard key={fixedTabIndices.MONITORING_DASHBOARD} />
-                  ) : (
-                      <div key={fixedTabIndices.MONITORING_DASHBOARD} />
-                  ),
-              ]
-            : []),
-        ...(isSuperAdmin &&
-        tabs[fixedTabIndices.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
-        tabs[fixedTabIndices.ADMIN_TERMINAL].isAlive
+        <MonitoringDashboard key={fixedTabIndices.MONITORING_DASHBOARD} />,
+        ...(isSuperAdmin && tabs[fixedTabIndices.ADMIN_TERMINAL]?.isAlive
             ? [
                   <AdminTerminal
                       key={tabs[fixedTabIndices.ADMIN_TERMINAL].componentKey}
@@ -511,16 +501,24 @@ const ResourceList = () => {
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
                 {tabs.length > 0 &&
                     fixedTabComponents.map((component, index) => {
-                        /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
-                        const hideClassName =
-                            tabs[index].name === AppDetailsTabs.terminal
-                                ? 'cluster-terminal-hidden'
-                                : 'dc__hide-section'
-                        return (
-                            <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
-                                {component}
-                            </div>
-                        )
+                        const currentTab = tabs[index]
+                        // We will render the fixed tab if it is selected, alive or it should remain mounted
+                        // Not using filter, as the index is directly coupled with tabs indexes
+                        if (currentTab.isSelected || currentTab.shouldRemainMounted || currentTab.isAlive) {
+                            /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
+                            const hideClassName =
+                                tabs[index].name === AppDetailsTabs.terminal
+                                    ? 'cluster-terminal-hidden'
+                                    : 'dc__hide-section'
+
+                            return (
+                                <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
+                                    {component}
+                                </div>
+                            )
+                        }
+
+                        return null
                     })}
                 {EventsAIResponseWidget && widgetEventDetails && (
                     <EventsAIResponseWidget

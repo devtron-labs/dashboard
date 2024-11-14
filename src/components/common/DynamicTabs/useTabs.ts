@@ -49,6 +49,7 @@ export function useTabs(persistanceKey: string) {
         hideName = false,
         tippyConfig,
         switchedFromTabId,
+        shouldRemainMounted,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
         name,
@@ -66,6 +67,7 @@ export function useTabs(persistanceKey: string) {
         componentKey: getNewTabComponentKey(id),
         tippyConfig,
         switchedFromTabId,
+        shouldRemainMounted,
     })
 
     const getTabDataFromLocalStorage = () => localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -134,6 +136,7 @@ export function useTabs(persistanceKey: string) {
             hideName: _initTab.hideName,
             tippyConfig: _initTab.tippyConfig,
             switchedFromTabId: null,
+            shouldRemainMounted: _initTab.shouldRemainMounted,
         })
     }
 
@@ -278,6 +281,7 @@ export function useTabs(persistanceKey: string) {
                             dynamicTitle,
                             tippyConfig,
                             switchedFromTabId: getSelectedTabId(),
+                            shouldRemainMounted: false,
                         }),
                     )
                 }
