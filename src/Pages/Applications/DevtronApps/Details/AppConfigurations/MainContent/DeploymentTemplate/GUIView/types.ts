@@ -1,4 +1,4 @@
-import { DeploymentChartVersionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentChartVersionType, GUIViewError } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateFormProps } from '../types'
 
 export interface GUIViewProps
@@ -18,3 +18,15 @@ export interface GUIViewProps
     guiSchema: string
     selectedChart: DeploymentChartVersionType
 }
+
+export type GUIViewState =
+    | {
+          guiSchema: object
+          uiSchema: object
+          error?: never
+      }
+    | {
+          guiSchema?: never
+          uiSchema?: never
+          error: GUIViewError
+      }

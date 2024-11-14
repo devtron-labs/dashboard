@@ -26,7 +26,6 @@ import {
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
     OverrideMergeStrategyType,
     GUIViewError,
-    GUIViewErrorType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -34,7 +33,7 @@ import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { GUIViewProps } from './types'
+import { GUIViewProps, GUIViewState } from './types'
 import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { getRenderActionButton } from './utils'
 
@@ -58,6 +57,7 @@ const GUIView = ({
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
     const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<object>({})
+    const [invalidGUISchemaError, setInvalideGUISchemaError] = useState<GUIViewError | null>(null)
     const modelRef = useRef<typeof ConfigurableGUIViewModel>(null)
 
     // NOTE: need this ref since we need the updated formData on unmount;
@@ -75,8 +75,12 @@ const GUIView = ({
                 modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
                 setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
             }
-        } catch {
-            handleChangeToYAMLMode()
+        } catch (err) {
+            if (err instanceof GUIViewError) {
+                setInvalideGUISchemaError(err)
+            } else {
+                handleChangeToYAMLMode()
+            }
         }
 
         return () => {
@@ -96,7 +100,11 @@ const GUIView = ({
         [],
     )
 
-    const state = useMemo(() => {
+    const state: GUIViewState = useMemo(() => {
+        if (invalidGUISchemaError) {
+            return { error: invalidGUISchemaError } as GUIViewState
+        }
+
         try {
             const chartDetailsText = selectedChart ? `${selectedChart.name} / ${selectedChart.version}` : ''
             const parsedGUISchema = JSON.parse(guiSchema)
@@ -115,7 +123,7 @@ const GUIView = ({
                 )
             }
 
-            if (!hideLockedKeys || !makeObjectFromJsonPathArray) {
+            if (!makeObjectFromJsonPathArray || !hideLockedKeys || mergeStrategy === OverrideMergeStrategyType.PATCH) {
                 return {
                     guiSchema: parsedGUISchema,
                     uiSchema: joinObjects([HIDE_SUBMIT_BUTTON_UI_SCHEMA, configurableGUIViewUISchema]),
@@ -146,18 +154,18 @@ const GUIView = ({
         } catch (err) {
             if (err instanceof GUIViewError) {
                 return {
-                    error: err as GUIViewErrorType,
+                    error: err,
                 }
             }
 
             return {
                 error: {
                     title: 'Something unexpected happened!',
-                    subTitle: err.message ?? 'Something broke while processing the json schema',
-                },
+                    subTitle: (err.message as string) ?? 'Something broke while processing the json schema',
+                } as GUIViewError,
             }
         }
-    }, [guiSchema, hideLockedKeys, configurableGUIViewUISchema])
+    }, [guiSchema, hideLockedKeys, configurableGUIViewUISchema, invalidGUISchemaError])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
         editorOnChange?.(YAML.stringify(data.formData))
