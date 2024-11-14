@@ -222,7 +222,7 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
         >
             <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
                 <button
-                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles"
+                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3"
                     type="button"
                     onClick={handleTextClick}
                 >
@@ -238,10 +238,10 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value.toString(), details)}
                     target="_blank"
-                    className="flex p-4 open-link-button"
+                    className="flex p-4 open-link-button dc__hover-n50 dc__right-radius-3"
                     rel="noreferrer"
                 >
-                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink" />
+                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
                 </a>
             </div>
         </ConditionalWrap>

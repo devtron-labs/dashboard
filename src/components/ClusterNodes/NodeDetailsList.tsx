@@ -360,10 +360,15 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const numericComparatorMethod = (a, b) => {
         let firstValue = a[sortByColumn.sortingFieldName] || 0
         let secondValue = b[sortByColumn.sortingFieldName] || 0
+
         if (typeof firstValue === 'string' && firstValue.endsWith('%')) {
             firstValue = firstValue.slice(0, -1)
+        }
+
+        if (typeof secondValue === 'string' && secondValue.endsWith('%')) {
             secondValue = secondValue.slice(0, -1)
         }
+
         return sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
     }
 
@@ -688,7 +693,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 </div>
             ) : (
                 <div
-                    className={`bcn-0 pt-16 flex-grow-1 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
+                    className={`bcn-0 pt-16 flexbox-col h-100 ${showStaleDataWarning ? 'sync-error' : ''} ${
                         noResults ? 'no-result-container' : ''
                     }`}
                 >
