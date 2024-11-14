@@ -20,8 +20,14 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import {
+    OverrideMergeStrategyType,
+    ToastManagerContainer,
+    UseRegisterShortcutProvider,
+    UserEmailProvider,
+    customEnv,
+} from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
-import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -105,7 +111,7 @@ if (!window || !window._env_) {
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
-        APPLICATION_METRICS_ENABLED: false,
+        APPLICATION_METRICS_ENABLED: true,
         POSTHOG_ENABLED: false,
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
@@ -127,7 +133,7 @@ if (!window || !window._env_) {
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
-        ENABLE_SCOPED_VARIABLES: false,
+        ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
@@ -157,8 +163,9 @@ if (!window || !window._env_) {
         FEATURE_CONFIG_DRIFT_ENABLE: false,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
-        FEATURE_PROMO_EMBEDDED_IFRAME_URL:'',
-        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset'
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL: '',
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
+        FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
     }
 }
 
