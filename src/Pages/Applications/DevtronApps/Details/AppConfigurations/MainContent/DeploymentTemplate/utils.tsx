@@ -175,7 +175,16 @@ export const getAreTemplateChangesPresent = (state: DeploymentTemplateStateType)
     const isOverriddenStatusChanged =
         currentEditorTemplateData.isOverridden !== currentEditorTemplateData.originalTemplateState.isOverridden
 
-    if (isEditorTemplateChanged || isChartRefIdChanged || areApplicationMetricsChanged || isOverriddenStatusChanged) {
+    const isOverrideStrategyChanged =
+        currentEditorTemplateData.mergeStrategy !== currentEditorTemplateData.originalTemplateState.mergeStrategy
+
+    if (
+        isEditorTemplateChanged ||
+        isChartRefIdChanged ||
+        areApplicationMetricsChanged ||
+        isOverriddenStatusChanged ||
+        isOverrideStrategyChanged
+    ) {
         return true
     }
 
@@ -344,6 +353,10 @@ export const handleInitializeDraftData = ({
             selectedChartRefId: chartRefId,
             selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
             editorTemplateWithoutLockedKeys,
+
+            mergedTemplate: stringifiedTemplate,
+            mergedTemplateObject: valuesOverride,
+            mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
         }
 
         return response

@@ -63,6 +63,9 @@ export interface DeploymentTemplateEditorDataStateType
     parsingError: string
     removedPatches: Operation[]
     originalTemplateState: DeploymentTemplateConfigState
+
+    isLoadingMergedTemplate: boolean
+    mergedTemplateError: ServerErrors
 }
 
 export interface DeploymentTemplateStateType {
