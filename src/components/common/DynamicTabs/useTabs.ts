@@ -25,6 +25,14 @@ export function useTabs(persistanceKey: string) {
 
     const getNewTabComponentKey = (id) => `${id}-${dayjs().toString()}`
 
+    const getIdFromIdPrefixAndTitle = ({
+        idPrefix,
+        title,
+    }: Pick<AddTabParamsType, 'idPrefix'> & Pick<PopulateTabDataPropsType, 'title'>) => `${idPrefix}-${title}`
+
+    const getTitleFromKindAndName = ({ kind, name }: Pick<InitTabType, 'kind' | 'name'>) =>
+        kind ? `${kind}/${name}` : name
+
     const populateTabData = ({
         id,
         name,
@@ -98,8 +106,16 @@ export function useTabs(persistanceKey: string) {
      * @returns {DynamicTabType} - Tab data for initialization
      */
     const populateInitTab = (_initTab: InitTabType) => {
-        const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
-        const _id = `${_initTab.idPrefix}-${title}`
+        const title = getTitleFromKindAndName({
+            kind: _initTab.kind,
+            name: _initTab.name,
+        })
+
+        const _id = getIdFromIdPrefixAndTitle({
+            idPrefix: _initTab.idPrefix,
+            title,
+        })
+
         return populateTabData({
             id: _id,
             name: _initTab.name,
@@ -129,7 +145,10 @@ export function useTabs(persistanceKey: string) {
     const initTabs = (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?: string[]) => {
         let _tabs: DynamicTabType[] = []
         let parsedTabsData: ParsedTabsData
-        setTabs((prevTabs) => {
+
+        setTabs((_prevTabs) => {
+            const prevTabs = structuredClone(_prevTabs)
+
             if (!reInit) {
                 const persistedTabsData = getTabDataFromLocalStorage()
                 try {
@@ -214,8 +233,14 @@ export function useTabs(persistanceKey: string) {
         }
 
         return new Promise((resolve) => {
-            const title = `${kind}/${name}`
-            const _id = `${idPrefix}-${title}`
+            const title = getTitleFromKindAndName({
+                kind,
+                name,
+            })
+            const _id = getIdFromIdPrefixAndTitle({
+                idPrefix,
+                title,
+            })
 
             setTabs((prevTabs) => {
                 let found = false
@@ -343,7 +368,10 @@ export function useTabs(persistanceKey: string) {
             title = `${kind}/${name}`
         }
 
-        const _id = `${idPrefix}-${title}`
+        const _id = getIdFromIdPrefixAndTitle({
+            idPrefix,
+            title,
+        })
 
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
@@ -399,7 +427,10 @@ export function useTabs(persistanceKey: string) {
             title = `${kind}/${name}`
         }
 
-        const _id = `${idPrefix}-${title}`
+        const _id = getIdFromIdPrefixAndTitle({
+            idPrefix,
+            title,
+        })
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) =>
                 tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
@@ -437,10 +468,16 @@ export function useTabs(persistanceKey: string) {
         })
     }
 
-    /* TODO: reuse this */
     const getTabId = (idPrefix: string, name: string, kind: string) => {
-        const title = kind ? `${kind}/${name}` : name
-        return `${idPrefix}-${title}`
+        const title = getTitleFromKindAndName({
+            kind,
+            name,
+        })
+
+        return getIdFromIdPrefixAndTitle({
+            idPrefix,
+            title,
+        })
     }
 
     const updateTabComponentKey = (id: string) => {
