@@ -293,12 +293,32 @@ const DeploymentTemplate = ({
         })
     }
 
+    /**
+     * This method is called whenever we are going to need to update current editor template mergedTemplate
+     * We need it in two cases:
+     * 1. When we are in dry run view
+     * 2. When we are in compare view to show merge values checkbox
+     * Since we are not updating it onChange or Should we? TODO: Re-verify in review
+     */
     const handleLoadMergedTemplate = async () => {
         if (
             !getConfigAfterOperations ||
             !currentEditorTemplateData?.isOverridden ||
             currentEditorTemplateData?.mergeStrategy !== OverrideMergeStrategyType.PATCH
         ) {
+            let parsedTemplate = {}
+            try {
+                parsedTemplate = YAML.parse(currentEditorTemplateData?.editorTemplate)
+            } catch {
+                logExceptionToSentry(new Error('handleLoadMergedTemplate threw error while parsing YAML'))
+            }
+
+            dispatch({
+                type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE,
+                payload: {
+                    mergedTemplate: parsedTemplate,
+                },
+            })
             return
         }
 
@@ -1231,8 +1251,7 @@ const DeploymentTemplate = ({
 
         // Question: No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
         if (currentEditorTemplateData) {
-            // TODO: Re-verify this claim
-            return currentEditorTemplateData.mergedTemplate
+            return currentEditorTemplateData.originalTemplateState.mergedTemplate
         }
 
         return ''

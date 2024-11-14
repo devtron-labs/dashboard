@@ -41,7 +41,6 @@ const ConfigDryRun = ({
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
-    // TODO: Can we move this to handleChange?
     const getDeploymentManifestWrapper = async () =>
         abortPreviousRequests(
             () =>

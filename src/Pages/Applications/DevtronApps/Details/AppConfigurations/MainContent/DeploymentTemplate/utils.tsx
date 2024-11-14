@@ -222,7 +222,9 @@ const getDryRunViewEditorState = ({
     } = state
 
     if (!draftTemplateData?.latestDraft) {
-        return isPublishedConfigPresent ? currentEditorTemplateData : baseDeploymentTemplateData
+        return isPublishedConfigPresent || currentEditorTemplateData?.isOverridden
+            ? currentEditorTemplateData
+            : baseDeploymentTemplateData
     }
 
     if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
