@@ -33,7 +33,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5" data-testid="chart-used-heading">
+                        <div className="fs-12 fw-4 cn-9 mr-5" data-testid="chart-used-heading">
                             Chart used
                         </div>
                         <Tippy
