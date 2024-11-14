@@ -258,7 +258,11 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (!envId || !isEditView || showDeleteOverrideDraftEmptyState) {
+        if (
+            !envId ||
+            showDeleteOverrideDraftEmptyState ||
+            (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
+        ) {
             return null
         }
 
@@ -271,6 +275,7 @@ const ConfigToolbar = ({
                             mergeStrategy={mergeStrategy}
                             handleMergeStrategyChange={handleMergeStrategyChange}
                             isDisabled={isDisabled}
+                            variant={isEditView ? 'dropdown' : 'text'}
                         />
                     </div>
                 </InvalidYAMLTippyWrapper>
