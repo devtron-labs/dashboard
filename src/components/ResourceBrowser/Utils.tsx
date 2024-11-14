@@ -27,8 +27,14 @@ import {
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { AppDetailsTabs, AppDetailsTabsId } from '../v2/appDetails/appDetails.store'
+import {
+    JUMP_TO_KIND_SHORT_NAMES,
+    K8S_EMPTY_GROUP,
+    MONITORING_DASHBOARD_TAB_ID,
+    ORDERED_AGGREGATORS,
+    SIDEBAR_KEYS,
+} from './Constants'
 import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
@@ -45,8 +51,6 @@ const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     null,
     'function',
 )
-
-const MONITORING_DASHBOARD_TAB_INDEX = importComponentFromFELibrary('MONITORING_DASHBOARD_TAB_INDEX', null, 'function')
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -277,13 +281,6 @@ export const updateQueryString = (
 export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
     `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
-export const getFixedTabIndices = () => ({
-    OVERVIEW: 0,
-    K8S_RESOURCE_LIST: 1,
-    MONITORING_DASHBOARD: MONITORING_DASHBOARD_TAB_INDEX || 3,
-    ADMIN_TERMINAL: MONITORING_DASHBOARD_TAB_INDEX ? 3 : 2,
-})
-
 export const getTabsBasedOnRole = ({
     selectedCluster,
     namespace,
@@ -294,20 +291,19 @@ export const getTabsBasedOnRole = ({
     isMonitoringDashBoardSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
-    const fixedTabIndices = getFixedTabIndices()
 
     const tabs: InitTabType[] = [
         {
-            idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
+            id: AppDetailsTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            position: fixedTabIndices.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
+            type: 'fixed',
         },
         {
-            idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+            id: AppDetailsTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
             isSelected:
@@ -315,7 +311,7 @@ export const getTabsBasedOnRole = ({
                 !dynamicTabData &&
                 !isOverviewSelected &&
                 !isMonitoringDashBoardSelected,
-            position: fixedTabIndices.K8S_RESOURCE_LIST,
+            type: 'fixed',
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -326,18 +322,18 @@ export const getTabsBasedOnRole = ({
                   getMonitoringDashboardTabConfig(
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
-                      fixedTabIndices.MONITORING_DASHBOARD,
+                      MONITORING_DASHBOARD_TAB_ID,
                   ),
               ]
             : []),
         ...(isSuperAdmin
             ? [
                   {
-                      idPrefix: AppDetailsTabsIdPrefix.terminal,
+                      id: AppDetailsTabsId.terminal,
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      position: fixedTabIndices.ADMIN_TERMINAL,
+                      type: 'fixed',
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,

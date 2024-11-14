@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UpdateTabUrlParamsType } from './Types'
@@ -23,7 +23,19 @@ import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY } from './constants'
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
+    const tabIdToTabMap = useMemo(
+        () =>
+            tabs.reduce((acc, tab) => {
+                acc[tab.id] = tab
+
+                return acc
+            }, {}),
+        [tabs],
+    )
+
     const getNewTabComponentKey = (id: DynamicTabType['id']): string => `${id}-${dayjs().toString()}`
+
+    const getTabById = (id: DynamicTabType['id']): DynamicTabType | null => tabIdToTabMap[id] ?? null
 
     const getIdFromIdPrefixAndTitle = ({
         idPrefix,
@@ -48,7 +60,7 @@ export function useTabs(persistanceKey: string) {
         url,
         isSelected,
         title,
-        position,
+        type,
         showNameOnSelect,
         iconPath = '',
         dynamicTitle = '',
@@ -64,7 +76,7 @@ export function useTabs(persistanceKey: string) {
         isSelected,
         title: title || name,
         isDeleted: false,
-        position,
+        type,
         iconPath,
         dynamicTitle,
         showNameOnSelect,
@@ -124,10 +136,12 @@ export function useTabs(persistanceKey: string) {
             name: _initTab.name,
         })
 
-        const _id = getIdFromIdPrefixAndTitle({
-            idPrefix: _initTab.idPrefix,
-            title,
-        })
+        const _id =
+            _initTab.id ??
+            getIdFromIdPrefixAndTitle({
+                idPrefix: _initTab.idPrefix,
+                title,
+            })
 
         return populateTabData({
             id: _id,
@@ -135,7 +149,7 @@ export function useTabs(persistanceKey: string) {
             url: _initTab.url,
             isSelected: _initTab.isSelected,
             title,
-            position: _initTab.position,
+            type: _initTab.type,
             showNameOnSelect: _initTab.showNameOnSelect,
             iconPath: _initTab.iconPath,
             dynamicTitle: _initTab.dynamicTitle,
@@ -196,7 +210,16 @@ export function useTabs(persistanceKey: string) {
                     /* NOTE: dynamic title might get updated between re-initialization */
                     _tabs[index].dynamicTitle = _initTab.dynamicTitle
                     _tabs[index].isAlive = _initTab.isAlive
-                    _tabs[index].position = _initTab.position
+                    if (_initTab.type) {
+                        _tabs[index].type = _initTab.type
+                    } else {
+                        // TODO: Remove if the key is changed
+                        // Backward compatibility with position
+                        _tabs[index].type =
+                            'position' in _initTab && _initTab.position === Number.MAX_SAFE_INTEGER
+                                ? 'dynamic'
+                                : 'fixed'
+                    }
                     return false
                 })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))
@@ -210,13 +233,15 @@ export function useTabs(persistanceKey: string) {
             }
             _tabs.sort((a, b) => {
                 /* NOTE: to mitigate Integer overflow using this comparison */
-                if (a.position < b.position) {
+                if (a.type === 'fixed') {
                     return -1
                 }
-                if (a.position === b.position) {
-                    return 0
+
+                if (b.type === 'fixed') {
+                    return 1
                 }
-                return 1
+
+                return 0
             })
             localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs, parsedTabsData))
             return _tabs
@@ -236,7 +261,7 @@ export function useTabs(persistanceKey: string) {
         name,
         url,
         showNameOnSelect = false,
-        position = Number.MAX_SAFE_INTEGER,
+        type = 'dynamic',
         iconPath = '',
         dynamicTitle = '',
         tippyConfig = null,
@@ -280,7 +305,7 @@ export function useTabs(persistanceKey: string) {
                             url,
                             isSelected: true,
                             title,
-                            position,
+                            type,
                             showNameOnSelect,
                             iconPath,
                             dynamicTitle,
@@ -393,37 +418,6 @@ export function useTabs(persistanceKey: string) {
     }
 
     /**
-     * This function marks a tab as deleted by its identifier.
-     *
-     * @param {string} idPrefix - Prefix for generating tab IDs
-     * @param {string} name - Name of the tab
-     * @param {string} kind - Kind of tab
-     */
-    const markTabResourceDeletedByIdentifier = (idPrefix: string, name: string, kind?: string) => {
-        const title = getTitleFromKindAndName({
-            kind,
-            name,
-        })
-        const _id = getIdFromIdPrefixAndTitle({
-            idPrefix,
-            title,
-        })
-
-        setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) =>
-                tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
-                    ? {
-                          ...tab,
-                          isDeleted: true,
-                      }
-                    : tab,
-            )
-            updateTabsInLocalStorage(_tabs)
-            return _tabs
-        })
-    }
-
-    /**
      * Updates the URL of a tab by its identifier.
      *
      * @param {string} id - Identifier of the tab to update
@@ -498,9 +492,9 @@ export function useTabs(persistanceKey: string) {
         addTab,
         removeTabByIdentifier,
         markTabActiveById,
-        markTabResourceDeletedByIdentifier,
         updateTabUrl,
         getTabId,
+        getTabById,
         updateTabComponentKey,
         updateTabLastSyncMoment,
         stopTabByIdentifier,

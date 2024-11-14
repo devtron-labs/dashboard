@@ -31,17 +31,24 @@ import {
     ApiResourceGroupType,
     InitTabType,
     useUrlFilters,
+    DynamicTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
+import {
+    ALL_NAMESPACE_OPTION,
+    K8S_EMPTY_GROUP,
+    MONITORING_DASHBOARD_TAB_ID,
+    SIDEBAR_KEYS,
+    UPGRADE_CLUSTER_CONSTANTS,
+} from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs, AppDetailsTabsId } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getFixedTabIndices, getTabsBasedOnRole } from '../Utils'
+import { getTabsBasedOnRole } from '../Utils'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -76,6 +83,7 @@ const ResourceList = () => {
         updateTabLastSyncMoment,
         stopTabByIdentifier,
         getTabId,
+        getTabById,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
@@ -144,8 +152,6 @@ const ResourceList = () => {
     const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
     const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
-    const fixedTabIndices = getFixedTabIndices()
-
     const getDynamicTabIdPrefix = () => {
         if (isUpgradeClusterNodeType) {
             return UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX
@@ -172,17 +178,16 @@ const ResourceList = () => {
         kind: nodeType || '',
         url,
         isSelected: true,
-        position: Number.MAX_SAFE_INTEGER,
+        type: 'dynamic',
         dynamicTitle: isUpgradeClusterNodeType
             ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
             : undefined,
         iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
     })
 
-    /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => {
         const { idPrefix, kind, name } = getDynamicTabData()
-        return tab.position === Number.MAX_SAFE_INTEGER && tab.id === getTabId(idPrefix, name, kind)
+        return tab.type === 'dynamic' && tab.id === getTabId(idPrefix, name, kind)
     })
 
     const initTabsBasedOnRole = (reInit: boolean) => {
@@ -200,7 +205,7 @@ const ResourceList = () => {
         initTabs(
             _tabs,
             reInit,
-            !isSuperAdmin ? [getTabId(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal, '')] : null,
+            !isSuperAdmin ? [getTabId(AppDetailsTabsId.terminal, AppDetailsTabs.terminal, '')] : null,
         )
     }
 
@@ -214,8 +219,9 @@ const ResourceList = () => {
         if (node || (isUpgradeClusterNodeType && isFELibAvailable)) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
+            const tabId = getTabId(idPrefix, name, kind)
             /* NOTE if the corresponding tab exists return */
-            const match = tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))
+            const match = getTabById(tabId)
             if (match) {
                 if (!match.isSelected) {
                     markTabActiveById(match.id)
@@ -239,33 +245,24 @@ const ResourceList = () => {
             return
         }
 
-        // These checks are wrong since tabs are sorted by position so index is not fixed
-        /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
-        if (isOverviewNodeType) {
-            if (tabs[fixedTabIndices.OVERVIEW] && !tabs[fixedTabIndices.OVERVIEW].isSelected) {
-                markTabActiveById(tabs[fixedTabIndices.OVERVIEW].id)
+        // Add here because of dynamic imports
+        const nodeTypeToTabIdMap: Record<string, string> = {
+            [SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()]: AppDetailsTabsId.cluster_overview,
+            [SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()]: MonitoringDashboard ? MONITORING_DASHBOARD_TAB_ID : null,
+            [AppDetailsTabs.terminal]: AppDetailsTabsId.terminal,
+        }
+
+        if (nodeType in nodeTypeToTabIdMap) {
+            const selectedTabFromNodeType = getTabById(nodeTypeToTabIdMap[nodeType]) ?? ({} as DynamicTabType)
+            // Explicitly not using optional chaining to ensure to check the tab exists
+            if (selectedTabFromNodeType && !selectedTabFromNodeType.isSelected) {
+                markTabActiveById(selectedTabFromNodeType.id)
             }
+
             return
         }
 
-        if (isMonitoringNodeType && MonitoringDashboard) {
-            if (tabs[fixedTabIndices.MONITORING_DASHBOARD] && !tabs[fixedTabIndices.MONITORING_DASHBOARD].isSelected) {
-                markTabActiveById(tabs[fixedTabIndices.MONITORING_DASHBOARD].id)
-            }
-
-            return
-        }
-
-        if (isTerminalNodeType) {
-            if (tabs[fixedTabIndices.ADMIN_TERMINAL] && !tabs[fixedTabIndices.ADMIN_TERMINAL].isSelected) {
-                markTabActiveById(tabs[fixedTabIndices.ADMIN_TERMINAL].id)
-            }
-            return
-        }
-
-        if (tabs[fixedTabIndices.K8S_RESOURCE_LIST] && !tabs[fixedTabIndices.K8S_RESOURCE_LIST].isSelected) {
-            markTabActiveById(tabs[fixedTabIndices.K8S_RESOURCE_LIST].id)
-        }
+        markTabActiveById(AppDetailsTabsId.k8s_Resources)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -335,7 +332,7 @@ const ResourceList = () => {
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
-        const terminalTab = tabs[fixedTabIndices.ADMIN_TERMINAL]
+        const terminalTab = getTabById(AppDetailsTabsId.terminal)
         if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
@@ -343,7 +340,7 @@ const ResourceList = () => {
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
-        updateTabLastSyncMoment(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)
+        updateTabLastSyncMoment(getTabById(AppDetailsTabsId.k8s_Resources)?.id)
 
     const getUpdateTabUrlForId =
         (id: UpdateTabUrlParamsType['id']): ClusterListType['updateTabUrl'] =>
@@ -433,42 +430,30 @@ const ResourceList = () => {
     }
 
     const fixedTabComponents = [
-        <ClusterOverview
-            key={tabs[fixedTabIndices.OVERVIEW]?.componentKey}
-            isSuperAdmin={isSuperAdmin}
-            selectedCluster={selectedCluster}
-            addTab={addTab}
-        />,
+        <ClusterOverview isSuperAdmin={isSuperAdmin} selectedCluster={selectedCluster} addTab={addTab} />,
         <K8SResourceTabComponent
-            key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
             selectedResource={selectedResource}
             setSelectedResource={setSelectedResource}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
-                tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
+                getTabById(AppDetailsTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
-            isOpen={!!tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.isSelected}
+            isOpen={!!getTabById(AppDetailsTabsId.k8s_Resources)?.isSelected}
             showStaleDataWarning={isDataStale}
-            updateK8sResourceTab={getUpdateTabUrlForId(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)}
+            updateK8sResourceTab={getUpdateTabUrlForId(getTabById(AppDetailsTabsId.k8s_Resources)?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             setWidgetEventDetails={setWidgetEventDetails}
             handleResourceClick={handleResourceClick}
             clusterName={selectedCluster.label}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
-        <MonitoringDashboard key={fixedTabIndices.MONITORING_DASHBOARD} />,
-        ...(isSuperAdmin && tabs[fixedTabIndices.ADMIN_TERMINAL]?.isAlive
-            ? [
-                  <AdminTerminal
-                      key={tabs[fixedTabIndices.ADMIN_TERMINAL].componentKey}
-                      isSuperAdmin={isSuperAdmin}
-                      updateTerminalTabUrl={updateTerminalTabUrl}
-                  />,
-              ]
+        <MonitoringDashboard />,
+        ...(isSuperAdmin && getTabById(AppDetailsTabsId.terminal)?.isAlive
+            ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
     ]
 
@@ -512,7 +497,10 @@ const ResourceList = () => {
                                     : 'dc__hide-section'
 
                             return (
-                                <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
+                                <div
+                                    key={currentTab.componentKey}
+                                    className={!tabs[index].isSelected ? hideClassName : ''}
+                                >
                                     {component}
                                 </div>
                             )
