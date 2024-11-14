@@ -161,9 +161,7 @@ export function useTabs(persistanceKey: string) {
         let _tabs: DynamicTabType[] = []
         let parsedTabsData: ParsedTabsData
 
-        setTabs((_prevTabs) => {
-            const prevTabs = structuredClone(_prevTabs)
-
+        setTabs((prevTabs) => {
             if (!reInit) {
                 const persistedTabsData = getTabDataFromLocalStorage()
                 try {
