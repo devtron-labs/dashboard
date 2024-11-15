@@ -241,7 +241,8 @@ export default function CIPipeline({
         }
     }
 
-    const areMandatoryPluginPossible = !isJobCard && !!processPluginData
+    // mandatory plugins are applicable for job ci but not jobs
+    const areMandatoryPluginPossible = !isJobView && !!processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
@@ -249,7 +250,7 @@ export default function CIPipeline({
         /**
          * ids required to fetch in case we have a plugin in step
          */
-        requiredPluginIds?: PluginDetailPayloadType['pluginId'],
+        requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ): Promise<void> => {
         if (areMandatoryPluginPossible) {
             let branchName = ''

@@ -219,15 +219,6 @@ export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> =>
         },
     }))
 
-/**
- * @deprecated Use getEnvironmentListMinPublic form common lib instead
- */
-export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
-    return get(
-        `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
-    )
-}
-
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
     return get(URL)

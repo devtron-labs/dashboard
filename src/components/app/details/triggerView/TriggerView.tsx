@@ -33,6 +33,7 @@ import {
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     BlockedStateData,
+    getEnvironmentListMinPublic,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -65,7 +66,7 @@ import {
     NO_COMMIT_SELECTED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../../services/service'
+import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as ICError } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'

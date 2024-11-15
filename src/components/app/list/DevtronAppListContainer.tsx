@@ -109,7 +109,7 @@ const DevtronAppList = ({
             ...expandedState,
             isAllExpandable: parsedAppList.some((app) => app.environments.length > 1),
         })
-        setAppCount(parsedAppList.length)
+        setAppCount(appListResponse?.result?.appCount || 0)
     }, [appListResponseLoading])
 
     const handleEditApp = (appId: number): void => {
