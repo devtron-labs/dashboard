@@ -18,6 +18,7 @@ import { ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
 import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { useTabs } from './useTabs'
+import { TAB_DATA_VERSION } from './constants'
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
@@ -53,6 +54,7 @@ export interface TimerType {
 export type ParsedTabsData = {
     key: string
     data: DynamicTabType[]
+    version: typeof TAB_DATA_VERSION
 }
 
 export interface PopulateTabDataPropsType

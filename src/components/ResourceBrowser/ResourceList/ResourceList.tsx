@@ -40,12 +40,13 @@ import {
     ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
-import { AppDetailsTabs, AppDetailsTabsId } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { getTabsBasedOnRole } from '../Utils'
@@ -205,7 +206,7 @@ const ResourceList = () => {
         initTabs(
             _tabs,
             reInit,
-            !isSuperAdmin ? [getTabId(AppDetailsTabsId.terminal, AppDetailsTabs.terminal, '')] : null,
+            !isSuperAdmin ? [getTabId(ResourceBrowserTabsId.terminal, AppDetailsTabs.terminal, '')] : null,
         )
     }
 
@@ -247,9 +248,9 @@ const ResourceList = () => {
 
         // Add here because of dynamic imports
         const nodeTypeToTabIdMap: Record<string, string> = {
-            [SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()]: AppDetailsTabsId.cluster_overview,
+            [SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()]: ResourceBrowserTabsId.cluster_overview,
             [SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()]: MonitoringDashboard ? MONITORING_DASHBOARD_TAB_ID : null,
-            [AppDetailsTabs.terminal]: AppDetailsTabsId.terminal,
+            [AppDetailsTabs.terminal]: ResourceBrowserTabsId.terminal,
         }
 
         if (nodeType in nodeTypeToTabIdMap) {
@@ -262,7 +263,7 @@ const ResourceList = () => {
             return
         }
 
-        markTabActiveById(AppDetailsTabsId.k8s_Resources)
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -332,7 +333,7 @@ const ResourceList = () => {
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
-        const terminalTab = getTabById(AppDetailsTabsId.terminal)
+        const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
         if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
@@ -340,7 +341,7 @@ const ResourceList = () => {
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
-        updateTabLastSyncMoment(getTabById(AppDetailsTabsId.k8s_Resources)?.id)
+        updateTabLastSyncMoment(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)
 
     const getUpdateTabUrlForId =
         (id: UpdateTabUrlParamsType['id']): ClusterListType['updateTabUrl'] =>
@@ -438,13 +439,13 @@ const ResourceList = () => {
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
-                getTabById(AppDetailsTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
+                getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
-            isOpen={!!getTabById(AppDetailsTabsId.k8s_Resources)?.isSelected}
+            isOpen={!!getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected}
             showStaleDataWarning={isDataStale}
-            updateK8sResourceTab={getUpdateTabUrlForId(getTabById(AppDetailsTabsId.k8s_Resources)?.id)}
+            updateK8sResourceTab={getUpdateTabUrlForId(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             setWidgetEventDetails={setWidgetEventDetails}
             handleResourceClick={handleResourceClick}
@@ -452,7 +453,7 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         <MonitoringDashboard />,
-        ...(isSuperAdmin && getTabById(AppDetailsTabsId.terminal)?.isAlive
+        ...(isSuperAdmin && getTabById(ResourceBrowserTabsId.terminal)?.isAlive
             ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
     ]

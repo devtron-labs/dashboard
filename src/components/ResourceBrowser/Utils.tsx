@@ -27,12 +27,13 @@ import {
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
-import { AppDetailsTabs, AppDetailsTabsId } from '../v2/appDetails/appDetails.store'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     ORDERED_AGGREGATORS,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
 import {
@@ -294,7 +295,7 @@ export const getTabsBasedOnRole = ({
 
     const tabs: InitTabType[] = [
         {
-            id: AppDetailsTabsId.cluster_overview,
+            id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
@@ -303,7 +304,7 @@ export const getTabsBasedOnRole = ({
             type: 'fixed',
         },
         {
-            id: AppDetailsTabsId.k8s_Resources,
+            id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
             isSelected:
@@ -329,7 +330,7 @@ export const getTabsBasedOnRole = ({
         ...(isSuperAdmin
             ? [
                   {
-                      id: AppDetailsTabsId.terminal,
+                      id: ResourceBrowserTabsId.terminal,
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,

@@ -18,7 +18,7 @@ import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UpdateTabUrlParamsType } from './Types'
-import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY } from './constants'
+import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
 
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
@@ -116,6 +116,7 @@ export function useTabs(persistanceKey: string) {
         return JSON.stringify({
             ..._parsedTabsData,
             key: persistanceKey,
+            version: TAB_DATA_VERSION,
             data: _tabs,
         })
     }
@@ -173,6 +174,7 @@ export function useTabs(persistanceKey: string) {
      */
     const initTabs = (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?: string[]) => {
         let _tabs: DynamicTabType[] = []
+        let tabDataVersion = TAB_DATA_VERSION
         let parsedTabsData: ParsedTabsData
 
         setTabs((prevTabs) => {
@@ -181,45 +183,49 @@ export function useTabs(persistanceKey: string) {
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = persistedTabsData ? parsedTabsData.data : prevTabs
+                    tabDataVersion = parsedTabsData?.version
                 } catch {
                     _tabs = prevTabs
                 }
             }
             if (_tabs.length > 0) {
-                _tabs = _tabs.map((_tab, index) => ({
-                    ..._tab,
-                    isSelected: false,
-                    /* NOTE: following lines migrate old tab data to new */
-                    lastSyncMoment: dayjs(),
-                    position: 'positionFixed' in _tab && _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
-                    ...(_tab.componentKey
-                        ? { componentKey: _tab.componentKey }
-                        : { componentKey: getNewTabComponentKey(_tab.id) }),
-                    ...(_tab.isAlive ? { isAlive: _tab.isAlive } : { isAlive: false }),
-                }))
+                _tabs = _tabs.map((_tab) => {
+                    // Backward compatibility with position
+                    const type =
+                        _tab.type ??
+                        ('position' in _tab && _tab.position === Number.MAX_SAFE_INTEGER ? 'dynamic' : 'fixed')
+
+                    return {
+                        ..._tab,
+                        isSelected: false,
+                        /* NOTE: following lines migrate old tab data to new */
+                        lastSyncMoment: dayjs(),
+                        ...(_tab.componentKey
+                            ? { componentKey: _tab.componentKey }
+                            : { componentKey: getNewTabComponentKey(_tab.id) }),
+                        ...(_tab.isAlive ? { isAlive: _tab.isAlive } : { isAlive: false }),
+                        type,
+                        id:
+                            tabDataVersion !== TAB_DATA_VERSION && type === 'fixed' && _tab.id
+                                ? _tab.id.split('-')[0]
+                                : _tab.id,
+                    }
+                })
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
                 }
                 const tabNamesSet = _tabs.map((_tab) => _tab.name)
                 const initTabsNotInTabs = initTabsData.filter((_initTab) => {
                     const index = tabNamesSet.indexOf(_initTab.name)
+
                     if (index === -1) {
                         return true
                     }
+
                     _tabs[index].isSelected = _initTab.isSelected
                     /* NOTE: dynamic title might get updated between re-initialization */
                     _tabs[index].dynamicTitle = _initTab.dynamicTitle
                     _tabs[index].isAlive = _initTab.isAlive
-                    if (_initTab.type) {
-                        _tabs[index].type = _initTab.type
-                    } else {
-                        // TODO: Remove if the key is changed
-                        // Backward compatibility with position
-                        _tabs[index].type =
-                            'position' in _initTab && _initTab.position === Number.MAX_SAFE_INTEGER
-                                ? 'dynamic'
-                                : 'fixed'
-                    }
                     return false
                 })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))
@@ -231,8 +237,9 @@ export function useTabs(persistanceKey: string) {
             if (!_tabs.some((_tab) => _tab.isSelected)) {
                 _tabs[FALLBACK_TAB].isSelected = true
             }
+
             _tabs.sort((a, b) => {
-                /* NOTE: to mitigate Integer overflow using this comparison */
+                // Fixed tabs are always before dynamic tabs
                 if (a.type === 'fixed') {
                     return -1
                 }
@@ -243,6 +250,7 @@ export function useTabs(persistanceKey: string) {
 
                 return 0
             })
+
             localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs, parsedTabsData))
             return _tabs
         })
