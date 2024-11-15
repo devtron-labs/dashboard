@@ -176,6 +176,16 @@ type ConfigDryRunManifestProps =
           manifestAbortController?: never
       }
 
+type ConfigErrorHandlingProps =
+    | {
+          errorInfo: ServerErrors
+          handleErrorReload: () => void
+      }
+    | {
+          errorInfo?: never
+          handleErrorReload?: never
+      }
+
 export type ConfigDryRunProps = {
     isLoading: boolean
     handleToggleResolveScopedVariables: () => void
@@ -260,16 +270,6 @@ type DeploymentTemplateDiffViewConfigType =
 
 export type CompareConfigViewEditorConfigType = DeploymentTemplateDiffViewConfigType | CMSecretDiffViewConfigType
 
-type ConfigErrorHandlingProps =
-    | {
-          errorInfo: ServerErrors
-          handleErrorReload: () => void
-      }
-    | {
-          errorInfo?: never
-          handleErrorReload?: never
-      }
-
 export type CompareConfigViewProps = {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
@@ -297,8 +297,18 @@ export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
 }
 
-export interface SelectMergeStrategyProps {
+export type SelectMergeStrategyProps = {
     mergeStrategy: OverrideMergeStrategyType
-    handleMergeStrategyChange: (value: OverrideMergeStrategyType) => void
-    isDisabled: boolean
+    /**
+     * @default `noop`
+     */
+    handleMergeStrategyChange?: (value: OverrideMergeStrategyType) => void
+    /**
+     * @default false
+     */
+    isDisabled?: boolean
+    /**
+     * @default `dropdown`
+     */
+    variant: 'dropdown' | 'text'
 }

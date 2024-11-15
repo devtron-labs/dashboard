@@ -7,6 +7,7 @@ import {
     SelectPickerVariantType,
     DOCUMENTATION_HOME_PAGE,
     ComponentSizeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { MERGE_STRATEGY_OPTIONS } from './constants'
@@ -18,9 +19,50 @@ const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false,
 const getIsOptionDisabled = (option: SelectPickerOptionType) =>
     !isFELibAvailable && option.value === OverrideMergeStrategyType.PATCH
 
-const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisabled }: SelectMergeStrategyProps) => {
+const MERGE_STRATEGY_LABEL_CLASS = 'cn-7 fs-12 fw-4 lh-16'
+
+const SelectMergeStrategy = ({
+    mergeStrategy,
+    handleMergeStrategyChange = noop,
+    isDisabled = false,
+    variant = 'dropdown',
+}: SelectMergeStrategyProps) => {
     const handleChange = (selectedOption: SelectPickerOptionType) => {
         handleMergeStrategyChange(selectedOption.value as OverrideMergeStrategyType)
+    }
+
+    const renderContent = () => {
+        const selectedOption = MERGE_STRATEGY_OPTIONS.find((option) => option.value === mergeStrategy)
+
+        if (variant === 'text') {
+            return (
+                <>
+                    <span className={MERGE_STRATEGY_LABEL_CLASS}>Merge strategy</span>
+                    <span className="cn-9 fs-12 fw-6 lh-20">{selectedOption?.label || '-'}</span>
+                </>
+            )
+        }
+
+        return (
+            <>
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label className={`m-0 ${MERGE_STRATEGY_LABEL_CLASS}`} htmlFor="config-toolbar-select-strategy">
+                    Merge strategy
+                </label>
+
+                <SelectPicker
+                    inputId="config-toolbar-select-strategy"
+                    onChange={handleChange}
+                    value={selectedOption}
+                    options={MERGE_STRATEGY_OPTIONS}
+                    isDisabled={isDisabled}
+                    variant={SelectPickerVariantType.BORDER_LESS}
+                    isSearchable={false}
+                    size={ComponentSizeType.small}
+                    isOptionDisabled={getIsOptionDisabled}
+                />
+            </>
+        )
     }
 
     return (
@@ -35,22 +77,7 @@ const SelectMergeStrategy = ({ mergeStrategy, handleMergeStrategyChange, isDisab
                 documentationLink={DOCUMENTATION_HOME_PAGE}
             />
 
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-            <label className="m-0 cn-7 fs-12 fw-4 lh-16" htmlFor="config-toolbar-select-strategy">
-                Merge strategy
-            </label>
-
-            <SelectPicker
-                inputId="config-toolbar-select-strategy"
-                onChange={handleChange}
-                value={MERGE_STRATEGY_OPTIONS.find((option) => option.value === mergeStrategy)}
-                options={MERGE_STRATEGY_OPTIONS}
-                isDisabled={isDisabled}
-                variant={SelectPickerVariantType.BORDER_LESS}
-                isSearchable={false}
-                size={ComponentSizeType.small}
-                isOptionDisabled={getIsOptionDisabled}
-            />
+            {renderContent()}
         </div>
     )
 }
