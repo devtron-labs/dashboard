@@ -1047,6 +1047,13 @@ const DeploymentTemplate = ({
 
             const isLockConfigError = !!response?.result?.isLockConfigError
 
+            if (isLockConfigError && showLockedTemplateDiffModal) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Changes in locked keys are not allowed.',
+                })
+            }
+
             dispatch({
                 type: DeploymentTemplateActionType.FINISH_SAVE,
                 payload: {
@@ -1349,7 +1356,11 @@ const DeploymentTemplate = ({
             publishedTemplateData?.isOverridden &&
             publishedTemplateData?.mergeStrategy === OverrideMergeStrategyType.PATCH
 
-        return isPublishedStrategyPatch || currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+        return (
+            isPublishedStrategyPatch ||
+            (currentViewEditorState?.isOverridden &&
+                currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH)
+        )
     }
 
     const handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange'] = (mergeStrategy) => {

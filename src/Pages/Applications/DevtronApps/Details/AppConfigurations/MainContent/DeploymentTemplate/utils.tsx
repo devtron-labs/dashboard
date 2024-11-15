@@ -636,12 +636,13 @@ export const getCompareFromEditorConfig = ({
             displayName: 'Version',
             value: templateState?.selectedChart?.version,
         },
-        ...(!!envId && {
-            mergeStrategy: {
-                displayName: 'Merge strategy',
-                value: templateState?.mergeStrategy,
-            },
-        }),
+        ...(!!envId &&
+            !isDeleteOverrideDraft && {
+                mergeStrategy: {
+                    displayName: 'Merge strategy',
+                    value: templateState?.mergeStrategy,
+                },
+            }),
         ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
             applicationMetrics: {
                 displayName: 'Application metrics',
