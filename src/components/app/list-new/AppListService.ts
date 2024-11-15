@@ -57,8 +57,9 @@ export const getDevtronAppListDataToExport = (
     namespaceList: EnvironmentListHelmResult[],
     clusterList: Cluster[],
     projectList: Teams[],
+    appCount: number
 ) => {
-    const appListPayload: AppListPayloadType = getDevtronAppListPayload(filterConfig, environmentList, namespaceList)
+    const appListPayload: AppListPayloadType = {...getDevtronAppListPayload(filterConfig, environmentList, namespaceList), offset: 0, size: appCount} // Over riding size and offset as we need all list (no pagination)
     const clusterMap = new Map<string, number>()
     clusterList.forEach((cluster) => clusterMap.set(cluster.cluster_name, cluster.id))
     return getAppList(appListPayload).then(({ result }) => {
