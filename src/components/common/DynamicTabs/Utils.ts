@@ -66,7 +66,7 @@ export const initTabsData = (
     tabs.forEach((tab) => {
         const tabOption = {
             ...tab,
-            label: tab.title,
+            label: tab.dynamicTitle || tab.title,
             value: tab.id,
         }
         if (tab.type === 'fixed') {

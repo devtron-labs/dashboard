@@ -226,6 +226,7 @@ export function useTabs(persistanceKey: string) {
                     /* NOTE: dynamic title might get updated between re-initialization */
                     _tabs[index].dynamicTitle = _initTab.dynamicTitle
                     _tabs[index].isAlive = _initTab.isAlive
+                    _tabs[index].tippyConfig = _initTab.tippyConfig
                     return false
                 })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))
@@ -291,11 +292,14 @@ export function useTabs(persistanceKey: string) {
             setTabs((prevTabs) => {
                 let found = false
                 const _tabs = prevTabs.map((tab) => {
-                    const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                    const matched = tab.id === _id
                     found = found || matched
                     return matched
                         ? {
                               ...tab,
+                              dynamicTitle,
+                              tippyConfig,
+                              iconPath,
                               url,
                               isSelected: true,
                           }

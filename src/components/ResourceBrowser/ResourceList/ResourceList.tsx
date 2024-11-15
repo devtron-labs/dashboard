@@ -60,7 +60,7 @@ import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
-import { parseSearchParams } from './utils'
+import { getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
 import { ResourceListUrlFiltersType } from './types'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
@@ -173,6 +173,17 @@ const ResourceList = () => {
         return node
     }
 
+    const getUpgradeCompatibilityTabConfigOverride = () =>
+        isUpgradeClusterNodeType
+            ? {
+                  iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
+                  dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
+                  tippyConfig: getUpgradeCompatibilityTippyConfig({
+                      targetK8sVersion,
+                  }),
+              }
+            : {}
+
     const getDynamicTabData = (): InitTabType => ({
         idPrefix: getDynamicTabIdPrefix(),
         name: getNodeName(),
@@ -180,10 +191,7 @@ const ResourceList = () => {
         url,
         isSelected: true,
         type: 'dynamic',
-        dynamicTitle: isUpgradeClusterNodeType
-            ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
-            : undefined,
-        iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+        ...getUpgradeCompatibilityTabConfigOverride(),
     })
 
     const dynamicActiveTab = tabs.find((tab) => {
@@ -236,10 +244,7 @@ const ResourceList = () => {
                 kind,
                 name,
                 url: _url,
-                iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
-                dynamicTitle: isUpgradeClusterNodeType
-                    ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
-                    : undefined,
+                ...getUpgradeCompatibilityTabConfigOverride(),
             })
                 .then(noop)
                 .catch(noop)
