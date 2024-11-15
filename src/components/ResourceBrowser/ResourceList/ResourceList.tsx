@@ -452,7 +452,7 @@ const ResourceList = () => {
             clusterName={selectedCluster.label}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
-        <MonitoringDashboard />,
+        ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
         ...(isSuperAdmin && getTabById(ResourceBrowserTabsId.terminal)?.isAlive
             ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
