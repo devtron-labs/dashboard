@@ -20,7 +20,6 @@ import {
     GetCurrentEditorPayloadForScopedVariablesProps,
     GetCurrentEditorStateProps,
     GetDryRunViewEditorStateProps,
-    GetLockConfigEligibleAndIneligibleChangesType,
     GetLockedDiffModalDocumentsParamsType,
     GetLockedDiffModalDocumentsReturnType,
     HandleInitializeDraftDataProps,
@@ -34,8 +33,6 @@ import { CompareConfigViewProps } from '../types'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
-const getLockConfigEligibleAndIneligibleChanges: GetLockConfigEligibleAndIneligibleChangesType =
-    importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
 
 export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
     if (index >= paths.length) {
@@ -449,7 +446,6 @@ export const getUpdateBaseDeploymentTemplatePayload = (
         currentEditorTemplateData,
         wasGuiOrHideLockedKeysEdited,
         lockedDiffModalState: { showLockedTemplateDiffModal },
-        lockedConfigKeysWithLockType,
     } = state
 
     const editorTemplate = getCurrentTemplateWithLockedKeys({
@@ -458,7 +454,7 @@ export const getUpdateBaseDeploymentTemplatePayload = (
     })
     const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
 
-    const baseRequestData = {
+    return {
         ...(currentEditorTemplateData.chartConfig.chartRefId === currentEditorTemplateData.selectedChart.id
             ? currentEditorTemplateData.chartConfig
             : {}),
@@ -469,6 +465,7 @@ export const getUpdateBaseDeploymentTemplatePayload = (
         defaultAppOverride: currentEditorTemplateData.originalTemplate,
         isAppMetricsEnabled: currentEditorTemplateData.isAppMetricsEnabled,
         saveEligibleChanges: showLockedTemplateDiffModal,
+        valuesOverride: editorTemplateObject,
 
         ...(!skipReadmeAndSchema
             ? {
@@ -477,27 +474,6 @@ export const getUpdateBaseDeploymentTemplatePayload = (
                   schema: currentEditorTemplateData.schema,
               }
             : {}),
-    }
-
-    if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
-        // Question: In case of draft edit should we do this or approval as unedited?
-        const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments({
-                isApprovalView: false,
-                state,
-            }),
-            lockedConfigKeysWithLockType,
-        })
-
-        return {
-            ...baseRequestData,
-            valuesOverride: eligibleChanges,
-        }
-    }
-
-    return {
-        ...baseRequestData,
-        valuesOverride: editorTemplateObject,
     }
 }
 
@@ -546,7 +522,6 @@ export const getUpdateEnvironmentDTPayload = (
         currentEditorTemplateData,
         lockedDiffModalState: { showLockedTemplateDiffModal },
         baseDeploymentTemplateData,
-        lockedConfigKeysWithLockType,
         wasGuiOrHideLockedKeysEdited,
     } = state
 
@@ -556,7 +531,7 @@ export const getUpdateEnvironmentDTPayload = (
     })
     const editorTemplateObject: Record<string, string> = YAML.parse(editorTemplate)
 
-    const baseObject = {
+    return {
         environmentId: +envId,
         chartRefId: currentEditorTemplateData.selectedChartRefId,
         // Since this is for published here it will always be overridden
@@ -584,26 +559,7 @@ export const getUpdateEnvironmentDTPayload = (
                   schema: currentEditorTemplateData.schema,
               }
             : {}),
-    }
 
-    if (showLockedTemplateDiffModal && getLockConfigEligibleAndIneligibleChanges) {
-        const { eligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-            documents: getLockedDiffModalDocuments({
-                isApprovalView: false,
-                state,
-            }),
-            lockedConfigKeysWithLockType,
-        })
-
-        return {
-            ...baseObject,
-            mergeStrategy: currentEditorTemplateData.mergeStrategy,
-            envOverrideValues: eligibleChanges,
-        }
-    }
-
-    return {
-        ...baseObject,
         mergeStrategy: currentEditorTemplateData.mergeStrategy,
         envOverrideValues: editorTemplateObject,
     }
