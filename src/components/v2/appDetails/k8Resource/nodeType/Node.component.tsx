@@ -40,14 +40,23 @@ import { useSharedState } from '../../../utils/useSharedState'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
-import { NoPod } from '../../../../app/ResourceTreeNodes'
-import './nodeType.scss'
+import { Pod as PodIcon } from '../../../../common'
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import './nodeType.scss'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
+
+const NoPod = ({ selectMessage = 'Select a pod to view events', style = {} }) => {
+    return (
+        <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
+            <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+            <p>{selectMessage}</p>
+        </div>
+    )
+}
 
 const NodeComponent = ({
     handleFocusTabs,

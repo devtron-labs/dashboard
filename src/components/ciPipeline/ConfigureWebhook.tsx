@@ -19,7 +19,7 @@ import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
-import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ConfigureWebhook = ({
     webhookConditionList,
@@ -31,15 +31,15 @@ export const ConfigureWebhook = ({
     onWebhookConditionSelectorValueChange,
     canEditPipeline,
 }) => {
-    const [triggerCopyUrl, setTriggerCopyUrl] = useState<boolean>(false)
-    const [triggerCopyKey, setTriggerCopyKey] = useState<boolean>(false)
+    const [copyToClipboardUrlPromise, setCopyToClipboardUrlPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
+    const [copyToClipboardSecretPromise, setCopyToClipboardSecretPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
 
-    const handleUrlCopyTrigger = () => {
-        setTriggerCopyUrl(true)
+    const handleCopyUrl = () => {
+        setCopyToClipboardUrlPromise(copyToClipboard(gitHost.webhookUrl))
     }
 
-    const handleKeyCopyTrigger = () => {
-        setTriggerCopyKey(true)
+    const handleCopySecret = () => {
+        setCopyToClipboardSecretPromise(copyToClipboard(gitHost.webhookSecret))
     }
 
     const _allSelectorIdsInConditions = []
@@ -71,14 +71,13 @@ export const ConfigureWebhook = ({
                         <div
                             className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
                             data-testid="build-copy-webhook-url-button"
-                            onClick={handleUrlCopyTrigger}
+                            onClick={handleCopyUrl}
                         >
                             Click to copy webhook URL
                             <div className="pl-4">
                                 <ClipboardButton
                                     content={gitHost.webhookUrl}
-                                    trigger={triggerCopyUrl}
-                                    setTrigger={setTriggerCopyUrl}
+                                    copyToClipboardPromise={copyToClipboardUrlPromise}
                                 />
                             </div>
                         </div>
@@ -87,14 +86,13 @@ export const ConfigureWebhook = ({
                         <div
                             className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
                             data-testid="build-copy-secret-key-button"
-                            onClick={handleKeyCopyTrigger}
+                            onClick={handleCopySecret}
                         >
                             Click to copy secret key
                             <div className="pl-4">
                                 <ClipboardButton
                                     content={gitHost.webhookSecret}
-                                    trigger={triggerCopyKey}
-                                    setTrigger={setTriggerCopyKey}
+                                    copyToClipboardPromise={copyToClipboardSecretPromise}
                                 />
                             </div>
                         </div>

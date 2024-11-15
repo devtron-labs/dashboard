@@ -33,6 +33,8 @@ import {
     ToastManager,
     ACCESS_TYPE_MAP,
     EntityTypes,
+    Button,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -42,7 +44,6 @@ import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-o
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
-import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import {
@@ -101,7 +102,14 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
+    const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
     const schemaRef = useRef<Array<HTMLDivElement | null>>([])
+
+    const clipboardContent = window.location.href
+
+    const handleCopyButtonClick = async () => {
+        setCopyToClipboardPromise(copyToClipboard(clipboardContent))
+    }
 
     const formatSampleJson = (json): string => {
         return JSON.stringify(json, null, 4)
@@ -892,15 +900,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         )
     }
 
-    const copySharableURL = (): void => {
-        copyToClipboard(window.location.href, () => {
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'URL copied successfully',
-            })
-        })
-    }
-
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
@@ -914,10 +913,16 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         user.
                     </span>
                 </div>
-                <button className="cta flex h-36" onClick={copySharableURL}>
-                    <ICCopy className="mr-8 icon-dim-16" />
-                    Copy shareable link
-                </button>
+                <Button
+                    dataTestId="copy-shareable-link"
+                    variant={ButtonVariantType.primary}
+                    size={ComponentSizeType.medium}
+                    onClick={handleCopyButtonClick}
+                    startIcon={
+                        <ClipboardButton content={clipboardContent} copyToClipboardPromise={copyToClipboardPromise} />
+                    }
+                    text="Copy shareable link"
+                />
             </div>
         )
     }

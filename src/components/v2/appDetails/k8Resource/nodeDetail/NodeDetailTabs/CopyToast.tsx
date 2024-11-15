@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg'
 import 'xterm/css/xterm.css'
-import '../../../../../LogViewer/LogViewer.scss'
 import './nodeDetailTab.scss'
 
 interface toastType {
@@ -36,10 +35,15 @@ const CopyToast = ({ showCopyToast }: toastType) => (
 
 function handleSelectionChange(terminal, setPopupText): void {
     terminal.onSelectionChange(() => {
-        copyToClipboard(terminal.getSelection())
-        if (terminal.getSelection()) {
-            setPopupText(true)
+        if (!terminal.getSelection()) {
+            return
         }
+
+        copyToClipboard(terminal.getSelection())
+            .then(() => {
+                setPopupText(true)
+            })
+            .catch(noop)
     })
 }
 

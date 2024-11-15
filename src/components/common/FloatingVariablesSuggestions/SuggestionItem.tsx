@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
-import { ClipboardButton, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, copyToClipboard, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'
 
@@ -28,9 +28,13 @@ export default function SuggestionItem({
     isRedacted,
     highlightText,
 }: SuggestionsItemProps) {
-    const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
+    const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
 
-    const handleCopyTrigger = () => setTriggerCopy(true)
+    const clipboardContent = `@{{${variableName}}}`
+
+    const handleCopyTrigger = () => {
+        setCopyToClipboardPromise(copyToClipboard(clipboardContent))
+    }
 
     const sanitiseVariableValue = (value): JSX.Element => {
         if (isRedacted) {
@@ -106,10 +110,9 @@ export default function SuggestionItem({
                     {renderVariableName()}
 
                     <ClipboardButton
-                        content={`@{{${variableName}}}`}
+                        content={clipboardContent}
                         copiedTippyText={`Copied: @{{${variableName}}}`}
-                        trigger={triggerCopy}
-                        setTrigger={setTriggerCopy}
+                        copyToClipboardPromise={copyToClipboardPromise}
                     />
                 </div>
 
