@@ -75,9 +75,12 @@ export const CiWebhookModal = ({
 
     useEffect(() => {
         if (webhookPayloads?.payloads && webhookPayloads.payloads[0]?.parsedDataId) {
+            // to redirect to the first payload if the payload id is not present in the URL
+            const flatMap = webhookPayloads.payloads.flatMap((payload) => `${payload.parsedDataId}`)
+            const payloadIdInSearchParam = searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]
             queryParams.set(
                 URLS.WEBHOOK_RECEIVED_PAYLOAD_ID,
-                searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]
+                payloadIdInSearchParam && flatMap.includes(payloadIdInSearchParam)
                     ? searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID]
                     : webhookPayloads.payloads[0].parsedDataId.toString(),
             )

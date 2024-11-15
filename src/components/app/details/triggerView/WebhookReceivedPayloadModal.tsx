@@ -91,19 +91,16 @@ export const WebhookReceivedPayloadModal = ({
     }
 
     const renderNoWebhook = () => (
-        <div>
-            <div className="flex left">
-                <span className="fs-16 mr-4">No webhook received from</span>
-                <a
-                    href={webhookPayloads?.repositoryUrl}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className="dc__link dc__mxw-90"
-                >
-                    /{webhookRepoName.substring(0, 8)}
-                    {webhookRepoName.length > 8 ? '...' : ''}
-                </a>
-            </div>
+        <div className="flex column w-100">
+            <span className="fs-16">No webhook received from</span>
+            <a
+                href={webhookPayloads?.repositoryUrl}
+                rel="noreferrer noopener"
+                target="_blank"
+                className="dc__link dc__word-break w-100"
+            >
+                /{webhookRepoName}
+            </a>
         </div>
     )
 
