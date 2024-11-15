@@ -230,6 +230,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     showTriggerButton
                     onTrigger={this.handleStartBuildAction}
                     nodeType={nodeType}
+                    isJobView={this.props.isJobCI}
                 >
                     <ButtonWithLoader
                         rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
@@ -238,8 +239,17 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isLoading={this.props.isLoading}
                         onClick={noop}
                     >
-                        <Play className="trigger-btn__icon" />
-                        Start Build
+                        {this.props.isJobCI ? (
+                            <>
+                                <RunIcon className="trigger-job-btn__icon" />
+                                Run Job
+                            </>
+                        ) : (
+                            <>
+                                <Play className="trigger-btn__icon" />
+                                Start Build
+                            </>
+                        )}
                     </ButtonWithLoader>
                 </AllowedWithWarningTippy>
             )

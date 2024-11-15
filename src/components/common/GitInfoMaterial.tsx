@@ -448,7 +448,11 @@ export default function GitInfoMaterial({
         <>
             {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
             {MissingPluginBlockState && isCITriggerBlocked ? (
-                <MissingPluginBlockState configurePluginURL={getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)} nodeType={nodeType} />
+                <MissingPluginBlockState
+                    configurePluginURL={getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)}
+                    nodeType={nodeType}
+                    isJobView={isJobCI}
+                />
             ) : (
                 <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
                     {showWebhookModal == true ? (
