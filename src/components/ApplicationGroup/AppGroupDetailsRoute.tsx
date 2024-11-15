@@ -505,6 +505,7 @@ export const EnvHeader = ({
 
     const contextValue = useMemo(
         () => ({
+            resourceId: envId,
             appListOptions,
             isMenuOpen,
             setMenuOpen,
@@ -528,6 +529,7 @@ export const EnvHeader = ({
             groupFilterOptions,
             selectedGroupFilter,
             isSuperAdmin,
+            envId,
         ],
     )
 

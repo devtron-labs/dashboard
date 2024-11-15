@@ -59,6 +59,7 @@ export const AppHeader = ({
 
     const contextValue = useMemo(
         () => ({
+            resourceId: appId,
             appListOptions,
             isMenuOpen,
             setMenuOpen,
@@ -82,6 +83,7 @@ export const AppHeader = ({
             groupFilterOptions,
             selectedGroupFilter,
             isSuperAdmin,
+            appId,
         ],
     )
 

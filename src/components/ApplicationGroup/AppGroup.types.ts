@@ -335,6 +335,7 @@ export interface CIConfigListType {
 }
 
 export interface AppGroupAppFilterContextType {
+    resourceId: string
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>

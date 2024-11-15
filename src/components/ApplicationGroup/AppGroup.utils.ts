@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import {
     ServerErrors,
     showError,
@@ -24,6 +23,7 @@ import {
     WorkflowType,
     getIsRequestAborted,
     CIMaterialType,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
@@ -32,8 +32,12 @@ import {
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
+    FilterParentType,
+    GroupOptionType,
 } from './AppGroup.types'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
+import { MultiValue } from 'react-select'
+import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
 
 let timeoutId
 
@@ -290,3 +294,25 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
 })
+
+export const setFilterInLocalStorage = (
+    filterParentType: FilterParentType,
+    resourceId: string,
+    resourceList: MultiValue<OptionType>,
+    groupList: MultiValue<GroupOptionType>,
+) => {
+    const localStorageKey =
+        filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+    const localStorageValue = localStorage.getItem(localStorageKey)
+    if (!localStorageValue) {
+        const resourceIdVsValuesMap = new Map()
+        resourceIdVsValuesMap.set(resourceId, [resourceList, groupList])
+        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(resourceIdVsValuesMap)))
+    } else {
+        // update or set value for current resource
+        const localStoredMap = new Map(JSON.parse(localStorageValue))
+        localStoredMap.set(resourceId, [resourceList, groupList])
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
+    }
+}

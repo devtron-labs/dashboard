@@ -229,3 +229,6 @@ export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
     title: `Verifying selected code sources for ${noOfApps} Applications & initiating build pipelines Applications`,
     subTitle: 'It might take some time depending upon the number of applications',
 })
+
+export const ENV_GROUP_LOCAL_STORAGE_KEY: `${string}__filter` = 'envGroup__filter'
+export const APP_GROUP_LOCAL_STORAGE_KEY: `${string}__filter` = 'appGroup__filter'

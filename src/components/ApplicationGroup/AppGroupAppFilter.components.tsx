@@ -29,7 +29,7 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
-import { AppFilterTabs } from './Constants'
+import { APP_GROUP_LOCAL_STORAGE_KEY, AppFilterTabs, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
 import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
 export const ValueContainer = (props): JSX.Element => {
@@ -182,6 +182,11 @@ export const MenuList = (props: any): JSX.Element => {
     const clearSelection = (): void => {
         setSelectedAppList([])
         setSelectedGroupFilter([])
+        if (filterParentType === FilterParentType.app) {
+            localStorage.setItem(ENV_GROUP_LOCAL_STORAGE_KEY, '')
+        } else {
+            localStorage.setItem(APP_GROUP_LOCAL_STORAGE_KEY, '')
+        }
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)
