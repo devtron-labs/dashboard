@@ -239,16 +239,16 @@ export function useTabs(persistanceKey: string) {
             }
 
             _tabs.sort((a, b) => {
+                if (a.type === b.type) {
+                    return 0
+                }
+
                 // Fixed tabs are always before dynamic tabs
                 if (a.type === 'fixed') {
                     return -1
                 }
 
-                if (b.type === 'fixed') {
-                    return 1
-                }
-
-                return 0
+                return 1
             })
 
             localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs, parsedTabsData))
