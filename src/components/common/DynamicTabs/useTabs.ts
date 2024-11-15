@@ -291,11 +291,14 @@ export function useTabs(persistanceKey: string) {
             setTabs((prevTabs) => {
                 let found = false
                 const _tabs = prevTabs.map((tab) => {
-                    const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                    const matched = tab.id === _id
                     found = found || matched
                     return matched
                         ? {
                               ...tab,
+                              dynamicTitle,
+                              tippyConfig,
+                              iconPath,
                               url,
                               isSelected: true,
                           }
