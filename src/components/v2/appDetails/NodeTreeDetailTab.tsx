@@ -100,6 +100,7 @@ const NodeTreeDetailTab = ({
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
                                         isExternalApp={isExternalApp}
+                                        lowercaseKindToResourceGroupMap={{}}
                                     />
                                 )
                             }}

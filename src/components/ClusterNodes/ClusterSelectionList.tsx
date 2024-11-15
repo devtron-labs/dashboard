@@ -16,7 +16,14 @@
 
 import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
-import { GenericEmptyState, SearchBar, useUrlFilters, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GenericEmptyState,
+    SearchBar,
+    useUrlFilters,
+    Tooltip,
+    ClusterFiltersType,
+    ClusterStatusType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
@@ -31,9 +38,25 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
+import { ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
+const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
+const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
+const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
+
+const getClusterMapData = (data: ClusterDetail[]) =>
+    data.map(({ name, id, nodeCount, status }) => ({
+        name,
+        status,
+        href: `${URLS.RESOURCE_BROWSER}/${id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+        value: nodeCount ?? 0,
+    }))
+
+const parseSearchParams = (searchParams: URLSearchParams) => ({
+    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
+})
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
@@ -46,12 +69,63 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     const history = useHistory()
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
 
-    const { searchKey, handleSearch, clearFilters } = useUrlFilters()
+    const { searchKey, clusterFilter, updateSearchParams, handleSearch, clearFilters } = useUrlFilters<
+        void,
+        { clusterFilter: ClusterFiltersType }
+    >({ parseSearchParams })
 
     const filteredList = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
-        return clusterOptions.filter((option) => !searchKey || option.name.toLowerCase().includes(loweredSearchKey))
-    }, [searchKey, clusterOptions])
+        return clusterOptions.filter((option) => {
+            const filterCondition =
+                clusterFilter === ClusterFiltersType.ALL_CLUSTERS ||
+                !option.status ||
+                option.status === ClusterStatusByFilter[clusterFilter]
+
+            return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
+        })
+    }, [searchKey, clusterOptions, `${clusterFilter}`])
+
+    const treeMapData = useMemo(() => {
+        const { prodClusters, nonProdClusters } = filteredList.reduce(
+            (acc, curr) => {
+                if (curr.status && curr.status !== ClusterStatusType.CONNECTION_FAILED) {
+                    if (curr.isProd) {
+                        acc.prodClusters.push(curr)
+                    } else {
+                        acc.nonProdClusters.push(curr)
+                    }
+                }
+
+                return acc
+            },
+            { prodClusters: [], nonProdClusters: [] },
+        )
+
+        const productionClustersData = getClusterMapData(prodClusters)
+        const nonProductionClustersData = getClusterMapData(nonProdClusters)
+
+        return [
+            ...(productionClustersData.length
+                ? [
+                      {
+                          id: 0,
+                          label: 'Production Clusters',
+                          data: productionClustersData,
+                      },
+                  ]
+                : []),
+            ...(nonProductionClustersData.length
+                ? [
+                      {
+                          id: 1,
+                          label: 'Non-Production Clusters',
+                          data: nonProductionClustersData,
+                      },
+                  ]
+                : []),
+        ]
+    }, [filteredList])
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
@@ -62,6 +136,10 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         setLastSyncTime(dayjs())
     }
 
+    const setClusterFilter = (_clusterFilter: ClusterFiltersType) => {
+        updateSearchParams({ clusterFilter: _clusterFilter })
+    }
+
     const getOpenTerminalHandler = (clusterData) => () =>
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
 
@@ -70,6 +148,28 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             return null
         }
         return value
+    }
+
+    const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
+        if (ClusterStatusCell && status) {
+            return <ClusterStatusCell status={status} />
+        }
+
+        return (
+            <div className="flexbox dc__align-items-center dc__gap-8">
+                {errorInNodeListing ? (
+                    <>
+                        <Error className="icon-dim-16 dc__no-shrink" />
+                        <span>Failed</span>
+                    </>
+                ) : (
+                    <>
+                        <Success className="icon-dim-16 dc__no-shrink" />
+                        <span>Connected</span>
+                    </>
+                )}
+            </div>
+        )
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
@@ -109,20 +209,11 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     alwaysShowTippyOnHover={!!clusterData.errorInNodeListing}
                     content={clusterData.errorInNodeListing}
                 >
-                    <div className="flexbox">
-                        {clusterData.errorInNodeListing ? (
-                            <>
-                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                <span>Failed</span>
-                            </>
-                        ) : (
-                            <>
-                                <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                <span>Successful</span>
-                            </>
-                        )}
-                    </div>
+                    {renderClusterStatus(clusterData)}
                 </Tooltip>
+                <div className="child-shimmer-loading">
+                    {hideDataOnLoad(clusterData.isProd ? 'Production' : 'Non Production')}
+                </div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
                     {errorCount > 0 &&
@@ -158,19 +249,24 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     return (
-        <div className="cluster-list-main-container flexbox-col bcn-0 h-100">
+        <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                <SearchBar
-                    initialSearchText={searchKey}
-                    handleEnter={handleFilterKeyPress}
-                    containerClassName="w-250-imp"
-                    inputProps={{
-                        placeholder: 'Search clusters',
-                        autoFocus: true,
-                        disabled: initialLoading,
-                    }}
-                />
-                <div className="fs-13">
+                <div className="flex dc__gap-12">
+                    <SearchBar
+                        initialSearchText={searchKey}
+                        handleEnter={handleFilterKeyPress}
+                        containerClassName="w-250-imp"
+                        inputProps={{
+                            placeholder: 'Search clusters',
+                            autoFocus: true,
+                            disabled: initialLoading,
+                        }}
+                    />
+                    {ClusterFilters && (
+                        <ClusterFilters clusterFilter={clusterFilter} setClusterFilter={setClusterFilter} />
+                    )}
+                </div>
+                <div className="fs-13 flex">
                     {clusterListLoader ? (
                         <span className="dc__loading-dots mr-20">Syncing</span>
                     ) : (
@@ -192,24 +288,26 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
-                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
-                    <div>Cluster</div>
-                    <div data-testid="cluster-list-connection-status">Connection status</div>
-                    <div>Nodes</div>
-                    <div>NODE Errors</div>
-                    <div>K8S version</div>
-                    <div>CPU Capacity</div>
-                    <div>Memory Capacity</div>
+            <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+            {!filteredList.length ? (
+                <div className="flex-grow-1">
+                    <ClusterNodeEmptyState actionHandler={clearFilters} />
                 </div>
-                {!filteredList.length ? (
-                    <div className="flex-grow-1">
-                        <ClusterNodeEmptyState actionHandler={clearFilters} />
+            ) : (
+                <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
+                        <div>Cluster</div>
+                        <div data-testid="cluster-list-connection-status">Status</div>
+                        <div>Type</div>
+                        <div>Nodes</div>
+                        <div>NODE Errors</div>
+                        <div>K8S version</div>
+                        <div>CPU Capacity</div>
+                        <div>Memory Capacity</div>
                     </div>
-                ) : (
-                    filteredList.map((clusterData) => renderClusterRow(clusterData))
-                )}
-            </div>
+                    {filteredList.map((clusterData) => renderClusterRow(clusterData))}
+                </div>
+            )}
         </div>
     )
 }

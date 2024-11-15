@@ -26,6 +26,10 @@ import {
     TabProps,
     ComponentSizeType,
     capitalizeFirstLetter,
+    ConfigurationType,
+    FormProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -38,6 +42,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import {
     AppType,
+    ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
     NodeDetailPropsType,
@@ -51,7 +56,6 @@ import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
-import { getResourceFromK8SObjectMap } from '../../../../ResourceBrowser/Utils'
 import './nodeDetail.css'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
@@ -63,11 +67,16 @@ import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+const ToggleManifestConfigurationMode = importComponentFromFELibrary(
+    'ToggleManifestConfigurationMode',
+    null,
+    'function',
+)
 
 const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
-    k8SObjectMapRaw,
+    lowercaseKindToResourceGroupMap,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
@@ -111,8 +120,8 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
-        [k8SObjectMapRaw, params.nodeType],
+        () => lowercaseKindToResourceGroupMap[params.nodeType.toLowerCase()],
+        [lowercaseKindToResourceGroupMap, params.nodeType],
     )
 
     const selectedResource = {
@@ -155,6 +164,11 @@ const NodeDetailComponent = ({
         value: _selectedContainer,
     })
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
+    const [manifestFormConfigurationType, setManifestFormConfigurationType] = useState<ConfigurationType>(
+        ConfigurationType.YAML,
+    )
+    const [manifestErrors, setManifestErrors] = useState<Parameters<FormProps['onError']>[0]>([])
+    const [unableToParseManifest, setUnableToParseManifest] = useState<boolean>(false)
 
     // States uplifted from Manifest Component
     const manifestViewRef = useRef<ManifestViewRefType>({
@@ -166,9 +180,13 @@ const NodeDetailComponent = ({
             activeManifestEditorData: '',
             modifiedManifest: '',
             normalizedLiveManifest: '',
+            guiSchema: {},
+            lockedKeys: null,
         },
         id: '',
     })
+
+    const manifestGUIFormRef: FormProps['ref'] = useRef(null)
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
@@ -234,9 +252,9 @@ const NodeDetailComponent = ({
                 }
             }
 
-            if (result?.ephemeralContainers) {
+            if (result?.manifestResponse.ephemeralContainers) {
                 _resourceContainers.push(
-                    ...result.ephemeralContainers.map((_container) => ({
+                    ...result.manifestResponse.ephemeralContainers.map((_container) => ({
                         name: _container.name,
                         isInitContainer: false,
                         isEphemeralContainer: true,
@@ -273,6 +291,10 @@ const NodeDetailComponent = ({
         } finally {
             setFetchingResource(false)
         }
+    }
+
+    const handleManifestGUIError: ManifestActionPropsType['handleManifestGUIErrors'] = (errors = []) => {
+        setManifestErrors(errors)
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
@@ -320,6 +342,8 @@ const NodeDetailComponent = ({
                 ) >= 0
             ))
 
+    const doesManifestGUIContainsError = manifestErrors.length > 0
+
     // Assign extracted containers to selected resource before passing further
     if (selectedResource) {
         selectedResource.containers = resourceContainers
@@ -349,9 +373,26 @@ const NodeDetailComponent = ({
         return Object.values(params).join('/')
     }
 
-    const handleManifestApplyChanges = () => setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    const handleManifestApplyChanges = () => {
+        const isFormValid = !manifestGUIFormRef.current?.validateForm || manifestGUIFormRef.current.validateForm()
 
-    const handleManifestCancel = () => setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+        if (!isFormValid) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Validation failed for some input fields, please rectify and apply changes again.',
+            })
+
+            return
+        }
+
+        setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
+    }
+
+    const handleManifestCancel = () => {
+        handleManifestGUIError([])
+        handleUpdateUnableToParseManifest(false)
+        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    }
 
     const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
 
@@ -380,6 +421,22 @@ const NodeDetailComponent = ({
         )
     }
 
+    const handleToggleManifestConfigurationMode = () => {
+        setManifestFormConfigurationType((prev) =>
+            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
+        )
+    }
+
+    const handleSwitchToYAMLMode = () => {
+        setManifestFormConfigurationType(ConfigurationType.YAML)
+    }
+
+    const handleUpdateUnableToParseManifest: ManifestActionPropsType['handleUpdateUnableToParseManifest'] = (
+        value: boolean,
+    ) => {
+        setUnableToParseManifest(value)
+    }
+
     const renderManifestTabHeader = () => (
         <>
             {(isExternalApp ||
@@ -393,10 +450,19 @@ const NodeDetailComponent = ({
                         <div className="ml-4 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
+                                {ToggleManifestConfigurationMode && !isExternalApp && (
+                                    <ToggleManifestConfigurationMode
+                                        mode={manifestFormConfigurationType}
+                                        handleToggle={handleToggleManifestConfigurationMode}
+                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
+                                    />
+                                )}
+
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                    className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
                                     onClick={handleManifestApplyChanges}
+                                    disabled={doesManifestGUIContainsError}
                                 >
                                     <>
                                         <ICCheck className="icon-dim-16 scb-5" />
@@ -519,6 +585,12 @@ const NodeDetailComponent = ({
                             setShowManifestCompareView={setShowManifestCompareView}
                             manifestCodeEditorMode={manifestCodeEditorMode}
                             setManifestCodeEditorMode={setManifestCodeEditorMode}
+                            handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                            manifestFormConfigurationType={manifestFormConfigurationType}
+                            handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
+                            handleManifestGUIErrors={handleManifestGUIError}
+                            manifestGUIFormRef={manifestGUIFormRef}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -575,6 +647,7 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
+                    handleSuccess={getContainersFromManifest}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
@@ -585,7 +658,7 @@ const NodeDetailComponent = ({
                         gvk: {
                             Group: selectedResource.group,
                             Version: selectedResource.version,
-                            Kind: selectedResource.kind as Nodes,
+                            Kind: selectedResource.kind as NodeType,
                         },
                         namespaced: false,
                     }}

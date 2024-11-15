@@ -645,7 +645,7 @@ export function sortBySelected(selectedArray: any[], availableArray: any[], matc
     ]
 }
 
-export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
+export const sortObjectArrayAlphabetically = <T extends unknown>(arr: T[], compareKey: string) => {
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
 

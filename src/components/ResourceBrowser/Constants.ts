@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { RBSidebarKeysType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -103,7 +105,7 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
-export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' } as const
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',
@@ -154,6 +156,7 @@ export const EVENT_LIST = {
         count: 'Count',
         age: 'Age',
         lastSeen: 'Last Seen',
+        gptWidgetButton: '',
     },
     dataKeys: {
         involvedObject: 'involved object',
@@ -174,15 +177,7 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS: {
-    nodes: string
-    events: string
-    namespaces: string
-    eventGVK: GVKType
-    namespaceGVK: GVKType
-    nodeGVK: GVKType
-    overviewGVK: GVKType
-} = {
+export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -204,8 +199,25 @@ export const SIDEBAR_KEYS: {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview as Nodes,
+        Kind: Nodes.Overview,
     },
+    monitoringGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.MonitoringDashboard,
+    },
+    upgradeClusterGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.UpgradeCluster,
+    },
+}
+
+export const UPGRADE_CLUSTER_CONSTANTS = {
+    DYNAMIC_TITLE: 'Upgrade Compatibility',
+    ICON_PATH: ICArrowUpCircle,
+    ID_PREFIX: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+    NAME: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
 }
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
@@ -267,3 +279,5 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'

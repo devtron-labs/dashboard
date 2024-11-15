@@ -234,7 +234,6 @@ export const Routes = {
     POD_EVENTS: 'pod/events',
     UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
-    K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
@@ -453,14 +452,6 @@ export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
-
-export const DISCORD_LINK = 'https://discord.devtron.ai/'
-
-export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticket'
-
-export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
-
-export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
 
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',

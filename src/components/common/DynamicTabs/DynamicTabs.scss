@@ -149,6 +149,10 @@
             .dynamic-tab__deleted {
                 text-decoration: line-through;
             }
+
+            &--no-title {
+                padding: 10px 12px;
+            }
         }
     }
 }

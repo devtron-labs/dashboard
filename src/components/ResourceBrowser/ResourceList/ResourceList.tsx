@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     getUserRole,
@@ -27,15 +27,19 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    WidgetEventDetails,
+    ApiResourceGroupType,
+    InitTabType,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { URLS } from '../../../config'
-import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
+import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getTabsBasedOnRole } from '../Utils'
+import { getFixedTabIndices, getTabsBasedOnRole } from '../Utils'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -45,12 +49,20 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
+import { parseSearchParams } from './utils'
+import { ResourceListUrlFiltersType } from './types'
+
+const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
+const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
-    const { replace } = useHistory()
+    const { replace, push } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
+    const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
         initTabs,
@@ -64,7 +76,14 @@ const ResourceList = () => {
         getTabId,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
+    const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
+        gvk: SIDEBAR_KEYS.nodeGVK,
+        namespaced: false,
+        isGrouped: false,
+    })
+    const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
@@ -76,14 +95,15 @@ const ResourceList = () => {
 
     const clusterList = clusterListData?.result || null
 
-    const clusterOptions: ClusterOptionType[] = useMemo(
+    const clusterOptions = useMemo(
         () =>
             clusterList &&
             (convertToOptionsList(
-                sortObjectArrayAlphabetically(clusterList, 'name'),
+                sortObjectArrayAlphabetically(clusterList, 'name').filter(({ isVirtualCluster }) => !isVirtualCluster),
                 'name',
                 'id',
                 'nodeErrors',
+                'isProd',
             ) as ClusterOptionType[]),
         [clusterList],
     )
@@ -95,29 +115,67 @@ const ResourceList = () => {
                 label: '',
                 value: clusterId,
                 errorInConnecting: '',
+                isProd: false,
             },
         [clusterId, clusterOptions],
+    )
+
+    const lowercaseKindToResourceGroupMap = useMemo(
+        () =>
+            (k8SObjectMapRaw?.result.apiResources ?? []).reduce<K8SResourceListType['lowercaseKindToResourceGroupMap']>(
+                (acc, resourceGroup) => {
+                    acc[resourceGroup.gvk.Kind.toLowerCase()] = resourceGroup
+
+                    return acc
+                },
+                {},
+            ),
+        [k8SObjectMapRaw],
     )
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+    const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+    const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+    const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
-    const getDynamicTabData = () => {
-        const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-        const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-        return {
-            idPrefix: isNodeTypeNode
-                ? K8S_EMPTY_GROUP
-                : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
-            name: node,
-            kind: nodeType,
-            url,
-            isSelected: true,
-            position: Number.MAX_SAFE_INTEGER,
+    const fixedTabIndices = getFixedTabIndices()
+
+    const getDynamicTabIdPrefix = () => {
+        if (isUpgradeClusterNodeType) {
+            return UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX
         }
+
+        if (isNodeTypeNode) {
+            return K8S_EMPTY_GROUP
+        }
+
+        return `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`
     }
+
+    const getNodeName = () => {
+        if (isUpgradeClusterNodeType) {
+            return UPGRADE_CLUSTER_CONSTANTS.NAME
+        }
+
+        return node
+    }
+
+    const getDynamicTabData = (): InitTabType => ({
+        idPrefix: getDynamicTabIdPrefix(),
+        name: getNodeName(),
+        kind: nodeType || '',
+        url,
+        isSelected: true,
+        position: Number.MAX_SAFE_INTEGER,
+        dynamicTitle: isUpgradeClusterNodeType
+            ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
+            : undefined,
+        iconPath: isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+    })
 
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => {
@@ -127,15 +185,16 @@ const ResourceList = () => {
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
-        const _tabs = getTabsBasedOnRole(
+        const _tabs = getTabsBasedOnRole({
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            node && getDynamicTabData(),
-            isTerminalNodeType,
-            isOverviewNodeType,
-        )
+            dynamicTabData: (node || isUpgradeClusterNodeType) && getDynamicTabData(),
+            isTerminalSelected: isTerminalNodeType,
+            isOverviewSelected: isOverviewNodeType,
+            isMonitoringDashBoardSelected: isMonitoringNodeType,
+        })
         initTabs(
             _tabs,
             reInit,
@@ -150,7 +209,7 @@ const ResourceList = () => {
         /* NOTE: tab selection is interactively done through dynamic tab button clicks
          * but to ensure consistency with url changes and user moving back through browser history,
          * correct active tab state is ensured by this effect */
-        if (node) {
+        if (node || (isUpgradeClusterNodeType && isFELibAvailable)) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
             /* NOTE if the corresponding tab exists return */
@@ -163,24 +222,49 @@ const ResourceList = () => {
             }
             /* NOTE: even though addTab updates selection it will override url;
              * thus to prevent that if found markTabActive and don't let this get called */
-            addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            addTab(
+                idPrefix,
+                kind,
+                name,
+                _url,
+                undefined,
+                undefined,
+                isUpgradeClusterNodeType ? UPGRADE_CLUSTER_CONSTANTS.ICON_PATH : undefined,
+                isUpgradeClusterNodeType
+                    ? `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`
+                    : undefined,
+            )
+                .then(noop)
+                .catch(noop)
             return
         }
+
+        // These checks are wrong since tabs are sorted by position so index is not fixed
         /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
         if (isOverviewNodeType) {
-            if (tabs[FIXED_TABS_INDICES.OVERVIEW] && !tabs[FIXED_TABS_INDICES.OVERVIEW].isSelected) {
-                markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+            if (tabs[fixedTabIndices.OVERVIEW] && !tabs[fixedTabIndices.OVERVIEW].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.OVERVIEW].id)
             }
             return
         }
+
+        if (isMonitoringNodeType && MonitoringDashboard) {
+            if (tabs[fixedTabIndices.MONITORING_DASHBOARD] && !tabs[fixedTabIndices.MONITORING_DASHBOARD].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.MONITORING_DASHBOARD].id)
+            }
+
+            return
+        }
+
         if (isTerminalNodeType) {
-            if (tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL] && !tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isSelected) {
-                markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].id)
+            if (tabs[fixedTabIndices.ADMIN_TERMINAL] && !tabs[fixedTabIndices.ADMIN_TERMINAL].isSelected) {
+                markTabActiveById(tabs[fixedTabIndices.ADMIN_TERMINAL].id)
             }
             return
         }
-        if (tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST] && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+
+        if (tabs[fixedTabIndices.K8S_RESOURCE_LIST] && !tabs[fixedTabIndices.K8S_RESOURCE_LIST].isSelected) {
+            markTabActiveById(tabs[fixedTabIndices.K8S_RESOURCE_LIST].id)
         }
     }, [location.pathname])
 
@@ -188,6 +272,9 @@ const ResourceList = () => {
         if (selected.value === selectedCluster?.value) {
             return
         }
+
+        // Close holmesGPT Response Widget on cluster change
+        setWidgetEventDetails(null)
 
         /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
@@ -248,7 +335,7 @@ const ResourceList = () => {
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
-        const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
+        const terminalTab = tabs[fixedTabIndices.ADMIN_TERMINAL]
         if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
@@ -256,14 +343,64 @@ const ResourceList = () => {
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
-        updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)
+        updateTabLastSyncMoment(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)
 
-    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
-        updateTabUrl(id, _url, dynamicTitle)
+    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string, retainSearchParams?: boolean) =>
+        updateTabUrl(id, _url, dynamicTitle, retainSearchParams)
 
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
+    const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
+        const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
+        const _group: string =
+            (shouldOverrideSelectedResourceKind
+                ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
+                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
+
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+
+        if (origin === 'event') {
+            const [_kind, _resourceName] = name.split('/')
+            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
+            resourceParam = `${eventKind}/${_group}/${_resourceName}`
+            kind = eventKind
+            resourceName = _resourceName
+        } else {
+            kind = shouldOverrideSelectedResourceKind
+                ? lowercaseKindFromResource
+                : selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${_group}/${name}`
+            resourceName = name
+        }
+
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
+        if (isUpgradeClusterNodeType && isFELibAvailable) {
+            return (
+                <ClusterUpgradeCompatibilityInfo
+                    clusterId={clusterId}
+                    clusterName={selectedCluster.label}
+                    selectedCluster={selectedCluster}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
+                    addTab={addTab}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                    handleResourceClick={handleResourceClick}
+                />
+            )
+        }
+
         if (!node) {
             return null
         }
@@ -273,7 +410,7 @@ const ResourceList = () => {
                 key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
-                k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
@@ -282,7 +419,7 @@ const ResourceList = () => {
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
-                    k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
@@ -295,31 +432,47 @@ const ResourceList = () => {
 
     const fixedTabComponents = [
         <ClusterOverview
-            key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
+            key={tabs[fixedTabIndices.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
+            addTab={addTab}
         />,
         <K8SResourceTabComponent
-            key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
+            key={tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
+            selectedResource={selectedResource}
+            setSelectedResource={setSelectedResource}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
                 isDataStale,
-                tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
+                tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
-            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected}
+            isOpen={!!tabs?.[fixedTabIndices.K8S_RESOURCE_LIST]?.isSelected}
             showStaleDataWarning={isDataStale}
-            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
+            updateK8sResourceTab={getUpdateTabUrlForId(tabs[fixedTabIndices.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            setWidgetEventDetails={setWidgetEventDetails}
+            handleResourceClick={handleResourceClick}
+            clusterName={selectedCluster.label}
+            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
+        ...(MonitoringDashboard
+            ? [
+                  isMonitoringNodeType ? (
+                      <MonitoringDashboard key={fixedTabIndices.MONITORING_DASHBOARD} />
+                  ) : (
+                      <div key={fixedTabIndices.MONITORING_DASHBOARD} />
+                  ),
+              ]
+            : []),
         ...(isSuperAdmin &&
-        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
-        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
+        tabs[fixedTabIndices.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
+        tabs[fixedTabIndices.ADMIN_TERMINAL].isAlive
             ? [
                   <AdminTerminal
-                      key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
+                      key={tabs[fixedTabIndices.ADMIN_TERMINAL].componentKey}
                       isSuperAdmin={isSuperAdmin}
                       updateTerminalTabUrl={updateTerminalTabUrl}
                   />,
@@ -349,7 +502,7 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         setIsDataStale={setIsDataStale}
-                        isOverview={isOverviewNodeType}
+                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
                     />
                 </div>
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
@@ -367,12 +520,20 @@ const ResourceList = () => {
                             </div>
                         )
                     })}
+                {EventsAIResponseWidget && widgetEventDetails && (
+                    <EventsAIResponseWidget
+                        parentRef={resourceBrowserRef}
+                        handleResourceClick={handleResourceClick}
+                        widgetEventDetails={widgetEventDetails}
+                        setWidgetEventDetails={setWidgetEventDetails}
+                    />
+                )}
             </>
         )
     }
 
     return (
-        <div className="resource-browser-container h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
