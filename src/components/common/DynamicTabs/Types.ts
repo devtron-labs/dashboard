@@ -58,63 +58,30 @@ export type ParsedTabsData = {
 }
 
 export interface PopulateTabDataPropsType
-    extends Pick<DynamicTabType, 'tippyConfig' | 'lastActiveTabId' | 'type'>,
-        Required<Pick<DynamicTabType, 'shouldRemainMounted'>> {
-    id: string
-    /**
-     * Name for the tab.
-     *
-     * Note: Used for the title
-     */
-    name: string
-    /**
-     * URL for the tab
-     */
-    url: string
-    isSelected: boolean
-    title: string
-    /**
-     * Whether to show the tab name when selected
-     *
-     * @default false
-     */
-    showNameOnSelect: boolean
-    /**
-     * Path of the icon for the tab
-     *
-     * @default ''
-     */
-    iconPath?: string
-    /**
-     * Dynamic title for the tab
-     *
-     * @default ''
-     */
-    dynamicTitle?: string
-    /**
-     * Indicates if showNameOnSelect tabs have been selected once
-     *
-     * @default false
-     */
-    isAlive?: boolean
-    /**
-     * @description Would remove the title/name from tab heading, but that does not mean name is not required, since it is used in other calculations
-     * @default false
-     */
-    hideName?: boolean
-}
+    extends Pick<
+            DynamicTabType,
+            | 'tippyConfig'
+            | 'lastActiveTabId'
+            | 'type'
+            | 'isSelected'
+            | 'url'
+            | 'name'
+            | 'iconPath'
+            | 'dynamicTitle'
+            | 'isAlive'
+            | 'hideName'
+            | 'id'
+        >,
+        Required<Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect'>> {}
 
 export interface AddTabParamsType
     extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,
-        Partial<Pick<PopulateTabDataPropsType, 'type' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>> {
+        Partial<Pick<PopulateTabDataPropsType, 'type' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>>,
+        Required<Pick<DynamicTabType, 'kind'>> {
     /**
      * Prefix for generating tab IDs
      */
     idPrefix: string
-    /**
-     * Kind of tab
-     */
-    kind: string
 }
 
 export interface UpdateTabUrlParamsType extends Pick<DynamicTabType, 'id' | 'url' | 'dynamicTitle'> {
