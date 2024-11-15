@@ -124,6 +124,7 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 import { RenderCDMaterialContentProps } from './types'
+import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -281,8 +282,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     })
                 }
             } else if (location.pathname.includes('build')) {
-                const lastIndexBeforeId = location.pathname.lastIndexOf('/')
-                const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
+                const ciNodeId = location.pathname.match(/build\/(\d+)/)?.[1] ?? null
                 const ciNode = filteredWorkflows
                     .flatMap((workflow) => workflow.nodes)
                     .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
@@ -1981,6 +1981,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (selectedCINode?.id) {
             return (
                 <Switch>
+                     <Route
+                        path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
+                    >
+                        <WebhookReceivedPayloadModal
+                            workflowId={workflowID}
+                            webhookPayloads={webhookPayloads}
+                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            material={material}
+                            pipelineId={selectedCINode?.id?.toString()}
+                            title={selectedCINode?.name}
+                            isJobView={!!nd?.isJobCI}
+                            getWebhookPayload={getWebhookPayload}
+                            appId={_appID?.toString()}
+                        />
+                    </Route>
                     <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
                         <CIMaterialModal
                             workflowId={workflowID}

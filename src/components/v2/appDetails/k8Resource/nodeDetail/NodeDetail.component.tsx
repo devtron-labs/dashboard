@@ -252,9 +252,9 @@ const NodeDetailComponent = ({
                 }
             }
 
-            if (result?.ephemeralContainers) {
+            if (result?.manifestResponse.ephemeralContainers) {
                 _resourceContainers.push(
-                    ...result.ephemeralContainers.map((_container) => ({
+                    ...result.manifestResponse.ephemeralContainers.map((_container) => ({
                         name: _container.name,
                         isInitContainer: false,
                         isEphemeralContainer: true,
@@ -647,6 +647,7 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
+                    handleSuccess={getContainersFromManifest}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
@@ -657,7 +658,7 @@ const NodeDetailComponent = ({
                         gvk: {
                             Group: selectedResource.group,
                             Version: selectedResource.version,
-                            Kind: selectedResource.kind as Nodes,
+                            Kind: selectedResource.kind as NodeType,
                         },
                         namespaced: false,
                     }}

@@ -37,6 +37,7 @@ import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
+import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -110,7 +111,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    getWebhookPayload: (id, webhookTimeStampOrder) => void
+    getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
     webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean

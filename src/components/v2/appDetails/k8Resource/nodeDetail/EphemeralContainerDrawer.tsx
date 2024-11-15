@@ -74,6 +74,7 @@ const EphemeralContainerDrawer = ({
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
+    handleSuccess
 }: EphemeralContainerDrawerType) => {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -500,6 +501,7 @@ const EphemeralContainerDrawer = ({
                 setResourceContainers(_containers)
                 setShowEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)
+                handleSuccess()
             })
             .catch((err) => {
                 showError(err)

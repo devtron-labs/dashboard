@@ -348,7 +348,9 @@ const CDMaterial = ({
         abortDeployRef.current = new AbortController()
         return () => {
             abortDeployRef.current.abort()
-            history.replace(pathname.split(URLS.APP_DIFF_VIEW)[0])
+            if (history.location.pathname.includes(URLS.APP_DIFF_VIEW)) {
+                history.replace(history.location.pathname.split(URLS.APP_DIFF_VIEW)[0])
+            }
         }
     }, [])
 

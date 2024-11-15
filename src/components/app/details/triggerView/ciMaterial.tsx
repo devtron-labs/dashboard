@@ -44,7 +44,6 @@ import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import BranchRegexModal from './BranchRegexModal'
 import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
-import { CIPipeline } from '../cIDetails/types'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
