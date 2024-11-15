@@ -8,6 +8,7 @@ import {
     DraftState,
     DryRunEditorMode,
     MODES,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -16,7 +17,7 @@ import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, ToggleResolveScopedVariables } from '@Pages/Applications'
 
-import { CM_SECRET_STATE, ConfigMapSecretDryRunProps } from './types'
+import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
 import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload } from './utils'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
@@ -54,7 +55,10 @@ export const ConfigMapSecretDryRun = ({
     const isCreateView = id === null
 
     const dryRunConfigMapSecretData = useMemo(() => {
-        let configMapSecretData = publishedConfigMapSecretData ?? null
+        let configMapSecretData: CMSecretConfigData =
+            cmSecretStateLabel === CM_SECRET_STATE.INHERITED
+                ? inheritedConfigMapSecretData
+                : publishedConfigMapSecretData
 
         if (draftData) {
             if (draftData.action === DraftAction.Delete) {
@@ -69,9 +73,16 @@ export const ConfigMapSecretDryRun = ({
 
         if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
             if (resolvedFormData ?? formDataRef.current) {
+                const payload = getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current)
+
                 configMapSecretData = {
                     ...configMapSecretData,
-                    ...getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current),
+                    ...payload,
+                    ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                        ? {
+                              data: { ...configMapSecretData.data, ...payload.data },
+                          }
+                        : {}),
                 }
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
@@ -141,11 +152,13 @@ export const ConfigMapSecretDryRun = ({
                     )}
                 </div>
                 <div className="flex left dc__gap-8">
-                    <div className="flex left dc__gap-4">
-                        <ICHelpOutline className="icon-dim-14 fcn-6" />
-                        <span className="fw-4 fs-12 lh-16 cn-7">Merge Strategy</span>
-                        <span className="fw-6 fs-12 lh-20 cn-9 dc__capitalize">{mergeStrategy}</span>
-                    </div>
+                    {mergeStrategy && (
+                        <div className="flex left dc__gap-4">
+                            <ICHelpOutline className="icon-dim-14 fcn-6" />
+                            <span className="fw-4 fs-12 lh-16 cn-7">Merge Strategy</span>
+                            <span className="fw-6 fs-12 lh-20 cn-9 dc__capitalize">{mergeStrategy}</span>
+                        </div>
+                    )}
                     <div className="dc__border-right-n1 dc__align-self-stretch mt-2 mb-2" />
                     <ToggleResolveScopedVariables
                         resolveScopedVariables={resolveScopedVariables}

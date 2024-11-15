@@ -258,7 +258,7 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (!envId || !isEditView || showDeleteOverrideDraftEmptyState) {
+        if (!mergeStrategy || !envId || !isEditView || showDeleteOverrideDraftEmptyState) {
             return null
         }
 

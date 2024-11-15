@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle } from 'react'
-import { Prompt } from 'react-router-dom'
+import { Prompt, useLocation } from 'react-router-dom'
 
 import {
     Button,
@@ -10,6 +10,7 @@ import {
     ComponentSizeType,
     CustomInput,
     getSelectPickerOptionByValue,
+    OverrideMergeStrategyType,
     Progressing,
     RadioGroup,
     RadioGroupItem,
@@ -45,6 +46,7 @@ import {
     ConfigMapSecretFormRefType,
 } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
+import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 
 export const ConfigMapSecretForm = forwardRef(
     (
@@ -60,6 +62,7 @@ export const ConfigMapSecretForm = forwardRef(
             isProtected,
             areScopeVariablesResolving,
             resolvedFormData,
+            mergeStrategy,
             restoreYAML,
             setRestoreYAML,
             onSubmit,
@@ -69,7 +72,8 @@ export const ConfigMapSecretForm = forwardRef(
         ref: ForwardedRef<ConfigMapSecretFormRefType>,
     ) => {
         // HOOKS
-        const { setFormState, formDataRef } = useConfigMapSecretFormContext()
+        const location = useLocation()
+        const { setFormState, formDataRef, isFormDirty } = useConfigMapSecretFormContext()
 
         // INITIAL FORM VALUES
         const formInitialValues = getConfigMapSecretFormInitialValues({
@@ -92,6 +96,7 @@ export const ConfigMapSecretForm = forwardRef(
         const isESO = data.isSecret && hasESO(data.externalType)
         const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
         const isFormDisabled = isHashiOrAWS || data.isResolvedData || (data.isSecret && isUnAuthorized)
+        const isPatchMode = mergeStrategy === OverrideMergeStrategyType.PATCH
         const isChartVersion309OrBelow =
             appChartRef &&
             appChartRef.name === ROLLOUT_DEPLOYMENT &&
@@ -114,14 +119,17 @@ export const ConfigMapSecretForm = forwardRef(
              * @note resolvedFormData means show scope variables is true.
              */
             if (resolvedFormData) {
-                reset({ ...resolvedFormData, isResolvedData: true }, { keepDirty: true })
+                reset({ ...resolvedFormData, isResolvedData: true }, { triggerDirty: true })
             } else if (formDataRef.current) {
                 /*
                  * We use formDataRef (is present) to restore form values after mounting & when `resolvedFormData` is null.
                  * The form reset is triggered with the keepDirty option, which resets the form using the stored values while preserving the “dirty” state.
                  * During the reset, we also ensure that yamlMode is preserved.
                  */
-                reset({ ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false }, { keepDirty: true })
+                reset(
+                    { ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false },
+                    { triggerDirty: true },
+                )
             }
         }, [resolvedFormData])
 
@@ -136,6 +144,22 @@ export const ConfigMapSecretForm = forwardRef(
                 setFormState({ type: 'SET_DATA', data, isDirty: formState.isDirty, errors })
             }
         }, [data, formState.isDirty, errors])
+
+        useEffect(() => {
+            if (mergeStrategy && mergeStrategy !== data.mergeStrategy) {
+                setValue('mergeStrategy', mergeStrategy, { shouldDirty: true })
+            }
+
+            if (
+                !isFormDirty &&
+                cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+                !isDraft &&
+                mergeStrategy === OverrideMergeStrategyType.REPLACE
+            ) {
+                setValue('yaml', formInitialValues.replaceYaml)
+                setValue('currentData', formInitialValues.replaceData)
+            }
+        }, [mergeStrategy])
 
         useEffect(() => {
             /*
@@ -403,33 +427,49 @@ export const ConfigMapSecretForm = forwardRef(
 
         return (
             <>
-                <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+                <Prompt
+                    when={shouldPrompt}
+                    message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
+                />
                 <form className="configmap-secret flexbox-col h-100 dc__overflow-hidden">
                     {areScopeVariablesResolving ? (
                         <Progressing fullHeight pageLoader />
                     ) : (
                         <div className="p-16 flex-grow-1 dc__overflow-auto">
                             <div className="flexbox-col dc__gap-16 dc__mxw-1200">
-                                {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
-                                <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
-                                    {renderDataTypeSelector()}
-                                    {renderName()}
-                                </div>
-                                {renderESOInfo(isESO)}
-                                {renderExternalInfo(
-                                    data.externalType === CMSecretExternalType.KubernetesSecret ||
-                                        (!data.isSecret && data.external),
-                                    componentType,
+                                {isPatchMode ? (
+                                    <ConfigMapSecretReadyOnly
+                                        componentType={componentType}
+                                        isJob={isJob}
+                                        configMapSecretData={configMapSecretData}
+                                        areScopeVariablesResolving={areScopeVariablesResolving}
+                                        hideCodeEditor
+                                    />
+                                ) : (
+                                    <>
+                                        {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
+                                        <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
+                                            {renderDataTypeSelector()}
+                                            {renderName()}
+                                        </div>
+                                        {renderESOInfo(isESO)}
+                                        {renderExternalInfo(
+                                            data.externalType === CMSecretExternalType.KubernetesSecret ||
+                                                (!data.isSecret && data.external),
+                                            componentType,
+                                        )}
+                                        {renderMountData()}
+                                        {renderVolumeMountPath()}
+                                        {renderRollARN()}
+                                    </>
                                 )}
-                                {renderMountData()}
-                                {renderVolumeMountPath()}
-                                {renderRollARN()}
                                 <ConfigMapSecretData
                                     isESO={isESO}
                                     isHashiOrAWS={isHashiOrAWS}
                                     isUnAuthorized={isUnAuthorized}
                                     useFormProps={useFormProps}
                                     readOnly={isFormDisabled}
+                                    isPatchMode={isPatchMode}
                                 />
                             </div>
                         </div>

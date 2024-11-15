@@ -41,6 +41,7 @@ export const ConfigMapSecretProtected = ({
     updateCMSecret,
     restoreYAML,
     setRestoreYAML,
+    mergeStrategy,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { formDataRef } = useConfigMapSecretFormContext()
@@ -164,6 +165,7 @@ export const ConfigMapSecretProtected = ({
                     : cmSecretStateLabel
             }
             isJob={isJob}
+            mergeStrategy={mergeStrategy}
             appChartRef={appChartRef}
             isProtected
             isDraft

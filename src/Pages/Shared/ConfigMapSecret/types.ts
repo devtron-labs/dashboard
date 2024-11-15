@@ -13,6 +13,7 @@ import {
     UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
+    ConfigHeaderTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -47,6 +48,7 @@ export type CMSecretPayloadType = Pick<
     | 'esoSecretData'
     | 'filePermission'
     | 'esoSubPath'
+    | 'mergeStrategy'
 >
 
 export interface ESOSecretData {
@@ -108,6 +110,9 @@ export interface ConfigMapSecretUseFormProps {
     esoSecretYaml: string
     hasCurrentDataErr: boolean
     isResolvedData: boolean
+    replaceData: CMSecretYamlData[]
+    replaceYaml: string
+    mergeStrategy: ConfigToolbarProps['mergeStrategy']
 }
 
 // COMPONENT PROPS
@@ -149,6 +154,7 @@ export interface ConfigMapSecretFormProps
     areScopeVariablesResolving: boolean
     resolvedFormData: ConfigMapSecretUseFormProps
     isDraft?: boolean
+    mergeStrategy: ConfigToolbarProps['mergeStrategy']
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
@@ -159,13 +165,17 @@ export interface ConfigMapSecretDataProps {
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
     readOnly: boolean
+    isPatchMode: boolean
     useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
-export type ConfigMapSecretReadyOnlyProps = Pick<
-    ConfigMapSecretFormProps,
-    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
->
+export interface ConfigMapSecretReadyOnlyProps
+    extends Pick<
+        ConfigMapSecretFormProps,
+        'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
+    > {
+    hideCodeEditor?: boolean
+}
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
@@ -212,6 +222,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'restoreYAML'
         | 'setRestoreYAML'
         | 'appChartRef'
+        | 'mergeStrategy'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -351,4 +362,8 @@ export type ConfigMapSecretDecodedDataProps<IsDraft extends boolean> = {
 export type ConfigMapSecretEncodedDataProps<IsDraft extends boolean> = {
     configMapSecretData: ConfigMapSecretDecodedDataReturnType<IsDraft>
     isDraft?: IsDraft
+}
+
+export interface ConfigMapSecretQueryParamsType {
+    tab: ConfigHeaderTabType
 }

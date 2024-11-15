@@ -9,11 +9,13 @@ import {
     DraftState,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
+    OverrideMergeStrategyType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import {
     CODE_EDITOR_RADIO_STATE,
     CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
@@ -36,6 +38,7 @@ import {
     ConfigMapSecretDecodedDataProps,
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
+    ConfigMapSecretQueryParamsType,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -89,6 +92,18 @@ const processCurrentData = ({
 }: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel'> & {
     isSecret: boolean
 }) => {
+    if (configMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH) {
+        if (configMapSecretData.patchData) {
+            return secureValues(
+                configMapSecretData.patchData,
+                isSecret && configMapSecretData.externalType === '',
+                isSecret && configMapSecretData.unAuthorized,
+            )
+        }
+
+        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
+    }
+
     if (configMapSecretData.data) {
         return secureValues(
             configMapSecretData.data,
@@ -96,6 +111,7 @@ const processCurrentData = ({
             isSecret && configMapSecretData.unAuthorized,
         )
     }
+
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
@@ -228,8 +244,18 @@ export const getConfigMapSecretFormInitialValues = ({
             roleARN,
             esoSubPath,
         } = configMapSecretData
+
+        const mergeStrategy =
+            configMapSecretData.mergeStrategy ||
+            (configMapSecretData.defaultData && !configMapSecretData.data ? DEFAULT_MERGE_STRATEGY : null)
+
         const currentData = processCurrentData({
-            configMapSecretData,
+            configMapSecretData: { ...configMapSecretData, mergeStrategy },
+            cmSecretStateLabel,
+            isSecret,
+        })
+        const replaceData = processCurrentData({
+            configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
             cmSecretStateLabel,
             isSecret,
         })
@@ -248,9 +274,12 @@ export const getConfigMapSecretFormInitialValues = ({
             roleARN: roleARN ?? '',
             yamlMode: true,
             yaml: convertKeyValuePairToYAML(currentData),
+            replaceYaml: convertKeyValuePairToYAML(replaceData),
             currentData,
+            replaceData,
             hasCurrentDataErr: false,
             isResolvedData: false,
+            mergeStrategy,
             ...getSecretDataFromConfigData(configMapSecretData),
         }
     }
@@ -270,10 +299,13 @@ export const getConfigMapSecretFormInitialValues = ({
         yamlMode: true,
         yaml: '"": ""\n',
         currentData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
+        replaceYaml: '"": ""\n',
+        replaceData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
         hasCurrentDataErr: false,
         isResolvedData: false,
         esoSecretYaml: '{}',
         secretDataYaml: '[]',
+        mergeStrategy: null,
     }
 }
 
@@ -304,7 +336,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         currentData,
         isSecret,
     } = getConfigMapSecretFormInitialValues({
-        configMapSecretData,
+        configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
         cmSecretStateLabel: CM_SECRET_STATE.INHERITED,
         componentType,
     })
@@ -411,6 +443,7 @@ export const getConfigMapSecretPayload = ({
     roleARN,
     volumeMountPath,
     isSubPathChecked,
+    mergeStrategy,
 }: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
     const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
@@ -438,6 +471,7 @@ export const getConfigMapSecretPayload = ({
         subPath: null,
         filePermission: null,
         esoSubPath: null,
+        mergeStrategy,
     }
 
     if (
@@ -699,4 +733,12 @@ export const getConfigMapSecretResolvedData = (
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
+
+export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams): ConfigMapSecretQueryParamsType => {
+    const tab = searchParams.get('tab') as ConfigMapSecretQueryParamsType['tab']
+
+    return {
+        tab: tab ?? null,
+    }
+}
 // DATA UTILS ----------------------------------------------------------------

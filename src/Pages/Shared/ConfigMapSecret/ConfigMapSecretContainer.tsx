@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, Prompt, useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 
 import {
@@ -12,7 +12,6 @@ import {
     DryRunEditorMode,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
-    noop,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
@@ -22,6 +21,7 @@ import {
     ToastVariantType,
     useAsync,
     usePrompt,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -30,6 +30,7 @@ import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState }
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import {
     getConfigMapSecretConfigData,
@@ -49,6 +50,7 @@ import {
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
     hasHashiOrAWS,
+    parseConfigMapSecretSearchParams,
 } from './utils'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
@@ -60,6 +62,7 @@ import {
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
     ConfigMapSecretFormRefType,
+    ConfigMapSecretQueryParamsType,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
@@ -92,17 +95,22 @@ export const ConfigMapSecretContainer = ({
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const { setFormState, isFormDirty, parsingError, formDataRef } = useConfigMapSecretFormContext()
+    const location = useLocation()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
+
+    // SEARCH PARAMS
+    const { tab: configHeaderTab, updateSearchParams } = useUrlFilters<void, ConfigMapSecretQueryParamsType>({
+        parseSearchParams: parseConfigMapSecretSearchParams,
+    })
 
     // REFS
     const abortControllerRef = useRef<AbortController>()
     const formMethodsRef = useRef<ConfigMapSecretFormRefType>(null)
 
     // STATES
-    const [configHeaderTab, setConfigHeaderTab] = useState<ConfigHeaderTabType>(null)
-    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(OverrideMergeStrategyType.REPLACE)
+    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(null)
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
     const [showComments, setShowComments] = useState(false)
@@ -115,6 +123,7 @@ export const ConfigMapSecretContainer = ({
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [restoreYAML, setRestoreYAML] = useState(false)
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
+    const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState(false)
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -382,12 +391,24 @@ export const ConfigMapSecretContainer = ({
 
     // TAB HANDLING
     useEffect(() => {
-        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
-            setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
-        } else {
-            setConfigHeaderTab(ConfigHeaderTabType.VALUES)
+        if (!configHeaderTab) {
+            if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
+                updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
+            } else {
+                updateSearchParams({ tab: ConfigHeaderTabType.VALUES })
+            }
         }
     }, [cmSecretStateLabel, draftData])
+
+    // MERGE STRATEGY HANDLING
+    useEffect(() => {
+        const _mergeStrategy =
+            configMapSecretData?.mergeStrategy ||
+            (draftData && JSON.parse(draftData.data).configData[0].mergeStrategy) ||
+            (configMapSecretData?.defaultData && !configMapSecretData.data ? DEFAULT_MERGE_STRATEGY : null)
+
+        setMergeStrategy(_mergeStrategy)
+    }, [configMapSecretData, draftData])
 
     const redirectURLToValidPage = () => {
         history.replace(
@@ -429,7 +450,7 @@ export const ConfigMapSecretContainer = ({
                     () => {
                         ToastManager.showToast({
                             variant: ToastVariantType.error,
-                            description: 'Please add input for required fields',
+                            description: 'Please resolve errors before continuing',
                         })
                     },
                 )()
@@ -439,7 +460,7 @@ export const ConfigMapSecretContainer = ({
         }
 
     const handleTabChange = (tab: ConfigHeaderTabType) => {
-        setConfigHeaderTab(tab)
+        updateSearchParams({ tab })
         if (tab === ConfigHeaderTabType.DRY_RUN) {
             ReactGA.event({
                 category: gaEventCategory,
@@ -470,7 +491,7 @@ export const ConfigMapSecretContainer = ({
 
     const handleClearPopupNode = () => setPopupNodeType(null)
 
-    const handleViewInheritedConfig = () => setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
+    const handleViewInheritedConfig = () => updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
 
     const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
         setSelectedProtectionViewTab(tab)
@@ -514,7 +535,8 @@ export const ConfigMapSecretContainer = ({
 
     const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
 
-    const handleChangeDryRunEditorMode = (mode: DryRunEditorMode) => setDryRunEditorMode(mode)
+    const handleToggleShowTemplateMergedWithPatch = () =>
+        setShouldMergeTemplateWithPatches(!shouldMergeTemplateWithPatches)
 
     const reloadSaveChangesModal = () => {
         setShowDraftSaveModal(false)
@@ -683,6 +705,7 @@ export const ConfigMapSecretContainer = ({
                 resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 appChartRef={appChartRef}
+                mergeStrategy={mergeStrategy}
             />
         ) : (
             <ConfigMapSecretForm
@@ -702,6 +725,7 @@ export const ConfigMapSecretContainer = ({
                 restoreYAML={restoreYAML}
                 setRestoreYAML={setRestoreYAML}
                 appChartRef={appChartRef}
+                mergeStrategy={mergeStrategy}
             />
         )
 
@@ -753,7 +777,7 @@ export const ConfigMapSecretContainer = ({
                         resolveScopedVariables={resolvedScopeVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         dryRunEditorMode={dryRunEditorMode}
-                        handleChangeDryRunEditorMode={handleChangeDryRunEditorMode}
+                        handleChangeDryRunEditorMode={setDryRunEditorMode}
                         mergeStrategy={mergeStrategy}
                         showCrudButtons={!showNoOverride}
                         isSubmitting={isSubmitting}
@@ -844,8 +868,8 @@ export const ConfigMapSecretContainer = ({
                         resolveScopedVariables={resolvedScopeVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         popupConfig={toolbarPopupConfig}
-                        handleToggleShowTemplateMergedWithPatch={noop}
-                        shouldMergeTemplateWithPatches={null}
+                        handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
+                        shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         parsingError={parsingError}
                         restoreLastSavedYAML={restoreLastSavedYAML}
                     />
@@ -857,7 +881,10 @@ export const ConfigMapSecretContainer = ({
 
     return (
         <>
-            <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt
+                when={shouldPrompt}
+                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
+            />
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >
