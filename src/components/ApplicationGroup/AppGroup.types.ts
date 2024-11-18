@@ -609,7 +609,7 @@ export enum AppGroupUrlFilters {
 
 export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
 
-export interface SetFiltersInLocalStorageParams {
+export interface SetFiltersInLocalStorageParamsType {
     filterParentType: FilterParentType,
     resourceId: string,
     resourceList: MultiValue<OptionType>,

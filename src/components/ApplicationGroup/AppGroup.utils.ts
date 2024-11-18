@@ -33,7 +33,7 @@ import {
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
     FilterParentType,
-    SetFiltersInLocalStorageParams,
+    SetFiltersInLocalStorageParamsType,
 } from './AppGroup.types'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
@@ -299,7 +299,7 @@ export const setFilterInLocalStorage = ({
     resourceId,
     resourceList,
     groupList,
-}: SetFiltersInLocalStorageParams) => {
+}: SetFiltersInLocalStorageParamsType) => {
     const localStorageKey =
         filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
     try {
