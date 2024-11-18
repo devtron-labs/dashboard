@@ -35,6 +35,8 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -58,8 +60,8 @@ import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../
 // @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
-import restoreIcon from '../../../../assets/icons/ic-restore.svg'
-import warningIcon from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ICRestore } from '../../../../assets/icons/ic-restore.svg'
+import { ReactComponent as ICWarning } from '../../../../assets/icons/ic-warning-y5.svg'
 import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg'
 import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg'
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
@@ -677,46 +679,38 @@ export const Details: React.FC<DetailsType> = ({
             )
         }
         return (
-            <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon} />
-                <ConfirmationDialog.Body
-                    title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
-                        appDetails.appName
-                    }' on '${appDetails.environmentName}'`}
-                    subtitle={
-                        <p>
-                            Pods for this application will be
-                            <b className="mr-4 ml-4">
-                                scaled
-                                {hibernateConfirmationModal === 'hibernate'
-                                    ? ' down to 0 '
-                                    : ' up to its original count '}
-                                on {appDetails.environmentName}
-                            </b>
-                            environment.
-                        </p>
-                    }
-                >
-                    <p className="mt-16">Are you sure you want to continue?</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button
-                        className="cta cancel"
-                        disabled={hibernating}
-                        onClick={handleHibernateConfirmationModalClose}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="cta"
-                        disabled={hibernating}
-                        data-testid={`app-details-${hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'}`}
-                        onClick={handleHibernate}
-                    >
-                        {hibernating ? <Progressing /> : getHibernateText()}
-                    </button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
+            <ConfirmationModal
+                variant={ConfirmationModalVariantType.custom}
+                Icon={hibernateConfirmationModal === 'hibernate' ? ICWarning : ICRestore}
+                title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
+                subtitle={
+                    <p className='m-0-imp fs-13'>
+                        Pods for this application will be
+                        <b className="mr-4 ml-4">
+                            scaled
+                            {hibernateConfirmationModal === 'hibernate' ? ' down to 0 ' : ' up to its original count '}
+                            on {appDetails.environmentName}
+                        </b>
+                        environment.
+                    </p>
+                }
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        dataTestId: 'cancel-hibernate-unhibernate-dialog',
+                        disabled: hibernating,
+                        onClick: handleHibernateConfirmationModalClose,
+                        text: 'Cancel',
+                    },
+                    primaryButtonConfig: {
+                        dataTestId: `app-details-${hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'}`,
+                        isLoading: hibernating,
+                        onClick: handleHibernate,
+                        text: getHibernateText(),
+                    },
+                }}
+            >
+                <span className='fs-13'>Are you sure you want to continue?</span>
+            </ConfirmationModal>
         )
     }
 
@@ -831,7 +825,9 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
+            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
+                <ConfigDriftModalRoute path={path} />
+            )}
         </>
     )
 }
