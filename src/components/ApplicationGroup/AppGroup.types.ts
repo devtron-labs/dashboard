@@ -615,3 +615,5 @@ export interface SetFiltersInLocalStorageParams {
     resourceList: MultiValue<OptionType>,
     groupList: MultiValue<GroupOptionType>,
 }
+
+export type AppEnvLocalStorageKeyType = `${string}__filter`

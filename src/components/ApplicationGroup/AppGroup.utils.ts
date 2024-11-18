@@ -304,18 +304,11 @@ export const setFilterInLocalStorage = ({
         filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
     try {
         const localStorageValue = localStorage.getItem(localStorageKey)
-        if (!localStorageValue) {
-            const resourceIdVsValuesMap = new Map()
-            resourceIdVsValuesMap.set(resourceId, [resourceList, groupList])
-            // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
-            localStorage.setItem(localStorageKey, JSON.stringify(Array.from(resourceIdVsValuesMap)))
-        } else {
-            // update or set value for current resource
-            const localStoredMap = new Map(JSON.parse(localStorageValue))
-            localStoredMap.set(resourceId, [resourceList, groupList])
-            localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
-        }
-    } catch (err) {
+        const localStoredMap = new Map(localStorageValue ? JSON.parse(localStorageValue) : '')
+        localStoredMap.set(resourceId, [resourceList, groupList])
+        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
+    } catch {
         localStorage.setItem(localStorageKey, '')
     }
 }

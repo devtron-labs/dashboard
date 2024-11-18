@@ -117,49 +117,49 @@ export default function AppGroupAppFilter() {
         appGroupFilterRef.current.onMenuOpen()
     }
 
+    const getAndSetItem = () => {
+        const localStorageKey =
+            filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        if (!localStorageValue) {
+            return
+        }
+        try {
+            const valueForCurrentResource = new Map(JSON.parse(localStorageValue)).get(resourceId)
+            // local storage value for app list/ env list
+            const localStorageResourceList = valueForCurrentResource?.[0] || []
+            // local storage value for group filter
+            const localStorageGroupList = valueForCurrentResource?.[1] || []
+
+            const appListOptionsMap = appListOptions.reduce<Record<string, true>>((agg, curr) => {
+                agg[curr.value] = true
+                return agg
+            }, {})
+
+            const groupFilterOptionsMap = groupFilterOptions.reduce<Record<string, true>>((agg, curr) => {
+                agg[curr.value] = true
+                return agg
+            }, {})
+
+            // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
+            const filteredLocalStorageResourceList =
+                localStorageResourceList.filter(({ value }) => appListOptionsMap[value])
+            const filteredLocalStorageGroupList =
+                localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
+
+            setSelectedAppList(filteredLocalStorageResourceList)
+            setSelectedGroupFilter(filteredLocalStorageGroupList)
+        } catch {
+            localStorage.setItem(localStorageKey, '')
+        }
+    }
+
     useEffect(() => {
         if (!appListOptions || !groupFilterOptions) {
             return
         }
-
-        const localStorageKey =
-            filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
-
-        const getAndSetItem = () => {
-            const localStorageValue = localStorage.getItem(localStorageKey)
-            if (!localStorageValue) {
-                return
-            }
-            try {
-                const valueForCurrentResource = new Map(JSON.parse(localStorageValue)).get(resourceId)
-                // local storage value for app list/ env list
-                const localStorageResourceList = valueForCurrentResource?.[0] || []
-                // local storage value for group filter
-                const localStorageGroupList = valueForCurrentResource?.[1] || []
-
-                const appListOptionsMap = appListOptions.reduce<Record<string, true>>((agg, curr) => {
-                    agg[curr.value] = true
-                    return agg
-                }, {})
-
-                const groupFilterOptionsMap = groupFilterOptions.reduce<Record<string, true>>((agg, curr) => {
-                    agg[curr.value] = true
-                    return agg
-                }, {})
-
-                // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
-                const filteredLocalStorageResourceList =
-                    localStorageResourceList.filter(({ value }) => appListOptionsMap[value])
-                const filteredLocalStorageGroupList =
-                    localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
-
-                setSelectedAppList(filteredLocalStorageResourceList)
-                setSelectedGroupFilter(filteredLocalStorageGroupList)
-            } catch (error) {
-                localStorage.setItem(localStorageKey, '')
-            }
-        }
-
+        
         getAndSetItem()
     }, [appListOptions, groupFilterOptions])
 
