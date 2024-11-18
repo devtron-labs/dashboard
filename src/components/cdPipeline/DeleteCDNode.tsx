@@ -94,6 +94,7 @@ const DeleteCDNode = ({
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: deleteTitleName,
             }}
+            handleClose={hideDeleteModal}
         />
     )
 }

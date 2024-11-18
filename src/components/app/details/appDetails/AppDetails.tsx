@@ -708,6 +708,7 @@ export const Details: React.FC<DetailsType> = ({
                         text: getHibernateText(),
                     },
                 }}
+                handleClose={handleHibernateConfirmationModalClose}
             >
                 <span className='fs-13'>Are you sure you want to continue?</span>
             </ConfirmationModal>
