@@ -45,7 +45,7 @@ const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerati
 
     return (
         <VisibleModal className="generate-token-modal">
-            <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column">
+            <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column dc__gap-16">
                 <button
                     type="button"
                     data-testid={`${modelType}-token-modal-close`}
