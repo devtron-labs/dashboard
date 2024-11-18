@@ -17,9 +17,9 @@
 import { useEffect, useRef, useState } from 'react'
 import ReactSelect, { SelectInstance } from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { appGroupAppSelectorStyle, setFilterInLocalStorage } from './AppGroup.utils'
+import { appGroupAppSelectorStyle, getAppFilterLocalStorageKey, setFilterInLocalStorage } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
-import { APP_GROUP_LOCAL_STORAGE_KEY, AppFilterTabs, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
+import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
 import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -118,8 +118,7 @@ export default function AppGroupAppFilter() {
     }
 
     const getAndSetItem = () => {
-        const localStorageKey =
-            filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+        const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
 
         const localStorageValue = localStorage.getItem(localStorageKey)
         if (!localStorageValue) {
@@ -143,10 +142,12 @@ export default function AppGroupAppFilter() {
             }, {})
 
             // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
-            const filteredLocalStorageResourceList =
-                localStorageResourceList.filter(({ value }) => appListOptionsMap[value])
-            const filteredLocalStorageGroupList =
-                localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
+            const filteredLocalStorageResourceList = localStorageResourceList.filter(
+                ({ value }) => appListOptionsMap[value],
+            )
+            const filteredLocalStorageGroupList = localStorageGroupList.filter(
+                ({ value }) => groupFilterOptionsMap[value],
+            )
 
             setSelectedAppList(filteredLocalStorageResourceList)
             setSelectedGroupFilter(filteredLocalStorageGroupList)
@@ -159,7 +160,7 @@ export default function AppGroupAppFilter() {
         if (!appListOptions || !groupFilterOptions) {
             return
         }
-        
+
         getAndSetItem()
     }, [appListOptions, groupFilterOptions])
 
