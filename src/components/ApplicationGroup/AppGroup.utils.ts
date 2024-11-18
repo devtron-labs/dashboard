@@ -38,7 +38,6 @@ import {
 } from './AppGroup.types'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
-import { truncate } from 'node:fs/promises'
 
 let timeoutId
 
