@@ -124,7 +124,7 @@ const Sidebar = ({
         setSelectedResource(_selectedResource)
         updateK8sResourceTabLastSyncMoment()
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
-        updateK8sResourceTab(_url, e.currentTarget.dataset.kind)
+        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
         if (shouldPushUrl) {
             push(_url)
         }

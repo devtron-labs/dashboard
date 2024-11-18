@@ -66,11 +66,10 @@ export const initTabsData = (
     tabs.forEach((tab) => {
         const tabOption = {
             ...tab,
-            label: tab.title,
+            label: tab.dynamicTitle || tab.title,
             value: tab.id,
         }
-        // NOTE: dynamic tabs are supposed to have position as Number.MAX_SAFE_INTEGER
-        if (tab.position < Number.MAX_SAFE_INTEGER) {
+        if (tab.type === 'fixed') {
             fixedTabs.push(tabOption)
         } else {
             dynamicTabs.push(tabOption)
