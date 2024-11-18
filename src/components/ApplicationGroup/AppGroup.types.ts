@@ -335,6 +335,7 @@ export interface CIConfigListType {
 }
 
 export interface AppGroupAppFilterContextType {
+    resourceId: string
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
@@ -607,3 +608,12 @@ export enum AppGroupUrlFilters {
 }
 
 export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
+
+export interface SetFiltersInLocalStorageParamsType {
+    filterParentType: FilterParentType,
+    resourceId: string,
+    resourceList: MultiValue<OptionType>,
+    groupList: MultiValue<GroupOptionType>,
+}
+
+export type AppEnvLocalStorageKeyType = `${string}__filter`

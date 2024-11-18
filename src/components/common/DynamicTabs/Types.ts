@@ -18,6 +18,7 @@ import { ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
 import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { useTabs } from './useTabs'
+import { TAB_DATA_VERSION } from './constants'
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
@@ -53,31 +54,39 @@ export interface TimerType {
 export type ParsedTabsData = {
     key: string
     data: DynamicTabType[]
+    version: typeof TAB_DATA_VERSION
 }
 
-export interface PopulateTabDataPropsType extends Pick<DynamicTabType, 'tippyConfig'> {
-    id: string
-    name: string
-    url: string
-    isSelected: boolean
-    title: string
-    position: number
-    showNameOnSelect: boolean
+export interface PopulateTabDataPropsType
+    extends Pick<
+            DynamicTabType,
+            | 'tippyConfig'
+            | 'lastActiveTabId'
+            | 'type'
+            | 'isSelected'
+            | 'url'
+            | 'name'
+            | 'iconPath'
+            | 'dynamicTitle'
+            | 'isAlive'
+            | 'hideName'
+            | 'id'
+        >,
+        Required<Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect'>> {}
+
+export interface AddTabParamsType
+    extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,
+        Partial<Pick<PopulateTabDataPropsType, 'type' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>>,
+        Required<Pick<DynamicTabType, 'kind'>> {
     /**
-     * @default ''
+     * Prefix for generating tab IDs
      */
-    iconPath?: string
-    /**
-     * @default ''
-     */
-    dynamicTitle?: string
+    idPrefix: string
+}
+
+export interface UpdateTabUrlParamsType extends Pick<DynamicTabType, 'id' | 'url' | 'dynamicTitle'> {
     /**
      * @default false
      */
-    isAlive?: boolean
-    /**
-     * @description Would remove the title/name from tab heading, but that does not mean name is not required, since it is used in other calculations
-     * @default false
-     */
-    hideName?: boolean
+    retainSearchParams?: boolean
 }

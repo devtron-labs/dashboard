@@ -27,7 +27,7 @@ import {
     K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterDetail } from '../ClusterNodes/types'
+import { ClusterDetail, ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -109,7 +109,7 @@ export interface SidebarType {
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
     isClusterError?: boolean
-    updateK8sResourceTab: (url: string, dynamicTitle?: string, retainSearchParams?: boolean) => void
+    updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }

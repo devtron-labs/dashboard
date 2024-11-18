@@ -366,17 +366,16 @@ export interface LogSearchTermType {
     isExternalApp?: boolean
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap'> {
+export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
     clusterName?: string
 }
 
-export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap'> {
+export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string

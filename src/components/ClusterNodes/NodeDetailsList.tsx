@@ -572,7 +572,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const clusterNodeClickEvent = (nodeData, column) => {
         const url = `${match.url}/${nodeData[column.value]}`
         return () => {
-            addTab(K8S_EMPTY_GROUP, nodeType, nodeData[column.value], url)
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: nodeType, name: nodeData[column.value], url })
             history.push(url)
         }
     }

@@ -299,7 +299,9 @@ const NodeDetailComponent = ({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
-        updateTabUrl?.(_url)
+        updateTabUrl?.({
+            url: _url
+        })
 
         /**
          * NOTE: resource browser handles creation of missing tabs;
