@@ -111,7 +111,7 @@ export default function SuggestionItem({
 
                     <ClipboardButton
                         content={clipboardContent}
-                        copiedTippyText={`Copied: @{{${variableName}}}`}
+                        copiedTippyText={`Copied: ${clipboardContent}`}
                         copyToClipboardPromise={copyToClipboardPromise}
                     />
                 </div>

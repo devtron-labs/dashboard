@@ -35,11 +35,13 @@ const CopyToast = ({ showCopyToast }: toastType) => (
 
 function handleSelectionChange(terminal, setPopupText): void {
     terminal.onSelectionChange(() => {
-        if (!terminal.getSelection()) {
+        const selectedText = terminal.getSelection()
+
+        if (!selectedText) {
             return
         }
 
-        copyToClipboard(terminal.getSelection())
+        copyToClipboard(selectedText)
             .then(() => {
                 setPopupText(true)
             })

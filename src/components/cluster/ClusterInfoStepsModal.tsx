@@ -28,8 +28,9 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
-        setCopied(true)
-        copyToClipboard(command).catch(noop)
+        copyToClipboard(command).then(() => {
+            setCopied(true)
+        }).catch(noop)
     }
     const infoItems = [
         {

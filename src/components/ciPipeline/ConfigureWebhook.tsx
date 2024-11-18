@@ -68,8 +68,8 @@ export const ConfigureWebhook = ({
                 </p>
                 <div className="flex left fs-12 fw-6 mt-12">
                     {gitHost.webhookUrl && (
-                        <div
-                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
+                        <button
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor dc__transparent--unstyled"
                             data-testid="build-copy-webhook-url-button"
                             onClick={handleCopyUrl}
                         >
@@ -80,11 +80,11 @@ export const ConfigureWebhook = ({
                                     copyToClipboardPromise={copyToClipboardUrlPromise}
                                 />
                             </div>
-                        </div>
+                        </button>
                     )}
                     {gitHost.webhookSecret && (
-                        <div
-                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
+                        <button
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor dc__transparent--unstyled"
                             data-testid="build-copy-secret-key-button"
                             onClick={handleCopySecret}
                         >
@@ -95,7 +95,7 @@ export const ConfigureWebhook = ({
                                     copyToClipboardPromise={copyToClipboardSecretPromise}
                                 />
                             </div>
-                        </div>
+                        </button>
                     )}
                 </div>
             </div>
