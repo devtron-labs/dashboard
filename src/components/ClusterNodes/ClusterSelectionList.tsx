@@ -288,7 +288,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+            {ClusterMap && <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />}
             {!filteredList.length ? (
                 <div className="flex-grow-1">
                     <ClusterNodeEmptyState actionHandler={clearFilters} />
