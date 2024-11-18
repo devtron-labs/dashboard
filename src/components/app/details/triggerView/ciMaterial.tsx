@@ -229,14 +229,15 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     showTriggerButton
                     onTrigger={this.handleStartBuildAction}
                     nodeType={nodeType}
+                    isJobView={this.props.isJobCI}
                 >
                     <Button
                         dataTestId="ci-trigger-start-build-button"
-                        text="Start Build"
+                        text={this.props.isJobCI ? 'Run Job' : 'Start Build'}
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
                         size={ComponentSizeType.xl}
-                        endIcon={<Play />}
+                        endIcon={this.props.isJobCI   ? <RunIcon /> : <Play />}
                     />
                 </AllowedWithWarningTippy>
             )

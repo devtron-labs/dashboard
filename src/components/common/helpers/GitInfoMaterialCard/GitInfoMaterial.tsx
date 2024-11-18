@@ -401,6 +401,7 @@ export const GitInfoMaterial = ({
                         isJobCI,
                     )}
                     nodeType={nodeType}
+                    isJobView={isJobCI}
                 />
             ) : (
                 <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
