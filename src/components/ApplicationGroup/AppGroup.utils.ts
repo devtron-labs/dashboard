@@ -23,6 +23,7 @@ import {
     WorkflowType,
     getIsRequestAborted,
     CIMaterialType,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
@@ -270,7 +271,9 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
                 const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
                     for (const mat of selectedCIPipeline.ciMaterial) {
-                        branchValues += `${branchValues ? ',' : ''}${getParsedBranchValuesForPlugin(mat.source.value)}`
+                        if (mat.source.type !== SourceTypeMap.WEBHOOK) {
+                            branchValues += `${branchValues ? ',' : ''}${getParsedBranchValuesForPlugin(mat.source.value)}`
+                        }
                     }
                 }
                 break
@@ -294,8 +297,8 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
 })
 
-export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType => 
-        filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
+    filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
 
 export const setFilterInLocalStorage = ({
     filterParentType,

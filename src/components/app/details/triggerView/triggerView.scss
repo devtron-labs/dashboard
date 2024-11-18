@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2024. Devtron Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,16 +18,12 @@
     height: calc(100vh - 400px);
 }
 
-.collapsed-incoming-payload {
-    max-height: 200px;
-}
-
 .empty-payload {
     min-height: 186px;
 }
 
 .payload-wrapper-no-header {
-    height: calc(100vh - 74px);
+    height: calc(100vh - 50px);
 }
 
 .payload-wrapper {
@@ -37,4 +33,19 @@
 .incoming-payload-bottom {
     height: calc(100vh - 300px);
     overflow: scroll;
+}
+
+.ci-trigger__webhook-wrapper{
+    display: grid;
+    grid-template-columns: 250px 1fr;
+
+    .ci-pipeline-webhook {
+        display: grid;
+        grid-template-rows: 48px 1fr;
+    }
+
+    .ci__filter-table__row{
+        display: grid;
+        grid-template-columns: 200px 200px auto 100px;
+    }
 }

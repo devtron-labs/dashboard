@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { sortCallback, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -73,16 +73,16 @@ export const swap = (array: any[], indexA: number, indexB: number) => {
     array[indexB] = temp
 }
 
-export const getGitProviderIcon = (gitUrl: string): JSX.Element => {
+export const getGitProviderIcon = (gitUrl: string, rootClassName?: string): JSX.Element => {
     let IconComponent: React.ElementType = Git // Using React.ElementType for any JSX component
     if(!gitUrl) return null
-    if (gitUrl.includes('gitlab')) {
+    if (gitUrl.includes(GitProviderType.GITLAB)) {
         IconComponent = GitLab
-    } else if (gitUrl.includes('github')) {
+    } else if (gitUrl.includes(GitProviderType.GITHUB)) {
         IconComponent = GitHub
-    } else if (gitUrl.includes('bitbucket')) {
+    } else if (gitUrl.includes(GitProviderType.BITBUCKET)) {
         IconComponent = BitBucket
     }
 
-    return <IconComponent className="icon-dim-20 mw-20" />
+    return <IconComponent className={`icon-dim-20 ${rootClassName} mw-20`} />
 }

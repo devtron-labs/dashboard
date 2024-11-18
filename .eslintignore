@@ -133,8 +133,6 @@ src/components/app/details/metrics/deploymentMetrics.util.tsx
 src/components/app/details/testViewer/List.tsx
 src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
-src/components/app/details/triggerView/BranchRegexModal.tsx
-src/components/app/details/triggerView/CiWebhookDebuggingModal.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/TriggerView.tsx
@@ -265,7 +263,6 @@ src/components/common/FloatingVariablesSuggestions/__tests__/FloatingVariablesSu
 src/components/common/FloatingVariablesSuggestions/__tests__/Suggestions.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsInfo.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsItem.test.tsx
-src/components/common/GitInfoMaterial.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx

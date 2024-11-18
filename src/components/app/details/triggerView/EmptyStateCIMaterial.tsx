@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
-import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
+import NoEligibleCommit from '../../../../assets/gif/ic-no-eligible-commit.svg'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
+import { ReceivedWebhookRedirectButton } from '@Components/common/helpers/GitInfoMaterialCard/ReceivedWebhookRedirectButton'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -39,7 +39,6 @@ export default function EmptyStateCIMaterial({
     isWebHook,
     noSearchResults,
     noSearchResultsMsg,
-    toggleWebHookModal,
     clearSearch,
     handleGoToWorkFlowEditor,
     showAllCommits,
@@ -149,9 +148,7 @@ export default function EmptyStateCIMaterial({
 
     const handleMaterialLoadingButton = () => {
         return (
-            <span className="dc__link cursor" onClick={toggleWebHookModal}>
-                {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-            </span>
+            <ReceivedWebhookRedirectButton />
         )
     }
 
