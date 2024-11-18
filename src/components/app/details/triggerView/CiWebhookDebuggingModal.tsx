@@ -221,17 +221,17 @@ export const CiWebhookModal = ({
 
             {getWebhookIncomingPayload().map((selectedData: WebhookReceivedFiltersType) => (
                 <div key={`${selectedData.selectorName}`} className="ci__filter-table__row py-10 lh-20 dc__gap-12">
-                    <Tooltip content={selectedData?.selectorName}>
-                        <span className="dc__truncate dc__word-break">{selectedData?.selectorName}</span>
+                    <Tooltip content={selectedData.selectorName}>
+                        <span className="dc__truncate dc__word-break">{selectedData.selectorName}</span>
                     </Tooltip>
                     <Tooltip content={selectedData.selectorValue}>
-                        <span className="dc__truncate dc__word-break">{selectedData?.selectorValue}</span>
+                        <span className="dc__truncate dc__word-break">{selectedData.selectorValue}</span>
                     </Tooltip>
                     <Tooltip content={selectedData.selectorCondition}>
-                        <span className="dc__truncate dc__word-break">{selectedData?.selectorCondition}</span>
+                        <span className="dc__truncate dc__word-break">{selectedData.selectorCondition}</span>
                     </Tooltip>
                     <div className={selectedData.match === false ? `cr-5` : `cg-5`}>
-                        {selectedData?.match === false ? 'Failed' : 'Passed'}
+                        {selectedData.match === false ? 'Failed' : 'Passed'}
                     </div>
                 </div>
             ))}
