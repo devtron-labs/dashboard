@@ -23,7 +23,6 @@ import {
     WorkflowType,
     getIsRequestAborted,
     CIMaterialType,
-    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
