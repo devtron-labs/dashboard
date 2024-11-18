@@ -48,7 +48,8 @@ const BranchRegexModal = ({
     const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
             (_ciMaterial) =>
-                _ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source?.type === SourceTypeMap.BranchRegex,
+                _ciMaterial.gitMaterialId === gitMaterialId &&
+                (_ciMaterial.source?.type === SourceTypeMap.BranchRegex || _ciMaterial.source.regex.length > 0),
         )
 
         return <span className="fw-6 cn-9">{ciMaterial?.source?.regex || ''}</span>
