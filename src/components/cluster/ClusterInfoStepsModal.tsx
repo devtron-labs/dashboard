@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, noop } from '@devtron-labs/devtron-fe-common-lib'
 import 'tippy.js/themes/light.css'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import './cluster.scss'
@@ -28,8 +28,9 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
-        setCopied(true)
-        copyToClipboard(command)
+        copyToClipboard(command).then(() => {
+            setCopied(true)
+        }).catch(noop)
     }
     const infoItems = [
         {
