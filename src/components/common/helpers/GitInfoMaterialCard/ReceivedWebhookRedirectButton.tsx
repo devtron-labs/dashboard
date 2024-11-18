@@ -1,10 +1,15 @@
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from '@Components/app/details/triggerView/Constants'
 import { URLS } from '@Config/routes'
-import { Button, ButtonComponentType, ButtonVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonComponentType, ButtonVariantType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router-dom'
+import { ReceivedWebhookRedirectButtonType } from './types'
 
-export const ReceivedWebhookRedirectButton = () => {
+export const ReceivedWebhookRedirectButton = ({ setIsWebhookBulkCI, isBulk }: ReceivedWebhookRedirectButtonType) => {
     const { url } = useRouteMatch()
+
+    const handleClick = () => {
+        setIsWebhookBulkCI(true)
+    }
 
     return (
         <Button
@@ -15,6 +20,7 @@ export const ReceivedWebhookRedirectButton = () => {
             linkProps={{
                 to: `${url}/${URLS.WEBHOOK_MODAL}`,
             }}
+            onClick={isBulk ? handleClick : noop}
         />
     )
 }

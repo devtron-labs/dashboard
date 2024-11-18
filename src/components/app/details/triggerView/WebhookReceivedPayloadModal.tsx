@@ -28,6 +28,7 @@ export const WebhookReceivedPayloadModal = ({
     isJobView = false,
     getWebhookPayload,
     appId,
+    isBulkCIWebhook = false,
 }: WebhookReceivedPayloadModalType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -36,7 +37,7 @@ export const WebhookReceivedPayloadModal = ({
         push(url.split(`/${URLS.WEBHOOK_MODAL}`)[0])
     }
     const webhookRepoName = (webhookPayloads?.repositoryUrl ?? material[0].gitMaterialUrl)
-        .replace('.git', '')
+        ?.replace('.git', '')
         .split('/')
         .pop()
 
@@ -130,6 +131,12 @@ export const WebhookReceivedPayloadModal = ({
             </div>
         )
     }
+
+    if (isBulkCIWebhook) {
+        // For bulk CI webhook, we don't need to show the modal as a child of the trigger view
+        return null
+    }
+
     return (
         <VisibleModal>
             <div

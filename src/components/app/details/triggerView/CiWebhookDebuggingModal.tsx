@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -95,7 +95,7 @@ export const CiWebhookModal = ({
         }
     }, [ciPipelineMaterialId, webhookPayloads])
 
-    const renderSelectedPassedCountRatio = (matchedFiltersCount, failedFiltersCount): string => {
+    const renderSelectedPassedCountRatio = (matchedFiltersCount: number, failedFiltersCount: number): string => {
         const totalFilters = matchedFiltersCount + failedFiltersCount
         return `${matchedFiltersCount}/${totalFilters}`
     }
@@ -131,12 +131,11 @@ export const CiWebhookModal = ({
         </div>
     )
 
-    const memoizedPayloads = useMemo(() => webhookPayloads?.payloads || [], [webhookPayloads])
     const renderSidebar = () => (
         <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
             <div className="p-8">
-                {memoizedPayloads?.map((webhookPayload: WebhookPayload) => {
+                {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
                     const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                     const webhookPayloadId = webhookPayload.parsedDataId
                     const isActive = searchParams[URLS.WEBHOOK_RECEIVED_PAYLOAD_ID] === String(webhookPayloadId)
@@ -209,7 +208,7 @@ export const CiWebhookModal = ({
     )
 
     const getWebhookIncomingPayload = () =>
-        webhookIncomingPayload?.selectorsData?.sort((a, b) => sortCallback('selectorName', a, b))
+        webhookIncomingPayload?.selectorsData?.sort((a, b) => sortCallback('selectorName', a, b)) || []
 
     const renderFilterTableContent = () => (
         <div className="w-100">
@@ -220,18 +219,18 @@ export const CiWebhookModal = ({
                 <div className="lh-20">Result</div>
             </div>
 
-            {getWebhookIncomingPayload()?.map((selectedData: WebhookReceivedFiltersType) => (
-                <div key={`${selectedData?.selectorName}`} className="ci__filter-table__row py-10 lh-20 dc__gap-12">
+            {getWebhookIncomingPayload().map((selectedData: WebhookReceivedFiltersType) => (
+                <div key={`${selectedData.selectorName}`} className="ci__filter-table__row py-10 lh-20 dc__gap-12">
                     <Tooltip content={selectedData?.selectorName}>
                         <span className="dc__truncate dc__word-break">{selectedData?.selectorName}</span>
                     </Tooltip>
-                    <Tooltip content={selectedData?.selectorValue}>
+                    <Tooltip content={selectedData.selectorValue}>
                         <span className="dc__truncate dc__word-break">{selectedData?.selectorValue}</span>
                     </Tooltip>
-                    <Tooltip content={selectedData?.selectorCondition}>
+                    <Tooltip content={selectedData.selectorCondition}>
                         <span className="dc__truncate dc__word-break">{selectedData?.selectorCondition}</span>
                     </Tooltip>
-                    <div className={selectedData?.match === false ? `cr-5` : `cg-5`}>
+                    <div className={selectedData.match === false ? `cr-5` : `cg-5`}>
                         {selectedData?.match === false ? 'Failed' : 'Passed'}
                     </div>
                 </div>

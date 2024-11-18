@@ -41,6 +41,7 @@ import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
 import { ReactComponent as Info } from '@Icons/info-filled.svg'
+import { CiWebhookModal } from '@Components/app/details/triggerView/CiWebhookDebuggingModal'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import EmptyStateCIMaterial from '../../../app/details/triggerView/EmptyStateCIMaterial'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
@@ -76,6 +77,11 @@ export const GitInfoMaterial = ({
     runtimeParams,
     handleRuntimeParamChange,
     handleRuntimeParamError,
+    isBulkCIWebhook,
+    webhookPayloads,
+    isWebhookPayloadLoading,
+    setIsWebhookBulkCI,
+    isBulk = false,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
@@ -312,7 +318,7 @@ export const GitInfoMaterial = ({
                         rootClassName="cn-9"
                     />
                     <span className="lh-20">.</span>
-                    <ReceivedWebhookRedirectButton />
+                    <ReceivedWebhookRedirectButton setIsWebhookBulkCI={setIsWebhookBulkCI} isBulk={isBulk} />
                 </div>
             </div>
         )
@@ -387,6 +393,22 @@ export const GitInfoMaterial = ({
     }
     const nodeType: CommonNodeAttr['type'] = 'CI'
 
+    const renderWebhookContent = () => (
+        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+            <CiWebhookModal
+                webhookPayloads={webhookPayloads}
+                ciPipelineMaterialId={material[0].id}
+                ciPipelineId={+pipelineId}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                workflowId={workflowId}
+                fromAppGrouping={fromAppGrouping}
+                fromBulkCITrigger={fromBulkCITrigger}
+                appId={appId}
+                isJobView={isJobView}
+            />
+        </div>
+    )
+
     return (
         <>
             {!fromBulkCITrigger && renderMaterialHeader()}
@@ -405,8 +427,14 @@ export const GitInfoMaterial = ({
                 />
             ) : (
                 <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
-                    {!fromBulkCITrigger && renderMaterialSource()}
-                    {renderMaterialHistory(selectedMaterial)}
+                    {isBulkCIWebhook ? (
+                        renderWebhookContent()
+                    ) : (
+                        <>
+                            {!fromBulkCITrigger && renderMaterialSource()}
+                            {renderMaterialHistory(selectedMaterial)}
+                        </>
+                    )}
                 </div>
             )}
         </>

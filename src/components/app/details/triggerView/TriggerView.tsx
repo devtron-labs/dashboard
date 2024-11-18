@@ -36,7 +36,7 @@ import {
     getEnvironmentListMinPublic,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { withRouter, NavLink, Route, Switch, Redirect } from 'react-router-dom'
+import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
 import {
     getCIMaterialList,
     triggerCINode,

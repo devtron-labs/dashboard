@@ -52,7 +52,7 @@ const BranchRegexModal = ({
                 (_ciMaterial.source?.type === SourceTypeMap.BranchRegex || _ciMaterial.source.regex.length > 0),
         )
 
-        return <span className="fw-6 cn-9">{ciMaterial?.source?.regex || ''}</span>
+        return ciMaterial?.source?.regex || ''
     }
 
     const renderBranchRegexMaterialHeader = () => {
@@ -123,7 +123,9 @@ const BranchRegexModal = ({
                                     <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
                                     <div className="dc__required-field">
                                         <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
-                                        {getBranchRegexName(mat.gitMaterialId) || mat.regex}
+                                        <span className="fw-6 cn-9">
+                                            {getBranchRegexName(mat.gitMaterialId) || mat.regex}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

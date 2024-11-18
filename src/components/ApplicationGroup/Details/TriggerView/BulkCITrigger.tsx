@@ -106,6 +106,7 @@ const BulkCITrigger = ({
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
     const { url } = useRouteMatch()
     const showWebhookModal = url.includes(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID || URLS.WEBHOOK_MODAL)
+    const [isWebhookBulkCI, setIsWebhookBulkCI] = useState(false)
 
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -244,20 +245,25 @@ const BulkCITrigger = ({
             let branchNames = ''
             for (const material of _materialListMap[appDetails.appId]) {
                 if (
-                    material.type !== SourceTypeMap.WEBHOOK &&
-                    ((!material.isBranchError && !material.isRepoError && !material.isRegex) || material.value !== '--')
+                    (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
+                    material.value !== '--'
                 ) {
                     branchNames += `${branchNames ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
                 }
             }
 
-            return () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames, appDetails.name)
+            return !branchNames
+                ? () => null
+                : () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames, appDetails.name)
         })
 
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch<BlockedStateData>(policyPromiseFunctionList, true)
+                const responses = await ApiQueuingWithBatch<BlockedStateData>(
+                    policyPromiseFunctionList,
+                    true,
+                )
                 responses.forEach((res, index) => {
                     if (res.status === PromiseAllStatusType.FULFILLED) {
                         policyListMap[appList[index]?.appId] = res.value ? processConsequenceData(res.value) : null
@@ -271,6 +277,9 @@ const BulkCITrigger = ({
     }
 
     const renderHeaderSection = (): JSX.Element | null => {
+        if (showWebhookModal) {
+            return null
+        }
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
@@ -473,6 +482,11 @@ const BulkCITrigger = ({
                 handleRuntimeParamChange={handleRuntimeParamChange}
                 handleRuntimeParamError={handleRuntimeParamError}
                 appName={selectedApp?.name}
+                isBulkCIWebhook={isWebhookBulkCI}
+                setIsWebhookBulkCI={setIsWebhookBulkCI}
+                webhookPayloads={webhookPayloads}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                isBulk
             />
         )
     }
@@ -620,6 +634,7 @@ const BulkCITrigger = ({
                 title={selectedApp.ciPipelineName}
                 getWebhookPayload={getWebhookPayload}
                 appId={selectedApp.appId.toString()}
+                isBulkCIWebhook={isWebhookBulkCI}
             />
         )
     }
@@ -646,10 +661,7 @@ const BulkCITrigger = ({
 
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
-                {showWebhookModal ? (
-                    renderWebhookModal()
-                ) : (
-                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                {isWebhookBulkCI ? renderWebhookModal() :   <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                         <div
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
@@ -676,8 +688,7 @@ const BulkCITrigger = ({
                                 {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
                             </div>
                         ))}
-                    </div>
-                )}
+                    </div>}
                 <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
                     {renderMainContent(selectedMaterialList)}
                 </div>

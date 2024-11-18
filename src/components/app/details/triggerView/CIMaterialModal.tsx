@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     Button,
@@ -39,7 +39,10 @@ export const CIMaterialModal = ({
     ...props
 }: CIMaterialModalProps) => {
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
-    const selectedCIPipeline = props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId)
+    const selectedCIPipeline = useMemo(
+        () => props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId),
+        [props.filteredCIPipelines, props.pipelineId],
+    )
 
     usePrompt({ shouldPrompt: isLoading })
 
@@ -52,8 +55,8 @@ export const CIMaterialModal = ({
     )
 
     useEffect(() => {
-        if (props.isJobView && props.environmentLists?.length > 0) {
-            const envId = selectedCIPipeline?.environmentId || 0
+        if (props.isJobView && props.environmentLists?.length > 0 && selectedCIPipeline?.environmentId) {
+            const envId = selectedCIPipeline?.environmentId
             const _selectedEnv = props.environmentLists.find((env) => env.id === envId)
             props.setSelectedEnv(_selectedEnv)
         }

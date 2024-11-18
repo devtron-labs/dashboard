@@ -1,5 +1,6 @@
 import { CIMaterialProps, TriggerViewState } from '@Components/app/details/triggerView/types'
 import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
 
 export interface GitInfoMaterialProps
     extends Pick<TriggerViewState, 'workflowId'>,
@@ -29,4 +30,14 @@ export interface GitInfoMaterialProps
     currentSidebarTab?: string
     handleSidebarTabChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
     handleRuntimeParamError?: (errorState: boolean) => void
+    isBulkCIWebhook?: boolean
+    webhookPayloads?: any
+    isWebhookPayloadLoading?: boolean
+    setIsWebhookBulkCI?: React.Dispatch<React.SetStateAction<boolean>>
+    isBulk?: boolean
+}
+
+export interface ReceivedWebhookRedirectButtonType {
+    setIsWebhookBulkCI?: React.Dispatch<React.SetStateAction<boolean>>
+    isBulk?: boolean
 }

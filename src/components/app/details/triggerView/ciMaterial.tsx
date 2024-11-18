@@ -28,6 +28,7 @@ import {
     showError,
     SourceTypeMap,
     CommonNodeAttr,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -211,6 +212,18 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
+    renderCTAButtonWithIcon = (canTrigger, isCTAActionable: boolean = true ) => (
+        <Button
+            dataTestId="ci-trigger-start-build-button"
+            text={this.props.isJobView ? 'Run Job' : 'Start Build'}
+            disabled={!canTrigger}
+            isLoading={this.props.isLoading}
+            onClick={isCTAActionable ? this.handleStartBuildAction : noop}
+            size={ComponentSizeType.large}
+            startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
+        />
+    )
+
     renderCTAButton = (canTrigger) => {
         const nodeType: CommonNodeAttr['type'] = 'CI'
 
@@ -231,29 +244,12 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     nodeType={nodeType}
                     isJobView={this.props.isJobCI}
                 >
-                    <Button
-                        dataTestId="ci-trigger-start-build-button"
-                        text={this.props.isJobCI ? 'Run Job' : 'Start Build'}
-                        disabled={!canTrigger}
-                        isLoading={this.props.isLoading}
-                        size={ComponentSizeType.xl}
-                        endIcon={this.props.isJobCI   ? <RunIcon /> : <Play />}
-                    />
+                    {this.renderCTAButtonWithIcon(canTrigger, false)}
                 </AllowedWithWarningTippy>
             )
         }
 
-        return (
-            <Button
-                dataTestId="ci-trigger-start-build-button"
-                text={this.props.isJobView ? 'Run Job' : 'Start Build'}
-                disabled={!canTrigger}
-                isLoading={this.props.isLoading}
-                onClick={this.handleStartBuildAction}
-                size={ComponentSizeType.large}
-                startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
-            />
-        )
+        return this.renderCTAButtonWithIcon(canTrigger)
     }
 
     renderMaterialStartBuild = (canTrigger) => {
