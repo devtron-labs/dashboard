@@ -152,7 +152,7 @@ const BranchRegexModal = ({
         })
 
         return (
-            <div className="trigger-modal__trigger flex right dc__gap-16">
+            <div className="trigger-modal__trigger flex right dc__gap-16 dc__position-rel-imp">
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Cancel"
