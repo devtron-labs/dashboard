@@ -127,6 +127,8 @@ export const URLS = {
     ARGO_APP_LIST: '/app/list/a',
     FLUX_APP_LIST: '/app/list/f',
     BUILD: '/build',
+    WEBHOOK_MODAL: 'webhook',
+    WEBHOOK_RECEIVED_PAYLOAD_ID: 'payload-id',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
 }

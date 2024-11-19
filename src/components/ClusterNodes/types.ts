@@ -15,6 +15,7 @@
  */
 
 import { ResponseType, ClusterStatusType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
+import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -162,7 +163,7 @@ export interface ColumnMetadataType {
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     isSuperAdmin: boolean
     addTab?: ReturnType<typeof useTabs>['addTab']
-    updateTabUrl: (url: string) => void
+    updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
 export interface ClusterAboutPropType {

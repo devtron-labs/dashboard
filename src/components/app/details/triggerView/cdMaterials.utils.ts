@@ -15,7 +15,7 @@
  */
 
 import { CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
-import { FilterConditionViews, MATERIAL_TYPE } from './types'
+import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
 import { LAST_SAVED_CONFIG_OPTION, SPECIFIC_TRIGGER_CONFIG_OPTION } from './TriggerView.utils'
 
 export const getInitialState = (materialType: string, material: CDMaterialType[], searchImageTag: string) => () => ({
@@ -40,3 +40,17 @@ export const getInitialState = (materialType: string, material: CDMaterialType[]
 
 export const getWfrId = (selectedMaterial: CDMaterialType, material: CDMaterialType[]) =>
     selectedMaterial ? selectedMaterial.wfrId : material?.find((_mat) => _mat.isSelected)?.wfrId
+
+const isValidRegex = (pattern: string, value: string): boolean => new RegExp(pattern).test(value)
+
+export const getRegexValue = (material): Record<number, RegexValueType> =>
+    material.reduce(
+        (acc, mat) => {
+            acc[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex && !isValidRegex(mat.regex, mat.value),
+            }
+            return acc
+        },
+        {} as Record<number, RegexValueType>,
+    )

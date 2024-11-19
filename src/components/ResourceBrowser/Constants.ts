@@ -361,3 +361,14 @@ export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
 
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
+
+export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
+
+// Note: can't change the snake case to camel case since that would be breaking change
+// while reading from local storage in useTabs
+export enum ResourceBrowserTabsId {
+    k8s_Resources = 'k8s_resources',
+    log_analyzer = 'log_analyzer',
+    terminal = 'cluster_terminal',
+    cluster_overview = 'overview',
+}

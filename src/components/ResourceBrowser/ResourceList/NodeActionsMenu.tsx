@@ -72,9 +72,8 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
         if (isAuthorized()) {
             const queryParams = new URLSearchParams(location.search)
             queryParams.set('node', name)
-            const url = location.pathname
             history.push(
-                `${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+                `${location.pathname.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
             )
         }
     }
@@ -82,7 +81,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
     const handleEditYamlAction = () => {
         if (isAuthorized()) {
             const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
-            addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
                 .then(() => history.push(_url))
                 .catch(noop)
         }
@@ -198,7 +197,8 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     name={name}
                     version={version}
                     kind={kind}
-                    unschedulable={nodeData.unschedulable as boolean}
+                    // NOTE!: ts was showing error in yarn lint but vscode did not
+                    unschedulable={nodeData.unschedulable as unknown as boolean}
                     closePopup={hideCordonNodeModal}
                 />
             )}

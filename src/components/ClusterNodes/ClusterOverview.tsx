@@ -52,6 +52,7 @@ import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluste
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
+import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
@@ -393,29 +394,17 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
             { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
         )
 
-        addTab(
-            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-            upgradeClusterLowerCaseKind,
-            UPGRADE_CLUSTER_CONSTANTS.NAME,
-            URL,
-            undefined,
-            undefined,
-            UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
-            `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
-            {
-                title: 'Upgrade compatibility',
-                descriptions: [
-                    {
-                        info: 'Current Version',
-                        value: clusterCapacityData?.serverVersion,
-                    },
-                    {
-                        info: 'Target Version',
-                        value: `v${selectedVersion}`,
-                    },
-                ]
-            }
-        ).then(() => history.push(URL))
+        addTab({
+            idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+            kind: upgradeClusterLowerCaseKind,
+            name: UPGRADE_CLUSTER_CONSTANTS.NAME,
+            url: URL,
+            iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
+            dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
+            tippyConfig: getUpgradeCompatibilityTippyConfig({
+                targetK8sVersion: selectedVersion
+            }),
+        }).then(() => history.push(URL))
     }
 
     const renderSideInfoData = () => {
