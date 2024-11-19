@@ -453,7 +453,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
         <div className="flexbox dc__gap-8 dc__align-items-center">
-            {column.label.toUpperCase() === 'NODE' && RBBulkOperations && <BulkSelection showPagination={showPaginatedView} />}
+            {RBBulkOperations && column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
             <SortableTableHeaderCell
                 key={column.label}
                 id={column.label}
