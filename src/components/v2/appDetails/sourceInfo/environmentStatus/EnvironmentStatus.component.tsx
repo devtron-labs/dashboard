@@ -169,6 +169,7 @@ const EnvironmentStatusComponent = ({
                 notes={notes}
                 onClickShowNotes={onClickShowNotes}
                 cardLoading={cardLoading}
+                onClickUpgrade={onClickUpgrade}
             />
         )
     }
@@ -201,7 +202,6 @@ const EnvironmentStatusComponent = ({
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
-                    {renderUpgraderChartBlock()}
                     {isScanV2Enabled && appDetails?.appType === AppType.DEVTRON_HELM_CHART && <SecurityVulnerabilityCard cardLoading={cardLoading} installedAppId={appDetails?.installedAppId} />}
                 </div>
             )}
