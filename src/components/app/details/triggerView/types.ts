@@ -604,7 +604,6 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id: number, value: string, mat: CIMaterialType) => void
     regexValue
     onCloseBranchRegexModal
-    hideHeaderFooter?: boolean
     savingRegexValue: boolean
 }
 export interface AppDetailsProps {
