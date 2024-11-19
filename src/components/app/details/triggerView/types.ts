@@ -49,6 +49,7 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { AppContextType } from '@Components/common'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
+import { TIME_STAMP_ORDER } from './Constants'
 import { Offset, WorkflowDimensions } from './config'
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
@@ -201,41 +202,10 @@ export interface CIMaterialRouterProps {
     ciNodeId: string
 }
 
-export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
-    workflowId: number
-    material: CIMaterialType[]
-    pipelineId: number
-    title: string
-    isLoading: boolean
-    pipelineName: string
-    showWebhookModal: boolean
-    toggleWebhookModal: (id, webhookTimeStampOrder) => void
-    webhookPayloads: WebhookPayloads
-    isWebhookPayloadLoading: boolean
-    hideWebhookModal: (e?) => void
-    onClickWebhookTimeStamp: () => void
-    webhhookTimeStampOrder: string
-    showMaterialRegexModal: boolean
-    onCloseBranchRegexModal?: () => void
-    filteredCIPipelines: any[]
-    onClickShowBranchRegexModal: () => void
-    isChangeBranchClicked: boolean
-    getWorkflows: () => void
-    loader: boolean
-    setLoader: (isLoading) => void
-    isFirstTrigger?: boolean
-    isCacheAvailable?: boolean
-    fromAppGrouping?: boolean
-    appId: string
-    isJobView?: boolean
-    isCITriggerBlocked?: boolean
-    ciBlockState?: ConsequenceType
-    selectedEnv?: EnvironmentWithSelectPickerType
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
-    environmentLists?: any[]
-    isJobCI?: boolean
-    handleRuntimeParamChange: HandleRuntimeParamChange
-    runtimeParams: KeyValueListType[]
+export interface WebhookPayloadType {
+    filters: Record<string, string> | unknown
+    repositoryUrl: string
+    payloads: WebhookPayload[]
 }
 
 export interface RegexValueType {
@@ -244,12 +214,11 @@ export interface RegexValueType {
 }
 
 export interface CIMaterialState {
-    regexValue: Record<number, RegexValueType>
-    savingRegexValue: boolean
-    selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
     runtimeParamsErrorState: boolean
+    savingRegexValue: boolean
+    regexValue: Record<number, RegexValueType>
 }
 
 export interface DownStreams {
@@ -389,20 +358,6 @@ export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterPr
     appContext: AppContextType
 }
 
-export interface WebhookPayloadDataResponse {
-    ParsedDataId: number
-    EventTime: string
-    MatchedFiltersCount: number
-    FailedFiltersCount: number
-    MatchedFilters: boolean
-}
-
-export interface WebhookPayloads {
-    filters: Map<string, string>
-    repositoryUrl: string
-    payloads: WebhookPayloadDataResponse[] | null
-}
-
 export interface TriggerViewState {
     code: number
     view: string
@@ -415,11 +370,10 @@ export interface TriggerViewState {
     isLoading: boolean
     invalidateCache: boolean
     hostURLConfig: HostURLConfig
-    showWebhookModal: boolean
-    webhookPayloads: WebhookPayloads
+    webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
     workflowId: number
-    webhhookTimeStampOrder: string
+    webhookTimeStampOrder?: string
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
@@ -435,6 +389,42 @@ export interface TriggerViewState {
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     runtimeParams?: RuntimeParamsListItemType[]
+}
+
+export interface CIMaterialProps
+    extends RouteComponentProps<CIMaterialRouterProps>,
+        Pick<
+            TriggerViewState,
+            | 'workflowId'
+            | 'isLoading'
+            | 'showMaterialRegexModal'
+            | 'filteredCIPipelines'
+            | 'isChangeBranchClicked'
+            | 'loader'
+            | 'environmentLists'
+            | 'selectedEnv'
+        > {
+    material: CIMaterialType[]
+    pipelineId: string
+    title: string
+    pipelineName: string
+    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
+    onClickWebhookTimeStamp: () => void
+    onCloseBranchRegexModal?: () => void
+    onClickShowBranchRegexModal: () => void
+    getWorkflows: () => void
+    setLoader: (isLoading) => void
+    isFirstTrigger?: boolean
+    isCacheAvailable?: boolean
+    fromAppGrouping?: boolean
+    appId: string
+    isJobView?: boolean
+    isCITriggerBlocked?: boolean
+    ciBlockState?: ConsequenceType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
+    isJobCI?: boolean
+    handleRuntimeParamChange: HandleRuntimeParamChange
+    runtimeParams: KeyValueListType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -606,13 +596,12 @@ export interface WorkflowDisplay {
 }
 
 export interface BranchRegexModalProps {
-    material
+    material: CIMaterialType[]
     selectedCIPipeline
-    showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    handleRegexInputValue: (id, value, mat) => void
+    handleRegexInputValue: (id: number, value: string, mat: CIMaterialType) => void
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
@@ -662,20 +651,20 @@ export interface EmptyStateCIMaterialProps {
     isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void
     clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
     showAllCommits?: boolean
     toggleExclude: (e) => void
 }
 
+export interface RefreshMaterialType {
+    pipelineId: number
+    refresh: (pipelineId: number, gitMaterialId: number) => void
+}
 export interface MaterialSourceProps {
     material: CIMaterialType[]
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
-    refreshMaterial?: {
-        pipelineId: number
-        refresh: (pipelineId: number, gitMaterialId: number) => void
-    }
+    refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
     fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
@@ -697,6 +686,49 @@ export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
     abortController: AbortController
     resetAbortController: () => void
+}
+
+export interface WebhookPayload {
+    eventTime: string
+    matchedFiltersCount: number
+    failedFiltersCount: number
+    matchedFilters: boolean
+    parsedDataId: number
+}
+
+export interface WebhookReceivedFiltersType {
+    selectorName: string
+    selectorValue: string
+    selectorCondition: string
+    match: boolean
+}
+
+export interface CiWebhookModalProps
+    extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
+        Pick<CIMaterialProps, 'isJobView' | 'fromAppGrouping'> {
+    ciPipelineMaterialId: number
+    ciPipelineId: number
+    fromBulkCITrigger?: boolean
+    appId: string
+}
+
+export interface CIWebhookPayload {
+    payloadId: number
+    payloadJson: string
+    selectorsData: WebhookReceivedFiltersType[]
+}
+
+export interface WebhookReceivedPayloadModalType
+    extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
+        Pick<CIMaterialProps, 'getWebhookPayload'> {
+    fromBulkCITrigger?: boolean
+    title: string
+    material: CIMaterialType[]
+    pipelineId: string
+    fromAppGrouping?: boolean
+    isJobView?: boolean
+    appId: string
+    isBulkCIWebhook?: boolean
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`

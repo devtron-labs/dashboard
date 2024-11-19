@@ -314,7 +314,7 @@ const BaseResourceListContent = ({
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         const _url = `${location.pathname}?${searchParamString}`
-        updateK8sResourceTab(_url)
+        updateK8sResourceTab({ url: _url })
         replace(_url)
         handleFilterChanges(text, true)
         if (text) {
@@ -325,7 +325,7 @@ const BaseResourceListContent = ({
 
     const emptyStateActionHandler = () => {
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(pathname, '', false)
+        updateK8sResourceTab({ url: pathname, dynamicTitle: '', retainSearchParams: false })
         push(pathname)
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
@@ -347,7 +347,7 @@ const BaseResourceListContent = ({
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => push(_url))
             .catch(noop)
     }

@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2024. Devtron Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,30 +14,38 @@
  * limitations under the License.
  */
 
-.clipboard-toast {
-    position: absolute;
-    height: 0px;
-    width: 0px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition:
-        height 0.25s,
-        width 0.25s,
-        opacity 0.25s;
-    overflow: hidden;
-    text-align: center;
-    display: block;
-    z-index: 1;
-    opacity: 0;
-    &.clipboard-toast--show {
-        height: 80px;
-        width: 80px;
-        padding: 16px;
-        opacity: 0.95;
-        transition:
-            height 0.25s,
-            width 0.25s,
-            opacity 0.25s;
+.expand-incoming-payload {
+    height: calc(100vh - 400px);
+}
+
+.empty-payload {
+    min-height: 186px;
+}
+
+.payload-wrapper-no-header {
+    height: calc(100vh - 50px);
+}
+
+.payload-wrapper {
+    height: calc(100vh - 130px);
+}
+
+.incoming-payload-bottom {
+    height: calc(100vh - 300px);
+    overflow: scroll;
+}
+
+.ci-trigger__webhook-wrapper{
+    display: grid;
+    grid-template-columns: 250px 1fr;
+
+    .ci-pipeline-webhook {
+        display: grid;
+        grid-template-rows: 48px 1fr;
+    }
+
+    .ci__filter-table__row{
+        display: grid;
+        grid-template-columns: 200px 200px auto 100px;
     }
 }

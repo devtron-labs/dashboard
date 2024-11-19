@@ -243,6 +243,7 @@ const AppListFilters = ({
                                     namespaceListResponse?.result,
                                     appListFiltersResponse?.appListFilters.result.clusters,
                                     appListFiltersResponse?.appListFilters.result.teams,
+                                    appCount,
                                 )
                             }
                             fileName={FILE_NAMES.Apps}
