@@ -127,6 +127,7 @@ export const K8SResourceList = ({
             isOpen={isOpen}
             renderRefreshBar={renderRefreshBar}
             updateK8sResourceTab={updateK8sResourceTab}
+            hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: checking for fe-lib linking
             nodeType={nodeType}
             group={group}
             addTab={addTab}

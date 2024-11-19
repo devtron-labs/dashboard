@@ -453,7 +453,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
         <div className="flexbox dc__gap-8 dc__align-items-center">
-            {column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
+            {RBBulkOperations && column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
             <SortableTableHeaderCell
                 key={column.label}
                 id={column.label}
@@ -590,12 +590,14 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent py-9">
-                            <Checkbox
-                                isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
-                                onChange={getHandleCheckedForId(nodeData)}
-                                rootClassName="mb-0"
-                                value={CHECKBOX_VALUE.CHECKED}
-                            />
+                            {RBBulkOperations && (
+                                <Checkbox
+                                     isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
+                                     onChange={getHandleCheckedForId(nodeData)}
+                                     rootClassName="mb-0"
+                                     value={CHECKBOX_VALUE.CHECKED}
+                                />
+                            )}
                             <Tooltip content={nodeData[column.value]}>
                                 <NavLink
                                     data-testid="cluster-node-link"
