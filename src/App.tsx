@@ -299,6 +299,9 @@ export default function App() {
         )
     }, [bgUpdated])
 
+    // TODO (Arun): Remove in next packet
+    localStorage.removeItem('undefined')
+
     return (
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
