@@ -708,7 +708,6 @@ export interface CiWebhookModalProps
         Pick<CIMaterialProps, 'isJobView' | 'fromAppGrouping'> {
     ciPipelineMaterialId: number
     ciPipelineId: number
-    fromBulkCITrigger?: boolean
     appId: string
 }
 
