@@ -29,6 +29,7 @@ export const getUsedChartContent = (isDeprecated: boolean, onClickUpgrade: () =>
                 </div>
             )}
         </div>
+        {/* Due to missing support of white text, unable to use Button component */}
         <button
             type="button"
             data-testid="chart-used-upgrade-button"

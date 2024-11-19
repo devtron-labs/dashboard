@@ -174,23 +174,6 @@ const EnvironmentStatusComponent = ({
         )
     }
 
-    const renderUpgraderChartBlock = () => {
-        return (
-            appDetails?.deprecated && (
-                <div className="chart-upgrade-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
-                    <div className="cn-9 flex left">
-                        <span>Chart deprecated</span>
-                        <Alert className="icon-dim-16 ml-4" />
-                    </div>
-                    <div className=" fw-6 fs-14">Upgrade required</div>
-                    <div onClick={onClickUpgrade} className="cursor cb-5 fw-6">
-                        Upgrade chart
-                    </div>
-                </div>
-            )
-        )
-    }
-
     return (
         <div>
             {loadingDetails ? (
