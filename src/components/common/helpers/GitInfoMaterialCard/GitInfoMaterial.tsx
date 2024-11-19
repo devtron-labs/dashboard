@@ -402,7 +402,6 @@ export const GitInfoMaterial = ({
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 workflowId={workflowId}
                 fromAppGrouping={fromAppGrouping}
-                fromBulkCITrigger={fromBulkCITrigger}
                 appId={appId}
                 isJobView={isJobView}
             />

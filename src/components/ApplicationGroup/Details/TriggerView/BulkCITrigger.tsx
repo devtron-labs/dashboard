@@ -418,17 +418,8 @@ const BulkCITrigger = ({
                         handleRegexInputValue={handleRegexInputValueChange}
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}
-                        hideHeaderFooter
                         savingRegexValue={isLoading}
                     />
-                    <div className="flex right pr-20 pb-20">
-                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal} type="button">
-                            Cancel
-                        </button>
-                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName} type="button">
-                            Save
-                        </button>
-                    </div>
                 </>
             )
         }
