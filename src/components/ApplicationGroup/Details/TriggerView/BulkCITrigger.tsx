@@ -478,6 +478,7 @@ const BulkCITrigger = ({
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isBulk
+                appId={selectedApp.appId.toString()}
             />
         )
     }
