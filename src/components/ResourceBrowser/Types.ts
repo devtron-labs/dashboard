@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { RefObject } from 'react'
 import {
     K8SObjectBaseType,
     ResponseType,
@@ -26,8 +26,9 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectInstance } from 'react-select'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterDetail } from '../ClusterNodes/types'
+import { ClusterDetail, ResourceDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -284,4 +285,50 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
+}
+
+export interface NodeRowDetail {
+    name: string
+    status: string
+    roles: string[]
+    errors: Record<string, string>[]
+    k8sVersion: string
+    podCount: number
+    taintCount: number
+    cpu: ResourceDetail
+    memory: ResourceDetail
+    age: string
+}
+
+export interface NodeListResponse extends ResponseType {
+    result?: NodeRowDetail[]
+}
+
+export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
+    nodeK8sVersions: string[]
+    visibleColumns: string[]
+    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+    searchParams: Record<string, string>
+}
+
+export enum NODE_SEARCH_KEYS {
+    NAME = 'name',
+    LABEL = 'label',
+    NODE_GROUP = 'nodeGroup',
+}
+
+export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
+
+export interface ColumnFilterContextType extends Pick<ColumnSelectorType, 'setVisibleColumns'> {
+    selectedColumns: OptionType[]
+    setSelectedColumns: React.Dispatch<React.SetStateAction<OptionType[]>>
+    isMenuOpen: boolean
+    setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    selectRef: RefObject<SelectInstance>
+}
+
+export interface NodeActionsMenuProps {
+    addTab: ReturnType<typeof useTabs>['addTab']
+    nodeData: K8sResourceDetailDataType
+    getNodeListData: () => void
 }

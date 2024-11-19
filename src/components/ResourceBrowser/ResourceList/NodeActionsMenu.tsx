@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
-import { PopupMenu, TOAST_ACCESS_DENIED, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { useState } from 'react'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import {
+    noop,
+    PopupMenu,
+    TOAST_ACCESS_DENIED,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
+import { TaintType } from '@Components/ClusterNodes/types'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
@@ -25,34 +34,34 @@ import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spray
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { NodeActionsMenuProps } from '../types'
-import CordonNodeModal from './CordonNodeModal'
-import DrainNodeModal from './DrainNodeModal'
-import DeleteNodeModal from './DeleteNodeModal'
-import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
-import EditTaintsModal from './EditTaintsModal'
-import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
+import { NodeActionsMenuProps } from '../Types'
+import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
+import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
+import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../../ClusterNodes/constants'
+import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
+import { K8S_EMPTY_GROUP } from '../Constants'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
-export default function NodeActionsMenu({
-    nodeData,
-    openTerminal,
-    getNodeListData,
-    isSuperAdmin,
-    addTab,
-}: NodeActionsMenuProps) {
+const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuProps) => {
     const history = useHistory()
     const { url } = useRouteMatch()
+    const location = useLocation()
+
     const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaintNodeDialog, setEditTaintNodeDialog] = useState(false)
 
+    const { name, version, kind } = nodeData as Record<string, string>
+
+    const { isSuperAdmin } = useMainContext()
+
     const isAuthorized = (): boolean => {
         if (!isSuperAdmin) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
             })
             return false
         }
@@ -61,14 +70,21 @@ export default function NodeActionsMenu({
 
     const handleOpenTerminalAction = () => {
         if (isAuthorized()) {
-            openTerminal(nodeData)
+            const queryParams = new URLSearchParams(location.search)
+            queryParams.set('node', name)
+            const url = location.pathname
+            history.push(
+                `${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+            )
         }
     }
 
     const handleEditYamlAction = () => {
         if (isAuthorized()) {
             const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
-            addTab(K8S_EMPTY_GROUP, 'node', nodeData.name, _url).then(() => history.push(_url))
+            addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+                .then(() => history.push(_url))
+                .catch(noop)
         }
     }
 
@@ -179,38 +195,30 @@ export default function NodeActionsMenu({
             </PopupMenu>
             {showCordonNodeDialog && (
                 <CordonNodeModal
-                    name={nodeData.name}
-                    version={nodeData.version}
-                    kind={nodeData.kind}
-                    unschedulable={nodeData.unschedulable}
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    unschedulable={nodeData.unschedulable as boolean}
                     closePopup={hideCordonNodeModal}
                 />
             )}
             {showDrainNodeDialog && (
-                <DrainNodeModal
-                    name={nodeData.name}
-                    version={nodeData.version}
-                    kind={nodeData.kind}
-                    closePopup={hideDrainNodeModal}
-                />
+                <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
             )}
             {showDeleteNodeDialog && (
-                <DeleteNodeModal
-                    name={nodeData.name}
-                    version={nodeData.version}
-                    kind={nodeData.kind}
-                    closePopup={hideDeleteNodeModal}
-                />
+                <DeleteNodeModal name={name} version={version} kind={kind} closePopup={hideDeleteNodeModal} />
             )}
             {showEditTaintNodeDialog && (
                 <EditTaintsModal
-                    name={nodeData.name}
-                    version={nodeData.version}
-                    kind={nodeData.kind}
-                    taints={nodeData.taints}
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    taints={nodeData.taints as TaintType[]}
                     closePopup={hideEditTaintsModal}
                 />
             )}
         </>
     )
 }
+
+export default NodeActionsMenu

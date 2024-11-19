@@ -21,6 +21,43 @@ export default () => {
         DESC = 'DESC',
     }
 
+    // NOTE!: this is a copy from ResourceBrowser/Types
+    // imports don't get bundled with the service worker
+    enum NODE_SEARCH_KEYS {
+        NAME = 'name',
+        LABEL = 'label',
+        NODE_GROUP = 'nodeGroup',
+    }
+
+    // NOTE!: this is a copy from ResourceBrowser/Constants
+    // imports don't get bundled with the service worker
+    const NODE_SEARCH_KEYS_TO_OBJECT_KEYS = {
+        [NODE_SEARCH_KEYS.LABEL]: 'labels',
+        [NODE_SEARCH_KEYS.NAME]: 'name',
+        [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
+    }
+
+    const NODE_LIST_HEADERS_TO_KEY_MAP = {
+        name: 'name',
+        status: 'status',
+        roles: 'roles',
+        errors: 'errorCount',
+        'k8s version': 'k8sVersion',
+        'node group': 'nodeGroup',
+        pods: 'podCount',
+        taints: 'taintCount',
+        'cpu usage (%)': 'cpu.usagePercentage',
+        'cpu usage (absolute)': 'cpu.usage',
+        'cpu allocatable': 'cpu.allocatable',
+        'mem usage (%)': 'memory.usagePercentage',
+        'mem usage (absolute)': 'memory.usageInBytes',
+        'mem allocatable': 'memory.allocatable',
+        age: 'age',
+        unschedulable: 'unschedulable',
+    }
+
+    const NODE_K8S_VERSION_KEY = 'k8sVersion'
+
     const stringComparatorBySortOrder = (a: string, b: string, sortOrder: SortingOrder = SortingOrder.ASC) =>
         sortOrder === SortingOrder.ASC ? a.localeCompare(b) : b.localeCompare(a)
 
@@ -68,6 +105,14 @@ export default () => {
             ? k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
             : k8sStyledAgeToSeconds(a) - k8sStyledAgeToSeconds(b)
 
+    const versionComparatorBySortOrder = (a: string, b: string, orderBy = SortingOrder.ASC) => {
+        if (orderBy === SortingOrder.DESC) {
+            return a?.localeCompare(b, undefined, { numeric: true }) ?? 1
+        }
+
+        return b?.localeCompare(a, undefined, { numeric: true }) ?? 1
+    }
+
     const propertyComparatorMap = {
         age: durationComparator,
         duration: durationComparator,
@@ -76,6 +121,13 @@ export default () => {
         cpu: numberInStringComparator,
         memory: numberInStringComparator,
         window: durationComparator,
+        errors: numberInStringComparator,
+        'k8s version': versionComparatorBySortOrder,
+        taints: numberInStringComparator,
+        'cpu usage (%)': numberInStringComparator,
+        'cpu allocatable': numberInStringComparator,
+        'mem usage (%)': numberInStringComparator,
+        'mem allocatable': numberInStringComparator,
     }
 
     /**
@@ -85,10 +137,10 @@ export default () => {
      * @returns A sorting function.
      */
     const dynamicSort =
-        (property: string, sortOrder: SortingOrder) =>
+        (property: string, sortOrder: SortingOrder, isNodeListing: boolean) =>
         (a: Record<string, string | number>, b: Record<string, string | number>) => {
-            const valueA = a[property]
-            const valueB = b[property]
+            const valueA = isNodeListing ? a[NODE_LIST_HEADERS_TO_KEY_MAP[property]] : a[property]
+            const valueB = isNodeListing ? b[NODE_LIST_HEADERS_TO_KEY_MAP[property]] : b[property]
 
             // Special cases handling where the property is not in sortable format.
             if (Object.keys(propertyComparatorMap).includes(property)) {
@@ -130,16 +182,67 @@ export default () => {
         list,
         sortBy,
         sortOrder,
+        nodeListingFilters: { isNodeListing, searchParams },
     }: {
         searchText: string
         list: unknown[]
         sortBy: string
         sortOrder: SortingOrder
+        nodeListingFilters: {
+            isNodeListing: boolean
+            searchParams: Record<string, string>
+        }
     }) => {
         const searchTextLowerCased = searchText.trim().toLowerCase()
         let filteredList = [...list]
 
-        if (searchTextLowerCased !== '' && list?.length) {
+        if (isNodeListing) {
+            filteredList = list.filter((item: Record<string, any>) => {
+                const isK8sVersionFilterAppliedAndMatchFound =
+                    !searchParams[NODE_K8S_VERSION_KEY] ||
+                    item[NODE_K8S_VERSION_KEY] === searchParams[NODE_K8S_VERSION_KEY]
+
+                const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) =>
+                    Object.hasOwn(searchParams, key),
+                )
+
+                const doesItemHaveAnyMatchingSearchKey = Object.values(NODE_SEARCH_KEYS).reduce(
+                    (isFound, searchKey) => {
+                        if (!searchParams[searchKey]) {
+                            return isFound
+                        }
+
+                        const searchTextFromSearchKey = searchParams[searchKey]
+
+                        return !!searchTextFromSearchKey?.split(',').some((text) => {
+                            const trimmedText = text.trim()
+                            const objectKey = NODE_SEARCH_KEYS_TO_OBJECT_KEYS[searchKey]
+
+                            // NOTE: if corresponding value in data is anything other than primitives like string, or number
+                            // handle it appropriately likewise
+                            if (searchKey === NODE_SEARCH_KEYS.LABEL) {
+                                const [searchKeyFromLabelText, searchValueFromLabelText] = trimmedText.split('=')
+
+                                return (
+                                    !!item[objectKey]?.some(
+                                        ({ key, value }) =>
+                                            key === searchKeyFromLabelText && value === searchValueFromLabelText,
+                                    ) && isFound
+                                )
+                            }
+
+                            return String(item[objectKey] ?? '').includes(trimmedText) && isFound
+                        })
+                    },
+                    true,
+                )
+
+                return (
+                    isK8sVersionFilterAppliedAndMatchFound &&
+                    (!doesAnyNodeSearchKeyExists || doesItemHaveAnyMatchingSearchKey)
+                )
+            })
+        } else if (searchTextLowerCased !== '' && list?.length) {
             filteredList = list.filter((item) =>
                 Object.entries(item).some(
                     ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
@@ -148,7 +251,7 @@ export default () => {
         }
 
         if (sortBy && sortOrder) {
-            filteredList.sort(dynamicSort(sortBy, sortOrder))
+            filteredList.sort(dynamicSort(sortBy, sortOrder, isNodeListing))
         }
 
         self.postMessage(filteredList)

@@ -31,7 +31,7 @@ import { JSONPath } from 'jsonpath-plus'
 import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { CreateResourcePayload, CreateResourceResponse, ResourceListPayloadType } from './Types'
+import { CreateResourcePayload, CreateResourceResponse, NodeListResponse, ResourceListPayloadType } from './Types'
 import { ALL_NAMESPACE_OPTION } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
@@ -140,3 +140,6 @@ export const restartWorkload = async (resource: SelectedResourceType, signal: Ab
 
     await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
 }
+
+export const getNodeList = (clusterId: string, signal?: AbortSignal): Promise<NodeListResponse> =>
+    get(`${Routes.NODE_LIST}?clusterId=${clusterId}`, { signal })

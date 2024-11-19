@@ -28,13 +28,20 @@ import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import {
+    JUMP_TO_KIND_SHORT_NAMES,
+    K8S_EMPTY_GROUP,
+    NODE_LIST_HEADERS,
+    ORDERED_AGGREGATORS,
+    SIDEBAR_KEYS,
+} from './Constants'
 import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
+    NodeListResponse,
 } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -383,3 +390,42 @@ export const renderResourceValue = (value: string) => {
 
     return isDateValue ? moment(value).format(DATE_TIME_FORMAT_STRING) : value
 }
+
+const flattenObject = (ob: object): object => {
+    const toReturn = {}
+
+    Object.keys(ob).forEach((i) => {
+        const currentElement = ob[i]
+
+        if (typeof currentElement === 'object' && currentElement !== null && !Array.isArray(currentElement)) {
+            const flatObject = flattenObject(currentElement)
+
+            Object.keys(flatObject).forEach((x) => {
+                toReturn[`${i}.${x}`] = flatObject[x]
+            })
+        } else {
+            toReturn[i] = currentElement
+        }
+    })
+
+    return toReturn
+}
+
+export const parseNodeList = (response: NodeListResponse) => ({
+    result: {
+        headers: [...NODE_LIST_HEADERS] as string[],
+        data: response.result.map((data) => {
+            const _flattenNodeData = flattenObject(data)
+            const meta: Record<string, any> = {}
+
+            if (data.errors) {
+                meta.errorCount = String(Object.keys(data.errors).length || '')
+            }
+
+            meta.taintCount =
+                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+
+            return { ..._flattenNodeData, ...meta }
+        }),
+    },
+})

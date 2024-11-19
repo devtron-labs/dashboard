@@ -25,11 +25,12 @@ import {
 import { useMemo, useRef, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from '../Constants'
-import { getResourceListPayload } from '../ResourceBrowser.service'
+import { getNodeList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
-import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
+import { sortEventListData, removeDefaultForStorageClass, parseNodeList } from '../Utils'
 import BaseResourceList from './BaseResourceList'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -68,9 +69,15 @@ export const K8SResourceList = ({
 
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () =>
-            abortPreviousRequests(
-                () =>
-                    getK8sResourceList(
+            abortPreviousRequests(async () => {
+                try {
+                    if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+                        const response = await getNodeList(clusterId, abortControllerRef.current.signal)
+
+                        return parseNodeList(response)
+                    }
+
+                    return await getK8sResourceList(
                         getResourceListPayload(
                             clusterId,
                             selectedNamespace.value.toLowerCase(),
@@ -78,17 +85,34 @@ export const K8SResourceList = ({
                             filters,
                         ),
                         abortControllerRef.current.signal,
-                    ).catch((err) => {
-                        if (!getIsRequestAborted(err)) {
-                            showError(err)
-                            throw err
-                        }
-                    }),
-                abortControllerRef,
-            ),
+                    )
+                } catch (err) {
+                    if (!getIsRequestAborted(err)) {
+                        showError(err)
+                        throw err
+                    }
+
+                    return null
+                }
+            }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, filters],
-        selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
+
+    const [, nodeK8sVersions] = useAsync(async () => {
+        if (selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind) {
+            return []
+        }
+
+        try {
+            const {
+                result: { nodeK8sVersions: versions },
+            } = await getClusterCapacity(clusterId)
+
+            return versions
+        } catch {
+            return []
+        }
+    }, [selectedResource, clusterId])
 
     const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
 
@@ -130,9 +154,11 @@ export const K8SResourceList = ({
             nodeType={nodeType}
             group={group}
             addTab={addTab}
+            hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
             setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             handleResourceClick={handleResourceClick}
+            nodeK8sVersions={nodeK8sVersions ?? []}
         >
             {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </BaseResourceList>
