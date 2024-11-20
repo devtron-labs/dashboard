@@ -36,6 +36,10 @@ import {
     BlockedStateData,
     PromiseAllStatusType,
     CommonNodeAttr,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -69,6 +73,7 @@ import { BULK_ERROR_MESSAGES } from './constants'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import { useRouteMatch } from 'react-router-dom'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
+import {ReactComponent as LeftIcon} from '@Icons/ic-arrow-backward.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -276,13 +281,31 @@ const BulkCITrigger = ({
         }
     }
 
+    const onCloseWebhookModal = () => (
+        setIsWebhookBulkCI(false)
+    )
+
     const renderHeaderSection = (): JSX.Element | null => {
         if (showWebhookModal) {
             return null
         }
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                <div className="flex left dc__gap-12">
+                    {isWebhookBulkCI && (
+                        <Button
+                            icon={<LeftIcon />}
+                            onClick={onCloseWebhookModal}
+                            ariaLabel="regex-back"
+                            dataTestId="build-deploy-pipeline-name-heading"
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.xs}
+                            showAriaLabelInTippy={false}
+                            style={ButtonStyleType.negativeGrey}
+                        />
+                    )}
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                </div>
                 <button
                     type="button"
                     className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
