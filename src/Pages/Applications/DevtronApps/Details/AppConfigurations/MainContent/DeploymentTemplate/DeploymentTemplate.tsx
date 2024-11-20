@@ -1512,6 +1512,8 @@ const DeploymentTemplate = ({
                     manifestAbortController={manifestAbortController}
                     errorInfo={mergedTemplateError}
                     handleErrorReload={handleLoadMergedTemplate}
+                    isOverridden={currentEditorTemplateData?.isOverridden}
+                    mergeStrategy={currentEditorTemplateData?.mergeStrategy}
                 />
             )
         }
