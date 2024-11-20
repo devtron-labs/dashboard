@@ -727,7 +727,7 @@ const DeploymentTemplate = ({
             readme,
             guiSchema,
             isAppMetricsEnabled: appMetrics,
-            editorTemplate: !Object.keys(originalTemplate).length ? '' : stringifiedTemplate,
+            editorTemplate: !Object.keys(originalTemplate || {}).length ? '' : stringifiedTemplate,
             isOverridden: !!IsOverride,
             environmentConfig: {
                 id,
@@ -1652,7 +1652,6 @@ const DeploymentTemplate = ({
         </div>
     )
 
-    // TODO: On handle tab change to gui remove re-apply locked keys if in patch mode
     const renderHeader = () => {
         if (showReadMe) {
             return (
