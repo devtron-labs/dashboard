@@ -5227,3 +5227,11 @@ textarea::placeholder {
 .dc__open-sans {
     font-family: 'Open Sans';
 }
+
+.code-editor-green-diff {
+    background: var(--G100);
+}
+
+.code-editor-red-diff {
+    background: var(--R100);
+}
