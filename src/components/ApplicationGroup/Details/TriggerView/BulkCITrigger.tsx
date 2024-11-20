@@ -265,10 +265,7 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch<BlockedStateData>(
-                    policyPromiseFunctionList,
-                    true,
-                )
+                const responses = await ApiQueuingWithBatch<BlockedStateData>(policyPromiseFunctionList, true)
                 responses.forEach((res, index) => {
                     if (res.status === PromiseAllStatusType.FULFILLED) {
                         policyListMap[appList[index]?.appId] = res.value ? processConsequenceData(res.value) : null
@@ -674,7 +671,10 @@ const BulkCITrigger = ({
 
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
-                {isWebhookBulkCI ? renderWebhookModal() :   <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                {isWebhookBulkCI ? (
+                    renderWebhookModal()
+                ) : (
+                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                         <div
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
@@ -701,7 +701,8 @@ const BulkCITrigger = ({
                                 {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
                             </div>
                         ))}
-                    </div>}
+                    </div>
+                )}
                 <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
                     {renderMainContent(selectedMaterialList)}
                 </div>
