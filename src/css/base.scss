@@ -1162,7 +1162,7 @@ button.anchor {
     }
 
     &.not-ready {
-        background: url('../assets//icons/ic-error.svg');
+        background: url('../assets/icons/ic-error.svg');
         background-size: contain, contain;
     }
 
@@ -2083,6 +2083,10 @@ button.anchor {
 
     &--n3-right {
         border-right: 1px dashed var(--N300);
+    }
+
+    &--n3-bottom {
+        border-bottom: 1px dashed var(--N300);
     }
 }
 
@@ -3699,6 +3703,10 @@ textarea,
     max-height: 450px;
 }
 
+.mxh-500 {
+    max-height: 500px;
+}
+
 .mxh-504 {
     max-height: 504px;
 }
@@ -3759,6 +3767,10 @@ textarea,
 
 .lh-18-imp {
     line-height: 18px !important;
+}
+
+.lh-19-imp {
+    line-height: 19px !important;
 }
 
 .lh-20 {
@@ -4858,6 +4870,14 @@ textarea::placeholder {
 
 .dc__backdrop-filter {
     backdrop-filter: blur(2px);
+}
+
+.dc__backdrop-filter-5 {
+    backdrop-filter: blur(5px);
+}
+
+.dc__background-opacity-75-per{
+    background: #f2f4f7BF;
 }
 
 .dc__visibility-hidden {

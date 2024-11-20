@@ -68,7 +68,9 @@ export default function NodeActionsMenu({
     const handleEditYamlAction = () => {
         if (isAuthorized()) {
             const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
-            addTab(K8S_EMPTY_GROUP, 'node', nodeData.name, _url).then(() => history.push(_url))
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name: nodeData.name, url: _url }).then(() =>
+                history.push(_url),
+            )
         }
     }
 

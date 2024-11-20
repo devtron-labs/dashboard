@@ -95,7 +95,7 @@ const ResourceFilterOptions = ({
             return
         }
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
-        updateK8sResourceTab(url)
+        updateK8sResourceTab({ url })
         replace(url)
         setSelectedNamespace(selected)
     }
