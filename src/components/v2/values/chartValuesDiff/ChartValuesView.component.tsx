@@ -31,6 +31,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
+    MarkDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -58,7 +59,6 @@ import {
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import {
     DELETE_CHART_APP_DESCRIPTION_LINES,
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
