@@ -36,6 +36,10 @@ import {
     BlockedStateData,
     PromiseAllStatusType,
     CommonNodeAttr,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -69,6 +73,7 @@ import { BULK_ERROR_MESSAGES } from './constants'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import { useRouteMatch } from 'react-router-dom'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
+import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -260,10 +265,7 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch<BlockedStateData>(
-                    policyPromiseFunctionList,
-                    true,
-                )
+                const responses = await ApiQueuingWithBatch<BlockedStateData>(policyPromiseFunctionList, true)
                 responses.forEach((res, index) => {
                     if (res.status === PromiseAllStatusType.FULFILLED) {
                         policyListMap[appList[index]?.appId] = res.value ? processConsequenceData(res.value) : null
@@ -276,13 +278,29 @@ const BulkCITrigger = ({
         }
     }
 
+    const onCloseWebhookModal = () => setIsWebhookBulkCI(false)
+
     const renderHeaderSection = (): JSX.Element | null => {
         if (showWebhookModal) {
             return null
         }
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                <div className="flex left dc__gap-12">
+                    {isWebhookBulkCI && (
+                        <Button
+                            icon={<LeftIcon />}
+                            onClick={onCloseWebhookModal}
+                            ariaLabel="bulk-webhook-back"
+                            dataTestId="build-deploy-pipeline-name-heading"
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.xs}
+                            showAriaLabelInTippy={false}
+                            style={ButtonStyleType.negativeGrey}
+                        />
+                    )}
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                </div>
                 <button
                     type="button"
                     className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
@@ -653,7 +671,10 @@ const BulkCITrigger = ({
 
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
-                {isWebhookBulkCI ? renderWebhookModal() :   <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                {isWebhookBulkCI ? (
+                    renderWebhookModal()
+                ) : (
+                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                         <div
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
@@ -680,7 +701,8 @@ const BulkCITrigger = ({
                                 {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
                             </div>
                         ))}
-                    </div>}
+                    </div>
+                )}
                 <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
                     {renderMainContent(selectedMaterialList)}
                 </div>
