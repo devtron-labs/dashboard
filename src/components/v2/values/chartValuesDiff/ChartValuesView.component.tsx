@@ -86,7 +86,6 @@ export const ChartEnvironmentSelector = ({
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
@@ -127,7 +126,7 @@ export const ChartEnvironmentSelector = ({
             )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4">
+        <div className="w-100 fw-4">
             <SelectPicker
                 label="Deploy to environment"
                 inputId="values-environment-select"
@@ -194,21 +193,16 @@ export const DeploymentAppSelector = ({
             )}
         </div>
     ) : (
-        <div className="w-100">
-            <div className="form__row">
-                <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
-                    How do you want to deploy?
-                </label>
-                <p className="fs-12px cr-5" data-testid="deployment-alert-message">
-                    Cannot be changed after deployment
-                </p>
-                <DeploymentAppRadioGroup
-                    isDisabled={isUpdate}
-                    deploymentAppType={commonState.deploymentAppType}
-                    handleOnChange={handleDeploymentAppTypeSelection}
-                    allowedDeploymentTypes={allowedDeploymentTypes}
-                />
-            </div>
+        <div className="flexbox-col dc__gap-6 w-100 chart-values-deployment-radio">
+            <span className='fs-13 cn-7 lh-20 fw-4'>How do you want to deploy?</span>
+            <DeploymentAppRadioGroup
+                isDisabled={isUpdate}
+                deploymentAppType={commonState.deploymentAppType}
+                handleOnChange={handleDeploymentAppTypeSelection}
+                allowedDeploymentTypes={allowedDeploymentTypes}
+                rootClassName="flexbox-col"
+            />
+            <span className='fs-11 lh-16 cr-5 fw-4'>This cannot be changed after deployment</span>
         </div>
     )
 }
@@ -452,7 +446,7 @@ export const ChartProjectSelector = ({
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return (
-        <div className="form__row form__row--w-100">
+        <div className="w-100">
             <SelectPicker
                 label="Project"
                 inputId="select-chart-project"
@@ -473,7 +467,7 @@ export const ChartVersionSelector = ({
     handleVersionSelection,
     chartVersionsData,
 }: ChartVersionSelectorType) => {
-    const selectOptions = chartVersionsData.map(chartVersion => ({
+    const selectOptions = chartVersionsData.map((chartVersion) => ({
         value: chartVersion.id,
         label: chartVersion.version,
     }))
@@ -483,7 +477,7 @@ export const ChartVersionSelector = ({
     )
 
     return (
-        <div className="w-100 mb-12">
+        <div className="w-100">
             <SelectPicker<number, false>
                 label="Chart Version"
                 inputId="chart-values-selector"
@@ -565,11 +559,17 @@ export const ChartValuesSelector = ({
     const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
         handleChartValuesSelection(selectedOption.value)
 
-    const selectedOption = selectOptions.flatMap(groupedOption => groupedOption.options).find(option => getOptionValue(option) === getOptionValue({
-        // Setting label null since the getOptionValue is not consuming it
-        label: null,
-        value: chartValues
-    }))
+    const selectedOption = selectOptions
+        .flatMap((groupedOption) => groupedOption.options)
+        .find(
+            (option) =>
+                getOptionValue(option) ===
+                getOptionValue({
+                    // Setting label null since the getOptionValue is not consuming it
+                    label: null,
+                    value: chartValues,
+                }),
+        )
 
     return (
         <SelectPicker<ChartValuesType, false>
@@ -623,14 +623,13 @@ export const ChartVersionValuesSelector = ({
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme dc__overflow-scroll dc__border-right">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1" data-testid="readme-heading">
+            <div
+                className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1"
+                data-testid="readme-heading"
+            >
                 Readme
             </div>
-            {fetchingReadMe ? (
-                <Progressing pageLoader />
-            ) : (
-                <MarkDown markdown={activeReadMe} />
-            )}
+            {fetchingReadMe ? <Progressing pageLoader /> : <MarkDown markdown={activeReadMe} />}
         </div>
     )
 }
@@ -728,6 +727,7 @@ export const AppNameInput = ({
                 data-testid="app-name-input"
                 isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
+                rootClassName="h-32"
             />
         </div>
     )
