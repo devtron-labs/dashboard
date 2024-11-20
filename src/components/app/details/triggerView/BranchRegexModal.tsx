@@ -42,6 +42,7 @@ const BranchRegexModal = ({
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
+    hideHeaderFooter,
     savingRegexValue,
 }: BranchRegexModalProps) => {
     const getBranchRegexName = (gitMaterialId: number) => {
@@ -54,35 +55,40 @@ const BranchRegexModal = ({
         return ciMaterial?.source?.regex || ''
     }
 
-    const renderBranchRegexMaterialHeader = () => (
-        <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
-            <div className="modal__title flex left dc__gap-12 fs-16 fw-6">
-                {isChangeBranchClicked && (
-                    <Button
-                        dataTestId="regex-modal-header-back-button"
-                        onClick={onCloseBranchRegexModal}
-                        ariaLabel="regex-back"
-                        icon={<LeftIcon />}
-                        variant={ButtonVariantType.borderLess}
-                        size={ComponentSizeType.small}
-                        showAriaLabelInTippy={false}
-                        style={ButtonStyleType.neutral}
-                    />
-                )}
-                <span className="dc__mxw-250 dc__truncate">{title}</span>&nbsp;/ Set branch
+    const renderBranchRegexMaterialHeader = () => {
+        if (hideHeaderFooter) {
+            return null
+        }
+        return (
+            <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
+                <div className="modal__title flex left dc__gap-12 fs-16 fw-6">
+                    {isChangeBranchClicked && (
+                        <Button
+                            dataTestId="regex-modal-header-back-button"
+                            onClick={onCloseBranchRegexModal}
+                            ariaLabel="regex-back"
+                            icon={<LeftIcon />}
+                            variant={ButtonVariantType.borderLess}
+                            size={ComponentSizeType.small}
+                            showAriaLabelInTippy={false}
+                            style={ButtonStyleType.neutral}
+                        />
+                    )}
+                    <span className="dc__mxw-250 dc__truncate">{title}</span>&nbsp;/ Set branch
+                </div>
+                <Button
+                    dataTestId="regex-modal-header-close-button"
+                    onClick={onCloseBranchRegexModal}
+                    ariaLabel="close-button"
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.small}
+                    showAriaLabelInTippy={false}
+                    icon={<Close />}
+                    style={ButtonStyleType.negativeGrey}
+                />
             </div>
-            <Button
-                dataTestId="regex-modal-header-close-button"
-                onClick={onCloseBranchRegexModal}
-                ariaLabel="close-button"
-                variant={ButtonVariantType.borderLess}
-                size={ComponentSizeType.small}
-                showAriaLabelInTippy={false}
-                icon={<Close />}
-                style={ButtonStyleType.negativeGrey}
-            />
-        </div>
-    )
+        )
+    }
 
     const renderRegexInfo = () => (
         <div className="dc__border-bottom--b2">
