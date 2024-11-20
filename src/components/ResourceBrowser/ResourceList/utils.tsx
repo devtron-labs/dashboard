@@ -19,8 +19,8 @@ export const getAppliedColumnsFromLocalStorage = () => {
     try {
         const appliedColumns = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS))
 
-        if (!Array.isArray(appliedColumns)) {
-            throw new Error('')
+        if (!Array.isArray(appliedColumns) || !appliedColumns.every((column) => typeof column === 'string')) {
+            throw new Error()
         }
 
         return appliedColumns
