@@ -73,7 +73,7 @@ import { BULK_ERROR_MESSAGES } from './constants'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import { useRouteMatch } from 'react-router-dom'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
-import {ReactComponent as LeftIcon} from '@Icons/ic-arrow-backward.svg'
+import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -281,9 +281,7 @@ const BulkCITrigger = ({
         }
     }
 
-    const onCloseWebhookModal = () => (
-        setIsWebhookBulkCI(false)
-    )
+    const onCloseWebhookModal = () => setIsWebhookBulkCI(false)
 
     const renderHeaderSection = (): JSX.Element | null => {
         if (showWebhookModal) {
