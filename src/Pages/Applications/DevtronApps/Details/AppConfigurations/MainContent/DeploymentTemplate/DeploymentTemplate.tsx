@@ -371,11 +371,13 @@ const DeploymentTemplate = ({
             },
         })
 
-        if (triggerGA && tab === ProtectConfigTabsType.COMPARE) {
-            ReactGA.event({
-                category: 'devtronapp-configuration-dt',
-                action: 'clicked-compare',
-            })
+        if (tab === ProtectConfigTabsType.COMPARE) {
+            if (triggerGA) {
+                ReactGA.event({
+                    category: 'devtronapp-configuration-dt',
+                    action: 'clicked-compare',
+                })
+            }
 
             // Question: Should we merge events?
             await handleLoadMergedTemplate()
