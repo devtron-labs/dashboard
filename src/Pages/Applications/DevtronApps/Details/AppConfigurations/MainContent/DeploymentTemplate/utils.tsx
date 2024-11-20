@@ -391,11 +391,11 @@ export const handleInitializeDraftData = ({
         readme,
         schema,
         mergeStrategy: mergeStrategyFromDraft,
-        envOverridePatchValues: envOverridePatchValuesFromAPI,
+        envOverridePatchValues: envOverridePatchValuesFromDraft,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
 
     const mergeStrategy = mergeStrategyFromDraft || DEFAULT_MERGE_STRATEGY
-    const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
+    const envOverridePatchValues = envOverridePatchValuesFromDraft || {}
 
     const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
     const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
@@ -572,9 +572,10 @@ export const getCompareFromEditorConfig = ({
     showApprovalPendingEditorInCompareView,
     state,
 }: GetCompareFromEditorConfigParams): Pick<CompareConfigViewProps, 'currentEditorConfig' | 'publishedEditorConfig'> => {
-    const { draftTemplateData, currentEditorTemplateData, publishedTemplateData } = state
+    const { draftTemplateData, currentEditorTemplateData, publishedTemplateData, baseDeploymentTemplateData } = state
 
-    const templateState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
+    const userSelectionState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
+    const currentEditorTemplateState = isDeleteOverrideDraft ? baseDeploymentTemplateData : userSelectionState
 
     const currentEditorConfig: CompareConfigViewProps['currentEditorConfig'] = {
         ...(envId &&
@@ -586,23 +587,23 @@ export const getCompareFromEditorConfig = ({
             }),
         chartName: {
             displayName: 'Chart',
-            value: templateState?.selectedChart?.name,
+            value: currentEditorTemplateState?.selectedChart?.name,
         },
         chartVersion: {
             displayName: 'Version',
-            value: templateState?.selectedChart?.version,
+            value: currentEditorTemplateState?.selectedChart?.version,
         },
         ...(!!envId &&
             !isDeleteOverrideDraft && {
                 mergeStrategy: {
                     displayName: 'Merge strategy',
-                    value: templateState?.mergeStrategy,
+                    value: currentEditorTemplateState?.mergeStrategy,
                 },
             }),
         ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
             applicationMetrics: {
                 displayName: 'Application metrics',
-                value: templateState?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                value: currentEditorTemplateState?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
             },
         }),
     }

@@ -40,6 +40,7 @@ import {
     ConfigResourceType,
     abortPreviousRequests,
     getIsRequestAborted,
+    DraftAction,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -213,8 +214,7 @@ const DeploymentTemplate = ({
         !!envId && !isDraftAvailable && !publishedTemplateData?.isOverridden && !currentEditorTemplateData?.isOverridden
 
     const showNoOverrideEmptyState = showNoOverrideTab && configHeaderTab === ConfigHeaderTabType.VALUES
-    // TODO: After CM/CS Merge strategy is implemented, we can re-use enum
-    const isDeleteOverrideDraft = !!envId && draftTemplateData?.latestDraft?.action === 3
+    const isDeleteOverrideDraft = !!envId && draftTemplateData?.latestDraft?.action === DraftAction.Delete
     const showDeleteOverrideDraftEmptyState =
         isDeleteOverrideDraft &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
@@ -1480,7 +1480,7 @@ const DeploymentTemplate = ({
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
-                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}-${shouldMergeTemplateWithPatches ? 'with-merged-values' : 'without-merged-values'}`}
+                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}-${shouldMergeTemplateWithPatches ? 'with-merged-values' : 'without-merged-values'}-${resolveScopedVariables ? 'in-resolved-view' : 'in-unresolved-view'}`}
                     {...getCompareFromEditorConfig({
                         envId,
                         isDeleteOverrideDraft,
