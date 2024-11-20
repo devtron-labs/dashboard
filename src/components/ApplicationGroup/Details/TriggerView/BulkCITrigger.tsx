@@ -294,7 +294,7 @@ const BulkCITrigger = ({
                         <Button
                             icon={<LeftIcon />}
                             onClick={onCloseWebhookModal}
-                            ariaLabel="regex-back"
+                            ariaLabel="bulk-webhook-back"
                             dataTestId="build-deploy-pipeline-name-heading"
                             variant={ButtonVariantType.borderLess}
                             size={ComponentSizeType.xs}
