@@ -128,13 +128,12 @@ const BranchRegexModal = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="ml-36-imp w-100">
+                                <div className="pl-36 w-100">
                                     <CustomInput
                                         name="name"
                                         data-testid={`branch-name-matching-regex-textbox${index}`}
                                         tabIndex={index}
                                         placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                        rootClassName="w-95-imp"
                                         value={_regexValue.value}
                                         onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
                                         autoFocus
