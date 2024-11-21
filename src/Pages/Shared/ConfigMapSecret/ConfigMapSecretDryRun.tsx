@@ -12,9 +12,8 @@ import {
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { NoPublishedVersionEmptyState, ToggleResolveScopedVariables } from '@Pages/Applications'
+import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
 import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
 import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload } from './utils'
@@ -148,13 +147,7 @@ export const ConfigMapSecretDryRun = ({
                     )}
                 </div>
                 <div className="flex left dc__gap-8">
-                    {mergeStrategy && (
-                        <div className="flex left dc__gap-4">
-                            <ICHelpOutline className="icon-dim-14 fcn-6" />
-                            <span className="fw-4 fs-12 lh-16 cn-7">Merge Strategy</span>
-                            <span className="fw-6 fs-12 lh-20 cn-9 dc__capitalize">{mergeStrategy}</span>
-                        </div>
-                    )}
+                    {mergeStrategy && <SelectMergeStrategy mergeStrategy={mergeStrategy} variant="text" />}
                     <div className="dc__border-right-n1 dc__align-self-stretch mt-2 mb-2" />
                     <ToggleResolveScopedVariables
                         resolveScopedVariables={resolveScopedVariables}
