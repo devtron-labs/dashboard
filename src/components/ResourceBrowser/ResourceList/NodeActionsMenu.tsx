@@ -139,6 +139,43 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
         }
     }
 
+    const renderModal = () => {
+        if (showCordonNodeDialog) {
+            return (
+                <CordonNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    // NOTE!: ts was showing error in yarn lint but vscode did not
+                    unschedulable={!!nodeData.unschedulable as unknown as boolean}
+                    closePopup={hideCordonNodeModal}
+                />
+            )
+        }
+
+        if (showDrainNodeDialog) {
+            return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
+        }
+
+        if (showDeleteNodeDialog) {
+            return <DeleteNodeModal name={name} version={version} kind={kind} closePopup={hideDeleteNodeModal} />
+        }
+
+        if (showEditTaintNodeDialog) {
+            return (
+                <EditTaintsModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    taints={nodeData.taints as TaintType[]}
+                    closePopup={hideEditTaintsModal}
+                />
+            )
+        }
+
+        return null
+    }
+
     return (
         <>
             <PopupMenu autoClose>
@@ -192,31 +229,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
-            {showCordonNodeDialog && (
-                <CordonNodeModal
-                    name={name}
-                    version={version}
-                    kind={kind}
-                    // NOTE!: ts was showing error in yarn lint but vscode did not
-                    unschedulable={nodeData.unschedulable as unknown as boolean}
-                    closePopup={hideCordonNodeModal}
-                />
-            )}
-            {showDrainNodeDialog && (
-                <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
-            )}
-            {showDeleteNodeDialog && (
-                <DeleteNodeModal name={name} version={version} kind={kind} closePopup={hideDeleteNodeModal} />
-            )}
-            {showEditTaintNodeDialog && (
-                <EditTaintsModal
-                    name={name}
-                    version={version}
-                    kind={kind}
-                    taints={nodeData.taints as TaintType[]}
-                    closePopup={hideEditTaintsModal}
-                />
-            )}
+            {renderModal()}
         </>
     )
 }

@@ -29,34 +29,12 @@ export default () => {
         NODE_GROUP = 'nodeGroup',
     }
 
-    // NOTE!: this is a copy from ResourceBrowser/Constants
-    // imports don't get bundled with the service worker
-    const NODE_SEARCH_KEYS_TO_OBJECT_KEYS = {
-        [NODE_SEARCH_KEYS.LABEL]: 'labels',
-        [NODE_SEARCH_KEYS.NAME]: 'name',
-        [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
-    }
-
-    const NODE_LIST_HEADERS_TO_KEY_MAP = {
-        name: 'name',
-        status: 'status',
-        roles: 'roles',
-        errors: 'errorCount',
-        'k8s version': 'k8sVersion',
-        'node group': 'nodeGroup',
-        pods: 'podCount',
-        taints: 'taintCount',
-        'cpu usage (%)': 'cpu.usagePercentage',
-        'cpu usage (absolute)': 'cpu.usage',
-        'cpu allocatable': 'cpu.allocatable',
-        'mem usage (%)': 'memory.usagePercentage',
-        'mem usage (absolute)': 'memory.usageInBytes',
-        'mem allocatable': 'memory.allocatable',
-        age: 'age',
-        unschedulable: 'unschedulable',
-    }
-
-    const NODE_K8S_VERSION_KEY = 'k8sVersion'
+    /**
+     * These constants are being passed to WebWorker since we can't import from other files
+     */
+    let NODE_SEARCH_KEYS_TO_OBJECT_KEYS = null
+    let NODE_LIST_HEADERS_TO_KEY_MAP = null
+    let NODE_K8S_VERSION_KEY = null
 
     const stringComparatorBySortOrder = (a: string, b: string, sortOrder: SortingOrder = SortingOrder.ASC) =>
         sortOrder === SortingOrder.ASC ? a.localeCompare(b) : b.localeCompare(a)
@@ -128,6 +106,7 @@ export default () => {
         'cpu allocatable': numberInStringComparator,
         'mem usage (%)': numberInStringComparator,
         'mem allocatable': numberInStringComparator,
+        'cpu usage (absolute)': numberInStringComparator,
     }
 
     /**
@@ -264,6 +243,12 @@ export default () => {
          */
         if (e.data.payload?.origin !== self.location.origin) {
             return
+        }
+
+        if (e.data.payload?.nodeListingFilters) {
+            NODE_LIST_HEADERS_TO_KEY_MAP = e.data.payload.nodeListingFilters.NODE_LIST_HEADERS_TO_KEY_MAP
+            NODE_SEARCH_KEYS_TO_OBJECT_KEYS = e.data.payload.nodeListingFilters.NODE_SEARCH_KEYS_TO_OBJECT_KEYS
+            NODE_K8S_VERSION_KEY = e.data.payload.nodeListingFilters.NODE_K8S_VERSION_KEY
         }
 
         switch (e.data.type) {

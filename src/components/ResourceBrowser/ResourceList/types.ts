@@ -45,7 +45,6 @@ export interface BaseResourceListProps
      * @default false
      */
     shouldOverrideSelectedResourceKind?: boolean
-    nodeK8sVersions?: string[]
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps

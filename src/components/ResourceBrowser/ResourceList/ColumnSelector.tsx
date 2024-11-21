@@ -29,7 +29,7 @@ export function useColumnFilterContext() {
     const context = React.useContext(ColumnFilterContext)
 
     if (!context) {
-        throw new Error(`cannot be rendered outside the component`)
+        throw new Error('cannot be rendered outside the component')
     }
 
     return context

@@ -23,6 +23,8 @@ import {
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
+    K8sResourceDetailType,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
@@ -43,7 +45,7 @@ import {
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    NodeListResponse,
+    NodeRowDetail,
 } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -385,27 +387,38 @@ export const renderResourceValue = (value: string) => {
     return isDateValue ? moment(value).format(DATE_TIME_FORMAT_STRING) : value
 }
 
-const flattenObject = (ob: object): object => {
+/**
+ * Provided a js object we will return a flattened object such that the nested
+ * keys are all direct children created by joining each level using (.)
+ *
+ * Ex: given object = { x: 'a', y: { a: 'b' } } returns { x: 'a', 'y.a': b }
+ *
+ * @param ob any js object
+ * @returns object without any nesting; nested keys will be
+ */
+const flattenObject = (ob: object): Record<string, any> => {
     const toReturn = {}
 
-    Object.keys(ob).forEach((i) => {
-        const currentElement = ob[i]
+    Object.entries(ob).forEach(([key, value]) => {
+        const currentElement = value
 
         if (typeof currentElement === 'object' && currentElement !== null && !Array.isArray(currentElement)) {
             const flatObject = flattenObject(currentElement)
 
-            Object.keys(flatObject).forEach((x) => {
-                toReturn[`${i}.${x}`] = flatObject[x]
+            Object.entries(flatObject).forEach(([flatObjectKey, flatObjectValue]) => {
+                toReturn[`${key}.${flatObjectKey}`] = flatObjectValue
             })
         } else {
-            toReturn[i] = currentElement
+            toReturn[key] = currentElement
         }
     })
 
     return toReturn
 }
 
-export const parseNodeList = (response: NodeListResponse) => ({
+// NOTE: Please understand the big comment on @flattenObject to understand this
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
+    ...response,
     result: {
         headers: [...NODE_LIST_HEADERS] as string[],
         data: response.result.map((data) => {

@@ -21,6 +21,10 @@ import {
     ResponseType,
     ApiResourceGroupType,
     convertJSONPointerToJSONPath,
+    getK8sResourceList,
+    getIsRequestAborted,
+    showError,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getManifestResource,
@@ -31,8 +35,16 @@ import { JSONPath } from 'jsonpath-plus'
 import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { CreateResourcePayload, CreateResourceResponse, NodeListResponse, ResourceListPayloadType } from './Types'
-import { ALL_NAMESPACE_OPTION } from './Constants'
+import {
+    CreateResourcePayload,
+    CreateResourceResponse,
+    GetResourceDataType,
+    NodeRowDetail,
+    ResourceListPayloadType,
+    URLParams,
+} from './Types'
+import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from './Constants'
+import { parseNodeList } from './Utils'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
 
@@ -141,5 +153,33 @@ export const restartWorkload = async (resource: SelectedResourceType, signal: Ab
     await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
 }
 
-export const getNodeList = (clusterId: string, signal?: AbortSignal): Promise<NodeListResponse> =>
-    get(`${Routes.NODE_LIST}?clusterId=${clusterId}`, { signal })
+export const getNodeList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<NodeRowDetail[]>> =>
+    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), { signal })
+
+export const getResourceData = async ({
+    selectedResource,
+    selectedNamespace,
+    clusterId,
+    filters,
+    abortControllerRef,
+}: GetResourceDataType) => {
+    try {
+        if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+            const response = await getNodeList(clusterId, abortControllerRef.current.signal)
+
+            return parseNodeList(response)
+        }
+
+        return await getK8sResourceList(
+            getResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            abortControllerRef.current.signal,
+        )
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+            throw err
+        }
+
+        return null
+    }
+}
