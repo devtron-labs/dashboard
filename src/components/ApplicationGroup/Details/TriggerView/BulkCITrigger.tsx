@@ -316,17 +316,21 @@ const BulkCITrigger = ({
                             style={ButtonStyleType.neutral}
                         />
                     )}
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">{isWebhookBulkCI ? `${selectedApp.ciPipelineName} / All received webhooks` : 'Build image' }</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">
+                        {isWebhookBulkCI ? `${selectedApp.ciPipelineName} / All received webhooks` : 'Build image'}
+                    </h2>
                 </div>
-                <button
-                    type="button"
-                    className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
-                    disabled={isLoading}
-                    onClick={closeBulkCIModal}
-                    aria-label="Close modal"
-                >
-                    <Close className="icon-dim-24" />
-                </button>
+                    <Button
+                        ariaLabel="bulk-ci-close-button"
+                        dataTestId="Bulk close modal"
+                        onClick={closeBulkCIModal}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.small}
+                        icon={<Close />}
+                        showAriaLabelInTippy={false}
+                        style={ButtonStyleType.negativeGrey}
+                        disabled={isLoading}
+                    />
             </div>
         )
     }
