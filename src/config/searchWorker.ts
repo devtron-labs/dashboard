@@ -156,6 +156,47 @@ export default () => {
         }
     }
 
+    const isItemASearchMatchForNodeListing = (item: Record<string, any>, searchParams: Record<string, string>) => {
+        const isK8sVersionFilterAppliedAndMatchFound =
+            !searchParams[NODE_K8S_VERSION_KEY] || item[NODE_K8S_VERSION_KEY] === searchParams[NODE_K8S_VERSION_KEY]
+
+        const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) =>
+            Object.hasOwn(searchParams, key),
+        )
+
+        const doesItemHaveAnyMatchingSearchKey =
+            !doesAnyNodeSearchKeyExists ||
+            Object.values(NODE_SEARCH_KEYS).reduce((isFound, searchKey) => {
+                if (!searchParams[searchKey]) {
+                    return isFound
+                }
+
+                const searchTextFromSearchKey = searchParams[searchKey]
+
+                return !!searchTextFromSearchKey?.split(',').some((text) => {
+                    const trimmedText = text.trim()
+                    const objectKey = NODE_SEARCH_KEYS_TO_OBJECT_KEYS[searchKey]
+
+                    // NOTE: if corresponding value in data is anything other than primitives like string, or number
+                    // handle it appropriately likewise
+                    if (searchKey === NODE_SEARCH_KEYS.LABEL) {
+                        const [searchKeyFromLabelText, searchValueFromLabelText] = trimmedText.split('=')
+
+                        return (
+                            !!item[objectKey]?.some(
+                                ({ key, value }) =>
+                                    key === searchKeyFromLabelText && value === searchValueFromLabelText,
+                            ) && isFound
+                        )
+                    }
+
+                    return String(item[objectKey] ?? '').includes(trimmedText) && isFound
+                })
+            }, true)
+
+        return isK8sVersionFilterAppliedAndMatchFound && doesItemHaveAnyMatchingSearchKey
+    }
+
     const getFilteredList = ({
         searchText,
         list,
@@ -176,51 +217,7 @@ export default () => {
         let filteredList = [...list]
 
         if (isNodeListing) {
-            filteredList = list.filter((item: Record<string, any>) => {
-                const isK8sVersionFilterAppliedAndMatchFound =
-                    !searchParams[NODE_K8S_VERSION_KEY] ||
-                    item[NODE_K8S_VERSION_KEY] === searchParams[NODE_K8S_VERSION_KEY]
-
-                const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) =>
-                    Object.hasOwn(searchParams, key),
-                )
-
-                const doesItemHaveAnyMatchingSearchKey = Object.values(NODE_SEARCH_KEYS).reduce(
-                    (isFound, searchKey) => {
-                        if (!searchParams[searchKey]) {
-                            return isFound
-                        }
-
-                        const searchTextFromSearchKey = searchParams[searchKey]
-
-                        return !!searchTextFromSearchKey?.split(',').some((text) => {
-                            const trimmedText = text.trim()
-                            const objectKey = NODE_SEARCH_KEYS_TO_OBJECT_KEYS[searchKey]
-
-                            // NOTE: if corresponding value in data is anything other than primitives like string, or number
-                            // handle it appropriately likewise
-                            if (searchKey === NODE_SEARCH_KEYS.LABEL) {
-                                const [searchKeyFromLabelText, searchValueFromLabelText] = trimmedText.split('=')
-
-                                return (
-                                    !!item[objectKey]?.some(
-                                        ({ key, value }) =>
-                                            key === searchKeyFromLabelText && value === searchValueFromLabelText,
-                                    ) && isFound
-                                )
-                            }
-
-                            return String(item[objectKey] ?? '').includes(trimmedText) && isFound
-                        })
-                    },
-                    true,
-                )
-
-                return (
-                    isK8sVersionFilterAppliedAndMatchFound &&
-                    (!doesAnyNodeSearchKeyExists || doesItemHaveAnyMatchingSearchKey)
-                )
-            })
+            filteredList = list.filter((item) => isItemASearchMatchForNodeListing(item, searchParams))
         } else if (searchTextLowerCased !== '' && list?.length) {
             filteredList = list.filter((item) =>
                 Object.entries(item).some(
