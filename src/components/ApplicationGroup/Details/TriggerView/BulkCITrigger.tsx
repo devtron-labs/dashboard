@@ -104,10 +104,27 @@ const BulkCITrigger = ({
 }: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
-    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
+    const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
+ const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
+        if (selectedApp?.appId) {
+            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId)?.material.find((mat) => mat.isSelected)
+
+            if (selectedMaterial?.id) {
+                console.log(selectedMaterial, 'bulk ci')
+                return {
+                    [selectedMaterial.gitMaterialId]: {
+                        value: selectedMaterial.value,
+                        isInvalid: false,
+                    },
+                }
+            }
+        }
+        return {}
+    }
+
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitSelectedRegexValue)
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
-    const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
     const { url } = useRouteMatch()
     const showWebhookModal = url.includes(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID || URLS.WEBHOOK_MODAL)
@@ -132,11 +149,16 @@ const BulkCITrigger = ({
         closePopup(evt)
     }
 
+   
+
     useEffect(() => {
         for (const _app of appList) {
             appIgnoreCache[_app.ciPipelineId] = false
         }
         getMaterialData()
+        const selectedMaterial = appList.find(app => app.appId === selectedApp.appId)?.material.find(mat => mat.isSelected)
+        console.log(selectedMaterial)
+        // setRegexValue(selectedMaterial?.gitMaterialId ? { [selectedMaterial.gitMaterialId]: { value: selectedMaterial.value, isInvalid: false } } : {})
     }, [])
 
     const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
@@ -421,6 +443,8 @@ const BulkCITrigger = ({
     }
 
     const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
+        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+
         if (showRegexModal) {
             const selectedCIPipeline = selectedApp.filteredCIPipelines?.find(
                 (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
@@ -470,7 +494,7 @@ const BulkCITrigger = ({
                 />
             )
         }
-        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+        console.log(selectedMaterial)
         return (
             <GitInfoMaterial
                 material={selectedMaterialList}

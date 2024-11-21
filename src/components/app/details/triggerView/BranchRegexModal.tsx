@@ -53,10 +53,11 @@ const BranchRegexModal = ({
 
         return ciMaterial?.source?.regex || ''
     }
+    console.log(regexValue)
 
     const renderBranchRegexMaterialHeader = () => (
-        <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
-            <div className="modal__title flex left dc__gap-12 fs-16 fw-6">
+        <div className="flex dc__content-space py-12 px-20 dc__border-bottom">
+            <div className="modal__title flex left fs-16 fw-6">
                 {isChangeBranchClicked && (
                     <Button
                         dataTestId="regex-modal-header-back-button"
@@ -110,7 +111,10 @@ const BranchRegexModal = ({
                 const _regexValue = regexValue[mat.gitMaterialId] || {}
                 return (
                     mat.regex && (
-                        <div className="dc__border-bottom flex left column dc__gap-6 pb-20" key={`regex_${mat.id}`}>
+                        <div
+                            className={`flex left column dc__gap-6 pb-20 ${index === material.length - 1 ? '' : 'dc__border-bottom'}`}
+                            key={`regex_${mat.id}`}
+                        >
                             <div className="flex left dc__gap-14">
                                 {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
                                 <div>
