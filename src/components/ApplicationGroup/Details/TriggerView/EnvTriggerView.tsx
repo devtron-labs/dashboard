@@ -46,6 +46,7 @@ import {
     preventBodyScroll,
     ToastManager,
     ToastVariantType,
+    BlockedStateData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -73,7 +74,7 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
+import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
@@ -122,9 +123,15 @@ import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
+import { RenderCDMaterialContentProps } from './types'
+import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
+    'getCIBlockState',
+    null,
+    'function',
+)
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'processDeploymentWindowStateAppGroup',
@@ -142,7 +149,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const match = useRouteMatch<CIMaterialRouterProps>()
     const { url } = useRouteMatch()
 
-    const httpProtocol = useRef('')
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
@@ -158,7 +164,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
-    const [showWebhookModal, setShowWebhookModal] = useState(false)
     const [isWebhookPayloadLoading, setWebhookPayloadLoading] = useState(false)
     const [invalidateCache, setInvalidateCache] = useState(false)
     const [webhookPayloads, setWebhookPayloads] = useState(null)
@@ -191,20 +196,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (ApprovalMaterialModal) {
             getConfigs()
         }
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-                const protocol = entry.nextHopProtocol
-                if (protocol && entry.initiatorType === 'fetch') {
-                    httpProtocol.current = protocol
-                    observer.disconnect()
-                }
-            })
-        })
 
-        observer.observe({ type: 'resource', buffered: true })
         return () => {
             handledLocation.current = false
-            observer.disconnect()
         }
     }, [])
 
@@ -288,8 +282,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     })
                 }
             } else if (location.pathname.includes('build')) {
-                const lastIndexBeforeId = location.pathname.lastIndexOf('/')
-                const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
+                const ciNodeId = location.pathname.match(/build\/(\d+)/)?.[1] ?? null
                 const ciNode = filteredWorkflows
                     .flatMap((workflow) => workflow.nodes)
                     .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
@@ -854,10 +847,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
+        let _appName
         for (const _wf of filteredWorkflows) {
             const nd = _wf.nodes.find((node) => +node.id == +ciNodeId && node.type === 'CI')
             if (nd) {
                 _appID = _wf.appId
+                _appName = _wf.name
                 break
             }
         }
@@ -873,19 +868,20 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                       ciNodeId,
                       _appID,
                       getBranchValues(ciNodeId, filteredWorkflows, filteredCIPipelines.get(_appID)),
+                      _appName,
                   )
-                : { result: null },
+                : null,
             getRuntimeParams ? getRuntimeParams(ciNodeId) : null,
         ])
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList
                 // it's already being set inside the same function
-                if (resp[1].result) {
+                if (resp[1]) {
                     const workflows = [...filteredWorkflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.ciBlockState = processConsequenceData(resp[1].result)
-                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.pluginBlockState = processConsequenceData(resp[1])
+                                node.isTriggerBlocked = resp[1].isCITriggerBlocked
                                 return node
                             }
                             return node
@@ -1197,7 +1193,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        triggerBranchChange(appIds, +envId, value, httpProtocol.current)
+        triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
                 const _responseList = []
                 response.map((res) => {
@@ -1303,7 +1299,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (e) {
             stopPropagation(e)
         }
-        setShowWebhookModal(false)
     }
 
     const onClickWebhookTimeStamp = () => {
@@ -1314,10 +1309,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }
 
-    const toggleWebhookModal = (id, _webhookTimeStampOrder) => {
+    const getWebhookPayload = (id, _webhookTimeStampOrder) => {
         setWebhookPayloadLoading(true)
         getCIWebhookRes(id, _webhookTimeStampOrder).then((result) => {
-            setShowWebhookModal(true)
             setWebhookPayloads(result?.result)
             setWebhookPayloadLoading(false)
         })
@@ -1532,7 +1526,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBulkTriggerLoading(true)
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
-            ApiQueuingWithBatch(promiseFunctionList, httpProtocol.current).then((responses: any[]) => {
+            ApiQueuingWithBatch(promiseFunctionList).then((responses: any[]) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -1739,6 +1733,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
+                const selectedCINode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                const doesWorkflowContainsWebhook = selectedCINode?.type === WorkflowNodeType.WEBHOOK
+
                 let _selectedNode: CommonNodeAttr
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
@@ -1748,13 +1747,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedNode = _cdNode.postNode
                 }
                 if (_selectedNode) {
+                    const stageType = DeploymentNodeType[_selectedNode.type]
+                    const isTriggerBlockedDueToPlugin =
+                        _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning
+                    const stageText = stageType === DeploymentNodeType.PRECD ? 'Pre-Deployment' : 'Post-Deployment'
+
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
                         name: wf.name,
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
-                        stageType: DeploymentNodeType[_selectedNode.type],
+                        stageType,
                         triggerType: _cdNode.triggerType,
                         envName: _selectedNode.environmentName,
                         envId: _selectedNode.environmentId,
@@ -1769,6 +1773,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         tagsEditable: wf.tagsEditable,
                         ciPipelineId: _selectedNode.connectingCiPipelineId,
                         hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete,
+                        showPluginWarning: _selectedNode.showPluginWarning,
+                        isTriggerBlockedDueToPlugin,
+                        configurePluginURL: getCDPipelineURL(
+                            String(wf.appId),
+                            wf.id,
+                            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+                            doesWorkflowContainsWebhook,
+                            _selectedNode.id,
+                            true,
+                        ),
+                        consequence: _selectedNode.pluginBlockState,
+                        warningMessage: isTriggerBlockedDueToPlugin ? `${stageText} is blocked` : '',
                     })
                 } else {
                     let warningMessage = ''
@@ -1965,6 +1981,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (selectedCINode?.id) {
             return (
                 <Switch>
+                     <Route
+                        path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
+                    >
+                        <WebhookReceivedPayloadModal
+                            workflowId={workflowID}
+                            webhookPayloads={webhookPayloads}
+                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            material={material}
+                            pipelineId={selectedCINode?.id?.toString()}
+                            title={selectedCINode?.name}
+                            isJobView={!!nd?.isJobCI}
+                            getWebhookPayload={getWebhookPayload}
+                            appId={_appID?.toString()}
+                        />
+                    </Route>
                     <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
                         <CIMaterialModal
                             workflowId={workflowID}
@@ -1975,14 +2006,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             pipelineName={selectedCINode?.name}
                             isLoading={isCDLoading}
                             title={selectedCINode?.name}
-                            pipelineId={selectedCINode?.id}
-                            showWebhookModal={showWebhookModal}
-                            hideWebhookModal={hideWebhookModal}
-                            toggleWebhookModal={toggleWebhookModal}
-                            webhookPayloads={webhookPayloads}
-                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            pipelineId={selectedCINode?.id?.toString()}
+                            getWebhookPayload={getWebhookPayload}
                             onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                            webhhookTimeStampOrder={webhookTimeStampOrder}
                             showMaterialRegexModal={showMaterialRegexModal}
                             onCloseBranchRegexModal={onCloseBranchRegexModal}
                             filteredCIPipelines={filteredCIPipelines.get(_appID)}
@@ -1995,8 +2021,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isCacheAvailable={nd?.storageConfigured}
                             fromAppGrouping
                             appId={_appID?.toString()}
-                            isCITriggerBlocked={nd?.isCITriggerBlocked}
-                            ciBlockState={nd?.ciBlockState}
+                            isCITriggerBlocked={nd?.isTriggerBlocked}
+                            ciBlockState={nd?.pluginBlockState}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
                             handleRuntimeParamChange={handleRuntimeParamChange}
@@ -2034,7 +2060,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCDLoading}
                 isVirtualEnv={isVirtualEnv}
                 uniqueReleaseTags={uniqueReleaseTags}
-                httpProtocol={httpProtocol.current}
                 runtimeParams={runtimeParams}
                 setRuntimeParams={setRuntimeParams}
                 runtimeParamsErrorState={runtimeParamsErrorState}
@@ -2054,9 +2079,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 closePopup={hideBulkCIModal}
                 updateBulkInputMaterial={updateBulkCIInputMaterial}
                 onClickTriggerBulkCI={onClickTriggerBulkCI}
-                showWebhookModal={showWebhookModal}
-                hideWebhookModal={hideWebhookModal}
-                toggleWebhookModal={toggleWebhookModal}
+                getWebhookPayload={getWebhookPayload}
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
@@ -2068,7 +2091,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 runtimeParamsErrorState={runtimeParamsErrorState}
                 setRuntimeParamsErrorState={setRuntimeParamsErrorState}
                 setPageViewType={setPageViewType}
-                httpProtocol={httpProtocol.current}
             />
         )
     }
@@ -2089,11 +2111,59 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const renderCDMaterialContent = ({
+        node,
+        appId,
+        workflowId,
+        selectedAppName,
+        doesWorkflowContainsWebhook,
+        ciNodeId,
+    }: RenderCDMaterialContentProps) => {
+        const configurePluginURL = getCDPipelineURL(
+            String(appId),
+            workflowId,
+            doesWorkflowContainsWebhook ? '0' : ciNodeId,
+            doesWorkflowContainsWebhook,
+            node?.id,
+            true,
+        )
+
+        return (
+            <CDMaterial
+                materialType={materialType}
+                appId={appId}
+                envId={node?.environmentId}
+                pipelineId={selectedCDNode?.id}
+                stageType={DeploymentNodeType[selectedCDNode?.type]}
+                envName={node?.environmentName}
+                closeCDModal={closeCDModal}
+                triggerType={node?.triggerType}
+                isVirtualEnvironment={isVirtualEnv}
+                parentEnvironmentName={node?.parentEnvironmentName}
+                // Wont need it and it might be isCDLoading
+                isLoading={isCILoading}
+                ciPipelineId={node?.connectingCiPipelineId}
+                deploymentAppType={node?.deploymentAppType}
+                selectedAppName={selectedAppName}
+                showPluginWarningBeforeTrigger={node?.showPluginWarning}
+                consequence={node?.pluginBlockState}
+                configurePluginURL={configurePluginURL}
+                isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
+            />
+        )
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
+        if (!selectedCDNode?.id) {
+            return null
+        }
+
         if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
             let selectedAppName: string
+            let workflowId: string
+            let selectedCINode: CommonNodeAttr
 
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
@@ -2101,6 +2171,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                     })
                     if (node) {
+                        selectedCINode = _wf.nodes.find(
+                            (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                        )
+                        workflowId = _wf.id
                         _appID = _wf.appId
                         selectedAppName = _wf.name
                         break
@@ -2129,23 +2203,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 </div>
                             </>
                         ) : (
-                            <CDMaterial
-                                materialType={materialType}
-                                appId={_appID}
-                                envId={node?.environmentId}
-                                pipelineId={selectedCDNode?.id}
-                                stageType={DeploymentNodeType[selectedCDNode?.type]}
-                                envName={node?.environmentName}
-                                closeCDModal={closeCDModal}
-                                triggerType={node?.triggerType}
-                                isVirtualEnvironment={isVirtualEnv}
-                                parentEnvironmentName={node?.parentEnvironmentName}
-                                // Wont need it and it might be isCDLoading
-                                isLoading={isCILoading}
-                                ciPipelineId={node?.connectingCiPipelineId}
-                                deploymentAppType={node?.deploymentAppType}
-                                selectedAppName={selectedAppName}
-                            />
+                            renderCDMaterialContent({
+                                node,
+                                appId: _appID,
+                                selectedAppName,
+                                workflowId,
+                                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
+                                ciNodeId: selectedCINode?.id,
+                            })
                         )}
                     </div>
                 </VisibleModal>

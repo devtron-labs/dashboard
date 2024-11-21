@@ -1162,7 +1162,7 @@ button.anchor {
     }
 
     &.not-ready {
-        background: url('../assets//icons/ic-error.svg');
+        background: url('../assets/icons/ic-error.svg');
         background-size: contain, contain;
     }
 
@@ -1501,6 +1501,17 @@ button.anchor {
                 }
             }
         }
+    }
+}
+
+.dc__inline-radio-group {
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .form__radio-item.disabled {
+        background-color: transparent;
     }
 }
 
@@ -2073,6 +2084,10 @@ button.anchor {
     &--n3-right {
         border-right: 1px dashed var(--N300);
     }
+
+    &--n3-bottom {
+        border-bottom: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
@@ -2550,6 +2565,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__bottom-radius-8 {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
 .dc__top-radius-8 {
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -2575,9 +2595,19 @@ button.anchor {
     border-bottom-right-radius: 0 !important;
 }
 
+.dc__left-radius-3 {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
 .dc__left-radius-4 {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+}
+
+.dc__right-radius-3 {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .dc__right-radius-4 {
@@ -2607,6 +2637,10 @@ button.anchor {
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-40 {
+    border-radius: 40px;
 }
 
 .dc__no-top-border {
@@ -3207,6 +3241,10 @@ textarea,
     width: 356px;
 }
 
+.w-360 {
+    width: 360px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -3665,6 +3703,10 @@ textarea,
     max-height: 450px;
 }
 
+.mxh-500 {
+    max-height: 500px;
+}
+
 .mxh-504 {
     max-height: 504px;
 }
@@ -3725,6 +3767,10 @@ textarea,
 
 .lh-18-imp {
     line-height: 18px !important;
+}
+
+.lh-19-imp {
+    line-height: 19px !important;
 }
 
 .lh-20 {
@@ -3885,6 +3931,14 @@ textarea,
 
 .mb-neg-2 {
     margin-bottom: -2px;
+}
+
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
 }
 
 .m-0-imp {
@@ -4110,6 +4164,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {
@@ -4261,10 +4319,24 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
+
+    &--fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+    &--stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
@@ -4800,6 +4872,14 @@ textarea::placeholder {
     backdrop-filter: blur(2px);
 }
 
+.dc__backdrop-filter-5 {
+    backdrop-filter: blur(5px);
+}
+
+.dc__background-opacity-75-per{
+    background: #f2f4f7BF;
+}
+
 .dc__visibility-hidden {
     visibility: hidden;
 }
@@ -5013,6 +5093,28 @@ textarea::placeholder {
     background-color: var(--Y100);
 }
 
+.code-editor__error {
+    background-color: #fde7e7;
+    color: #862020;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+}
+
+.code-editor__information {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d6dbdf;
+    background-color: var(--B100);
+}
+
 .security-policy--whitelist,
 .security-policy--whitelisted {
     color: var(--G500);
@@ -5087,4 +5189,41 @@ textarea::placeholder {
     position: absolute;
     bottom: 120px;
     right: 110px;
+}
+
+
+.read-only-expression {
+    counter-reset: line;
+}
+
+.read-only-expression span {
+    display: block;
+    // JUST A HACK, since need span for setting line number
+    width: 1px;
+}
+
+.read-only-expression span:before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    padding: 0 8px;
+    color: var(--N700);
+    width: 24px;
+    margin-right: 8px;
+}
+
+.read-only-expression.dark span:before {
+    color: var(--N400);
+}
+
+.read-only-expression.dark {
+    background-color: #0C0F21;
+}
+
+.dc__text-wrap {
+    text-wrap: wrap;
+}
+
+.dc__open-sans {
+    font-family: 'Open Sans';
 }

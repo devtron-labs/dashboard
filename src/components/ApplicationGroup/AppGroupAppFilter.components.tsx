@@ -19,7 +19,7 @@ import { components } from 'react-select'
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { getOptionBGClass } from './AppGroup.utils'
+import { getOptionBGClass, setFilterInLocalStorage } from './AppGroup.utils'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -168,6 +168,7 @@ export const Option = (props): JSX.Element => {
 
 export const MenuList = (props: any): JSX.Element => {
     const {
+        resourceId,
         appListOptions,
         selectedAppList,
         setSelectedAppList,
@@ -182,6 +183,7 @@ export const MenuList = (props: any): JSX.Element => {
     const clearSelection = (): void => {
         setSelectedAppList([])
         setSelectedGroupFilter([])
+        setFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)

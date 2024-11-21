@@ -33,6 +33,7 @@ import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
 import EditTaintsModal from './EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
 
+// TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 export default function NodeActionsMenu({
     nodeData,
     openTerminal,
@@ -67,7 +68,9 @@ export default function NodeActionsMenu({
     const handleEditYamlAction = () => {
         if (isAuthorized()) {
             const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
-            addTab(K8S_EMPTY_GROUP, 'node', nodeData.name, _url).then(() => history.push(_url))
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name: nodeData.name, url: _url }).then(() =>
+                history.push(_url),
+            )
         }
     }
 
@@ -126,7 +129,7 @@ export default function NodeActionsMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex p-4" isKebab>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

@@ -17,7 +17,7 @@
 .cluster-list-main-container {
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
+        grid-template-columns: auto 150px 100px 50px 90px 100px 100px 120px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
@@ -85,6 +85,12 @@
 
         & > :last-child {
             padding-right: 20px;
+        }
+
+        &.no-hover-bg {
+            &:hover > :first-child {
+                background-color: var(--N0);
+            }
         }
     }
 
@@ -246,12 +252,6 @@
             .sticky-column {
                 background-color: var(--N50);
             }
-        }
-    }
-
-    .list-title {
-        .mw-85px {
-            max-width: 85px;
         }
     }
 }

@@ -16,31 +16,9 @@
 
 import { ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
+import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { useTabs } from './useTabs'
-
-interface CommonTabArgsType {
-    name: string
-    kind?: string
-    url: string
-    isSelected: boolean
-    title?: string
-    isDeleted?: boolean
-    position: number
-    iconPath?: string
-    dynamicTitle?: string
-    showNameOnSelect?: boolean
-    isAlive?: boolean
-    lastSyncMoment?: Dayjs
-    componentKey?: string
-}
-
-export interface InitTabType extends CommonTabArgsType {
-    idPrefix: string
-}
-
-export interface DynamicTabType extends CommonTabArgsType {
-    id: string
-}
+import { TAB_DATA_VERSION } from './constants'
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
@@ -49,7 +27,7 @@ export interface DynamicTabsProps {
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
     refreshData: () => void
-    isOverview: boolean
+    hideTimer: boolean
 }
 
 export interface TabsDataType {
@@ -76,4 +54,39 @@ export interface TimerType {
 export type ParsedTabsData = {
     key: string
     data: DynamicTabType[]
+    version: typeof TAB_DATA_VERSION
+}
+
+export interface PopulateTabDataPropsType
+    extends Pick<
+            DynamicTabType,
+            | 'tippyConfig'
+            | 'lastActiveTabId'
+            | 'type'
+            | 'isSelected'
+            | 'url'
+            | 'name'
+            | 'iconPath'
+            | 'dynamicTitle'
+            | 'isAlive'
+            | 'hideName'
+            | 'id'
+        >,
+        Required<Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect'>> {}
+
+export interface AddTabParamsType
+    extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,
+        Partial<Pick<PopulateTabDataPropsType, 'type' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>>,
+        Required<Pick<DynamicTabType, 'kind'>> {
+    /**
+     * Prefix for generating tab IDs
+     */
+    idPrefix: string
+}
+
+export interface UpdateTabUrlParamsType extends Pick<DynamicTabType, 'id' | 'url' | 'dynamicTitle'> {
+    /**
+     * @default false
+     */
+    retainSearchParams?: boolean
 }

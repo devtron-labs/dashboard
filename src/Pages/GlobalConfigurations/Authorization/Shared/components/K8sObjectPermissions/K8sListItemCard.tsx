@@ -28,6 +28,7 @@ import {
     OptionType,
     LoadingIndicator,
     GVKType,
+    getK8sResourceList,
     EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
@@ -42,7 +43,6 @@ import {
 import {
     getClusterList,
     getResourceGroupList,
-    getResourceList,
     namespaceListByClusterId,
 } from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
 import { K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
@@ -152,7 +152,7 @@ const K8sListItemCard = ({
                     },
                 },
             }
-            const { result } = await getResourceList(resourceListPayload)
+            const { result } = await getK8sResourceList(resourceListPayload)
             if (result) {
                 const _data =
                     result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []

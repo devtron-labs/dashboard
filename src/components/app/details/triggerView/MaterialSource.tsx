@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { SourceTypeMap } from '../../../../config'
+import { ReactComponent as Refresh } from '@Icons/ic-restore.svg'
+import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { MaterialSourceProps } from './types'
-import { CIMaterialType, CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, CiPipelineSourceConfig, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { getGitProviderIcon } from '@Components/common'
 
 export default function MaterialSource({
     material,
@@ -61,9 +60,9 @@ export default function MaterialSource({
             )
         }
         return (
-            <div data-testid="material-last-fetch-time" className="flex fs-10">
-                {mat.lastFetchTime ? 'Updated' : ''}
-                <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
+            <div data-testid="material-last-fetch-time" className="flex fs-11 flex left dc__gap-4">
+                <span>{mat.lastFetchTime ? 'Updated' : ''}</span>
+                <span className="fw-6"> {mat.lastFetchTime}</span>
             </div>
         )
     }
@@ -81,7 +80,7 @@ export default function MaterialSource({
         return (
             <button
                 type="button"
-                className="material-refresh"
+                className="material-refresh dc__unset-button-styles"
                 disabled={mat.isMaterialLoading}
                 data-id={mat.gitMaterialId}
                 onClick={handleRefreshAction}
@@ -107,14 +106,16 @@ export default function MaterialSource({
                         key={index}
                         data-id={mat.id}
                         data-testid={`material-list-item-${index}`}
-                        className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
+                        className={`material-list__item flex left column dc__gap-10 p-12 cursor ${mat.isSelected ? 'material-selected' : ''}`}
                         onClick={handleSelectMaterialAction}
                     >
-                        <div className="material-info">
-                            <div className="material-info__name flex-1 dc__ellipsis-right">/{mat.gitMaterialName}</div>
-                            <div className="icon-dim-22 git" />
-                        </div>
-                        <div className="branch-name">
+                        <div className="flex left column dc__gap-4 w-100">
+                            <div className="material-info flex left dc__content-space w-100">
+                                <div className="material-info__name flex-1 dc__ellipsis-right fs-13 fw-6 cn-9 fw-6 lh-20">
+                                    /{mat.gitMaterialName}
+                                </div>
+                                {getGitProviderIcon(mat.gitURL)}
+                            </div>
                             <CiPipelineSourceConfig
                                 sourceType={mat.type}
                                 sourceValue={mat.value}
@@ -124,7 +125,7 @@ export default function MaterialSource({
                             />
                         </div>
                         {refreshMaterial ? (
-                            <div className="material-info mt-10">
+                            <div className="material-info w-100">
                                 {renderMaterialUpdateInfo(mat)}
                                 {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
                             </div>

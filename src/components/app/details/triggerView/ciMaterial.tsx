@@ -17,16 +17,18 @@
 import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
 import {
-    showError,
-    ServerErrors,
     Checkbox,
-    noop,
     CIMaterialSidebarType,
-    ButtonWithLoader,
     ModuleNameMap,
-    SourceTypeMap,
     ToastManager,
     ToastVariantType,
+    Button,
+    ComponentSizeType,
+    CIMaterialType,
+    showError,
+    SourceTypeMap,
+    CommonNodeAttr,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -35,17 +37,16 @@ import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.s
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
-import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
-import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
+import BranchRegexModal from './BranchRegexModal'
+import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
-
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
@@ -58,21 +59,21 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
             }
         })
-
         this.state = {
             regexValue,
             savingRegexValue: false,
-            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
             runtimeParamsErrorState: false,
         }
     }
 
+    selectedCIPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.pipelineId)
+
     componentDidMount() {
         this.getSecurityModuleStatus()
         if (this.props.isJobView && this.props.environmentLists?.length > 0) {
-            const envId = this.state.selectedCIPipeline?.environmentId || 0
+            const envId = this.selectedCIPipeline?.environmentId || 0
             const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
             this.props.setSelectedEnv(_selectedEnv)
         }
@@ -160,7 +161,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <Checkbox
                 isChecked={this.context.invalidateCache}
                 onClick={this.onClickStopPropagation}
-                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                rootClassName="form__checkbox-label--ignore-cache mb-0 flex top"
                 value="CHECKED"
                 onChange={this.context.toggleInvalidateCache}
                 data-testid="set-clone-directory"
@@ -211,49 +212,44 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
+    renderCTAButtonWithIcon = (canTrigger, isCTAActionable: boolean = true ) => (
+        <Button
+            dataTestId="ci-trigger-start-build-button"
+            text={this.props.isJobView ? 'Run Job' : 'Start Build'}
+            disabled={!canTrigger}
+            isLoading={this.props.isLoading}
+            onClick={isCTAActionable ? this.handleStartBuildAction : noop}
+            size={ComponentSizeType.large}
+            startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
+        />
+    )
+
     renderCTAButton = (canTrigger) => {
+        const nodeType: CommonNodeAttr['type'] = 'CI'
+
         if (AllowedWithWarningTippy && this.props.ciBlockState && !this.props.isJobView) {
             return (
                 <AllowedWithWarningTippy
                     consequence={this.props.ciBlockState}
-                    onConfigure={this.redirectToCIPipeline}
-                    onStart={this.handleStartBuildAction}
+                    configurePluginURL={getCIPipelineURL(
+                        this.props.appId,
+                        this.props.workflowId.toString(),
+                        true,
+                        this.props.pipelineId,
+                        false,
+                        this.props.isJobCI,
+                    )}
+                    showTriggerButton
+                    onTrigger={this.handleStartBuildAction}
+                    nodeType={nodeType}
+                    isJobView={this.props.isJobCI}
                 >
-                    <ButtonWithLoader
-                        rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
-                        dataTestId="ci-trigger-start-build-button"
-                        disabled={!canTrigger}
-                        isLoading={this.props.isLoading}
-                        onClick={noop}
-                    >
-                        <Play className="trigger-btn__icon" />
-                        Start Build
-                    </ButtonWithLoader>
+                    {this.renderCTAButtonWithIcon(canTrigger, false)}
                 </AllowedWithWarningTippy>
             )
         }
 
-        return (
-            <ButtonWithLoader
-                rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
-                dataTestId="ci-trigger-start-build-button"
-                disabled={!canTrigger}
-                isLoading={this.props.isLoading}
-                onClick={this.handleStartBuildAction}
-            >
-                {this.props.isJobView ? (
-                    <>
-                        <RunIcon className="trigger-job-btn__icon" />
-                        Run Job
-                    </>
-                ) : (
-                    <>
-                        <Play className="trigger-btn__icon" />
-                        Start Build
-                    </>
-                )}
-            </ButtonWithLoader>
-        )
+        return this.renderCTAButtonWithIcon(canTrigger)
     }
 
     renderMaterialStartBuild = (canTrigger) => {
@@ -264,6 +260,20 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             </div>
         )
     }
+
+    renderBranchRegexModal = () => (
+        <BranchRegexModal
+            material={this.props.material}
+            selectedCIPipeline={this.selectedCIPipeline}
+            title={this.props.title}
+            isChangeBranchClicked={this.props.isChangeBranchClicked}
+            onClickNextButton={this.onClickNextButton}
+            handleRegexInputValue={this.handleRegexInputValue}
+            regexValue={this.state.regexValue}
+            onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
+            savingRegexValue={this.state.savingRegexValue}
+        />
+    )
 
     renderCIModal() {
         const selectedMaterial = this.props.material.find((mat) => mat.isSelected)
@@ -285,15 +295,9 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         pipelineId={this.props.pipelineId}
                         pipelineName={this.props.pipelineName}
                         selectedMaterial={selectedMaterial}
-                        showWebhookModal={this.props.showWebhookModal}
-                        hideWebhookModal={this.props.hideWebhookModal}
-                        toggleWebhookModal={this.props.toggleWebhookModal}
-                        webhookPayloads={this.props.webhookPayloads}
-                        isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         fromAppGrouping={this.props.fromAppGrouping}
-                        appId={this.props.appId}
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
@@ -304,11 +308,11 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         runtimeParams={this.props.runtimeParams}
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
                         handleRuntimeParamError={this.handleRuntimeParamError}
+                        appId={this.props.appId}
                     />
-                    {this.props.isCITriggerBlocked || this.props.showWebhookModal
-                        ? null
-                        : this.renderMaterialStartBuild(canTrigger)}
+                    {this.props.isCITriggerBlocked ? null : this.renderMaterialStartBuild(canTrigger)}
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                    {this.props.showMaterialRegexModal && this.renderBranchRegexModal()}
                 </>
             )
         }
@@ -328,10 +332,9 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
-    onClickNextButton = () => {
-        this.setState({
-            savingRegexValue: true,
-        })
+    onClickNextButton = async () => {
+        // setSavingRegexValue(true)
+        this.setState({ savingRegexValue: true })
         const payload: any = {
             appId: Number(this.props.match.params.appId ?? this.props.appId),
             id: +this.props.workflowId,
@@ -339,10 +342,11 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
 
         // Populate the ciPipelineMaterial with flatten object
-        if (this.state.selectedCIPipeline?.ciMaterial?.length) {
-            for (const _cm of this.state.selectedCIPipeline.ciMaterial) {
+        if (this.selectedCIPipeline?.ciMaterial?.length) {
+            payload.ciPipelineMaterial = this.selectedCIPipeline.ciMaterial.map((_cm) => {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
                 let _updatedCM
+
                 if (regVal?.value && _cm.source.regex) {
                     this.isRegexValueInvalid(_cm)
 
@@ -353,8 +357,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         regex: _cm.source.regex,
                     }
                 } else {
-                    // To maintain the flatten object structure supported by API for unchanged values
-                    // as during update/next click it uses the fetched ciMaterial structure i.e. containing source
+                    // Maintain the flattened object structure for unchanged values
                     _updatedCM = {
                         ..._cm,
                         ..._cm.source,
@@ -362,29 +365,28 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 }
 
                 // Deleting as it's not required in the request payload
-                delete _updatedCM['source']
-                payload.ciPipelineMaterial.push(_updatedCM)
-            }
+                delete _updatedCM.source
+
+                return _updatedCM
+            })
         }
 
-        savePipeline(payload, true)
-            .then((response) => {
-                if (response) {
-                    this.props.getWorkflows()
-                    this.context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
-                }
+        try {
+            const response = await savePipeline(payload, true)
+            if (response) {
+                await this.props.getWorkflows()
+                this.context.onClickCIMaterial(this.props.pipelineId.toString(), this.props.pipelineName)
+            }
+        } catch (error) {
+            showError(error)
+        } finally {
+            this.setState({
+                savingRegexValue: false,
             })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-            .finally(() => {
-                this.setState({
-                    savingRegexValue: false,
-                })
-            })
+        }
     }
 
-    handleRegexInputValue = (id, value, mat) => {
+    handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
         this.setState((prevState) => {
             return {
                 regexValue: {
@@ -396,22 +398,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     render() {
-        if (this.props.showMaterialRegexModal) {
-            return (
-                <BranchRegexModal
-                    material={this.props.material}
-                    selectedCIPipeline={this.state.selectedCIPipeline}
-                    showWebhookModal={this.props.showWebhookModal}
-                    title={this.props.title}
-                    isChangeBranchClicked={this.props.isChangeBranchClicked}
-                    onClickNextButton={this.onClickNextButton}
-                    handleRegexInputValue={this.handleRegexInputValue}
-                    regexValue={this.state.regexValue}
-                    onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
-                    savingRegexValue={this.state.savingRegexValue}
-                />
-            )
-        }
         return this.renderCIModal()
     }
 }

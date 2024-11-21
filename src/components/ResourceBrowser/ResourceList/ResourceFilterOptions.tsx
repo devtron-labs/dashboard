@@ -38,6 +38,8 @@ const ResourceFilterOptions = ({
     isSearchInputDisabled,
     renderRefreshBar,
     updateK8sResourceTab,
+    areFiltersHidden = false,
+    searchPlaceholder,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -93,7 +95,7 @@ const ResourceFilterOptions = ({
             return
         }
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
-        updateK8sResourceTab(url)
+        updateK8sResourceTab({ url })
         replace(url)
         setSelectedNamespace(selected)
     }
@@ -117,7 +119,7 @@ const ResourceFilterOptions = ({
                 <div className="resource-filter-options-container__search-box dc__position-rel">
                     <SearchBar
                         inputProps={{
-                            placeholder: `Search ${selectedResource?.gvk?.Kind || ''}`,
+                            placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
                             disabled: isSearchInputDisabled,
                             onBlur: handleInputBlur,
                             onFocus: handleInputFocus,
@@ -135,27 +137,29 @@ const ResourceFilterOptions = ({
                         />
                     )}
                 </div>
-                <div className="flexbox dc__gap-8 dc__zi-3">
-                    {FilterButton && (
-                        <FilterButton
-                            clusterName={selectedCluster?.label || ''}
-                            updateTabUrl={updateK8sResourceTab}
-                            showModal={showFilterModal}
-                            setShowModal={setShowFilterModal}
+                {!areFiltersHidden && (
+                    <div className="flexbox dc__gap-8 dc__zi-3">
+                        {FilterButton && (
+                            <FilterButton
+                                clusterName={selectedCluster?.label || ''}
+                                updateTabUrl={updateK8sResourceTab}
+                                showModal={showFilterModal}
+                                setShowModal={setShowFilterModal}
+                            />
+                        )}
+                        <SelectPicker
+                            inputId="resource-filter-select"
+                            placeholder="Select Namespace"
+                            options={namespaceOptions}
+                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
+                            onChange={handleNamespaceChange}
+                            isDisabled={!selectedResource?.namespaced}
+                            icon={<NamespaceIcon className="fcn-6" />}
+                            disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
+                            shouldMenuAlignRight
                         />
-                    )}
-                    <SelectPicker
-                        inputId="resource-filter-select"
-                        placeholder="Select Namespace"
-                        options={namespaceOptions}
-                        value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
-                        onChange={handleNamespaceChange}
-                        isDisabled={!selectedResource?.namespaced}
-                        icon={<NamespaceIcon className="fcn-6" />}
-                        disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
-                        shouldMenuAlignRight
-                    />
-                </div>
+                    </div>
+                )}
             </div>
         </>
     )

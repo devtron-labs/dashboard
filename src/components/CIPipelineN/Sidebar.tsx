@@ -21,6 +21,7 @@ import {
     CHECKBOX_VALUE,
     PipelineFormType,
     SelectPicker,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
@@ -40,7 +41,6 @@ const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarn
 export const Sidebar = ({
     isJobView,
     isJobCI,
-    mandatoryPluginData,
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -59,7 +59,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
-        pluginDataStore,
+        mandatoryPluginData,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -88,6 +88,9 @@ export const Sidebar = ({
 
     const showMandatoryWarning = (): boolean => {
         return (
+            !!MandatoryPluginWarning &&
+            // mandatory plugins are applicable for Job CI but not Jobs
+            !isJobView &&
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
@@ -311,16 +314,16 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                    {showMandatoryWarning() && (
                         <MandatoryPluginWarning
-                            stage={activeStageName}
                             mandatoryPluginData={mandatoryPluginData}
+                            stage={activeStageName}
                             formData={formData}
                             setFormData={setFormData}
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
-                            pluginDataStore={pluginDataStore}
                             handleApplyPlugin={handleApplyPlugin}
+                            resourceKindType={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
                         />
                     )}
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { PipelineFormType, PluginDetailPayloadType, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
@@ -55,10 +56,27 @@ export interface DeleteCDNodeProps {
     forceDeleteData: ForceDeleteMessageType
     deleteTitleName: string
     isLoading?: boolean
-    showConfirmationBar?: boolean
 }
 
 export interface PullImageDigestToggleType {
     formData: PipelineFormType
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+}
+
+export interface BuildCDProps
+    extends Pick<CDPipelineProps, 'envIds' | 'isGitOpsRepoNotConfigured' | 'noGitOpsModuleInstalledAndConfigured'> {
+    isAdvanced: boolean
+    setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>
+    noStrategyAvailable: MutableRefObject<boolean>
+    allStrategies: MutableRefObject<{
+        [key: string]: any
+    }>
+    parentPipelineId: string
+    isWebhookCD: boolean
+    dockerRegistries: any[]
+    releaseMode: ReleaseMode
+    getMandatoryPluginData: (
+        form: PipelineFormType,
+        requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
+    ) => Promise<void>
 }

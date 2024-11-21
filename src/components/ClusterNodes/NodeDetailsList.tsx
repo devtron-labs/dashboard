@@ -31,8 +31,15 @@ import {
     Tooltip,
     ClipboardButton,
     useResizableTableConfig,
+    useBulkSelection,
+    BulkOperationModalState,
+    BulkSelectionEvents,
+    BulkSelection,
+    Checkbox,
+    CHECKBOX_VALUE,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getNodeList, getClusterCapacity } from './clusterNodes.service'
+import { getNodeList, getClusterCapacity, deleteNodeCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail, SearchTextType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -45,10 +52,14 @@ import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
+import { importComponentFromFELibrary } from '@Components/common'
 import { URLParams } from '../ResourceBrowser/Types'
 import './clusterNodes.scss'
 
-export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab, showStaleDataWarning }) {
+const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
+const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
+
+export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab, showStaleDataWarning, clusterName }) {
     const { clusterId, nodeType } = useParams<URLParams>()
     const match = useRouteMatch()
     const location = useLocation()
@@ -62,14 +73,16 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState(name || label || group || '')
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
-    const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
+    const [flattenNodeList, setFlattenNodeList] = useState<(NodeDetail & Record<'id', number>)[]>([])
+    const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<typeof flattenNodeList>([])
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
 
     const initialSeachType = getInitialSearchType(name, label, group)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<SearchTextType | ''>(initialSeachType)
+
+    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
 
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
@@ -85,6 +98,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         })),
     })
 
+    const parentRef = useRef<HTMLDivElement>()
+
     const [, nodeK8sVersions] = useAsync(
         () =>
             abortPreviousRequests(async () => {
@@ -93,6 +108,14 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             }, abortControllerRef),
         [clusterId],
     )
+
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        handleBulkSelection,
+        setIdentifiers,
+        isBulkSelectionApplied,
+        getSelectedIdentifiersCount,
+    } = useBulkSelection<Record<number, (typeof filteredFlattenNodeList)[number]>>()
 
     function getInitialSearchType(name: string, label: string, group: string): SearchTextType | '' {
         if (name) {
@@ -137,6 +160,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value)
 
+    const showPaginatedView = filteredFlattenNodeList.length > pageSize
+
     useEffect(() => {
         const qs = queryString.parse(location.search)
         const offset = Number(qs['offset'])
@@ -152,6 +177,16 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             handleUrlChange(filteredFlattenNodeList)
         }
     }, [filteredFlattenNodeList])
+
+    useEffect(() => {
+        setIdentifiers(
+            (filteredFlattenNodeList?.slice(nodeListOffset, nodeListOffset + pageSize).reduce((acc, curr) => {
+                acc[curr.id] = curr
+                return acc
+            }, {}) as Record<number, (typeof flattenNodeList)[number]>) ?? {},
+        )
+    }, [nodeListOffset, filteredFlattenNodeList, pageSize])
+
 
     const getUpdatedAppliedColumn = () => {
         let isMissingColumn = false // intialized this to check if sortingFieldName is missing
@@ -225,7 +260,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         getNodeList(clusterId)
             .then((response) => {
                 if (response.result) {
-                    const _flattenNodeList = response.result.map((data) => {
+                    const _flattenNodeList = response.result.map((data, index) => {
                         const _flattenNodeData = flattenObject(data)
                         if (data['errors']) {
                             _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
@@ -233,9 +268,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         if (data['taints']) {
                             _flattenNodeData['taintCount'] = Object.keys(data['taints']).length
                         }
+                        _flattenNodeData['id'] = index
                         return _flattenNodeData
                     })
-                    setFlattenNodeList(_flattenNodeList)
+                    setFlattenNodeList(_flattenNodeList as typeof flattenNodeList)
                 }
                 setClusterDetailsLoader(false)
             })
@@ -251,6 +287,12 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     useEffect(() => {
         getNodeListData()
     }, [clusterId])
+
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
 
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
@@ -318,10 +360,15 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const numericComparatorMethod = (a, b) => {
         let firstValue = a[sortByColumn.sortingFieldName] || 0
         let secondValue = b[sortByColumn.sortingFieldName] || 0
+
         if (typeof firstValue === 'string' && firstValue.endsWith('%')) {
             firstValue = firstValue.slice(0, -1)
+        }
+
+        if (typeof secondValue === 'string' && secondValue.endsWith('%')) {
             secondValue = secondValue.slice(0, -1)
         }
+
         return sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
     }
 
@@ -370,21 +417,86 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         setNodeListOffset(0)
     }
 
+    const getBulkOperationModalStateSetter = (state: BulkOperationModalState) => () => {
+        setBulkOperationModalState(state)
+    }
+
+    const getHandleCheckedForId = (nodeData: (typeof filteredFlattenNodeList)[number]) => () => {
+        const id = nodeData.id
+
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else if (bulkSelectionState[id]) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+        } else {
+            handleBulkSelection({
+                action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                data: {
+                    identifierObject: {
+                        ...bulkSelectionState,
+                        [id]: nodeData,
+                    },
+                },
+            })
+        }
+    }
+
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
-        <SortableTableHeaderCell
-            key={column.label}
-            id={column.label}
-            isResizable
-            handleResize={handleResize}
-            showTippyOnTruncate
-            disabled={false}
-            triggerSorting={handleSortClick(column)}
-            title={column.label}
-            isSorted={sortByColumn.value === column.value}
-            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-            isSortable={!!column.isSortingAllowed}
-        />
+        <div className="flexbox dc__gap-8 dc__align-items-center">
+            {RBBulkOperations && column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
+            <SortableTableHeaderCell
+                key={column.label}
+                id={column.label}
+                isResizable
+                handleResize={handleResize}
+                showTippyOnTruncate
+                disabled={false}
+                triggerSorting={handleSortClick(column)}
+                title={column.label}
+                isSorted={sortByColumn.value === column.value}
+                sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+                isSortable={!!column.isSortingAllowed}
+            />
+        </div>
     )
+
+    const getBulkOperations = () => {
+        if (bulkOperationModalState === 'closed') {
+            return []
+        }
+
+        const selections = (isBulkSelectionApplied ? filteredFlattenNodeList : Object.values(bulkSelectionState)) ?? []
+
+        return selections.map((selection) => ({
+            id: selection.id,
+            name: selection.name,
+            operation: async (signal: AbortSignal) => {
+                const payload = {
+                    clusterId: Number(clusterId),
+                    name: selection.name,
+                    version: selection.version,
+                    kind: selection.kind,
+                }
+
+                await deleteNodeCapacity(payload, signal)
+            }
+        }))
+    }
+
+    const handleReloadDataAfterBulkDelete = () => {
+        handleClearBulkSelection()
+        getNodeListData()
+    }
 
     const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
         return (
@@ -423,7 +535,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         if (column.value === 'k8sVersion') {
             return (
                 <Tooltip content={nodeData[column.value]}>
-                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                    <span className="dc__truncate">{nodeData[column.value]}</span>
                 </Tooltip>
             )
         }
@@ -434,10 +546,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         if (column.value === 'errorCount') {
             return (
                 nodeData['errorCount'] > 0 && (
-                    <>
-                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>
-                    </>
+                    <span className="flex left dc__gap-4">
+                        <Error className="icon-dim-16 dc__no-shrink" />
+                        <span className="cr-5 dc__truncate">{nodeData['errorCount'] || '-'}</span>
+                    </span>
                 )
             )
         }
@@ -460,24 +572,32 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const clusterNodeClickEvent = (nodeData, column) => {
         const url = `${match.url}/${nodeData[column.value]}`
         return () => {
-            addTab(K8S_EMPTY_GROUP, nodeType, nodeData[column.value], url)
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: nodeType, name: nodeData[column.value], url })
             history.push(url)
         }
     }
 
-    const renderNodeList = (nodeData: Object): JSX.Element => {
+    const renderNodeList = (nodeData: (typeof filteredFlattenNodeList)[number]): JSX.Element => {
         return (
             <div
-                key={nodeData['name']}
+                key={`${nodeData.id}-${bulkSelectionState[nodeData.id]}-${isBulkSelectionApplied}`}
                 ref={nodeListRef}
-                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
+                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 node-list-row dc__align-items-center dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
                 style={{ gridTemplateColumns }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
+                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent py-9">
+                            {RBBulkOperations && (
+                                <Checkbox
+                                     isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
+                                     onChange={getHandleCheckedForId(nodeData)}
+                                     rootClassName="mb-0"
+                                     value={CHECKBOX_VALUE.CHECKED}
+                                />
+                            )}
                             <Tooltip content={nodeData[column.value]}>
                                 <NavLink
                                     data-testid="cluster-node-link"
@@ -502,11 +622,11 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right list-title pt-12 pb-12 ${
+                            className={`py-12 ${
                                 column.value === 'status' ? `${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}` : ''
                             }`}
                         >
-                            {renderNodeRow(column, nodeData)}
+                            <span className="dc__truncate">{renderNodeRow(column, nodeData)}</span>
                         </div>
                     )
                 })}
@@ -530,7 +650,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
     const renderPagination = (): JSX.Element => {
         return (
-            filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
+            showPaginatedView && (
                 <Pagination
                     rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                     size={filteredFlattenNodeList.length}
@@ -566,58 +686,78 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         )
     }
 
-    if (clusterDetailsLoader) {
-        return (
-            <div className="dc__border-left">
-                <Progressing pageLoader size={32} />
-            </div>
-        )
-    }
-
     return (
-        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left">
+        <div ref={parentRef} data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left flexbox-col">
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
-            <div
-                className={`bcn-0 pt-16 h-100 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
-                    noResults ? 'no-result-container' : ''
-                }`}
-            >
-                <div className="pl-20 pr-20 dc__zi-4">
-                    <NodeListSearchFilter
-                        defaultVersion={defaultVersion}
-                        nodeK8sVersions={nodeK8sVersions}
-                        selectedVersion={selectedVersion}
-                        setSelectedVersion={setSelectedVersion}
-                        appliedColumns={appliedColumns}
-                        setAppliedColumns={setAppliedColumns}
-                        selectedSearchTextType={selectedSearchTextType}
-                        setSelectedSearchTextType={setSelectedSearchTextType}
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        searchedTextMap={searchedTextMap}
-                        setSearchedTextMap={setSearchedTextMap}
-                    />
+            {clusterDetailsLoader ? (
+                <div className="h-100">
+                    <Progressing pageLoader size={32} />
                 </div>
-                {noResults ? (
-                    <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
-                ) : (
-                    <>
-                        <div className="mt-16 dc__overflow-scroll h-100 w-100">
-                            <div
-                                data-testid="node-status"
-                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row dc__zi-2"
-                                style={{ gridTemplateColumns }}
-                            >
-                                {appliedColumns.map((column) => renderNodeListHeader(column))}
+            ) : (
+                <div
+                    className={`bcn-0 pt-16 flexbox-col h-100 ${showStaleDataWarning ? 'sync-error' : ''} ${
+                        noResults ? 'no-result-container' : ''
+                    }`}
+                >
+                    <div className="pl-20 pr-20 dc__zi-4">
+                        <NodeListSearchFilter
+                            defaultVersion={defaultVersion}
+                            nodeK8sVersions={nodeK8sVersions}
+                            selectedVersion={selectedVersion}
+                            setSelectedVersion={setSelectedVersion}
+                            appliedColumns={appliedColumns}
+                            setAppliedColumns={setAppliedColumns}
+                            selectedSearchTextType={selectedSearchTextType}
+                            setSelectedSearchTextType={setSelectedSearchTextType}
+                            searchText={searchText}
+                            setSearchText={setSearchText}
+                            searchedTextMap={searchedTextMap}
+                            setSearchedTextMap={setSearchedTextMap}
+                        />
+                    </div>
+                    {noResults ? (
+                        <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
+                    ) : (
+                        <>
+                            <div className="mt-16 dc__overflow-scroll h-100 w-100">
+                                <div
+                                    data-testid="node-status"
+                                    className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row no-hover-bg dc__zi-2"
+                                    style={{ gridTemplateColumns }}
+                                >
+                                    {appliedColumns.map((column) => renderNodeListHeader(column))}
+                                </div>
+                                {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {filteredFlattenNodeList
-                                .slice(nodeListOffset, nodeListOffset + pageSize)
-                                ?.map((nodeData) => renderNodeList(nodeData))}
-                        </div>
-                        {renderPagination()}
-                    </>
-                )}
-            </div>
+                            {renderPagination()}
+                        </>
+                    )}
+                </div>
+            )}
+            {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                <RBBulkSelectionActionWidget
+                    count={
+                        isBulkSelectionApplied ? filteredFlattenNodeList?.length ?? 0 : getSelectedIdentifiersCount()
+                    }
+                    handleClearBulkSelection={handleClearBulkSelection}
+                    handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
+                    parentRef={parentRef}
+                    showBulkRestartOption={false}
+                    handleOpenRestartWorkloadModal={noop}
+                />
+            )}
+            {RBBulkOperations && bulkOperationModalState !== 'closed' && (
+                <RBBulkOperations
+                    clusterName={clusterName}
+                    operationType={bulkOperationModalState}
+                    handleModalClose={getBulkOperationModalStateSetter('closed')}
+                    handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
+                    operations={getBulkOperations()}
+                    resourceKind={'node'}
+                />
+            )}
         </div>
     )
 }

@@ -15,9 +15,9 @@
  */
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import { createContext, useContext } from 'react'
 
-interface AppContext {
+export interface AppContextType {
     /**
      * environmentId is for history purpose, like have opened cdMaterials of env and want to retain it
      */
@@ -34,7 +34,7 @@ interface AppContext {
     currentEnvironmentName?: string
     setCurrentEnvironmentName?: (currentEnvironmentName: string) => void
 }
-export const AppContext = React.createContext<AppContext>({
+export const AppContext = createContext<AppContextType>({
     environmentId: null,
     setEnvironmentId: null,
     currentAppName: '',
@@ -44,9 +44,14 @@ export const AppContext = React.createContext<AppContext>({
 })
 
 export function useAppContext() {
-    const context = React.useContext(AppContext)
+    const context = useContext(AppContext)
     if (!context) {
         throw new Error(`App context cannout be used outside app scope`)
     }
     return context
+}
+
+export const withAppContext = (Component) => (props) => {
+    const appContext = useAppContext()
+    return <Component {...props} appContext={appContext} />
 }

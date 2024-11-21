@@ -61,6 +61,7 @@ export interface DescriptorProps {
     children?: React.ReactNode
     showUploadButton?: boolean
     readFile?: ReturnType<typeof useFileReader>['readFile']
+    searchKey?: string
     onSearch?: (query: string) => void
 }
 
@@ -99,18 +100,8 @@ export interface VariablesListItemProps {
     tooltip?: boolean
 }
 
-export interface SearchBarProps {
-    onSearch: (query: string) => void
-    placeholder?: string
-    inputClass?: string
-    containerClass?: string
-    children?: React.ReactNode
-    Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
-    iconClass?: string
-}
-
-export interface SavedVariablesContentProps {
-    handleSearch: (searchKey: string) => void
+export interface SavedVariablesContentProps extends Required<Pick<DescriptorProps, 'onSearch' | 'searchKey'>> {
+    handleClearFilters: () => void
     readFile: ReturnType<typeof useFileReader>['readFile']
     handleActivateEditView: () => void
     scopedVariablesYAML: ReturnType<typeof parseIntoYAMLString>

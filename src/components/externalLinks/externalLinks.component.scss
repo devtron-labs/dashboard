@@ -256,9 +256,26 @@
     }
 
     .external-link-chip {
-        max-width: 250px;
-        padding: 4px 6px;
-        margin: 4px 8px 4px 0;
+        grid-template-columns: auto 0;
+        transition: grid-template-columns 0.2s ease-out;
+        &:hover {
+            grid-template-columns: auto 24px;
+
+            .open-link-button {
+                opacity: 1;
+            }
+        }
+    }
+
+    .open-link-button {
+        transition: opacity 0.2s ease-out;
+        opacity: 0;
+
+        &:hover {
+            .arrow-out-icon > * {
+                stroke: var(--N900) !important;
+            }
+        }
     }
 }
 
