@@ -1405,13 +1405,20 @@ const DeploymentTemplate = ({
 
     const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
 
+    const hideToggleLockedKeysMenuOption =
+        editMode === ConfigurationType.GUI &&
+        currentViewEditorState?.isOverridden &&
+        currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
-            lockedConfigData: {
-                areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
-                hideLockedKeys,
-                handleSetHideLockedKeys,
-            },
+            lockedConfigData: !hideToggleLockedKeysMenuOption
+                ? {
+                      areLockedKeysPresent: lockedConfigKeysWithLockType.config.length > 0,
+                      hideLockedKeys,
+                      handleSetHideLockedKeys,
+                  }
+                : null,
             configHeaderTab,
             isOverridden: publishedTemplateData?.isOverridden,
             isPublishedValuesView,
@@ -1695,7 +1702,7 @@ const DeploymentTemplate = ({
                         showMergePatchesButton={getShouldShowMergePatchesButton()}
                         shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
-                        mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                        mergeStrategy={currentViewEditorState?.mergeStrategy}
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         handleEnableReadmeView={handleEnableReadmeView}
                         popupConfig={toolbarPopupConfig}
