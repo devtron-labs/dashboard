@@ -84,83 +84,89 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
 
     // All updates to docker args will be handled here, which will will be further merged into formData on introduction of reducer
     const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdateType) => {
-        const _form = { ...formData }
+        setFormData(prevFormData => {
+            const _form = structuredClone(prevFormData)
 
-        switch (action) {
-            case DockerArgsAction.ADD:
-                _form.args.unshift({ key: '', value: '' })
-                break
+            switch (action) {
+                case DockerArgsAction.ADD:
+                    _form.args.unshift({ key: '', value: '' })
+                    break
 
-            case DockerArgsAction.UPDATE_KEY:
-                _form.args[argData.index]['key'] = argData.value
-                break
+                case DockerArgsAction.UPDATE_KEY:
+                    _form.args[argData.index]['key'] = argData.value
+                    break
 
-            case DockerArgsAction.UPDATE_VALUE:
-                _form.args[argData.index]['value'] = argData.value
-                break
+                case DockerArgsAction.UPDATE_VALUE:
+                    _form.args[argData.index]['value'] = argData.value
+                    break
 
-            case DockerArgsAction.DELETE:
-                _form.args = _form.args.filter((_, index) => index !== argData.index)
-                break
-        }
+                case DockerArgsAction.DELETE:
+                    _form.args = _form.args.filter((_, index) => index !== argData.index)
+                    break
+            }
 
-        setFormData(_form)
+            return _form
+        })
     }
 
     const updateDockerConfigOverride = (
         key: string,
         value: CIBuildConfigType | OptionType[] | boolean | string,
     ): void => {
-        const _form = structuredClone(formData)
+        setFormData((prevFormData) => {
+            const _form = structuredClone(prevFormData)
 
-        // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
-        if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
-            if (parentState.selectedCIPipeline?.isDockerConfigOverridden) {
-                _form.dockerConfigOverride = { ...parentState.selectedCIPipeline.dockerConfigOverride }
-            } else if (parentState?.ciConfig) {
-                _form.dockerConfigOverride = {
-                    dockerRegistry: parentState.ciConfig.dockerRegistry,
-                    dockerRepository: parentState.ciConfig.dockerRepository,
-                    ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+            // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
+            if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
+                if (parentState.selectedCIPipeline?.isDockerConfigOverridden) {
+                    _form.dockerConfigOverride = { ...parentState.selectedCIPipeline.dockerConfigOverride }
+                } else if (parentState?.ciConfig) {
+                    _form.dockerConfigOverride = {
+                        dockerRegistry: parentState.ciConfig.dockerRegistry,
+                        dockerRepository: parentState.ciConfig.dockerRepository,
+                        ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+                    }
                 }
             }
-        }
 
-        // Update the specific config value present at different level from dockerConfigOverride
-        if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
-            const _value = value as boolean
-            _form.isDockerConfigOverridden = _value
-            setAllowOverride(_value)
-        } else if (
-            key === DockerConfigOverrideKeys.dockerRegistry ||
-            key === DockerConfigOverrideKeys.dockerRepository
-        ) {
-            _form.dockerConfigOverride[key] = value as string
-        } else if (key === DockerConfigOverrideKeys.targetPlatform) {
-            _form.dockerConfigOverride.ciBuildConfig = {
-                ..._form.dockerConfigOverride.ciBuildConfig,
-                dockerBuildConfig: {
-                    ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
-                    targetPlatform: (value as OptionType[]).map((_selectedTarget) => _selectedTarget.label).join(','),
-                },
+            // Update the specific config value present at different level from dockerConfigOverride
+            if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
+                const _value = value as boolean
+                _form.isDockerConfigOverridden = _value
+                setAllowOverride(_value)
+            } else if (
+                key === DockerConfigOverrideKeys.dockerRegistry ||
+                key === DockerConfigOverrideKeys.dockerRepository
+            ) {
+                _form.dockerConfigOverride[key] = value as string
+            } else if (key === DockerConfigOverrideKeys.targetPlatform) {
+                _form.dockerConfigOverride.ciBuildConfig = {
+                    ..._form.dockerConfigOverride.ciBuildConfig,
+                    dockerBuildConfig: {
+                        ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
+                        targetPlatform: (value as OptionType[])
+                            .map((_selectedTarget) => _selectedTarget.label)
+                            .join(','),
+                    },
+                }
+            } else if (key === DockerConfigOverrideKeys.dockerfileRelativePath) {
+                _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.dockerfileRelativePath = value as string
+            } else if (key === DockerConfigOverrideKeys.buildContext) {
+                _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.buildContext = value as string
+            } else if (key === DockerConfigOverrideKeys.projectPath) {
+                _form.dockerConfigOverride.ciBuildConfig.buildPackConfig.projectPath = value as string
+            } else {
+                _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
             }
-        } else if (key === DockerConfigOverrideKeys.dockerfileRelativePath) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.dockerfileRelativePath = value as string
-        } else if (key === DockerConfigOverrideKeys.buildContext) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.buildContext = value as string
-        } else if (key === DockerConfigOverrideKeys.projectPath) {
-            _form.dockerConfigOverride.ciBuildConfig.buildPackConfig.projectPath = value as string
-        } else {
-            _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
-        }
 
-        // No need to pass the id in the request
-        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
-            delete _form.dockerConfigOverride.ciBuildConfig.id
-        }
+            // No need to pass the id in the request
+            if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
+                delete _form.dockerConfigOverride.ciBuildConfig.id
+            }
 
-        // set updated form data
-        setFormData(_form)
+            return _form
+        })
+
     }
 
     const toggleAdvancedOptions = (): void => {
