@@ -142,8 +142,9 @@ const BulkCITrigger = ({
 
     const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
         if (selectedApp?.appId) {
-            const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
-            const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+            const selectedMaterial = appList
+                .find((app) => app.appId === selectedApp.appId)
+                ?.material?.find((mat) => mat.isSelected)
             if (selectedMaterial?.id) {
                 return {
                     [selectedMaterial.gitMaterialId]: {
@@ -320,17 +321,17 @@ const BulkCITrigger = ({
                         {isWebhookBulkCI ? `${selectedApp.ciPipelineName} / All received webhooks` : 'Build image'}
                     </h2>
                 </div>
-                    <Button
-                        ariaLabel="bulk-ci-close-button"
-                        dataTestId="Bulk close modal"
-                        onClick={closeBulkCIModal}
-                        variant={ButtonVariantType.borderLess}
-                        size={ComponentSizeType.small}
-                        icon={<Close />}
-                        showAriaLabelInTippy={false}
-                        style={ButtonStyleType.negativeGrey}
-                        disabled={isLoading}
-                    />
+                <Button
+                    ariaLabel="bulk-ci-close-button"
+                    dataTestId="Bulk close modal"
+                    onClick={closeBulkCIModal}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.small}
+                    icon={<Close />}
+                    showAriaLabelInTippy={false}
+                    style={ButtonStyleType.negativeGrey}
+                    disabled={isLoading}
+                />
             </div>
         )
     }
@@ -443,8 +444,6 @@ const BulkCITrigger = ({
     }
 
     const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
-        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
-
         if (showRegexModal) {
             const selectedCIPipeline = selectedApp.filteredCIPipelines?.find(
                 (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
@@ -493,6 +492,8 @@ const BulkCITrigger = ({
                 />
             )
         }
+        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+
         return (
             <GitInfoMaterial
                 material={selectedMaterialList}
