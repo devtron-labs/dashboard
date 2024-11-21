@@ -55,8 +55,8 @@ const BranchRegexModal = ({
     }
 
     const renderBranchRegexMaterialHeader = () => (
-        <div className="flex dc__content-space py-16 px-20 dc__border-bottom">
-            <div className="modal__title flex left dc__gap-12 fs-16 fw-6">
+        <div className="flex dc__content-space py-12 px-20 dc__border-bottom">
+            <div className="modal__title flex left fs-16 fw-6">
                 {isChangeBranchClicked && (
                     <Button
                         dataTestId="regex-modal-header-back-button"
@@ -105,41 +105,42 @@ const BranchRegexModal = ({
     }
 
     const renderBranchRegexContent = () => (
-        <div className="ci-trigger__branch-regex-wrapper px-20 py-16 fs-13 dc__overflow-scroll mxh-500 mh-200">
-            {material?.map((mat, index) => {
-                const _regexValue = regexValue[mat.gitMaterialId] || {}
-                return (
-                    mat.regex && (
-                        <div className="dc__border-bottom flex left column dc__gap-6 pb-20" key={`regex_${mat.id}`}>
-                            <div className="flex left dc__gap-14">
-                                {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
-                                <div>
-                                    <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
-                                    <div className="dc__required-field">
-                                        <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
-                                        <span className="fw-6 cn-9">
-                                            {getBranchRegexName(mat.gitMaterialId) || mat.regex}
-                                        </span>
+        <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-scroll mxh-500 mh-200">
+            <div className="bcn-2 flexbox-col dc__gap-1">
+                {material.map((mat, index) => {
+                    const _regexValue = regexValue[mat.gitMaterialId] || {}
+                    return (
+                        mat.regex && (
+                            <div className="flex left column dc__gap-6 pt-16 pb-16 bcn-0" key={`regex_${mat.id}`}>
+                                <div className="flex left dc__gap-14">
+                                    {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
+                                    <div>
+                                        <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
+                                        <div className="dc__required-field">
+                                            <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
+                                            <span className="fw-6 cn-9">
+                                                {getBranchRegexName(mat.gitMaterialId) || mat.regex}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="pl-36 w-100">
+                                    <CustomInput
+                                        name="name"
+                                        data-testid={`branch-name-matching-regex-textbox${index}`}
+                                        tabIndex={index}
+                                        placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
+                                        value={_regexValue.value}
+                                        onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                        autoFocus
+                                        error={getErrorMessage(_regexValue)}
+                                    />
+                                </div>
                             </div>
-                            <div className="ml-36-imp w-100">
-                                <CustomInput
-                                    name="name"
-                                    data-testid={`branch-name-matching-regex-textbox${index}`}
-                                    tabIndex={index}
-                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                    rootClassName="w-95-imp"
-                                    value={_regexValue.value}
-                                    onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                    autoFocus
-                                    error={getErrorMessage(_regexValue)}
-                                />
-                            </div>
-                        </div>
+                        )
                     )
-                )
-            })}
+                })}
+            </div>
         </div>
     )
     const renderMaterialRegexFooterNextButton = () => {
@@ -149,18 +150,18 @@ const BranchRegexModal = ({
         })
 
         return (
-            <div className="trigger-modal__trigger flex right dc__gap-16 dc__position-rel-imp dc__bottom-radius-4">
+            <div className="trigger-modal__trigger flex right dc__gap-12 dc__position-rel-imp dc__bottom-radius-4">
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Cancel"
-                    dataTestId="branch-regex-save-next-button"
+                    dataTestId="branch-regex-save-close-button"
                     onClick={onCloseBranchRegexModal}
                     size={ComponentSizeType.medium}
                     style={ButtonStyleType.neutral}
                 />
                 <Button
                     variant={ButtonVariantType.primary}
-                    text={`Fetch commits ${!isChangeBranchClicked ? '& Next' : ''}`}
+                    text="Fetch commits"
                     dataTestId="branch-regex-save-next-button"
                     onClick={onClickNextButton}
                     disabled={isDisabled || savingRegexValue}
