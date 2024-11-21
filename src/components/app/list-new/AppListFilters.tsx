@@ -11,6 +11,7 @@ import {
 import ReactGA from 'react-ga4'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
+import { useMemo } from 'react'
 import { APP_STATUS_FILTER_OPTIONS, SELECT_CLUSTER_TIPPY, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
 import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
 import { getDevtronAppListDataToExport } from './AppListService'
@@ -59,7 +60,10 @@ const AppListFilters = ({
     const getIsAppStatusDisabled = (option: SelectPickerOptionType): boolean =>
         appType === AppListConstants.AppType.HELM_APPS && option.label === AppStatuses.NOT_DEPLOYED
 
-    const selectedAppStatus = appStatus.map((status) => ({ label: status, value: status })) || []
+    const selectedAppStatus = useMemo(
+        () => appStatus.map((status) => ({ label: status, value: status })) || [],
+        [appStatus],
+    )
 
     const selectedProjects =
         project.map((team) => ({

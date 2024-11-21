@@ -16,40 +16,63 @@
 
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { useRef } from 'react'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
-import { ChartUsedCardType } from '../environment.type'
+import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
+import { getUsedChartContent } from '../utils'
 
-const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
+const ChartToolTip = ({ children, isDeprecated, onClickUpgrade, chartRef }: ChartToolTipType) => (
+    <Tippy
+        className="default-tt w-200"
+        arrow={false}
+        placement="top"
+        interactive
+        content={getUsedChartContent(isDeprecated, onClickUpgrade)}
+        appendTo={() => chartRef.current} // To fix the issue of tippy not showing the content outside the container
+    >
+        {children}
+    </Tippy>
+)
+
+const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onClickUpgrade }: ChartUsedCardType) => {
+    const chartRef = useRef(null)
+
     if (cardLoading) {
         return <LoadingCard />
     }
 
     return (
-        <div data-testid="chart-used-card" className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200">
+        <div
+            data-testid="chart-used-card"
+            className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            ref={chartRef}
+        >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5" data-testid="chart-used-heading">
-                            Chart used
+                        <div
+                            className={`fs-12 fw-4 ${appDetails.deprecated ? 'cr-5' : 'cn-9'} mr-5`}
+                            data-testid="chart-used-heading"
+                        >
+                            Chart {appDetails.deprecated ? 'deprecated' : 'used'}
                         </div>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content="Chart used to deploy to this application"
+                        <ChartToolTip
+                            isDeprecated={appDetails.deprecated}
+                            onClickUpgrade={onClickUpgrade}
+                            chartRef={chartRef}
                         >
                             <div className="flex">
                                 <QuestionIcon className="icon-dim-16 mt-2" />
                             </div>
-                        </Tippy>
+                        </ChartToolTip>
                     </div>
                     <div className="fs-13 fw-6 dc__ellipsis-right" data-testid="full-chart-name-with-version">
                         <Link
-                            className="cb-5 fw-6"
+                            className={`fw-6 ${appDetails.appStoreChartId ? 'cb-5' : 'cn-9'}`}
                             to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
                             style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
                         >
