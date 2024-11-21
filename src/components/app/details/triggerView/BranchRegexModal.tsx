@@ -164,7 +164,7 @@ const BranchRegexModal = ({
                 />
                 <Button
                     variant={ButtonVariantType.primary}
-                    text={`Fetch commits ${!isBulkCiModal ? '& Next' : ''}`}
+                    text="Fetch commits"
                     dataTestId="branch-regex-save-next-button"
                     onClick={onClickNextButton}
                     disabled={isDisabled || savingRegexValue}
