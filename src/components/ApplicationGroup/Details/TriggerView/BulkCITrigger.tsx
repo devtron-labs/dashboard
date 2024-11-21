@@ -43,7 +43,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-triangle.svg'
