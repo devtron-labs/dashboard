@@ -215,9 +215,11 @@ const NodeListSearchFilter = ({
 
         return (
             <div className="dc__position-rel bc-n50">
-                <div
-                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start"
+                <button
+                    type="button"
+                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start dc__transparent"
                     onClick={handleOpenSearchKeySelectorMenu}
+                    aria-label="Open search key selector popup"
                 >
                     <ICSearch className="mr-5 ml-10 icon-dim-18" />
 
@@ -246,24 +248,31 @@ const NodeListSearchFilter = ({
                     {!searchTextType && (
                         <ShortcutKeyBadge shortcutKey="r" rootClassName="node-listing-search-container__shortcut-key" />
                     )}
-                </div>
+                </button>
 
                 {isSearchKeySelectorOpen && (
                     <>
-                        <div className="dc__transparent-div" onClick={handleToggleIsSearchKeySelectorOpen} />
+                        <button
+                            type="button"
+                            className="dc__transparent-div"
+                            onClick={handleToggleIsSearchKeySelectorOpen}
+                            aria-label="Close search popup"
+                        />
 
                         {!searchTextType && (
                             <div className="dc__zi-6 w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="dc__window-bg pt-4 pb-4 pl-10 pr-10">Search by</div>
 
                                 {NODE_SEARCH_KEY_OPTIONS.map((option) => (
-                                    <div
-                                        className="pt-8 pb-8 pl-10 pr-10 hover-class pointer"
+                                    <button
+                                        type="button"
+                                        className="pt-8 pb-8 pl-10 pr-10 dc__hover-n50 pointer dc__transparent w-100 dc__align-left"
                                         key={option.label}
                                         onClick={getSelectSearchKeyTypeHandler(option.value)}
+                                        aria-label={`Set search key type to ${option.label}`}
                                     >
                                         {option.label}
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         )}

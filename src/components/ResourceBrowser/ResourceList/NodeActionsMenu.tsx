@@ -48,10 +48,10 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
     const { url } = useRouteMatch()
     const location = useLocation()
 
-    const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
-    const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
-    const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
-    const [showEditTaintNodeDialog, setEditTaintNodeDialog] = useState(false)
+    const [showCordonNodeDialog, setShowCordonNodeDialog] = useState(false)
+    const [showDrainNodeDialog, setShowDrainNodeDialog] = useState(false)
+    const [showDeleteNodeDialog, setShowDeleteNodeDialog] = useState(false)
+    const [showEditTaintNodeDialog, setShowEditTaintNodeDialog] = useState(false)
 
     const { name, version, kind } = nodeData as Record<string, string>
 
@@ -89,12 +89,12 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
 
     const showCordonNodeModal = (): void => {
         if (isAuthorized()) {
-            setCordonNodeDialog(true)
+            setShowCordonNodeDialog(true)
         }
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
-        setCordonNodeDialog(false)
+        setShowCordonNodeDialog(false)
         if (refreshData) {
             getNodeListData()
         }
@@ -102,12 +102,12 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
 
     const showDrainNodeModal = (): void => {
         if (isAuthorized()) {
-            setDrainNodeDialog(true)
+            setShowDrainNodeDialog(true)
         }
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
-        setDrainNodeDialog(false)
+        setShowDrainNodeDialog(false)
         if (refreshData) {
             getNodeListData()
         }
@@ -115,12 +115,12 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
 
     const showDeleteNodeModal = (): void => {
         if (isAuthorized()) {
-            setDeleteNodeDialog(true)
+            setShowDeleteNodeDialog(true)
         }
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
-        setDeleteNodeDialog(false)
+        setShowDeleteNodeDialog(false)
         if (refreshData) {
             getNodeListData()
         }
@@ -128,12 +128,12 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
 
     const showEditTaintsModal = (): void => {
         if (isAuthorized()) {
-            setEditTaintNodeDialog(true)
+            setShowEditTaintNodeDialog(true)
         }
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
-        setEditTaintNodeDialog(false)
+        setShowEditTaintNodeDialog(false)
         if (refreshData) {
             getNodeListData()
         }
@@ -176,6 +176,8 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
         return null
     }
 
+    const menuListItemButtonClassName = 'flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__transparent w-100'
+
     return (
         <>
             <PopupMenu autoClose>
@@ -184,14 +186,21 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
-                        <span
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
+                        <button
+                            type="button"
+                            aria-label="Open the node in terminal"
+                            className={menuListItemButtonClassName}
                             onClick={handleOpenTerminalAction}
                         >
                             <TerminalIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.terminal}
-                        </span>
-                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showCordonNodeModal}>
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Cordon the node"
+                            className={menuListItemButtonClassName}
+                            onClick={showCordonNodeModal}
+                        >
                             {nodeData.unschedulable ? (
                                 <>
                                     <UncordonIcon className="icon-dim-16 mr-8 scn-7 dc__stroke-width-4" />
@@ -203,29 +212,43 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                                     {CLUSTER_NODE_ACTIONS_LABELS.cordon}
                                 </>
                             )}
-                        </span>
-                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showDrainNodeModal}>
+                        </button>
+                        <button
+                            type="button"
+                            className={menuListItemButtonClassName}
+                            onClick={showDrainNodeModal}
+                            aria-label="Drain the node"
+                        >
                             <DrainIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                        </span>
-                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showEditTaintsModal}>
+                        </button>
+                        <button
+                            type="button"
+                            className={menuListItemButtonClassName}
+                            aria-label="Edit taints for the node"
+                            onClick={showEditTaintsModal}
+                        >
                             <EditTaintsIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                        </span>
-                        <span
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Edit the node's yaml"
+                            className={menuListItemButtonClassName}
                             onClick={handleEditYamlAction}
                         >
                             <EditFileIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.yaml}
-                        </span>
-                        <span
-                            className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Delete the node"
+                            className={menuListItemButtonClassName}
                             onClick={showDeleteNodeModal}
                         >
                             <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
                             {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                        </span>
+                        </button>
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
