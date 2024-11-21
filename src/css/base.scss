@@ -2463,6 +2463,10 @@ button.anchor {
     background-color: var(--N100);
 }
 
+.dc__bs-contain {
+    background-size: contain;
+}
+
 .dc__registry-icon,
 .repository-icon {
     width: 20px;
