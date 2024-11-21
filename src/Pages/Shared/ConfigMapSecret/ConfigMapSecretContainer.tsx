@@ -846,7 +846,11 @@ export const ConfigMapSecretContainer = ({
                 {!hideConfigToolbar && (
                     <ConfigToolbar
                         configHeaderTab={configHeaderTab}
-                        mergeStrategy={mergeStrategy}
+                        mergeStrategy={
+                            selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED
+                                ? configMapSecretData?.mergeStrategy
+                                : mergeStrategy
+                        }
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
