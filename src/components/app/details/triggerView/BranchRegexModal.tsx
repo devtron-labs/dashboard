@@ -43,7 +43,6 @@ const BranchRegexModal = ({
     regexValue,
     onCloseBranchRegexModal,
     savingRegexValue,
-    isBulkCiModal = false,
 }: BranchRegexModalProps) => {
     const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
@@ -107,43 +106,45 @@ const BranchRegexModal = ({
 
     const renderBranchRegexContent = () => (
         <div className="ci-trigger__branch-regex-wrapper px-20 py-16 fs-13 dc__overflow-scroll mxh-500 mh-200">
-            {material?.map((mat, index) => {
-                const _regexValue = regexValue[mat.gitMaterialId] || {}
-                return (
-                    mat.regex && (
-                        <div
-                            className={`flex left column dc__gap-6 pb-20 ${index === material.length - 1 || isBulkCiModal ? '' : 'dc__border-bottom'} ${index !== 0 ? 'pt-20' : ''}`}
-                            key={`regex_${mat.id}`}
-                        >
-                            <div className="flex left dc__gap-14">
-                                {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
-                                <div>
-                                    <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
-                                    <div className="dc__required-field">
-                                        <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
-                                        <span className="fw-6 cn-9">
-                                            {getBranchRegexName(mat.gitMaterialId) || mat.regex}
-                                        </span>
+            <div className="bcn-2 flexbox-col dc__gap-1">
+                {material
+                    ?.filter(({ regex }) => !!regex)
+                    .map((mat, index) => {
+                        const _regexValue = regexValue[mat.gitMaterialId] || {}
+                        return (
+                            <div
+                                className={`flex left column dc__gap-6 pb-20 bcn-0 ${index !== 0 ? 'pt-20' : ''}`}
+                                key={`regex_${mat.id}`}
+                            >
+                                <div className="flex left dc__gap-14">
+                                    {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
+                                    <div>
+                                        <div className="fw-6 lh-20">{mat.gitMaterialName}</div>
+                                        <div className="dc__required-field">
+                                            <span className="cn-7">{BRANCH_REGEX_MODAL_MESSAGING.SubTitle}</span>&nbsp;
+                                            <span className="fw-6 cn-9">
+                                                {getBranchRegexName(mat.gitMaterialId) || mat.regex}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="ml-36-imp w-100">
+                                    <CustomInput
+                                        name="name"
+                                        data-testid={`branch-name-matching-regex-textbox${index}`}
+                                        tabIndex={index}
+                                        placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
+                                        rootClassName="w-95-imp"
+                                        value={_regexValue.value}
+                                        onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                        autoFocus
+                                        error={getErrorMessage(_regexValue)}
+                                    />
+                                </div>
                             </div>
-                            <div className="ml-36-imp w-100">
-                                <CustomInput
-                                    name="name"
-                                    data-testid={`branch-name-matching-regex-textbox${index}`}
-                                    tabIndex={index}
-                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                    rootClassName="w-95-imp"
-                                    value={_regexValue.value}
-                                    onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                    autoFocus
-                                    error={getErrorMessage(_regexValue)}
-                                />
-                            </div>
-                        </div>
-                    )
-                )
-            })}
+                        )
+                    })}
+            </div>
         </div>
     )
     const renderMaterialRegexFooterNextButton = () => {
@@ -153,7 +154,7 @@ const BranchRegexModal = ({
         })
 
         return (
-            <div className="trigger-modal__trigger flex right dc__gap-16 dc__position-rel-imp dc__bottom-radius-4">
+            <div className="trigger-modal__trigger flex right dc__gap-12 dc__position-rel-imp dc__bottom-radius-4">
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Cancel"

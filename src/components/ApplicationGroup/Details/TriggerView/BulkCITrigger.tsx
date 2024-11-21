@@ -459,7 +459,6 @@ const BulkCITrigger = ({
                     regexValue={regexValue}
                     onCloseBranchRegexModal={hideBranchEditModal}
                     savingRegexValue={isLoading}
-                    isBulkCiModal
                 />
             )
         }
