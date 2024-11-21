@@ -116,7 +116,7 @@ const GUIView = ({
                 )
             }
 
-            if (modelRef.current && !modelRef.current?.totalCheckedCount) {
+            if (modelRef.current && !modelRef.current.totalCheckedCount) {
                 throw new GUIViewError(
                     'All fields are unselected',
                     'Select fields from the side pane that you wish to be displayed here',
