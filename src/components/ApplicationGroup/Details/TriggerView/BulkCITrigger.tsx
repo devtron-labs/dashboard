@@ -142,16 +142,19 @@ const BulkCITrigger = ({
 
     const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
         if (selectedApp?.appId) {
-            const selectedMaterial = appList
-                .find((app) => app.appId === selectedApp.appId)
-                ?.material?.find((mat) => mat.isSelected)
-            if (selectedMaterial?.id) {
-                return {
-                    [selectedMaterial.gitMaterialId]: {
-                        value: selectedMaterial.value,
-                        isInvalid: false,
+            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId)?.material
+
+            if (selectedMaterial) {
+                return selectedMaterial.reduce(
+                    (acc, mat) => {
+                        acc[mat.gitMaterialId] = {
+                            value: mat.value,
+                            isInvalid: mat.regex ? !new RegExp(mat.regex).test(mat.value) : false,
+                        }
+                        return acc
                     },
-                }
+                    {} as Record<number, RegexValueType>,
+                )
             }
         }
         return {}
