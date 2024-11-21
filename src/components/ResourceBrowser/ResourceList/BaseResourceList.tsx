@@ -33,12 +33,14 @@ import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
 import { deleteNodeCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
-import { ReactComponent as ICError } from '@Icons/ic-error.svg'
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     ALL_NAMESPACE_OPTION,
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
+    MANDATORY_NODE_LIST_HEADERS,
+    NODE_LIST_HEADERS,
     NODE_LIST_HEADERS_TO_KEY_MAP,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
@@ -129,7 +131,13 @@ const BaseResourceListContent = ({
 
         const visibleColumnsSet = new Set(visibleColumns)
 
-        return resourceList?.headers.filter((header) => visibleColumnsSet.has(header)) ?? []
+        return (
+            resourceList?.headers.filter(
+                (header) =>
+                    MANDATORY_NODE_LIST_HEADERS.includes(header as (typeof NODE_LIST_HEADERS)[number]) ||
+                    visibleColumnsSet.has(header),
+            ) ?? []
+        )
     }, [resourceList, visibleColumns, isNodeListing])
 
     const { gridTemplateColumns, handleResize } = useResizableTableConfig({
@@ -385,7 +393,7 @@ const BaseResourceListContent = ({
             statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
         }
 
-        return `f-${statusPostfix}`
+        return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
     }
 
     const handleResourceClick = (e) => onResourceClick(e, shouldOverrideSelectedResourceKind)
@@ -503,7 +511,7 @@ const BaseResourceListContent = ({
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
                                 {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
-                                    <ICError className="icon-dim-16 dc__no-shrink mr-4" />
+                                    <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
                                 )}
                                 <Tooltip
                                     content={renderResourceValue(
