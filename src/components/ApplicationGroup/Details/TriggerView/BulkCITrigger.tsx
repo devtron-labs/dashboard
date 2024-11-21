@@ -141,8 +141,8 @@ const BulkCITrigger = ({
     }, [])
 
     const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
-        if (selectedApp?.appId) {
-            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId)?.material
+        if (selectedApp.appId) {
+            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId).material
 
             if (selectedMaterial) {
                 return selectedMaterial.reduce(
