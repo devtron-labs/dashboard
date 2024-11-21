@@ -99,6 +99,7 @@ export const URLS = {
     GLOBAL_CONFIG_PLUGIN_POLICY: '/global-config/plugin-policy',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION: '/global-config/lock-deployment-configuration',
+    GLOBAL_CONFIG_APPROVAL_POLICY: '/global-config/approval-policy',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GLOBAL_CONFIG_DEPLOYMENT_WINDOW: '/global-config/deployment-window',
     GLOBAL_CONFIG_IMAGE_PROMOTION: '/global-config/image-promotion',
