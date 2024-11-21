@@ -26,7 +26,6 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SelectInstance } from 'react-select'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail, ResourceDetail, ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
@@ -314,14 +313,6 @@ export enum NODE_SEARCH_KEYS {
 }
 
 export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
-
-export interface ColumnFilterContextType extends Pick<ColumnSelectorType, 'setVisibleColumns'> {
-    selectedColumns: OptionType[]
-    setSelectedColumns: React.Dispatch<React.SetStateAction<OptionType[]>>
-    isMenuOpen: boolean
-    setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-    selectRef: RefObject<SelectInstance>
-}
 
 export interface NodeActionsMenuProps {
     addTab: ReturnType<typeof useTabs>['addTab']
