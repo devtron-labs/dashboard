@@ -819,6 +819,7 @@ button.anchor {
     &.f-completed,
     &.f-bound,
     &.f-active,
+    &.f-ready,
     &.f-created,
     &.f-scalingreplicasetdown {
         color: var(--G500);
@@ -846,6 +847,7 @@ button.anchor {
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
     &.f-deleted,
+    &.f-not__ready,
     &.f-evicted {
         color: var(--R500);
     }

@@ -33,6 +33,7 @@ import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
 import { deleteNodeCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
+import { ReactComponent as ICError } from '@Icons/ic-error.svg'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     ALL_NAMESPACE_OPTION,
@@ -377,8 +378,11 @@ const BaseResourceListContent = ({
     const getStatusClass = (status: string) => {
         let statusPostfix = status?.toLowerCase()
 
-        if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/'))) {
-            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__')
+        if (
+            statusPostfix &&
+            (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))
+        ) {
+            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
         }
 
         return `f-${statusPostfix}`
@@ -400,6 +404,8 @@ const BaseResourceListContent = ({
         const gvkFromRawData = lowercaseKindToResourceGroupMap[lowercaseKind]?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
+        const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
+        const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
 
         return (
             <div
@@ -490,15 +496,28 @@ const BaseResourceListContent = ({
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
-                            }`}
+                            } ${columnName === 'errors' ? 'app-summary__status-name f-error' : ''}`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <Tooltip content={resourceData[columnName]}>
+                                {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
+                                    <ICError className="icon-dim-16 dc__no-shrink mr-4" />
+                                )}
+                                <Tooltip
+                                    content={renderResourceValue(
+                                        resourceData[
+                                            isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                                        ]?.toString(),
+                                    )}
+                                >
                                     <span
-                                        className="dc__truncate"
+                                        className={
+                                            columnName === 'status' && isNodeUnschedulable
+                                                ? 'dc__no-shrink'
+                                                : 'dc__truncate'
+                                        }
                                         data-testid={`${columnName}-count`}
                                         // eslint-disable-next-line react/no-danger
                                         dangerouslySetInnerHTML={{
@@ -518,6 +537,14 @@ const BaseResourceListContent = ({
                                         }}
                                     />
                                 </Tooltip>
+                                {columnName === 'status' && isNodeUnschedulable && (
+                                    <>
+                                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
+                                        <Tooltip content="Scheduling disabled">
+                                            <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                                        </Tooltip>
+                                    </>
+                                )}
                                 <span>
                                     {columnName === 'restarts' &&
                                         Number(resourceData.restarts) !== 0 &&
