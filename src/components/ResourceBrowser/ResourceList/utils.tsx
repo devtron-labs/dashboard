@@ -1,9 +1,9 @@
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    NODE_LIST_HEADERS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     LOCAL_STORAGE_EXISTS,
     LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
+    OPTIONAL_NODE_LIST_HEADERS,
 } from '../Constants'
 import { ResourceListUrlFiltersType } from './types'
 
@@ -13,7 +13,8 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
 
 export const getAppliedColumnsFromLocalStorage = () => {
     if (!LOCAL_STORAGE_EXISTS) {
-        return [...NODE_LIST_HEADERS]
+        // NOTE: show all headers by default
+        return [...OPTIONAL_NODE_LIST_HEADERS]
     }
 
     try {
@@ -25,7 +26,8 @@ export const getAppliedColumnsFromLocalStorage = () => {
 
         return appliedColumns
     } catch {
-        return [...NODE_LIST_HEADERS]
+        // NOTE: show all headers by default
+        return [...OPTIONAL_NODE_LIST_HEADERS]
     }
 }
 
