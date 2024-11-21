@@ -1543,6 +1543,7 @@ const DeploymentTemplate = ({
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
+                mergeStrategy={currentEditorTemplateData?.mergeStrategy}
             />
         )
     }

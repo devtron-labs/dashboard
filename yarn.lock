@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.0.3-beta-7":
-  version "1.0.3-beta-7"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.0.3-beta-7.tgz#9ea887dd5837217e56565135e4e3df188ee0ab39"
-  integrity sha512-IO96XWluohQOtIh9bhxIvr/ksQc+B6odGxBZhJG4UPIohw69WB8wyxZtGQIsF4qcZ+BWaO5xaPYGs7cC0cnkxQ==
+"@devtron-labs/devtron-fe-common-lib@1.0.3-beta-8":
+  version "1.0.3-beta-8"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.0.3-beta-8.tgz#87b2af5336675975c3910d8213c734bf6a78b245"
+  integrity sha512-bG9LrrLm4WwpPujHuWQrH71d4O4RsQB3PCY23TTTRtPAFwm/xxh5G0QF1H+aG26QLcEMjMTE2Uy6NoAYkM6jfQ==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -2570,7 +2570,7 @@
 
 "@types/react-dates@^21.8.6":
   version "21.8.6"
-  resolved "https://registry.yarnpkg.com/@types/react-dates/-/react-dates-21.8.6.tgz#ec9314b59e9d8e1ad71ccf021a7634e8afd26135"
+  resolved "https://registry.npmjs.org/@types/react-dates/-/react-dates-21.8.6.tgz"
   integrity sha512-fDF322SOXAxstapv0/oruiPx9kY4DiiaEHYAVvXdPfQhi/hdaONsA9dFw5JBNPAWz7Niuwk+UUhxPU98h70TjA==
   dependencies:
     "@types/react" "*"
@@ -2586,7 +2586,7 @@
 
 "@types/react-outside-click-handler@*":
   version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@types/react-outside-click-handler/-/react-outside-click-handler-1.3.4.tgz#999e61057a3a23c6dfc9159b28f96378749d6c42"
+  resolved "https://registry.npmjs.org/@types/react-outside-click-handler/-/react-outside-click-handler-1.3.4.tgz"
   integrity sha512-kLuYIa9nWk1n0ywJPbVWqOEIRg0mh3vumriCHbz6LUObJw4rXYx9inDm8G579BtnH8vC0wKfrTq5c2y/K/Xzww==
   dependencies:
     "@types/react" "*"
@@ -3030,7 +3030,7 @@ ansi-styles@^6.0.0:
 
 ansi_up@^5.2.1:
   version "5.2.1"
-  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-5.2.1.tgz#9437082c7ad4975c15ec57d30a6b55da295bee36"
+  resolved "https://registry.npmjs.org/ansi_up/-/ansi_up-5.2.1.tgz"
   integrity sha512-5bz5T/7FRmlxA37zDXhG6cAwlcZtfnmNLDJra66EEIT3kYlw5aPJdbkJEhm59D6kA4Wi5ict6u6IDYHJaQlH+g==
 
 anymatch@~3.1.2:
@@ -3747,7 +3747,7 @@ data-view-byte-offset@^1.0.0:
 
 dayjs@^1.11.13:
   version "1.11.13"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.13.tgz"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 dayjs@^1.11.8:
@@ -6418,7 +6418,7 @@ react-moment-proptypes@^1.6.0:
 
 react-monaco-editor@^0.54.0:
   version "0.54.0"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
+  resolved "https://registry.npmjs.org/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz"
   integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
   dependencies:
     prop-types "^15.8.1"
@@ -7445,7 +7445,7 @@ tsconfig-paths@^4.2.0:
 
 tslib@2.7.0, tslib@^2.0.1:
   version "2.7.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.7.0.tgz"
   integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 tslib@^1.8.1, tslib@^1.9.3:

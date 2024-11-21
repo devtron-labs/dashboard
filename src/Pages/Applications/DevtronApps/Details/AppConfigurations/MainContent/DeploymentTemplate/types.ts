@@ -189,7 +189,7 @@ export interface DeploymentTemplateOptionsHeaderProps
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
     extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
-        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema'>,
+        Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
         Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
         Pick<
             DeploymentTemplateStateType,
