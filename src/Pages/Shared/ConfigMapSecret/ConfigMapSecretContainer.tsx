@@ -101,7 +101,7 @@ export const ConfigMapSecretContainer = ({
     const { appId, envId, name } = params
 
     // SEARCH PARAMS
-    const { tab: configHeaderTab, updateSearchParams } = useUrlFilters<void, ConfigMapSecretQueryParamsType>({
+    const { headerTab: configHeaderTab, updateSearchParams } = useUrlFilters<never, ConfigMapSecretQueryParamsType>({
         parseSearchParams: parseConfigMapSecretSearchParams,
     })
 
@@ -315,7 +315,7 @@ export const ConfigMapSecretContainer = ({
     const isLoading =
         configMapSecretResLoading ||
         isEnvConfigLoading ||
-        (id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
+        (!!id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
     const hideConfigToolbar =
         cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
@@ -391,21 +391,21 @@ export const ConfigMapSecretContainer = ({
 
     // TAB HANDLING
     useEffect(() => {
-        if (!configHeaderTab) {
+        if (!isLoading && !configHeaderTab) {
             if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
-                updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
+                updateSearchParams({ headerTab: ConfigHeaderTabType.INHERITED })
             } else {
-                updateSearchParams({ tab: ConfigHeaderTabType.VALUES })
+                updateSearchParams({ headerTab: ConfigHeaderTabType.VALUES })
             }
         }
-    }, [cmSecretStateLabel, draftData])
+    }, [isLoading, cmSecretStateLabel, draftData])
 
     // MERGE STRATEGY HANDLING
     useEffect(() => {
         const _mergeStrategy =
-            configMapSecretData?.mergeStrategy ||
             (draftData && JSON.parse(draftData.data).configData[0].mergeStrategy) ||
-            (configMapSecretData?.defaultData && !configMapSecretData.data ? DEFAULT_MERGE_STRATEGY : null)
+            configMapSecretData?.mergeStrategy ||
+            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? DEFAULT_MERGE_STRATEGY : null)
 
         setMergeStrategy(_mergeStrategy)
     }, [configMapSecretData, draftData])
@@ -460,7 +460,7 @@ export const ConfigMapSecretContainer = ({
         }
 
     const handleTabChange = (tab: ConfigHeaderTabType) => {
-        updateSearchParams({ tab })
+        updateSearchParams({ headerTab: tab })
         if (tab === ConfigHeaderTabType.DRY_RUN) {
             ReactGA.event({
                 category: gaEventCategory,
@@ -491,7 +491,7 @@ export const ConfigMapSecretContainer = ({
 
     const handleClearPopupNode = () => setPopupNodeType(null)
 
-    const handleViewInheritedConfig = () => updateSearchParams({ tab: ConfigHeaderTabType.INHERITED })
+    const handleViewInheritedConfig = () => updateSearchParams({ headerTab: ConfigHeaderTabType.INHERITED })
 
     const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
         setSelectedProtectionViewTab(tab)
@@ -706,6 +706,7 @@ export const ConfigMapSecretContainer = ({
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 appChartRef={appChartRef}
                 mergeStrategy={mergeStrategy}
+                shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
             />
         ) : (
             <ConfigMapSecretForm
@@ -753,6 +754,7 @@ export const ConfigMapSecretContainer = ({
                 return (
                     <ConfigMapSecretReadyOnly
                         componentType={componentType}
+                        cmSecretStateLabel={CM_SECRET_STATE.BASE}
                         isJob={isJob}
                         configMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
@@ -859,7 +861,10 @@ export const ConfigMapSecretContainer = ({
                                 configHeaderTab === ConfigHeaderTabType.VALUES &&
                                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
                         }
-                        showMergePatchesButton={false}
+                        showMergePatchesButton={
+                            mergeStrategy === OverrideMergeStrategyType.PATCH ||
+                            configMapSecretData?.mergeStrategy === OverrideMergeStrategyType.PATCH
+                        }
                         baseConfigurationURL={baseConfigurationURL}
                         headerMessage={headerMessage}
                         selectedProtectionViewTab={selectedProtectionViewTab}

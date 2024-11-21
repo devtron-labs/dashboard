@@ -229,10 +229,7 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.secrets.map((secret) => {
-                const { title, subtitle, href, iconConfig } = secret
-                return { title, subtitle, href, iconConfig }
-            }),
+            items: updatedEnvConfig.secrets,
             noItemsText: 'No secrets',
             isExpanded: expandedIds?.secrets,
         },

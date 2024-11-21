@@ -648,11 +648,11 @@ export const getCompareFromEditorConfig = ({
 export const parseDeploymentTemplateParams =
     (envId: string) =>
     (searchParams: URLSearchParams): DeploymentTemplateURLConfigType => {
-        const urlConfigHeaderTab = searchParams.get('configHeaderTab') as ConfigHeaderTabType
+        const urlConfigHeaderTab = searchParams.get('headerTab') as ConfigHeaderTabType
 
         if (!urlConfigHeaderTab) {
             return {
-                configHeaderTab: null,
+                headerTab: null,
             }
         }
 
@@ -663,7 +663,7 @@ export const parseDeploymentTemplateParams =
         const isURLConfigHeaderTabValid = validConfigHeaderTabList.includes(urlConfigHeaderTab)
 
         return {
-            configHeaderTab: isURLConfigHeaderTabValid ? urlConfigHeaderTab : null,
+            headerTab: isURLConfigHeaderTabValid ? urlConfigHeaderTab : null,
         }
     }
 

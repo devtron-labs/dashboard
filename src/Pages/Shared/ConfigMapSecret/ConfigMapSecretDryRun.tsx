@@ -8,7 +8,6 @@ import {
     DraftState,
     DryRunEditorMode,
     MODES,
-    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -78,18 +77,14 @@ export const ConfigMapSecretDryRun = ({
                 configMapSecretData = {
                     ...configMapSecretData,
                     ...payload,
-                    ...(mergeStrategy === OverrideMergeStrategyType.PATCH
-                        ? {
-                              data: { ...configMapSecretData.data, ...payload.data },
-                          }
-                        : {}),
+                    data: { ...configMapSecretData.data, ...payload.data },
                 }
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
             configMapSecretData = publishedConfigMapSecretData ?? null
         }
 
-        return configMapSecretData
+        return { ...configMapSecretData, mergeStrategy: null }
     }, [
         isProtected,
         dryRunEditorMode,
@@ -131,6 +126,7 @@ export const ConfigMapSecretDryRun = ({
             <ConfigMapSecretReadyOnly
                 componentType={componentType}
                 isJob={isJob}
+                cmSecretStateLabel={CM_SECRET_STATE.BASE}
                 configMapSecretData={dryRunConfigMapSecretData}
                 areScopeVariablesResolving={areScopeVariablesResolving}
             />

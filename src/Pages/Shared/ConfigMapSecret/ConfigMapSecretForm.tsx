@@ -439,6 +439,7 @@ export const ConfigMapSecretForm = forwardRef(
                             <div className="flexbox-col dc__gap-16 dc__mxw-1200">
                                 {isPatchMode ? (
                                     <ConfigMapSecretReadyOnly
+                                        cmSecretStateLabel={cmSecretStateLabel}
                                         componentType={componentType}
                                         isJob={isJob}
                                         configMapSecretData={configMapSecretData}

@@ -8,13 +8,16 @@ export const ConfigMapSecretReadyOnly = ({
     componentType,
     isJob,
     configMapSecretData,
+    cmSecretStateLabel,
     areScopeVariablesResolving,
     hideCodeEditor = false,
 }: ConfigMapSecretReadyOnlyProps) => {
     const displayValues = getConfigMapSecretReadOnlyValues({
         configMapSecretData,
+        cmSecretStateLabel,
         componentType,
         isJob,
+        mergeStrategy: null,
     })
 
     return areScopeVariablesResolving ? (

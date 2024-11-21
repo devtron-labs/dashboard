@@ -138,12 +138,11 @@ const DeploymentTemplate = ({
         getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
-    const { configHeaderTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<
-        never,
-        DeploymentTemplateURLConfigType
-    >({
-        parseSearchParams: parseDeploymentTemplateParams(envId),
-    })
+    const { headerTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<never, DeploymentTemplateURLConfigType>(
+        {
+            parseSearchParams: parseDeploymentTemplateParams(envId),
+        },
+    )
 
     const configHeaderTab = urlConfigHeaderTab || ConfigHeaderTabType.VALUES
 
@@ -596,7 +595,7 @@ const DeploymentTemplate = ({
         }
 
         updateSearchParams({
-            configHeaderTab: tab,
+            headerTab: tab,
         })
 
         if (tab === ConfigHeaderTabType.DRY_RUN) {
@@ -785,7 +784,7 @@ const DeploymentTemplate = ({
 
         if (!urlConfigHeaderTab) {
             updateSearchParams({
-                configHeaderTab:
+                headerTab:
                     envId && !publishedTemplateState.isOverridden
                         ? ConfigHeaderTabType.INHERITED
                         : ConfigHeaderTabType.VALUES,
@@ -888,7 +887,7 @@ const DeploymentTemplate = ({
 
         if (!urlConfigHeaderTab) {
             updateSearchParams({
-                configHeaderTab: ConfigHeaderTabType.VALUES,
+                headerTab: ConfigHeaderTabType.VALUES,
             })
         }
 
@@ -971,7 +970,7 @@ const DeploymentTemplate = ({
 
     const handleReload = async () => {
         updateSearchParams({
-            configHeaderTab: null,
+            headerTab: null,
         })
 
         dispatch({

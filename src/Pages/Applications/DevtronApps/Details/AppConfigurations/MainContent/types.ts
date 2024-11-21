@@ -243,6 +243,7 @@ type CMSecretDiffViewConfigType = {
     externalSubpathValues: DeploymentHistorySingleValue
     filePermission: DeploymentHistorySingleValue
     roleARN: DeploymentHistorySingleValue
+    mergeStrategy: DeploymentHistorySingleValue
 }
 
 type DeploymentTemplateDiffViewConfigType =
@@ -264,7 +265,6 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
-          mergeStrategy?: never
           isOverride?: never
       }
 

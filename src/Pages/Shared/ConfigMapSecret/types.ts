@@ -172,7 +172,7 @@ export interface ConfigMapSecretDataProps {
 export interface ConfigMapSecretReadyOnlyProps
     extends Pick<
         ConfigMapSecretFormProps,
-        'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
+        'configMapSecretData' | 'componentType' | 'cmSecretStateLabel' | 'isJob' | 'areScopeVariablesResolving'
     > {
     hideCodeEditor?: boolean
 }
@@ -232,6 +232,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         selectedProtectionViewTab: ProtectConfigTabsType
     } & {
         formMethodsRef: MutableRefObject<ConfigMapSecretFormRefType>
+        shouldMergeTemplateWithPatches: boolean
     }
 
 export type ConfigMapSecretDryRunProps = Pick<
@@ -365,5 +366,5 @@ export type ConfigMapSecretEncodedDataProps<IsDraft extends boolean> = {
 }
 
 export interface ConfigMapSecretQueryParamsType {
-    tab: ConfigHeaderTabType
+    headerTab: ConfigHeaderTabType
 }

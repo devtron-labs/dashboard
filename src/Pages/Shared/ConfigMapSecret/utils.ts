@@ -247,7 +247,7 @@ export const getConfigMapSecretFormInitialValues = ({
 
         const mergeStrategy =
             configMapSecretData.mergeStrategy ||
-            (configMapSecretData.defaultData && !configMapSecretData.data ? DEFAULT_MERGE_STRATEGY : null)
+            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? DEFAULT_MERGE_STRATEGY : null)
 
         const currentData = processCurrentData({
             configMapSecretData: { ...configMapSecretData, mergeStrategy },
@@ -255,7 +255,7 @@ export const getConfigMapSecretFormInitialValues = ({
             isSecret,
         })
         const replaceData = processCurrentData({
-            configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
+            configMapSecretData: { ...configMapSecretData, mergeStrategy: null },
             cmSecretStateLabel,
             isSecret,
         })
@@ -311,9 +311,14 @@ export const getConfigMapSecretFormInitialValues = ({
 
 export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
+    cmSecretStateLabel,
     componentType,
     isJob,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob'>) => {
+    mergeStrategy,
+}: Pick<
+    ConfigMapSecretFormProps,
+    'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob' | 'mergeStrategy'
+>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -336,8 +341,11 @@ export const getConfigMapSecretReadOnlyValues = ({
         currentData,
         isSecret,
     } = getConfigMapSecretFormInitialValues({
-        configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
-        cmSecretStateLabel: CM_SECRET_STATE.INHERITED,
+        configMapSecretData: {
+            ...configMapSecretData,
+            mergeStrategy: mergeStrategy || configMapSecretData.mergeStrategy,
+        },
+        cmSecretStateLabel,
         componentType,
     })
     const mountExistingExternal =
@@ -735,10 +743,10 @@ export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledRe
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
 
 export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams): ConfigMapSecretQueryParamsType => {
-    const tab = searchParams.get('tab') as ConfigMapSecretQueryParamsType['tab']
+    const headerTab = searchParams.get('headerTab') as ConfigMapSecretQueryParamsType['headerTab']
 
     return {
-        tab: tab ?? null,
+        headerTab: headerTab || null,
     }
 }
 // DATA UTILS ----------------------------------------------------------------
