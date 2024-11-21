@@ -46,7 +46,6 @@ export const CiWebhookModal = ({
     isWebhookPayloadLoading,
     workflowId,
     fromAppGrouping,
-    fromBulkCITrigger,
     isJobView,
     appId,
 }: CiWebhookModalProps) => {
@@ -267,11 +266,7 @@ export const CiWebhookModal = ({
     )
 
     const renderWebhookPayloadContent = () => (
-        <div
-            className={` bcn-0 dc__top-0 dc__right-0 timestamp-detail-container ${
-                fromBulkCITrigger ? 'env-modal-width' : ''
-            }`}
-        >
+        <div className="bcn-0 dc__top-0 dc__right-0 timestamp-detail-container">
             {isPayloadLoading ? (
                 <div className="flex payload-wrapper-no-header">{renderWebhookPayloadLoader()}</div>
             ) : (

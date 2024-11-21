@@ -86,7 +86,9 @@ export const K8SResourceList = ({
             default:
                 break
         }
-        result.data = result.data.map((data, index) => ({ id: index, ...data }))
+        // NOTE: for namespaced resource name+namespace will be unique
+        // while for non-namespaced resources name will be unique
+        result.data = result.data.map((data) => ({ id: `${data.name}-${data.namespace}`, ...data }))
         return result
     }, [_resourceList])
 

@@ -123,7 +123,7 @@ const BaseResourceListContent = ({
         setIdentifiers,
         isBulkSelectionApplied,
         getSelectedIdentifiersCount,
-    } = useBulkSelection<Record<number, K8sResourceDetailDataType>>()
+    } = useBulkSelection<Record<string, K8sResourceDetailDataType>>()
 
     const headers = useMemo(() => {
         const list = resourceList?.headers ?? []
@@ -220,9 +220,9 @@ const BaseResourceListContent = ({
     useEffect(() => {
         setIdentifiers(
             (filteredResourceList?.slice(resourceListOffset, resourceListOffset + pageSize).reduce((acc, curr) => {
-                acc[curr.id as number] = curr
+                acc[curr.id as string] = curr
                 return acc
-            }, {}) as Record<number, K8sResourceDetailDataType>) ?? {},
+            }, {}) as Record<string, K8sResourceDetailDataType>) ?? {},
         )
     }, [resourceListOffset, filteredResourceList, pageSize])
 
@@ -264,7 +264,7 @@ const BaseResourceListContent = ({
     }, [resourceList, sortBy, sortOrder, location.search])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
-        const id = Number(resourceData.id)
+        const { id } = resourceData as Record<'id', string>
 
         if (isBulkSelectionApplied) {
             handleBulkSelection({
@@ -424,21 +424,21 @@ const BaseResourceListContent = ({
         return (
             <div
                 // Added id as the name is not always unique
-                key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
+                key={`${resourceData.id}-${bulkSelectionState[resourceData.id as string]}-${isBulkSelectionApplied}`}
                 className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
                 {headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.id}-${columnName}`}
+                            key={resourceData.id as string}
                             className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
                                 <Checkbox
                                     isChecked={
-                                        !!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied
+                                        !!bulkSelectionState[resourceData.id as string] || isBulkSelectionApplied
                                     }
                                     onChange={getHandleCheckedForId(resourceData)}
                                     rootClassName="mb-0"
@@ -505,7 +505,7 @@ const BaseResourceListContent = ({
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.id}-${columnName}`}
+                            key={resourceData.id as string}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`

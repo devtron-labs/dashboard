@@ -14,6 +14,7 @@ export interface GitInfoMaterialProps
             | 'handleRuntimeParamChange'
             | 'pipelineId'
             | 'runtimeParams'
+            | 'appId'
         > {
     dataTestId?: string
     material: CIMaterialType[]
