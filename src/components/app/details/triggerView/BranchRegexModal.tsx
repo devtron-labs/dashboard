@@ -112,7 +112,7 @@ const BranchRegexModal = ({
                 return (
                     mat.regex && (
                         <div
-                            className={`flex left column dc__gap-6 pb-20 ${index === material.length - 1 ? '' : 'dc__border-bottom'}`}
+                            className={`flex left column dc__gap-6 pb-20 ${index === material.length - 1 || isBulkCiModal ? '' : 'dc__border-bottom'} ${index !== 0 ? 'pt-20' : ''}`}
                             key={`regex_${mat.id}`}
                         >
                             <div className="flex left dc__gap-14">
