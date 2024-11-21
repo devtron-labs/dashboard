@@ -156,11 +156,11 @@ const BaseResourceListContent = ({
     const initialSortKey = useMemo(() => {
         // NOTE: if isEventList don't initiate sort since we already sort it; therefore return empty initialSortKey
         if (resourceList && !isEventList) {
-            const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
+            const isNameSpaceColumnPresent = headers.some((header) => header === 'namespace')
             return isNameSpaceColumnPresent ? 'namespace' : 'name'
         }
         return ''
-    }, [resourceList, isEventList])
+    }, [headers, isEventList])
 
     // SORTING HOOK
     const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })

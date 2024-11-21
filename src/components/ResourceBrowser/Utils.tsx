@@ -400,16 +400,14 @@ const flattenObject = (ob: object): Record<string, any> => {
     const toReturn = {}
 
     Object.entries(ob).forEach(([key, value]) => {
-        const currentElement = value
-
-        if (typeof currentElement === 'object' && currentElement !== null && !Array.isArray(currentElement)) {
-            const flatObject = flattenObject(currentElement)
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const flatObject = flattenObject(value)
 
             Object.entries(flatObject).forEach(([flatObjectKey, flatObjectValue]) => {
                 toReturn[`${key}.${flatObjectKey}`] = flatObjectValue
             })
         } else {
-            toReturn[key] = currentElement
+            toReturn[key] = value
         }
     })
 

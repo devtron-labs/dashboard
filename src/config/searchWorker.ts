@@ -160,6 +160,10 @@ export default () => {
         const isK8sVersionFilterAppliedAndMatchFound =
             !searchParams[NODE_K8S_VERSION_KEY] || item[NODE_K8S_VERSION_KEY] === searchParams[NODE_K8S_VERSION_KEY]
 
+        if (!isK8sVersionFilterAppliedAndMatchFound) {
+            return false
+        }
+
         const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) =>
             Object.hasOwn(searchParams, key),
         )
