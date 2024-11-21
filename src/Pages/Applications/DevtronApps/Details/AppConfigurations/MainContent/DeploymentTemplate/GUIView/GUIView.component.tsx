@@ -57,7 +57,7 @@ const GUIView = ({
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
     const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<object>({})
-    const [invalidGUISchemaError, setInvalideGUISchemaError] = useState<GUIViewError | null>(null)
+    const [invalidGUISchemaError, setInvalidGUISchemaError] = useState<GUIViewError | null>(null)
     const modelRef = useRef<typeof ConfigurableGUIViewModel>(null)
 
     // NOTE: need this ref since we need the updated formData on unmount;
@@ -77,7 +77,7 @@ const GUIView = ({
             }
         } catch (err) {
             if (err instanceof GUIViewError) {
-                setInvalideGUISchemaError(err)
+                setInvalidGUISchemaError(err)
             } else {
                 handleChangeToYAMLMode()
             }
