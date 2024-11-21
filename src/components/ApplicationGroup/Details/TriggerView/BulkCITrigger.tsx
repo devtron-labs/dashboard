@@ -106,7 +106,6 @@ const BulkCITrigger = ({
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
 
-
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
@@ -134,14 +133,11 @@ const BulkCITrigger = ({
         closePopup(evt)
     }
 
-   
-   
     useEffect(() => {
         for (const _app of appList) {
             appIgnoreCache[_app.ciPipelineId] = false
         }
         getMaterialData()
-        
     }, [])
 
     const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
@@ -320,7 +316,7 @@ const BulkCITrigger = ({
                             style={ButtonStyleType.neutral}
                         />
                     )}
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">{isWebhookBulkCI ? `${selectedApp.ciPipelineName} / All received webhooks` : 'Build image' }</h2>
                 </div>
                 <button
                     type="button"
