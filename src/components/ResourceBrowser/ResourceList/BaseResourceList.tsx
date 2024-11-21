@@ -41,7 +41,9 @@ import {
     K8S_EMPTY_GROUP,
     MANDATORY_NODE_LIST_HEADERS,
     NODE_LIST_HEADERS,
+    NODE_K8S_VERSION_FILTER_KEY,
     NODE_LIST_HEADERS_TO_KEY_MAP,
+    NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
@@ -91,7 +93,6 @@ const BaseResourceListContent = ({
     setWidgetEventDetails,
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
-    nodeK8sVersions,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -125,18 +126,18 @@ const BaseResourceListContent = ({
     } = useBulkSelection<Record<number, K8sResourceDetailDataType>>()
 
     const headers = useMemo(() => {
+        const list = resourceList?.headers ?? []
+
         if (!isNodeListing) {
-            return resourceList?.headers ?? []
+            return list
         }
 
         const visibleColumnsSet = new Set(visibleColumns)
 
-        return (
-            resourceList?.headers.filter(
-                (header) =>
-                    MANDATORY_NODE_LIST_HEADERS.includes(header as (typeof NODE_LIST_HEADERS)[number]) ||
-                    visibleColumnsSet.has(header),
-            ) ?? []
+        return list.filter(
+            (header) =>
+                MANDATORY_NODE_LIST_HEADERS.includes(header as (typeof NODE_LIST_HEADERS)[number]) ||
+                visibleColumnsSet.has(header),
         )
     }, [resourceList, visibleColumns, isNodeListing])
 
@@ -205,6 +206,11 @@ const BaseResourceListContent = ({
                 nodeListingFilters: {
                     isNodeListing,
                     searchParams,
+                    // NOTE!: these constants need to be passed to searchWorker since we cannot import
+                    // stuff inside web worker
+                    NODE_LIST_HEADERS_TO_KEY_MAP: structuredClone(NODE_LIST_HEADERS_TO_KEY_MAP),
+                    NODE_SEARCH_KEYS_TO_OBJECT_KEYS: structuredClone(NODE_SEARCH_KEYS_TO_OBJECT_KEYS),
+                    NODE_K8S_VERSION_KEY: structuredClone(NODE_K8S_VERSION_FILTER_KEY),
                 },
                 origin: new URL(window.__BASE_URL__, window.location.href).origin,
             },
@@ -677,7 +683,6 @@ const BaseResourceListContent = ({
             {isNodeListing ? (
                 <NodeListSearchFilter
                     key={lastTimeStringSinceClearAllFilters}
-                    nodeK8sVersions={nodeK8sVersions}
                     visibleColumns={visibleColumns}
                     setVisibleColumns={setVisibleColumns}
                     searchParams={searchParams}

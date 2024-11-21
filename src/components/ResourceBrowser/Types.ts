@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { RefObject } from 'react'
 import {
     K8SObjectBaseType,
     ResponseType,
@@ -29,6 +29,7 @@ import {
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail, ResourceDetail, ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
+import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -299,12 +300,7 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListResponse extends ResponseType {
-    result?: NodeRowDetail[]
-}
-
 export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
-    nodeK8sVersions: string[]
     visibleColumns: string[]
     setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
     searchParams: Record<string, string>
@@ -322,4 +318,12 @@ export interface NodeActionsMenuProps {
     addTab: ReturnType<typeof useTabs>['addTab']
     nodeData: K8sResourceDetailDataType
     getNodeListData: () => void
+}
+
+export interface GetResourceDataType {
+    selectedResource: ApiResourceGroupType
+    selectedNamespace: BaseResourceListProps['selectedNamespace']
+    clusterId: string
+    filters: Record<string, unknown>
+    abortControllerRef: RefObject<AbortController>
 }

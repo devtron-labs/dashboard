@@ -15,13 +15,14 @@
  */
 
 import { useState, useEffect, KeyboardEvent, ChangeEvent, useMemo, useRef, RefCallback } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation, useHistory, useParams } from 'react-router-dom'
 import { ParsedQuery, parse as parseQueryString, stringify as stringifyQueryString } from 'query-string'
-import { OptionType, SelectPicker, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, SelectPicker, useAsync, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
 import { ReactComponent as ICClear } from '@Icons/ic-error.svg'
+import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 import ColumnSelector from './ColumnSelector'
-import { NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
+import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import {
     DEFAULT_NODE_K8S_VERSION,
@@ -31,12 +32,13 @@ import {
 } from '../Constants'
 
 const NodeListSearchFilter = ({
-    nodeK8sVersions,
     visibleColumns,
     setVisibleColumns,
     isOpen,
     searchParams,
 }: NodeListSearchFilterType) => {
+    const { clusterId } = useParams<URLParams>()
+
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
         if (searchParams[key]) {
             return key
@@ -66,20 +68,25 @@ const NodeListSearchFilter = ({
     const location = useLocation()
     const { push } = useHistory()
 
-    const nodeK8sVersionOptions = useMemo(
-        () => [
-            DEFAULT_NODE_K8S_VERSION,
-            ...(nodeK8sVersions?.map((version) => ({
-                label: `K8s version: ${version}`,
-                value: version,
-            })) || []),
-        ],
-        [nodeK8sVersions],
-    )
+    const [nodeK8sVersionsLoading, nodeK8sVersionOptions, nodeK8sVersionsError, refetchNodeK8sVersions] =
+        useAsync(async () => {
+            const {
+                result: { nodeK8sVersions: versions },
+            } = await getClusterCapacity(clusterId)
+
+            return [
+                DEFAULT_NODE_K8S_VERSION,
+                ...(versions?.map((version) => ({
+                    label: `K8s version: ${version}`,
+                    value: version,
+                })) || []),
+            ]
+        }, [clusterId])
 
     const selectedK8sVersionOption = useMemo(
         () =>
-            nodeK8sVersionOptions.find((option) => option.value === selectedK8sNodeVersion) ?? DEFAULT_NODE_K8S_VERSION,
+            nodeK8sVersionOptions?.find((option) => option.value === selectedK8sNodeVersion) ??
+            DEFAULT_NODE_K8S_VERSION,
         [nodeK8sVersionOptions, selectedK8sNodeVersion],
     )
 
@@ -283,9 +290,10 @@ const NodeListSearchFilter = ({
 
             <SelectPicker
                 inputId="k8s-version-select"
-                name="k8s-version-select"
-                classNamePrefix="k8s-version-select"
-                options={nodeK8sVersionOptions}
+                optionListError={nodeK8sVersionsError}
+                reloadOptionList={refetchNodeK8sVersions}
+                isLoading={nodeK8sVersionsLoading}
+                options={nodeK8sVersionOptions ?? []}
                 onChange={handleApplyNodeK8sVersion}
                 value={selectedK8sVersionOption}
             />
