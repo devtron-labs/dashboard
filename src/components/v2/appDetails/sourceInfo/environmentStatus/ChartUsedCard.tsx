@@ -16,6 +16,7 @@
 
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { useRef } from 'react'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
@@ -24,26 +25,32 @@ import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import { getUsedChartContent } from '../utils'
 
-const ChartToolTip = ({ children, isDeprecated, onClickUpgrade }: ChartToolTipType) => (
+const ChartToolTip = ({ children, isDeprecated, onClickUpgrade, chartRef }: ChartToolTipType) => (
     <Tippy
         className="default-tt w-200"
         arrow={false}
         placement="top"
         interactive
         content={getUsedChartContent(isDeprecated, onClickUpgrade)}
-        appendTo={() => document.body} // To fix the issue of tippy not showing the content outside the container
+        appendTo={() => chartRef.current} // To fix the issue of tippy not showing the content outside the container
     >
         {children}
     </Tippy>
 )
 
 const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onClickUpgrade }: ChartUsedCardType) => {
+    const chartRef = useRef(null)
+
     if (cardLoading) {
         return <LoadingCard />
     }
 
     return (
-        <div data-testid="chart-used-card" className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200">
+        <div
+            data-testid="chart-used-card"
+            className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            ref={chartRef}
+        >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
@@ -53,7 +60,11 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
                         >
                             Chart {appDetails.deprecated ? 'deprecated' : 'used'}
                         </div>
-                        <ChartToolTip isDeprecated={appDetails.deprecated} onClickUpgrade={onClickUpgrade}>
+                        <ChartToolTip
+                            isDeprecated={appDetails.deprecated}
+                            onClickUpgrade={onClickUpgrade}
+                            chartRef={chartRef}
+                        >
                             <div className="flex">
                                 <QuestionIcon className="icon-dim-16 mt-2" />
                             </div>
