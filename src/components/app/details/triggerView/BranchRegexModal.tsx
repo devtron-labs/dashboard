@@ -43,6 +43,7 @@ const BranchRegexModal = ({
     regexValue,
     onCloseBranchRegexModal,
     savingRegexValue,
+    isBulkCiModal = false,
 }: BranchRegexModalProps) => {
     const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
@@ -53,7 +54,6 @@ const BranchRegexModal = ({
 
         return ciMaterial?.source?.regex || ''
     }
-    console.log(regexValue)
 
     const renderBranchRegexMaterialHeader = () => (
         <div className="flex dc__content-space py-12 px-20 dc__border-bottom">
@@ -157,14 +157,14 @@ const BranchRegexModal = ({
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Cancel"
-                    dataTestId="branch-regex-save-next-button"
+                    dataTestId="branch-regex-save-close-button"
                     onClick={onCloseBranchRegexModal}
                     size={ComponentSizeType.medium}
                     style={ButtonStyleType.neutral}
                 />
                 <Button
                     variant={ButtonVariantType.primary}
-                    text={`Fetch commits ${!isChangeBranchClicked ? '& Next' : ''}`}
+                    text={`Fetch commits ${!isBulkCiModal ? '& Next' : ''}`}
                     dataTestId="branch-regex-save-next-button"
                     onClick={onClickNextButton}
                     disabled={isDisabled || savingRegexValue}

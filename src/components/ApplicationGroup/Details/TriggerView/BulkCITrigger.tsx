@@ -105,24 +105,9 @@ const BulkCITrigger = ({
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
- const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
-        if (selectedApp?.appId) {
-            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId)?.material.find((mat) => mat.isSelected)
 
-            if (selectedMaterial?.id) {
-                console.log(selectedMaterial, 'bulk ci')
-                return {
-                    [selectedMaterial.gitMaterialId]: {
-                        value: selectedMaterial.value,
-                        isInvalid: false,
-                    },
-                }
-            }
-        }
-        return {}
-    }
 
-    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitSelectedRegexValue)
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
@@ -150,16 +135,30 @@ const BulkCITrigger = ({
     }
 
    
-
+   
     useEffect(() => {
         for (const _app of appList) {
             appIgnoreCache[_app.ciPipelineId] = false
         }
         getMaterialData()
-        const selectedMaterial = appList.find(app => app.appId === selectedApp.appId)?.material.find(mat => mat.isSelected)
-        console.log(selectedMaterial)
-        // setRegexValue(selectedMaterial?.gitMaterialId ? { [selectedMaterial.gitMaterialId]: { value: selectedMaterial.value, isInvalid: false } } : {})
+        
     }, [])
+
+    const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
+        if (selectedApp?.appId) {
+            const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+            const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+            if (selectedMaterial?.id) {
+                return {
+                    [selectedMaterial.gitMaterialId]: {
+                        value: selectedMaterial.value,
+                        isInvalid: false,
+                    },
+                }
+            }
+        }
+        return {}
+    }
 
     const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const runtimeParamsServiceList = appList.map((appDetails) => {
@@ -318,7 +317,7 @@ const BulkCITrigger = ({
                             variant={ButtonVariantType.borderLess}
                             size={ComponentSizeType.xs}
                             showAriaLabelInTippy={false}
-                            style={ButtonStyleType.negativeGrey}
+                            style={ButtonStyleType.neutral}
                         />
                     )}
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
@@ -339,6 +338,7 @@ const BulkCITrigger = ({
     const showBranchEditModal = (): void => {
         setShowRegexModal(true)
         setChangeBranchClicked(false)
+        setRegexValue(getInitSelectedRegexValue())
     }
 
     const hideBranchEditModal = (e?): void => {
@@ -450,19 +450,18 @@ const BulkCITrigger = ({
                 (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
             )
             return (
-                <>
-                    <BranchRegexModal
-                        material={selectedMaterialList}
-                        selectedCIPipeline={selectedCIPipeline}
-                        title={selectedApp.ciPipelineName}
-                        isChangeBranchClicked={isChangeBranchClicked}
-                        onClickNextButton={saveBranchName}
-                        handleRegexInputValue={handleRegexInputValueChange}
-                        regexValue={regexValue}
-                        onCloseBranchRegexModal={hideBranchEditModal}
-                        savingRegexValue={isLoading}
-                    />
-                </>
+                <BranchRegexModal
+                    material={selectedMaterialList}
+                    selectedCIPipeline={selectedCIPipeline}
+                    title={selectedApp.ciPipelineName}
+                    isChangeBranchClicked={isChangeBranchClicked}
+                    onClickNextButton={saveBranchName}
+                    handleRegexInputValue={handleRegexInputValueChange}
+                    regexValue={regexValue}
+                    onCloseBranchRegexModal={hideBranchEditModal}
+                    savingRegexValue={isLoading}
+                    isBulkCiModal
+                />
             )
         }
         if (selectedApp.isLinkedCD) {
@@ -494,7 +493,6 @@ const BulkCITrigger = ({
                 />
             )
         }
-        console.log(selectedMaterial)
         return (
             <GitInfoMaterial
                 material={selectedMaterialList}
@@ -727,7 +725,7 @@ const BulkCITrigger = ({
                         ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
+                <div className="main-content dc__window-bg dc__height-inherit">
                     {renderMainContent(selectedMaterialList)}
                 </div>
             </div>

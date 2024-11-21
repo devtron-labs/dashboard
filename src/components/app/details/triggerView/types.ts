@@ -605,6 +605,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     savingRegexValue: boolean
+    isBulkCiModal?: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean
