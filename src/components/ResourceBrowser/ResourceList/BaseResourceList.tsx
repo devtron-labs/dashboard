@@ -369,7 +369,7 @@ const BaseResourceListContent = ({
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={resourceData.id as string}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
@@ -436,7 +436,7 @@ const BaseResourceListContent = ({
                         </div>
                     ) : (
                         <div
-                            key={resourceData.id as string}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
@@ -543,7 +543,6 @@ const BaseResourceListContent = ({
                                         <BulkSelection showPagination={showPaginatedView} />
                                     )}
                                     <SortableTableHeaderCell
-                                        key={columnName}
                                         showTippyOnTruncate
                                         title={columnName}
                                         triggerSorting={triggerSortingHandler(columnName)}
