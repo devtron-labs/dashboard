@@ -64,6 +64,7 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
+import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -297,7 +298,7 @@ export default function NavigationRoutes() {
     }, [])
 
     useEffect(() => {
-        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+        const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
         if (persistedTabs) {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
@@ -305,10 +306,10 @@ export default function NavigationRoutes() {
                     location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
-                    localStorage.removeItem('persisted-tabs-data')
+                    localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
             } catch (e) {
-                localStorage.removeItem('persisted-tabs-data')
+                localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
             }
         }
     }, [location.pathname])

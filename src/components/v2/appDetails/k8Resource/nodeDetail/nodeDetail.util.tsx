@@ -34,10 +34,11 @@ import {
     K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { ManifestData, NodeDetailTab } from './nodeDetail.type'
+import { EphemeralContainerOptionsType, ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { DeleteEphemeralButton } from './DeleteEphemeralButton'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -52,36 +53,30 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
     return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
 }
 
-export const flatContainers = (pod: PodMetaData): string[] => {
-    return [
-        ...(pod?.containers || []),
-        ...(pod?.initContainers || []),
-        ...(pod?.ephemeralContainers?.map((_con) => {
-            return _con.name
-        }) || []),
-    ]
-}
+export const flatContainers = (pod: PodMetaData): string[] => [
+    ...(pod?.containers || []),
+    ...(pod?.initContainers || []),
+    ...(pod?.ephemeralContainers?.map((_con) => _con.name) || []),
+]
 
-export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
-    return [
-        ...(pod?.containers?.map((_container) => ({
-            name: _container,
-            isInitContainer: false,
-            isEphemeralContainer: false,
-        })) || []),
-        ...(pod?.initContainers?.map((_container) => ({
-            name: _container,
-            isInitContainer: true,
-            isEphemeralContainer: false,
-        })) || []),
-        ...(pod?.ephemeralContainers?.map((_container) => ({
-            name: _container.name,
-            isInitContainer: false,
-            isEphemeralContainer: true,
-            isExternal: _container.isExternal,
-        })) || []),
-    ]
-}
+export const getContainersData = (pod: PodMetaData): OptionsBase[] => [
+    ...(pod?.containers?.map((_container) => ({
+        name: _container,
+        isInitContainer: false,
+        isEphemeralContainer: false,
+    })) || []),
+    ...(pod?.initContainers?.map((_container) => ({
+        name: _container,
+        isInitContainer: true,
+        isEphemeralContainer: false,
+    })) || []),
+    ...(pod?.ephemeralContainers?.map((_container) => ({
+        name: _container.name,
+        isInitContainer: false,
+        isEphemeralContainer: true,
+        isExternal: _container.isExternal,
+    })) || []),
+]
 
 export function getSelectedPodList(selectedOption: string): PodMetaData[] {
     let pods: PodMetaData[]
@@ -141,14 +136,12 @@ export function getPodContainerOptions(
         _selectedContainerName =
             logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
-        const containerOptions = containers.map((_container) => {
-            return {
-                ..._container,
-                selected: _container.name === _selectedContainerName,
-                isEphemeralContainer: _container.isEphemeralContainer,
-                isInitContainer: _container.isInitContainer,
-            }
-        })
+        const containerOptions = containers.map((_container) => ({
+            ..._container,
+            selected: _container.name === _selectedContainerName,
+            isEphemeralContainer: _container.isEphemeralContainer,
+            isInitContainer: _container.isInitContainer,
+        }))
 
         return {
             containerOptions,
@@ -174,11 +167,7 @@ export function getPodContainerOptions(
             podOptions: [],
         }
     }
-    const podOptions = additionalPodOptions.concat(
-        _allPods.map((_pod) => {
-            return { name: _pod.name, selected: false }
-        }),
-    )
+    const podOptions = additionalPodOptions.concat(_allPods.map((_pod) => ({ name: _pod.name, selected: false })))
     if (logState.selectedPodOption) {
         podOptions.forEach(
             (_po) => (_po.selected = _po.name.toLowerCase() === logState.selectedPodOption.toLowerCase()),
@@ -188,9 +177,7 @@ export function getPodContainerOptions(
     // build container Options
     const _allSelectedPods = getSelectedPodList(logState.selectedPodOption)
     const containers = (getContainersData(_allSelectedPods[0]) ?? []).sort()
-    const containerOptions = containers.map((_container, index) => {
-        return { ..._container, selected: index === 0 }
-    })
+    const containerOptions = containers.map((_container, index) => ({ ..._container, selected: index === 0 }))
     if (logState.selectedContainerOption) {
         containerOptions.forEach(
             (_co) => (_co.selected = _co.name.toLowerCase() === logState.selectedContainerOption.toLowerCase()),
@@ -266,95 +253,7 @@ export function getFirstOrNull<T extends { label: string }>(arr: T[]): T | null 
     return indvPodsList.length > 0 ? indvPodsList[0] : null
 }
 
-export const getContainerSelectStyles = () => {
-    return {
-        ...multiSelectStyles,
-        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
-        menuList: (base) => ({
-            ...base,
-            paddingTop: 0,
-        }),
-        control: (base) => ({
-            ...base,
-            borderColor: 'transparent',
-            backgroundColor: 'transparent',
-            minHeight: '24px !important',
-            cursor: 'pointer',
-            height: '28px',
-        }),
-        singleValue: (base) => ({
-            ...base,
-            fontWeight: 600,
-            color: '#06c',
-            direction: 'rtl',
-            textAlign: 'left',
-            marginLeft: '2px',
-        }),
-        valueContainer: (base, state) => ({
-            ...base,
-            height: '28px',
-            padding: '0 6px',
-        }),
-        indicatorsContainer: (provided) => ({
-            ...provided,
-            height: '28px',
-        }),
-        group: (base) => ({
-            ...base,
-            paddingTop: 0,
-            paddingBottom: 0,
-        }),
-        groupHeading: (base) => ({
-            ...base,
-            fontWeight: 600,
-            fontSize: '12px',
-            textTransform: 'normal',
-            height: '28px',
-            color: 'var(--N900)',
-            backgroundColor: 'var(--N100)',
-            marginBottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-        }),
-    }
-}
-
-export const getShellSelectStyles = () => {
-    return {
-        ...multiSelectStyles,
-        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-        control: (base) => ({
-            ...base,
-            borderColor: 'transparent',
-            backgroundColor: 'transparent',
-            minHeight: '24px !important',
-            cursor: 'pointer',
-        }),
-        singleValue: (base) => ({
-            ...base,
-            fontWeight: 600,
-            textAlign: 'left',
-            color: '#06c',
-        }),
-        valueContainer: (base, state) => ({
-            ...base,
-            height: '28px',
-            padding: '0 6px',
-        }),
-        indicatorsContainer: (provided) => ({
-            ...provided,
-            height: '28px',
-        }),
-    }
-}
-
-export const getContainerOptions = (containers: string[]) => {
-    return Array.isArray(containers) ? containers.map((container) => ({ label: container, value: container })) : []
-}
-
-export const getTimeStamp = (date: Moment, time: string) => {
-    return Date.parse(`${date.format('YYYY-MM-DD')} ${time}`) / 1000
-}
+export const getTimeStamp = (date: Moment, time: string) => Date.parse(`${date.format('YYYY-MM-DD')} ${time}`) / 1000
 
 export const getPodLogsOptions = () => {
     const options = [
@@ -387,9 +286,7 @@ export const getTimeFromTimestamp = (timestamp) => {
     const value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
         .toString()
         .padStart(2, '0')}`
-    return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => {
-        return option.value == value
-    })
+    return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => option.value == value)
 }
 
 export const getDurationUnits = () => [
@@ -397,10 +294,10 @@ export const getDurationUnits = () => [
     { label: 'Hours', value: 'hours' },
 ]
 
-export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
+export const getGroupedContainerOptions = (containers: Options[],isTerminal?, isResourceBrowserView?, setContainers?, selectedNamespace?, selectedClusterId?, selectedPodName?, switchSelectedContainer?, params?) => {
     const containerOptions = []
     const initContainerOptions = []
-    const ephemralContainerOptions = []
+    const ephemeralContainerOptions = [] as EphemeralContainerOptionsType[]
 
     if (Array.isArray(containers) && containers.length > 0) {
         for (const _container of containers) {
@@ -410,11 +307,24 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
                     value: _container.name,
                 })
             } else if (_container.isEphemeralContainer) {
-                ephemralContainerOptions.push({
+                ephemeralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
                     isEphemeralContainer: _container.isEphemeralContainer,
                     isExternal: _container.isExternal,
+                    endIcon: (
+                        <DeleteEphemeralButton
+                            containerName={_container.name}
+                            isResourceBrowserView={isResourceBrowserView}
+                            setContainers={setContainers}
+                            selectedNamespace={selectedNamespace}
+                            selectedClusterId={selectedClusterId}
+                            selectedPodName={selectedPodName}
+                            switchSelectedContainer={switchSelectedContainer}
+                            containers={containers}
+                            isExternal={_container.isExternal}
+                        />
+                    ),
                 })
             } else {
                 containerOptions.push({
@@ -438,10 +348,10 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
             })
         }
 
-        if (ephemralContainerOptions.length > 0) {
+        if (ephemeralContainerOptions.length > 0) {
             groupedOptions.push({
                 label: 'Ephemeral containers',
-                options: ephemralContainerOptions.sort(sortOptionsByLabel),
+                options: ephemeralContainerOptions.sort(sortOptionsByLabel),
             })
         }
 

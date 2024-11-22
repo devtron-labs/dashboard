@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, VisibleModal, stopPropagation, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Progressing,
+    VisibleModal,
+    stopPropagation,
+    usePrompt,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CIMaterial from './ciMaterial'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { CIMaterialModalProps, CIMaterialRouterProps } from './types'
@@ -30,6 +39,11 @@ export const CIMaterialModal = ({
     ...props
 }: CIMaterialModalProps) => {
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
+    const selectedCIPipeline = useMemo(
+        () => props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId),
+        [props.filteredCIPipelines, props.pipelineId],
+    )
+
     usePrompt({ shouldPrompt: isLoading })
 
     useEffect(
@@ -40,31 +54,44 @@ export const CIMaterialModal = ({
         [],
     )
 
-    return (
+    useEffect(() => {
+        if (props.isJobView && props.environmentLists?.length > 0 && selectedCIPipeline?.environmentId) {
+            const envId = selectedCIPipeline?.environmentId
+            const _selectedEnv = props.environmentLists.find((env) => env.id === envId)
+            props.setSelectedEnv(_selectedEnv)
+        }
+    }, [selectedCIPipeline])
+
+    const renderBranchCIModal = () => (
         <VisibleModal className="" close={closeCIModal}>
+            (
             <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
                 {loader ? (
                     <>
                         <div className="trigger-modal__header flex right">
-                            <button
-                                type="button"
-                                aria-label="close-modal"
-                                className="dc__transparent"
+                            <Button
+                                ariaLabel="close-button"
+                                variant={ButtonVariantType.borderLess}
+                                icon={<CloseIcon />}
                                 onClick={closeCIModal}
-                            >
-                                <CloseIcon />
-                            </button>
+                                size={ComponentSizeType.small}
+                                style={ButtonStyleType.negativeGrey}
+                                dataTestId="ci-material-close-button"
+                            />
                         </div>
                         <div style={{ height: 'calc(100% - 55px)' }}>
                             <Progressing pageLoader size={32} />
                         </div>
                     </>
                 ) : (
-                    <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={+ciNodeId} />
+                    <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={ciNodeId} />
                 )}
             </div>
+            )
         </VisibleModal>
     )
+
+    return renderBranchCIModal()
 }
 
 export default CIMaterialModal
