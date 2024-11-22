@@ -16,26 +16,18 @@
 
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import {
-    useAsync,
-    abortPreviousRequests,
-    BulkSelectionProvider,
-    SelectAllDialogStatus,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import { SIDEBAR_KEYS } from '../Constants'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import ConnectingToClusterState from './ConnectingToClusterState'
-import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 
 const K8SResourceTabComponent = ({
     selectedResource,
     setSelectedResource,
     selectedCluster,
     renderRefreshBar,
-    isSuperAdmin,
     addTab,
     isOpen,
     showStaleDataWarning,
@@ -83,37 +75,19 @@ const K8SResourceTabComponent = ({
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />
-            {/* NOTE: if we directly use nodeType for this check
-             * component will mount/dismount on every tab change */}
-            {selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind ? (
-                <BulkSelectionProvider
-                    key={JSON.stringify(selectedResource)}
-                    // TODO: do we need a dialog for this ?
-                    getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
-                >
-                    <NodeDetailsList
-                        clusterName={clusterName}
-                        isSuperAdmin={isSuperAdmin}
-                        addTab={addTab}
-                        renderRefreshBar={renderRefreshBar}
-                        showStaleDataWarning={showStaleDataWarning}
-                    />
-                </BulkSelectionProvider>
-            ) : (
-                <K8SResourceList
-                    clusterName={clusterName}
-                    selectedResource={selectedResource}
-                    selectedCluster={selectedCluster}
-                    addTab={addTab}
-                    isOpen={isOpen}
-                    renderRefreshBar={renderRefreshBar}
-                    showStaleDataWarning={showStaleDataWarning}
-                    updateK8sResourceTab={updateK8sResourceTab}
-                    setWidgetEventDetails={setWidgetEventDetails}
-                    handleResourceClick={handleResourceClick}
-                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                />
-            )}
+            <K8SResourceList
+                clusterName={clusterName}
+                selectedResource={selectedResource}
+                selectedCluster={selectedCluster}
+                addTab={addTab}
+                isOpen={isOpen}
+                renderRefreshBar={renderRefreshBar}
+                showStaleDataWarning={showStaleDataWarning}
+                updateK8sResourceTab={updateK8sResourceTab}
+                setWidgetEventDetails={setWidgetEventDetails}
+                handleResourceClick={handleResourceClick}
+                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+            />
         </div>
     )
 }

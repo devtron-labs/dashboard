@@ -8,6 +8,7 @@ import {
     DOCUMENTATION_HOME_PAGE,
     ComponentSizeType,
     noop,
+    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { MERGE_STRATEGY_OPTIONS } from './constants'
@@ -32,7 +33,7 @@ const SelectMergeStrategy = ({
     }
 
     const renderContent = () => {
-        const selectedOption = MERGE_STRATEGY_OPTIONS.find((option) => option.value === mergeStrategy)
+        const selectedOption = getSelectPickerOptionByValue(MERGE_STRATEGY_OPTIONS, mergeStrategy, null)
 
         if (variant === 'text') {
             return (

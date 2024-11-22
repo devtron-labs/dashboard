@@ -13,6 +13,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
 import {
     BaseDeploymentTemplateParsedDraftDTO,
+    ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
@@ -109,7 +110,10 @@ export const getEditorTemplateAndLockedKeys = (
 export const getCurrentTemplateWithLockedKeys = ({
     currentEditorTemplateData,
     wasGuiOrHideLockedKeysEdited,
-}: Pick<DeploymentTemplateStateType, 'currentEditorTemplateData' | 'wasGuiOrHideLockedKeysEdited'>): string => {
+}: Pick<
+    DeploymentTemplateStateType,
+    ConfigEditorStatesType.CURRENT_EDITOR | 'wasGuiOrHideLockedKeysEdited'
+>): string => {
     const removedPatches = structuredClone(currentEditorTemplateData.removedPatches || [])
 
     if (!removedPatches.length || !reapplyRemovedLockedKeysToYaml) {
@@ -373,6 +377,8 @@ export const handleInitializeDraftData = ({
             mergedTemplate: stringifiedTemplate,
             mergedTemplateObject: valuesOverride,
             mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
+            isLoadingMergedTemplate: false,
+            mergedTemplateError: null,
         }
 
         return response
@@ -391,11 +397,11 @@ export const handleInitializeDraftData = ({
         readme,
         schema,
         mergeStrategy: mergeStrategyFromDraft,
-        envOverridePatchValues: envOverridePatchValuesFromAPI,
+        envOverridePatchValues: envOverridePatchValuesFromDraft,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
 
     const mergeStrategy = mergeStrategyFromDraft || DEFAULT_MERGE_STRATEGY
-    const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
+    const envOverridePatchValues = envOverridePatchValuesFromDraft || {}
 
     const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
     const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
@@ -432,6 +438,8 @@ export const handleInitializeDraftData = ({
         mergedTemplateObject: envOverrideValues,
         mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
             .editorTemplate,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
     }
 
     return response
@@ -572,9 +580,10 @@ export const getCompareFromEditorConfig = ({
     showApprovalPendingEditorInCompareView,
     state,
 }: GetCompareFromEditorConfigParams): Pick<CompareConfigViewProps, 'currentEditorConfig' | 'publishedEditorConfig'> => {
-    const { draftTemplateData, currentEditorTemplateData, publishedTemplateData } = state
+    const { draftTemplateData, currentEditorTemplateData, publishedTemplateData, baseDeploymentTemplateData } = state
 
-    const templateState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
+    const userSelectionState = showApprovalPendingEditorInCompareView ? draftTemplateData : currentEditorTemplateData
+    const currentEditorTemplateState = isDeleteOverrideDraft ? baseDeploymentTemplateData : userSelectionState
 
     const currentEditorConfig: CompareConfigViewProps['currentEditorConfig'] = {
         ...(envId &&
@@ -586,23 +595,23 @@ export const getCompareFromEditorConfig = ({
             }),
         chartName: {
             displayName: 'Chart',
-            value: templateState?.selectedChart?.name,
+            value: currentEditorTemplateState?.selectedChart?.name,
         },
         chartVersion: {
             displayName: 'Version',
-            value: templateState?.selectedChart?.version,
+            value: currentEditorTemplateState?.selectedChart?.version,
         },
         ...(!!envId &&
             !isDeleteOverrideDraft && {
                 mergeStrategy: {
                     displayName: 'Merge strategy',
-                    value: templateState?.mergeStrategy,
+                    value: currentEditorTemplateState?.mergeStrategy,
                 },
             }),
         ...(!!window._env_.APPLICATION_METRICS_ENABLED && {
             applicationMetrics: {
                 displayName: 'Application metrics',
-                value: templateState?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                value: currentEditorTemplateState?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
             },
         }),
     }
@@ -674,3 +683,18 @@ export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, ver
 
     return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${CHART_NAME_TO_DOC_SEGMENT[chartName]}-chart_${version.replace(/\./g, '-')}/schema.json`
 }
+
+const getIsEditorStrategyPatch = (
+    editorState: DeploymentTemplateConfigState | DeploymentTemplateEditorDataStateType,
+): boolean => editorState?.isOverridden && editorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+export const getEditorStatesWithPatchStrategy = (state: DeploymentTemplateStateType): ConfigEditorStatesType[] =>
+    Object.values(ConfigEditorStatesType)
+        .map((editorState) => {
+            if (getIsEditorStrategyPatch(state[editorState])) {
+                return editorState
+            }
+
+            return null
+        })
+        .filter(Boolean)

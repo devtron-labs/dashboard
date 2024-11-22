@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { MultiValue } from 'react-select'
 import { ResponseType, ClusterStatusType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
+import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { LabelTag, OptionType } from '../app/types'
-import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
+import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { ClusterOptionType, K8SResourceListType } from '../ResourceBrowser/Types'
 import { useTabs } from '../common/DynamicTabs'
@@ -33,20 +32,7 @@ export enum EFFECT_TYPE {
     PreferNoSchedule = 'PreferNoSchedule',
     NoExecute = 'NoExecute',
 }
-export interface NodeListSearchFliterType {
-    defaultVersion: OptionType
-    nodeK8sVersions: string[]
-    selectedVersion: OptionType
-    setSelectedVersion: React.Dispatch<React.SetStateAction<OptionType>>
-    appliedColumns: MultiValue<ColumnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
-    selectedSearchTextType: string
-    setSelectedSearchTextType: React.Dispatch<React.SetStateAction<string>>
-    searchText: string
-    setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchedTextMap: Map<string, string>
-    setSearchedTextMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
-}
+
 export interface ResourceDetail {
     name: string
     capacity: string
@@ -102,19 +88,6 @@ export interface ClusterNoteType {
     updatedOn: string
 }
 
-export interface NodeRowDetail {
-    name: string
-    status: string
-    roles: string[]
-    errors: Record<string, string>[]
-    k8sVersion: string
-    podCount: number
-    taintCount: number
-    cpu: ResourceDetail
-    memory: ResourceDetail
-    age: string
-}
-
 export interface ClusterListResponse extends ResponseType {
     result?: ClusterDetail[]
 }
@@ -129,10 +102,6 @@ export interface ClusterNoteResponse extends ResponseType {
 
 export interface ClusterCapacityResponse extends ResponseType {
     result?: ClusterCapacityType
-}
-
-export interface NodeListResponse extends ResponseType {
-    result?: NodeRowDetail[]
 }
 
 export interface PodType extends K8sResourceDetailDataType {
@@ -194,7 +163,7 @@ export interface ColumnMetadataType {
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     isSuperAdmin: boolean
     addTab?: ReturnType<typeof useTabs>['addTab']
-    updateTabUrl: (url: string) => void
+    updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
 export interface ClusterAboutPropType {
@@ -239,16 +208,6 @@ export interface TaintErrorObj {
         key: ErrorObj
         value: ErrorObj
     }[]
-}
-interface NodeDataPropType {
-    nodeData: NodeDetail
-    getNodeListData: () => void
-}
-
-export interface NodeActionsMenuProps extends NodeDataPropType {
-    openTerminal: (clusterData: NodeDetail) => void
-    isSuperAdmin: boolean
-    addTab: ReturnType<typeof useTabs>['addTab']
 }
 
 export interface NodeActionRequest {
@@ -389,5 +348,3 @@ export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
     addTab: ReturnType<typeof useTabs>['addTab']
 }
-
-export type SearchTextType = (typeof NODE_SEARCH_TEXT)[keyof typeof NODE_SEARCH_TEXT]

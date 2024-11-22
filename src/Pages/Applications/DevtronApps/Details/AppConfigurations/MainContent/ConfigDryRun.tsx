@@ -15,6 +15,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 // FIXME: Placeholder icon since no sense of git merge icon as of now
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import SelectMergeStrategy from './SelectMergeStrategy'
 import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
 import { ConfigDryRunProps } from './types'
@@ -38,6 +39,8 @@ const ConfigDryRun = ({
     errorInfo,
     handleErrorReload,
     manifestAbortController,
+    mergeStrategy,
+    isOverridden,
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
@@ -103,11 +106,17 @@ const ConfigDryRun = ({
                         )}
                     </div>
 
-                    <ToggleResolveScopedVariables
-                        handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
-                        resolveScopedVariables={resolveScopedVariables}
-                        isDisabled={!!errorInfo}
-                    />
+                    <div className="flexbox dc__gap-8">
+                        {isOverridden && mergeStrategy && (
+                            <SelectMergeStrategy mergeStrategy={mergeStrategy} variant="text" />
+                        )}
+
+                        <ToggleResolveScopedVariables
+                            handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
+                            resolveScopedVariables={resolveScopedVariables}
+                            isDisabled={!!errorInfo}
+                        />
+                    </div>
                 </div>
 
                 {renderEditorBody()}

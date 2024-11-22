@@ -16,9 +16,15 @@
 
 import React, { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
-import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    sortCallback,
+    Reload,
+    SearchBar,
+    getEnvironmentListMinPublic,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
-import { getEnvironmentListMinPublic } from '../../services/service'
 import { ViewType } from '../../config'
 import { SecurityPolicyEnvironmentState } from './security.types'
 

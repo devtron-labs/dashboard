@@ -14,7 +14,12 @@ import {
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentTemplateEditorDataStateType, DeploymentTemplateProps, DeploymentTemplateStateType } from './types'
+import {
+    ConfigEditorStatesType,
+    DeploymentTemplateEditorDataStateType,
+    DeploymentTemplateProps,
+    DeploymentTemplateStateType,
+} from './types'
 import {
     applyCompareDiffOfTempFormDataOnOriginalData,
     getCurrentTemplateWithLockedKeys,
@@ -24,7 +29,10 @@ import {
 interface InitializeStateBasePayloadType
     extends Pick<
         DeploymentTemplateStateType,
-        'baseDeploymentTemplateData' | 'publishedTemplateData' | 'chartDetails' | 'lockedConfigKeysWithLockType'
+        | ConfigEditorStatesType.BASE_EDITOR
+        | ConfigEditorStatesType.PUBLISHED_EDITOR
+        | 'chartDetails'
+        | 'lockedConfigKeysWithLockType'
     > {}
 
 interface GetDeploymentTemplateInitialStateParamsType {
@@ -107,7 +115,10 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
-    | DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE
+
+interface LoadMergedTemplateBasePayloadType {
+    editorStates: ConfigEditorStatesType[]
+}
 
 export type DeploymentTemplateActionState =
     | {
@@ -126,14 +137,17 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT
-          payload: InitializeStateBasePayloadType & Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'>
+          payload: InitializeStateBasePayloadType &
+              Pick<DeploymentTemplateStateType, ConfigEditorStatesType.CURRENT_EDITOR>
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  'currentEditorTemplateData' | 'draftTemplateData' | 'selectedProtectionViewTab'
+                  | ConfigEditorStatesType.CURRENT_EDITOR
+                  | ConfigEditorStatesType.DRAFT_EDITOR
+                  | 'selectedProtectionViewTab'
               >
       }
     | {
@@ -203,9 +217,14 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE
-          payload: {
-              mergedTemplate: Record<string, any>
-          }
+          payload: LoadMergedTemplateBasePayloadType &
+              Pick<DeploymentTemplateStateType, ConfigEditorStatesType.BASE_EDITOR> & {
+                  mergedTemplates: Record<string, any>[]
+              }
+      }
+    | {
+          type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE
+          payload: LoadMergedTemplateBasePayloadType
       }
     | {
           type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
@@ -786,17 +805,40 @@ export const deploymentTemplateReducer = (
                 areCommentsPresent: action.payload.areCommentsPresent,
             }
 
-        case DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE:
+        case DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE: {
+            const { editorStates } = action.payload
+
             return {
                 ...state,
-                currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
-                    isLoadingMergedTemplate: true,
-                    mergedTemplateError: null,
-                },
-            }
+                ...editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
+                    (acc, editorState) => {
+                        const editorStateData = state[editorState]
+                        const baseOperationObject = {
+                            isLoadingMergedTemplate: true,
+                            mergedTemplateError: null,
+                        }
 
-        case DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR:
+                        // Since currentEditorState has different typing had to do this
+                        if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
+                                ...baseOperationObject,
+                            }
+                        } else {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateConfigState),
+                                ...baseOperationObject,
+                            }
+                        }
+
+                        return acc
+                    },
+                    {},
+                ),
+            }
+        }
+
+        case DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR: {
             return {
                 ...state,
                 currentEditorTemplateData: {
@@ -805,27 +847,49 @@ export const deploymentTemplateReducer = (
                     mergedTemplateError: action.payload.mergedTemplateError,
                 },
             }
+        }
 
         case DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE: {
-            const { mergedTemplate: mergedTemplateObject } = action.payload
-            const mergedTemplate = YAMLStringify(mergedTemplateObject)
-            const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
-                mergedTemplate,
-                state.lockedConfigKeysWithLockType.config,
-            )
+            const { mergedTemplates: mergedTemplateObjects, baseDeploymentTemplateData, editorStates } = action.payload
 
             return {
                 ...state,
-                currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
+                baseDeploymentTemplateData,
+                ...editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
+                    (acc, editorState, index) => {
+                        const editorStateData = state[editorState]
 
-                    isLoadingMergedTemplate: false,
-                    mergedTemplateError: null,
+                        const mergedTemplateObject = mergedTemplateObjects[index]
+                        const mergedTemplate = YAMLStringify(mergedTemplateObject)
+                        const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
+                            mergedTemplate,
+                            state.lockedConfigKeysWithLockType.config,
+                        )
 
-                    mergedTemplateObject,
-                    mergedTemplate,
-                    mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
-                },
+                        const baseOperationObject = {
+                            isLoadingMergedTemplate: false,
+                            mergedTemplateError: null,
+                            mergedTemplateObject,
+                            mergedTemplate,
+                            mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
+                        }
+
+                        if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
+                                ...baseOperationObject,
+                            }
+                        } else {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateConfigState),
+                                ...baseOperationObject,
+                            }
+                        }
+
+                        return acc
+                    },
+                    {},
+                ),
             }
         }
 

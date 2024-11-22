@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    useAsync,
-    abortPreviousRequests,
-    Nodes,
-    getIsRequestAborted,
-    getK8sResourceList,
-    showError,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from '../Constants'
-import { getResourceListPayload } from '../ResourceBrowser.service'
+import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
 import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
 import BaseResourceList from './BaseResourceList'
@@ -69,25 +62,11 @@ export const K8SResourceList = ({
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () =>
             abortPreviousRequests(
-                () =>
-                    getK8sResourceList(
-                        getResourceListPayload(
-                            clusterId,
-                            selectedNamespace.value.toLowerCase(),
-                            selectedResource,
-                            filters,
-                        ),
-                        abortControllerRef.current.signal,
-                    ).catch((err) => {
-                        if (!getIsRequestAborted(err)) {
-                            showError(err)
-                            throw err
-                        }
-                    }),
+                async () =>
+                    getResourceData({ selectedResource, selectedNamespace, clusterId, filters, abortControllerRef }),
                 abortControllerRef,
             ),
         [selectedResource, clusterId, selectedNamespace, filters],
-        selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
 
     const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
@@ -107,7 +86,9 @@ export const K8SResourceList = ({
             default:
                 break
         }
-        result.data = result.data.map((data, index) => ({ id: index, ...data }))
+        // NOTE: for namespaced resource name+namespace will be unique
+        // while for non-namespaced resources name will be unique
+        result.data = result.data.map((data) => ({ id: `${data.name}-${data.namespace}`, ...data }))
         return result
     }, [_resourceList])
 
@@ -130,6 +111,7 @@ export const K8SResourceList = ({
             nodeType={nodeType}
             group={group}
             addTab={addTab}
+            hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
             setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             handleResourceClick={handleResourceClick}
