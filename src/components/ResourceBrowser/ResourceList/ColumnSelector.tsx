@@ -56,9 +56,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
 
         const newVisibleColumns = selectedColumns.map((option) => option.value)
 
-        if (typeof Storage !== 'undefined') {
-            saveAppliedColumnsInLocalStorage(newVisibleColumns)
-        }
+        saveAppliedColumnsInLocalStorage(newVisibleColumns)
 
         selectRef.current?.blur()
 

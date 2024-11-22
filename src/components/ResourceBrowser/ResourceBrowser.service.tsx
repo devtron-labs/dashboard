@@ -33,6 +33,7 @@ import {
 import { applyOperation, escapePathComponent } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
 import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
+import { RefObject } from 'react'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
@@ -153,8 +154,13 @@ export const restartWorkload = async (resource: SelectedResourceType, signal: Ab
     await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
 }
 
-export const getNodeList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<NodeRowDetail[]>> =>
-    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), { signal })
+export const getNodeList = (
+    clusterId: string,
+    abortControllerRef: RefObject<AbortController>,
+): Promise<ResponseType<NodeRowDetail[]>> =>
+    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), {
+        abortControllerRef,
+    })
 
 export const getResourceData = async ({
     selectedResource,
@@ -165,7 +171,7 @@ export const getResourceData = async ({
 }: GetResourceDataType) => {
     try {
         if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
-            const response = await getNodeList(clusterId, abortControllerRef.current.signal)
+            const response = await getNodeList(clusterId, abortControllerRef)
 
             return parseNodeList(response)
         }
