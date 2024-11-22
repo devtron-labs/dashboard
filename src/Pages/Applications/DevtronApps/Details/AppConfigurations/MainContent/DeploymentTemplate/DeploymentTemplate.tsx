@@ -72,6 +72,7 @@ import {
     getCompareFromEditorConfig,
     getCurrentEditorPayloadForScopedVariables,
     getCurrentEditorState,
+    getCurrentTemplateWithLockedKeys,
     getDeleteProtectedOverridePayload,
     getDeploymentTemplateResourceName,
     getEditorStatesWithPatchStrategy,
@@ -387,10 +388,17 @@ const DeploymentTemplate = ({
                 },
             })
 
-            // TODO: Look if sending locked keys or not else merge will not work
             const parsedValues = requiredEditorStates.map((editorState) => {
                 try {
-                    return YAML.parse(state[editorState].editorTemplate)
+                    const editorTemplate =
+                        editorState === ConfigEditorStatesType.CURRENT_EDITOR
+                            ? getCurrentTemplateWithLockedKeys({
+                                  currentEditorTemplateData,
+                                  wasGuiOrHideLockedKeysEdited,
+                              })
+                            : state[editorState].editorTemplate
+
+                    return YAML.parse(editorTemplate)
                 } catch {
                     // Won't need this in reality but just in case
                     return {}
