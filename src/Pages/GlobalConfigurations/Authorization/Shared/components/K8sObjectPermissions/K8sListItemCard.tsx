@@ -30,6 +30,7 @@ import {
     GVKType,
     getK8sResourceList,
     EntityTypes,
+    ApiResourceGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -85,7 +86,7 @@ const K8sListItemCard = ({
     const { showStatus, userStatus } = usePermissionConfiguration()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
-    const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
+    const allInKindMapping = { label: 'All kind', value: SELECT_ALL_VALUE }
     const [
         { isClusterListLoading, isNamespaceListLoading, isApiGroupListLoading, isResourceListLoading },
         setLoadingState,
@@ -174,16 +175,19 @@ const K8sListItemCard = ({
         }
     }
 
-    const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
+    const createKindData = (selected, _k8SObjectMap = null) => {
         const kind = []
         let selectedGvk: GVKType
+        const isAllNamespaceSelected = k8sPermission.namespace.some((option) => option.value === SELECT_ALL_VALUE)
         if (_k8SObjectMap ?? processedData) {
             if (selected.value === SELECT_ALL_VALUE) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const value of (_k8SObjectMap ?? processedData).values()) {
                     // eslint-disable-next-line no-loop-func
-                    value?.child.forEach((ele: { gvk: GVKType }) => {
-                        kind.push({ value: ele.gvk.Kind, label: ele.gvk.Kind, gvk: ele.gvk })
+                    value?.child.forEach((ele: ApiResourceGroupType) => {
+                        if (isAllNamespaceSelected || ele.namespaced) {
+                            kind.push({ label: ele.gvk.Kind, value: ele.gvk.Kind, gvk: ele.gvk })
+                        }
                         if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                             selectedGvk = ele.gvk
                         }
@@ -191,8 +195,9 @@ const K8sListItemCard = ({
                 }
             } else {
                 const data = (_k8SObjectMap ?? processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
+
                 data?.child?.forEach((ele) => {
-                    if (ele.namespaced) {
+                    if (isAllNamespaceSelected || ele.namespaced) {
                         kind.push({ label: ele.gvk.Kind, value: ele.gvk.Kind, gvk: ele.gvk })
                     }
                     if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
@@ -201,12 +206,12 @@ const K8sListItemCard = ({
                 })
             }
         } else {
-            _allKindMapping = [{ label: 'All kind', value: SELECT_ALL_VALUE }]
+            kind.push(allInKindMapping[0])
         }
 
         setKindMapping((prevMapping) => ({
             ...prevMapping,
-            [k8sPermission.key]: [..._allKindMapping, ...kind.sort(sortOptionsByLabel)],
+            [k8sPermission.key]: [...kind.sort(sortOptionsByLabel)],
         }))
         if (k8sPermission?.resource) {
             if (k8sPermission.kind.value !== SELECT_ALL_VALUE && k8sPermission.kind.value !== 'Event') {
@@ -238,15 +243,12 @@ const K8sListItemCard = ({
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
 
                 const _allApiGroupMapping = []
-                const _allKindMapping = []
                 if (resourceGroupList.allowedAll) {
                     _allApiGroupMapping.push(
                         { label: 'All API groups', value: SELECT_ALL_VALUE },
                         { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
                     )
-                    _allKindMapping.push({ label: 'All kind', value: SELECT_ALL_VALUE })
                 }
-                setAllInKindMapping(_allKindMapping)
                 setApiGroupMapping((prevMapping) => ({
                     ...prevMapping,
                     [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList.sort(sortOptionsByLabel)],
@@ -255,7 +257,6 @@ const K8sListItemCard = ({
                 if (k8sPermission?.kind) {
                     createKindData(
                         k8sPermission.group,
-                        _allKindMapping,
                         k8sPermission?.namespace.some((el) => el.value === SELECT_ALL_VALUE)
                             ? _k8SObjectMap
                             : _processedNamespacedGvk.k8SObjectMap,
@@ -336,7 +337,7 @@ const K8sListItemCard = ({
     const onApiGroupSelect = (selected) => {
         if (selected.value !== k8sPermission?.group?.value) {
             handleK8sPermission(K8sPermissionActionType.onApiGroupChange, index, selected)
-            createKindData(selected, allInKindMapping)
+            createKindData(selected)
         }
     }
 
