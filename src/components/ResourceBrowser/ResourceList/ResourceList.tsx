@@ -358,7 +358,7 @@ const ResourceList = () => {
     const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
         const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
         const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
-        const _group: string =
+        let _group: string =
             (shouldOverrideSelectedResourceKind
                 ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
                 : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
@@ -371,6 +371,9 @@ const ResourceList = () => {
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
             const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
+            // For event, we should read the group for kind from the resource group map else fallback to empty group
+            _group = lowercaseKindToResourceGroupMap[eventKind]?.gvk?.Group || K8S_EMPTY_GROUP
+
             resourceParam = `${eventKind}/${_group}/${_resourceName}`
             kind = eventKind
             resourceName = _resourceName
