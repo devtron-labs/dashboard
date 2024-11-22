@@ -13,6 +13,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
 import {
     BaseDeploymentTemplateParsedDraftDTO,
+    ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
@@ -92,7 +93,10 @@ export const getEditorTemplateAndLockedKeys = (
 export const getCurrentTemplateWithLockedKeys = ({
     currentEditorTemplateData,
     wasGuiOrHideLockedKeysEdited,
-}: Pick<DeploymentTemplateStateType, 'currentEditorTemplateData' | 'wasGuiOrHideLockedKeysEdited'>): string => {
+}: Pick<
+    DeploymentTemplateStateType,
+    ConfigEditorStatesType.CURRENT_EDITOR | 'wasGuiOrHideLockedKeysEdited'
+>): string => {
     const removedPatches = structuredClone(currentEditorTemplateData.removedPatches || [])
 
     if (!removedPatches.length || !reapplyRemovedLockedKeysToYaml) {
@@ -356,6 +360,8 @@ export const handleInitializeDraftData = ({
             mergedTemplate: stringifiedTemplate,
             mergedTemplateObject: valuesOverride,
             mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
+            isLoadingMergedTemplate: false,
+            mergedTemplateError: null,
         }
 
         return response
@@ -415,6 +421,8 @@ export const handleInitializeDraftData = ({
         mergedTemplateObject: envOverrideValues,
         mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
             .editorTemplate,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
     }
 
     return response
@@ -658,3 +666,18 @@ export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, ver
 
     return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${CHART_NAME_TO_DOC_SEGMENT[chartName]}-chart_${version.replace(/\./g, '-')}/schema.json`
 }
+
+const getIsEditorStrategyPatch = (
+    editorState: DeploymentTemplateConfigState | DeploymentTemplateEditorDataStateType,
+): boolean => editorState?.isOverridden && editorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+export const getEditorStatesWithPatchStrategy = (state: DeploymentTemplateStateType): ConfigEditorStatesType[] =>
+    Object.values(ConfigEditorStatesType)
+        .map((editorState) => {
+            if (getIsEditorStrategyPatch(state[editorState])) {
+                return editorState
+            }
+
+            return null
+        })
+        .filter(Boolean)
