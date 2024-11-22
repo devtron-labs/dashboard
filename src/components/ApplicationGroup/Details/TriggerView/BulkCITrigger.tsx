@@ -43,7 +43,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-triangle.svg'
@@ -104,10 +104,11 @@ const BulkCITrigger = ({
 }: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
+    const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
+
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
-    const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
     const { url } = useRouteMatch()
     const showWebhookModal = url.includes(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID || URLS.WEBHOOK_MODAL)
@@ -138,6 +139,26 @@ const BulkCITrigger = ({
         }
         getMaterialData()
     }, [])
+
+    const getInitSelectedRegexValue = (): Record<number, RegexValueType> => {
+        if (selectedApp.appId) {
+            const selectedMaterial = appList.find((app) => app.appId === selectedApp.appId).material
+
+            if (selectedMaterial) {
+                return selectedMaterial.reduce(
+                    (acc, mat) => {
+                        acc[mat.gitMaterialId] = {
+                            value: mat.value,
+                            isInvalid: mat.regex ? !new RegExp(mat.regex).test(mat.value) : false,
+                        }
+                        return acc
+                    },
+                    {} as Record<number, RegexValueType>,
+                )
+            }
+        }
+        return {}
+    }
 
     const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const runtimeParamsServiceList = appList.map((appDetails) => {
@@ -296,20 +317,24 @@ const BulkCITrigger = ({
                             variant={ButtonVariantType.borderLess}
                             size={ComponentSizeType.xs}
                             showAriaLabelInTippy={false}
-                            style={ButtonStyleType.negativeGrey}
+                            style={ButtonStyleType.neutral}
                         />
                     )}
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">
+                        {isWebhookBulkCI ? `${selectedApp.ciPipelineName} / All received webhooks` : 'Build image'}
+                    </h2>
                 </div>
-                <button
-                    type="button"
-                    className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
-                    disabled={isLoading}
+                <Button
+                    ariaLabel="bulk-ci-close-button"
+                    dataTestId="Bulk close modal"
                     onClick={closeBulkCIModal}
-                    aria-label="Close modal"
-                >
-                    <Close className="icon-dim-24" />
-                </button>
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.small}
+                    icon={<Close />}
+                    showAriaLabelInTippy={false}
+                    style={ButtonStyleType.negativeGrey}
+                    disabled={isLoading}
+                />
             </div>
         )
     }
@@ -317,6 +342,7 @@ const BulkCITrigger = ({
     const showBranchEditModal = (): void => {
         setShowRegexModal(true)
         setChangeBranchClicked(false)
+        setRegexValue(getInitSelectedRegexValue())
     }
 
     const hideBranchEditModal = (e?): void => {
@@ -426,19 +452,17 @@ const BulkCITrigger = ({
                 (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
             )
             return (
-                <>
-                    <BranchRegexModal
-                        material={selectedMaterialList}
-                        selectedCIPipeline={selectedCIPipeline}
-                        title={selectedApp.ciPipelineName}
-                        isChangeBranchClicked={isChangeBranchClicked}
-                        onClickNextButton={saveBranchName}
-                        handleRegexInputValue={handleRegexInputValueChange}
-                        regexValue={regexValue}
-                        onCloseBranchRegexModal={hideBranchEditModal}
-                        savingRegexValue={isLoading}
-                    />
-                </>
+                <BranchRegexModal
+                    material={selectedMaterialList}
+                    selectedCIPipeline={selectedCIPipeline}
+                    title={selectedApp.ciPipelineName}
+                    isChangeBranchClicked={isChangeBranchClicked}
+                    onClickNextButton={saveBranchName}
+                    handleRegexInputValue={handleRegexInputValueChange}
+                    regexValue={regexValue}
+                    onCloseBranchRegexModal={hideBranchEditModal}
+                    savingRegexValue={isLoading}
+                />
             )
         }
         if (selectedApp.isLinkedCD) {
@@ -471,6 +495,7 @@ const BulkCITrigger = ({
             )
         }
         const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+
         return (
             <GitInfoMaterial
                 material={selectedMaterialList}
@@ -703,7 +728,7 @@ const BulkCITrigger = ({
                         ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
+                <div className="main-content dc__window-bg dc__height-inherit">
                     {renderMainContent(selectedMaterialList)}
                 </div>
             </div>
