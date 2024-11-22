@@ -196,6 +196,7 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             ref={formMethodsRef}
             configMapSecretData={configMapSecretData}
+            inheritedConfigMapSecretData={inheritedConfigMapSecretData}
             id={id}
             componentType={componentType}
             cmSecretStateLabel={

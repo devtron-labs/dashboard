@@ -27,6 +27,7 @@ import {
     ConfigResourceType,
     getIsRequestAborted,
     DraftMetadataDTO,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
@@ -42,6 +43,8 @@ import {
     DeleteEnvConfigMapSecretProps,
     OverrideConfigMapSecretProps,
     GetCMSecretProps,
+    ConfigMapSecretManifestProps,
+    ConfigMapSecretManifestDTO,
 } from './types'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -206,3 +209,31 @@ export const getConfigMapSecretResolvedValues = (
         },
         signal,
     )
+
+export const getConfigMapSecretManifest = async (params: ConfigMapSecretManifestProps, signal?: AbortSignal) => {
+    try {
+        const { result } = await post<
+            ConfigMapSecretManifestDTO,
+            Omit<ConfigMapSecretManifestProps, 'resourceType'> & { resourceType: ConfigResourceType }
+        >(
+            Routes.CONFIG_MANIFEST,
+            {
+                ...params,
+                resourceType:
+                    params.resourceType === CMSecretComponentType.ConfigMap
+                        ? ConfigResourceType.ConfigMap
+                        : ConfigResourceType.Secret,
+            },
+            { signal },
+        )
+
+        return result
+    } catch (error) {
+        if (getIsRequestAborted(error)) {
+            return null
+        }
+
+        showError(error)
+        throw error
+    }
+}

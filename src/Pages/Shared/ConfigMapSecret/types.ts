@@ -14,6 +14,7 @@ import {
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
     ConfigHeaderTabType,
+    OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -110,8 +111,6 @@ export interface ConfigMapSecretUseFormProps {
     esoSecretYaml: string
     hasCurrentDataErr: boolean
     isResolvedData: boolean
-    replaceData: CMSecretYamlData[]
-    replaceYaml: string
     mergeStrategy: ConfigToolbarProps['mergeStrategy']
 }
 
@@ -147,6 +146,7 @@ export interface ConfigMapSecretFormProps
     extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType' | 'appChartRef'>> {
     id: number
     configMapSecretData: CMSecretConfigData
+    inheritedConfigMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
     restoreYAML: boolean
     setRestoreYAML: Dispatch<SetStateAction<boolean>>
@@ -318,6 +318,10 @@ export interface CMSecretDTO {
     configData: ConfigDatum[]
 }
 
+export interface ConfigMapSecretManifestDTO {
+    manifest: string
+}
+
 // API CALLS PROPS
 export interface ConfigMapSecretCommonAPIProps {
     id: number
@@ -343,6 +347,15 @@ export interface OverrideConfigMapSecretProps
 export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {
     componentType: CMSecretComponentType
     envId?: number
+}
+
+export interface ConfigMapSecretManifestProps {
+    appId: number
+    mergeStrategy: OverrideMergeStrategyType
+    resourceType: CMSecretComponentType
+    resourceName: string
+    environmentId: number
+    values: Record<string, any>
 }
 
 // UTILS TYPES

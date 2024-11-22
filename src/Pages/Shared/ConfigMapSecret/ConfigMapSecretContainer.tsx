@@ -715,6 +715,7 @@ export const ConfigMapSecretContainer = ({
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
+                inheritedConfigMapSecretData={inheritedConfigMapSecretData}
                 isJob={isJob}
                 isProtected={isProtected}
                 isSubmitting={isSubmitting}

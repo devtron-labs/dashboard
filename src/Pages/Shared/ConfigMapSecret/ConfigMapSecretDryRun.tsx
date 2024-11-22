@@ -1,30 +1,39 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { Prompt, useLocation, useParams } from 'react-router-dom'
 
 import {
+    abortPreviousRequests,
+    APIResponseHandler,
     Button,
     CodeEditor,
     ComponentSizeType,
     DraftAction,
     DraftState,
     DryRunEditorMode,
+    GenericEmptyState,
     MODES,
+    useAsync,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
+import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 
 import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
 import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload } from './utils'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
 import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
+import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
+import { renderExternalInfo } from './helpers'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 
 export const ConfigMapSecretDryRun = ({
-    id,
+    id = null,
     isJob,
     cmSecretStateLabel,
     componentType,
@@ -47,10 +56,17 @@ export const ConfigMapSecretDryRun = ({
     updateCMSecret,
 }: ConfigMapSecretDryRunProps) => {
     // HOOKS
-    const { formDataRef } = useConfigMapSecretFormContext()
+    const location = useLocation()
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const { formDataRef, isFormDirty } = useConfigMapSecretFormContext()
+    const abortControllerRef = useRef<AbortController>(null)
 
     // CONSTANTS
     const isCreateView = id === null
+    const shouldPrompt = isCreateView && isFormDirty
+
+    // PROMPT FOR UNSAVED CHANGES
+    usePrompt({ shouldPrompt })
 
     const dryRunConfigMapSecretData = useMemo(() => {
         let configMapSecretData: CMSecretConfigData =
@@ -74,16 +90,16 @@ export const ConfigMapSecretDryRun = ({
                 const payload = getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current)
 
                 configMapSecretData = {
-                    ...configMapSecretData,
+                    ...((configMapSecretData || {}) as CMSecretConfigData),
                     ...payload,
-                    data: { ...configMapSecretData.data, ...payload.data },
+                    data: { ...(configMapSecretData ? configMapSecretData.data : {}), ...payload.data },
                 }
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
             configMapSecretData = publishedConfigMapSecretData ?? null
         }
 
-        return { ...configMapSecretData, mergeStrategy: null }
+        return configMapSecretData ? { ...configMapSecretData, mergeStrategy: null } : null
     }, [
         isProtected,
         dryRunEditorMode,
@@ -93,6 +109,38 @@ export const ConfigMapSecretDryRun = ({
         publishedConfigMapSecretData,
         inheritedConfigMapSecretData,
     ])
+
+    useEffect(() => {
+        abortControllerRef.current = new AbortController()
+
+        return () => {
+            abortControllerRef.current.abort()
+        }
+    }, [dryRunConfigMapSecretData])
+
+    const isDryRunDataPresent = !!dryRunConfigMapSecretData
+    const isExternal = dryRunConfigMapSecretData?.external
+
+    const [configMapSecretManifestLoading, configMapSecretManifest, configMapSecretManifestError] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () =>
+                    getConfigMapSecretManifest(
+                        {
+                            appId: +appId,
+                            environmentId: envId ? +envId : null,
+                            mergeStrategy,
+                            resourceName: dryRunConfigMapSecretData.name,
+                            resourceType: componentType,
+                            values: dryRunConfigMapSecretData.data,
+                        },
+                        abortControllerRef.current.signal,
+                    ),
+                abortControllerRef,
+            ),
+        [dryRunConfigMapSecretData],
+        isDryRunDataPresent && !isExternal,
+    )
 
     // METHODS
     const handleSubmit = () =>
@@ -122,13 +170,22 @@ export const ConfigMapSecretDryRun = ({
         }
 
         return (
-            <ConfigMapSecretReadyOnly
-                componentType={componentType}
-                isJob={isJob}
-                cmSecretStateLabel={CM_SECRET_STATE.BASE}
-                configMapSecretData={dryRunConfigMapSecretData}
-                areScopeVariablesResolving={areScopeVariablesResolving}
-            />
+            <>
+                <ConfigMapSecretReadyOnly
+                    componentType={componentType}
+                    isJob={isJob}
+                    cmSecretStateLabel={CM_SECRET_STATE.BASE}
+                    configMapSecretData={dryRunConfigMapSecretData}
+                    areScopeVariablesResolving={areScopeVariablesResolving}
+                />
+                <div className="px-16 pb-16">
+                    {renderExternalInfo(
+                        dryRunConfigMapSecretData.externalType,
+                        dryRunConfigMapSecretData.external,
+                        componentType,
+                    )}
+                </div>
+            </>
         )
     }
 
@@ -166,10 +223,23 @@ export const ConfigMapSecretDryRun = ({
                 <ICFilePlay className="icon-dim-16 scn-9" />
                 <h3 className="m-0 fw-6 fs-12 lh-20 cn-9">Manifest generated from merged</h3>
             </div>
-            <div className="flex-grow-1 dc__overflow-scroll">
-                {/* TODO: add manifest after API support */}
-                <CodeEditor value="MANIFEST CONTENT AFTER API" height="100%" mode={MODES.YAML} readOnly noParsing />
-            </div>
+            <APIResponseHandler
+                isLoading={
+                    configMapSecretManifestLoading || (!configMapSecretManifestError && !configMapSecretManifest)
+                }
+                error={!configMapSecretManifestLoading && configMapSecretManifestError}
+                progressingProps={{ pageLoader: true }}
+            >
+                <div className="flex-grow-1 dc__overflow-scroll">
+                    <CodeEditor
+                        value={configMapSecretManifest?.manifest}
+                        height="100%"
+                        mode={MODES.YAML}
+                        readOnly
+                        noParsing
+                    />
+                </div>
+            </APIResponseHandler>
         </div>
     )
 
@@ -202,13 +272,23 @@ export const ConfigMapSecretDryRun = ({
             </footer>
         )
 
+    if (!isDryRunDataPresent) {
+        return <GenericEmptyState title="No data present for manifest" />
+    }
+
     return (
-        <div className="flexbox-col h-100 dc__overflow-hidden">
-            <div className="dc__grid-half flex-grow-1 dc__overflow-hidden">
-                {renderLHS()}
-                {renderRHS()}
+        <>
+            <Prompt
+                when={shouldPrompt}
+                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
+            />
+            <div className="flexbox-col h-100 dc__overflow-hidden">
+                <div className={`flex-grow-1 dc__overflow-hidden ${!isExternal ? 'dc__grid-half' : ''}`}>
+                    {renderLHS()}
+                    {!isExternal && renderRHS()}
+                </div>
+                {showCrudButtons && dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES && renderCrudButton()}
             </div>
-            {showCrudButtons && dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES && renderCrudButton()}
-        </div>
+        </>
     )
 }

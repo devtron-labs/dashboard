@@ -3,6 +3,7 @@ import YAML from 'yaml'
 import {
     AppEnvDeploymentConfigDTO,
     CMSecretExternalType,
+    ConfigHeaderTabType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
     DraftMetadataDTO,
@@ -254,11 +255,6 @@ export const getConfigMapSecretFormInitialValues = ({
             cmSecretStateLabel,
             isSecret,
         })
-        const replaceData = processCurrentData({
-            configMapSecretData: { ...configMapSecretData, mergeStrategy: null },
-            cmSecretStateLabel,
-            isSecret,
-        })
 
         return {
             name,
@@ -274,9 +270,7 @@ export const getConfigMapSecretFormInitialValues = ({
             roleARN: roleARN ?? '',
             yamlMode: true,
             yaml: convertKeyValuePairToYAML(currentData),
-            replaceYaml: convertKeyValuePairToYAML(replaceData),
             currentData,
-            replaceData,
             hasCurrentDataErr: false,
             isResolvedData: false,
             mergeStrategy,
@@ -299,8 +293,6 @@ export const getConfigMapSecretFormInitialValues = ({
         yamlMode: true,
         yaml: '"": ""\n',
         currentData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
-        replaceYaml: '"": ""\n',
-        replaceData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
         hasCurrentDataErr: false,
         isResolvedData: false,
         esoSecretYaml: '{}',
@@ -746,7 +738,7 @@ export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams):
     const headerTab = searchParams.get('headerTab') as ConfigMapSecretQueryParamsType['headerTab']
 
     return {
-        headerTab: headerTab || null,
+        headerTab: Object.values(ConfigHeaderTabType).includes(headerTab) ? headerTab : null,
     }
 }
 // DATA UTILS ----------------------------------------------------------------

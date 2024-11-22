@@ -61,7 +61,7 @@ export const getNavigationPath = (
     params: EnvConfigRouteParams,
     resourceType: EnvResourceType,
     href?: string,
-) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}`
+) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}?headerTab=`
 
 const getIconClassFromConfigState = (configState: ResourceConfigState) => {
     switch (configState) {

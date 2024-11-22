@@ -16,6 +16,7 @@ import {
     RadioGroupItem,
     SelectPicker,
     stopPropagation,
+    useEffectAfterMount,
     useForm,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -53,6 +54,7 @@ export const ConfigMapSecretForm = forwardRef(
         {
             id = null,
             configMapSecretData,
+            inheritedConfigMapSecretData,
             cmSecretStateLabel,
             isJob,
             appChartRef,
@@ -133,7 +135,7 @@ export const ConfigMapSecretForm = forwardRef(
             }
         }, [resolvedFormData])
 
-        useEffect(() => {
+        useEffectAfterMount(() => {
             /*
              * We update formDataRef whenever the form’s data state changes, \
              * but only if resolvedFormData is null. \
@@ -148,6 +150,23 @@ export const ConfigMapSecretForm = forwardRef(
         useEffect(() => {
             if (mergeStrategy && mergeStrategy !== data.mergeStrategy) {
                 setValue('mergeStrategy', mergeStrategy, { shouldDirty: true })
+
+                reset(
+                    {
+                        ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                            ? getConfigMapSecretFormInitialValues({
+                                  cmSecretStateLabel,
+                                  componentType,
+                                  configMapSecretData: inheritedConfigMapSecretData,
+                              })
+                            : formDataRef.current || formInitialValues),
+                        mergeStrategy,
+                        yamlMode: data.yamlMode,
+                        currentData: data.currentData,
+                        yaml: data.yaml,
+                    },
+                    { triggerDirty: true },
+                )
             }
 
             if (
@@ -156,8 +175,13 @@ export const ConfigMapSecretForm = forwardRef(
                 !isDraft &&
                 mergeStrategy === OverrideMergeStrategyType.REPLACE
             ) {
-                setValue('yaml', formInitialValues.replaceYaml)
-                setValue('currentData', formInitialValues.replaceData)
+                const { yaml, currentData } = getConfigMapSecretFormInitialValues({
+                    cmSecretStateLabel,
+                    componentType,
+                    configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
+                })
+                setValue('yaml', yaml)
+                setValue('currentData', currentData)
             }
         }, [mergeStrategy])
 
@@ -442,7 +466,7 @@ export const ConfigMapSecretForm = forwardRef(
                                         cmSecretStateLabel={cmSecretStateLabel}
                                         componentType={componentType}
                                         isJob={isJob}
-                                        configMapSecretData={configMapSecretData}
+                                        configMapSecretData={inheritedConfigMapSecretData}
                                         areScopeVariablesResolving={areScopeVariablesResolving}
                                         hideCodeEditor
                                     />
@@ -454,11 +478,7 @@ export const ConfigMapSecretForm = forwardRef(
                                             {renderName()}
                                         </div>
                                         {renderESOInfo(isESO)}
-                                        {renderExternalInfo(
-                                            data.externalType === CMSecretExternalType.KubernetesSecret ||
-                                                (!data.isSecret && data.external),
-                                            componentType,
-                                        )}
+                                        {renderExternalInfo(data.externalType, data.external, componentType)}
                                         {renderMountData()}
                                         {renderVolumeMountPath()}
                                         {renderRollARN()}
