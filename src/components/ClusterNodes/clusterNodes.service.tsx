@@ -23,7 +23,6 @@ import {
     NodeActionRequest,
     NodeDetailResponse,
     NodeDrainRequest,
-    NodeListResponse,
     UpdateNodeRequestBody,
     EditTaintsRequest,
     TerminalDataType,
@@ -54,9 +53,6 @@ export const getClusterCapacity = (clusterId: string, signal?): Promise<ClusterC
 export const updateClusterShortDescription = (
     requestPayload: ClusterShortDescriptionPatchRequest,
 ): Promise<ResponseType> => put(`${Routes.CLUSTER_DESCRIPTION}`, requestPayload)
-
-export const getNodeList = (clusterId: string): Promise<NodeListResponse> =>
-    get(`${Routes.NODE_LIST}?clusterId=${clusterId}`)
 
 export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<NodeDetailResponse> =>
     get(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)

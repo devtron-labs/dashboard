@@ -158,6 +158,10 @@ export default function App() {
     }
 
     useEffect(() => {
+        if (typeof Storage !== 'undefined') {
+            // TODO (Arun): Remove in next packet
+            localStorage.removeItem('undefined')
+        }
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
