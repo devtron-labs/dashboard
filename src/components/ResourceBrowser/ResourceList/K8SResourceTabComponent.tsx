@@ -34,6 +34,7 @@ const K8SResourceTabComponent = ({
     showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
+    k8SObjectMapRaw,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
@@ -95,6 +96,7 @@ const K8SResourceTabComponent = ({
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
                     updateK8sResourceTab={updateK8sResourceTab}
+                    k8SObjectMapRaw={k8SObjectMapRaw}
                 />
             )}
         </div>

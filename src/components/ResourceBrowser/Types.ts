@@ -144,6 +144,7 @@ export interface ResourceFilterOptionsProps {
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
+    k8SObjectMapRaw: ApiResourceGroupType[]
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -212,6 +213,7 @@ export interface K8SResourceTabComponentProps {
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
+    k8SObjectMapRaw: ApiResourceGroupType[]
 }
 
 export interface AdminTerminalProps {
