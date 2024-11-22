@@ -42,12 +42,6 @@ export const AppDetailsTabs = {
     cluster_overview: 'Overview',
 }
 
-export const AppDetailsTabsIdPrefix = {
-    k8s_Resources: 'k8s_resources',
-    log_analyzer: 'log_analyzer',
-    terminal: 'cluster_terminal',
-    cluster_overview: 'overview',
-}
 
 const AppDetailsStore = {
     getAppDetailsTabs: () => {

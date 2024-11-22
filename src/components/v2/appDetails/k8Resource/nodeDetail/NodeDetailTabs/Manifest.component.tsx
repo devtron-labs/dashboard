@@ -768,7 +768,9 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className="bcn-0 flexbox-col flex-grow-1 dc__overflow-scroll h-100">
+                <div className={`${
+                    manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
+                } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}>
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
                             msg="Manifest not available"

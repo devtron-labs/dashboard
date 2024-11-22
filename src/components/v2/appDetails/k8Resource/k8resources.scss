@@ -47,3 +47,12 @@
         grid-template-columns: 1fr 1fr 20px;
     }
 }
+
+.ephemeral-delete-button .dc__hover-color-r500 {
+    &--fill:hover {
+        path {
+            fill: var(--R500);
+        }
+    }
+
+}
