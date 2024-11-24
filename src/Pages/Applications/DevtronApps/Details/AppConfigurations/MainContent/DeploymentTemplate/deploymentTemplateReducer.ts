@@ -770,8 +770,12 @@ export const deploymentTemplateReducer = (
             return {
                 ...state,
                 currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
+                    ...state[ConfigEditorStatesType.CURRENT_EDITOR],
                     isOverridden: true,
+                    editorTemplate:
+                        state[ConfigEditorStatesType.CURRENT_EDITOR].mergeStrategy === OverrideMergeStrategyType.REPLACE
+                            ? state[ConfigEditorStatesType.BASE_EDITOR].editorTemplate
+                            : state[ConfigEditorStatesType.CURRENT_EDITOR].editorTemplate,
                 },
             }
 

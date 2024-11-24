@@ -77,6 +77,7 @@ import {
     getDeploymentTemplateResourceName,
     getEditorStatesWithPatchStrategy,
     getEditorTemplateAndLockedKeys,
+    getEnvOverrideEditorCommonState,
     getLockedDiffModalDocuments,
     getUpdateBaseDeploymentTemplatePayload,
     getUpdateEnvironmentDTPayload,
@@ -96,7 +97,6 @@ import {
 import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
-import { DEFAULT_MERGE_STRATEGY } from '../constants'
 import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
 import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
@@ -533,7 +533,8 @@ const DeploymentTemplate = ({
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: currentEditorTemplateData.originalTemplateState.selectedChartRefId,
-                          values: YAMLStringify(currentEditorTemplateData.originalTemplate, { simpleKeys: true }),
+                          // TODO: Re-confirm during review
+                          values: currentEditorTemplateData.originalTemplateState.editorTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
                       })
@@ -748,54 +749,31 @@ const DeploymentTemplate = ({
             active,
             namespace,
             envOverrideValues,
-            mergeStrategy: mergeStrategyFromAPI,
-            envOverridePatchValues: envOverridePatchValuesFromAPI,
+            mergeStrategy,
+            envOverridePatchValues,
         } = environmentConfig || {}
-
-        const mergeStrategy = mergeStrategyFromAPI || DEFAULT_MERGE_STRATEGY
-        const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
-
-        const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
-        // If not overridden, will replace the editorTemplate, originalTemplate with envOverridePatchValues
-        const mergedTemplateObject = IsOverride ? envOverrideValues || globalConfig : globalConfig
-
-        const originalTemplate = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
-
-        const stringifiedTemplate = YAMLStringify(originalTemplate, { simpleKeys: true })
-
-        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-            stringifiedTemplate,
-            lockedConfigKeys,
-        )
-
-        const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
 
         // In case of no override it same as saying we have override with no patch value
         return {
-            originalTemplate,
-            schema,
-            readme,
-            guiSchema,
-            isAppMetricsEnabled: appMetrics,
-            editorTemplate: !Object.keys(originalTemplate || {}).length ? '' : stringifiedTemplate,
-            isOverridden: !!IsOverride,
-            environmentConfig: {
+            ...getEnvOverrideEditorCommonState({
                 id,
                 status,
                 manualReviewed,
                 active,
                 namespace,
-            },
-            editorTemplateWithoutLockedKeys,
+                lockedConfigKeys,
+                mergeStrategy,
+                envOverridePatchValues,
+                mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
+                isOverridden: !!IsOverride,
+            }),
+
+            schema,
+            readme,
+            guiSchema,
+            isAppMetricsEnabled: appMetrics,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
-            mergeStrategy,
-            mergedTemplate: stringifiedFinalTemplate,
-            mergedTemplateObject,
-            mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
-                .editorTemplate,
-            isLoadingMergedTemplate: false,
-            mergedTemplateError: null,
         }
     }
 

@@ -30,7 +30,7 @@ import {
 } from './types'
 import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { CompareConfigViewProps } from '../types'
+import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../types'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -110,6 +110,7 @@ export const getCurrentTemplateWithLockedKeys = ({
         const updatedEditorObject = reapplyRemovedLockedKeysToYaml(parsedDocument, removedPatches)
 
         if (wasGuiOrHideLockedKeysEdited) {
+            // TODO: Sync regarding this originalDocument theory when we have no override should we check for mergedTemplateObject
             return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
                 simpleKeys: true,
             })
@@ -319,6 +320,63 @@ export const getCurrentEditorPayloadForScopedVariables = ({
     return currentEditorState.editorTemplate
 }
 
+export const getEnvOverrideEditorCommonState = ({
+    id,
+    status,
+    manualReviewed,
+    active,
+    namespace,
+    lockedConfigKeys,
+    mergeStrategy: mergeStrategyFromParams,
+    envOverridePatchValues: envOverridePatchValuesFromParams,
+    mergedTemplateObject: mergedTemplateObjectFromParams,
+    isOverridden,
+}: Pick<
+    OverriddenBaseDeploymentTemplateParsedDraftDTO,
+    'id' | 'status' | 'manualReviewed' | 'active' | 'namespace' | 'mergeStrategy' | 'envOverridePatchValues'
+> &
+    Pick<EnvOverrideEditorCommonStateType, 'isOverridden'> & {
+        lockedConfigKeys: string[]
+        mergedTemplateObject: OverriddenBaseDeploymentTemplateParsedDraftDTO['envOverrideValues']
+    }): EnvOverrideEditorCommonStateType => {
+    const mergeStrategy = mergeStrategyFromParams || DEFAULT_MERGE_STRATEGY
+    const envOverridePatchValues = envOverridePatchValuesFromParams || {}
+    const mergedTemplateObject = mergedTemplateObjectFromParams || {}
+
+    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+    const originalTemplateObjectBasedOnStrategy = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
+    const originalTemplateObject = isOverridden ? originalTemplateObjectBasedOnStrategy : {}
+
+    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
+    const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+        stringifiedTemplate,
+        lockedConfigKeys,
+    )
+
+    const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
+
+    return {
+        originalTemplate: originalTemplateObject,
+        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
+        editorTemplateWithoutLockedKeys,
+        environmentConfig: {
+            id,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+        },
+        mergeStrategy,
+        mergedTemplate: stringifiedFinalTemplate,
+        mergedTemplateObject,
+        mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
+            .editorTemplate,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
+        isOverridden,
+    }
+}
+
 export const handleInitializeDraftData = ({
     latestDraft,
     guiSchema,
@@ -368,61 +426,43 @@ export const handleInitializeDraftData = ({
     }
 
     const {
-        envOverrideValues,
         id,
-        isDraftOverriden,
-        isAppMetricsEnabled,
-        chartRefId,
         status,
         manualReviewed,
         active,
         namespace,
+        envOverrideValues,
+        mergeStrategy,
+        envOverridePatchValues,
+
+        isDraftOverriden,
+        isAppMetricsEnabled,
+        chartRefId,
         readme,
         schema,
-        mergeStrategy: mergeStrategyFromDraft,
-        envOverridePatchValues: envOverridePatchValuesFromDraft,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
 
-    const mergeStrategy = mergeStrategyFromDraft || DEFAULT_MERGE_STRATEGY
-    const envOverridePatchValues = envOverridePatchValuesFromDraft || {}
-
-    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
-    const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
-
-    const stringifiedFinalTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
-
-    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
-    const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-        stringifiedTemplate,
-        lockedConfigKeys,
-    )
-
     const response: DeploymentTemplateStateType['draftTemplateData'] = {
-        originalTemplate: originalTemplateObject,
-        schema,
-        readme,
-        guiSchema,
-        isAppMetricsEnabled,
-        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
-        latestDraft,
-        selectedChartRefId: chartRefId,
-        selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
-        editorTemplateWithoutLockedKeys,
-        isOverridden: isDraftOverriden,
-        environmentConfig: {
+        ...getEnvOverrideEditorCommonState({
             id,
             status,
             manualReviewed,
             active,
             namespace,
-        },
-        mergeStrategy,
-        mergedTemplate: stringifiedFinalTemplate,
-        mergedTemplateObject: envOverrideValues,
-        mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
-            .editorTemplate,
-        isLoadingMergedTemplate: false,
-        mergedTemplateError: null,
+            mergedTemplateObject: envOverrideValues,
+            mergeStrategy,
+            envOverridePatchValues,
+            lockedConfigKeys,
+            isOverridden: isDraftOverriden,
+        }),
+
+        schema,
+        readme,
+        guiSchema,
+        isAppMetricsEnabled,
+        latestDraft,
+        selectedChartRefId: chartRefId,
+        selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
     }
 
     return response
