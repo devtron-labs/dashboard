@@ -224,7 +224,10 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE
-          payload: LoadMergedTemplateBasePayloadType
+          payload: LoadMergedTemplateBasePayloadType & {
+              // Ideally should compute this inside reducer but already computed outside for other cases so passing it to avoid recomputation
+              currentEditorParsedObject: Record<string, any>
+          }
       }
     | {
           type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
@@ -377,6 +380,47 @@ const handleReApplyLockedKeys = (state: DeploymentTemplateStateType): Deployment
         return state
     }
 }
+
+const getEditorStatesFromMergedTemplates = (
+    state: DeploymentTemplateStateType,
+    editorStates: ConfigEditorStatesType[],
+    mergedTemplateObjects: Record<string, any>[],
+) =>
+    editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
+        (acc, editorState, index) => {
+            const editorStateData = state[editorState]
+
+            const mergedTemplateObject = mergedTemplateObjects[index]
+            const mergedTemplate = YAMLStringify(mergedTemplateObject)
+            const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
+                mergedTemplate,
+                state.lockedConfigKeysWithLockType.config,
+            )
+
+            const baseOperationObject = {
+                isLoadingMergedTemplate: false,
+                mergedTemplateError: null,
+                mergedTemplateObject,
+                mergedTemplate,
+                mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
+            }
+
+            if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                acc[editorState] = {
+                    ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
+                    ...baseOperationObject,
+                }
+            } else {
+                acc[editorState] = {
+                    ...(editorStateData as DeploymentTemplateConfigState),
+                    ...baseOperationObject,
+                }
+            }
+
+            return acc
+        },
+        {},
+    )
 
 export const deploymentTemplateReducer = (
     state: DeploymentTemplateStateType,
@@ -806,7 +850,17 @@ export const deploymentTemplateReducer = (
             }
 
         case DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE: {
-            const { editorStates } = action.payload
+            const { editorStates, currentEditorParsedObject } = action.payload
+            const isCurrentEditorLoading = editorStates.includes(ConfigEditorStatesType.CURRENT_EDITOR)
+
+            // This means for current editor the mergeStrategy is not patch
+            const currentEditorStateWithMergedTemplate = !isCurrentEditorLoading
+                ? getEditorStatesFromMergedTemplates(
+                      state,
+                      [ConfigEditorStatesType.CURRENT_EDITOR],
+                      [currentEditorParsedObject],
+                  )
+                : {}
 
             return {
                 ...state,
@@ -835,10 +889,13 @@ export const deploymentTemplateReducer = (
                     },
                     {},
                 ),
+                ...currentEditorStateWithMergedTemplate,
             }
         }
 
         case DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR: {
+            // We will only show error in case of current editor, since we have stale data for other editors
+            // TODO: Need to re-confirm
             return {
                 ...state,
                 currentEditorTemplateData: {
@@ -855,41 +912,7 @@ export const deploymentTemplateReducer = (
             return {
                 ...state,
                 baseDeploymentTemplateData,
-                ...editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
-                    (acc, editorState, index) => {
-                        const editorStateData = state[editorState]
-
-                        const mergedTemplateObject = mergedTemplateObjects[index]
-                        const mergedTemplate = YAMLStringify(mergedTemplateObject)
-                        const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
-                            mergedTemplate,
-                            state.lockedConfigKeysWithLockType.config,
-                        )
-
-                        const baseOperationObject = {
-                            isLoadingMergedTemplate: false,
-                            mergedTemplateError: null,
-                            mergedTemplateObject,
-                            mergedTemplate,
-                            mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
-                        }
-
-                        if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
-                            acc[editorState] = {
-                                ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
-                                ...baseOperationObject,
-                            }
-                        } else {
-                            acc[editorState] = {
-                                ...(editorStateData as DeploymentTemplateConfigState),
-                                ...baseOperationObject,
-                            }
-                        }
-
-                        return acc
-                    },
-                    {},
-                ),
+                ...getEditorStatesFromMergedTemplates(state, editorStates, mergedTemplateObjects),
             }
         }
 

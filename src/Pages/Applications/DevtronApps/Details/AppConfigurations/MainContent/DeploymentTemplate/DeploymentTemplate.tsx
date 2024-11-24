@@ -360,20 +360,26 @@ const DeploymentTemplate = ({
     const handleLoadMergedTemplate = async () => {
         // We will be checking if published, current and draft has patch strategy. If yes, then we will merge them
         const requiredEditorStates = getEditorStatesWithPatchStrategy(state)
+        const currentEditorValue = getCurrentTemplateWithLockedKeys({
+            currentEditorTemplateData,
+            wasGuiOrHideLockedKeysEdited,
+        })
 
+        let currentEditorParsedValue = {}
+
+        try {
+            currentEditorParsedValue = YAML.parse(currentEditorValue)
+        } catch {
+            logExceptionToSentry(new Error('handleLoadMergedTemplate threw error while parsing YAML'))
+        }
+
+        // Need to update merged template anyway since we do not update it on every change
         if (!getConfigAfterOperations || requiredEditorStates.length === 0) {
-            let parsedTemplate = {}
-            try {
-                parsedTemplate = YAML.parse(currentEditorTemplateData?.editorTemplate)
-            } catch {
-                logExceptionToSentry(new Error('handleLoadMergedTemplate threw error while parsing YAML'))
-            }
-
             dispatch({
                 type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE,
                 payload: {
                     editorStates: [ConfigEditorStatesType.CURRENT_EDITOR],
-                    mergedTemplates: [parsedTemplate],
+                    mergedTemplates: [currentEditorParsedValue],
                     baseDeploymentTemplateData,
                 },
             })
@@ -385,20 +391,17 @@ const DeploymentTemplate = ({
                 type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE,
                 payload: {
                     editorStates: requiredEditorStates,
+                    currentEditorParsedObject: currentEditorParsedValue,
                 },
             })
 
             const parsedValues = requiredEditorStates.map((editorState) => {
                 try {
-                    const editorTemplate =
-                        editorState === ConfigEditorStatesType.CURRENT_EDITOR
-                            ? getCurrentTemplateWithLockedKeys({
-                                  currentEditorTemplateData,
-                                  wasGuiOrHideLockedKeysEdited,
-                              })
-                            : state[editorState].editorTemplate
+                    if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                        return currentEditorParsedValue
+                    }
 
-                    return YAML.parse(editorTemplate)
+                    return YAML.parse(state[editorState].editorTemplate)
                 } catch {
                     // Won't need this in reality but just in case
                     return {}
@@ -423,7 +426,6 @@ const DeploymentTemplate = ({
             )
 
             if (mergedTemplatesResponse.status === 'rejected') {
-                loadMergedTemplateAbortController.current.abort()
                 throw mergedTemplatesResponse.reason
             }
 
