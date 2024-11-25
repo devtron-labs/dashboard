@@ -15,7 +15,6 @@
  */
 
 import { AppEnvironment as BaseAppEnvironmentType } from '@devtron-labs/devtron-fe-common-lib'
-import { TooltipProps } from '@devtron-labs/devtron-fe-common-lib/dist/Common/Tooltip/types'
 import React from 'react'
 import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
 import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
@@ -57,7 +56,7 @@ export interface HelmAppConfigApplyStatusCardType {
 }
 
 export interface ChartToolTipType extends Pick<ChartUsedCardType, 'onClickUpgrade'> {
-    children: TooltipProps['children']
+    children: React.ReactElement<any>
     isDeprecated: boolean
     chartRef: React.RefObject<HTMLDivElement>
 }
