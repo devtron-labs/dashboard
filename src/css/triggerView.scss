@@ -48,25 +48,12 @@
 }
 
 .material-list__item {
-    cursor: pointer;
-    padding: 16px;
     min-height: 76px;
 }
 
 .material-info {
     display: flex;
     justify-content: space-between;
-}
-
-.material-info__name {
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 4px;
 }
 
 .material-selected {
@@ -76,12 +63,6 @@
 
 .material-refresh {
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    padding: 3px;
-    align-self: center;
     animation: spin 6s infinite linear paused forwards;
 
     svg {
@@ -112,12 +93,7 @@
 }
 
 .select-material--trigger-view {
-    height: calc(100vh - 122px);
-}
-
-.select-material--regex-body {
-    height: calc(100vh - 108px);
-    overflow: auto;
+    height: calc(100vh - 116px);
 }
 
 .select-material__empty-state-container {
@@ -715,12 +691,4 @@
 .trigger-modal__config-diff-status svg.loader__svg path,
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
     fill: white;
-}
-
-.code-editor-green-diff {
-    background: var(--code-editor-green);
-}
-
-.code-editor-red-diff {
-    background: var(--code-editor-red);
 }
