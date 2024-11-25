@@ -26,6 +26,7 @@ import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
 const DeleteCDNode = ({
+    showDeleteDialog,
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -78,13 +79,11 @@ const DeleteCDNode = ({
             subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
             buttonConfig={{
                 secondaryButtonConfig: {
-                    dataTestId: 'delete-cd-node-cancel',
                     text: 'Cancel',
                     onClick: hideDeleteModal,
                     disabled: isLoading,
                 },
                 primaryButtonConfig: {
-                    dataTestId: 'delete-cd-node-delete',
                     text: 'Delete',
                     onClick: () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes),
                     isLoading,
@@ -94,6 +93,7 @@ const DeleteCDNode = ({
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: deleteTitleName,
             }}
+            showConfirmationModal={showDeleteDialog}
             handleClose={hideDeleteModal}
         />
     )

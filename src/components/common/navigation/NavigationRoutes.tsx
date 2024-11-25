@@ -380,7 +380,7 @@ export default function NavigationRoutes() {
                 isSuperAdmin,
             }}
         >
-            <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+            <main className={`${_isOnboardingPage ? 'no-nav' : ''}`} id='devtron-base-main-identifier'>
                 {!_isOnboardingPage && (
                     <Navigation
                         history={history}
