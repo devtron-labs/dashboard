@@ -692,11 +692,3 @@
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
     fill: white;
 }
-
-.code-editor-green-diff {
-    background: var(--code-editor-green);
-}
-
-.code-editor-red-diff {
-    background: var(--code-editor-red);
-}

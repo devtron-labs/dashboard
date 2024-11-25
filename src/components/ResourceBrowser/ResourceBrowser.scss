@@ -98,6 +98,17 @@
         }
 
         .resource-list-container {
+            .node-listing-search-container {
+                display: grid;
+                grid-template-columns: auto 160px 1px 180px;
+                column-gap: 8px;
+
+                &__shortcut-key {
+                    right: 10px;
+                    top: 6px;
+                }
+            }
+
             &.no-result-container {
                 height: calc(100vh - 92px);
                 overflow: hidden;
@@ -113,6 +124,7 @@
                     }
                 }
             }
+
             .scrollable-resource-list {
                 height: calc(100vh - 144px);
                 &.paginated-list-view {

@@ -37,26 +37,30 @@ export const Build = ({
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
-        const _formData = { ...formData }
-        const allMaterials = _formData.materials.map((mat) => {
-            if (mat.gitMaterialId === gitMaterialId) {
-                if (sourceType === SourceTypeMap.BranchRegex) {
+        setFormData((prevFormData) => {
+            const _formData = structuredClone(prevFormData)
+
+            const allMaterials = _formData.materials.map((mat) => {
+                if (mat.gitMaterialId === gitMaterialId) {
+                    if (sourceType === SourceTypeMap.BranchRegex) {
+                        return {
+                            ...mat,
+                            value: '',
+                            regex: event.target.value,
+                        }
+                    }
                     return {
                         ...mat,
-                        value: '',
-                        regex: event.target.value,
+                        regex: '',
+                        value: event.target.value,
                     }
                 }
-                return {
-                    ...mat,
-                    regex: '',
-                    value: event.target.value,
-                }
-            }
-            return mat
+                return mat
+            })
+            _formData.materials = allMaterials
+
+            return _formData
         })
-        _formData.materials = allMaterials
-        setFormData(_formData)
     }
 
     const handleOnBlur = async (): Promise<void> => {

@@ -32,7 +32,7 @@ import {
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -82,10 +82,10 @@ export const GitInfoMaterial = ({
     isWebhookPayloadLoading,
     setIsWebhookBulkCI,
     isBulk = false,
+    appId,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
-    const { appId } = useParams<{ appId: string }>()
     const triggerViewContext = useContext(TriggerViewContext)
 
     const { searchKey, handleSearch, clearFilters } = useStateFilters()
@@ -402,7 +402,6 @@ export const GitInfoMaterial = ({
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 workflowId={workflowId}
                 fromAppGrouping={fromAppGrouping}
-                fromBulkCITrigger={fromBulkCITrigger}
                 appId={appId}
                 isJobView={isJobView}
             />
