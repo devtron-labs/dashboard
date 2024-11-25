@@ -70,7 +70,7 @@ export const getEditorTemplateAndLockedKeys = (
 ): Pick<DeploymentTemplateEditorDataStateType, 'editorTemplate' | 'removedPatches'> => {
     const removedPatches: DeploymentTemplateEditorDataStateType['removedPatches'] = []
 
-    if (!removeLockedKeysFromYaml || !lockedConfigKeys.length) {
+    if (!removeLockedKeysFromYaml || !lockedConfigKeys.length || !template) {
         return { editorTemplate: template, removedPatches }
     }
 
