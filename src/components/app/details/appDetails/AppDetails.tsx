@@ -40,7 +40,6 @@ import {
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import Select from 'react-select'
-import { AnimatePresence, motion } from 'framer-motion'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
@@ -58,8 +57,8 @@ import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
 import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
-import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
-import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
+import AppNotDeployedIcon from '@Images/app-not-deployed.png'
+import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
 import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
 import { ReactComponent as PlayButton } from '@Icons/ic-play.svg'

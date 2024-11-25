@@ -28,6 +28,7 @@ import {
     URLS as CommonURLS,
     AppListConstants,
     MODES,
+    DEVTRON_BASE_MAIN_ID,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -380,7 +381,7 @@ export default function NavigationRoutes() {
                 isSuperAdmin,
             }}
         >
-            <main className={`${_isOnboardingPage ? 'no-nav' : ''}`} id='devtron-base-main-identifier'>
+            <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
                 {!_isOnboardingPage && (
                     <Navigation
                         history={history}
