@@ -151,12 +151,12 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList?.length) {
+        if (!isOpen || nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
         const match =
-            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ||
+            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ??
             k8sObjectOptionsList[0]
         /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
         selectNode(
