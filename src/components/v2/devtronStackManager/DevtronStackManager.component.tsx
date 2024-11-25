@@ -32,6 +32,7 @@ import {
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    MarkDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -75,7 +76,6 @@ import {
     PENDING_DEPENDENCY_MESSAGE,
     handleEnableAction,
 } from './DevtronStackManager.utils'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import trivy from '../../../assets/icons/ic-clair-to-trivy.svg'
 import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
