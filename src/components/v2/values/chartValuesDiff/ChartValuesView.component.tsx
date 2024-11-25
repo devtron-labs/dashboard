@@ -194,7 +194,7 @@ export const DeploymentAppSelector = ({
         </div>
     ) : (
         <div className="flexbox-col dc__gap-6 w-100 chart-values-deployment-radio">
-            <span className='fs-13 cn-7 lh-20 fw-4'>How do you want to deploy?</span>
+            <span className="fs-13 cn-7 lh-20 fw-4">How do you want to deploy?</span>
             <DeploymentAppRadioGroup
                 isDisabled={isUpdate}
                 deploymentAppType={commonState.deploymentAppType}
@@ -202,7 +202,7 @@ export const DeploymentAppSelector = ({
                 allowedDeploymentTypes={allowedDeploymentTypes}
                 rootClassName="flexbox-col"
             />
-            <span className='fs-11 lh-16 cr-5 fw-4'>This cannot be changed after deployment</span>
+            <span className="fs-11 lh-16 cr-5 fw-4">This cannot be changed after deployment</span>
         </div>
     )
 }
