@@ -559,17 +559,18 @@ export const ChartValuesSelector = ({
     const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
         handleChartValuesSelection(selectedOption.value)
 
-    const selectedOption = selectOptions
+    const selectOptionsFlatmap = selectOptions
         .flatMap((groupedOption) => groupedOption.options)
-        .find(
-            (option) =>
-                getOptionValue(option) ===
-                getOptionValue({
-                    // Setting label null since the getOptionValue is not consuming it
-                    label: null,
-                    value: chartValues,
-                }),
-        )
+
+    const selectedOption = selectOptionsFlatmap.find(
+        (option) =>
+            getOptionValue(option) ===
+            getOptionValue({
+                // Setting label null since the getOptionValue is not consuming it
+                label: null,
+                value: chartValues,
+            }),
+    )  
 
     return (
         <SelectPicker<ChartValuesType, false>
