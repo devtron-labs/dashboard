@@ -416,6 +416,7 @@ const DeploymentTemplate = ({
                             resourceType: ConfigResourceType.DeploymentTemplate,
                             appId: +appId,
                             signal: loadMergedTemplateAbortController.current.signal,
+                            shouldShowError: false,
                         }),
                         handleFetchGlobalDeploymentTemplate({
                             globalChartDetails: chartDetails?.globalChartDetails,
