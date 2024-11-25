@@ -24,6 +24,7 @@ import {
     EditableTextArea,
     ResourceKindType,
     getUrlWithSearchParams,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -89,7 +90,7 @@ const tippyForMetricsApi = () => {
     )
 }
 
-function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverviewProps) {
+function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -132,7 +133,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                 })
             }
         } catch (error) {
-            setErrorCode(error['code'])
+            showError(error)
             throw error
         }
     }
@@ -512,7 +513,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, addTab }: ClusterOverv
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
-                        isSuperAdmin={isSuperAdmin}
+                        isSuperAdmin
                         descriptionId={descriptionData.descriptionId}
                         initialDescriptionText={descriptionData.descriptionText}
                         initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}

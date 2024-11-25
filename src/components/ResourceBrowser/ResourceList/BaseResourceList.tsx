@@ -261,7 +261,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search])
+    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
