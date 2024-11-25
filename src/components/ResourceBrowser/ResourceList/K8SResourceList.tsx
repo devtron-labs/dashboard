@@ -61,11 +61,19 @@ export const K8SResourceList = ({
 
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () =>
-            abortPreviousRequests(
-                async () =>
-                    getResourceData({ selectedResource, selectedNamespace, clusterId, filters, abortControllerRef }),
-                abortControllerRef,
-            ),
+            abortPreviousRequests(async () => {
+                if (selectedResource) {
+                    return getResourceData({
+                        selectedResource,
+                        selectedNamespace,
+                        clusterId,
+                        filters,
+                        abortControllerRef,
+                    })
+                }
+
+                return null
+            }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, filters],
     )
 

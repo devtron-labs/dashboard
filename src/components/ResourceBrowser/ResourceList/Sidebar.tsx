@@ -151,15 +151,13 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || nodeType === selectedResource.gvk.Kind.toLowerCase()) {
+        if (!isOpen || nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList?.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
         const match =
             k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ||
-            k8sObjectOptionsList.find(
-                (option) => option.dataset.kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
-            )
+            k8sObjectOptionsList[0]
         /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
         selectNode(
             {
@@ -169,9 +167,9 @@ const Sidebar = ({
             },
             match.groupName,
             /* NOTE: if we push here the history will be lost */
-            false,
+            !selectedResource,
         )
-    }, [nodeType])
+    }, [nodeType, k8sObjectOptionsList])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
@@ -342,17 +340,19 @@ const Sidebar = ({
             </div>
             <div className="k8s-object-wrapper flexbox-col dc__border-top-n1 p-8 dc__user-select-none">
                 <div className="pb-8 flexbox-col">
-                    <SidebarChildButton
-                        parentRef={selectedChildRef}
-                        text={SIDEBAR_KEYS.nodes}
-                        group={SIDEBAR_KEYS.nodeGVK.Group}
-                        version={SIDEBAR_KEYS.nodeGVK.Version}
-                        kind={SIDEBAR_KEYS.nodeGVK.Kind}
-                        namespaced={false}
-                        isSelected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
-                        onClick={selectNode}
-                    />
-                    {list?.size && list.get(AggregationKeys.Events) && (
+                    {!!list?.size && !!list.get(AggregationKeys.Nodes) && (
+                        <SidebarChildButton
+                            parentRef={selectedChildRef}
+                            text={SIDEBAR_KEYS.nodes}
+                            group={SIDEBAR_KEYS.nodeGVK.Group}
+                            version={SIDEBAR_KEYS.nodeGVK.Version}
+                            kind={SIDEBAR_KEYS.nodeGVK.Kind}
+                            namespaced={false}
+                            isSelected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
+                            onClick={selectNode}
+                        />
+                    )}
+                    {!!list?.size && !!list.get(AggregationKeys.Events) && (
                         <SidebarChildButton
                             parentRef={selectedChildRef}
                             text={SIDEBAR_KEYS.events}
@@ -364,7 +364,7 @@ const Sidebar = ({
                             onClick={selectNode}
                         />
                     )}
-                    {list?.size && list.get(AggregationKeys.Namespaces) && (
+                    {!!list?.size && !!list.get(AggregationKeys.Namespaces) && (
                         <SidebarChildButton
                             parentRef={selectedChildRef}
                             text={SIDEBAR_KEYS.namespaces}
@@ -377,10 +377,11 @@ const Sidebar = ({
                         />
                     )}
                 </div>
-                {list?.size &&
+                {!!list?.size &&
                     [...list.values()].map((k8sObject) =>
                         k8sObject.name === AggregationKeys.Events ||
-                        k8sObject.name === AggregationKeys.Namespaces ? null : (
+                        k8sObject.name === AggregationKeys.Namespaces ||
+                        k8sObject.name === AggregationKeys.Nodes ? null : (
                             <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"

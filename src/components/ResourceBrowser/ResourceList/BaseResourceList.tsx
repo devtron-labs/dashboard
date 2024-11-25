@@ -115,7 +115,7 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
-    const isNodeListing = selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -579,7 +579,7 @@ const BaseResourceListContent = ({
     }
 
     const renderContent = () => {
-        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList)) {
+        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList || !selectedResource)) {
             return <Progressing size={32} pageLoader />
         }
 
@@ -690,7 +690,7 @@ const BaseResourceListContent = ({
                 />
             ) : (
                 <ResourceFilterOptions
-                    key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
+                    key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
                     selectedNamespace={selectedNamespace}
                     setSelectedNamespace={setSelectedNamespace}

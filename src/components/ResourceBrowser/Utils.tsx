@@ -201,6 +201,21 @@ export const convertK8sObjectMapToOptionsList = (
         child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
             switch (key.toLowerCase()) {
                 /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase():
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.nodes,
+                            '',
+                            SIDEBAR_KEYS.nodeGVK,
+                            false,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.nodes,
+                        ),
+                    )
+                    break
+
+                /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
                         newK8sObjectOption(
@@ -247,18 +262,6 @@ export const convertK8sObjectMapToOptionsList = (
             }
         })
     })
-
-    _k8sObjectOptionsList.push(
-        newK8sObjectOption(
-            SIDEBAR_KEYS.nodes,
-            '',
-            SIDEBAR_KEYS.nodeGVK,
-            false,
-            false,
-            '',
-            JUMP_TO_KIND_SHORT_NAMES.nodes,
-        ),
-    )
 
     return _k8sObjectOptionsList
 }

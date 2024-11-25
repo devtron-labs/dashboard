@@ -88,11 +88,7 @@ const ResourceList = () => {
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
-    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
-        gvk: SIDEBAR_KEYS.nodeGVK,
-        namespaced: false,
-        isGrouped: false,
-    })
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
@@ -348,7 +344,7 @@ const ResourceList = () => {
         const _group: string =
             (shouldOverrideSelectedResourceKind
                 ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
-                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+                : selectedResource.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
         const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
         let resourceParam: string
