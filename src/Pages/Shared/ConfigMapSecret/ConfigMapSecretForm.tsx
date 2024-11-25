@@ -150,23 +150,6 @@ export const ConfigMapSecretForm = forwardRef(
         useEffect(() => {
             if (mergeStrategy && mergeStrategy !== data.mergeStrategy) {
                 setValue('mergeStrategy', mergeStrategy, { shouldDirty: true })
-
-                reset(
-                    {
-                        ...(mergeStrategy === OverrideMergeStrategyType.PATCH
-                            ? getConfigMapSecretFormInitialValues({
-                                  cmSecretStateLabel,
-                                  componentType,
-                                  configMapSecretData: inheritedConfigMapSecretData,
-                              })
-                            : formDataRef.current || formInitialValues),
-                        mergeStrategy,
-                        yamlMode: data.yamlMode,
-                        currentData: data.currentData,
-                        yaml: data.yaml,
-                    },
-                    { triggerDirty: true },
-                )
             }
 
             if (
@@ -184,6 +167,27 @@ export const ConfigMapSecretForm = forwardRef(
                 setValue('currentData', currentData)
             }
         }, [mergeStrategy])
+
+        useEffectAfterMount(() => {
+            if (mergeStrategy && mergeStrategy === data.mergeStrategy) {
+                reset(
+                    {
+                        ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                            ? getConfigMapSecretFormInitialValues({
+                                  cmSecretStateLabel,
+                                  componentType,
+                                  configMapSecretData: inheritedConfigMapSecretData,
+                              })
+                            : formDataRef.current || formInitialValues),
+                        mergeStrategy,
+                        yamlMode: data.yamlMode,
+                        currentData: data.currentData,
+                        yaml: data.yaml,
+                    },
+                    { triggerDirty: true },
+                )
+            }
+        }, [data.mergeStrategy])
 
         useEffect(() => {
             /*

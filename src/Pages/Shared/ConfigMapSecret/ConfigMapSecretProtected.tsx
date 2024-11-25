@@ -157,7 +157,7 @@ export const ConfigMapSecretProtected = ({
             configMapSecretData: cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? publishedConfigMapSecretData : null,
             isJob,
             mergeStrategy:
-                publishedConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.REPLACE ||
+                publishedConfigMapSecretData?.mergeStrategy === OverrideMergeStrategyType.REPLACE ||
                 shouldMergeTemplateWithPatches
                     ? OverrideMergeStrategyType.REPLACE
                     : OverrideMergeStrategyType.PATCH,

@@ -12,6 +12,7 @@ import {
     DryRunEditorMode,
     GenericEmptyState,
     MODES,
+    OverrideMergeStrategyType,
     useAsync,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -92,7 +93,14 @@ export const ConfigMapSecretDryRun = ({
                 configMapSecretData = {
                     ...((configMapSecretData || {}) as CMSecretConfigData),
                     ...payload,
-                    data: { ...(configMapSecretData ? configMapSecretData.data : {}), ...payload.data },
+                    ...(mergeStrategy === OverrideMergeStrategyType.PATCH
+                        ? {
+                              data: {
+                                  ...(configMapSecretData ? configMapSecretData.data : {}),
+                                  ...payload.data,
+                              },
+                          }
+                        : {}),
                 }
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
@@ -121,7 +129,12 @@ export const ConfigMapSecretDryRun = ({
     const isDryRunDataPresent = !!dryRunConfigMapSecretData
     const isExternal = dryRunConfigMapSecretData?.external
 
-    const [configMapSecretManifestLoading, configMapSecretManifest, configMapSecretManifestError] = useAsync(
+    const [
+        configMapSecretManifestLoading,
+        configMapSecretManifest,
+        configMapSecretManifestError,
+        reloadConfigMapSecretManifest,
+    ] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
@@ -229,6 +242,9 @@ export const ConfigMapSecretDryRun = ({
                 }
                 error={!configMapSecretManifestLoading && configMapSecretManifestError}
                 progressingProps={{ pageLoader: true }}
+                errorScreenManagerProps={{
+                    reload: reloadConfigMapSecretManifest,
+                }}
             >
                 <div className="flex-grow-1 dc__overflow-scroll">
                     <CodeEditor

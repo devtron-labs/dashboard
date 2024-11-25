@@ -81,6 +81,7 @@ const ConfigToolbar = ({
 
     mergeStrategy,
     handleMergeStrategyChange,
+    hidePatchOption,
 
     showEnableReadMeButton,
     handleEnableReadmeView,
@@ -277,6 +278,7 @@ const ConfigToolbar = ({
                             handleMergeStrategyChange={handleMergeStrategyChange}
                             isDisabled={isDisabled}
                             variant={isEditView ? 'dropdown' : 'text'}
+                            hidePatchOption={hidePatchOption}
                         />
                     </div>
                 </InvalidYAMLTippyWrapper>

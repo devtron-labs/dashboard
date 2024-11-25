@@ -95,6 +95,7 @@ export type ConfigToolbarProps = {
 
     mergeStrategy: OverrideMergeStrategyType
     handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
+    hidePatchOption?: boolean
 
     /**
      * Used to place toggle editor view and chart selectors in deployment template
@@ -313,4 +314,8 @@ export type SelectMergeStrategyProps = {
      * @default `dropdown`
      */
     variant: 'dropdown' | 'text'
+    /**
+     * Boolean to hide the `OverrideMergeStrategy.PATCH` option.
+     */
+    hidePatchOption?: boolean
 }

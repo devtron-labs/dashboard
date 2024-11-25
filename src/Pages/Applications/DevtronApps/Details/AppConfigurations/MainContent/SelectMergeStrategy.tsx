@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
     InfoIconTippy,
     OverrideMergeStrategyType,
@@ -27,13 +28,20 @@ const SelectMergeStrategy = ({
     handleMergeStrategyChange = noop,
     isDisabled = false,
     variant = 'dropdown',
+    hidePatchOption,
 }: SelectMergeStrategyProps) => {
     const handleChange = (selectedOption: SelectPickerOptionType) => {
         handleMergeStrategyChange(selectedOption.value as OverrideMergeStrategyType)
     }
 
+    const options = useMemo(
+        () =>
+            MERGE_STRATEGY_OPTIONS.filter(({ value }) => !hidePatchOption || value !== OverrideMergeStrategyType.PATCH),
+        [hidePatchOption],
+    )
+
     const renderContent = () => {
-        const selectedOption = getSelectPickerOptionByValue(MERGE_STRATEGY_OPTIONS, mergeStrategy, null)
+        const selectedOption = getSelectPickerOptionByValue(options, mergeStrategy, null)
 
         if (variant === 'text') {
             return (
@@ -55,7 +63,7 @@ const SelectMergeStrategy = ({
                     inputId="config-toolbar-select-strategy"
                     onChange={handleChange}
                     value={selectedOption}
-                    options={MERGE_STRATEGY_OPTIONS}
+                    options={options}
                     isDisabled={isDisabled}
                     variant={SelectPickerVariantType.BORDER_LESS}
                     isSearchable={false}

@@ -30,7 +30,6 @@ import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState }
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import {
     getConfigMapSecretConfigData,
@@ -49,6 +48,7 @@ import {
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
+    getDefaultMergeStrategy,
     hasHashiOrAWS,
     parseConfigMapSecretSearchParams,
 } from './utils'
@@ -400,14 +400,19 @@ export const ConfigMapSecretContainer = ({
         }
     }, [isLoading, cmSecretStateLabel, draftData])
 
-    // MERGE STRATEGY HANDLING
-    useEffect(() => {
+    // METHOD FOR DEFAULT MERGE STRATEGY
+    const setDefaultMergeStrategy = () => {
+        const _configMapSecretData = draftData ? JSON.parse(draftData.data).configData[0] : configMapSecretData
         const _mergeStrategy =
-            (draftData && JSON.parse(draftData.data).configData[0].mergeStrategy) ||
-            configMapSecretData?.mergeStrategy ||
-            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? DEFAULT_MERGE_STRATEGY : null)
+            _configMapSecretData?.mergeStrategy ||
+            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? getDefaultMergeStrategy(_configMapSecretData) : null)
 
         setMergeStrategy(_mergeStrategy)
+    }
+
+    // MERGE STRATEGY HANDLING
+    useEffect(() => {
+        setDefaultMergeStrategy()
     }, [configMapSecretData, draftData])
 
     const redirectURLToValidPage = () => {
@@ -442,7 +447,7 @@ export const ConfigMapSecretContainer = ({
     const handleActionWithFormValidation =
         <Args extends unknown[]>(func: (...args: Args) => void) =>
         async (...args: Args) => {
-            if (formMethodsRef.current) {
+            if (formMethodsRef.current && mergeStrategy !== OverrideMergeStrategyType.PATCH) {
                 const { handleSubmit } = formMethodsRef.current
 
                 await handleSubmit(
@@ -521,6 +526,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleNoOverrideFormCancel = () => {
+        setDefaultMergeStrategy()
         setFormState({ type: 'RESET' })
         setHideNoOverrideEmptyState(false)
     }
@@ -853,6 +859,11 @@ export const ConfigMapSecretContainer = ({
                                 : mergeStrategy
                         }
                         handleMergeStrategyChange={handleMergeStrategyChange}
+                        hidePatchOption={
+                            inheritedConfigMapSecretData?.external ||
+                            configMapSecretData?.external ||
+                            formDataRef.current?.external
+                        }
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}

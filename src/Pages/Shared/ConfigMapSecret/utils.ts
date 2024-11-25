@@ -246,9 +246,10 @@ export const getConfigMapSecretFormInitialValues = ({
             esoSubPath,
         } = configMapSecretData
 
+        const defaultMergeStrategy = external ? OverrideMergeStrategyType.REPLACE : DEFAULT_MERGE_STRATEGY
         const mergeStrategy =
             configMapSecretData.mergeStrategy ||
-            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? DEFAULT_MERGE_STRATEGY : null)
+            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? defaultMergeStrategy : null)
 
         const currentData = processCurrentData({
             configMapSecretData: { ...configMapSecretData, mergeStrategy },
@@ -729,6 +730,14 @@ export const getConfigMapSecretResolvedData = (
             isDraft: true,
         }),
     }
+}
+
+export const getDefaultMergeStrategy = (configMapSecretData: CMSecretConfigData) => {
+    const defaultMergeStrategy = configMapSecretData?.external
+        ? OverrideMergeStrategyType.REPLACE
+        : DEFAULT_MERGE_STRATEGY
+
+    return defaultMergeStrategy
 }
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
