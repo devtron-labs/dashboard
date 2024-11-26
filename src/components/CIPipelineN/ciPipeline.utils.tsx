@@ -172,40 +172,6 @@ export const outputFormatSelectStyle = {
     }),
 }
 
-export const containerImageSelectStyles = {
-    ...baseSelectStyles,
-    control: (base, state) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        boxShadow: 'none',
-        minHeight: 'auto',
-        borderRadius: '4px',
-        height: '32px',
-        fontSize: '12px',
-        pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-    }),
-    valueContainer: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        background: 'var(--N50) !important',
-        padding: '0px 10px',
-        display: 'flex',
-        height: '30px',
-        borderTopLeftRadius: '4px',
-        borderBottomLeftRadius: '4px',
-        fontSize: '12px',
-        width: '100px',
-        whiteSpace: 'nowrap',
-    }),
-    indicatorsContainer: (base, state) => ({
-        ...base,
-        background: 'var(--N50) !important',
-        borderTopRightRadius: '4px',
-        borderBottomRightRadius: '4px',
-    }),
-}
-
 export const CiPipelineSourceTypeBaseOptions = [
     {
         label: 'Branch Fixed',

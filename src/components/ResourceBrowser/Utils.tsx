@@ -23,6 +23,8 @@ import {
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
+    K8sResourceDetailType,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
@@ -31,8 +33,9 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
-    MONITORING_DASHBOARD_TAB_ID,
+    NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
+    MONITORING_DASHBOARD_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -42,6 +45,7 @@ import {
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
+    NodeRowDetail,
 } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -382,3 +386,51 @@ export const renderResourceValue = (value: string) => {
 
     return isDateValue ? moment(value).format(DATE_TIME_FORMAT_STRING) : value
 }
+
+/**
+ * Provided a js object we will return a flattened object such that the nested
+ * keys are all direct children created by joining each level using (.)
+ *
+ * Ex: given object = { x: 'a', y: { a: 'b' } } returns { x: 'a', 'y.a': b }
+ *
+ * @param ob any js object
+ * @returns object without any nesting; nested keys will be
+ */
+const flattenObject = (ob: object): Record<string, any> => {
+    const toReturn = {}
+
+    Object.entries(ob).forEach(([key, value]) => {
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const flatObject = flattenObject(value)
+
+            Object.entries(flatObject).forEach(([flatObjectKey, flatObjectValue]) => {
+                toReturn[`${key}.${flatObjectKey}`] = flatObjectValue
+            })
+        } else {
+            toReturn[key] = value
+        }
+    })
+
+    return toReturn
+}
+
+// NOTE: Please understand the big comment on @flattenObject to understand this
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
+    ...response,
+    result: {
+        headers: [...NODE_LIST_HEADERS] as string[],
+        data: response.result.map((data) => {
+            const _flattenNodeData = flattenObject(data)
+            const meta: Record<string, any> = {}
+
+            if (data.errors) {
+                meta.errorCount = String(Object.keys(data.errors).length || '')
+            }
+
+            meta.taintCount =
+                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+
+            return { ..._flattenNodeData, ...meta }
+        }),
+    },
+})
