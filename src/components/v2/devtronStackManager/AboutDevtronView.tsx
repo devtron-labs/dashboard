@@ -16,12 +16,11 @@
 
 import React, { useEffect } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType, InstallationType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
 import { URLS } from '../../../config'
-import { TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { MarkDown, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 
 const AboutDevtronView = ({
     parentRef,
