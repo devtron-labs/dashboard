@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { MarkDown } from '../../../../charts/discoverChartDetail/DiscoverChartDetails'
 import './environmentStatus.scss'
 import { NotesDrawerType } from './notesDrawer.type'
-import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 
 const NotesDrawer = ({ notes, close }: NotesDrawerType) => {
     const appNotesRef = useRef<HTMLDivElement>(null)

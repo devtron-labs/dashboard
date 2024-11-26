@@ -124,7 +124,6 @@ export const WebhookReceivedPayloadModal = ({
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     workflowId={workflowId}
                     fromAppGrouping={fromAppGrouping}
-                    fromBulkCITrigger={fromBulkCITrigger}
                     isJobView={isJobView}
                     appId={appId}
                 />

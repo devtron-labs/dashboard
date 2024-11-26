@@ -308,6 +308,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         runtimeParams={this.props.runtimeParams}
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
                         handleRuntimeParamError={this.handleRuntimeParamError}
+                        appId={this.props.appId}
                     />
                     {this.props.isCITriggerBlocked ? null : this.renderMaterialStartBuild(canTrigger)}
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
