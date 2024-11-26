@@ -5258,3 +5258,9 @@ textarea::placeholder {
 .code-editor-red-diff {
     background: var(--R100);
 }
+
+.backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    z-index: var(--modal-index);
+    backdrop-filter: blur(1px);
+}
