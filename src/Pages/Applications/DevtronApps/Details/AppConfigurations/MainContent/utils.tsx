@@ -180,14 +180,14 @@ export const getConfigToolbarPopupConfig = ({
 }
 
 export const getCompareViewHistoryDiffConfigProps = (
-    showDisplayName: boolean,
     editorTemplate: Record<string | number, unknown>,
     editorConfig: CompareConfigViewEditorConfigType,
+    displayName = 'Data',
 ):
     | DeploymentTemplateHistoryType['baseTemplateConfiguration']
     | DeploymentTemplateHistoryType['currentConfiguration'] => ({
     codeEditorValue: {
-        displayName: showDisplayName ? 'Data' : '',
+        displayName,
         ...(editorTemplate && { value: JSON.stringify(editorTemplate) }),
     },
     values: editorConfig,

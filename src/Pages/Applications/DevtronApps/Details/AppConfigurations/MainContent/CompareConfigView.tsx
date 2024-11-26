@@ -22,6 +22,7 @@ const CompareConfigView = ({
     className = '',
     errorInfo,
     handleErrorReload,
+    displayName,
 }: CompareConfigViewProps) => (
     <div className={`flexbox-col ${className ?? ''}`}>
         <div className="dc__grid-half bcn-0 dc__position-sticky dc__top-0 dc__zi-10">
@@ -57,14 +58,14 @@ const CompareConfigView = ({
                 <DeploymentHistoryDiffView
                     key={editorKey}
                     currentConfiguration={getCompareViewHistoryDiffConfigProps(
-                        true,
                         publishedEditorTemplate,
                         publishedEditorConfig,
+                        displayName,
                     )}
                     baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
-                        false,
                         currentEditorTemplate,
                         currentEditorConfig,
+                        displayName,
                     )}
                     previousConfigAvailable
                 />

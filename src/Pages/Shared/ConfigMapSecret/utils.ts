@@ -551,7 +551,7 @@ const getConfigMapSecretDecodedData = <IsDraft extends boolean = false>({
     }
 
     const draftData = configMapSecretData as ConfigMapSecretDecodedDataProps<true>['configMapSecretData']
-    const parsedData = JSON.parse(draftData.data).configData[0]
+    const parsedData = draftData.parsedData.configData[0]
     if (!isSecret || draftData.unAuthorized || parsedData.externalType !== '') {
         return draftData as ConfigMapSecretDecodedDataReturnType<IsDraft>
     }
@@ -581,13 +581,13 @@ const getConfigMapSecretEncodedData = <IsDraft extends boolean = false>({
     }
 
     const draftData = configMapSecretData as ConfigMapSecretEncodedDataProps<true>['configMapSecretData']
-    const parsedData = JSON.parse(draftData.data)
+    const { parsedData } = draftData
     return {
         ...draftData,
-        data: JSON.stringify({
+        parsedData: {
             ...parsedData,
-            configData: [{ ...parsedData.configData[0], data: decode(draftData.parsedData, true) }],
-        }),
+            configData: [{ ...parsedData.configData[0], data: decode(parsedData, true) }],
+        },
     } as ConfigMapSecretEncodedDataReturnType<IsDraft>
 }
 
@@ -642,6 +642,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
         ) {
             draftData = {
                 ...draftConfigData,
+                parsedData: JSON.parse(draftConfigData.data),
                 unAuthorized: !draftConfigData.isAppAdmin,
             }
         }

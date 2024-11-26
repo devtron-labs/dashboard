@@ -402,7 +402,10 @@ export const ConfigMapSecretContainer = ({
 
     // METHOD FOR DEFAULT MERGE STRATEGY
     const setDefaultMergeStrategy = () => {
-        const _configMapSecretData = draftData ? JSON.parse(draftData.data).configData[0] : configMapSecretData
+        const _configMapSecretData = {
+            ...configMapSecretData,
+            ...(draftData ? draftData.parsedData.configData?.[0] || {} : {}),
+        }
         const _mergeStrategy =
             _configMapSecretData?.mergeStrategy ||
             (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? getDefaultMergeStrategy(_configMapSecretData) : null)

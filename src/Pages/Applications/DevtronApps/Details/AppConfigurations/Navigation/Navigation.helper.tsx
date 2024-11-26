@@ -61,7 +61,7 @@ export const getNavigationPath = (
     params: EnvConfigRouteParams,
     resourceType: EnvResourceType,
     href?: string,
-) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}?headerTab=`
+) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}`
 
 const getIconClassFromConfigState = (configState: ResourceConfigState) => {
     switch (configState) {
@@ -144,6 +144,7 @@ export const getEnvConfiguration = (
                           ),
                           iconConfig: getIcon(configState, isProtected),
                           subtitle: SUBTITLE[configStage],
+                          clearQueryParamsOnNavigation: true,
                       })),
         }),
         {

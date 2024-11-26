@@ -60,7 +60,7 @@ export const ConfigMapSecretProtected = ({
 
     // DATA
     const configMapSecretData = useMemo<CMSecretConfigData>(
-        () => ({ ...JSON.parse(draftData.data).configData?.[0], unAuthorized: !draftData.isAppAdmin }),
+        () => ({ ...draftData.parsedData.configData?.[0], unAuthorized: !draftData.isAppAdmin }),
         [draftData],
     )
 
@@ -98,7 +98,8 @@ export const ConfigMapSecretProtected = ({
               }
             : {
                   ...currentConfigMapSecretData,
-                  ...(shouldMergeTemplateWithPatches
+                  ...(currentConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH &&
+                  shouldMergeTemplateWithPatches
                       ? { data: { ...inheritedConfigMapSecretData.data, ...currentConfigMapSecretData.data } }
                       : {}),
               }
@@ -115,7 +116,10 @@ export const ConfigMapSecretProtected = ({
             isJob,
             componentType,
             configMapSecretData: _configMapSecretData,
-            mergeStrategy: isApprovalPendingOptionSelected ? mergeStrategy : OverrideMergeStrategyType.REPLACE,
+            mergeStrategy:
+                isApprovalPendingOptionSelected && draftData.action !== DraftAction.Delete
+                    ? mergeStrategy
+                    : OverrideMergeStrategyType.REPLACE,
             cmSecretStateLabel,
         })
 

@@ -115,8 +115,9 @@ export interface ConfigMapSecretUseFormProps {
 }
 
 // COMPONENT PROPS
-export interface CMSecretDraftData extends DraftMetadataDTO {
+export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
     unAuthorized: boolean
+    parsedData: CMSecretDTO
 }
 
 export interface CMSecretWrapperProps

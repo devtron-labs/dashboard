@@ -121,7 +121,7 @@ export const ConfigMapSecretForm = forwardRef(
              * @note resolvedFormData means show scope variables is true.
              */
             if (resolvedFormData) {
-                reset({ ...resolvedFormData, isResolvedData: true }, { triggerDirty: true })
+                reset({ ...resolvedFormData, isResolvedData: true }, { triggerDirty: true, keepInitialValues: true })
             } else if (formDataRef.current) {
                 /*
                  * We use formDataRef (is present) to restore form values after mounting & when `resolvedFormData` is null.
@@ -130,7 +130,7 @@ export const ConfigMapSecretForm = forwardRef(
                  */
                 reset(
                     { ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false },
-                    { triggerDirty: true },
+                    { triggerDirty: true, keepInitialValues: true },
                 )
             }
         }, [resolvedFormData])
@@ -184,7 +184,7 @@ export const ConfigMapSecretForm = forwardRef(
                         currentData: data.currentData,
                         yaml: data.yaml,
                     },
-                    { triggerDirty: true },
+                    { triggerDirty: true, keepInitialValues: true },
                 )
             }
         }, [data.mergeStrategy])

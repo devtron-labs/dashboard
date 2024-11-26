@@ -1532,6 +1532,7 @@ const DeploymentTemplate = ({
                     })}
                     errorInfo={shouldMergeTemplateWithPatches ? mergedTemplateError : null}
                     handleErrorReload={handleLoadMergedTemplate}
+                    displayName="Values"
                 />
             )
         }

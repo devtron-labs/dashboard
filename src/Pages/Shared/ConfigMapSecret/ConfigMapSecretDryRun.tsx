@@ -4,6 +4,7 @@ import { Prompt, useLocation, useParams } from 'react-router-dom'
 import {
     abortPreviousRequests,
     APIResponseHandler,
+    applyCompareDiffOnUneditedDocument,
     Button,
     CodeEditor,
     ComponentSizeType,
@@ -80,7 +81,7 @@ export const ConfigMapSecretDryRun = ({
                 configMapSecretData = inheritedConfigMapSecretData
             } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
                 configMapSecretData = {
-                    ...JSON.parse(draftData.data).configData?.[0],
+                    ...draftData.parsedData.configData?.[0],
                     unAuthorized: !draftData.isAppAdmin,
                 }
             }
@@ -95,10 +96,10 @@ export const ConfigMapSecretDryRun = ({
                     ...payload,
                     ...(mergeStrategy === OverrideMergeStrategyType.PATCH
                         ? {
-                              data: {
-                                  ...(configMapSecretData ? configMapSecretData.data : {}),
-                                  ...payload.data,
-                              },
+                              data: applyCompareDiffOnUneditedDocument(
+                                  inheritedConfigMapSecretData ? inheritedConfigMapSecretData.data : {},
+                                  payload.data,
+                              ),
                           }
                         : {}),
                 }
@@ -107,7 +108,7 @@ export const ConfigMapSecretDryRun = ({
             configMapSecretData = publishedConfigMapSecretData ?? null
         }
 
-        return configMapSecretData ? { ...configMapSecretData, mergeStrategy: null } : null
+        return configMapSecretData
     }, [
         isProtected,
         dryRunEditorMode,
@@ -217,7 +218,9 @@ export const ConfigMapSecretDryRun = ({
                     )}
                 </div>
                 <div className="flex left dc__gap-8">
-                    {mergeStrategy && <SelectMergeStrategy mergeStrategy={mergeStrategy} variant="text" />}
+                    {dryRunConfigMapSecretData?.mergeStrategy && (
+                        <SelectMergeStrategy mergeStrategy={dryRunConfigMapSecretData.mergeStrategy} variant="text" />
+                    )}
                     <div className="dc__border-right-n1 dc__align-self-stretch mt-2 mb-2" />
                     <ToggleResolveScopedVariables
                         resolveScopedVariables={resolveScopedVariables}
@@ -266,7 +269,7 @@ export const ConfigMapSecretDryRun = ({
                 configMapSecretData={
                     draftData
                         ? {
-                              ...JSON.parse(draftData.data).configData?.[0],
+                              ...draftData.parsedData.configData?.[0],
                               unAuthorized: !draftData.isAppAdmin,
                           }
                         : null

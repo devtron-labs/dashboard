@@ -291,6 +291,10 @@ export type CompareConfigViewProps = {
      */
     editorKey?: string
     className?: string
+    /**
+     * @default 'Data'
+     */
+    displayName?: string
 } & ConfigErrorHandlingProps
 
 export interface BaseConfigurationNavigationProps {

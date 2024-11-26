@@ -363,7 +363,7 @@ export const EnvConfigurationsNav = ({
                             <NavLink
                                 data-testid="env-deployment-template"
                                 className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
-                                to={updatedEnvConfig.deploymentTemplate.href}
+                                to={{ pathname: updatedEnvConfig.deploymentTemplate.href, search: '' }}
                                 onClick={handleDeploymentTemplateNavLinkOnClick}
                             >
                                 <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
