@@ -21,7 +21,7 @@ import { Progressing, EnvResourceType } from '@devtron-labs/devtron-fe-common-li
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
-import { ErrorBoundary, importComponentFromFELibrary, useAppContext } from '@Components/common'
+import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
@@ -39,7 +39,7 @@ const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEdito
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
 
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+// const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -84,7 +84,7 @@ const AppComposeRouter = () => {
         isJobView,
         isBaseConfigProtected,
         reloadEnvironments,
-        configProtectionData,
+        // configProtectionData,
         filteredEnvIds,
         isGitOpsConfigurationRequired,
         reloadAppConfig,
@@ -225,7 +225,7 @@ const AppComposeRouter = () => {
                     />
                 </Route>
             )}
-            {isUnlocked.workflowEditor && ConfigProtectionView && (
+            {/* {isUnlocked.workflowEditor && ConfigProtectionView && (
                 <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
                     <ConfigProtectionView
                         appId={Number(appId)}
@@ -235,7 +235,7 @@ const AppComposeRouter = () => {
                         isBaseConfigProtected={isBaseConfigProtected}
                     />
                 </Route>
-            )}
+            )} */}
             {isUnlocked.workflowEditor && [
                 <Route
                     key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}

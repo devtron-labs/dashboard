@@ -16,7 +16,7 @@
 
 import { ResourceKindType, stringComparatorBySortOrder, ConfigResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS, DOCUMENTATION } from '@Config/index'
+import { DOCUMENTATION } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
@@ -270,12 +270,12 @@ export const getNavItems = (
                         flowCompletionPercent: completedPercent,
                         currentStep: completedSteps,
                     },
-                    {
-                        title: 'Protect Configuration',
-                        href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
-                        stage: STAGE_NAME.PROTECT_CONFIGURATION,
-                        isLocked: false,
-                    },
+                    // {
+                    //     title: 'Protect Configuration',
+                    //     href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
+                    //     stage: STAGE_NAME.PROTECT_CONFIGURATION,
+                    //     isLocked: false,
+                    // },
                     {
                         title: 'Environment Override',
                         href: `/app/${appId}/edit/env-override`,
