@@ -225,10 +225,10 @@ export const getConfigMapSecretFormInitialValues = ({
     configMapSecretData,
     cmSecretStateLabel,
     componentType,
-}: Pick<
-    ConfigMapSecretFormProps,
-    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'
->): ConfigMapSecretUseFormProps => {
+    skipValidation = false,
+}: Pick<ConfigMapSecretFormProps, 'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'> & {
+    skipValidation?: boolean
+}): ConfigMapSecretUseFormProps => {
     const isSecret = componentType === CMSecretComponentType.Secret
 
     if (configMapSecretData) {
@@ -281,6 +281,7 @@ export const getConfigMapSecretFormInitialValues = ({
             hasCurrentDataErr: false,
             isResolvedData: false,
             mergeStrategy,
+            skipValidation,
             ...getSecretDataFromConfigData(configMapSecretData),
         }
     }
@@ -305,6 +306,7 @@ export const getConfigMapSecretFormInitialValues = ({
         esoSecretYaml: '{}',
         secretDataYaml: '[]',
         mergeStrategy: null,
+        skipValidation,
     }
 }
 

@@ -195,7 +195,12 @@ export const getConfigMapSecretFormValidations: UseFormValidations<ConfigMapSecr
     yaml,
     yamlMode,
     esoSecretYaml,
+    skipValidation,
 }) => {
+    if (skipValidation) {
+        return {}
+    }
+
     const mountExistingExternal =
         external && externalType === (isSecret ? CMSecretExternalType.KubernetesSecret : CMSecretExternalType.Internal)
     const isESO = isSecret && hasESO(externalType)

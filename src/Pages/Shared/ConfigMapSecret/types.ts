@@ -111,6 +111,7 @@ export interface ConfigMapSecretUseFormProps {
     hasCurrentDataErr: boolean
     isResolvedData: boolean
     mergeStrategy: ConfigToolbarProps['mergeStrategy']
+    skipValidation: boolean
 }
 
 // COMPONENT PROPS

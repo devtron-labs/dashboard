@@ -110,6 +110,19 @@ export const ConfigMapSecretDryRun = ({
         return configMapSecretData
     }, [isProtected, dryRunEditorMode, formData, draftData, publishedConfigMapSecretData, inheritedConfigMapSecretData])
 
+    // DATA CONSTANTS
+    const isDryRunDataPresent = !!dryRunConfigMapSecretData
+    const fileDeletionRequest =
+        draftData?.action === DraftAction.Delete &&
+        (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING ||
+            dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT)
+    const publishedVersionDoesNotExist =
+        dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES &&
+        (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+            cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
+            !publishedConfigMapSecretData)
+    const hideManifest = dryRunConfigMapSecretData?.external || fileDeletionRequest || publishedVersionDoesNotExist
+
     useEffect(() => {
         abortControllerRef.current = new AbortController()
 
@@ -117,15 +130,6 @@ export const ConfigMapSecretDryRun = ({
             abortControllerRef.current.abort()
         }
     }, [dryRunConfigMapSecretData])
-
-    // DATA CONSTANTS
-    const isDryRunDataPresent = !!dryRunConfigMapSecretData
-    const isExternal = dryRunConfigMapSecretData?.external
-    const fileDeletionRequest =
-        draftData?.action === DraftAction.Delete &&
-        (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING ||
-            dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT)
-    const hideManifest = !isExternal && !fileDeletionRequest
 
     const [
         configMapSecretManifestLoading,
@@ -150,7 +154,7 @@ export const ConfigMapSecretDryRun = ({
                 abortControllerRef,
             ),
         [dryRunConfigMapSecretData],
-        isDryRunDataPresent && !isExternal,
+        isDryRunDataPresent && !hideManifest,
     )
 
     // METHODS
@@ -158,12 +162,7 @@ export const ConfigMapSecretDryRun = ({
 
     // RENDERERS
     const renderLHSContent = () => {
-        const publishedVersionDoesNotExist =
-            cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-            cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
-            !publishedConfigMapSecretData
-
-        if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES && publishedVersionDoesNotExist) {
+        if (publishedVersionDoesNotExist) {
             return (
                 <NoPublishedVersionEmptyState
                     isOverride={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && !!publishedConfigMapSecretData}
@@ -298,9 +297,9 @@ export const ConfigMapSecretDryRun = ({
                 message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
             />
             <div className="flexbox-col h-100 dc__overflow-hidden">
-                <div className={`flex-grow-1 dc__overflow-hidden ${hideManifest ? 'dc__grid-half' : ''}`}>
+                <div className={`flex-grow-1 dc__overflow-hidden ${!hideManifest ? 'dc__grid-half' : ''}`}>
                     {renderLHS()}
-                    {hideManifest && renderRHS()}
+                    {!hideManifest && renderRHS()}
                 </div>
                 {showCrudButtons && dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES && renderCrudButton()}
             </div>
