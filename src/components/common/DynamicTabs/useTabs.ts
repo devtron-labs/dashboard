@@ -223,8 +223,6 @@ export function useTabs(persistanceKey: string) {
                     }
 
                     _tabs[index].isSelected = _initTab.isSelected
-                    /* NOTE: dynamic title might get updated between re-initialization */
-                    _tabs[index].dynamicTitle = _initTab.dynamicTitle
                     _tabs[index].isAlive = _initTab.isAlive
                     _tabs[index].tippyConfig = _initTab.tippyConfig
                     return false
