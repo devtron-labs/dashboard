@@ -29,7 +29,7 @@ import {
     AppListConstants,
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
+import { Route, Switch, useRouteMatch, useHistory, useLocation, Redirect } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
@@ -420,6 +420,7 @@ export default function NavigationRoutes() {
                                                     isSuperAdmin={isSuperAdmin}
                                                     appListCount={appListCount}
                                                     loginCount={loginCount}
+                                                    serverMode={serverMode}
                                                 />
                                             )}
                                         />,
@@ -523,7 +524,7 @@ export default function NavigationRoutes() {
     )
 }
 
-export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
+export const AppRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentAppName, setCurrentAppName] = useState<string>('')
@@ -539,6 +540,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                                 isSuperAdmin={isSuperAdmin}
                                 appListCount={appListCount}
                                 loginCount={loginCount}
+                                serverMode={serverMode}
                             />
                         )}
                     />
@@ -560,7 +562,11 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
 
                     <Route exact path="">
-                        <RedirectToAppList />
+                        {serverMode === SERVER_MODE.EA_ONLY ? (
+                            <Redirect to={URLS.RESOURCE_BROWSER} />
+                        ) : (
+                            <RedirectToAppList />
+                        )}
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
@@ -573,7 +579,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
     )
 }
 
-export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
+export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
@@ -581,9 +587,13 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
     return (
         <ErrorBoundary>
             <Switch>
-                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
+                <Route exact path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
                 <Route exact path="">
-                    <RedirectToAppList />
+                    {serverMode === SERVER_MODE.EA_ONLY ? (
+                        <Redirect to={URLS.RESOURCE_BROWSER} />
+                    ) : (
+                        <RedirectToAppList />
+                    )}
                 </Route>
                 <Route>
                     <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
