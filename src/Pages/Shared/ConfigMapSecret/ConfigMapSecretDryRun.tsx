@@ -121,7 +121,8 @@ export const ConfigMapSecretDryRun = ({
         (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
             cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
             !publishedConfigMapSecretData)
-    const hideManifest = dryRunConfigMapSecretData?.external || fileDeletionRequest || publishedVersionDoesNotExist
+    const hideManifest =
+        isJob || dryRunConfigMapSecretData?.external || fileDeletionRequest || publishedVersionDoesNotExist
 
     useEffect(() => {
         abortControllerRef.current = new AbortController()

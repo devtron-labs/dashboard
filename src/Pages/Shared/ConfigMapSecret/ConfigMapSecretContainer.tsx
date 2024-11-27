@@ -206,8 +206,10 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        // Skipped for jobs as API support is unavailable                        !isJob &&
+                        !isJob &&
+                        (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN)
                             ? getConfigMapSecretConfigData({
                                   appId: +appId,
                                   appName,
@@ -249,11 +251,15 @@ export const ConfigMapSecretContainer = ({
 
             return {
                 ...data,
-                inheritedConfigMapSecretData: getConfigMapSecretInheritedData({
-                    cmSecretConfigDataRes: configMapSecretRes[1],
-                    isJob,
-                    isSecret,
-                }),
+                // For jobs: using current configuration data since inherited data is unavailable
+                // (logic is implemented to parse inherited data from the current data)
+                inheritedConfigMapSecretData: isJob
+                    ? data.configMapSecretData
+                    : getConfigMapSecretInheritedData({
+                          cmSecretConfigDataRes: configMapSecretRes[1],
+                          isJob,
+                          isSecret,
+                      }),
             }
         }
 
@@ -442,7 +448,7 @@ export const ConfigMapSecretContainer = ({
     // TAB HANDLING
     useEffect(() => {
         if (!isLoading && !configHeaderTab) {
-            if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
+            if (!isJob && cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
                 updateSearchParams({ headerTab: ConfigHeaderTabType.INHERITED })
             } else {
                 updateSearchParams({ headerTab: ConfigHeaderTabType.VALUES })
@@ -537,7 +543,14 @@ export const ConfigMapSecretContainer = ({
 
     const handleClearPopupNode = () => setPopupNodeType(null)
 
-    const handleViewInheritedConfig = () => updateSearchParams({ headerTab: ConfigHeaderTabType.INHERITED })
+    const handleViewInheritedConfig = () => {
+        if (isJob) {
+            // Redirecting to the base config URL, since inherited tab is hidden
+            history.push(baseConfigurationURL)
+        } else {
+            handleTabChange(ConfigHeaderTabType.INHERITED)
+        }
+    }
 
     const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
         setSelectedProtectionViewTab(tab)
@@ -915,6 +928,7 @@ export const ConfigMapSecretContainer = ({
                     showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
+                    hideTabs={{ inherited: isJob }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
