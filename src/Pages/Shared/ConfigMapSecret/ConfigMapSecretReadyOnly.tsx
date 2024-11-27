@@ -17,7 +17,6 @@ export const ConfigMapSecretReadyOnly = ({
         cmSecretStateLabel,
         componentType,
         isJob,
-        mergeStrategy: null,
     })
 
     return areScopeVariablesResolving ? (

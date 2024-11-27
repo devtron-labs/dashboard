@@ -288,7 +288,8 @@ export const ConfigMapSecretData = ({
                 <CodeEditor
                     key={codeEditorRadio}
                     value={getCodeEditorValue()}
-                    onChange={!isLocked ? onChange : noop}
+                    // Skip calling onChange if resolvedData exists
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
                     mode="yaml"
                     inline

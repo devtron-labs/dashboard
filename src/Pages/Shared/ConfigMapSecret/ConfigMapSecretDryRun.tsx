@@ -24,13 +24,14 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 
+import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
 import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
-import { getConfigMapSecretFormInitialValues, getConfigMapSecretPayload } from './utils'
+import { renderExternalInfo } from './helpers'
+import { getConfigMapSecretPayload } from './utils'
+
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
-import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
-import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
-import { renderExternalInfo } from './helpers'
+import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 
@@ -44,11 +45,9 @@ export const ConfigMapSecretDryRun = ({
     areScopeVariablesResolving,
     handleToggleScopedVariablesView,
     isProtected,
-    resolvedFormData,
     draftData,
     inheritedConfigMapSecretData,
     publishedConfigMapSecretData,
-    mergeStrategy,
     dryRunEditorMode,
     handleChangeDryRunEditorMode,
     isSubmitting,
@@ -56,11 +55,12 @@ export const ConfigMapSecretDryRun = ({
     showCrudButtons,
     parentName,
     updateCMSecret,
+    formData,
+    isFormDirty,
 }: ConfigMapSecretDryRunProps) => {
     // HOOKS
     const location = useLocation()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const { formDataRef, isFormDirty } = useConfigMapSecretFormContext()
     const abortControllerRef = useRef<AbortController>(null)
 
     // CONSTANTS
@@ -81,43 +81,34 @@ export const ConfigMapSecretDryRun = ({
                 configMapSecretData = inheritedConfigMapSecretData
             } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
                 configMapSecretData = {
-                    ...draftData.parsedData.configData?.[0],
+                    ...draftData.parsedData.configData[0],
                     unAuthorized: !draftData.isAppAdmin,
                 }
             }
         }
 
         if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
-            if (resolvedFormData ?? formDataRef.current) {
-                const payload = getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current)
+            const payload = getConfigMapSecretPayload(formData)
+            const inheritedData = inheritedConfigMapSecretData?.data || {}
 
-                configMapSecretData = {
-                    ...((configMapSecretData || {}) as CMSecretConfigData),
-                    ...payload,
-                    ...(mergeStrategy === OverrideMergeStrategyType.PATCH
-                        ? {
-                              data: applyCompareDiffOnUneditedDocument(
-                                  inheritedConfigMapSecretData ? inheritedConfigMapSecretData.data : {},
-                                  payload.data,
-                              ),
-                          }
-                        : {}),
-                }
+            configMapSecretData = {
+                ...((configMapSecretData || {}) as CMSecretConfigData),
+                ...payload,
+                ...(payload.mergeStrategy === OverrideMergeStrategyType.PATCH
+                    ? {
+                          data: applyCompareDiffOnUneditedDocument(inheritedData, {
+                              ...inheritedData,
+                              ...payload.data,
+                          }),
+                      }
+                    : {}),
             }
         } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
             configMapSecretData = publishedConfigMapSecretData ?? null
         }
 
         return configMapSecretData
-    }, [
-        isProtected,
-        dryRunEditorMode,
-        resolvedFormData,
-        formDataRef.current,
-        draftData,
-        publishedConfigMapSecretData,
-        inheritedConfigMapSecretData,
-    ])
+    }, [isProtected, dryRunEditorMode, formData, draftData, publishedConfigMapSecretData, inheritedConfigMapSecretData])
 
     useEffect(() => {
         abortControllerRef.current = new AbortController()
@@ -127,8 +118,14 @@ export const ConfigMapSecretDryRun = ({
         }
     }, [dryRunConfigMapSecretData])
 
+    // DATA CONSTANTS
     const isDryRunDataPresent = !!dryRunConfigMapSecretData
     const isExternal = dryRunConfigMapSecretData?.external
+    const fileDeletionRequest =
+        draftData?.action === DraftAction.Delete &&
+        (dryRunEditorMode === DryRunEditorMode.APPROVAL_PENDING ||
+            dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT)
+    const hideManifest = !isExternal && !fileDeletionRequest
 
     const [
         configMapSecretManifestLoading,
@@ -143,7 +140,7 @@ export const ConfigMapSecretDryRun = ({
                         {
                             appId: +appId,
                             environmentId: envId ? +envId : null,
-                            mergeStrategy,
+                            mergeStrategy: formData.mergeStrategy,
                             resourceName: dryRunConfigMapSecretData.name,
                             resourceType: componentType,
                             values: dryRunConfigMapSecretData.data,
@@ -157,16 +154,7 @@ export const ConfigMapSecretDryRun = ({
     )
 
     // METHODS
-    const handleSubmit = () =>
-        onSubmit(
-            formDataRef.current
-                ? formDataRef.current
-                : getConfigMapSecretFormInitialValues({
-                      configMapSecretData: dryRunConfigMapSecretData,
-                      cmSecretStateLabel,
-                      componentType,
-                  }),
-        )
+    const handleSubmit = () => onSubmit(formData)
 
     // RENDERERS
     const renderLHSContent = () => {
@@ -183,13 +171,25 @@ export const ConfigMapSecretDryRun = ({
             )
         }
 
+        if (fileDeletionRequest) {
+            return cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN ? (
+                <ConfigMapSecretNullState nullStateType="DELETE_OVERRIDE" />
+            ) : (
+                <ConfigMapSecretNullState nullStateType="DELETE" componentName={componentName} />
+            )
+        }
+
+        if (!isDryRunDataPresent) {
+            return <GenericEmptyState title="No data present for manifest" />
+        }
+
         return (
             <>
                 <ConfigMapSecretReadyOnly
                     componentType={componentType}
                     isJob={isJob}
                     cmSecretStateLabel={CM_SECRET_STATE.BASE}
-                    configMapSecretData={dryRunConfigMapSecretData}
+                    configMapSecretData={{ ...dryRunConfigMapSecretData, mergeStrategy: null }}
                     areScopeVariablesResolving={areScopeVariablesResolving}
                 />
                 <div className="px-16 pb-16">
@@ -204,7 +204,7 @@ export const ConfigMapSecretDryRun = ({
     }
 
     const renderLHS = () => (
-        <div className="flexbox-col dc__border-right dc__overflow-hidden">
+        <div className="h-100 flexbox-col dc__border-right dc__overflow-hidden">
             <div className="px-12 py-6 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8">
                 <div className="flex left dc__gap-8">
                     <ICFileCode className="dc__no-shrink scn-9 icon-dim-16" />
@@ -291,10 +291,6 @@ export const ConfigMapSecretDryRun = ({
             </footer>
         )
 
-    if (!isDryRunDataPresent) {
-        return <GenericEmptyState title="No data present for manifest" />
-    }
-
     return (
         <>
             <Prompt
@@ -302,9 +298,9 @@ export const ConfigMapSecretDryRun = ({
                 message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
             />
             <div className="flexbox-col h-100 dc__overflow-hidden">
-                <div className={`flex-grow-1 dc__overflow-hidden ${!isExternal ? 'dc__grid-half' : ''}`}>
+                <div className={`flex-grow-1 dc__overflow-hidden ${hideManifest ? 'dc__grid-half' : ''}`}>
                     {renderLHS()}
-                    {!isExternal && renderRHS()}
+                    {hideManifest && renderRHS()}
                 </div>
                 {showCrudButtons && dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES && renderCrudButton()}
             </div>

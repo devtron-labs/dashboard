@@ -307,11 +307,7 @@ export const getConfigMapSecretReadOnlyValues = ({
     cmSecretStateLabel,
     componentType,
     isJob,
-    mergeStrategy,
-}: Pick<
-    ConfigMapSecretFormProps,
-    'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob' | 'mergeStrategy'
->) => {
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -334,10 +330,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         currentData,
         isSecret,
     } = getConfigMapSecretFormInitialValues({
-        configMapSecretData: {
-            ...configMapSecretData,
-            mergeStrategy: mergeStrategy || configMapSecretData.mergeStrategy,
-        },
+        configMapSecretData,
         cmSecretStateLabel,
         componentType,
     })
@@ -363,14 +356,17 @@ export const getConfigMapSecretReadOnlyValues = ({
             {
                 displayName: 'DataType',
                 value: dataType,
+                key: 'dataType',
             },
             {
                 displayName: 'Mount data as',
                 value: configMapSecretMountDataMap[selectedType].title,
+                key: 'mountDataAs',
             },
             {
                 displayName: 'Volume mount path',
                 value: volumeMountPath,
+                key: 'volumeMountPath',
             },
             {
                 displayName: 'Set Sub Path',
@@ -378,18 +374,22 @@ export const getConfigMapSecretReadOnlyValues = ({
                     (configMapSecretMountDataMap[selectedType].value === 'volume' &&
                         (isSubPathChecked ? 'True' : 'False')) ||
                     '',
+                key: 'setSubPath',
             },
             {
                 displayName: 'Subpath Values',
                 value: externalSubpathValues,
+                key: 'externalSubpathValues',
             },
             {
                 displayName: 'File Permission',
                 value: filePermission,
+                key: 'filePermission',
             },
             {
                 displayName: 'Role ARN',
                 value: roleARN,
+                key: 'roleArn',
             },
         ],
         data: !mountExistingExternal ? (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml : null,
@@ -731,14 +731,6 @@ export const getConfigMapSecretResolvedData = (
             isDraft: true,
         }),
     }
-}
-
-export const getDefaultMergeStrategy = (configMapSecretData: CMSecretConfigData) => {
-    const defaultMergeStrategy = configMapSecretData?.external
-        ? OverrideMergeStrategyType.REPLACE
-        : DEFAULT_MERGE_STRATEGY
-
-    return defaultMergeStrategy
 }
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>

@@ -20,6 +20,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useForm,
     usePrompt,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -43,15 +44,17 @@ import {
 import {
     getConfigMapSecretDraftAndPublishedData,
     getConfigMapSecretError,
+    getConfigMapSecretFormInitialValues,
     getConfigMapSecretInheritedData,
     getConfigMapSecretPayload,
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
-    getDefaultMergeStrategy,
+    hasESO,
     hasHashiOrAWS,
     parseConfigMapSecretSearchParams,
 } from './utils'
+import { getConfigMapSecretFormValidations } from './validations'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
     CM_SECRET_STATE,
@@ -61,8 +64,8 @@ import {
     CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
-    ConfigMapSecretFormRefType,
     ConfigMapSecretQueryParamsType,
+    ConfigMapSecretUseFormProps,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
@@ -71,7 +74,6 @@ import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
-import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 
 import './styles.scss'
 
@@ -94,7 +96,6 @@ export const ConfigMapSecretContainer = ({
     reloadEnvironments,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
-    const { setFormState, isFormDirty, parsingError, formDataRef } = useConfigMapSecretFormContext()
     const location = useLocation()
     const history = useHistory()
     const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
@@ -107,10 +108,9 @@ export const ConfigMapSecretContainer = ({
 
     // REFS
     const abortControllerRef = useRef<AbortController>()
-    const formMethodsRef = useRef<ConfigMapSecretFormRefType>(null)
+    const savedFormData = useRef<ConfigMapSecretUseFormProps>()
 
     // STATES
-    const [mergeStrategy, setMergeStrategy] = useState<OverrideMergeStrategyType>(null)
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
     const [popupNodeType, setPopupNodeType] = useState<ConfigToolbarPopupNodeType>(null)
     const [showComments, setShowComments] = useState(false)
@@ -121,9 +121,19 @@ export const ConfigMapSecretContainer = ({
     const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
     const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
-    const [restoreYAML, setRestoreYAML] = useState(false)
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState(false)
+
+    // FORM INITIALIZATION
+    const useFormProps = useForm<ConfigMapSecretUseFormProps>({
+        validations: getConfigMapSecretFormValidations,
+        initialValues: getConfigMapSecretFormInitialValues({
+            configMapSecretData: null,
+            componentType,
+            cmSecretStateLabel: envId ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.BASE,
+        }),
+    })
+    const { data: formData, errors: formErrors, formState, setValue, handleSubmit, reset } = useFormProps
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -138,6 +148,11 @@ export const ConfigMapSecretContainer = ({
     const id = selectedCMSecret?.id
     const isCreateState = name === 'create' && !id
     const isEmptyState = !name && !envConfigData.length
+
+    const yamlError =
+        formData.mergeStrategy !== OverrideMergeStrategyType.PATCH &&
+        (formData.external ? formErrors.esoSecretYaml : formErrors.yaml)?.[0]
+    const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR ? yamlError : ''
 
     // GA EVENT CATEGORY (BASED ON CM/SECRET)
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
@@ -154,19 +169,10 @@ export const ConfigMapSecretContainer = ({
      * * Show the prompt only when not in create mode, as unsaved changes are already handled in ConfigMapSecretForm.
      * * During creation, route changes (/create -> /{configName}) would trigger an unnecessary prompt, so we skip it in that case.
      */
-    const shouldPrompt = !isCreateState && isFormDirty
+    const shouldPrompt = !isCreateState && formState.isDirty
 
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
-
-    // USE EFFECTS
-    useEffect(
-        // Reset the form state after unmounting
-        () => () => {
-            setFormState({ type: 'RESET' })
-        },
-        [],
-    )
 
     useEffect(() => {
         abortControllerRef.current = new AbortController()
@@ -275,7 +281,7 @@ export const ConfigMapSecretContainer = ({
         () =>
             abortPreviousRequests(() => {
                 const values = getConfigMapSecretResolvedDataPayload({
-                    formData: formDataRef.current,
+                    formData,
                     inheritedConfigMapSecretData,
                     configMapSecretData,
                     draftData,
@@ -309,6 +315,36 @@ export const ConfigMapSecretContainer = ({
                 resolvedDraftData: null,
             }
         }, [resolvedScopeVariablesRes])
+
+    // CONFIGMAP/SECRET FORM INITIAL VALUES
+    const formInitialValues = useMemo(() => {
+        let formInitialData = configMapSecretData
+        if (draftData) {
+            if (draftData.action === DraftAction.Delete) {
+                formInitialData = null
+            } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
+                formInitialData = {
+                    ...draftData.parsedData.configData[0],
+                    unAuthorized: !draftData.isAppAdmin,
+                }
+            }
+        }
+
+        return formInitialData
+            ? getConfigMapSecretFormInitialValues({
+                  configMapSecretData: formInitialData,
+                  componentType,
+                  cmSecretStateLabel,
+              })
+            : null
+    }, [configMapSecretData, draftData])
+
+    // SET INITIAL FORM STATE
+    useEffect(() => {
+        if (formInitialValues) {
+            reset(formInitialValues)
+        }
+    }, [formInitialValues])
 
     // DATA CONSTANTS
     const isError = configHasBeenDeleted || configMapSecretResErr
@@ -389,6 +425,17 @@ export const ConfigMapSecretContainer = ({
         }
     }, [resolvedScopeVariablesRes, reloadResolvedScopeVariablesResErr])
 
+    // SET RESOLVE VALUES IN FORM STATE
+    useEffect(() => {
+        if (resolvedScopeVariables && resolvedFormData) {
+            savedFormData.current = formData
+            reset({ ...resolvedFormData, isResolvedData: true }, { keepInitialValues: true, keepDirty: true })
+        } else if (savedFormData.current) {
+            reset(savedFormData.current, { keepInitialValues: true, keepDirty: true })
+            savedFormData.current = null
+        }
+    }, [resolvedScopeVariables, resolvedFormData])
+
     // TAB HANDLING
     useEffect(() => {
         if (!isLoading && !configHeaderTab) {
@@ -399,24 +446,6 @@ export const ConfigMapSecretContainer = ({
             }
         }
     }, [isLoading, cmSecretStateLabel, draftData])
-
-    // METHOD FOR DEFAULT MERGE STRATEGY
-    const setDefaultMergeStrategy = () => {
-        const _configMapSecretData = {
-            ...configMapSecretData,
-            ...(draftData ? draftData.parsedData.configData?.[0] || {} : {}),
-        }
-        const _mergeStrategy =
-            _configMapSecretData?.mergeStrategy ||
-            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? getDefaultMergeStrategy(_configMapSecretData) : null)
-
-        setMergeStrategy(_mergeStrategy)
-    }
-
-    // MERGE STRATEGY HANDLING
-    useEffect(() => {
-        setDefaultMergeStrategy()
-    }, [configMapSecretData, draftData])
 
     const redirectURLToValidPage = () => {
         history.replace(
@@ -429,6 +458,7 @@ export const ConfigMapSecretContainer = ({
         )
     }
 
+    // HANDLING REDIRECTION IN CASE OF INVALID PAGE
     useEffect(() => {
         if (!isLoading && !selectedCMSecret && !isCreateState && !isEmptyState) {
             redirectURLToValidPage()
@@ -437,7 +467,6 @@ export const ConfigMapSecretContainer = ({
 
     // METHODS
     const updateCMSecret = (configName?: string) => {
-        setFormState({ type: 'RESET' })
         setResolvedScopeVariables(false)
         setHideNoOverrideEmptyState(false)
         fetchEnvConfig(+envId || -1)
@@ -450,9 +479,10 @@ export const ConfigMapSecretContainer = ({
     const handleActionWithFormValidation =
         <Args extends unknown[]>(func: (...args: Args) => void) =>
         async (...args: Args) => {
-            if (formMethodsRef.current && mergeStrategy !== OverrideMergeStrategyType.PATCH) {
-                const { handleSubmit } = formMethodsRef.current
-
+            if (
+                configHeaderTab === ConfigHeaderTabType.VALUES &&
+                formData.mergeStrategy !== OverrideMergeStrategyType.PATCH
+            ) {
                 await handleSubmit(
                     () => func(...args),
                     () => {
@@ -477,7 +507,15 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const restoreLastSavedYAML = () => setRestoreYAML(true)
+    const restoreLastSavedYAML = () => {
+        /*
+         * This triggers a reset of the YAML to its initial state (i.e., the latest valid state). \
+         * Depending on the type of ConfigMap or Secret, we set the appropriate YAML form field accordingly.
+         */
+        const isESO = isSecret && hasESO(formData.externalType)
+        const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
+        setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
+    }
 
     const toggleDraftComments = () => setShowComments(!showComments)
 
@@ -529,13 +567,46 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleNoOverrideFormCancel = () => {
-        setDefaultMergeStrategy()
-        setFormState({ type: 'RESET' })
+        // setFormState({ type: 'RESET' })
+        reset(formInitialValues)
         setHideNoOverrideEmptyState(false)
     }
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
-        setMergeStrategy(strategy)
+        setValue('mergeStrategy', strategy)
+
+        if (
+            !formState.isDirty &&
+            cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+            !draftData &&
+            strategy === OverrideMergeStrategyType.REPLACE
+        ) {
+            const { yaml, currentData } = getConfigMapSecretFormInitialValues({
+                cmSecretStateLabel,
+                componentType,
+                configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
+            })
+            setValue('yaml', yaml)
+            setValue('currentData', currentData)
+        } else {
+            reset(
+                {
+                    ...(strategy === OverrideMergeStrategyType.PATCH
+                        ? getConfigMapSecretFormInitialValues({
+                              cmSecretStateLabel,
+                              componentType,
+                              configMapSecretData: inheritedConfigMapSecretData,
+                          })
+                        : formInitialValues),
+                    mergeStrategy: strategy,
+                    yamlMode: formData.yamlMode,
+                    currentData: formData.currentData,
+                    yaml: formData.yaml,
+                },
+                { triggerDirty: true, keepInitialValues: true },
+            )
+        }
+
         ReactGA.event({
             category: gaEventCategory,
             action: 'clicked-merge-strategy-dropdown',
@@ -583,8 +654,8 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (formData) => {
-        const payloadData = getConfigMapSecretPayload(resolvedScopeVariables ? formDataRef.current : formData)
+    const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (data) => {
+        const payloadData = getConfigMapSecretPayload(data)
 
         if (isProtected) {
             setDraftPayload({
@@ -695,7 +766,6 @@ export const ConfigMapSecretContainer = ({
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
         isProtected && draftData ? (
             <ConfigMapSecretProtected
-                formMethodsRef={formMethodsRef}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentName={componentName}
                 publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
@@ -709,18 +779,14 @@ export const ConfigMapSecretContainer = ({
                 componentType={componentType}
                 isJob={isJob}
                 parentName={parentName}
-                restoreYAML={restoreYAML}
-                setRestoreYAML={setRestoreYAML}
-                resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 appChartRef={appChartRef}
-                mergeStrategy={mergeStrategy}
                 shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
+                useFormProps={useFormProps}
             />
         ) : (
             <ConfigMapSecretForm
                 id={id}
-                ref={formMethodsRef}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
@@ -731,12 +797,9 @@ export const ConfigMapSecretContainer = ({
                 onSubmit={onSubmit}
                 onError={onError}
                 onCancel={onCancel}
-                resolvedFormData={resolvedFormData}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                restoreYAML={restoreYAML}
-                setRestoreYAML={setRestoreYAML}
                 appChartRef={appChartRef}
-                mergeStrategy={mergeStrategy}
+                useFormProps={useFormProps}
             />
         )
 
@@ -779,7 +842,6 @@ export const ConfigMapSecretContainer = ({
                         componentName={componentName}
                         cmSecretStateLabel={cmSecretStateLabel}
                         isProtected={isProtected}
-                        resolvedFormData={resolvedFormData}
                         publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
                         draftData={resolvedDraftData ?? draftData}
                         inheritedConfigMapSecretData={
@@ -790,12 +852,13 @@ export const ConfigMapSecretContainer = ({
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         dryRunEditorMode={dryRunEditorMode}
                         handleChangeDryRunEditorMode={setDryRunEditorMode}
-                        mergeStrategy={mergeStrategy}
                         showCrudButtons={!showNoOverride}
                         isSubmitting={isSubmitting}
                         onSubmit={onSubmit}
                         parentName={parentName}
                         updateCMSecret={updateCMSecret}
+                        formData={resolvedFormData ?? formData}
+                        isFormDirty={formState.isDirty}
                     />
                 )
             default:
@@ -844,7 +907,7 @@ export const ConfigMapSecretContainer = ({
                     configHeaderTab={configHeaderTab}
                     handleTabChange={handleActionWithFormValidation(handleTabChange)}
                     isDisabled={isLoading}
-                    areChangesPresent={isFormDirty}
+                    areChangesPresent={formState.isDirty}
                     isOverridable={
                         cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                         cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
@@ -859,13 +922,11 @@ export const ConfigMapSecretContainer = ({
                         mergeStrategy={
                             selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED
                                 ? configMapSecretData?.mergeStrategy
-                                : mergeStrategy
+                                : formData.mergeStrategy
                         }
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         hidePatchOption={
-                            inheritedConfigMapSecretData?.external ||
-                            configMapSecretData?.external ||
-                            formDataRef.current?.external
+                            inheritedConfigMapSecretData?.external || configMapSecretData?.external || formData.external
                         }
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
@@ -881,7 +942,7 @@ export const ConfigMapSecretContainer = ({
                                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
                         }
                         showMergePatchesButton={
-                            mergeStrategy === OverrideMergeStrategyType.PATCH ||
+                            formData.mergeStrategy === OverrideMergeStrategyType.PATCH ||
                             configMapSecretData?.mergeStrategy === OverrideMergeStrategyType.PATCH
                         }
                         baseConfigurationURL={baseConfigurationURL}
