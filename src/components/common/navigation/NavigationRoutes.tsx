@@ -480,13 +480,17 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                            <DevtronStackManager
-                                                serverInfo={currentServerInfo.serverInfo}
-                                                getCurrentServerInfo={getCurrentServerInfo}
-                                                isSuperAdmin={isSuperAdmin}
-                                            />
-                                        </Route>,
+                                        ...(serverMode !== SERVER_MODE.EA_ONLY
+                                            ? [
+                                                <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                                    <DevtronStackManager
+                                                        serverInfo={currentServerInfo.serverInfo}
+                                                        getCurrentServerInfo={getCurrentServerInfo}
+                                                        isSuperAdmin={isSuperAdmin}
+                                                    />
+                                                </Route>
+                                              ]
+                                            : []),
                                         <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
