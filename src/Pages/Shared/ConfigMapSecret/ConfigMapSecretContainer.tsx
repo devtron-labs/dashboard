@@ -601,7 +601,7 @@ export const ConfigMapSecretContainer = ({
             })
             setValue('yaml', yaml)
             setValue('currentData', currentData)
-        } else {
+        } else if (strategy !== formData.mergeStrategy) {
             reset(
                 {
                     ...(strategy === OverrideMergeStrategyType.PATCH
