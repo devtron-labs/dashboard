@@ -202,6 +202,20 @@ const ResourceList = () => {
     }
 
     useEffect(() => initTabsBasedOnRole(false), [])
+    useEffect(() => {
+        const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
+        const newLabel = `Terminal '${selectedCluster.label}'`
+
+        // NOTE: we don't have cluster name on mount therefore need
+        // to update the dynamicTitle once we have fetched the cluster name
+        if (terminalTab && terminalTab.dynamicTitle !== newLabel) {
+            updateTabUrl({
+                id: terminalTab.id,
+                url: terminalTab.url,
+                dynamicTitle: newLabel,
+            })
+        }
+    }, [getTabById(ResourceBrowserTabsId.terminal)?.dynamicTitle, selectedCluster])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffectAfterMount(() => {
