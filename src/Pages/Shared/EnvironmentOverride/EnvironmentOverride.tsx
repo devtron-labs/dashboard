@@ -149,11 +149,9 @@ const EnvironmentOverride = ({
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
-                    <Route
-                        key={`deployment-${params.appId}-${params.envId}`}
-                        path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}
-                    >
+                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplate
+                            key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
@@ -161,11 +159,9 @@ const EnvironmentOverride = ({
                             fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
-                    <Route
-                        key={`configmap-${params.appId}-${params.envId}`}
-                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
-                    >
+                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
+                            key={`configmap-${params.appId}-${params.envId}`}
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -180,8 +176,9 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    <Route key={`secret-${params.appId}-${params.envId}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
+                            key={`secret-${params.appId}-${params.envId}`}
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
