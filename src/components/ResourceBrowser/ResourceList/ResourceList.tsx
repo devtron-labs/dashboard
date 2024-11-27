@@ -432,15 +432,7 @@ const ResourceList = () => {
                 getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
                 refreshData,
             )}
-            isOpen={
-                !!(
-                    getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected ??
-                    (!isTerminalNodeType &&
-                        !(node || isUpgradeClusterNodeType) &&
-                        !isOverviewNodeType &&
-                        !isMonitoringNodeType)
-                )
-            }
+            isOpen={!!getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected}
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
@@ -460,7 +452,7 @@ const ResourceList = () => {
             return <ErrorScreenManager code={error.code} />
         }
 
-        if (loading) {
+        if (loading || !tabs.length) {
             return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
         }
 
