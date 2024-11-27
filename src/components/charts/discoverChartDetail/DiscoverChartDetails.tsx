@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
-import { Route, Switch, useRouteMatch, useLocation, useParams, useHistory } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Route, Switch, useRouteMatch, useParams, useHistory } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -26,9 +26,8 @@ import {
     versionComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
+    MarkDown,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
 import { List } from '../../common'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
@@ -47,8 +46,6 @@ import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff
 import { ChartValuesType } from '../charts.types'
 
 const DiscoverDetailsContext = React.createContext(null)
-const uncheckedCheckboxInputElement = `<input checked="" disabled="" type="checkbox">`
-const checkedCheckboxInputElement = `<input disabled="" type="checkbox">`
 export function useDiscoverDetailsContext() {
     const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
@@ -402,99 +399,6 @@ const ReadmeRowHorizontal = ({ readme = null, version = '', ...props }) => {
             </List>
             {!collapsed && readme && <MarkDown markdown={readme} />}
         </div>
-    )
-}
-
-function isReadmeInputCheckbox(text: string) {
-    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) {
-        return true
-    }
-    return false
-}
-
-/**
- *
- * @deprecated function is used in common component
- */
-export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {
-    const { hash } = useLocation()
-    const renderer = new marked.Renderer()
-    const mdeRef = useRef(null)
-
-    renderer.listitem = function (text: string) {
-        if (isReadmeInputCheckbox(text)) {
-            text = text
-                .replace(
-                    uncheckedCheckboxInputElement,
-                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>',
-                )
-                .replace(
-                    checkedCheckboxInputElement,
-                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>',
-                )
-            return `<li style="list-style: none">${text}</li>`
-        }
-        return `<li>${text}</li>`
-    }
-
-    renderer.image = function (href: string, title: string, text: string) {
-        return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
-    }
-
-    renderer.table = function (header, body) {
-        return `
-        <div class="table-container">
-            <table>
-                ${header}
-                ${body}
-            </table>
-        </div>
-        `
-    }
-
-    renderer.heading = function (text, level) {
-        const escapedText = disableEscapedText ? '' : text.toLowerCase().replace(/[^\w]+/g, '-')
-
-        return `
-          <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
-                <h${level} data-testid="deployment-template-readme-version">
-              <span class="header-link"></span>
-              ${text}
-              </h${level}>
-            </a>`
-    }
-
-    marked.setOptions({
-        renderer,
-        gfm: true,
-        smartLists: true,
-        ...(breaks && { breaks: true }),
-    })
-
-    useEffect(() => {
-        getHeight()
-    }, [markdown])
-
-    const getHeight = () => {
-        const editorHeight = mdeRef.current?.clientHeight
-        const minHeight = 320
-        const showExpandableViewIcon = editorHeight > minHeight
-        if (typeof props.setExpandableIcon === 'function') {
-            props.setExpandableIcon(showExpandableViewIcon)
-        }
-    }
-
-    function createMarkup() {
-        return { __html: DOMPurify.sanitize(marked(markdown), { USE_PROFILES: { html: true } }) }
-    }
-    return (
-        <article
-            {...props}
-            ref={mdeRef}
-            className={`deploy-chart__readme-markdown pr-20 ${className}`}
-            dangerouslySetInnerHTML={createMarkup()}
-            data-testid="article-for-bulk-edit"
-        />
     )
 }
 

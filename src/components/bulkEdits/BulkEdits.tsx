@@ -27,6 +27,7 @@ import {
     ComponentSizeType,
     ToastManager,
     ToastVariantType,
+    MarkDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
@@ -40,7 +41,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
 import './bulkEdit.scss'
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
