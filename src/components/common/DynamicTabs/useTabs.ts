@@ -253,7 +253,7 @@ export function useTabs(persistanceKey: string) {
             })
 
             localStorage.setItem(TAB_DATA_LOCAL_STORAGE_KEY, stringifyData(_tabs, parsedTabsData))
-            return _tabs
+            return [..._tabs]
         })
     }
 
@@ -510,5 +510,6 @@ export function useTabs(persistanceKey: string) {
         updateTabComponentKey,
         updateTabLastSyncMoment,
         stopTabByIdentifier,
+        tabIdToTabMap,
     }
 }
