@@ -149,9 +149,11 @@ const EnvironmentOverride = ({
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                    <Route
+                        key={`deployment-${params.appId}-${params.envId}`}
+                        path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}
+                    >
                         <DeploymentTemplate
-                            key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
@@ -159,7 +161,10 @@ const EnvironmentOverride = ({
                             fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <Route
+                        key={`configmap-${params.appId}-${params.envId}`}
+                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
+                    >
                         <ConfigMapSecretWrapper
                             isProtected={isProtected}
                             parentState={viewState}
@@ -175,7 +180,7 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <Route key={`secret-${params.appId}-${params.envId}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isProtected={isProtected}
                             parentState={viewState}
