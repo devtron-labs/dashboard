@@ -150,8 +150,10 @@ export const ConfigMapSecretContainer = ({
     const isEmptyState = !name && !envConfigData.length
 
     const yamlError =
-        formData.mergeStrategy !== OverrideMergeStrategyType.PATCH &&
-        (formData.external ? formErrors.esoSecretYaml : formErrors.yaml)?.[0]
+        !(
+            formData.mergeStrategy === OverrideMergeStrategyType.PATCH &&
+            cmSecretStateLabel === CM_SECRET_STATE.INHERITED
+        ) && (formData.external ? formErrors.esoSecretYaml : formErrors.yaml)?.[0]
     const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR ? yamlError : ''
 
     // GA EVENT CATEGORY (BASED ON CM/SECRET)
@@ -330,13 +332,11 @@ export const ConfigMapSecretContainer = ({
             }
         }
 
-        return formInitialData
-            ? getConfigMapSecretFormInitialValues({
-                  configMapSecretData: formInitialData,
-                  componentType,
-                  cmSecretStateLabel,
-              })
-            : null
+        return getConfigMapSecretFormInitialValues({
+            configMapSecretData: formInitialData,
+            componentType,
+            cmSecretStateLabel,
+        })
     }, [configMapSecretData, draftData])
 
     // SET INITIAL FORM STATE
@@ -481,7 +481,7 @@ export const ConfigMapSecretContainer = ({
         async (...args: Args) => {
             if (
                 configHeaderTab === ConfigHeaderTabType.VALUES &&
-                formData.mergeStrategy !== OverrideMergeStrategyType.PATCH
+                !(formData.mergeStrategy === OverrideMergeStrategyType.PATCH && !formState.isDirty)
             ) {
                 await handleSubmit(
                     () => func(...args),
