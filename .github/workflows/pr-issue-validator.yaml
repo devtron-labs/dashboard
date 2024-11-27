@@ -19,6 +19,7 @@ jobs:
       issues: write
       contents: read
       pull-requests: write
+      repository-projects: read
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
