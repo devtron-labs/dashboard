@@ -161,7 +161,6 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
-    isSuperAdmin: boolean
     addTab?: ReturnType<typeof useTabs>['addTab']
     updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
@@ -344,7 +343,6 @@ export interface ClusterErrorType {
     filterText: string[]
 }
 export interface ClusterOverviewProps {
-    isSuperAdmin: boolean
     selectedCluster: ClusterOptionType
     addTab: ReturnType<typeof useTabs>['addTab']
 }

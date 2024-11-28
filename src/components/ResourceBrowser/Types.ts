@@ -94,7 +94,6 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
-    isSuperAdmin: boolean
     clusterListLoader: boolean
     initialLoading: boolean
     refreshData: () => void
@@ -221,7 +220,6 @@ export interface K8SResourceTabComponentProps
             'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
         > {
     selectedCluster: ClusterOptionType
-    isSuperAdmin: boolean
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
@@ -230,7 +228,6 @@ export interface K8SResourceTabComponentProps
 }
 
 export interface AdminTerminalProps {
-    isSuperAdmin: boolean
     updateTerminalTabUrl: (queryParams: string) => void
 }
 
@@ -271,7 +268,6 @@ export interface RBSidebarKeysType {
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
     namespace: string
-    isSuperAdmin: boolean
     dynamicTabData: InitTabType
     /**
      * @default false
