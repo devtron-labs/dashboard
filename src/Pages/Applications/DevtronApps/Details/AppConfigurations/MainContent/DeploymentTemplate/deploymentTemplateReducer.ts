@@ -185,7 +185,7 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG
-          payload: Pick<DeploymentTemplateProps, 'isProtected'>
+          payload: Pick<DeploymentTemplateProps, 'isApprovalPolicyConfigured'>
       }
     | {
           type: DeploymentTemplateActionType.SAVE_ERROR
@@ -667,8 +667,8 @@ export const deploymentTemplateReducer = (
         case DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG:
             return {
                 ...state,
-                showDeleteDraftOverrideDialog: action.payload.isProtected,
-                showDeleteOverrideDialog: !action.payload.isProtected,
+                showDeleteDraftOverrideDialog: action.payload.isApprovalPolicyConfigured,
+                showDeleteOverrideDialog: !action.payload.isApprovalPolicyConfigured,
             }
 
         case DeploymentTemplateActionType.DELETE_LOCAL_OVERRIDE:

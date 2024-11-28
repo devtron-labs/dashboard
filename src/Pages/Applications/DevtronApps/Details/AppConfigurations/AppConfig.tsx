@@ -27,7 +27,6 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceProtectConfigType,
-    BASE_CONFIGURATION_ENV_ID,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -110,12 +109,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      *
      * The promise resolves to an object with the following properties:
      * - `updatedEnvs`: An array of updated environment configurations, each marked with a protection status.
-     * - `isBaseConfigProtectionEnabled`: A boolean flag indicating if the base configuration protection is enabled.
      * - `configProtections`: An array of configuration protection objects.
      */
     const fetchEnvironments = (): Promise<{
         updatedEnvs: AppConfigState['environmentList']
-        isBaseConfigProtectionEnabled: boolean
         envProtectionConfig: ResourceProtectConfigType
     }> =>
         Promise.all([
@@ -139,11 +136,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                     ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                     ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
 
-            const isBaseConfigProtectionEnabled = envProtectionConfig[BASE_CONFIGURATION_ENV_ID]?.isProtected ?? false
-
             return {
                 updatedEnvs,
-                isBaseConfigProtectionEnabled,
                 envProtectionConfig,
             }
         })
@@ -311,7 +305,6 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 canDeleteApp: workflowRes.result.workflows.length === 0,
                 workflowsRes: workflowRes.result,
                 environmentList: updatedEnvs,
-                // isBaseConfigProtected: isBaseConfigProtectionEnabled,
                 envProtectionConfig,
             })
             if (location.pathname === match.url) {
@@ -391,11 +384,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const reloadEnvironments = () => {
         fetchEnvironments()
-            .then(({ updatedEnvs, isBaseConfigProtectionEnabled, envProtectionConfig }) => {
+            .then(({ updatedEnvs, envProtectionConfig }) => {
                 setState((prevState) => ({
                     ...prevState,
                     environmentList: updatedEnvs,
-                    isBaseConfigProtected: isBaseConfigProtectionEnabled,
                     envProtectionConfig,
                 }))
             })

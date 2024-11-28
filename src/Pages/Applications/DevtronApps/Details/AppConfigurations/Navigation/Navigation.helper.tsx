@@ -10,7 +10,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
+import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
@@ -22,13 +22,12 @@ import {
 } from '../AppConfig.types'
 import { RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP } from './constants'
 
-const renderNavItemIcon = (isLocked: boolean, isProtected: boolean, dataTestId: string) => {
+const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolean, dataTestId: string) => {
     if (isLocked) {
         return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
     }
-    if (!isLocked && isProtected) {
-        // TODO: Check and update/remove
-        return <ProtectedIcon className="icon-dim-20 fcv-5" data-testid={`${dataTestId}-protectedicon`} />
+    if (!isLocked && isApprovalPolicyConfigured) {
+        return <ICStamp className="icon-dim-20" data-testid={`${dataTestId}-protectedicon`} />
     }
     return null
 }

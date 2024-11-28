@@ -226,7 +226,6 @@ export enum EnvConfigObjectKey {
 export interface EnvironmentOptionType {
     name: string
     id: number
-    // isProtected?: boolean
 }
 
 export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envProtectionConfig'> {
@@ -270,24 +269,23 @@ export interface DeploymentConfigParams {
     resourceName: string
 }
 
-export type DeploymentConfigCompareProps = {
+export type DeploymentConfigCompareProps = Pick<AppConfigState, 'envProtectionConfig'> & {
     environments: EnvironmentOptionType[]
     goBackURL?: string
-    isBaseConfigProtected?: boolean
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
     overwriteNavHeading?: string
 } & (
-    | {
-          type: 'appGroup'
-          envName: string
-          appName?: never
-      }
-    | {
-          type: 'app'
-          appName: string
-          envName?: never
-      }
-)
+        | {
+              type: 'appGroup'
+              envName: string
+              appName?: never
+          }
+        | {
+              type: 'app'
+              appName: string
+              envName?: never
+          }
+    )
 
 export enum AppEnvDeploymentConfigQueryParams {
     CONFIG_TYPE = 'configType',

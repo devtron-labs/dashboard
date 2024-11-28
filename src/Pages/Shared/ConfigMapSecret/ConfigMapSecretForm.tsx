@@ -54,7 +54,7 @@ export const ConfigMapSecretForm = ({
     isDraft,
     componentType,
     isSubmitting,
-    isProtected,
+    isApprovalPolicyConfigured,
     areScopeVariablesResolving,
     resolvedFormData,
     restoreYAML,
@@ -373,7 +373,7 @@ export const ConfigMapSecretForm = ({
             <div className="flex left dc__gap-12 dc__mxw-1200">
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
-                    text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
                     size={ComponentSizeType.medium}
                     onClick={handleSubmit(onSubmit, onError)}
                     isLoading={isSubmitting}

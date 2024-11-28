@@ -114,7 +114,7 @@ const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isUnSet = false,
     isCiPipeline = false,
-    isProtected,
+    isApprovalPolicyConfigured,
     reloadEnvironments,
     environmentName,
     clusterId,
@@ -169,7 +169,7 @@ const DeploymentTemplate = ({
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
     const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED
-    const isDraftAvailable = isProtected && !!draftTemplateData?.latestDraft
+    const isDraftAvailable = isApprovalPolicyConfigured && !!draftTemplateData?.latestDraft
 
     const isPublishedValuesView = !!(
         isDraftAvailable &&
@@ -178,7 +178,7 @@ const DeploymentTemplate = ({
             (isDryRunView && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
     )
     const isCompareView = !!(
-        isProtected &&
+        isApprovalPolicyConfigured &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE
     )
@@ -216,7 +216,7 @@ const DeploymentTemplate = ({
 
     const isEditMode =
         configHeaderTab === ConfigHeaderTabType.VALUES &&
-        (!isProtected || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
+        (!isApprovalPolicyConfigured || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
@@ -808,7 +808,7 @@ const DeploymentTemplate = ({
                 ? structuredClone(lockedKeysConfigResponse.value.result)
                 : structuredClone(DEFAULT_LOCKED_KEYS_CONFIG)
 
-            const shouldFetchDraftDetails = isProtected && typeof getDraftByResourceName === 'function'
+            const shouldFetchDraftDetails = isApprovalPolicyConfigured && typeof getDraftByResourceName === 'function'
 
             if (shouldFetchDraftDetails) {
                 await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig)
@@ -964,7 +964,7 @@ const DeploymentTemplate = ({
             }
         }
 
-        if (isProtected) {
+        if (isApprovalPolicyConfigured) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
             })
@@ -976,7 +976,7 @@ const DeploymentTemplate = ({
     }
 
     const handleTriggerSaveFromLockedModal = async () => {
-        if (isProtected) {
+        if (isApprovalPolicyConfigured) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
             })
@@ -1141,7 +1141,7 @@ const DeploymentTemplate = ({
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG,
                 payload: {
-                    isProtected,
+                    isApprovalPolicyConfigured,
                 },
             })
             return
@@ -1249,7 +1249,7 @@ const DeploymentTemplate = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             showDeleteOverrideDraftEmptyState,
-            isProtected,
+            isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
         }),
         popupNodeType,
@@ -1388,7 +1388,7 @@ const DeploymentTemplate = ({
 
         const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
 
-        if (isProtected && ProtectedDeploymentTemplateCTA) {
+        if (isApprovalPolicyConfigured && ProtectedDeploymentTemplateCTA) {
             return (
                 <ProtectedDeploymentTemplateCTA
                     isPublishedView={isPublishedValuesView}
@@ -1522,7 +1522,7 @@ const DeploymentTemplate = ({
                         disableAllActions={isLoadingSideEffects}
                         parsingError={currentEditorTemplateData?.parsingError}
                         configHeaderTab={configHeaderTab}
-                        isProtected={isProtected}
+                        isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                         isApprovalPending={isApprovalPending}
                         isDraftPresent={isDraftAvailable}
                         approvalUsers={draftTemplateData?.latestDraft?.approvers}

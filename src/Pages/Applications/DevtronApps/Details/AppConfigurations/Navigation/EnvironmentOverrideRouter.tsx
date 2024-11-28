@@ -29,6 +29,7 @@ import {
     ToastManager,
     SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
 import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
@@ -36,9 +37,8 @@ import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.s
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
-import { JobEnvOverrideRouteProps } from '../AppConfig.types'
+import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { renderNavItem } from './Navigation.helper'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
@@ -197,7 +197,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
                 to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
-                {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
+                {isEnvProtected && <ICStamp className="icon-dim-20" />}
             </NavLink>
             {deletePopUpMenu()}
             {showDelete && showDeleteDialog(deletePipeline)}
@@ -205,7 +205,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
     )
 }
 
-const EnvironmentOverrideRouter = () => {
+const EnvironmentOverrideRouter = ({ envProtectionConfig }: Pick<AppConfigState, 'envProtectionConfig'>) => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -322,16 +322,19 @@ const EnvironmentOverrideRouter = () => {
                                             envOverride={env}
                                             ciPipelines={ciPipelines}
                                             reload={reloadEnvData}
-                                            // isEnvProtected={env.isProtected}
+                                            isEnvProtected={
+                                                envProtectionConfig?.[env.environmentId]?.isApprovalApplicable
+                                            }
                                         />
                                     ) : (
                                         renderNavItem(
                                             {
                                                 title: env.environmentName,
-                                                // isProtectionAllowed: env.isProtected,
+                                                isProtectionAllowed:
+                                                    envProtectionConfig?.[env.environmentId]?.isApprovalApplicable,
                                                 href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
                                             },
-                                            // env.isProtected,
+                                            envProtectionConfig?.[env.environmentId]?.isApprovalApplicable,
                                         )
                                     )}
                                 </Fragment>

@@ -2,9 +2,11 @@ import { useMemo } from 'react'
 import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
+    ApprovalConfigDataKindType,
     DeploymentHistoryBaseParamsType,
     EnvResourceType,
     GenericEmptyState,
+    getIsApprovalPolicyConfigured,
     Progressing,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -67,6 +69,7 @@ export const Configurations = () => {
         () => (environments ? environments.find(({ id }) => +envId === id) : null),
         [environments, envId, isEnvListLoading],
     )
+    const approvalConfigForEnv = envProtectionConfig[selectedEnv?.id]?.approvalConfigurationMap
     const showConfig = !!selectedApp && !!selectedEnv
 
     // RENDERERS
@@ -95,8 +98,9 @@ export const Configurations = () => {
                     <DeploymentTemplate
                         key={`${appId}/${envId}`}
                         fetchEnvConfig={fetchEnvConfig}
-                        // isProtected={selectedEnv.isProtected}
-                        isProtected
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate],
+                        )}
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
@@ -112,8 +116,9 @@ export const Configurations = () => {
                         fetchEnvConfig={fetchEnvConfig}
                         onErrorRedirectURL=""
                         reloadEnvironments={reloadEnvironments}
-                        // isProtected={selectedEnv.isProtected}
-                        isProtected
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
+                        )}
                         clusterId={null}
                     />
                 </div>
@@ -128,8 +133,9 @@ export const Configurations = () => {
                         fetchEnvConfig={fetchEnvConfig}
                         onErrorRedirectURL=""
                         reloadEnvironments={reloadEnvironments}
-                        // isProtected={selectedEnv.isProtected}
-                        isProtected
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
+                        )}
                         clusterId={null}
                     />
                 </div>
@@ -164,6 +170,7 @@ export const Configurations = () => {
                             getNavItemHref={(resourceType, resourceName) =>
                                 `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                             }
+                            envProtectionConfig={envProtectionConfig}
                         />
                     ) : (
                         <Progressing fullHeight pageLoader />

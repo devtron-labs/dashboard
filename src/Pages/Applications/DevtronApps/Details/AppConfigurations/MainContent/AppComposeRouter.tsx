@@ -141,7 +141,7 @@ const AppComposeRouter = () => {
                 <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
                         isJob
-                        isProtected={false}
+                        isApprovalPolicyConfigured={false}
                         reloadEnvironments={reloadEnvironments}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
@@ -153,7 +153,7 @@ const AppComposeRouter = () => {
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
                         isJob
-                        isProtected={false}
+                        isApprovalPolicyConfigured={false}
                         componentType={CMSecretComponentType.Secret}
                         reloadEnvironments={reloadEnvironments}
                         envConfig={envConfig}
@@ -215,7 +215,7 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
-                        isProtected={getIsApprovalPolicyConfigured(
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate],
                         )}
                         reloadEnvironments={reloadEnvironments}
@@ -237,17 +237,6 @@ const AppComposeRouter = () => {
                     />
                 </Route>
             )}
-            {/* {isUnlocked.workflowEditor && ConfigProtectionView && (
-                <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
-                    <ConfigProtectionView
-                        appId={Number(appId)}
-                        envList={environments}
-                        reloadEnvironments={reloadEnvironments}
-                        configProtectionData={configProtectionData}
-                        isBaseConfigProtected={isBaseConfigProtected}
-                    />
-                </Route>
-            )} */}
             {isUnlocked.workflowEditor && [
                 <Route
                     key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
@@ -265,7 +254,7 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
-                        isProtected={getIsApprovalPolicyConfigured(
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
                         )}
                         reloadEnvironments={reloadEnvironments}
@@ -278,7 +267,7 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
-                        isProtected={getIsApprovalPolicyConfigured(
+                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         componentType={CMSecretComponentType.Secret}
@@ -330,15 +319,13 @@ const AppComposeRouter = () => {
                                 appName={currentAppName}
                                 environments={environments.map(({ environmentId, environmentName }) => ({
                                     id: environmentId,
-                                    // isProtected,
                                     name: environmentName,
                                 }))}
-                                // TODO: Fix this
-                                // isBaseConfigProtected={approvalConfigForBaseConfiguration}
                                 goBackURL={goBackURL}
                                 getNavItemHref={(resourceType, resourceName) =>
                                     `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                                 }
+                                envProtectionConfig={envProtectionConfig}
                             />
                         )
                     }}

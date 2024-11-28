@@ -202,7 +202,6 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
-    // isProtected?: boolean
 }
 
 export interface EnvApp {

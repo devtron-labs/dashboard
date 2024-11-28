@@ -156,7 +156,7 @@ const EnvironmentOverride = ({
                         <DeploymentTemplate
                             key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
-                            isProtected={getIsApprovalPolicyConfigured(
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                                 protectionConfig?.[ApprovalConfigDataKindType.deploymentTemplate],
                             )}
                             reloadEnvironments={reloadEnvironments}
@@ -166,7 +166,7 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
-                            isProtected={getIsApprovalPolicyConfigured(
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                                 protectionConfig?.[ApprovalConfigDataKindType.configMap],
                             )}
                             parentState={viewState}
@@ -184,7 +184,7 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
-                            isProtected={getIsApprovalPolicyConfigured(
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                                 protectionConfig?.[ApprovalConfigDataKindType.configSecret],
                             )}
                             parentState={viewState}

@@ -39,7 +39,6 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig, appApprovalCo
                     fetchEnvConfig={fetchEnvConfig}
                     environments={envAppList.map((env) => ({
                         ...env,
-                        // isProtected: env.isProtected || false
                     }))}
                     goBackURL={generatePath(path, { envId })}
                     showDeploymentTemplate
@@ -59,24 +58,18 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig, appApprovalCo
                     </h4>
                 </div>
                 <div className="px-8 dc__overflow-auto">
-                    {envAppList.map(
-                        ({
-                            name,
-                            // isProtected,
-                            id,
-                        }) => (
-                            <Fragment key={id}>
-                                {renderNavItem(
-                                    {
-                                        title: name,
-                                        // isProtectionAllowed: isProtected,
-                                        href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
-                                    },
-                                    // isProtected,
-                                )}
-                            </Fragment>
-                        ),
-                    )}
+                    {envAppList.map(({ name, id }) => (
+                        <Fragment key={id}>
+                            {renderNavItem(
+                                {
+                                    title: name,
+                                    isProtectionAllowed: appApprovalConfigMap?.[id]?.isApprovalApplicable,
+                                    href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
+                                },
+                                appApprovalConfigMap?.[id]?.isApprovalApplicable,
+                            )}
+                        </Fragment>
+                    ))}
                 </div>
             </Route>
         </Switch>

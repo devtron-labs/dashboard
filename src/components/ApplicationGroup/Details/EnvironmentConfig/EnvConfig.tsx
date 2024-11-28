@@ -143,6 +143,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                             getNavItemHref={(resourceType, resourceName) =>
                                 `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                             }
+                            envProtectionConfig={appApprovalConfigMap}
                         />
                     )
                 }}

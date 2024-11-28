@@ -113,7 +113,7 @@ export type ConfigToolbarProps = {
     /**
      * @default false
      */
-    isProtected?: boolean
+    isApprovalPolicyConfigured?: boolean
     /**
      * @default false
      */
@@ -166,7 +166,7 @@ export interface GetConfigToolbarPopupConfigProps {
     isLoading: boolean
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
-    isProtected?: boolean
+    isApprovalPolicyConfigured?: boolean
     isDeletable?: boolean
     isDeleteOverrideDraftPresent?: boolean
 }

@@ -50,9 +50,11 @@ export const DeploymentConfigCompare = ({
     type = 'app',
     goBackURL = '',
     overwriteNavHeading,
-    isBaseConfigProtected = false,
     getNavItemHref,
+    // envProtectionConfig,
 }: DeploymentConfigCompareProps) => {
+    // TODO: Need to be fixed
+    const isBaseConfigProtected = false
     // HOOKS
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
@@ -391,7 +393,7 @@ export const DeploymentConfigCompare = ({
         id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
         options: getEnvironmentConfigTypeOptions(
             isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
-            isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
+            isEnvProtected({ environments, envName: isCompare ? compareWith : compareTo, isBaseConfigProtected }),
             isManifestView,
         ),
         placeholder: 'Select State',
@@ -404,7 +406,7 @@ export const DeploymentConfigCompare = ({
         value: getSelectPickerOptionByValue(
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
-                isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
+                isEnvProtected({ environments, envName: isCompare ? compareWith : compareTo, isBaseConfigProtected }),
                 isManifestView,
             ),
             !isCompare
@@ -431,7 +433,7 @@ export const DeploymentConfigCompare = ({
             },
             ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
             (compareEnvOptions?.previousDeployments.length ||
-                isEnvProtected(environments, compareWith, isBaseConfigProtected))
+                isEnvProtected({ environments, envName: compareWith, isBaseConfigProtected }))
                 ? [
                       {
                           id: `environment-config-type-selector-compare`,
@@ -448,7 +450,7 @@ export const DeploymentConfigCompare = ({
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
             ...((currentEnvOptions?.previousDeployments.length ||
-            isEnvProtected(environments, compareTo, isBaseConfigProtected)
+            isEnvProtected({ environments, envName: compareTo, isBaseConfigProtected })
                 ? [
                       {
                           id: `environment-config-type-selector-current`,

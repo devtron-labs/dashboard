@@ -138,18 +138,10 @@ export const AppNavigation = () => {
                         key={`env-configurations-nav-${match.params.envId}`}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
-                        environments={environments.map(
-                            ({
-                                environmentName,
-                                environmentId,
-                                // isProtected
-                            }) => ({
-                                id: environmentId,
-                                // isProtected,
-                                name: environmentName,
-                            }),
-                        )}
-                        // isBaseConfigProtected={isBaseConfigProtected}
+                        environments={environments.map(({ environmentName, environmentId }) => ({
+                            id: environmentId,
+                            name: environmentName,
+                        }))}
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
@@ -217,7 +209,7 @@ export const AppNavigation = () => {
                             )
                         }
 
-                        return <EnvironmentOverrideRouter key={item.stage} />
+                        return <EnvironmentOverrideRouter key={item.stage} envProtectionConfig={envProtectionConfig} />
                     })}
                     {isJobView && <div className="h-100" />}
                     <div className="dc__align-self-end">

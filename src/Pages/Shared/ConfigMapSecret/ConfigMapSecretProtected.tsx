@@ -170,7 +170,7 @@ export const ConfigMapSecretProtected = ({
             }
             isJob={isJob}
             appChartRef={appChartRef}
-            isProtected
+            isApprovalPolicyConfigured
             isDraft
             isSubmitting={false}
             onCancel={noop}

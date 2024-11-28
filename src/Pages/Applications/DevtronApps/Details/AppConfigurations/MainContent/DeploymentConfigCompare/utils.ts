@@ -47,14 +47,19 @@ export const getPreviousDeploymentValue = (value: string) => {
 export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptionType[], name: string) =>
     environments.find(({ name: _name }) => name === _name)?.id ?? BASE_CONFIGURATIONS.id
 
-export const isEnvProtected = (
+// TODO: need to be updated
+export const isEnvProtected = ({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    environments: EnvironmentOptionType[],
+    environments,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    envName: string,
+    envName,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isBaseConfigProtected?: boolean,
-) => true
+    isBaseConfigProtected,
+}: {
+    environments: EnvironmentOptionType[]
+    envName: string
+    isBaseConfigProtected?: boolean
+}) => true
 // ) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
 /**
@@ -218,7 +223,7 @@ export const getCompareEnvironmentSelectorOptions = (
  */
 export const getEnvironmentConfigTypeOptions = (
     previousDeploymentsList: TemplateListDTO[] = [],
-    isProtected = false,
+    isApprovalPolicyConfigured = false,
     isManifestView = false,
 ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
     {
@@ -226,7 +231,7 @@ export const getEnvironmentConfigTypeOptions = (
         value: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
         description: 'Configurations that will be deployed in the next deployment',
     },
-    ...(isProtected
+    ...(isApprovalPolicyConfigured
         ? [
               {
                   label: 'Drafts only',
