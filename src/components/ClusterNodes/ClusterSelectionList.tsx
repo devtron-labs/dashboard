@@ -60,7 +60,6 @@ const parseSearchParams = (searchParams: URLSearchParams) => ({
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
-    isSuperAdmin,
     clusterListLoader,
     initialLoading,
     refreshData,
@@ -190,7 +189,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
                     <div className="cursor dc__visible-hover--child ml-8">
                         <div className="flexbox dc__align-items-center dc__gap-4">
-                            {!!clusterData.nodeCount && !clusterListLoader && isSuperAdmin && (
+                            {!!clusterData.nodeCount && !clusterListLoader && (
                                 <Tooltip alwaysShowTippyOnHover content="View terminal">
                                     <div className="flex">
                                         <TerminalIcon

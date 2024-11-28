@@ -206,6 +206,6 @@ export const getFilterChipConfig = (
         case AppListConstants.AppType.FLUX_APPS:
             return { cluster, namespace, templateType }
         default:
-            return filterConfig
+            return { ...filterConfig, templateType: [] }
     }
 }

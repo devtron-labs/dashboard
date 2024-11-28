@@ -16,7 +16,7 @@
 
 import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, ErrorScreenManager, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createGroupSelectList, filterImageList } from '../../common'
 import { createTaintsList } from '../../cluster/cluster.util'
@@ -24,7 +24,7 @@ import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clu
 import { getHostURLConfiguration } from '../../../services/service'
 import { AdminTerminalProps, URLParams } from '../Types'
 
-const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTerminalTabUrl }: AdminTerminalProps) => {
+const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: AdminTerminalProps) => {
     const { clusterId } = useParams<URLParams>()
 
     const [loading, data, error] = useAsync(
@@ -65,7 +65,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
         const errCode = error?.code || 403
         return (
             <div className="bcn-0 node-data-container flex">
-                {isSuperAdmin ? <Reload /> : <ErrorScreenManager code={errCode} />}
+                <ErrorScreenManager code={errCode} />
             </div>
         )
     }

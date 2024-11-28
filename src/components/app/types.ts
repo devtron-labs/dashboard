@@ -439,6 +439,7 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
+    Node = 'Node',
     Overview = 'Overview',
     MonitoringDashboard = 'MonitoringDashboard',
     UpgradeCluster = 'UpgradeCluster',
@@ -458,6 +459,7 @@ export enum AggregationKeys {
     'Other Resources' = 'Other Resources',
     Events = 'Events',
     Namespaces = 'Namespaces',
+    Nodes = 'Nodes',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 

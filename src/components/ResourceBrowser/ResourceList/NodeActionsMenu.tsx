@@ -16,14 +16,7 @@
 
 import { useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import {
-    noop,
-    PopupMenu,
-    TOAST_ACCESS_DENIED,
-    ToastManager,
-    ToastVariantType,
-    useMainContext,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 import { TaintType } from '@Components/ClusterNodes/types'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
@@ -55,42 +48,23 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
 
     const { name, version, kind } = nodeData as Record<string, string>
 
-    const { isSuperAdmin } = useMainContext()
-
-    const isAuthorized = (): boolean => {
-        if (!isSuperAdmin) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-            return false
-        }
-        return true
-    }
-
     const handleOpenTerminalAction = () => {
-        if (isAuthorized()) {
-            const queryParams = new URLSearchParams(location.search)
-            queryParams.set('node', name)
-            history.push(
-                `${location.pathname.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
-            )
-        }
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', name)
+        history.push(
+            `${location.pathname.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+        )
     }
 
     const handleEditYamlAction = () => {
-        if (isAuthorized()) {
-            const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
-            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-                .then(() => history.push(_url))
-                .catch(noop)
-        }
+        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
+            .then(() => history.push(_url))
+            .catch(noop)
     }
 
     const showCordonNodeModal = (): void => {
-        if (isAuthorized()) {
-            setShowCordonNodeDialog(true)
-        }
+        setShowCordonNodeDialog(true)
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
@@ -101,9 +75,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
     }
 
     const showDrainNodeModal = (): void => {
-        if (isAuthorized()) {
-            setShowDrainNodeDialog(true)
-        }
+        setShowDrainNodeDialog(true)
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
@@ -114,9 +86,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
     }
 
     const showDeleteNodeModal = (): void => {
-        if (isAuthorized()) {
-            setShowDeleteNodeDialog(true)
-        }
+        setShowDeleteNodeDialog(true)
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
@@ -127,9 +97,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
     }
 
     const showEditTaintsModal = (): void => {
-        if (isAuthorized()) {
-            setShowEditTaintNodeDialog(true)
-        }
+        setShowEditTaintNodeDialog(true)
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
