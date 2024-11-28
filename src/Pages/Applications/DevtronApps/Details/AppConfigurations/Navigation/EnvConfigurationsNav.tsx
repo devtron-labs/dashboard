@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
@@ -81,7 +81,10 @@ export const EnvConfigurationsNav = ({
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
-    const isCreate = pathname.includes('/create')
+    const isCreate = useMemo(
+        () => !!pathname.match(/\bcreate\b/) && !updatedEnvConfig[resourceType].some(({ title }) => title === 'create'),
+        [pathname, updatedEnvConfig, resourceType],
+    )
 
     const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration> = updatedEnvConfig) => {
         const envConfigKey =
@@ -125,7 +128,7 @@ export const EnvConfigurationsNav = ({
             const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname])
+    }, [isLoading, config, pathname, isCreate])
 
     useEffect(() => {
         if (!isLoading && config) {
@@ -174,7 +177,7 @@ export const EnvConfigurationsNav = ({
      * @param _resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`${_resourceType}/create`) || isCMSecretLocked) {
+        if (isCreate || isCMSecretLocked) {
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
