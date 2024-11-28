@@ -57,13 +57,14 @@ export const AppNavigation = () => {
         getRepo,
         isJobView,
         hideConfigHelp,
-        isBaseConfigProtected,
+        // isBaseConfigProtected,
         isGitOpsConfigurationRequired,
         environments,
         envConfig,
         fetchEnvConfig,
         isUnlocked,
         lastUnlockedStage,
+        envProtectionConfig,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -137,18 +138,25 @@ export const AppNavigation = () => {
                         key={`env-configurations-nav-${match.params.envId}`}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
-                        environments={environments.map(({ environmentName, environmentId, isProtected }) => ({
-                            id: environmentId,
-                            isProtected,
-                            name: environmentName,
-                        }))}
-                        isBaseConfigProtected={isBaseConfigProtected}
+                        environments={environments.map(
+                            ({
+                                environmentName,
+                                environmentId,
+                                // isProtected
+                            }) => ({
+                                id: environmentId,
+                                // isProtected,
+                                name: environmentName,
+                            }),
+                        )}
+                        // isBaseConfigProtected={isBaseConfigProtected}
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
+                        envProtectionConfig={envProtectionConfig}
                     />
                 )}
             </Route>
@@ -199,7 +207,12 @@ export const AppNavigation = () => {
                                     condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
                                     wrap={getEnvOverrideTippy}
                                 >
-                                    {item.required && renderNavItem(item, isBaseConfigProtected)}
+                                    {item.required &&
+                                        renderNavItem(
+                                            item,
+                                            false,
+                                            // isBaseConfigProtected
+                                        )}
                                 </ConditionalWrap>
                             )
                         }

@@ -17,7 +17,15 @@
 import { useEffect, useMemo } from 'react'
 import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BASE_CONFIGURATION_ENV_ID,
+    EnvResourceType,
+    GenericEmptyState,
+    Progressing,
+    ResourceProtectConfigType,
+    noop,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -30,7 +38,11 @@ import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
-const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
+const getEnvConfigProtections: (envId: number) => Promise<ResourceProtectConfigType> = importComponentFromFELibrary(
+    'getEnvConfigProtections',
+    null,
+    'function',
+)
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
@@ -44,9 +56,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         () =>
             Promise.allSettled([
                 getConfigAppList(+envId, filteredAppIds),
-                typeof getEnvConfigProtections === 'function'
-                    ? getEnvConfigProtections(Number(envId))
-                    : { result: null },
+                typeof getEnvConfigProtections === 'function' ? getEnvConfigProtections(Number(envId)) : null,
             ]),
         [filteredAppIds],
     )
@@ -61,23 +71,32 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     }
 
     // CONSTANTS
-    const envAppList = useMemo<ConfigAppList[]>(() => {
+    const { envAppList, appApprovalConfigMap } = useMemo<{
+        envAppList: ConfigAppList[]
+        appApprovalConfigMap: ResourceProtectConfigType
+    }>(() => {
         if (
             initDataResults?.[0].status === 'fulfilled' &&
             initDataResults?.[1].status === 'fulfilled' &&
             initDataResults[0].value?.result?.length
         ) {
-            const configProtectionMap = initDataResults[1].value?.result ?? {}
-            const _appList = initDataResults[0].value.result.map((appData) => ({
-                ...appData,
-                isProtected: configProtectionMap[appData.id] ?? false,
-            }))
+            const _appApprovalConfigMap = initDataResults[1].value
+            const _appList = initDataResults[0].value.result
 
             _appList.sort((a, b) => a.name.localeCompare(b.name))
-            return _appList
+
+            return {
+                envAppList: _appList,
+                appApprovalConfigMap: _appApprovalConfigMap,
+            }
         }
 
-        return []
+        return {
+            envAppList: [],
+            appApprovalConfigMap: {
+                [BASE_CONFIGURATION_ENV_ID]: null,
+            },
+        }
     }, [initDataResults])
 
     const isAppNotPresentInEnv = useMemo(
@@ -138,6 +157,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                             envAppList={envAppList}
                             envConfig={envConfig}
                             fetchEnvConfig={refetch}
+                            appApprovalConfigMap={appApprovalConfigMap}
                         />
                     </div>
                     {appId ? (
@@ -150,6 +170,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={refetch}
                                 onErrorRedirectURL={generatePath(path, { envId })}
+                                appEnvProtectionConfig={appApprovalConfigMap}
                             />
                         </div>
                     ) : (

@@ -20,6 +20,7 @@ import {
     AppEnvDeploymentConfigType,
     EnvResourceType,
     AppEnvironment,
+    ResourceProtectConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -92,10 +93,13 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    /** Boolean indicating if the base configuration is protected. */
-    isBaseConfigProtected?: boolean
-    /** Array of configuration protection data which denotes which env is in protected state. */
-    configProtectionData?: ConfigProtection[]
+    // /**
+    //  * Boolean indicating if the base configuration is protected.
+    //  *
+    //  * @deprecated Maybe
+    //  * */
+    // isBaseConfigProtected?: boolean
+    envProtectionConfig: ResourceProtectConfigType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
 }
@@ -145,6 +149,9 @@ export enum ProtectionState {
     DISABLED = 2,
 }
 
+/**
+ * @deprecated
+ */
 export type ConfigProtection = {
     appId: number
     envId: number
@@ -169,17 +176,22 @@ interface CommonAppConfigurationProps {
     fetchEnvConfig: (envId: number) => void
 }
 
-export interface AppConfigurationContextType extends CommonAppConfigurationProps {
+export interface AppConfigurationContextType
+    extends CommonAppConfigurationProps,
+        Pick<AppConfigState, 'envProtectionConfig'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
     isCDPipeline: boolean
-    environments: AppEnvironment[]
+    environments: AppConfigState['environmentList']
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    isBaseConfigProtected: boolean
-    configProtectionData: ConfigProtection[]
+    // /**
+    //  * @deprecated maybe
+    //  */
+    // isBaseConfigProtected: boolean
+    envProtectionConfig: ResourceProtectConfigType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
@@ -214,13 +226,13 @@ export enum EnvConfigObjectKey {
 export interface EnvironmentOptionType {
     name: string
     id: number
-    isProtected?: boolean
+    // isProtected?: boolean
 }
 
-export interface EnvConfigurationsNavProps {
+export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envProtectionConfig'> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
-    isBaseConfigProtected?: boolean
+    // isBaseConfigProtected?: boolean
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string

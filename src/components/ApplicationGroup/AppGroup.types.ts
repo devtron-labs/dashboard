@@ -35,7 +35,7 @@ import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
-import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { AppConfigState, EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
 import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
@@ -202,7 +202,7 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
-    isProtected?: boolean
+    // isProtected?: boolean
 }
 
 export interface EnvApp {
@@ -252,6 +252,7 @@ export interface ApplicationRouteType {
     envAppList: ConfigAppList[]
     envConfig: EnvConfigurationState
     fetchEnvConfig: () => void
+    appApprovalConfigMap: AppConfigState['envProtectionConfig']
 }
 
 export interface AppGroupFilterConfig

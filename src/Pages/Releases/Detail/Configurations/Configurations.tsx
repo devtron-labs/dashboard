@@ -44,6 +44,7 @@ export const Configurations = () => {
         reloadEnvironments,
         isAppListLoading,
         isEnvListLoading,
+        envProtectionConfig,
     }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
     // ASYNC CALLS
@@ -81,6 +82,7 @@ export const Configurations = () => {
                     showDeploymentTemplate
                     showComparison
                     hideEnvSelector
+                    envProtectionConfig={envProtectionConfig}
                 />
             </Route>
         </Switch>
@@ -93,7 +95,8 @@ export const Configurations = () => {
                     <DeploymentTemplate
                         key={`${appId}/${envId}`}
                         fetchEnvConfig={fetchEnvConfig}
-                        isProtected={selectedEnv.isProtected}
+                        // isProtected={selectedEnv.isProtected}
+                        isProtected
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
@@ -109,7 +112,8 @@ export const Configurations = () => {
                         fetchEnvConfig={fetchEnvConfig}
                         onErrorRedirectURL=""
                         reloadEnvironments={reloadEnvironments}
-                        isProtected={selectedEnv.isProtected}
+                        // isProtected={selectedEnv.isProtected}
+                        isProtected
                         clusterId={null}
                     />
                 </div>
@@ -124,7 +128,8 @@ export const Configurations = () => {
                         fetchEnvConfig={fetchEnvConfig}
                         onErrorRedirectURL=""
                         reloadEnvironments={reloadEnvironments}
-                        isProtected={selectedEnv.isProtected}
+                        // isProtected={selectedEnv.isProtected}
+                        isProtected
                         clusterId={null}
                     />
                 </div>

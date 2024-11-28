@@ -17,7 +17,13 @@
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
 
-import { Progressing, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    EnvResourceType,
+    BASE_CONFIGURATION_ENV_ID,
+    ApprovalConfigDataKindType,
+    getIsApprovalPolicyConfigured,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
@@ -82,7 +88,7 @@ const AppComposeRouter = () => {
         toggleRepoSelectionTippy,
         setRepoState,
         isJobView,
-        isBaseConfigProtected,
+        // isBaseConfigProtected,
         reloadEnvironments,
         // configProtectionData,
         filteredEnvIds,
@@ -91,8 +97,11 @@ const AppComposeRouter = () => {
         lastUnlockedStage,
         envConfig,
         fetchEnvConfig,
+        envProtectionConfig,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
+
+    const approvalConfigForBaseConfiguration = envProtectionConfig[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
 
     const renderJobViewRoutes = (): JSX.Element => (
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -165,6 +174,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
+                            appEnvProtectionConfig={envProtectionConfig}
                         />
                     )}
                 </Route>,
@@ -205,7 +215,9 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
-                        isProtected={isBaseConfigProtected}
+                        isProtected={getIsApprovalPolicyConfigured(
+                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate],
+                        )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
                     />
@@ -253,7 +265,9 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
-                        isProtected={isBaseConfigProtected}
+                        isProtected={getIsApprovalPolicyConfigured(
+                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
+                        )}
                         reloadEnvironments={reloadEnvironments}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
@@ -264,7 +278,9 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
-                        isProtected={isBaseConfigProtected}
+                        isProtected={getIsApprovalPolicyConfigured(
+                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
+                        )}
                         componentType={CMSecretComponentType.Secret}
                         reloadEnvironments={reloadEnvironments}
                         envConfig={envConfig}
@@ -287,6 +303,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
+                            appEnvProtectionConfig={envProtectionConfig}
                         />
                     )}
                 </Route>,
@@ -311,12 +328,13 @@ const AppComposeRouter = () => {
                             <DeploymentConfigCompare
                                 type="app"
                                 appName={currentAppName}
-                                environments={environments.map(({ environmentId, environmentName, isProtected }) => ({
+                                environments={environments.map(({ environmentId, environmentName }) => ({
                                     id: environmentId,
-                                    isProtected,
+                                    // isProtected,
                                     name: environmentName,
                                 }))}
-                                isBaseConfigProtected={isBaseConfigProtected}
+                                // TODO: Fix this
+                                // isBaseConfigProtected={approvalConfigForBaseConfiguration}
                                 goBackURL={goBackURL}
                                 getNavItemHref={(resourceType, resourceName) =>
                                     `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`

@@ -58,6 +58,7 @@ const EnvOverridesHelpNote = () => (
     </div>
 )
 
+// TODO: need to verify this
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
@@ -321,16 +322,16 @@ const EnvironmentOverrideRouter = () => {
                                             envOverride={env}
                                             ciPipelines={ciPipelines}
                                             reload={reloadEnvData}
-                                            isEnvProtected={env.isProtected}
+                                            // isEnvProtected={env.isProtected}
                                         />
                                     ) : (
                                         renderNavItem(
                                             {
                                                 title: env.environmentName,
-                                                isProtectionAllowed: env.isProtected,
+                                                // isProtectionAllowed: env.isProtected,
                                                 href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
                                             },
-                                            env.isProtected,
+                                            // env.isProtected,
                                         )
                                     )}
                                 </Fragment>

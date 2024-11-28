@@ -26,6 +26,8 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    ResourceProtectConfigType,
+    BASE_CONFIGURATION_ENV_ID,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -38,7 +40,6 @@ import {
     AppStageUnlockedType,
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
-    ConfigProtection,
 } from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
@@ -47,13 +48,16 @@ import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/con
 import { AppNavigation } from './Navigation/AppNavigation'
 import { AppConfigStatusItemType } from '../../service.types'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
-import { AppOtherEnvironment } from '../../../../../services/service.types'
 import { deleteApp } from './AppConfig.service'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
 import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
+const getConfigProtections: (appId: number) => Promise<ResourceProtectConfigType> = importComponentFromFELibrary(
+    'getConfigProtections',
+    null,
+    'function',
+)
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
@@ -79,8 +83,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         canDeleteApp: false,
         workflowsRes: null,
         environmentList: [],
-        isBaseConfigProtected: false,
-        configProtectionData: [],
+        // isBaseConfigProtected: false,
+        envProtectionConfig: {} as ResourceProtectConfigType,
         envConfig: {
             isLoading: true,
             config: null,
@@ -110,43 +114,37 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      * - `configProtections`: An array of configuration protection objects.
      */
     const fetchEnvironments = (): Promise<{
-        updatedEnvs: AppOtherEnvironment['result']
+        updatedEnvs: AppConfigState['environmentList']
         isBaseConfigProtectionEnabled: boolean
-        configProtections: ConfigProtection[]
+        envProtectionConfig: ResourceProtectConfigType
     }> =>
         Promise.all([
             isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
-        ]).then(([envResult, configProtectionsResp]) => {
-            let envProtectMap: Record<number, boolean> = {}
+        ]).then(([envResult, envProtectionConfig]) => {
+            // let envProtectMap: Record<number, boolean> = {}
 
-            if (configProtectionsResp?.result) {
-                envProtectMap = configProtectionsResp.result.reduce((acc, config) => {
-                    acc[config.envId] = config.state === 1
-                    return acc
-                }, {})
-            }
+            // if (configProtectionConfig) {
+            //     envProtectMap = configProtectionConfig.result.reduce((acc, config) => {
+            //         // TODO:
+            //         acc[config.envId] = config.state === 1
+            //         return acc
+            //     }, {})
+            // }
 
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
-            const updatedEnvs =
+            const updatedEnvs: AppConfigState['environmentList'] =
                 envResult.result
                     ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    .map((env) => {
-                        const envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    })
                     ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
 
-            const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
+            const isBaseConfigProtectionEnabled = envProtectionConfig[BASE_CONFIGURATION_ENV_ID]?.isProtected ?? false
 
             return {
                 updatedEnvs,
                 isBaseConfigProtectionEnabled,
-                configProtections: configProtectionsResp?.result ?? [],
+                envProtectionConfig,
             }
         })
 
@@ -294,8 +292,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     useEffect(() => {
         if (appConfigData) {
             // SET APP CONFIG DATA IN STATE
-            const [configStatusRes, workflowRes, { updatedEnvs, configProtections, isBaseConfigProtectionEnabled }] =
-                appConfigData
+            const [configStatusRes, workflowRes, { updatedEnvs, envProtectionConfig }] = appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
                 processConfigStatusData(configStatusRes.result)
 
@@ -314,8 +311,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 canDeleteApp: workflowRes.result.workflows.length === 0,
                 workflowsRes: workflowRes.result,
                 environmentList: updatedEnvs,
-                isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                configProtectionData: configProtections,
+                // isBaseConfigProtected: isBaseConfigProtectionEnabled,
+                envProtectionConfig,
             })
             if (location.pathname === match.url) {
                 history.replace(redirectUrl)
@@ -394,12 +391,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const reloadEnvironments = () => {
         fetchEnvironments()
-            .then(({ updatedEnvs, isBaseConfigProtectionEnabled, configProtections }) => {
+            .then(({ updatedEnvs, isBaseConfigProtectionEnabled, envProtectionConfig }) => {
                 setState((prevState) => ({
                     ...prevState,
                     environmentList: updatedEnvs,
                     isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                    configProtectionData: configProtections,
+                    envProtectionConfig,
                 }))
             })
             .catch((errors) => {

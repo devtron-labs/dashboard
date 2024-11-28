@@ -48,10 +48,14 @@ export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptio
     environments.find(({ name: _name }) => name === _name)?.id ?? BASE_CONFIGURATIONS.id
 
 export const isEnvProtected = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     environments: EnvironmentOptionType[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     envName: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isBaseConfigProtected?: boolean,
-) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
+) => true
+// ) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
 /**
  * Returns the application and environment IDs for comparison based on the given parameters.
