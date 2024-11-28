@@ -61,11 +61,19 @@ export const K8SResourceList = ({
 
     const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () =>
-            abortPreviousRequests(
-                async () =>
-                    getResourceData({ selectedResource, selectedNamespace, clusterId, filters, abortControllerRef }),
-                abortControllerRef,
-            ),
+            abortPreviousRequests(async () => {
+                if (selectedResource) {
+                    return getResourceData({
+                        selectedResource,
+                        selectedNamespace,
+                        clusterId,
+                        filters,
+                        abortControllerRef,
+                    })
+                }
+
+                return null
+            }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, filters],
     )
 
@@ -88,7 +96,10 @@ export const K8SResourceList = ({
         }
         // NOTE: for namespaced resource name+namespace will be unique
         // while for non-namespaced resources name will be unique
-        result.data = result.data.map((data) => ({ id: `${data.name}-${data.namespace}`, ...data }))
+        result.data = result.data.map((data, index) => ({
+            id: `${selectedResource?.gvk?.Kind}-${data.name}-${data.namespace}-${index}`,
+            ...data,
+        }))
         return result
     }, [_resourceList])
 

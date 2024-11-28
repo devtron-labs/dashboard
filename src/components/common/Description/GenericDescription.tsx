@@ -52,7 +52,6 @@ import { AppMetaInfo } from '../../app/types'
 export default function GenericDescription({
     isClusterTerminal,
     clusterId,
-    isSuperAdmin,
     appId,
     descriptionId,
     initialDescriptionText,
@@ -65,7 +64,6 @@ export default function GenericDescription({
 }: {
     isClusterTerminal: boolean
     clusterId?: string
-    isSuperAdmin: boolean
     appId?: number
     descriptionId?: number
     initialDescriptionText?: string
@@ -132,7 +130,7 @@ export default function GenericDescription({
     }
 
     const isAuthorized = (): boolean => {
-        if (!isSuperAdmin && isClusterTerminal) {
+        if (isClusterTerminal) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
                 description: TOAST_ACCESS_DENIED.SUBTITLE,

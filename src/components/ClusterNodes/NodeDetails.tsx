@@ -79,7 +79,7 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
+const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -799,12 +799,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         return (
             <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
                 <div className="flex left">
-                    {isSuperAdmin && (
-                        <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
-                            <TerminalLineIcon className="icon-dim-16 mr-5" />
-                            {NODE_DETAILS_TABS.debug}
-                        </span>
-                    )}
+                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                        <TerminalLineIcon className="icon-dim-16 mr-5" />
+                        {NODE_DETAILS_TABS.debug}
+                    </span>
                     <span className="cn-2 mr-16 ml-16">|</span>
                     {renderTabControls()}
                 </div>
@@ -996,21 +994,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         return renderSummary()
     }
 
-    const isAuthorized = (): boolean => {
-        if (!isSuperAdmin) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-            return false
-        }
-        return true
-    }
-
     const showCordonNodeModal = (): void => {
-        if (isAuthorized()) {
-            setCordonNodeDialog(true)
-        }
+        setCordonNodeDialog(true)
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
@@ -1021,9 +1006,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showDrainNodeModal = (): void => {
-        if (isAuthorized()) {
-            setDrainNodeDialog(true)
-        }
+        setDrainNodeDialog(true)
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
@@ -1034,9 +1017,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showDeleteNodeModal = (): void => {
-        if (isAuthorized()) {
-            setDeleteNodeDialog(true)
-        }
+        setDeleteNodeDialog(true)
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
@@ -1047,9 +1028,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showEditTaintsModal = (): void => {
-        if (isAuthorized()) {
-            setShowEditTaints(true)
-        }
+        setShowEditTaints(true)
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
