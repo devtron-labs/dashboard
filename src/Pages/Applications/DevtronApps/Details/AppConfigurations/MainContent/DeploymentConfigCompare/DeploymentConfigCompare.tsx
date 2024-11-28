@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -60,6 +60,7 @@ export const DeploymentConfigCompare = ({
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
+    const isDefaultLandingPreviousDeploymentSet = useRef<boolean>(false)
 
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
@@ -132,6 +133,32 @@ export const DeploymentConfigCompare = ({
         () => (!optionsLoader && options ? getDefaultVersionAndPreviousDeploymentOptions(options[1].result) : null),
         [options, optionsLoader],
     )
+
+    useEffect(() => {
+        if (!compareEnvOptions || isDefaultLandingPreviousDeploymentSet.current) {
+            return
+        }
+
+        isDefaultLandingPreviousDeploymentSet.current = true
+
+        if (!compareEnvOptions.previousDeployments?.length) {
+            updateSearchParams({
+                compareWith: null,
+            })
+
+            return
+        }
+
+        const previousDeploymentData = compareEnvOptions.previousDeployments[0]
+
+        updateSearchParams({
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
+                AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+            compareWithIdentifierId: previousDeploymentData.deploymentTemplateHistoryId,
+            compareWithPipelineId: previousDeploymentData.pipelineId,
+            compareWithManifestChartRefId: isManifestView ? previousDeploymentData.chartRefId : null,
+        })
+    }, [compareEnvOptions])
 
     const fetchManifestData = async () => {
         const [{ result: currentList }, { result: compareList }] = await Promise.all([
