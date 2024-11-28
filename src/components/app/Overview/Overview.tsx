@@ -469,7 +469,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 )}
                 <GenericDescription
                     isClusterTerminal={false}
-                    isSuperAdmin
                     appId={Number(appId)}
                     descriptionId={descriptionId}
                     initialDescriptionText={newDescription}

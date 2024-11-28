@@ -115,7 +115,7 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
-    const isNodeListing = selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -261,7 +261,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search])
+    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -431,7 +431,7 @@ const BaseResourceListContent = ({
                 {headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={resourceData.id as string}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
@@ -505,7 +505,7 @@ const BaseResourceListContent = ({
                         </div>
                     ) : (
                         <div
-                            key={resourceData.id as string}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
@@ -579,7 +579,7 @@ const BaseResourceListContent = ({
     }
 
     const renderContent = () => {
-        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList)) {
+        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList || !selectedResource)) {
             return <Progressing size={32} pageLoader />
         }
 
@@ -639,7 +639,6 @@ const BaseResourceListContent = ({
                                         <BulkSelection showPagination={showPaginatedView} />
                                     )}
                                     <SortableTableHeaderCell
-                                        key={columnName}
                                         showTippyOnTruncate
                                         title={columnName}
                                         triggerSorting={triggerSortingHandler(columnName)}
@@ -690,7 +689,7 @@ const BaseResourceListContent = ({
                 />
             ) : (
                 <ResourceFilterOptions
-                    key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
+                    key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
                     selectedNamespace={selectedNamespace}
                     setSelectedNamespace={setSelectedNamespace}
