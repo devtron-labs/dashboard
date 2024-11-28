@@ -284,12 +284,12 @@ export function processWorkflow(
                             cdPipeline.parentPipelineId = branch.parentId
                             cdPipeline.parentPipelineType = branch.parentType
                         }
+                        cdPipeline.approvalConfigData = sanitizeApprovalConfigData(cdPipeline.approvalConfigData)
 
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
                         if (getIsApprovalPolicyConfigured(cdPipeline.approvalConfigData)) {
-                            // TODO: what does this do?
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
                                 [cdPipeline.id]: cdPipeline.approvalConfigData,
@@ -742,7 +742,7 @@ function cdPipelineToNode(
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         // Remove this
         userApprovalConfig: cdPipeline.userApprovalConfig,
-        approvalConfigData: sanitizeApprovalConfigData(cdPipeline.approvalConfigData),
+        approvalConfigData: cdPipeline.approvalConfigData,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',

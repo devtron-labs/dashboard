@@ -69,7 +69,6 @@ import {
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
-    useUserEmail,
     ToastManager,
     ToastVariantType,
     EnvResourceType,
@@ -135,11 +134,6 @@ const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindow
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
-const getIsImageApproverFromUserApprovalMetaData: (
-    email: string,
-    userApprovalMetadata: UserApprovalMetadataType,
-) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const getSecurityScan: ({
     appId,
     envId,
@@ -200,7 +194,6 @@ const CDMaterial = ({
     const { currentAppName } = useAppContext()
 
     const appName = selectedAppName || currentAppName
-    const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
 
@@ -593,8 +586,7 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
-        getIsImageApproverFromUserApprovalMetaData(email, userApprovalMetadata)
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean => userApprovalMetadata?.hasCurrentUserApproved
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
