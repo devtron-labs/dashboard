@@ -30,6 +30,7 @@ import {
     InfoIconTippy,
     ToastVariantType,
     ToastManager,
+    TARGET_IDS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -903,7 +904,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
 
         return (
-            <div className="workflow-editor bcn-0" data-testid="workflow-editor-page">
+            <div
+                className="workflow-editor bcn-0"
+                data-testid="workflow-editor-page"
+                id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}
+            >
                 <div className="flex dc__content-space pb-16">
                     <div className="flex dc__gap-8 dc__content-start">
                         <h1 className="m-0 cn-9 fs-16 fw-6">Workflow Editor</h1>
