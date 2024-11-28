@@ -190,6 +190,7 @@ export default function CDPipeline({
             steps: [],
         },
         // Utilizing the null checks to get default value
+        // TODO: Remove
         userApprovalConfig: sanitizeUserApprovalConfig(null),
         isClusterCdActive: false,
         deploymentAppCreated: false,
@@ -248,6 +249,7 @@ export default function CDPipeline({
             steps: [],
             isValid: true,
         },
+        // TODO: Remove
         userApprovalConfig: {
             isValid: true,
         },
@@ -709,6 +711,7 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
+            // TODO: Remove this
             ...(getUserApprovalConfigPayload
                 ? {
                       userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig),
@@ -972,6 +975,8 @@ export default function CDPipeline({
             return
         }
 
+
+        // TODO: Remove this
         const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } =
             formDataErrorObj.userApprovalConfig ?? {}
 

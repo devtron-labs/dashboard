@@ -24,6 +24,8 @@ import {
     getIsManualApprovalConfigured,
     CiPipeline,
     CdPipeline,
+    getIsApprovalPolicyConfigured,
+    sanitizeApprovalConfigData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -286,10 +288,11 @@ export function processWorkflow(
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
-                        if (getIsManualApprovalConfigured(cdPipeline.userApprovalConfig)) {
+                        if (getIsApprovalPolicyConfigured(cdPipeline.approvalConfigData)) {
+                            // TODO: what does this do?
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
-                                [cdPipeline.id]: cdPipeline.userApprovalConfig,
+                                [cdPipeline.id]: cdPipeline.approvalConfigData,
                             }
                         }
                     }
@@ -575,6 +578,7 @@ function ciPipelineToNode(
             showPluginWarning: false,
             isTriggerBlocked: false,
             pluginBlockState: getParsedPluginPolicyConsequenceData(),
+            approvalConfigData: null,
         }
     })
     const trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
@@ -615,6 +619,7 @@ function ciPipelineToNode(
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isTriggerBlocked: ciPipeline.isCITriggerBlocked,
         pluginBlockState: getParsedPluginPolicyConsequenceData(ciPipeline.ciBlockState),
+        approvalConfigData: null,
     }
 
     return ciNode
@@ -693,6 +698,7 @@ function cdPipelineToNode(
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
+            approvalConfigData: null,
         }
         stageIndex++
     }
@@ -734,7 +740,9 @@ function cdPipelineToNode(
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
+        // Remove this
         userApprovalConfig: cdPipeline.userApprovalConfig,
+        approvalConfigData: sanitizeApprovalConfigData(cdPipeline.approvalConfigData),
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
@@ -787,6 +795,7 @@ function cdPipelineToNode(
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
+            approvalConfigData: null,
         }
     }
 

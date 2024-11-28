@@ -29,6 +29,7 @@ import {
     RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
     CommonNodeAttr,
+    ApprovalConfigDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
@@ -80,6 +81,10 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMater
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
     approvalUsers?: string[]
+    approvalConfigData?: ApprovalConfigDataType
+    /**
+     * @deprecated
+     */
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
     appReleaseTags?: string[]

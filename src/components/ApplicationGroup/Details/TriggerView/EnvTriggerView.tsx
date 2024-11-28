@@ -924,7 +924,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     // TODO: Ig not using this, can remove it
-                    node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
                     _selectedNode = node
                     _workflowId = workflow.id
                     _appID = workflow.appId
@@ -981,7 +981,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === 'CD' && +node.id == cdNodeId) {
-                    node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
                     _selectedNode = node
                 }
                 return node
@@ -1767,7 +1767,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
                         approvalUsers: _selectedNode.approvalUsers,
+                        // TODO: Remove
                         userApprovalConfig: _selectedNode.userApprovalConfig,
+                        approvalConfigData: _selectedNode.approvalConfigData,
                         requestedUserId: _selectedNode.requestedUserId,
                         appReleaseTags: wf.appReleaseTags,
                         tagsEditable: wf.tagsEditable,

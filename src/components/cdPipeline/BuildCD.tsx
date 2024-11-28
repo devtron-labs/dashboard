@@ -601,6 +601,7 @@ export default function BuildCD({
     }
 
     const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
+        // TODO: Remove the validator and this function
         const _form = structuredClone(formData)
         const _formDataErrorObj = structuredClone(formDataErrorObj)
 

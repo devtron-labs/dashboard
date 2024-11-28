@@ -564,7 +564,9 @@ export default function BulkCDTrigger({
             approvalUsers: appListData.approvalUsers,
             requestedUserId: appListData.requestedUserId,
             // FIXME: Not using anywhere
+            // TODO: Remove
             userApprovalConfig: appListData.userApprovalConfig,
+            approvalConfigData: appListData.approvalConfigData,
             appReleaseTagNames: appListData.appReleaseTags,
             tagsEditable: appListData.tagsEditable,
         })
