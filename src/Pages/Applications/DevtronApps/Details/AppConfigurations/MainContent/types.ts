@@ -208,6 +208,9 @@ export type ConfigDryRunProps = {
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
     mergeStrategy: OverrideMergeStrategyType
+    /**
+     * Is current view overridden
+     */
     isOverridden: boolean
 } & ConfigDryRunManifestProps &
     ConfigErrorHandlingProps

@@ -350,11 +350,10 @@ const DeploymentTemplate = ({
     }
 
     /**
-     * This method is called whenever we are going to need to update  mergedTemplates of valid states
+     * This method is called whenever we are going to need to update mergedTemplates of valid states
      * We need it in two cases:
      * 1. When we are in dry run view
      * 2. When we are in compare view to show merge values checkbox
-     * Since we are not updating it onChange or Should we? TODO: Re-verify in review
      * We will also re-fetch base deployment template when we make this call
      */
     const handleLoadMergedTemplate = async () => {
@@ -534,7 +533,6 @@ const DeploymentTemplate = ({
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: currentEditorTemplateData.originalTemplateState.selectedChartRefId,
-                          // TODO: Re-confirm during review
                           values: currentEditorTemplateData.originalTemplateState.editorTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
@@ -1285,16 +1283,16 @@ const DeploymentTemplate = ({
      */
     const getUneditedDocument = (): string => {
         if (!isGuiSupported) {
-            return '{}'
+            return ''
         }
 
         if (resolveScopedVariables && resolvedOriginalTemplate) {
-            return resolvedOriginalTemplate.originalTemplateString
+            return resolvedOriginalTemplate.originalTemplateString || ''
         }
 
         // Question: No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
         if (currentEditorTemplateData) {
-            return currentEditorTemplateData.originalTemplateState.mergedTemplate
+            return currentEditorTemplateData.originalTemplateState.editorTemplate || ''
         }
 
         return ''
@@ -1442,7 +1440,7 @@ const DeploymentTemplate = ({
     const hideToggleLockedKeysMenuOption =
         editMode === ConfigurationType.GUI &&
         currentViewEditorState?.isOverridden &&
-        currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+        currentViewEditorState.mergeStrategy === OverrideMergeStrategyType.PATCH
 
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
@@ -1518,6 +1516,7 @@ const DeploymentTemplate = ({
                     isApprovalView={isApprovalView}
                     currentEditorTemplate={YAML.parse(getCurrentEditorValue())}
                     publishedEditorTemplate={YAML.parse(getCompareViewPublishedTemplate())}
+                    // This is only for current editor view to show for approval pending state
                     selectedChartVersion={
                         showDeleteOverrideDraftEmptyState ? '' : currentEditorTemplateData?.selectedChart?.version
                     }
@@ -1555,8 +1554,8 @@ const DeploymentTemplate = ({
                     manifestAbortController={manifestAbortController}
                     errorInfo={mergedTemplateError}
                     handleErrorReload={handleLoadMergedTemplate}
-                    isOverridden={currentEditorTemplateData?.isOverridden}
-                    mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                    isOverridden={currentViewEditorState?.isOverridden}
+                    mergeStrategy={currentViewEditorState?.mergeStrategy}
                 />
             )
         }
@@ -1580,11 +1579,11 @@ const DeploymentTemplate = ({
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
                 showReadMe={showReadMe}
-                readMe={currentEditorTemplateData?.readme}
+                readMe={currentViewEditorState?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
-                mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                mergeStrategy={currentViewEditorState?.mergeStrategy}
             />
         )
     }
