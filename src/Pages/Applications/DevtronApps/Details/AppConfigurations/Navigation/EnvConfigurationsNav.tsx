@@ -120,7 +120,12 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, envProtectionConfig?.[envId])
+            const newEnvConfig = getEnvConfiguration(
+                config,
+                path,
+                params,
+                envProtectionConfig?.[envId]?.approvalConfigurationMap,
+            )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
     }, [isLoading, config, pathname, envProtectionConfig])

@@ -48,18 +48,18 @@ export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptio
     environments.find(({ name: _name }) => name === _name)?.id ?? BASE_CONFIGURATIONS.id
 
 // TODO: need to be updated
-export const isEnvProtected = ({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    environments,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    envName,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isBaseConfigProtected,
-}: {
-    environments: EnvironmentOptionType[]
-    envName: string
-    isBaseConfigProtected?: boolean
-}) => true
+// export const isEnvProtected = ({
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     environments,
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     envName,
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     isBaseConfigProtected,
+// }: {
+//     environments: EnvironmentOptionType[]
+//     envName: string
+//     isBaseConfigProtected?: boolean
+// }) => true
 // ) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
 /**

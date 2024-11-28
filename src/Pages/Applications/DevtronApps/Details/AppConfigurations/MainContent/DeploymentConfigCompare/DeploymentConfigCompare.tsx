@@ -14,6 +14,9 @@ import {
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
     EnvResourceType,
+    ApprovalConfigDataKindType,
+    BASE_CONFIGURATION_ENV_ID,
+    getIsApprovalPolicyConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
@@ -31,7 +34,7 @@ import {
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
     getEnvironmentConfigTypeOptions,
-    isEnvProtected,
+    // isEnvProtected,
     getConfigChartRefId,
     getManifestRequestValues,
     deploymentConfigDiffTabs,
@@ -51,10 +54,8 @@ export const DeploymentConfigCompare = ({
     goBackURL = '',
     overwriteNavHeading,
     getNavItemHref,
-    // envProtectionConfig,
+    appEnvProtectionConfig,
 }: DeploymentConfigCompareProps) => {
-    // TODO: Need to be fixed
-    const isBaseConfigProtected = false
     // HOOKS
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
@@ -389,77 +390,136 @@ export const DeploymentConfigCompare = ({
         onChange: onCompareEnvironmentChange,
     })
 
-    const renderEnvironmentConfigTypeSelectorProps = (isCompare?: boolean) => ({
-        id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-        options: getEnvironmentConfigTypeOptions(
-            isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
-            isEnvProtected({ environments, envName: isCompare ? compareWith : compareTo, isBaseConfigProtected }),
-            isManifestView,
-        ),
-        placeholder: 'Select State',
-        classNamePrefix: 'environment-config-type-selector',
-        inputId: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-        name: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-        variant: SelectPickerVariantType.BORDER_LESS,
-        isSearchable: false,
-        disableDescriptionEllipsis: true,
-        value: getSelectPickerOptionByValue(
-            getEnvironmentConfigTypeOptions(
+    const getIdentifierForProtectionConfig = (isCompare: boolean) => {
+        if (isCompare) {
+            if (type === 'appGroup') {
+                return compareWithAppId
+            }
+
+            return compareWithEnvId
+        }
+        if (type === 'appGroup') {
+            return compareToAppId
+        }
+        return compareToEnvId
+    }
+
+    const getApprovalConfigKindType = (): ApprovalConfigDataKindType | null => {
+        switch (resourceType) {
+            case EnvResourceType.ConfigMap:
+                return ApprovalConfigDataKindType.configMap
+            case EnvResourceType.Secret:
+                return ApprovalConfigDataKindType.configSecret
+            case EnvResourceType.DeploymentTemplate:
+                return ApprovalConfigDataKindType.deploymentTemplate
+            default:
+                return null
+        }
+    }
+
+    const renderEnvironmentConfigTypeSelectorProps = (isCompare?: boolean) => {
+        const identifier = getIdentifierForProtectionConfig(isCompare)
+        const approvalConfigKind = getApprovalConfigKindType()
+
+        const isBaseConfigProtected = getIsApprovalPolicyConfigured(
+            appEnvProtectionConfig?.[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap?.[approvalConfigKind],
+        )
+        const isEnvProtected =
+            getIsApprovalPolicyConfigured(
+                appEnvProtectionConfig?.[identifier]?.approvalConfigurationMap?.[approvalConfigKind],
+            ) ?? isBaseConfigProtected // TODO: This needs to be tested and discussed
+
+        return {
+            id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
+            options: getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
-                isEnvProtected({ environments, envName: isCompare ? compareWith : compareTo, isBaseConfigProtected }),
+                isEnvProtected,
                 isManifestView,
             ),
-            !isCompare
-                ? getPreviousDeploymentOptionValue(identifierId, pipelineId, manifestChartRefId) || configType
-                : getPreviousDeploymentOptionValue(
-                      compareWithIdentifierId,
-                      compareWithPipelineId,
-                      compareWithManifestChartRefId,
-                  ) || compareWithConfigType,
-            {
-                label: BASE_CONFIGURATIONS.name,
-                value: '',
-            },
-        ),
-        onChange: onEnvironmentConfigTypeChange(isCompare),
-    })
+            placeholder: 'Select State',
+            classNamePrefix: 'environment-config-type-selector',
+            inputId: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
+            name: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
+            variant: SelectPickerVariantType.BORDER_LESS,
+            isSearchable: false,
+            disableDescriptionEllipsis: true,
+            value: getSelectPickerOptionByValue(
+                getEnvironmentConfigTypeOptions(
+                    isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
+                    isEnvProtected,
+                    isManifestView,
+                ),
+                !isCompare
+                    ? getPreviousDeploymentOptionValue(identifierId, pipelineId, manifestChartRefId) || configType
+                    : getPreviousDeploymentOptionValue(
+                          compareWithIdentifierId,
+                          compareWithPipelineId,
+                          compareWithManifestChartRefId,
+                      ) || compareWithConfigType,
+                {
+                    label: BASE_CONFIGURATIONS.name,
+                    value: '',
+                },
+            ),
+            onChange: onEnvironmentConfigTypeChange(isCompare),
+        }
+    }
 
-    const deploymentConfigDiffSelectors: DeploymentConfigDiffProps['selectorsConfig'] = {
-        primaryConfig: [
-            {
-                id: 'compare-with-environment-selector',
-                type: 'selectPicker',
-                selectPickerProps: renderCompareEnvironmentSelectorProps(),
-            },
-            ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
-            (compareEnvOptions?.previousDeployments.length ||
-                isEnvProtected({ environments, envName: compareWith, isBaseConfigProtected }))
-                ? [
-                      {
-                          id: `environment-config-type-selector-compare`,
-                          type: 'selectPicker' as const,
-                          selectPickerProps: renderEnvironmentConfigTypeSelectorProps(true),
-                      },
-                  ]
-                : []),
-        ],
-        secondaryConfig: [
-            {
-                id: compareTo || BASE_CONFIGURATIONS.name,
-                type: 'string',
-                text: compareTo || BASE_CONFIGURATIONS.name,
-            },
-            ...((currentEnvOptions?.previousDeployments.length ||
-            isEnvProtected({ environments, envName: compareTo, isBaseConfigProtected })
-                ? [
-                      {
-                          id: `environment-config-type-selector-current`,
-                          type: 'selectPicker',
-                          selectPickerProps: renderEnvironmentConfigTypeSelectorProps(),
-                      },
-                  ]
-                : []) as DeploymentConfigDiffProps['selectorsConfig']['secondaryConfig']),
-        ],
+    const getDeploymentConfigDiffSelectors = (): DeploymentConfigDiffProps['selectorsConfig'] => {
+        const approvalConfigKind = getApprovalConfigKindType()
+        const isBaseConfigProtected = getIsApprovalPolicyConfigured(
+            appEnvProtectionConfig?.[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap?.[approvalConfigKind],
+        )
+
+        const deploymentConfigDiffSelectors: DeploymentConfigDiffProps['selectorsConfig'] = {
+            primaryConfig: [
+                {
+                    id: 'compare-with-environment-selector',
+                    type: 'selectPicker',
+                    selectPickerProps: renderCompareEnvironmentSelectorProps(),
+                },
+                ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
+                (compareEnvOptions?.previousDeployments.length ||
+                    (getIsApprovalPolicyConfigured(
+                        appEnvProtectionConfig?.[getIdentifierForProtectionConfig(true)]?.approvalConfigurationMap?.[
+                            approvalConfigKind
+                        ],
+                    ) ??
+                        isBaseConfigProtected))
+                    ? [
+                          {
+                              id: `environment-config-type-selector-compare`,
+                              type: 'selectPicker' as const,
+                              selectPickerProps: renderEnvironmentConfigTypeSelectorProps(true),
+                          },
+                      ]
+                    : []),
+            ],
+            secondaryConfig: [
+                {
+                    id: compareTo || BASE_CONFIGURATIONS.name,
+                    type: 'string',
+                    text: compareTo || BASE_CONFIGURATIONS.name,
+                },
+                ...((currentEnvOptions?.previousDeployments.length ||
+                (getIsApprovalPolicyConfigured(
+                    appEnvProtectionConfig?.[getIdentifierForProtectionConfig(false)]?.approvalConfigurationMap?.[
+                        approvalConfigKind
+                    ],
+                ) ??
+                    isBaseConfigProtected)
+                    ? [
+                          {
+                              id: `environment-config-type-selector-current`,
+                              type: 'selectPicker',
+                              selectPickerProps: renderEnvironmentConfigTypeSelectorProps(),
+                          },
+                      ]
+                    : []) as DeploymentConfigDiffProps['selectorsConfig']['secondaryConfig']),
+            ],
+        }
+
+        return deploymentConfigDiffSelectors
     }
 
     const getNavHelpText = (): DeploymentConfigDiffProps['navHelpText'] => {
@@ -524,7 +584,7 @@ export const DeploymentConfigCompare = ({
             }}
             {...appEnvDeploymentConfigList}
             goBackURL={goBackURL}
-            selectorsConfig={deploymentConfigDiffSelectors}
+            selectorsConfig={getDeploymentConfigDiffSelectors()}
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
             navHeading={overwriteNavHeading || `Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}

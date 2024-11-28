@@ -170,7 +170,7 @@ export const Configurations = () => {
                             getNavItemHref={(resourceType, resourceName) =>
                                 `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                             }
-                            envProtectionConfig={envProtectionConfig}
+                            appEnvProtectionConfig={envProtectionConfig}
                         />
                     ) : (
                         <Progressing fullHeight pageLoader />
