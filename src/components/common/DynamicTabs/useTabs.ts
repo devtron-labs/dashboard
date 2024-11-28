@@ -508,6 +508,5 @@ export function useTabs(persistanceKey: string) {
         updateTabComponentKey,
         updateTabLastSyncMoment,
         stopTabByIdentifier,
-        tabIdToTabMap,
     }
 }

@@ -513,7 +513,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
-                        isSuperAdmin
                         descriptionId={descriptionData.descriptionId}
                         initialDescriptionText={descriptionData.descriptionText}
                         initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
