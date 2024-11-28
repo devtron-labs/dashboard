@@ -123,6 +123,7 @@ export const SourceInfo = ({
 
     const getIsApprovalConfigured = (): boolean => {
         try {
+            // TODO: Check this one
             const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
             const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
             return getIsManualApprovalConfigured(parsedUserApprovalConfig)

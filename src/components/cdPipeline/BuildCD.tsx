@@ -25,11 +25,9 @@ import {
     TippyTheme,
     YAMLStringify,
     CodeEditor,
-    UserApprovalConfigType,
     Environment,
     ReleaseMode,
     SelectPicker,
-    CDFormType,
     ToastVariantType,
     ToastManager,
     ComponentSizeType,
@@ -60,22 +58,11 @@ import { getGitOpsRepoConfig } from '../../services/service'
 import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
-import { PipelineFormDataErrorType } from '@Components/workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
-const validateUserApprovalConfig: (
-    userApprovalConfig: UserApprovalConfigType,
-) => PipelineFormDataErrorType['userApprovalConfig'] = importComponentFromFELibrary(
-    'validateUserApprovalConfig',
-    () => ({
-        isValid: true,
-    }),
-    'function',
-)
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
@@ -600,18 +587,6 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
-        // TODO: Remove the validator and this function
-        const _form = structuredClone(formData)
-        const _formDataErrorObj = structuredClone(formDataErrorObj)
-
-        _form.userApprovalConfig = updatedUserApprovalConfig
-        _formDataErrorObj.userApprovalConfig = validateUserApprovalConfig(updatedUserApprovalConfig)
-
-        setFormData(_form)
-        setFormDataErrorObj(_formDataErrorObj)
-    }
-
     const renderDeploymentAppType = () => {
         return (
             <div className="cd-pipeline__deployment-type mt-16">
@@ -800,13 +775,6 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-                {isAdvanced &&
-                    getBuildCDManualApproval &&
-                    getBuildCDManualApproval(
-                        formData.userApprovalConfig,
-                        formDataErrorObj.userApprovalConfig,
-                        handleUpdateUserApprovalConfig,
-                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

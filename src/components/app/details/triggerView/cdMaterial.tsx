@@ -77,6 +77,7 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    getIsApprovalPolicyConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -271,8 +272,9 @@ const CDMaterial = ({
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
-    const userApprovalConfig = materialsResult?.userApprovalConfig
-    const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
+    const isApprovalConfigured = getIsApprovalPolicyConfigured(
+        materialsResult?.deploymentApprovalInfo?.approvalConfigData,
+    )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
 

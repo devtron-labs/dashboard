@@ -21,7 +21,6 @@ import {
     FilterConditionsListType,
     MODAL_TYPE,
     ResponseType,
-    UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
     AppInfoListType,
@@ -82,10 +81,6 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMater
     parentEnvironmentName?: string
     approvalUsers?: string[]
     approvalConfigData?: ApprovalConfigDataType
-    /**
-     * @deprecated
-     */
-    userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
     appReleaseTags?: string[]
     tagsEditable?: boolean

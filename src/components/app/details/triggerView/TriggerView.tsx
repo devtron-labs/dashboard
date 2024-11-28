@@ -763,7 +763,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     if (node.type === 'CD') {
-                        // TODO: Potential bug since removed, data was from api which is now in cdmaterials data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
                         node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
                     }
                 }

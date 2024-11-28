@@ -740,8 +740,6 @@ function cdPipelineToNode(
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
-        // Remove this
-        userApprovalConfig: cdPipeline.userApprovalConfig,
         approvalConfigData: cdPipeline.approvalConfigData,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,

@@ -102,6 +102,7 @@ export interface AppDetails extends CDModalProps {
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
+    // TODO: Need to check this one
     userApprovalConfig?: string
     ciArtifactId?: number
     parentArtifactId?: number

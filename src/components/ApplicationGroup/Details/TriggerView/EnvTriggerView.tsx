@@ -1395,9 +1395,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
-                    _selectedNode.approvalUsers = _materialData.approvalUsers
                     _selectedNode.requestedUserId = _materialData.requestedUserId
-                    _selectedNode.userApprovalConfig = _materialData.userApprovalConfig
+                    _selectedNode.approvalConfigData = _materialData.deploymentApprovalInfo?.approvalConfigData
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
                     _selectedNode = _cdNode.postNode
                 }
@@ -1767,8 +1766,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
                         approvalUsers: _selectedNode.approvalUsers,
-                        // TODO: Remove
-                        userApprovalConfig: _selectedNode.userApprovalConfig,
                         approvalConfigData: _selectedNode.approvalConfigData,
                         requestedUserId: _selectedNode.requestedUserId,
                         appReleaseTags: wf.appReleaseTags,

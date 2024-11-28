@@ -24,7 +24,6 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
-    ValidationResponseType,
     PipelineFormType,
     MandatoryPluginDataType,
     CiPipeline,
@@ -251,7 +250,6 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
-    userApprovalConfig?: ValidationResponseType
 }
 
 interface HandleValidateMandatoryPluginsParamsType {
