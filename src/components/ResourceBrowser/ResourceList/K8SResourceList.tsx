@@ -61,6 +61,7 @@ import {
     updateQueryString,
     getRenderNodeButton,
     renderResourceValue,
+    getResourceFromK8SObjectMap,
 } from '../Utils'
 import { URLS } from '../../../config'
 import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
@@ -81,6 +82,7 @@ export const K8SResourceList = ({
     isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
+    k8SObjectMapRaw,
 }: K8SResourceListType) => {
     // HOOKS
     const { searchParams } = useSearchString()
@@ -250,7 +252,7 @@ export const K8SResourceList = ({
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            _group = getResourceFromK8SObjectMap(k8SObjectMapRaw, _kind.toLowerCase())?.gvk?.Group || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName

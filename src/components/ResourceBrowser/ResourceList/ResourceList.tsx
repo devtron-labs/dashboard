@@ -313,6 +313,7 @@ const ResourceList = () => {
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            k8SObjectMapRaw={k8SObjectMapRaw?.result?.apiResources || null}
         />,
         ...(isSuperAdmin &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
