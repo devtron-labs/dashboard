@@ -21,7 +21,6 @@ import {
     PipelineType,
     DownstreamNodesEnvironmentsType,
     WorkflowType,
-    getIsManualApprovalConfigured,
     CiPipeline,
     CdPipeline,
     getIsApprovalPolicyConfigured,

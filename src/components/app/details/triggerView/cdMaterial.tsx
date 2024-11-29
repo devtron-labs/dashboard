@@ -68,7 +68,6 @@ import {
     RuntimeParamsListItemType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
-    getIsManualApprovalConfigured,
     ToastManager,
     ToastVariantType,
     EnvResourceType,
