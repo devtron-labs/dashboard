@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -57,6 +57,7 @@ export const DeploymentConfigCompare = ({
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
+    const location = useLocation()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
@@ -507,13 +508,47 @@ export const DeploymentConfigCompare = ({
         if (_isManifestView) {
             setConvertVariables(false)
         }
-        push(
-            generatePath(path, {
+
+        /** NOTE: retain current search params but only append manifestChartRefId(s) if _isManifestView otherwise remove them
+         * This is done to retain selection across jumps between manifest view and config view */
+        const currentSearchParamsObject = Object.fromEntries(new URLSearchParams(location.search).entries())
+
+        const _compareWithManifestChartRefId =
+            Object.hasOwn(currentSearchParamsObject, 'compareWithIdentifierId') &&
+            _isManifestView &&
+            compareEnvOptions.previousDeployments &&
+            Array.isArray(compareEnvOptions.previousDeployments)
+                ? compareEnvOptions.previousDeployments.find(
+                      (prev) =>
+                          prev.deploymentTemplateHistoryId ===
+                          Number(currentSearchParamsObject.compareWithIdentifierId),
+                  )?.chartRefId ?? null
+                : null
+
+        const _manifestChartRefId =
+            Object.hasOwn(currentSearchParamsObject, 'identifierId') &&
+            _isManifestView &&
+            currentEnvOptions.previousDeployments &&
+            Array.isArray(currentEnvOptions.previousDeployments)
+                ? currentEnvOptions.previousDeployments.find(
+                      (prev) => prev.deploymentTemplateHistoryId === Number(identifierId),
+                  )?.chartRefId ?? null
+                : null
+
+        push({
+            pathname: generatePath(path, {
                 ...params,
                 resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
                 resourceName: null,
             }),
-        )
+            search: new URLSearchParams({
+                ...currentSearchParamsObject,
+                compareWithManifestChartRefId: _compareWithManifestChartRefId
+                    ? String(_compareWithManifestChartRefId)
+                    : null,
+                manifestChartRefId: _manifestChartRefId ? String(_manifestChartRefId) : null,
+            }).toString(),
+        })
     }
 
     const tabConfig: DeploymentConfigDiffProps['tabConfig'] = {
