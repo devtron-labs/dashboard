@@ -26,6 +26,7 @@ import {
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
     OverrideMergeStrategyType,
     GUIViewError,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -94,7 +95,7 @@ const GUIView = ({
         () => () => {
             if (modelRef.current) {
                 const newData = modelRef.current.syncCheckedFieldsInJson(formDataRef.current)
-                editorOnChange?.(YAML.stringify(newData))
+                editorOnChange?.(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
             }
         },
         [],
