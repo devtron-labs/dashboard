@@ -78,6 +78,7 @@ import {
     ApiResponseResultType,
     CommonNodeAttr,
     getIsApprovalPolicyConfigured,
+    ApprovalRuntimeStateType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -611,7 +612,10 @@ const CDMaterial = ({
         const consumedImage = []
         const approvedImages = []
         material.forEach((mat) => {
-            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
+            if (
+                !mat.userApprovalMetadata ||
+                mat.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
+            ) {
                 mat.isSelected = false
                 consumedImage.push(mat)
             } else {

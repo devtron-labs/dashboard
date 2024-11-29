@@ -405,8 +405,7 @@ export const DeploymentConfigCompare = ({
 
     const renderEnvironmentConfigTypeSelectorProps = (isCompare?: boolean) => {
         const identifier = getIdentifierForProtectionConfig(isCompare)
-        // TODO: This needs to be tested and discussed if this should be || or ??
-        const isEnvProtected = appEnvProtectionConfig?.[identifier]?.isApprovalApplicable || isBaseConfigProtected
+        const isEnvProtected = appEnvProtectionConfig?.[identifier]?.isApprovalApplicable ?? isBaseConfigProtected
 
         return {
             id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
@@ -452,8 +451,8 @@ export const DeploymentConfigCompare = ({
                 selectPickerProps: renderCompareEnvironmentSelectorProps(),
             },
             ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
-            (compareEnvOptions?.previousDeployments.length ||
-                appEnvProtectionConfig?.[getIdentifierForProtectionConfig(true)]?.isApprovalApplicable ||
+            ((compareEnvOptions?.previousDeployments.length ||
+                appEnvProtectionConfig?.[getIdentifierForProtectionConfig(true)]?.isApprovalApplicable) ??
                 isBaseConfigProtected)
                 ? [
                       {
@@ -470,8 +469,8 @@ export const DeploymentConfigCompare = ({
                 type: 'string',
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
-            ...((currentEnvOptions?.previousDeployments.length ||
-            appEnvProtectionConfig?.[getIdentifierForProtectionConfig(false)]?.isApprovalApplicable ||
+            ...(((currentEnvOptions?.previousDeployments.length ||
+                appEnvProtectionConfig?.[getIdentifierForProtectionConfig(false)]?.isApprovalApplicable) ??
             isBaseConfigProtected
                 ? [
                       {

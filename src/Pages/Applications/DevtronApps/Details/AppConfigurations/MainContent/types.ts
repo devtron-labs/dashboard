@@ -1,5 +1,4 @@
 import {
-    ApprovalConfigDataType,
     CompareFromApprovalOptionsValuesType,
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
@@ -9,6 +8,7 @@ import {
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
+    UserApprovalMetadataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
@@ -120,7 +120,7 @@ export type ConfigToolbarProps = {
      */
     isApprovalPending?: boolean
     isDraftPresent?: boolean
-    approvalConfigData: ApprovalConfigDataType
+    userApprovalMetadata: UserApprovalMetadataType
     /**
      * @default - false
      * If given would disable all the actions
