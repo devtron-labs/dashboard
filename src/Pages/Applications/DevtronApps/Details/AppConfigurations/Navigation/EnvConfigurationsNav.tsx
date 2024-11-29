@@ -81,15 +81,15 @@ export const EnvConfigurationsNav = ({
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
+    const envConfigKey =
+        resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
+
     const isCreate = useMemo(
-        () => !!pathname.match(/\bcreate\b/) && !updatedEnvConfig[resourceType].some(({ title }) => title === 'create'),
+        () => !!pathname.match(/\bcreate\b/) && !updatedEnvConfig[envConfigKey].some(({ title }) => title === 'create'),
         [pathname, updatedEnvConfig, resourceType],
     )
 
     const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration> = updatedEnvConfig) => {
-        const envConfigKey =
-            resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
-
         setExpandedIds({ ...expandedIds, [resourceType]: true })
 
         return {
@@ -177,7 +177,7 @@ export const EnvConfigurationsNav = ({
      * @param _resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
-        if (isCreate || isCMSecretLocked) {
+        if ((resourceType === _resourceType && isCreate) || isCMSecretLocked) {
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
