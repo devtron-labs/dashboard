@@ -686,6 +686,7 @@ const ManifestComponent = ({
                         // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
                         manifestYAMLString={getCodeEditorValue()}
                         handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                        manifestGUIFormRef={manifestGUIFormRef}
                     />
                 </>
             )
