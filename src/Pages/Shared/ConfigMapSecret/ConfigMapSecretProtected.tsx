@@ -12,12 +12,12 @@ import {
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { hasApproverAccess, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 
+import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
@@ -48,7 +48,6 @@ export const ConfigMapSecretProtected = ({
     setRestoreYAML,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
-    const { email } = useUserEmail()
     const { formDataRef } = useConfigMapSecretFormContext()
 
     // STATES
@@ -184,46 +183,47 @@ export const ConfigMapSecretProtected = ({
     )
 
     const renderApproveButton = () => {
-        if (draftData.draftState !== DraftState.AwaitApproval || !ApproveRequestTippy) {
-            return null
+        if (draftData.userApprovalMetadata.hasCurrentUserApproved) {
+            return (
+                <p className="flex left dc__gap-8 px-12 py-8 m-0">
+                    <ICCheck className="dc__no-shrink icon-dim-16 scg-5" />
+                    <span className="fs-13 fw-4 lh-20 fw-6 cg-5">Approved by you</span>
+                </p>
+            )
         }
 
-        const hasAccess = hasApproverAccess(email, draftData.approvers)
+        const hasAccess = draftData.userApprovalMetadata.canCurrentUserApprove
 
-        return (
-            <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
-                {draftData.canApprove && hasAccess ? (
-                    <ApproveRequestTippy
-                        draftId={draftData.draftId}
-                        draftVersionId={draftData.draftVersionId}
-                        resourceName={componentName}
-                        reload={updateCMSecret}
-                        envName={parentName}
-                    >
-                        <Button
-                            dataTestId="cm-secret-approve-btn"
-                            text="Approve Changes"
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.positive}
-                        />
-                    </ApproveRequestTippy>
-                ) : (
-                    <Button
-                        dataTestId="cm-secret-approve-btn"
-                        text="Approve Changes"
-                        size={ComponentSizeType.medium}
-                        style={ButtonStyleType.positive}
-                        disabled
-                        showTooltip
-                        tooltipProps={{
-                            placement: 'top-end',
-                            content: hasAccess
-                                ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                                : 'You do not have permission to approve configuration changes for this application - environment combination.',
-                        }}
-                    />
-                )}
-            </footer>
+        return draftData.canApprove && hasAccess ? (
+            <ApproveRequestTippy
+                draftId={draftData.draftId}
+                draftVersionId={draftData.draftVersionId}
+                resourceName={componentName}
+                reload={updateCMSecret}
+                envName={parentName}
+            >
+                <Button
+                    dataTestId="cm-secret-approve-btn"
+                    text="Approve Changes"
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.positive}
+                />
+            </ApproveRequestTippy>
+        ) : (
+            <Button
+                dataTestId="cm-secret-approve-btn"
+                text="Approve Changes"
+                size={ComponentSizeType.medium}
+                style={ButtonStyleType.positive}
+                disabled
+                showTooltip
+                tooltipProps={{
+                    placement: 'top-end',
+                    content: hasAccess
+                        ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
+                        : 'You do not have permission to approve configuration changes for this application - environment combination.',
+                }}
+            />
         )
     }
 
@@ -243,7 +243,11 @@ export const ConfigMapSecretProtected = ({
                     />
                 )}
             </div>
-            {renderApproveButton()}
+            {draftData.draftState === DraftState.AwaitApproval && ApproveRequestTippy && (
+                <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
+                    {renderApproveButton()}
+                </footer>
+            )}
         </div>
     )
 

@@ -1096,19 +1096,6 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-export const hasApproverAccess = (email: string, approverList: string[]): boolean => {
-    let hasAccess = false
-    if (approverList?.length > 0) {
-        for (const approver of approverList) {
-            if (approver === email) {
-                hasAccess = true
-                break
-            }
-        }
-    }
-    return hasAccess
-}
-
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
