@@ -93,12 +93,6 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    // /**
-    //  * Boolean indicating if the base configuration is protected.
-    //  *
-    //  * @deprecated Maybe
-    //  * */
-    // isBaseConfigProtected?: boolean
     envProtectionConfig: ResourceProtectConfigType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
@@ -144,20 +138,6 @@ export interface NextButtonProps {
     isDisabled: boolean
 }
 
-export enum ProtectionState {
-    ENABLED = 1,
-    DISABLED = 2,
-}
-
-/**
- * @deprecated
- */
-export type ConfigProtection = {
-    appId: number
-    envId: number
-    state: ProtectionState
-}
-
 interface CommonAppConfigurationProps {
     appId: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
@@ -187,10 +167,6 @@ export interface AppConfigurationContextType
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    // /**
-    //  * @deprecated maybe
-    //  */
-    // isBaseConfigProtected: boolean
     envProtectionConfig: ResourceProtectConfigType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
