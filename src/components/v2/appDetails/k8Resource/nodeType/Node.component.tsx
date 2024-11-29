@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
+import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
 import {
     TippyCustomized,
     TippyTheme,
@@ -24,13 +24,12 @@ import {
     ToastManager,
     ToastVariantType,
     SortableTableHeaderCell,
-    noop,
     Tooltip,
     TabGroup,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../index.store'
-import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
+import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -41,13 +40,22 @@ import { useSharedState } from '../../../utils/useSharedState'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
-import { NoPod } from '../../../../app/ResourceTreeNodes'
-import './nodeType.scss'
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import './nodeType.scss'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
+const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
+
+const NoPod = ({ selectMessage = 'Select a pod to view events', style = {} }) => {
+    return (
+        <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
+            <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+            <p>{selectMessage}</p>
+        </div>
+    )
+}
 
 const NodeComponent = ({
     handleFocusTabs,
@@ -59,6 +67,7 @@ const NodeComponent = ({
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
+    const location = useLocation()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
@@ -200,14 +209,17 @@ const NodeComponent = ({
             node.name
         }/${_tabName.toLowerCase()}`
 
-        if (containerName) {
-            _url = `${_url}?container=${containerName}`
+        const getSearchString = () => {
+            if (containerName) {
+                return location.search ? `${location.search}&container=${containerName}` : `?container=${containerName}`
+            }
+            return location.search
         }
 
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
 
         if (isAdded) {
-            history.push(_url)
+            history.push({ pathname: _url, search: getSearchString() })
         } else {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -286,6 +298,7 @@ const NodeComponent = ({
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+            const nodeStatus = getNodeStatus(node)
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -315,26 +328,12 @@ const NodeComponent = ({
                     {showHeader && !!_currentNodeHeader && (
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
-                                <SortableTableHeaderCell
-                                    disabled={false}
-                                    isSortable={false}
-                                    isSorted={null}
-                                    sortOrder={null}
-                                    triggerSorting={noop}
-                                    title={node.kind}
-                                />
+                                <SortableTableHeaderCell isSortable={false} title={node.kind} />
                             </div>
                             {((node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
                                 (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
                                 <div className="fw-6">
-                                    <SortableTableHeaderCell
-                                        disabled={false}
-                                        isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
-                                        title="Links"
-                                    />
+                                    <SortableTableHeaderCell isSortable={false} title="Links" />
                                 </div>
                             )}
                         </div>
@@ -367,15 +366,9 @@ const NodeComponent = ({
                                             node.kind.toLowerCase() == NodeType.Pod.toLowerCase() ? 'mw-264' : 'mw-152'
                                         }`}
                                     >
-                                        <button
-                                            type="button"
-                                            className="dc__unset-button-styles"
-                                            onClick={stopPropagation}
-                                        >
-                                            <div className="pl-8 pr-8">
-                                                <ClipboardButton content={node.name} />
-                                            </div>
-                                        </button>
+                                        <div className="px-8">
+                                            <ClipboardButton content={node.name} />
+                                        </div>
                                         {!appDetails.isVirtualEnvironment && (
                                             <>
                                                 <div
@@ -418,16 +411,21 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
-                                    <span
-                                        data-testid="node-resource-status"
-                                        className={`app-summary__status-name f-${(
-                                            node?.status ||
-                                            node?.health?.status ||
-                                            ''
-                                        ).toLowerCase()}`}
-                                    >
-                                        {getNodeStatus(node)}
-                                    </span>
+                                    {nodeStatus && (
+                                        <span
+                                            data-testid="node-resource-status"
+                                            className={`app-summary__status-name f-${(
+                                                node?.status ||
+                                                node?.health?.status ||
+                                                ''
+                                            ).toLowerCase()}`}
+                                        >
+                                            {nodeStatus}
+                                        </span>
+                                    )}
+                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                                        renderConfigDriftDetectedText &&
+                                        renderConfigDriftDetectedText(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
@@ -549,14 +547,7 @@ const NodeComponent = ({
                                     key={`gpt_${index}`}
                                     className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                                 >
-                                    <SortableTableHeaderCell
-                                        disabled={false}
-                                        isSortable={false}
-                                        isSorted={null}
-                                        sortOrder={null}
-                                        triggerSorting={noop}
-                                        title={cell}
-                                    />
+                                    <SortableTableHeaderCell isSortable={false} title={cell} />
                                 </div>
                             )
                         })}

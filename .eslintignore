@@ -133,8 +133,6 @@ src/components/app/details/metrics/deploymentMetrics.util.tsx
 src/components/app/details/testViewer/List.tsx
 src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
-src/components/app/details/triggerView/BranchRegexModal.tsx
-src/components/app/details/triggerView/CiWebhookDebuggingModal.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/TriggerView.tsx
@@ -265,7 +263,6 @@ src/components/common/FloatingVariablesSuggestions/__tests__/FloatingVariablesSu
 src/components/common/FloatingVariablesSuggestions/__tests__/Suggestions.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsInfo.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsItem.test.tsx
-src/components/common/GitInfoMaterial.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
@@ -404,7 +401,7 @@ src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tes
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts
-src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.ts
+src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx
 src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import {
     ServerErrors,
     showError,
@@ -24,10 +23,21 @@ import {
     WorkflowType,
     getIsRequestAborted,
     CIMaterialType,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
-import { AppGroupUrlFilters, CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
+import {
+    AppGroupUrlFilters,
+    CDWorkflowStatusType,
+    CIWorkflowStatusType,
+    ProcessWorkFlowStatusType,
+    FilterParentType,
+    SetFiltersInLocalStorageParamsType,
+    AppEnvLocalStorageKeyType,
+} from './AppGroup.types'
+import { getParsedBranchValuesForPlugin } from '@Components/common'
+import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
 
 let timeoutId
 
@@ -81,17 +91,17 @@ export const processWorkflowStatuses = (
         wf.nodes = wf.nodes.map((node) => {
             switch (node.type) {
                 case 'CI':
-                    node['status'] = node.isLinkedCI ? ciMap[node.parentCiPipeline]?.status : ciMap[node.id]?.status
-                    node['storageConfigured'] = ciMap[node.id]?.storageConfigured
+                    node.status = node.isLinkedCI ? ciMap[node.parentCiPipeline]?.status : ciMap[node.id]?.status
+                    node.storageConfigured = ciMap[node.id]?.storageConfigured
                     break
                 case 'PRECD':
-                    node['status'] = preCDMap[node.id]
+                    node.status = preCDMap[node.id]
                     break
                 case 'POSTCD':
-                    node['status'] = postCDMap[node.id]
+                    node.status = postCDMap[node.id]
                     break
                 case 'CD':
-                    node['status'] = cdMap[node.id]
+                    node.status = cdMap[node.id]
                     break
             }
             return node
@@ -141,8 +151,8 @@ export const handleSourceNotConfigured = (
     }
 }
 
-export const envListOptions = (inputValue: string, signal?: AbortSignal): Promise<[]> => {
-    return new Promise((resolve) => {
+export const envListOptions = (inputValue: string, signal?: AbortSignal): Promise<[]> =>
+    new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
         }
@@ -156,9 +166,9 @@ export const envListOptions = (inputValue: string, signal?: AbortSignal): Promis
                     let appList = []
                     if (response.result) {
                         appList = response.result.envList?.map((res) => ({
-                            value: res['id'],
-                            label: res['environment_name'],
-                            appCount: res['appCount'],
+                            value: res.id,
+                            label: res.environment_name,
+                            appCount: res.appCount,
                             ...res,
                         }))
                     }
@@ -174,7 +184,6 @@ export const envListOptions = (inputValue: string, signal?: AbortSignal): Promis
                 })
         }, 300)
     })
-}
 
 export const appGroupAppSelectorStyle = {
     control: (base, state) => ({
@@ -220,15 +229,13 @@ export const appGroupAppSelectorStyle = {
         width: state.menuIsOpen ? '250px' : 'max-content',
         whiteSpace: 'nowrap',
     }),
-    menuList: (base) => {
-        return {
-            ...base,
-            paddingTop: '0',
-            paddingBottom: '0',
-            marginBottom: '0',
-            borderRadius: '4px',
-        }
-    },
+    menuList: (base) => ({
+        ...base,
+        paddingTop: '0',
+        paddingBottom: '0',
+        marginBottom: '0',
+        borderRadius: '4px',
+    }),
     dropdownIndicator: (base, state) => ({
         ...base,
         padding: '0 4px 0 4px',
@@ -264,7 +271,9 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
                 const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
                     for (const mat of selectedCIPipeline.ciMaterial) {
-                        branchValues += `${branchValues ? ',' : ''}${mat.source.value}`
+                        if (mat.source.type !== SourceTypeMap.WEBHOOK) {
+                            branchValues += `${branchValues ? ',' : ''}${getParsedBranchValuesForPlugin(mat.source.value)}`
+                        }
                     }
                 }
                 break
@@ -279,7 +288,7 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
         return null
     }
     if (data.isCITriggerBlocked) {
-        return { action: ConsequenceAction.BLOCK, metadataField: null }
+        return { action: ConsequenceAction.BLOCK }
     }
     return data.ciBlockState
 }
@@ -287,3 +296,24 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
 })
+
+export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
+    filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+
+export const setFilterInLocalStorage = ({
+    filterParentType,
+    resourceId,
+    resourceList,
+    groupList,
+}: SetFiltersInLocalStorageParamsType) => {
+    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+    try {
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        const localStoredMap = new Map(localStorageValue ? JSON.parse(localStorageValue) : null)
+        localStoredMap.set(resourceId, [resourceList, groupList])
+        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
+    } catch {
+        localStorage.setItem(localStorageKey, '')
+    }
+}

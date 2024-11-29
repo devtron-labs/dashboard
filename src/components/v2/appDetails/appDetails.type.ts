@@ -366,17 +366,16 @@ export interface LogSearchTermType {
     isExternalApp?: boolean
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap'> {
+export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
     clusterName?: string
 }
 
-export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap'> {
+export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
@@ -435,6 +434,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
+    showConfigDriftInfo?: boolean
 }
 
 export interface StatusFilterButtonType {
@@ -472,6 +472,10 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
+        /*
+         * Normalized live manifest for manifest diff view
+         */
+        normalizedLiveManifest: string
         guiSchema: Record<string, string>
         lockedKeys: string[] | null
     }

@@ -30,6 +30,7 @@ import {
     SortingOrder,
     Tooltip,
     ClipboardButton,
+    useResizableTableConfig,
     useBulkSelection,
     BulkOperationModalState,
     BulkSelectionEvents,
@@ -89,6 +90,13 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: appliedColumns.map((column, index) => ({
+            id: column.label,
+            minWidth: index === 0 ? 120 : null,
+            width: index === 0 ? 260 : index === 1 ? 180 : 120,
+        })),
+    })
 
     const parentRef = useRef<HTMLDivElement>()
 
@@ -445,9 +453,12 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
         <div className="flexbox dc__gap-8 dc__align-items-center">
-            {column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
+            {RBBulkOperations && column.label.toUpperCase() === 'NODE' && <BulkSelection showPagination={showPaginatedView} />}
             <SortableTableHeaderCell
                 key={column.label}
+                id={column.label}
+                isResizable
+                handleResize={handleResize}
                 showTippyOnTruncate
                 disabled={false}
                 triggerSorting={handleSortClick(column)}
@@ -561,12 +572,10 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const clusterNodeClickEvent = (nodeData, column) => {
         const url = `${match.url}/${nodeData[column.value]}`
         return () => {
-            addTab(K8S_EMPTY_GROUP, nodeType, nodeData[column.value], url)
+            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: nodeType, name: nodeData[column.value], url })
             history.push(url)
         }
     }
-
-    const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
 
     const renderNodeList = (nodeData: (typeof filteredFlattenNodeList)[number]): JSX.Element => {
         return (
@@ -581,12 +590,14 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent py-9">
-                            <Checkbox
-                                isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
-                                onChange={getHandleCheckedForId(nodeData)}
-                                rootClassName="mb-0"
-                                value={CHECKBOX_VALUE.CHECKED}
-                            />
+                            {RBBulkOperations && (
+                                <Checkbox
+                                     isChecked={!!bulkSelectionState[nodeData.id] || isBulkSelectionApplied}
+                                     onChange={getHandleCheckedForId(nodeData)}
+                                     rootClassName="mb-0"
+                                     value={CHECKBOX_VALUE.CHECKED}
+                                />
+                            )}
                             <Tooltip content={nodeData[column.value]}>
                                 <NavLink
                                     data-testid="cluster-node-link"

@@ -96,7 +96,7 @@ export const URLS = {
     GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
     GLOBAL_CONFIG_PULL_IMAGE_DIGEST: '/global-config/pull-image-digest',
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
-    GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
+    GLOBAL_CONFIG_PLUGIN_POLICY: '/global-config/plugin-policy',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION: '/global-config/lock-deployment-configuration',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
@@ -127,6 +127,8 @@ export const URLS = {
     ARGO_APP_LIST: '/app/list/a',
     FLUX_APP_LIST: '/app/list/f',
     BUILD: '/build',
+    WEBHOOK_MODAL: 'webhook',
+    WEBHOOK_RECEIVED_PAYLOAD_ID: 'payload-id',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
 }

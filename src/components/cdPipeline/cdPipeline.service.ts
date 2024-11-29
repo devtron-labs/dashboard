@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { post, get, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { post, get, sortCallback, getEnvironmentListMinPublic } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, TriggerType } from '../../config'
-import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service'
+import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
     const URL = `app/pipeline/suggest/cd/${appId}`

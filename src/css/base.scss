@@ -365,6 +365,10 @@ a:focus {
     top: 9px;
 }
 
+.dc__top-12 {
+    top: 12px;
+}
+
 .dc__top-22 {
     top: 22px;
 }
@@ -433,8 +437,16 @@ a:focus {
     right: 0;
 }
 
+.dc__right-3--neg {
+    right: -3px;
+}
+
 .dc__right-10 {
     right: 10px;
+}
+
+.dc__right-12 {
+    right: 12px;
 }
 
 .dc__left-0 {
@@ -443,6 +455,10 @@ a:focus {
 
 .dc__left-6 {
     left: 6px;
+}
+
+.dc__left-12 {
+    left: 12px;
 }
 
 .dc__left-30 {
@@ -796,6 +812,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -994,6 +1011,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1146,7 +1164,7 @@ button.anchor {
     }
 
     &.not-ready {
-        background: url('../assets//icons/ic-error.svg');
+        background: url('../assets/icons/ic-error.svg');
         background-size: contain, contain;
     }
 
@@ -1162,6 +1180,11 @@ button.anchor {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
         }
+    }
+
+    &.drifted {
+        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.missing {
@@ -1289,12 +1312,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1323,19 +1346,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1354,12 +1377,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             color: var(--N900);
             background-color: var(--N0);
@@ -1389,12 +1412,12 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
@@ -1405,7 +1428,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1434,7 +1457,7 @@ button.anchor {
         &.radio-group {
             height: 30px;
 
-            input + .radio__item-label {
+            input+.radio__item-label {
                 padding-inline: 8px;
             }
         }
@@ -1443,7 +1466,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1451,7 +1474,7 @@ button.anchor {
             }
         }
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1462,12 +1485,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1480,6 +1503,17 @@ button.anchor {
                 }
             }
         }
+    }
+}
+
+.dc__inline-radio-group {
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .form__radio-item.disabled {
+        background-color: transparent;
     }
 }
 
@@ -1691,6 +1725,7 @@ button.anchor {
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover {
+
             // If we give this class then the element will be visible on hover
             &--child {
                 display: inherit;
@@ -1778,7 +1813,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1951,6 +1986,7 @@ button.anchor {
         color: var(--N900);
     }
 }
+
 .dc__artifact-add {
     font-weight: 600;
     font-style: normal;
@@ -2051,6 +2087,10 @@ button.anchor {
 
     &--n3-right {
         border-right: 1px dashed var(--N300);
+    }
+
+    &--n3-bottom {
+        border-bottom: 1px dashed var(--N300);
     }
 }
 
@@ -2529,6 +2569,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__bottom-radius-8 {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
 .dc__top-radius-8 {
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -2554,9 +2599,19 @@ button.anchor {
     border-bottom-right-radius: 0 !important;
 }
 
+.dc__left-radius-3 {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
 .dc__left-radius-4 {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+}
+
+.dc__right-radius-3 {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .dc__right-radius-4 {
@@ -2586,6 +2641,10 @@ button.anchor {
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-40 {
+    border-radius: 40px;
 }
 
 .dc__no-top-border {
@@ -2649,7 +2708,7 @@ textarea,
     font-weight: 600;
     line-height: 20px;
     width: 100%;
-    
+
     &__pane {
         flex: 1 0 0;
         background-color: var(--terminal-bg);
@@ -2657,7 +2716,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2806,6 +2865,7 @@ textarea,
 }
 
 .icon-stroke-b5 {
+
     path,
     rect {
         stroke: var(--B500);
@@ -3648,6 +3708,10 @@ textarea,
     max-height: 450px;
 }
 
+.mxh-500 {
+    max-height: 500px;
+}
+
 .mxh-504 {
     max-height: 504px;
 }
@@ -3708,6 +3772,10 @@ textarea,
 
 .lh-18-imp {
     line-height: 18px !important;
+}
+
+.lh-19-imp {
+    line-height: 19px !important;
 }
 
 .lh-20 {
@@ -3868,6 +3936,14 @@ textarea,
 
 .mb-neg-2 {
     margin-bottom: -2px;
+}
+
+.mb-60 {
+    margin-bottom: 60px;
+
+    &--neg {
+        margin-bottom: -60px;
+    }
 }
 
 .m-0-imp {
@@ -4043,6 +4119,10 @@ textarea,
     column-gap: 32px;
 }
 
+.dc__gap-1 {
+    gap: 1px;
+}
+
 .dc__gap-2 {
     gap: 2px;
 }
@@ -4093,6 +4173,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+
+    &--neg {
+        transform: rotate(-180deg);
+    }
 }
 
 .dc__flip-45 {
@@ -4248,10 +4332,25 @@ textarea::placeholder {
     background-color: var(--B50) !important;
 }
 
-.dc__hover-color-b500:hover {
-    color: var(--B500);
+.dc__hover-color-b500 {
+    &:hover {
+        color: var(--B500);
+    }
+
+    &--fill:hover {
+        path {
+            fill: var(--B500);
+        }
+    }
+
+    &--stroke:hover {
+        path {
+            stroke: var(--B500);
+        }
+    }
 }
 
+// FIXME: Wrong format. Please use the correct format
 .dc__hover-color-n800:hover {
     color: var(--N800);
 
@@ -4633,6 +4732,10 @@ textarea::placeholder {
     cursor: -webkit-grabbing;
 }
 
+.dc__cursor-col-resize {
+    cursor: col-resize;
+}
+
 .focus-within-border-b5:focus-within {
     border: 1px solid var(--B500) !important;
 }
@@ -4781,6 +4884,14 @@ textarea::placeholder {
 
 .dc__backdrop-filter {
     backdrop-filter: blur(2px);
+}
+
+.dc__backdrop-filter-5 {
+    backdrop-filter: blur(5px);
+}
+
+.dc__background-opacity-75-per {
+    background: #f2f4f7BF;
 }
 
 .dc__visibility-hidden {
@@ -4964,6 +5075,7 @@ textarea::placeholder {
 }
 
 .cd-material {
+
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
         grid-template-columns: 234px auto;
@@ -5028,6 +5140,7 @@ textarea::placeholder {
     color: var(--R500);
     text-transform: capitalize;
 }
+
 .dc__transparent-div {
     position: fixed;
     background: transparent;

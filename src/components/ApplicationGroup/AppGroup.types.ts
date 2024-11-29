@@ -28,15 +28,16 @@ import {
     GVKType,
     RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
-    NodeType,
-    Nodes,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CDMaterialProps } from '../app/details/triggerView/types'
+import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads } from '../app/details/triggerView/types'
-import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
+import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -68,7 +69,7 @@ export interface BulkCDDetailTypeResponse {
     uniqueReleaseTags: string[]
 }
 
-export interface BulkCDDetailType extends BulkTriggerAppDetailType {
+export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>, Partial<Pick<CommonNodeAttr, 'showPluginWarning'>> {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
@@ -110,11 +111,9 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    showWebhookModal: boolean
-    toggleWebhookModal: (id, webhookTimeStampOrder) => void
-    webhookPayloads: WebhookPayloads
+    getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
+    webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
-    hideWebhookModal: (e?) => void
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
     isLoading: boolean
@@ -336,6 +335,7 @@ export interface CIConfigListType {
 }
 
 export interface AppGroupAppFilterContextType {
+    resourceId: string
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
@@ -608,3 +608,12 @@ export enum AppGroupUrlFilters {
 }
 
 export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
+
+export interface SetFiltersInLocalStorageParamsType {
+    filterParentType: FilterParentType,
+    resourceId: string,
+    resourceList: MultiValue<OptionType>,
+    groupList: MultiValue<GroupOptionType>,
+}
+
+export type AppEnvLocalStorageKeyType = `${string}__filter`

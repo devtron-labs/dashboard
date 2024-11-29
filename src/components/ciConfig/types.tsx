@@ -20,17 +20,17 @@ import {
     CIBuildConfigType,
     CIBuildType,
     DockerConfigOverrideType,
-    MandatoryPluginDataType,
     VariableType,
     CommonNodeAttr,
     WorkflowType,
     Material,
     SelectPickerOptionType,
+    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
-import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
+import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
@@ -366,7 +366,6 @@ export interface TargetPlatformSelectorType {
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
-    mandatoryPluginData?: MandatoryPluginDataType
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

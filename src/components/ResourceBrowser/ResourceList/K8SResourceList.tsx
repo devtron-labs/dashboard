@@ -108,7 +108,12 @@ export const K8SResourceList = ({
             default:
                 break
         }
-        result.data = result.data.map((data, index) => ({ id: index, ...data }))
+        // NOTE: for namespaced resource name+namespace will be unique
+        // while for non-namespaced resources name will be unique
+        result.data = result.data.map((data, index) => ({
+            id: `${selectedResource?.gvk?.Kind}-${data.name}-${data.namespace}-${index}`,
+            ...data,
+        }))
         return result
     }, [_resourceList])
 
@@ -128,6 +133,7 @@ export const K8SResourceList = ({
             isOpen={isOpen}
             renderRefreshBar={renderRefreshBar}
             updateK8sResourceTab={updateK8sResourceTab}
+            hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: checking for fe-lib linking
             nodeType={nodeType}
             group={group}
             addTab={addTab}

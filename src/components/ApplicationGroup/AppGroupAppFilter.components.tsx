@@ -19,7 +19,7 @@ import { components } from 'react-select'
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { getOptionBGClass } from './AppGroup.utils'
+import { getOptionBGClass, setFilterInLocalStorage } from './AppGroup.utils'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -30,6 +30,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
+import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -53,16 +54,17 @@ export const ValueContainer = (props): JSX.Element => {
             {!props.selectProps.inputValue ? (
                 <>
                     {!props.selectProps.menuIsOpen ? (
-                        <>
+                        <div className="flexbox dc__gap-4 dc__align-items-center">
                             {selectedAppsLength > 0 ? (
-                                <ShowIconFilterApplied className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
                             ) : (
-                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
                             )}
                             <span data-testid="app-group-selector-text" className="cn-9 ml-2">
                                 {selectorText}
                             </span>
-                        </>
+                            <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
+                        </div>
                     ) : (
                         <>
                             <Search className="icon-dim-16 mr-4 mw-18" />
@@ -166,6 +168,7 @@ export const Option = (props): JSX.Element => {
 
 export const MenuList = (props: any): JSX.Element => {
     const {
+        resourceId,
         appListOptions,
         selectedAppList,
         setSelectedAppList,
@@ -180,6 +183,7 @@ export const MenuList = (props: any): JSX.Element => {
     const clearSelection = (): void => {
         setSelectedAppList([])
         setSelectedGroupFilter([])
+        setFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)

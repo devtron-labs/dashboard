@@ -16,23 +16,17 @@
 
 import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
-import ReactSelect from 'react-select'
 import {
     useAsync,
     useRegisterShortcut,
     OptionType,
     SearchBar,
-    Option,
-    Tooltip,
+    SelectPicker,
     ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { ResourceValueContainerWithIcon } from './ResourceList.component'
-import {
-    FILTER_SELECT_COMMON_STYLES,
-    NAMESPACE_NOT_APPLICABLE_OPTION,
-    NAMESPACE_NOT_APPLICABLE_TEXT,
-} from '../Constants'
+import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
@@ -108,7 +102,7 @@ const ResourceFilterOptions = ({
             return
         }
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
-        updateK8sResourceTab(url)
+        updateK8sResourceTab({ url })
         replace(url)
         setSelectedNamespace(selected)
     }
@@ -150,9 +144,8 @@ const ResourceFilterOptions = ({
                         />
                     )}
                 </div>
-                <div className="flex-grow-1" />
                 {!areFiltersHidden && (
-                    <>
+                    <div className="flexbox dc__gap-8 dc__zi-3">
                         {FilterButton && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
@@ -161,34 +154,18 @@ const ResourceFilterOptions = ({
                                 setShowModal={setShowFilterModal}
                             />
                         )}
-                        <Tooltip
-                            alwaysShowTippyOnHover={!!selectedResource && !selectedResource.namespaced}
-                            content={NAMESPACE_NOT_APPLICABLE_TEXT}
-                        >
-                            <div className="resource-filter-options-wrapper flex">
-                                <ReactSelect
-                                    placeholder="Select Namespace"
-                                    className="w-220 ml-8"
-                                    classNamePrefix="resource-filter-select"
-                                    options={namespaceOptions}
-                                    value={
-                                        selectedResource?.namespaced
-                                            ? selectedNamespace
-                                            : NAMESPACE_NOT_APPLICABLE_OPTION
-                                    }
-                                    onChange={handleNamespaceChange}
-                                    blurInputOnSelect
-                                    isDisabled={!selectedResource?.namespaced}
-                                    styles={FILTER_SELECT_COMMON_STYLES}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                        ValueContainer: ResourceValueContainerWithIcon,
-                                    }}
-                                />
-                            </div>
-                        </Tooltip>
-                    </>
+                        <SelectPicker
+                            inputId="resource-filter-select"
+                            placeholder="Select Namespace"
+                            options={namespaceOptions}
+                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
+                            onChange={handleNamespaceChange}
+                            isDisabled={!selectedResource?.namespaced}
+                            icon={<NamespaceIcon className="fcn-6" />}
+                            disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
+                            shouldMenuAlignRight
+                        />
+                    </div>
                 )}
             </div>
         </>

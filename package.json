@@ -1,10 +1,10 @@
 {
     "name": "dashboard",
-    "version": "0.2.0",
+    "version": "1.1.0",
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.6.0-patch-1-beta-17",
+        "@devtron-labs/devtron-fe-common-lib": "1.1.0-patch-1",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -45,7 +45,7 @@
         "rxjs": "^7.5.4",
         "sockjs-client": "1.6.1",
         "tippy.js": "^6.3.7",
-        "vite": "5.4.6",
+        "vite": "5.4.11",
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
         "xterm": "^4.19.0",
@@ -60,7 +60,6 @@
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
-        "build-cluster": "relative-deps && NODE_OPTIONS=--max_old_space_size=4096 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false vite build",
         "build-k8s-app": "NODE_OPTIONS=--max_old_space_size=4096 GENERATE_SOURCEMAP=false VITE_K8S_CLIENT=true vite build",
@@ -80,18 +79,17 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@chromatic-com/storybook": "^1.8.0",
         "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
-        "@storybook/addon-a11y": "^8.2.9",
-        "@storybook/addon-actions": "^8.2.9",
-        "@storybook/addon-essentials": "^8.2.9",
-        "@storybook/addon-interactions": "^8.2.9",
-        "@storybook/addon-links": "^8.2.9",
-        "@storybook/blocks": "^8.2.9",
-        "@storybook/react": "^8.2.9",
-        "@storybook/react-vite": "^8.2.9",
-        "@storybook/test": "^8.2.9",
+        "@storybook/addon-a11y": "^8.4.2",
+        "@storybook/addon-actions": "^8.4.2",
+        "@storybook/addon-essentials": "^8.4.2",
+        "@storybook/addon-interactions": "^8.4.2",
+        "@storybook/addon-links": "^8.4.2",
+        "@storybook/blocks": "^8.4.2",
+        "@storybook/react": "^8.4.2",
+        "@storybook/react-vite": "^8.4.2",
+        "@storybook/test": "^8.4.2",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",
         "@types/jest": "^27.4.1",
@@ -124,13 +122,12 @@
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
-        "relative-deps": "^1.0.7",
         "sass": "^1.69.7",
-        "storybook": "^8.2.9",
+        "storybook": "^8.4.2",
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite-plugin-pwa": "0.20.2",
+        "vite-plugin-pwa": "0.20.5",
         "vite-tsconfig-paths": "5.0.1",
         "vitest": "2.0.5",
         "workbox-core": "7.1.0",
@@ -159,8 +156,8 @@
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
     },
-    "relativeDependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "../devtron-fe-common-lib",
-        "@devtron-labs/devtron-fe-lib": "../devtron-fe-lib"
+    "resolutions": {
+        "rollup": "^4.22.4",
+        "path-to-regexp": "^1.9.0"
     }
 }

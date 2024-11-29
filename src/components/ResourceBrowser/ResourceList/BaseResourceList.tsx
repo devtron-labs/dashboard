@@ -24,6 +24,7 @@ import {
     K8sResourceDetailDataType,
     Nodes,
     ALL_NAMESPACE_OPTION,
+    useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -104,9 +105,16 @@ const BaseResourceListContent = ({
         setIdentifiers,
         isBulkSelectionApplied,
         getSelectedIdentifiersCount,
-    } = useBulkSelection<Record<number, K8sResourceDetailDataType>>()
+    } = useBulkSelection<Record<string, K8sResourceDetailDataType>>()
 
-    const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
+    const { gridTemplateColumns, handleResize } = useResizableTableConfig({
+        headersConfig: (resourceList?.headers ?? []).map((columnName, index) => ({
+            id: columnName,
+            minWidth: index === 0 ? 120 : null,
+            width: index === 0 ? 350 : 180,
+        })),
+    })
+
     const showPaginatedView = filteredResourceList?.length > pageSize
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
     const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
@@ -169,9 +177,9 @@ const BaseResourceListContent = ({
     useEffect(() => {
         setIdentifiers(
             (filteredResourceList?.slice(resourceListOffset, resourceListOffset + pageSize).reduce((acc, curr) => {
-                acc[curr.id as number] = curr
+                acc[curr.id as string] = curr
                 return acc
-            }, {}) as Record<number, K8sResourceDetailDataType>) ?? {},
+            }, {}) as Record<string, K8sResourceDetailDataType>) ?? {},
         )
     }, [resourceListOffset, filteredResourceList, pageSize])
 
@@ -209,7 +217,7 @@ const BaseResourceListContent = ({
     }, [resourceList, sortBy, sortOrder])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
-        const id = Number(resourceData.id)
+        const { id } = resourceData as Record<'id', string>
 
         if (isBulkSelectionApplied) {
             handleBulkSelection({
@@ -306,7 +314,7 @@ const BaseResourceListContent = ({
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         const _url = `${location.pathname}?${searchParamString}`
-        updateK8sResourceTab(_url)
+        updateK8sResourceTab({ url: _url })
         replace(_url)
         handleFilterChanges(text, true)
         if (text) {
@@ -317,7 +325,7 @@ const BaseResourceListContent = ({
 
     const emptyStateActionHandler = () => {
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(pathname, '', false)
+        updateK8sResourceTab({ url: pathname, dynamicTitle: '', retainSearchParams: false })
         push(pathname)
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
@@ -339,7 +347,7 @@ const BaseResourceListContent = ({
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => push(_url))
             .catch(noop)
     }
@@ -354,7 +362,7 @@ const BaseResourceListContent = ({
         return (
             <div
                 // Added id as the name is not always unique
-                key={`${resourceData.id}-${resourceData.name}-${bulkSelectionState[resourceData.id as number]}-${isBulkSelectionApplied}`}
+                key={`${resourceData.id}-${bulkSelectionState[resourceData.id as string]}-${isBulkSelectionApplied}`}
                 className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
@@ -368,7 +376,7 @@ const BaseResourceListContent = ({
                             {!hideBulkSelection && (
                                 <Checkbox
                                     isChecked={
-                                        !!bulkSelectionState[resourceData.id as number] || isBulkSelectionApplied
+                                        !!bulkSelectionState[resourceData.id as string] || isBulkSelectionApplied
                                     }
                                     onChange={getHandleCheckedForId(resourceData)}
                                     rootClassName="mb-0"
@@ -535,13 +543,15 @@ const BaseResourceListContent = ({
                                         <BulkSelection showPagination={showPaginatedView} />
                                     )}
                                     <SortableTableHeaderCell
-                                        key={columnName}
                                         showTippyOnTruncate
                                         title={columnName}
                                         triggerSorting={triggerSortingHandler(columnName)}
                                         isSorted={sortBy === columnName}
                                         sortOrder={sortOrder}
                                         disabled={false}
+                                        id={columnName}
+                                        handleResize={handleResize}
+                                        isResizable
                                     />
                                 </div>
                             ))}

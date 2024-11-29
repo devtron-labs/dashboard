@@ -22,7 +22,6 @@ import {
     DeploymentNodeType,
     UserApprovalConfigType,
     CIBuildConfigType,
-    DockerConfigOverrideType,
     ReleaseTag,
     ImageComment,
     DeploymentAppTypes,
@@ -40,12 +39,18 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
+    CiPipeline,
+    CdPipeline,
+    ConsequenceType,
+    PolicyKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { AppContextType } from '@Components/common'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { WorkflowDimensions } from './config'
+import { TIME_STAMP_ORDER } from './Constants'
+import { Offset, WorkflowDimensions } from './config'
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
 
@@ -63,6 +68,18 @@ type CDMaterialBulkRuntimeParams =
           handleBulkRuntimeParamChange?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
+      }
+
+type CDMaterialPluginWarningProps =
+    | {
+          showPluginWarningBeforeTrigger: boolean
+          consequence: ConsequenceType
+          configurePluginURL: string
+      }
+    | {
+          showPluginWarningBeforeTrigger?: never
+          consequence?: never
+          configurePluginURL?: never
       }
 
 export type CDMaterialProps = {
@@ -133,7 +150,9 @@ export type CDMaterialProps = {
      * To be consumed through variable called appName
      */
     selectedAppName?: string
-} & CDMaterialBulkRuntimeParams
+    isTriggerBlockedDueToPlugin?: boolean
+} & CDMaterialBulkRuntimeParams &
+    CDMaterialPluginWarningProps
 
 export interface ConfigToDeployOptionType {
     label: string
@@ -183,44 +202,10 @@ export interface CIMaterialRouterProps {
     ciNodeId: string
 }
 
-export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
-    workflowId: number
-    material: CIMaterialType[]
-    pipelineId: number
-    title: string
-    isLoading: boolean
-    pipelineName: string
-    showWebhookModal: boolean
-    toggleWebhookModal: (id, webhookTimeStampOrder) => void
-    webhookPayloads: WebhookPayloads
-    isWebhookPayloadLoading: boolean
-    hideWebhookModal: (e?) => void
-    onClickWebhookTimeStamp: () => void
-    webhhookTimeStampOrder: string
-    showMaterialRegexModal: boolean
-    onCloseBranchRegexModal?: () => void
-    filteredCIPipelines: any[]
-    onClickShowBranchRegexModal: () => void
-    isChangeBranchClicked: boolean
-    getWorkflows: () => void
-    loader: boolean
-    setLoader: (isLoading) => void
-    isFirstTrigger?: boolean
-    isCacheAvailable?: boolean
-    fromAppGrouping?: boolean
-    appId: string
-    isJobView?: boolean
-    isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
-    selectedEnv?: EnvironmentWithSelectPickerType
-    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
-    environmentLists?: any[]
-    isJobCI?: boolean
-    handleRuntimeParamChange: HandleRuntimeParamChange
-    runtimeParams: KeyValueListType[]
+export interface WebhookPayloadType {
+    filters: Record<string, string> | unknown
+    repositoryUrl: string
+    payloads: WebhookPayload[]
 }
 
 export interface RegexValueType {
@@ -229,12 +214,11 @@ export interface RegexValueType {
 }
 
 export interface CIMaterialState {
-    regexValue: Record<number, RegexValueType>
-    savingRegexValue: boolean
-    selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
     runtimeParamsErrorState: boolean
+    savingRegexValue: boolean
+    regexValue: Record<number, RegexValueType>
 }
 
 export interface DownStreams {
@@ -287,7 +271,9 @@ export interface TriggerCDNodeState {
     gitOpsRepoWarningCondition: boolean
 }
 
-export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
+export interface TriggerPrePostCDNodeProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<CommonNodeAttr, 'isTriggerBlocked'> {
     x: number
     y: number
     height: number
@@ -369,20 +355,7 @@ export interface TriggerViewRouterProps {
 export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
-}
-
-export interface WebhookPayloadDataResponse {
-    ParsedDataId: number
-    EventTime: string
-    MatchedFiltersCount: number
-    FailedFiltersCount: number
-    MatchedFilters: boolean
-}
-
-export interface WebhookPayloads {
-    filters: Map<string, string>
-    repositoryUrl: string
-    payloads: WebhookPayloadDataResponse[] | null
+    appContext: AppContextType
 }
 
 export interface TriggerViewState {
@@ -397,11 +370,10 @@ export interface TriggerViewState {
     isLoading: boolean
     invalidateCache: boolean
     hostURLConfig: HostURLConfig
-    showWebhookModal: boolean
-    webhookPayloads: WebhookPayloads
+    webhookPayloads: WebhookPayloadType
     isWebhookPayloadLoading: boolean
     workflowId: number
-    webhhookTimeStampOrder: string
+    webhookTimeStampOrder?: string
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
@@ -417,6 +389,42 @@ export interface TriggerViewState {
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     runtimeParams?: RuntimeParamsListItemType[]
+}
+
+export interface CIMaterialProps
+    extends RouteComponentProps<CIMaterialRouterProps>,
+        Pick<
+            TriggerViewState,
+            | 'workflowId'
+            | 'isLoading'
+            | 'showMaterialRegexModal'
+            | 'filteredCIPipelines'
+            | 'isChangeBranchClicked'
+            | 'loader'
+            | 'environmentLists'
+            | 'selectedEnv'
+        > {
+    material: CIMaterialType[]
+    pipelineId: string
+    title: string
+    pipelineName: string
+    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
+    onClickWebhookTimeStamp: () => void
+    onCloseBranchRegexModal?: () => void
+    onClickShowBranchRegexModal: () => void
+    getWorkflows: () => void
+    setLoader: (isLoading) => void
+    isFirstTrigger?: boolean
+    isCacheAvailable?: boolean
+    fromAppGrouping?: boolean
+    appId: string
+    isJobView?: boolean
+    isCITriggerBlocked?: boolean
+    ciBlockState?: ConsequenceType
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
+    isJobCI?: boolean
+    handleRuntimeParamChange: HandleRuntimeParamChange
+    runtimeParams: KeyValueListType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -520,40 +528,6 @@ export interface CiScript {
     outputLocation?: string
 }
 
-export interface CiPipeline {
-    isManual: boolean
-    dockerArgs?: Map<string, string>
-    isExternal: boolean
-    parentCiPipeline: number
-    parentAppId: number
-    externalCiConfig: ExternalCiConfig
-    ciMaterial?: CiMaterial[]
-    name?: string
-    id?: number
-    active?: boolean
-    linkedCount: number
-    scanEnabled: boolean
-    deleted?: boolean
-    version?: string
-    beforeDockerBuild?: Array<Task>
-    afterDockerBuild?: Array<Task>
-    appWorkflowId?: number
-    beforeDockerBuildScripts?: Array<CiScript>
-    afterDockerBuildScripts?: Array<CiScript>
-    isDockerConfigOverridden?: boolean
-    dockerConfigOverride?: DockerConfigOverrideType
-    appName?: string
-    appId?: string
-    componentId?: number
-    isCITriggerBlocked?: boolean
-    ciBlockState?: {
-        action: any
-        metadataField: string
-    }
-    isOffendingMandatoryPlugin?: boolean
-    pipelineType?: string
-}
-
 export interface CiPipelineResult {
     id?: number
     appId?: number
@@ -599,43 +573,6 @@ export interface PrePostDeployStageType {
     status: string
 }
 
-// Remove this and use from fe-common
-/**
- * @deprecated
- */
-export interface CdPipeline {
-    id: number
-    environmentId: number
-    environmentName?: string
-    description?: string
-    ciPipelineId: number
-    triggerType: 'AUTOMATIC' | 'MANUAL'
-    name: string
-    strategies?: Strategy[]
-    namespace?: string
-    appWorkflowId?: number
-    deploymentTemplate?: string
-    preStage?: CDStage
-    postStage?: CDStage
-    preStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    postStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    runPreStageInEnv?: boolean
-    runPostStageInEnv?: boolean
-    isClusterCdActive?: boolean
-    parentPipelineId?: number
-    parentPipelineType?: string
-    deploymentAppDeleteRequest?: boolean
-    deploymentAppCreated?: boolean
-    userApprovalConfig?: UserApprovalConfigType
-    isVirtualEnvironment?: boolean
-    deploymentAppType: DeploymentAppTypes
-    helmPackageName?: string
-    preDeployStage?: PrePostDeployStageType
-    postDeployStage?: PrePostDeployStageType
-    isGitOpsRepoNotConfigured?: boolean
-    isDeploymentBlocked?: boolean
-}
-
 export interface CdPipelineResult {
     pipelines?: CdPipeline[]
     appId: number
@@ -659,16 +596,14 @@ export interface WorkflowDisplay {
 }
 
 export interface BranchRegexModalProps {
-    material
+    material: CIMaterialType[]
     selectedCIPipeline
-    showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    handleRegexInputValue: (id, value, mat) => void
+    handleRegexInputValue: (id: number, value: string, mat: CIMaterialType) => void
     regexValue
     onCloseBranchRegexModal
-    hideHeaderFooter?: boolean
     savingRegexValue: boolean
 }
 export interface AppDetailsProps {
@@ -715,20 +650,20 @@ export interface EmptyStateCIMaterialProps {
     isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void
     clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
     showAllCommits?: boolean
     toggleExclude: (e) => void
 }
 
+export interface RefreshMaterialType {
+    pipelineId: number
+    refresh: (pipelineId: number, gitMaterialId: number) => void
+}
 export interface MaterialSourceProps {
     material: CIMaterialType[]
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
-    refreshMaterial?: {
-        pipelineId: number
-        refresh: (pipelineId: number, gitMaterialId: number) => void
-    }
+    refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
     fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
@@ -750,4 +685,59 @@ export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
     abortController: AbortController
     resetAbortController: () => void
+}
+
+export interface WebhookPayload {
+    eventTime: string
+    matchedFiltersCount: number
+    failedFiltersCount: number
+    matchedFilters: boolean
+    parsedDataId: number
+}
+
+export interface WebhookReceivedFiltersType {
+    selectorName: string
+    selectorValue: string
+    selectorCondition: string
+    match: boolean
+}
+
+export interface CiWebhookModalProps
+    extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
+        Pick<CIMaterialProps, 'isJobView' | 'fromAppGrouping'> {
+    ciPipelineMaterialId: number
+    ciPipelineId: number
+    appId: string
+}
+
+export interface CIWebhookPayload {
+    payloadId: number
+    payloadJson: string
+    selectorsData: WebhookReceivedFiltersType[]
+}
+
+export interface WebhookReceivedPayloadModalType
+    extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
+        Pick<CIMaterialProps, 'getWebhookPayload'> {
+    fromBulkCITrigger?: boolean
+    title: string
+    material: CIMaterialType[]
+    pipelineId: string
+    fromAppGrouping?: boolean
+    isJobView?: boolean
+    appId: string
+    isBulkCIWebhook?: boolean
+}
+
+export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`
+
+export interface GetInitialWorkflowsParamsType {
+    id: any
+    dimensions: WorkflowDimensions
+    workflowOffset: Offset
+    useAppWfViewAPI?: boolean
+    isJobView?: boolean
+    filteredEnvIds?: string
+    shouldCheckDeploymentWindow?: boolean
+    offending?: OffendingWorkflowQueryParamType
 }

@@ -27,7 +27,13 @@ import { Cluster } from '@Services/service.types'
 import { URLS } from '../../../config'
 import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
-import { AppListUrlFilters, AppStatuses, AppStatusesDTO, useFilterOptionsProps } from './AppListType'
+import {
+    AppListUrlFilters,
+    AppListUrlFiltersType,
+    AppStatuses,
+    AppStatusesDTO,
+    useFilterOptionsProps,
+} from './AppListType'
 import { APPS_WITH_NO_PROJECT_OPTION } from './Constants'
 
 export const getChangeAppTabURL = (appTabType) => {
@@ -148,24 +154,18 @@ export const useFilterOptions = ({
         () =>
             clusterGroupedEnvOptions?.map((clusterItem) => ({
                 label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
-                options: clusterItem.options,
+                options: clusterItem.options?.sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
             })) ?? [],
         [clusterGroupedEnvOptions],
     )
 
-    const handleVirtualClusterFiltering = (clusterList: Cluster[]): Cluster[] => {
-        if (!clusterList) return []
-        if (isExternalArgo || isExternalFlux) {
-            return clusterList.filter((clusterItem) => !clusterItem.isVirtualCluster)
-        }
-        return clusterList
-    }
-
     const getClusterOptions = (clusterList: Cluster[]): SelectPickerOptionType[] =>
-        handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
-            label: clusterItem.cluster_name,
-            value: String(clusterItem.id),
-        }))
+        (clusterList ?? [])
+            .map((clusterItem) => ({
+                label: clusterItem.cluster_name,
+                value: String(clusterItem.id),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(
         () =>
@@ -193,4 +193,19 @@ export const useFilterOptions = ({
     )
 
     return { projectOptions, clusterOptions, environmentOptions, namespaceOptions }
+}
+
+export const getFilterChipConfig = (
+    filterConfig: AppListUrlFiltersType,
+    appType: string,
+): Partial<AppListUrlFiltersType> => {
+    const { cluster, namespace, templateType } = filterConfig
+    switch (appType) {
+        case AppListConstants.AppType.ARGO_APPS:
+            return { cluster, namespace }
+        case AppListConstants.AppType.FLUX_APPS:
+            return { cluster, namespace, templateType }
+        default:
+            return { ...filterConfig, templateType: [] }
+    }
 }
