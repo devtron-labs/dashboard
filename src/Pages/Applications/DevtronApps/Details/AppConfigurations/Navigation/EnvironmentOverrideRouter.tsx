@@ -205,7 +205,9 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
     )
 }
 
-const EnvironmentOverrideRouter = ({ envProtectionConfig }: Pick<AppConfigState, 'envProtectionConfig'>) => {
+const EnvironmentOverrideRouter = ({
+    envIdToEnvApprovalConfigMap,
+}: Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'>) => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -323,7 +325,7 @@ const EnvironmentOverrideRouter = ({ envProtectionConfig }: Pick<AppConfigState,
                                             ciPipelines={ciPipelines}
                                             reload={reloadEnvData}
                                             isEnvProtected={
-                                                envProtectionConfig?.[env.environmentId]?.isApprovalApplicable
+                                                envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable
                                             }
                                         />
                                     ) : (
@@ -331,10 +333,11 @@ const EnvironmentOverrideRouter = ({ envProtectionConfig }: Pick<AppConfigState,
                                             {
                                                 title: env.environmentName,
                                                 isProtectionAllowed:
-                                                    envProtectionConfig?.[env.environmentId]?.isApprovalApplicable,
+                                                    envIdToEnvApprovalConfigMap?.[env.environmentId]
+                                                        ?.isApprovalApplicable,
                                                 href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
                                             },
-                                            envProtectionConfig?.[env.environmentId]?.isApprovalApplicable,
+                                            envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable,
                                         )
                                     )}
                                 </Fragment>

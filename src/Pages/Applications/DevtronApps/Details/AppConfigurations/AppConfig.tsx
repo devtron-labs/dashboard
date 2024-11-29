@@ -82,8 +82,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         canDeleteApp: false,
         workflowsRes: null,
         environmentList: [],
-        // isBaseConfigProtected: false,
-        envProtectionConfig: {} as ResourceProtectConfigType,
+        envIdToEnvApprovalConfigMap: {} as ResourceProtectConfigType,
         envConfig: {
             isLoading: true,
             config: null,
@@ -113,22 +112,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      */
     const fetchEnvironments = (): Promise<{
         updatedEnvs: AppConfigState['environmentList']
-        envProtectionConfig: ResourceProtectConfigType
+        envIdToEnvApprovalConfigMap: ResourceProtectConfigType
     }> =>
         Promise.all([
             isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
-        ]).then(([envResult, envProtectionConfig]) => {
-            // let envProtectMap: Record<number, boolean> = {}
-
-            // if (configProtectionConfig) {
-            //     envProtectMap = configProtectionConfig.result.reduce((acc, config) => {
-            //         // TODO:
-            //         acc[config.envId] = config.state === 1
-            //         return acc
-            //     }, {})
-            // }
-
+        ]).then(([envResult, envIdToEnvApprovalConfigMap]) => {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
             const updatedEnvs: AppConfigState['environmentList'] =
@@ -138,7 +127,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
             return {
                 updatedEnvs,
-                envProtectionConfig,
+                envIdToEnvApprovalConfigMap,
             }
         })
 
@@ -286,7 +275,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     useEffect(() => {
         if (appConfigData) {
             // SET APP CONFIG DATA IN STATE
-            const [configStatusRes, workflowRes, { updatedEnvs, envProtectionConfig }] = appConfigData
+            const [configStatusRes, workflowRes, { updatedEnvs, envIdToEnvApprovalConfigMap }] = appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
                 processConfigStatusData(configStatusRes.result)
 
@@ -305,7 +294,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 canDeleteApp: workflowRes.result.workflows.length === 0,
                 workflowsRes: workflowRes.result,
                 environmentList: updatedEnvs,
-                envProtectionConfig,
+                envIdToEnvApprovalConfigMap,
             })
             if (location.pathname === match.url) {
                 history.replace(redirectUrl)
@@ -384,11 +373,11 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const reloadEnvironments = () => {
         fetchEnvironments()
-            .then(({ updatedEnvs, envProtectionConfig }) => {
+            .then(({ updatedEnvs, envIdToEnvApprovalConfigMap }) => {
                 setState((prevState) => ({
                     ...prevState,
                     environmentList: updatedEnvs,
-                    envProtectionConfig,
+                    envIdToEnvApprovalConfigMap,
                 }))
             })
             .catch((errors) => {

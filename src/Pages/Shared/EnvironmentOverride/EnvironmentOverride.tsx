@@ -47,7 +47,7 @@ const EnvironmentOverride = ({
     onErrorRedirectURL,
     envConfig,
     fetchEnvConfig,
-    appEnvProtectionConfig,
+    appOrEnvIdToAppOrEnvApprovalConfigMap,
 }: EnvironmentOverrideComponentProps) => {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -59,8 +59,9 @@ const EnvironmentOverride = ({
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
-    const protectionConfig = (appEnvProtectionConfig[+params.envId] ?? appEnvProtectionConfig[+params.appId])
-        ?.approvalConfigurationMap
+    const approvalConfig = (
+        appOrEnvIdToAppOrEnvApprovalConfigMap[+params.envId] ?? appOrEnvIdToAppOrEnvApprovalConfigMap[+params.appId]
+    )?.approvalConfigurationMap
 
     useEffect(() => {
         if (params.envId) {
@@ -157,7 +158,7 @@ const EnvironmentOverride = ({
                             key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                protectionConfig?.[ApprovalConfigDataKindType.deploymentTemplate],
+                                approvalConfig?.[ApprovalConfigDataKindType.deploymentTemplate],
                             )}
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
@@ -167,7 +168,7 @@ const EnvironmentOverride = ({
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                protectionConfig?.[ApprovalConfigDataKindType.configMap],
+                                approvalConfig?.[ApprovalConfigDataKindType.configMap],
                             )}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -185,7 +186,7 @@ const EnvironmentOverride = ({
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                protectionConfig?.[ApprovalConfigDataKindType.configSecret],
+                                approvalConfig?.[ApprovalConfigDataKindType.configSecret],
                             )}
                             parentState={viewState}
                             parentName={getParentName()}

@@ -251,7 +251,7 @@ export interface ApplicationRouteType {
     envAppList: ConfigAppList[]
     envConfig: EnvConfigurationState
     fetchEnvConfig: () => void
-    appApprovalConfigMap: AppConfigState['envProtectionConfig']
+    appIdToAppApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
 }
 
 export interface AppGroupFilterConfig

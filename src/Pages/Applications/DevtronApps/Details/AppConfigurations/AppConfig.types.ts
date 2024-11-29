@@ -93,7 +93,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    envProtectionConfig: ResourceProtectConfigType
+    envIdToEnvApprovalConfigMap: ResourceProtectConfigType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
 }
@@ -158,7 +158,7 @@ interface CommonAppConfigurationProps {
 
 export interface AppConfigurationContextType
     extends CommonAppConfigurationProps,
-        Pick<AppConfigState, 'envProtectionConfig'> {
+        Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
@@ -167,7 +167,7 @@ export interface AppConfigurationContextType
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envProtectionConfig: ResourceProtectConfigType
+    envIdToEnvApprovalConfigMap: ResourceProtectConfigType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
@@ -204,7 +204,7 @@ export interface EnvironmentOptionType {
     id: number
 }
 
-export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envProtectionConfig'> {
+export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     // isBaseConfigProtected?: boolean
@@ -246,7 +246,7 @@ export interface DeploymentConfigParams {
 }
 
 export type DeploymentConfigCompareProps = {
-    appEnvProtectionConfig: AppConfigState['envProtectionConfig']
+    appOrEnvIdToAppOrEnvApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
     environments: EnvironmentOptionType[]
     goBackURL?: string
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string

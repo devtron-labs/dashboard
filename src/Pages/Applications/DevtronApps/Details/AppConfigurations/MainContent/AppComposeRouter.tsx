@@ -97,11 +97,12 @@ const AppComposeRouter = () => {
         lastUnlockedStage,
         envConfig,
         fetchEnvConfig,
-        envProtectionConfig,
+        envIdToEnvApprovalConfigMap,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
-    const approvalConfigForBaseConfiguration = envProtectionConfig[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
+    const approvalConfigMapForBaseConfiguration =
+        envIdToEnvApprovalConfigMap[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
 
     const renderJobViewRoutes = (): JSX.Element => (
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -174,7 +175,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            appEnvProtectionConfig={envProtectionConfig}
+                            appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
                         />
                     )}
                 </Route>,
@@ -216,7 +217,7 @@ const AppComposeRouter = () => {
                         isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate],
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate],
                         )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
@@ -255,7 +256,7 @@ const AppComposeRouter = () => {
                 <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
                         )}
                         reloadEnvironments={reloadEnvironments}
                         envConfig={envConfig}
@@ -268,7 +269,7 @@ const AppComposeRouter = () => {
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         componentType={CMSecretComponentType.Secret}
                         reloadEnvironments={reloadEnvironments}
@@ -292,7 +293,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            appEnvProtectionConfig={envProtectionConfig}
+                            appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
                         />
                     )}
                 </Route>,
@@ -325,7 +326,7 @@ const AppComposeRouter = () => {
                                 getNavItemHref={(resourceType, resourceName) =>
                                     `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                                 }
-                                appEnvProtectionConfig={envProtectionConfig}
+                                appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
                             />
                         )
                     }}

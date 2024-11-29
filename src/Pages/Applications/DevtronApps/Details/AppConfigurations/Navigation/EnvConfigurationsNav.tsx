@@ -49,7 +49,7 @@ export const EnvConfigurationsNav = ({
     isCMSecretLocked,
     hideEnvSelector,
     compareWithURL,
-    envProtectionConfig,
+    envIdToEnvApprovalConfigMap,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -124,11 +124,11 @@ export const EnvConfigurationsNav = ({
                 config,
                 path,
                 params,
-                envProtectionConfig?.[envId]?.approvalConfigurationMap,
+                envIdToEnvApprovalConfigMap?.[envId]?.approvalConfigurationMap,
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, envProtectionConfig])
+    }, [isLoading, config, pathname, envIdToEnvApprovalConfigMap])
 
     useEffect(() => {
         if (!isLoading && config) {

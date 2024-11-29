@@ -30,7 +30,6 @@ import {
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-// import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
 
@@ -38,8 +37,6 @@ import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { renderNavItem } from './Navigation.helper'
 import { EnvConfigurationsNav } from './EnvConfigurationsNav'
-
-// const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 
 export const AppNavigation = () => {
     // HOOKS
@@ -52,19 +49,17 @@ export const AppNavigation = () => {
         deleteApp,
         canShowExternalLinks,
         showCannotDeleteTooltip,
-        // isWorkflowEditorUnlocked,
         toggleRepoSelectionTippy,
         getRepo,
         isJobView,
         hideConfigHelp,
-        // isBaseConfigProtected,
         isGitOpsConfigurationRequired,
         environments,
         envConfig,
         fetchEnvConfig,
         isUnlocked,
         lastUnlockedStage,
-        envProtectionConfig,
+        envIdToEnvApprovalConfigMap,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -148,7 +143,7 @@ export const AppNavigation = () => {
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
-                        envProtectionConfig={envProtectionConfig}
+                        envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
                     />
                 )}
             </Route>
@@ -177,18 +172,6 @@ export const AppNavigation = () => {
                             )
                         }
 
-                        // if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                        //     return (
-                        //         isWorkflowEditorUnlocked &&
-                        //         ConfigProtectionView && (
-                        //             <div key={item.stage}>
-                        //                 {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
-                        //                 {renderNavItem(item)}
-                        //             </div>
-                        //         )
-                        //     )
-                        // }
-
                         if (
                             item.stage !== STAGE_NAME.ENV_OVERRIDE ||
                             (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
@@ -203,13 +186,19 @@ export const AppNavigation = () => {
                                         renderNavItem(
                                             item,
                                             false,
+                                            // TODO: Need to be fixed
                                             // isBaseConfigProtected
                                         )}
                                 </ConditionalWrap>
                             )
                         }
 
-                        return <EnvironmentOverrideRouter key={item.stage} envProtectionConfig={envProtectionConfig} />
+                        return (
+                            <EnvironmentOverrideRouter
+                                key={item.stage}
+                                envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                            />
+                        )
                     })}
                     {isJobView && <div className="h-100" />}
                     <div className="dc__align-self-end">

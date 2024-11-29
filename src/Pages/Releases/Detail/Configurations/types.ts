@@ -15,5 +15,5 @@ export interface ReleaseConfigurationContextType {
     reloadEnvironments: () => void
     isAppListLoading: boolean
     isEnvListLoading: boolean
-    envProtectionConfig: AppConfigState['envProtectionConfig']
+    envIdToEnvApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
 }

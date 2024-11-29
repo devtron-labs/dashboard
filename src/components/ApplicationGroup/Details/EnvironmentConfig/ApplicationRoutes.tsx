@@ -24,7 +24,12 @@ import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfig
 
 import { ApplicationRouteType } from '../../AppGroup.types'
 
-const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig, appApprovalConfigMap }: ApplicationRouteType) => {
+const ApplicationRoute = ({
+    envAppList,
+    envConfig,
+    fetchEnvConfig,
+    appIdToAppApprovalConfigMap,
+}: ApplicationRouteType) => {
     const {
         url,
         params: { envId },
@@ -45,7 +50,7 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig, appApprovalCo
                     paramToCheck="appId"
                     compareWithURL={path}
                     showComparison
-                    envProtectionConfig={appApprovalConfigMap}
+                    envIdToEnvApprovalConfigMap={appIdToAppApprovalConfigMap}
                 />
             </Route>
             <Route key="default-navigation">
@@ -63,10 +68,10 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig, appApprovalCo
                             {renderNavItem(
                                 {
                                     title: name,
-                                    isProtectionAllowed: appApprovalConfigMap?.[id]?.isApprovalApplicable,
+                                    isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
                                     href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
                                 },
-                                appApprovalConfigMap?.[id]?.isApprovalApplicable,
+                                appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
                             )}
                         </Fragment>
                     ))}

@@ -52,7 +52,7 @@ export const DeploymentConfigCompare = ({
     goBackURL = '',
     overwriteNavHeading,
     getNavItemHref,
-    appEnvProtectionConfig,
+    appOrEnvIdToAppOrEnvApprovalConfigMap,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
     const { push } = useHistory()
@@ -107,7 +107,8 @@ export const DeploymentConfigCompare = ({
             }),
         [type, compareWith, compareTo, appId, envId, environments],
     )
-    const isBaseConfigProtected = appEnvProtectionConfig?.[BASE_CONFIGURATION_ENV_ID]?.isApprovalApplicable
+    const isBaseConfigProtected =
+        appOrEnvIdToAppOrEnvApprovalConfigMap?.[BASE_CONFIGURATION_ENV_ID]?.isApprovalApplicable
 
     // STATES
     const [selectedTab, setSelectedTab] = useState(
@@ -389,7 +390,7 @@ export const DeploymentConfigCompare = ({
         onChange: onCompareEnvironmentChange,
     })
 
-    const getIdentifierForProtectionConfig = (isCompare: boolean) => {
+    const getIdentifierForApprovalConfig = (isCompare: boolean) => {
         if (isCompare) {
             if (type === 'appGroup') {
                 return compareWithAppId
@@ -404,8 +405,9 @@ export const DeploymentConfigCompare = ({
     }
 
     const renderEnvironmentConfigTypeSelectorProps = (isCompare?: boolean) => {
-        const identifier = getIdentifierForProtectionConfig(isCompare)
-        const isEnvProtected = appEnvProtectionConfig?.[identifier]?.isApprovalApplicable ?? isBaseConfigProtected
+        const identifier = getIdentifierForApprovalConfig(isCompare)
+        const isEnvProtected =
+            appOrEnvIdToAppOrEnvApprovalConfigMap?.[identifier]?.isApprovalApplicable ?? isBaseConfigProtected
 
         return {
             id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
@@ -452,7 +454,7 @@ export const DeploymentConfigCompare = ({
             },
             ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
             ((compareEnvOptions?.previousDeployments.length ||
-                appEnvProtectionConfig?.[getIdentifierForProtectionConfig(true)]?.isApprovalApplicable) ??
+                appOrEnvIdToAppOrEnvApprovalConfigMap?.[getIdentifierForApprovalConfig(true)]?.isApprovalApplicable) ??
                 isBaseConfigProtected)
                 ? [
                       {
@@ -470,7 +472,7 @@ export const DeploymentConfigCompare = ({
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
             ...(((currentEnvOptions?.previousDeployments.length ||
-                appEnvProtectionConfig?.[getIdentifierForProtectionConfig(false)]?.isApprovalApplicable) ??
+                appOrEnvIdToAppOrEnvApprovalConfigMap?.[getIdentifierForApprovalConfig(false)]?.isApprovalApplicable) ??
             isBaseConfigProtected
                 ? [
                       {
