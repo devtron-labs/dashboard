@@ -244,7 +244,7 @@ export const ConfigMapSecretProtected = ({
                 )}
             </div>
             {draftData.draftState === DraftState.AwaitApproval && ApproveRequestTippy && (
-                <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
+                <footer className="py-12 px-16 dc__border-top-n1 flex left dc__content-end dc__gap-12 configmap-secret-container__approval-tippy">
                     {renderApproveButton()}
                 </footer>
             )}
