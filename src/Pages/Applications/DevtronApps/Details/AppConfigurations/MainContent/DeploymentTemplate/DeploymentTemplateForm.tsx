@@ -30,8 +30,8 @@ const DeploymentTemplateForm = ({
         return (
             <DeploymentTemplateGUIView
                 // NOTE: This is with locked keys so original value is passed
-                uneditedDocument={uneditedDocument}
-                editedDocument={editedDocument}
+                uneditedDocument={uneditedDocument || '{}'}
+                editedDocument={editedDocument || '{}'}
                 value={editedDocument}
                 readOnly={readOnly}
                 hideLockedKeys={hideLockedKeys}
