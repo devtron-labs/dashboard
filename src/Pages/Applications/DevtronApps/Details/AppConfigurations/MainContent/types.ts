@@ -1,4 +1,5 @@
 import {
+    ApprovalConfigDataType,
     CompareFromApprovalOptionsValuesType,
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
@@ -119,7 +120,7 @@ export type ConfigToolbarProps = {
      */
     isApprovalPending?: boolean
     isDraftPresent?: boolean
-    approvalUsers: string[]
+    approvalConfigData: ApprovalConfigDataType
     /**
      * @default - false
      * If given would disable all the actions
