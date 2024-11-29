@@ -775,7 +775,7 @@ export const getDryRunConfigMapSecretData = ({
         }
     }
 
-    if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
+    if (!configMapSecretData?.unAuthorized && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
         const payload = getConfigMapSecretPayload(formData)
         const inheritedData = inheritedConfigMapSecretData?.data || {}
 

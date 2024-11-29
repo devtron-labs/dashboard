@@ -71,10 +71,11 @@ export const ConfigMapSecretProtected = ({
             }
         }
 
+        const showFormData = !isApprovalPendingOptionSelected && !configMapSecretData.unAuthorized
         const updatedConfigMapSecretData = {
             ...configMapSecretData,
             // -> !isApprovalPendingOptionSelected means "Values from draft"
-            ...(!isApprovalPendingOptionSelected ? getConfigMapSecretPayload(formData) : {}),
+            ...(showFormData ? getConfigMapSecretPayload(formData) : {}),
         }
 
         const showMergedData =
@@ -83,7 +84,7 @@ export const ConfigMapSecretProtected = ({
 
         return {
             mergeStrategyToShow: updatedConfigMapSecretData.mergeStrategy,
-            diffViewData: isApprovalPendingOptionSelected
+            diffViewData: !showFormData
                 ? {
                       ...updatedConfigMapSecretData,
                       mergeStrategy: showMergedData
