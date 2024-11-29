@@ -45,8 +45,6 @@ const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEdito
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
 
-// const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
     const index = navItems.findIndex((item) => item.stage === currentStageName)

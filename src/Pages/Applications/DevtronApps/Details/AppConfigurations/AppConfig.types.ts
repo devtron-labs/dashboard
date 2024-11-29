@@ -20,7 +20,7 @@ import {
     AppEnvDeploymentConfigType,
     EnvResourceType,
     AppEnvironment,
-    ResourceProtectConfigType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -93,7 +93,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    envIdToEnvApprovalConfigMap: ResourceProtectConfigType
+    envIdToEnvApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
 }
@@ -167,7 +167,7 @@ export interface AppConfigurationContextType
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envIdToEnvApprovalConfigMap: ResourceProtectConfigType
+    envIdToEnvApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string

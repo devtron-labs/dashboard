@@ -26,7 +26,7 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
-    ResourceProtectConfigType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -51,12 +51,8 @@ import { deleteApp } from './AppConfig.service'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
 import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-const getConfigProtections: (appId: number) => Promise<ResourceProtectConfigType> = importComponentFromFELibrary(
-    'getConfigProtections',
-    null,
-    'function',
-)
+const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
+    importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
@@ -82,7 +78,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         canDeleteApp: false,
         workflowsRes: null,
         environmentList: [],
-        envIdToEnvApprovalConfigMap: {} as ResourceProtectConfigType,
+        envIdToEnvApprovalConfigMap: {} as ResourceIdToResourceApprovalPolicyConfigMapType,
         envConfig: {
             isLoading: true,
             config: null,
@@ -100,7 +96,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      *
      * The function performs the following steps:
      * 1. Calls `getAppOtherEnvironmentMin` or `getJobOtherEnvironmentMin` (if resource kind is `job` (isJob)) with the application ID (`appId`) to fetch the environment configurations.
-     * 2. Calls `getConfigProtections` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
+     * 2. Calls `getApprovalPolicyConfigForApp` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
      * 3. Creates a map (`envProtectMap`) to store protection states for each environment based on the configuration protections response.
      * 4. Filters the environment configurations based on `filteredEnvIds`, if provided, and marks them as protected if they are found in the protection map.
      * 5. Sorts the filtered and updated environments by their names.
@@ -112,11 +108,13 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      */
     const fetchEnvironments = (): Promise<{
         updatedEnvs: AppConfigState['environmentList']
-        envIdToEnvApprovalConfigMap: ResourceProtectConfigType
+        envIdToEnvApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
     }> =>
         Promise.all([
             isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
+            typeof getApprovalPolicyConfigForApp === 'function' && !isJob
+                ? getApprovalPolicyConfigForApp(Number(appId))
+                : null,
         ]).then(([envResult, envIdToEnvApprovalConfigMap]) => {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
@@ -455,9 +453,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 : 'app-compose-with-no-gitops-config__nav'
         } ${isJob ? 'job-compose__side-nav' : ''} ${
             !showCannotDeleteTooltip ? 'dc__position-rel' : ''
-        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''} ${
-            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJob ? 'config-protection__side-nav' : ''
-        }`
+        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}`
     }
 
     const toggleRepoSelectionTippy = () => {

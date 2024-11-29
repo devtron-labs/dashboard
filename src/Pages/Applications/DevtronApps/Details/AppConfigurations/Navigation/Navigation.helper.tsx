@@ -6,7 +6,7 @@ import {
     CollapsibleListItem,
     EnvResourceType,
     getIsApprovalPolicyConfigured,
-    ResourceProtectConfigType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
@@ -112,7 +112,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    approvalConfigurationMapForEnv: ResourceProtectConfigType[number]['approvalConfigurationMap'],
+    approvalConfigurationMapForEnv: ResourceIdToResourceApprovalPolicyConfigMapType[number]['approvalConfigurationMap'],
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem
     configmaps: ExtendedCollapsibleListItem[]

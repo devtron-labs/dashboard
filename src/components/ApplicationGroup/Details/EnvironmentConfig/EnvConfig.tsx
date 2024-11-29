@@ -22,7 +22,7 @@ import {
     EnvResourceType,
     GenericEmptyState,
     Progressing,
-    ResourceProtectConfigType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
     noop,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -38,11 +38,8 @@ import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
-const getEnvConfigProtections: (envId: number) => Promise<ResourceProtectConfigType> = importComponentFromFELibrary(
-    'getEnvConfigProtections',
-    null,
-    'function',
-)
+const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
+    importComponentFromFELibrary('getApprovalPolicyConfigForEnv', null, 'function')
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
@@ -56,7 +53,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         () =>
             Promise.allSettled([
                 getConfigAppList(+envId, filteredAppIds),
-                typeof getEnvConfigProtections === 'function' ? getEnvConfigProtections(Number(envId)) : null,
+                typeof getApprovalPolicyConfigForEnv === 'function'
+                    ? getApprovalPolicyConfigForEnv(Number(envId))
+                    : null,
             ]),
         [filteredAppIds],
     )
@@ -73,7 +72,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // CONSTANTS
     const { envAppList, appIdToAppApprovalConfigMap } = useMemo<{
         envAppList: ConfigAppList[]
-        appIdToAppApprovalConfigMap: ResourceProtectConfigType
+        appIdToAppApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
     }>(() => {
         if (
             initDataResults?.[0].status === 'fulfilled' &&
