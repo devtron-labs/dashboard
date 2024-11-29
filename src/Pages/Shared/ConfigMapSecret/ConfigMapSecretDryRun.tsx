@@ -278,7 +278,10 @@ export const ConfigMapSecretDryRun = ({
                     {renderLHS()}
                     {!hideManifest && renderRHS()}
                 </div>
-                {showCrudButtons && dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES && renderCrudButton()}
+                {showCrudButtons &&
+                    dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES &&
+                    (!fileDeletionRequest || dryRunEditorMode !== DryRunEditorMode.VALUES_FROM_DRAFT) &&
+                    renderCrudButton()}
             </div>
         </>
     )
