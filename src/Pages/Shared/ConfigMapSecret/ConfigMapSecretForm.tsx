@@ -18,7 +18,8 @@ import {
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ROLLOUT_DEPLOYMENT, UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
+import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
+import { checkIfPathIsMatching } from '@Config/utils'
 import { isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
 
 import {
@@ -331,10 +332,7 @@ export const ConfigMapSecretForm = ({
 
     return (
         <>
-            <Prompt
-                when={shouldPrompt}
-                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
-            />
+            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <form className="configmap-secret flexbox-col h-100 dc__overflow-hidden">
                 {areScopeVariablesResolving ? (
                     <Progressing fullHeight pageLoader />

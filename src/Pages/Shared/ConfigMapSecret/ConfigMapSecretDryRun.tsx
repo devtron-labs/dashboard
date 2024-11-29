@@ -4,7 +4,7 @@ import { Prompt, useLocation, useParams } from 'react-router-dom'
 import {
     abortPreviousRequests,
     APIResponseHandler,
-    applyCompareDiffOnUneditedDocument,
+    BaseURLParams,
     Button,
     CodeEditor,
     ComponentSizeType,
@@ -13,21 +13,20 @@ import {
     DryRunEditorMode,
     GenericEmptyState,
     MODES,
-    OverrideMergeStrategyType,
     useAsync,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import { checkIfPathIsMatching } from '@Config/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
-import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
-import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretDryRunProps } from './types'
+import { CM_SECRET_STATE, ConfigMapSecretDryRunProps } from './types'
 import { renderExternalInfo } from './helpers'
-import { getConfigMapSecretPayload } from './utils'
+import { getDryRunConfigMapSecretData } from './utils'
 
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
@@ -60,7 +59,7 @@ export const ConfigMapSecretDryRun = ({
 }: ConfigMapSecretDryRunProps) => {
     // HOOKS
     const location = useLocation()
-    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const { appId, envId } = useParams<Pick<BaseURLParams, 'appId' | 'envId'>>()
     const abortControllerRef = useRef<AbortController>(null)
 
     // CONSTANTS
@@ -70,45 +69,25 @@ export const ConfigMapSecretDryRun = ({
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
 
-    const dryRunConfigMapSecretData = useMemo(() => {
-        let configMapSecretData: CMSecretConfigData =
-            cmSecretStateLabel === CM_SECRET_STATE.INHERITED
-                ? inheritedConfigMapSecretData
-                : publishedConfigMapSecretData
-
-        if (draftData) {
-            if (draftData.action === DraftAction.Delete) {
-                configMapSecretData = inheritedConfigMapSecretData
-            } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
-                configMapSecretData = {
-                    ...draftData.parsedData.configData[0],
-                    unAuthorized: !draftData.isAppAdmin,
-                }
-            }
-        }
-
-        if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
-            const payload = getConfigMapSecretPayload(formData)
-            const inheritedData = inheritedConfigMapSecretData?.data || {}
-
-            configMapSecretData = {
-                ...((configMapSecretData || {}) as CMSecretConfigData),
-                ...payload,
-                ...(payload.mergeStrategy === OverrideMergeStrategyType.PATCH
-                    ? {
-                          data: applyCompareDiffOnUneditedDocument(inheritedData, {
-                              ...inheritedData,
-                              ...payload.data,
-                          }),
-                      }
-                    : {}),
-            }
-        } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
-            configMapSecretData = publishedConfigMapSecretData ?? null
-        }
-
-        return configMapSecretData
-    }, [isProtected, dryRunEditorMode, formData, draftData, publishedConfigMapSecretData, inheritedConfigMapSecretData])
+    const dryRunConfigMapSecretData = useMemo(
+        () =>
+            getDryRunConfigMapSecretData({
+                cmSecretStateLabel,
+                draftData,
+                dryRunEditorMode,
+                formData,
+                inheritedConfigMapSecretData,
+                publishedConfigMapSecretData,
+            }),
+        [
+            isProtected,
+            dryRunEditorMode,
+            formData,
+            draftData,
+            publishedConfigMapSecretData,
+            inheritedConfigMapSecretData,
+        ],
+    )
 
     // DATA CONSTANTS
     const isDryRunDataPresent = !!dryRunConfigMapSecretData
@@ -150,7 +129,7 @@ export const ConfigMapSecretDryRun = ({
                             resourceType: componentType,
                             values: dryRunConfigMapSecretData.data,
                         },
-                        abortControllerRef.current.signal,
+                        abortControllerRef,
                     ),
                 abortControllerRef,
             ),
@@ -293,10 +272,7 @@ export const ConfigMapSecretDryRun = ({
 
     return (
         <>
-            <Prompt
-                when={shouldPrompt}
-                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
-            />
+            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <div className="flexbox-col h-100 dc__overflow-hidden">
                 <div className={`flex-grow-1 dc__overflow-hidden ${!hideManifest ? 'dc__grid-half' : ''}`}>
                     {renderLHS()}

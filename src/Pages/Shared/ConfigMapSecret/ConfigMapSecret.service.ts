@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MutableRefObject } from 'react'
 import {
     get,
     post,
@@ -210,7 +211,10 @@ export const getConfigMapSecretResolvedValues = (
         signal,
     )
 
-export const getConfigMapSecretManifest = async (params: ConfigMapSecretManifestProps, signal?: AbortSignal) => {
+export const getConfigMapSecretManifest = async (
+    params: ConfigMapSecretManifestProps,
+    abortControllerRef?: MutableRefObject<AbortController>,
+) => {
     try {
         const { result } = await post<
             ConfigMapSecretManifestDTO,
@@ -224,7 +228,7 @@ export const getConfigMapSecretManifest = async (params: ConfigMapSecretManifest
                         ? ConfigResourceType.ConfigMap
                         : ConfigResourceType.Secret,
             },
-            { signal },
+            { signal: abortControllerRef?.current?.signal },
         )
 
         return result

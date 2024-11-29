@@ -48,6 +48,7 @@ import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Com
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
+import { checkIfPathIsMatching } from '@Config/utils'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
@@ -1436,8 +1437,6 @@ const DeploymentTemplate = ({
 
     const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
 
-    const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
-
     const hideToggleLockedKeysMenuOption =
         editMode === ConfigurationType.GUI &&
         currentViewEditorState?.isOverridden &&
@@ -1883,7 +1882,10 @@ const DeploymentTemplate = ({
                 )}
             </div>
 
-            <Prompt when={areChangesPresent} message={getPromptMessage} />
+            <Prompt
+                when={areChangesPresent}
+                message={checkIfPathIsMatching(location.pathname, DEFAULT_ROUTE_PROMPT_MESSAGE)}
+            />
         </>
     )
 }

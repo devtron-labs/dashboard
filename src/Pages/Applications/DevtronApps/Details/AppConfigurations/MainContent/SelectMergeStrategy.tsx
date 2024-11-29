@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
     InfoIconTippy,
     OverrideMergeStrategyType,
@@ -34,10 +33,8 @@ const SelectMergeStrategy = ({
         handleMergeStrategyChange(selectedOption.value as OverrideMergeStrategyType)
     }
 
-    const options = useMemo(
-        () =>
-            MERGE_STRATEGY_OPTIONS.filter(({ value }) => !hidePatchOption || value !== OverrideMergeStrategyType.PATCH),
-        [hidePatchOption],
+    const options = MERGE_STRATEGY_OPTIONS.filter(
+        ({ value }) => !hidePatchOption || value !== OverrideMergeStrategyType.PATCH,
     )
 
     const renderContent = () => {

@@ -26,7 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
-import { UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
+import { checkIfPathIsMatching } from '@Config/utils'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
@@ -448,11 +448,10 @@ export const ConfigMapSecretContainer = ({
     // TAB HANDLING
     useEffect(() => {
         if (!isLoading && !configHeaderTab) {
-            if (!isJob && cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
-                updateSearchParams({ headerTab: ConfigHeaderTabType.INHERITED })
-            } else {
-                updateSearchParams({ headerTab: ConfigHeaderTabType.VALUES })
-            }
+            const hasOnlyInheritedData = !isJob && cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData
+            updateSearchParams({
+                headerTab: hasOnlyInheritedData ? ConfigHeaderTabType.INHERITED : ConfigHeaderTabType.VALUES,
+            })
         }
     }, [isLoading, cmSecretStateLabel, draftData])
 
@@ -628,8 +627,7 @@ export const ConfigMapSecretContainer = ({
 
     const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
 
-    const handleToggleShowTemplateMergedWithPatch = () =>
-        setShouldMergeTemplateWithPatches(!shouldMergeTemplateWithPatches)
+    const handleToggleShowTemplateMergedWithPatch = () => setShouldMergeTemplateWithPatches((prev) => !prev)
 
     const reloadSaveChangesModal = () => {
         setShowDraftSaveModal(false)
@@ -956,8 +954,9 @@ export const ConfigMapSecretContainer = ({
                                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
                         }
                         showMergePatchesButton={
-                            formData.mergeStrategy === OverrideMergeStrategyType.PATCH ||
-                            configMapSecretData?.mergeStrategy === OverrideMergeStrategyType.PATCH
+                            configMapSecretData?.mergeStrategy === OverrideMergeStrategyType.PATCH ||
+                            draftData?.parsedData?.configData?.[0]?.mergeStrategy === OverrideMergeStrategyType.PATCH ||
+                            formData.mergeStrategy === OverrideMergeStrategyType.PATCH
                         }
                         baseConfigurationURL={baseConfigurationURL}
                         headerMessage={headerMessage}
@@ -980,10 +979,7 @@ export const ConfigMapSecretContainer = ({
 
     return (
         <>
-            <Prompt
-                when={shouldPrompt}
-                message={({ pathname }) => location.pathname === pathname || UNSAVED_CHANGES_PROMPT_MESSAGE}
-            />
+            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >

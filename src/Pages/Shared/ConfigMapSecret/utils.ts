@@ -2,12 +2,15 @@ import YAML from 'yaml'
 
 import {
     AppEnvDeploymentConfigDTO,
+    applyCompareDiffOnUneditedDocument,
     CMSecretExternalType,
     ConfigHeaderTabType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
+    DraftAction,
     DraftMetadataDTO,
     DraftState,
+    DryRunEditorMode,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
     OverrideMergeStrategyType,
@@ -40,6 +43,7 @@ import {
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
     ConfigMapSecretQueryParamsType,
+    ConfigMapSecretDryRunProps,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -739,6 +743,59 @@ export const getConfigMapSecretResolvedData = (
             isDraft: true,
         }),
     }
+}
+
+export const getDryRunConfigMapSecretData = ({
+    cmSecretStateLabel,
+    draftData,
+    inheritedConfigMapSecretData,
+    publishedConfigMapSecretData,
+    dryRunEditorMode,
+    formData,
+}: Pick<
+    ConfigMapSecretDryRunProps,
+    | 'formData'
+    | 'dryRunEditorMode'
+    | 'cmSecretStateLabel'
+    | 'inheritedConfigMapSecretData'
+    | 'publishedConfigMapSecretData'
+    | 'draftData'
+>) => {
+    let configMapSecretData: CMSecretConfigData =
+        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? inheritedConfigMapSecretData : publishedConfigMapSecretData
+
+    if (draftData) {
+        if (draftData.action === DraftAction.Delete) {
+            configMapSecretData = inheritedConfigMapSecretData
+        } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
+            configMapSecretData = {
+                ...draftData.parsedData.configData[0],
+                unAuthorized: !draftData.isAppAdmin,
+            }
+        }
+    }
+
+    if (dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
+        const payload = getConfigMapSecretPayload(formData)
+        const inheritedData = inheritedConfigMapSecretData?.data || {}
+
+        configMapSecretData = {
+            ...((configMapSecretData || {}) as CMSecretConfigData),
+            ...payload,
+            ...(payload.mergeStrategy === OverrideMergeStrategyType.PATCH
+                ? {
+                      data: applyCompareDiffOnUneditedDocument(inheritedData, {
+                          ...inheritedData,
+                          ...payload.data,
+                      }),
+                  }
+                : {}),
+        }
+    } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
+        configMapSecretData = publishedConfigMapSecretData ?? null
+    }
+
+    return configMapSecretData
 }
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
