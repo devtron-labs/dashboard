@@ -2,12 +2,15 @@ import YAML from 'yaml'
 
 import {
     AppEnvDeploymentConfigDTO,
+    applyCompareDiffOnUneditedDocument,
     CMSecretExternalType,
     ConfigHeaderTabType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
+    DraftAction,
     DraftMetadataDTO,
     DraftState,
+    DryRunEditorMode,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
     OverrideMergeStrategyType,
@@ -40,6 +43,7 @@ import {
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
     ConfigMapSecretQueryParamsType,
+    ConfigMapSecretDryRunProps,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -225,10 +229,10 @@ export const getConfigMapSecretFormInitialValues = ({
     configMapSecretData,
     cmSecretStateLabel,
     componentType,
-}: Pick<
-    ConfigMapSecretFormProps,
-    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'
->): ConfigMapSecretUseFormProps => {
+    skipValidation = false,
+}: Pick<ConfigMapSecretFormProps, 'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'> & {
+    skipValidation?: boolean
+}): ConfigMapSecretUseFormProps => {
     const isSecret = componentType === CMSecretComponentType.Secret
 
     if (configMapSecretData) {
@@ -241,6 +245,7 @@ export const getConfigMapSecretFormInitialValues = ({
             defaultMountPath,
             subPath,
             data,
+            defaultData,
             filePermission,
             roleARN,
             esoSubPath,
@@ -265,7 +270,12 @@ export const getConfigMapSecretFormInitialValues = ({
             selectedType: type ?? configMapSecretMountDataMap.environment.value,
             isFilePermissionChecked: !!filePermission,
             isSubPathChecked: !!subPath,
-            externalSubpathValues: processExternalSubPathValues({ data, external, subPath, esoSubPath }),
+            externalSubpathValues: processExternalSubPathValues({
+                data: data || defaultData,
+                external,
+                subPath,
+                esoSubPath,
+            }),
             filePermission: filePermission ?? '',
             volumeMountPath: mountPath ?? defaultMountPath ?? '',
             roleARN: roleARN ?? '',
@@ -275,6 +285,7 @@ export const getConfigMapSecretFormInitialValues = ({
             hasCurrentDataErr: false,
             isResolvedData: false,
             mergeStrategy,
+            skipValidation,
             ...getSecretDataFromConfigData(configMapSecretData),
         }
     }
@@ -299,6 +310,7 @@ export const getConfigMapSecretFormInitialValues = ({
         esoSecretYaml: '{}',
         secretDataYaml: '[]',
         mergeStrategy: null,
+        skipValidation,
     }
 }
 
@@ -307,11 +319,7 @@ export const getConfigMapSecretReadOnlyValues = ({
     cmSecretStateLabel,
     componentType,
     isJob,
-    mergeStrategy,
-}: Pick<
-    ConfigMapSecretFormProps,
-    'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob' | 'mergeStrategy'
->) => {
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -334,10 +342,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         currentData,
         isSecret,
     } = getConfigMapSecretFormInitialValues({
-        configMapSecretData: {
-            ...configMapSecretData,
-            mergeStrategy: mergeStrategy || configMapSecretData.mergeStrategy,
-        },
+        configMapSecretData,
         cmSecretStateLabel,
         componentType,
     })
@@ -363,14 +368,17 @@ export const getConfigMapSecretReadOnlyValues = ({
             {
                 displayName: 'DataType',
                 value: dataType,
+                key: 'dataType',
             },
             {
                 displayName: 'Mount data as',
                 value: configMapSecretMountDataMap[selectedType].title,
+                key: 'mountDataAs',
             },
             {
                 displayName: 'Volume mount path',
                 value: volumeMountPath,
+                key: 'volumeMountPath',
             },
             {
                 displayName: 'Set Sub Path',
@@ -378,18 +386,22 @@ export const getConfigMapSecretReadOnlyValues = ({
                     (configMapSecretMountDataMap[selectedType].value === 'volume' &&
                         (isSubPathChecked ? 'True' : 'False')) ||
                     '',
+                key: 'setSubPath',
             },
             {
                 displayName: 'Subpath Values',
                 value: externalSubpathValues,
+                key: 'externalSubpathValues',
             },
             {
                 displayName: 'File Permission',
                 value: filePermission,
+                key: 'filePermission',
             },
             {
                 displayName: 'Role ARN',
                 value: roleARN,
+                key: 'roleArn',
             },
         ],
         data: !mountExistingExternal ? (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml : null,
@@ -733,12 +745,57 @@ export const getConfigMapSecretResolvedData = (
     }
 }
 
-export const getDefaultMergeStrategy = (configMapSecretData: CMSecretConfigData) => {
-    const defaultMergeStrategy = configMapSecretData?.external
-        ? OverrideMergeStrategyType.REPLACE
-        : DEFAULT_MERGE_STRATEGY
+export const getDryRunConfigMapSecretData = ({
+    cmSecretStateLabel,
+    draftData,
+    inheritedConfigMapSecretData,
+    publishedConfigMapSecretData,
+    dryRunEditorMode,
+    formData,
+}: Pick<
+    ConfigMapSecretDryRunProps,
+    | 'formData'
+    | 'dryRunEditorMode'
+    | 'cmSecretStateLabel'
+    | 'inheritedConfigMapSecretData'
+    | 'publishedConfigMapSecretData'
+    | 'draftData'
+>) => {
+    let configMapSecretData: CMSecretConfigData =
+        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? inheritedConfigMapSecretData : publishedConfigMapSecretData
 
-    return defaultMergeStrategy
+    if (draftData) {
+        if (draftData.action === DraftAction.Delete) {
+            configMapSecretData = inheritedConfigMapSecretData
+        } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
+            configMapSecretData = {
+                ...draftData.parsedData.configData[0],
+                unAuthorized: !draftData.isAppAdmin,
+            }
+        }
+    }
+
+    if (!configMapSecretData?.unAuthorized && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
+        const payload = getConfigMapSecretPayload(formData)
+        const inheritedData = inheritedConfigMapSecretData?.data || {}
+
+        configMapSecretData = {
+            ...((configMapSecretData || {}) as CMSecretConfigData),
+            ...payload,
+            ...(payload.mergeStrategy === OverrideMergeStrategyType.PATCH
+                ? {
+                      data: applyCompareDiffOnUneditedDocument(inheritedData, {
+                          ...inheritedData,
+                          ...payload.data,
+                      }),
+                  }
+                : {}),
+        }
+    } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
+        configMapSecretData = publishedConfigMapSecretData ?? null
+    }
+
+    return configMapSecretData
 }
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>

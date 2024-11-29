@@ -56,22 +56,18 @@ export const ConfigMapSecretData = ({
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
+    const isSelectedTypeVolume =
+        data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
 
     // METHODS & CONFIGURATIONS
     const config: KeyValueConfig<'k' | 'v'> = {
         headers: [
             {
-                label:
-                    data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
-                        ? 'File Name'
-                        : 'Key',
+                label: isSelectedTypeVolume ? 'File Name' : 'Key',
                 key: 'k',
             },
             {
-                label:
-                    data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
-                        ? 'File Content'
-                        : 'Value',
+                label: isSelectedTypeVolume ? 'File Content' : 'Value',
                 key: 'v',
             },
         ],
@@ -288,7 +284,8 @@ export const ConfigMapSecretData = ({
                 <CodeEditor
                     key={codeEditorRadio}
                     value={getCodeEditorValue()}
-                    onChange={!isLocked ? onChange : noop}
+                    // Skip calling onChange if resolvedData exists
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
                     mode="yaml"
                     inline

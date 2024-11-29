@@ -30,6 +30,8 @@ export interface ConfigHeaderProps {
     showNoOverride: boolean
     parsingError: string
     restoreLastSavedYAML: () => void
+    /** A map indicating which tabs to hide, with their visibility as boolean values */
+    hideTabs?: Partial<Record<ConfigHeaderTabType, boolean>>
 }
 
 export interface ConfigHeaderTabProps

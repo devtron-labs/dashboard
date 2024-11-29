@@ -9,7 +9,6 @@ import {
     SelectPickerOptionType,
     useForm,
     UseFormErrorHandler,
-    UseFormErrors,
     UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
@@ -112,6 +111,7 @@ export interface ConfigMapSecretUseFormProps {
     hasCurrentDataErr: boolean
     isResolvedData: boolean
     mergeStrategy: ConfigToolbarProps['mergeStrategy']
+    skipValidation: boolean
 }
 
 // COMPONENT PROPS
@@ -149,25 +149,21 @@ export interface ConfigMapSecretFormProps
     configMapSecretData: CMSecretConfigData
     inheritedConfigMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
-    restoreYAML: boolean
-    setRestoreYAML: Dispatch<SetStateAction<boolean>>
     isSubmitting: boolean
     areScopeVariablesResolving: boolean
-    resolvedFormData: ConfigMapSecretUseFormProps
     isDraft?: boolean
-    mergeStrategy: ConfigToolbarProps['mergeStrategy']
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
+    useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
-export interface ConfigMapSecretDataProps {
+export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
     readOnly: boolean
     isPatchMode: boolean
-    useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
 export interface ConfigMapSecretReadyOnlyProps
@@ -219,11 +215,8 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'onError'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
-        | 'resolvedFormData'
-        | 'restoreYAML'
-        | 'setRestoreYAML'
         | 'appChartRef'
-        | 'mergeStrategy'
+        | 'useFormProps'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -232,7 +225,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         draftData: CMSecretDraftData
         selectedProtectionViewTab: ProtectConfigTabsType
     } & {
-        formMethodsRef: MutableRefObject<ConfigMapSecretFormRefType>
         shouldMergeTemplateWithPatches: boolean
     }
 
@@ -243,11 +235,10 @@ export type ConfigMapSecretDryRunProps = Pick<
     | 'isProtected'
     | 'isSubmitting'
     | 'onSubmit'
-    | 'resolvedFormData'
     | 'isJob'
     | 'areScopeVariablesResolving'
 > &
-    Pick<ConfigToolbarProps, 'mergeStrategy' | 'resolveScopedVariables' | 'handleToggleScopedVariablesView'> &
+    Pick<ConfigToolbarProps, 'resolveScopedVariables' | 'handleToggleScopedVariablesView'> &
     Pick<
         ConfigMapSecretProtectedProps,
         | 'id'
@@ -258,6 +249,8 @@ export type ConfigMapSecretDryRunProps = Pick<
         | 'componentName'
         | 'parentName'
     > & {
+        formData: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>['data']
+        isFormDirty: boolean
         dryRunEditorMode: DryRunEditorMode
         handleChangeDryRunEditorMode: (mode: DryRunEditorMode) => void
         showCrudButtons: boolean
@@ -266,50 +259,6 @@ export type ConfigMapSecretDryRunProps = Pick<
 export interface ConfigMapSecretApproveButtonProps
     extends Pick<ConfigMapSecretProtectedProps, 'updateCMSecret' | 'parentName' | 'componentName' | 'draftData'> {
     configMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
-}
-
-export interface ConfigMapSecretFormRefType extends Pick<ConfigMapSecretDataProps['useFormProps'], 'handleSubmit'> {}
-
-// CONTEXT TYPES
-type SetFormStateParams =
-    | {
-          type: 'SET_DATA'
-          data: ConfigMapSecretUseFormProps
-          errors: UseFormErrors<ConfigMapSecretUseFormProps>
-          isDirty: boolean
-      }
-    | {
-          type: 'RESET'
-          data?: never
-          errors?: never
-          isDirty?: never
-      }
-
-export interface ConfigMapSecretFormContextType {
-    /**
-     * Reference to the current state of the form data.
-     * This persists the form values across renders, preventing data loss when the component unmounts.
-     */
-    formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
-    /**
-     * Boolean indicating whether the form has unsaved changes.
-     * This tracks the "dirty" state of the form.
-     */
-    isFormDirty: boolean
-    /**
-     * String containing any error messages related to parsing, \
-     * such as issues encountered when processing YAML.
-     */
-    parsingError: string
-    /**
-     * Function to update the form state based on the provided parameters.
-     * @param params - The new form state parameters to apply.
-     */
-    setFormState: (params: SetFormStateParams) => void
-}
-
-export interface ConfigMapSecretFormProviderProps {
-    children: JSX.Element
 }
 
 // DTO

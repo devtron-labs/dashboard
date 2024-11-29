@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import YAML from 'yaml'
 
 import {
+    applyCompareDiffOnUneditedDocument,
     CompareFromApprovalOptionsValuesType,
     DraftAction,
     DraftState,
@@ -14,17 +15,15 @@ import {
 
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 
-import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
+import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
-import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 
 export const ConfigMapSecretProtected = ({
     id,
-    formMethodsRef,
     draftData,
     componentType,
     componentName,
@@ -35,18 +34,14 @@ export const ConfigMapSecretProtected = ({
     selectedProtectionViewTab,
     parentName,
     inheritedConfigMapSecretData,
-    resolvedFormData,
     areScopeVariablesResolving,
     onError,
     onSubmit,
     updateCMSecret,
-    restoreYAML,
-    setRestoreYAML,
-    mergeStrategy,
     shouldMergeTemplateWithPatches,
+    useFormProps,
 }: ConfigMapSecretProtectedProps) => {
-    // HOOKS
-    const { formDataRef } = useConfigMapSecretFormContext()
+    const { data: formData } = useFormProps
 
     // STATES
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
@@ -64,62 +59,62 @@ export const ConfigMapSecretProtected = ({
         [draftData],
     )
 
-    const currentConfigMapSecretData = useMemo(
-        () =>
-            (componentType === CMSecretComponentType.ConfigMap || !configMapSecretData?.unAuthorized) &&
-            (resolvedFormData ?? formDataRef.current)
-                ? {
-                      ...configMapSecretData,
-                      ...getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current),
-                  }
-                : {
-                      ...configMapSecretData,
-                      data:
-                          configMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH
-                              ? configMapSecretData.patchData
-                              : configMapSecretData.data,
-                  },
-        [configMapSecretData, formDataRef.current, resolvedFormData],
-    )
-
     // METHODS
     const handleCompareFromOptionSelection = (option: SelectPickerOptionType) =>
         setCompareFromSelectedOptionValue(option.value as CompareFromApprovalOptionsValuesType)
 
     const getConfigMapSecretDiffViewData = () => {
         if (draftData.action === DraftAction.Delete) {
-            return isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null
+            return {
+                diffViewData: isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null,
+                mergeStrategyToShow: inheritedConfigMapSecretData?.mergeStrategy,
+            }
         }
 
-        const _configMapSecretData = isApprovalPendingOptionSelected
-            ? {
-                  ...configMapSecretData,
-                  ...(shouldMergeTemplateWithPatches ? { patchData: configMapSecretData.data } : {}),
-              }
-            : {
-                  ...currentConfigMapSecretData,
-                  ...(currentConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH &&
-                  shouldMergeTemplateWithPatches
-                      ? { data: { ...inheritedConfigMapSecretData.data, ...currentConfigMapSecretData.data } }
-                      : {}),
-              }
+        const showFormData = !isApprovalPendingOptionSelected && !configMapSecretData.unAuthorized
+        const updatedConfigMapSecretData = {
+            ...configMapSecretData,
+            // -> !isApprovalPendingOptionSelected means "Values from draft"
+            ...(showFormData ? getConfigMapSecretPayload(formData) : {}),
+        }
 
-        return _configMapSecretData
+        const showMergedData =
+            shouldMergeTemplateWithPatches &&
+            updatedConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+        return {
+            mergeStrategyToShow: updatedConfigMapSecretData.mergeStrategy,
+            diffViewData: !showFormData
+                ? {
+                      ...updatedConfigMapSecretData,
+                      mergeStrategy: showMergedData
+                          ? OverrideMergeStrategyType.REPLACE
+                          : updatedConfigMapSecretData.mergeStrategy,
+                  }
+                : {
+                      ...updatedConfigMapSecretData,
+                      mergeStrategy: OverrideMergeStrategyType.REPLACE,
+                      ...(showMergedData
+                          ? {
+                                data: applyCompareDiffOnUneditedDocument(inheritedConfigMapSecretData?.data || {}, {
+                                    ...(inheritedConfigMapSecretData?.data || {}),
+                                    ...updatedConfigMapSecretData.data,
+                                }),
+                            }
+                          : {}),
+                  },
+        }
     }
 
     const getCurrentEditorConfig = (): Pick<
         CompareConfigViewProps,
         'currentEditorConfig' | 'currentEditorTemplate'
     > => {
-        const _configMapSecretData = getConfigMapSecretDiffViewData()
+        const { diffViewData, mergeStrategyToShow } = getConfigMapSecretDiffViewData()
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             isJob,
             componentType,
-            configMapSecretData: _configMapSecretData,
-            mergeStrategy:
-                isApprovalPendingOptionSelected && draftData.action !== DraftAction.Delete
-                    ? mergeStrategy
-                    : OverrideMergeStrategyType.REPLACE,
+            configMapSecretData: diffViewData,
             cmSecretStateLabel,
         })
 
@@ -128,7 +123,7 @@ export const ConfigMapSecretProtected = ({
                 ...editorConfigData.reduce<CompareConfigViewProps['currentEditorConfig']>(
                     (acc, curr) => ({
                         ...acc,
-                        [curr.displayName]: {
+                        [curr.key]: {
                             displayName: curr.displayName,
                             value: curr.value,
                         },
@@ -144,7 +139,7 @@ export const ConfigMapSecretProtected = ({
                 ),
                 mergeStrategy: {
                     displayName: 'Merge strategy',
-                    value: _configMapSecretData?.mergeStrategy,
+                    value: mergeStrategyToShow,
                 },
             },
             currentEditorTemplate: data ? YAML.parse(data) : undefined,
@@ -158,13 +153,20 @@ export const ConfigMapSecretProtected = ({
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             componentType,
             cmSecretStateLabel,
-            configMapSecretData: cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? publishedConfigMapSecretData : null,
+            configMapSecretData:
+                publishedConfigMapSecretData && cmSecretStateLabel !== CM_SECRET_STATE.INHERITED
+                    ? {
+                          ...publishedConfigMapSecretData,
+                          ...(publishedConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH
+                              ? {
+                                    mergeStrategy: shouldMergeTemplateWithPatches
+                                        ? OverrideMergeStrategyType.REPLACE
+                                        : OverrideMergeStrategyType.PATCH,
+                                }
+                              : {}),
+                      }
+                    : null,
             isJob,
-            mergeStrategy:
-                publishedConfigMapSecretData?.mergeStrategy === OverrideMergeStrategyType.REPLACE ||
-                shouldMergeTemplateWithPatches
-                    ? OverrideMergeStrategyType.REPLACE
-                    : OverrideMergeStrategyType.PATCH,
         })
 
         return {
@@ -172,7 +174,7 @@ export const ConfigMapSecretProtected = ({
                 ...editorConfigData.reduce<CompareConfigViewProps['publishedEditorConfig']>(
                     (acc, curr) => ({
                         ...acc,
-                        [curr.displayName]: {
+                        [curr.key]: {
                             displayName: curr.displayName,
                             value: curr.value,
                         },
@@ -198,7 +200,6 @@ export const ConfigMapSecretProtected = ({
     // RENDERERS
     const renderFormView = () => (
         <ConfigMapSecretForm
-            ref={formMethodsRef}
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
             id={id}
@@ -211,7 +212,6 @@ export const ConfigMapSecretProtected = ({
                     : cmSecretStateLabel
             }
             isJob={isJob}
-            mergeStrategy={mergeStrategy}
             appChartRef={appChartRef}
             isProtected
             isDraft
@@ -219,10 +219,8 @@ export const ConfigMapSecretProtected = ({
             onCancel={noop}
             onError={onError}
             onSubmit={onSubmit}
-            resolvedFormData={resolvedFormData}
             areScopeVariablesResolving={areScopeVariablesResolving}
-            restoreYAML={restoreYAML}
-            setRestoreYAML={setRestoreYAML}
+            useFormProps={useFormProps}
         />
     )
 

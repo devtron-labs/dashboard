@@ -35,23 +35,6 @@ import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../typ
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
-export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
-    if (index >= paths.length) {
-        return {
-            'ui:widget': 'hidden',
-        }
-    }
-    if (paths[index] === '$') {
-        return makeObjectFromJsonPathArray(index + 1, paths)
-    }
-    const key = paths[index]
-    const isKeyNumber = !Number.isNaN(Number(key))
-    if (isKeyNumber) {
-        return { items: makeObjectFromJsonPathArray(index + 1, paths) }
-    }
-    return { [key]: makeObjectFromJsonPathArray(index + 1, paths) }
-}
-
 /**
  * This method will compare and calculate the diffs between @unedited and @edited
  * documents and apply these diffs onto the @unedited document and return this new document
