@@ -27,6 +27,7 @@ import {
     PageHeader,
     getResourceGroupListRaw,
     noop,
+    ALL_NAMESPACE_OPTION,
     WidgetEventDetails,
     ApiResourceGroupType,
     InitTabType,
@@ -37,7 +38,6 @@ import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import {
-    ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     ResourceBrowserTabsId,
@@ -65,6 +65,7 @@ import { ResourceListUrlFiltersType } from './types'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
@@ -466,6 +467,13 @@ const ResourceList = () => {
             : []),
     ]
 
+    const renderPageHeaderActionButtons = () => (
+        <div className="flexbox dc__align-items-center dc__gap-8">
+            {CompareClusterButton && !!clusterId && <CompareClusterButton sourceClusterId={clusterId} />}
+            {renderCreateResourceButton(clusterId, closeResourceModal)()}
+        </div>
+    )
+
     const renderMainBody = () => {
         if (error) {
             return <ErrorScreenManager code={error.code} />
@@ -535,7 +543,7 @@ const ResourceList = () => {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 headerName=""
-                renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
+                renderActionButtons={renderPageHeaderActionButtons}
             />
             {renderMainBody()}
         </div>

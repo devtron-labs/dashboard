@@ -228,7 +228,7 @@ const NodeDetailComponent = ({
                     name: selectedResource.name ? selectedResource.name : nullCaseName,
                     namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
                 },
-            )
+            ) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {

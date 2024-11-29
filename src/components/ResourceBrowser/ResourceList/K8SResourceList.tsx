@@ -21,13 +21,14 @@ import {
     getIsRequestAborted,
     getK8sResourceList,
     showError,
+    ALL_NAMESPACE_OPTION,
+    getK8sResourceListPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from '../Constants'
-import { getResourceListPayload } from '../ResourceBrowser.service'
+import { SIDEBAR_KEYS } from '../Constants'
 import { K8SResourceListType, URLParams } from '../Types'
 import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
 import BaseResourceList from './BaseResourceList'
@@ -71,7 +72,7 @@ export const K8SResourceList = ({
             abortPreviousRequests(
                 () =>
                     getK8sResourceList(
-                        getResourceListPayload(
+                        getK8sResourceListPayload(
                             clusterId,
                             selectedNamespace.value.toLowerCase(),
                             selectedResource,

@@ -23,6 +23,7 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
     Nodes,
+    ALL_NAMESPACE_OPTION,
     useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
@@ -33,7 +34,6 @@ import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
-    ALL_NAMESPACE_OPTION,
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
     RESOURCE_EMPTY_PAGE_STATE,

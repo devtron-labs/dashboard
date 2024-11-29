@@ -16,10 +16,17 @@
 
 import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
-import { useAsync, useRegisterShortcut, OptionType, SearchBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    useRegisterShortcut,
+    OptionType,
+    SearchBar,
+    SelectPicker,
+    ALL_NAMESPACE_OPTION,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { ALL_NAMESPACE_OPTION, NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'

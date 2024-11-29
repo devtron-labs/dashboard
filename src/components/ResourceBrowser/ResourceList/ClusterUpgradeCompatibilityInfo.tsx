@@ -6,12 +6,13 @@ import {
     noop,
     Progressing,
     useSearchString,
+    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import { URLS } from '@Config/routes'
 import BaseResourceList from './BaseResourceList'
-import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
+import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
