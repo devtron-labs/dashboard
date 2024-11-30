@@ -236,7 +236,7 @@ const NavItem = ({ serverMode }) => {
                     isAvailableInEA: true,
                 },
                 {
-                    name: 'User Permissions',
+                    name: 'User Permissions Changed',
                     dataTestId: 'authorization-user-permissions-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.USER_PERMISSIONS}`,
                     isAvailableInEA: true,
