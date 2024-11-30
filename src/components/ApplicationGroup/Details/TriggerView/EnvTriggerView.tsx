@@ -1765,7 +1765,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
-                        approvalUsers: _selectedNode.approvalUsers,
                         approvalConfigData: _selectedNode.approvalConfigData,
                         requestedUserId: _selectedNode.requestedUserId,
                         appReleaseTags: wf.appReleaseTags,

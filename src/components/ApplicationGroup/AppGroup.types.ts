@@ -79,7 +79,6 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMater
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
-    approvalUsers?: string[]
     approvalConfigData?: ApprovalConfigDataType
     requestedUserId?: number
     appReleaseTags?: string[]

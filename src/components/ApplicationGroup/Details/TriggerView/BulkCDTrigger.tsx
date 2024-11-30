@@ -561,7 +561,6 @@ export default function BulkCDTrigger({
             updatedMaterials?: CDMaterialType,
         ) => ({
             materials: updatedMaterials ?? appListData.material,
-            approvalUsers: appListData.approvalUsers,
             requestedUserId: appListData.requestedUserId,
             approvalConfigData: appListData.approvalConfigData,
             appReleaseTagNames: appListData.appReleaseTags,
