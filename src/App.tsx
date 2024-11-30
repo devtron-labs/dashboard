@@ -194,7 +194,6 @@ export default function App() {
     })()
 
     const {
-        // needRefresh: [needRefresh],
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
@@ -273,24 +272,6 @@ export default function App() {
             localStorage.removeItem('serverInfo')
         }
     }
-
-    // useEffect(() => {
-    //     if (window.isSecureContext && navigator.serviceWorker) {
-    //         // check for sw updates on page change
-    //         navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
-    //         if (needRefresh) {
-    //             update()
-    //         } else if (ToastManager.isToastActive(updateToastRef.current)) {
-    //             ToastManager.dismissToast(updateToastRef.current)
-    //         }
-    //     }
-    // }, [location])
-
-    // useEffect(() => {
-    //     if (needRefresh) {
-    //         handleNeedRefresh()
-    //     }
-    // }, [needRefresh])
 
     useEffect(() => {
         if (!bgUpdated) {

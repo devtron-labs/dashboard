@@ -142,11 +142,7 @@ export default defineConfig(({ mode }) => {
                           },
                           workbox: {
                               globPatterns: ['**\/*.{js,css,html,ico,png,svg,woff2}'],
-                              // Need to check both of these
-                            //   skipWaiting: true,
-                            //   clientsClaim: true,
-                              //   enableWorkboxModulesLogs: true,
-                            //   cleanupOutdatedCaches: true,
+                              cleanupOutdatedCaches: true,
                               maximumFileSizeToCacheInBytes: 8000000,
                           },
                           manifest: {
