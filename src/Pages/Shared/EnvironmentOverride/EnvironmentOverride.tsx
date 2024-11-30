@@ -49,6 +49,7 @@ const EnvironmentOverride = ({
     fetchEnvConfig,
     appOrEnvIdToAppOrEnvApprovalConfigMap,
 }: EnvironmentOverrideComponentProps) => {
+    const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path, url } = useRouteMatch()
@@ -59,8 +60,10 @@ const EnvironmentOverride = ({
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
-    const approvalConfig = (
-        appOrEnvIdToAppOrEnvApprovalConfigMap[+params.envId] ?? appOrEnvIdToAppOrEnvApprovalConfigMap[+params.appId]
+    const approvalConfigMap = (
+        isAppGroupView
+            ? appOrEnvIdToAppOrEnvApprovalConfigMap[+params.appId]
+            : appOrEnvIdToAppOrEnvApprovalConfigMap[+params.envId]
     )?.approvalConfigurationMap
 
     useEffect(() => {
@@ -158,7 +161,7 @@ const EnvironmentOverride = ({
                             key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfig?.[ApprovalConfigDataKindType.deploymentTemplate],
+                                approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate],
                             )}
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
@@ -168,7 +171,7 @@ const EnvironmentOverride = ({
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfig?.[ApprovalConfigDataKindType.configMap],
+                                approvalConfigMap?.[ApprovalConfigDataKindType.configMap],
                             )}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -186,7 +189,7 @@ const EnvironmentOverride = ({
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfig?.[ApprovalConfigDataKindType.configSecret],
+                                approvalConfigMap?.[ApprovalConfigDataKindType.configSecret],
                             )}
                             parentState={viewState}
                             parentName={getParentName()}

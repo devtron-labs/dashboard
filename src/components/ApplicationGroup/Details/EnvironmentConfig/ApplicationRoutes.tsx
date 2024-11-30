@@ -71,6 +71,7 @@ const ApplicationRoute = ({
                                     isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
                                     href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
                                 },
+                                // TODO: Check with Rohit if this should be base config check
                                 appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
                             )}
                         </Fragment>
