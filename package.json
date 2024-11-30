@@ -115,7 +115,6 @@
         "husky": "^7.0.4",
         "jest-extended": "^2.0.0",
         "jest-junit": "^13.0.0",
-        "jsdom-worker": "^0.2.1",
         "lint-staged": "12.5.0",
         "mock-socket": "^9.2.1",
         "prettier": "^3.1.1",
@@ -125,16 +124,9 @@
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite-plugin-pwa": "0.20.5",
+        "vite-plugin-pwa": "^0.21.1",
         "vite-tsconfig-paths": "5.0.1",
-        "vitest": "2.0.5",
-        "workbox-core": "7.1.0",
-        "workbox-navigation-preload": "7.1.0",
-        "workbox-precaching": "7.1.0",
-        "workbox-routing": "7.1.0",
-        "workbox-strategies": "7.1.0",
-        "workbox-window": "7.1.0",
-        "worker-loader": "3.0.8"
+        "vitest": "2.0.5"
     },
     "jest": {
         "collectCoverageFrom": [
