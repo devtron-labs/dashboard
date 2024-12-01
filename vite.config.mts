@@ -107,6 +107,18 @@ export default defineConfig(({ mode }) => {
                             return '@sockjs-client'
                         }
 
+                        if (
+                            id.includes('/node_modules/moment') ||
+                            id.includes('/node_modules/moment-timezone') ||
+                            id.includes('@moment')
+                        ) {
+                            return '@moment'
+                        }
+
+                        if (id.includes('/node_modules/react-select') || id.includes('@react-select')) {
+                            return '@react-select'
+                        }
+
                         if (id.includes('node_modules/react-virtualized')) {
                             return '@react-virtualized'
                         }
