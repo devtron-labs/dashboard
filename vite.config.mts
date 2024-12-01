@@ -155,14 +155,25 @@ export default defineConfig(({ mode }) => {
 
                         // separating the common lib chunk
                         if (id.includes('devtron-fe-common-lib')) {
+                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]?.split('.')?.[0]
+
+                            if (splittedChunk) {
+                                return `@devtron-common/${splittedChunk}`
+                            }
                             return '@devtron-common'
                         }
                         if (id.includes('@devtron')) {
-                            return '@devtron'
+                            const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]?.split('.')?.[0]
+
+                            if (splittedChunk) {
+                                return `@devtron-fe-lib/${splittedChunk}`
+                            }
+                            return '@devtron-fe-lib'
                         }
                     },
                 },
             },
+            assetsInlineLimit: 0,
         },
         plugins: [
             tsconfigPaths(),
@@ -187,9 +198,6 @@ export default defineConfig(({ mode }) => {
                       VitePWA({
                           filename: 'service-worker.js',
                           injectRegister: 'script',
-                          devOptions: {
-                              enabled: true,
-                          },
                           workbox: {
                               globPatterns: ['**\/*.{js,css,html,ico,png,svg,woff2}'],
                               cleanupOutdatedCaches: true,
