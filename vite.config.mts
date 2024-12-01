@@ -111,13 +111,14 @@ export default defineConfig(({ mode }) => {
                             return '@react-virtualized'
                         }
 
-                        if (id.includes('node_modules/react-dates')) {
+                        if (id.includes('node_modules/react-dates') || id.includes('@react-dates')) {
                             return '@react-dates'
                         }
 
-                        if (id.includes('node_modules/recharts')) {
-                            return '@recharts'
-                        }
+                        // FIXME: This breaks due to circular imports probably
+                        // if (id.includes('node_modules/recharts')) {
+                        //     return '@recharts'
+                        // }
 
                         if (id.includes('node_modules/@rjsf')) {
                             return '@rjsf'
@@ -129,9 +130,10 @@ export default defineConfig(({ mode }) => {
 
                         if (
                             id.includes('node_modules/monaco-editor') ||
-                            id.includes('node_modules/react-monaco-editor')
+                            id.includes('node_modules/react-monaco-editor') ||
+                            id.includes('dist/@monaco-editor')
                         ) {
-                            return '@react-monaco-editor'
+                            return '@monaco-editor'
                         }
 
                         if (id.includes('node_modules/@rxjs')) {
@@ -147,10 +149,6 @@ export default defineConfig(({ mode }) => {
                             id.includes('react-router')
                         ) {
                             return '@react-router'
-                        }
-
-                        if (id.includes('node_modules/react-monaco-editor')) {
-                            return '@react-monaco-editor'
                         }
 
                         // separating the common lib chunk

@@ -237,7 +237,6 @@ export default function App() {
             console.log('Ready to work offline')
         },
         onNeedRefresh() {
-            console.log('Refreshing now!', handleNeedRefresh)
             handleNeedRefresh()
         },
     })
