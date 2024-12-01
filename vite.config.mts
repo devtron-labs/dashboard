@@ -103,6 +103,56 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     manualChunks(id: string) {
+                        if (id.includes('node_modules/sockjs-client')) {
+                            return '@sockjs-client'
+                        }
+
+                        if (id.includes('node_modules/react-virtualized')) {
+                            return '@react-virtualized'
+                        }
+
+                        if (id.includes('node_modules/react-dates')) {
+                            return '@react-dates'
+                        }
+
+                        if (id.includes('node_modules/recharts')) {
+                            return '@recharts'
+                        }
+
+                        if (id.includes('node_modules/@rjsf')) {
+                            return '@rjsf'
+                        }
+
+                        if (id.includes('node_modules/react-mde')) {
+                            return '@react-mde'
+                        }
+
+                        if (
+                            id.includes('node_modules/monaco-editor') ||
+                            id.includes('node_modules/react-monaco-editor')
+                        ) {
+                            return '@react-monaco-editor'
+                        }
+
+                        if (id.includes('node_modules/@rxjs')) {
+                            return '@rxjs'
+                        }
+
+                        if (id.includes('node_modules/@sentry')) {
+                            return '@sentry'
+                        }
+
+                        if (
+                            id.includes('react-router-dom') ||
+                            id.includes('react-router')
+                        ) {
+                            return '@react-router'
+                        }
+
+                        if (id.includes('node_modules/react-monaco-editor')) {
+                            return '@react-monaco-editor'
+                        }
+
                         // separating the common lib chunk
                         if (id.includes('devtron-fe-common-lib')) {
                             return '@devtron-common'
