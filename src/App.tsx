@@ -59,7 +59,7 @@ export default function App() {
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
     const location = useLocation()
-    const { push } = useHistory()
+    const { push, ...history } = useHistory()
     const didMountRef = useRef(false)
     const isDirectApprovalNotification =
         location.pathname &&
@@ -194,6 +194,7 @@ export default function App() {
     })()
 
     const {
+        needRefresh: [doesNeedRefresh],
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
@@ -219,7 +220,7 @@ export default function App() {
                                 },
                             })
                             if (resp?.status === API_STATUS_CODES.OK) {
-                                 await swRegistration.update()
+                                await swRegistration.update()
                             }
                         } catch {
                             // Do nothing
@@ -241,7 +242,7 @@ export default function App() {
         },
     })
 
-    function update() {
+    function handleAppUpdate() {
         updateServiceWorker(true)
     }
 
@@ -258,7 +259,7 @@ export default function App() {
                 buttonProps: {
                     text: 'Reload',
                     dataTestId: 'reload-btn',
-                    onClick: update,
+                    onClick: handleAppUpdate,
                     startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,
@@ -272,6 +273,20 @@ export default function App() {
             localStorage.removeItem('serverInfo')
         }
     }
+
+    useEffect(() => {
+        if (window.isSecureContext && navigator.serviceWorker) {
+            // check for sw updates on page change
+            navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => registrations.forEach((reg) => reg.update()))
+            if (doesNeedRefresh) {
+                handleAppUpdate()
+            } else if (ToastManager.isToastActive(updateToastRef.current)) {
+                ToastManager.dismissToast(updateToastRef.current)
+            }
+        }
+    }, [history.location.pathname])
 
     useEffect(() => {
         if (!bgUpdated) {
