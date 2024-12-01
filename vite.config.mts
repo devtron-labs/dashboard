@@ -169,13 +169,13 @@ export default defineConfig(({ mode }) => {
                             }
                             return '@devtron-common'
                         }
-                        if (id.includes('@devtron')) {
+                        if (id.includes('devtron-fe-lib')) {
                             const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]?.split('.')?.[0]
 
                             if (splittedChunk) {
                                 return `@devtron-fe-lib/${splittedChunk}`
                             }
-                            return '@devtron'
+                            return '@devtron-fe-lib'
                         }
 
                         // if (id.includes('node_modules')) {
@@ -210,9 +210,9 @@ export default defineConfig(({ mode }) => {
                           filename: 'service-worker.js',
                           injectRegister: 'script',
                           workbox: {
-                              globPatterns: ['**\/*.{js,css,html,ico,png,svg,woff2}'],
+                              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                               cleanupOutdatedCaches: true,
-                              maximumFileSizeToCacheInBytes: 8000000,
+                              maximumFileSizeToCacheInBytes: 10000000,
                           },
                           manifest: {
                               short_name: 'Devtron',
