@@ -102,7 +102,7 @@ export default defineConfig(({ mode }) => {
             sourcemap: true,
             rollupOptions: {
                 output: {
-                    manualChunks(id: string) {
+                    manualChunks(id: string): `@${string}` | undefined {
                         if (id.includes('node_modules/sockjs-client')) {
                             return '@sockjs-client'
                         }
@@ -144,10 +144,7 @@ export default defineConfig(({ mode }) => {
                             return '@sentry'
                         }
 
-                        if (
-                            id.includes('react-router-dom') ||
-                            id.includes('react-router')
-                        ) {
+                        if (id.includes('react-router-dom') || id.includes('react-router')) {
                             return '@react-router'
                         }
 
@@ -166,8 +163,12 @@ export default defineConfig(({ mode }) => {
                             if (splittedChunk) {
                                 return `@devtron-fe-lib/${splittedChunk}`
                             }
-                            return '@devtron-fe-lib'
+                            return '@devtron'
                         }
+
+                        // if (id.includes('node_modules')) {
+                        //     return `@${id.toString().split('node_modules/')[1].split('/')[0].toString()}`
+                        // }
                     },
                 },
             },

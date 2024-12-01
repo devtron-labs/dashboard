@@ -242,6 +242,10 @@ export default function App() {
     })
 
     function handleAppUpdate() {
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
+
         updateServiceWorker(true)
     }
 
