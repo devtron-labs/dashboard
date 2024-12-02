@@ -427,9 +427,9 @@ export default class Navigation extends Component<
                                 return this.renderNavLink(item)
                             }
                         })}
-                        {!window._env_.K8S_CLIENT && !this.props.isAirgapped && (
-                            this.props.serverMode !== SERVER_MODE.EA_ONLY || this.props.currentServerInfo.serverInfo?.installationType !== 'enterprise'
-                        ) &&  (
+                        {!window._env_.K8S_CLIENT &&
+                         !this.props.isAirgapped &&
+                         this.props.currentServerInfo.serverInfo?.installationType !== 'enterprise' && (
                             <>
                                 <div className="short-nav__divider" />
                                 {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}

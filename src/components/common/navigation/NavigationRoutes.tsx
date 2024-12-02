@@ -482,7 +482,7 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(serverMode !== SERVER_MODE.EA_ONLY || currentServerInfo.serverInfo?.installationType !== 'enterprise'
+                                        ...(currentServerInfo.serverInfo?.installationType !== 'enterprise'
                                             ? [
                                                 <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                                     <DevtronStackManager
