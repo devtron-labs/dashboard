@@ -28,6 +28,7 @@ import {
     RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
+    UserApprovalMetadataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -102,8 +103,7 @@ export interface AppDetails extends CDModalProps {
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
-    // TODO: Need to check this one
-    userApprovalConfig?: string
+    userApprovalMetadata?: UserApprovalMetadataType
     ciArtifactId?: number
     parentArtifactId?: number
     deprecated?: boolean
