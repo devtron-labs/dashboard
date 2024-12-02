@@ -296,7 +296,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     renderWrapWithLink = (children: ReactElement) => (
-        <Link to={this.props.to} onClick={this.onClickNodeCard} target={this.props.isOffendingPipelineView ? '_blank' : '_self'} className="dc__no-decor">
+        <Link
+            to={this.props.to}
+            onClick={this.onClickNodeCard}
+            target={this.props.isOffendingPipelineView ? '_blank' : '_self'}
+            className="dc__no-decor"
+        >
             {children}
         </Link>
     )
@@ -306,7 +311,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
             <ConditionalWrap
-                condition={!!this.props.to && (!this.props.isOffendingPipelineView  || this.props.showPluginWarning)}
+                condition={!!this.props.to && (!this.props.isOffendingPipelineView || this.props.showPluginWarning)}
                 wrap={this.renderWrapWithLink}
             >
                 <div
@@ -393,21 +398,20 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-
-                {this.state.showDeleteDialog && (
-                    <DeleteCDNode
-                        deleteDialog={this.state.deleteDialog}
-                        setDeleteDialog={this.handleDeleteDialogUpdate}
-                        clusterName={this.state.clusterName}
-                        appName={this.props.appName}
-                        hideDeleteModal={this.handleHideDeleteModal}
-                        deleteCD={this.deleteCD}
-                        deploymentAppType={this.props.deploymentAppType ?? ''}
-                        forceDeleteData={this.state.forceDeleteData}
-                        deleteTitleName={this.props.environmentName}
-                        isLoading={this.state.deleteInProgress}
-                    />
-                )}
+                
+                <DeleteCDNode
+                    showDeleteDialog={this.state.showDeleteDialog}
+                    deleteDialog={this.state.deleteDialog}
+                    setDeleteDialog={this.handleDeleteDialogUpdate}
+                    clusterName={this.state.clusterName}
+                    appName={this.props.appName}
+                    hideDeleteModal={this.handleHideDeleteModal}
+                    deleteCD={this.deleteCD}
+                    deploymentAppType={this.props.deploymentAppType ?? ''}
+                    forceDeleteData={this.state.forceDeleteData}
+                    deleteTitleName={this.props.environmentName}
+                    isLoading={this.state.deleteInProgress}
+                />
                 {this.renderDeleteConformationDialog()}
             </>
         )

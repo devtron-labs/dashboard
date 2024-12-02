@@ -4012,6 +4012,10 @@ textarea,
     margin-bottom: 0px !important;
 }
 
+.mt-40 {
+    margin-top: 40px;
+}
+
 .mt-120 {
     margin-top: 120px;
 }
@@ -5253,4 +5257,10 @@ textarea::placeholder {
 
 .code-editor-red-diff {
     background: var(--R100);
+}
+
+.backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    z-index: var(--modal-index);
+    backdrop-filter: blur(1px);
 }

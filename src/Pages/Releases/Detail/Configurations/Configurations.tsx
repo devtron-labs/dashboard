@@ -93,10 +93,9 @@ export const Configurations = () => {
 
     const renderConfig = () => (
         <Switch>
-            <Route key={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                <div className="dc__overflow-auto">
+            <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                <div key={`${appId}-${envId}-${URLS.APP_DEPLOYMENT_CONFIG}`} className="dc__overflow-auto">
                     <DeploymentTemplate
-                        key={`${appId}/${envId}`}
                         fetchEnvConfig={fetchEnvConfig}
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate],
@@ -107,8 +106,8 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                <div className="dc__overflow-auto">
+            <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <div key={`${appId}-${envId}-${URLS.APP_CM_CONFIG}`} className="dc__overflow-auto">
                     <ConfigMapSecretWrapper
                         appName={selectedApp.label}
                         envName={selectedEnv.name}
@@ -123,8 +122,8 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                <div className="dc__overflow-auto">
+            <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <div key={`${appId}-${envId}-${URLS.APP_CS_CONFIG}`} className="dc__overflow-auto">
                     <ConfigMapSecretWrapper
                         componentType={CMSecretComponentType.Secret}
                         appName={selectedApp.label}

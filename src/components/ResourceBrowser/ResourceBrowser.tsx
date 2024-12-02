@@ -17,7 +17,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import {
     showError,
-    getUserRole,
     DevtronProgressing,
     useAsync,
     PageHeader,
@@ -44,11 +43,7 @@ const ResourceBrowser: React.FC = () => {
             return null
         }
     })
-    const [initialLoading, data, error] = useAsync(() =>
-        Promise.all([getClusterListMin(), window._env_?.K8S_CLIENT ? null : getUserRole()]),
-    )
-    /* transpose the data */
-    const [clusterListMinData = null, userRoleData = null] = data || []
+    const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListMin())
 
     useEffect(
         () => () => {
@@ -67,8 +62,6 @@ const ResourceBrowser: React.FC = () => {
         [detailClusterList, clusterListMinData],
     )
 
-    const isSuperAdmin = userRoleData?.result.superAdmin || false
-
     const renderContent = () => {
         if (error) {
             return <ErrorScreenManager code={error.code} />
@@ -77,7 +70,6 @@ const ResourceBrowser: React.FC = () => {
         return (
             <ClusterSelectionList
                 clusterOptions={sortedClusterList}
-                isSuperAdmin={isSuperAdmin}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}

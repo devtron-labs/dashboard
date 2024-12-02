@@ -69,6 +69,8 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
             return AggregationKeys.Events
         case Nodes.Namespace:
             return AggregationKeys.Namespaces
+        case Nodes.Node:
+            return AggregationKeys.Nodes
         default:
             return defaultAsOtherResources ? AggregationKeys['Other Resources'] : AggregationKeys['Custom Resource']
     }
