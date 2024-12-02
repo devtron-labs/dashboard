@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.1.6.tgz#13390eaef23265dfaf2525506fc37c263df3416c"
-  integrity sha512-t5o8rjIBxaUfL97yhXZHJUZDhiwhRQOgWGqaulD2PqzCei9I8rP+0wlwQbbRHh73HFSc3sxmesItYoHGeQhNJw==
+"@devtron-labs/devtron-fe-common-lib@1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.1.7.tgz#a2e0184ba94afda20309f3a1e80f0399f8272518"
+  integrity sha512-0Ztp/HBvuvEUoHJz0MnjZvbT+SfoYiVr+PVxZ9AJKmrRYk5HkBBXTyIZFWc0XSn3oxPiwlfbc/0xxIeDIH64FA==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -5894,7 +5894,7 @@ markdown-to-jsx@^7.4.1:
 
 marked@^13.0.3:
   version "13.0.3"
-  resolved "https://registry.npmjs.org/marked/-/marked-13.0.3.tgz"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-13.0.3.tgz#5c5b4a5d0198060c7c9bc6ef9420a7fed30f822d"
   integrity sha512-rqRix3/TWzE9rIoFGIn8JmsVfhiuC8VIQ8IdX5TfzmeBucdY05/0UlzKaw0eVtpcN/OdVFpBk7CjKGo9iHJ/zA==
 
 memoize-one@^6.0.0:
