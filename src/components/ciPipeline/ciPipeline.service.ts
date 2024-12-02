@@ -23,6 +23,7 @@ import {
     PluginType,
     RefVariableType,
     PipelineBuildStageType,
+    VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -407,7 +408,7 @@ function migrateOldData(
 ): PipelineBuildStageType {
     const commonFields = {
         value: '',
-        format: 'STRING',
+        format: VariableTypeFormat.STRING,
         description: '',
         defaultValue: '',
         variableType: RefVariableType.GLOBAL,
