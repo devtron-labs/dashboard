@@ -32,16 +32,3 @@ export const checkIfDevtronOperatorHelmRelease = (
         clusterId === DEVTRON_DEFAULT_CLUSTER_ID
     )
 }
-
-/**
- * Checks if the provided pathname matches the current path.
- * If the paths do not match, returns a custom message or a default unsaved changes prompt.
- *
- * @param currentPathName - The current path to compare against.
- * @param customMessage - Optional custom message to display when the path does not match.
- * @returns A function that takes an object with a `pathname` property and performs the path match check.
- */
-export const checkIfPathIsMatching =
-    (currentPathName: string, customMessage = '') =>
-    ({ pathname }: { pathname: string }): boolean | string =>
-        currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE

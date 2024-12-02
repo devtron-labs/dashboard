@@ -26,10 +26,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
-import { checkIfPathIsMatching } from '@Config/utils'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { checkIfPathIsMatching, FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import {
@@ -131,6 +130,7 @@ export const ConfigMapSecretContainer = ({
             configMapSecretData: null,
             componentType,
             cmSecretStateLabel: envId ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.BASE,
+            isJob,
         }),
     })
     const { data: formData, errors: formErrors, formState, setValue, handleSubmit, reset } = useFormProps
@@ -345,6 +345,7 @@ export const ConfigMapSecretContainer = ({
             componentType,
             cmSecretStateLabel,
             skipValidation: !isCreateState && !formInitialData,
+            isJob,
         })
     }, [configMapSecretData, draftData])
 
@@ -487,7 +488,11 @@ export const ConfigMapSecretContainer = ({
     const handleActionWithFormValidation =
         <Args extends unknown[]>(func: (...args: Args) => void) =>
         async (...args: Args) => {
-            if (!(formData.mergeStrategy === OverrideMergeStrategyType.PATCH && !formState.isDirty)) {
+            if (
+                configHeaderTab === ConfigHeaderTabType.VALUES &&
+                (!selectedProtectionViewTab || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT) &&
+                !(formData.mergeStrategy === OverrideMergeStrategyType.PATCH && !formState.isDirty)
+            ) {
                 await handleSubmit(
                     () => func(...args),
                     () => {
@@ -579,7 +584,6 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleNoOverrideFormCancel = () => {
-        // setFormState({ type: 'RESET' })
         reset(formInitialValues)
         setHideNoOverrideEmptyState(false)
     }
@@ -594,6 +598,7 @@ export const ConfigMapSecretContainer = ({
             strategy === OverrideMergeStrategyType.REPLACE
         ) {
             const { yaml, currentData } = getConfigMapSecretFormInitialValues({
+                isJob,
                 cmSecretStateLabel,
                 componentType,
                 configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
@@ -605,6 +610,7 @@ export const ConfigMapSecretContainer = ({
                 {
                     ...(strategy === OverrideMergeStrategyType.PATCH
                         ? getConfigMapSecretFormInitialValues({
+                              isJob,
                               cmSecretStateLabel,
                               componentType,
                               configMapSecretData: inheritedConfigMapSecretData,
@@ -926,7 +932,7 @@ export const ConfigMapSecretContainer = ({
                     showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideTabs={{ inherited: isJob }}
+                    hideTabs={{ inherited: isJob, dryRun: isJob }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
@@ -938,7 +944,10 @@ export const ConfigMapSecretContainer = ({
                         }
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         hidePatchOption={
-                            inheritedConfigMapSecretData?.external || configMapSecretData?.external || formData.external
+                            isJob ||
+                            inheritedConfigMapSecretData?.external ||
+                            configMapSecretData?.external ||
+                            formData.external
                         }
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}

@@ -19,8 +19,7 @@ import {
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { checkIfPathIsMatching } from '@Config/utils'
-import { importComponentFromFELibrary } from '@Components/common'
+import { checkIfPathIsMatching, importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'

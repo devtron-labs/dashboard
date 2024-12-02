@@ -228,7 +228,7 @@ export const getConfigMapSecretManifest = async (
                         ? ConfigResourceType.ConfigMap
                         : ConfigResourceType.Secret,
             },
-            { signal: abortControllerRef?.current?.signal },
+            { abortControllerRef },
         )
 
         return result

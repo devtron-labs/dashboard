@@ -44,11 +44,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { checkIfPathIsMatching, FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
-import { checkIfPathIsMatching } from '@Config/utils'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
@@ -1881,10 +1879,7 @@ const DeploymentTemplate = ({
                 )}
             </div>
 
-            <Prompt
-                when={areChangesPresent}
-                message={checkIfPathIsMatching(location.pathname, DEFAULT_ROUTE_PROMPT_MESSAGE)}
-            />
+            <Prompt when={areChangesPresent} message={checkIfPathIsMatching(location.pathname)} />
         </>
     )
 }

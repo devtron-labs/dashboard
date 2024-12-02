@@ -31,12 +31,7 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import {
-    convertKeyValuePairToYAML,
-    convertYAMLToKeyValuePair,
-    getLockedYamlString,
-    getYAMLWithStringifiedNumbers,
-} from './utils'
+import { convertKeyValuePairToYAML, convertYAMLToKeyValuePair, getLockedYamlString } from './utils'
 import { ConfigMapSecretDataProps } from './types'
 
 export const ConfigMapSecretData = ({
@@ -204,7 +199,7 @@ export const ConfigMapSecretData = ({
             ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
             : (data[getCodeEditorFormKey()] as string)
 
-        return readOnly ? getYAMLWithStringifiedNumbers(codeEditorValue) : codeEditorValue
+        return codeEditorValue
     }
 
     // RENDERERS

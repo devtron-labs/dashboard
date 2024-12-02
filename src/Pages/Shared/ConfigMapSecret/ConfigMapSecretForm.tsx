@@ -19,8 +19,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
-import { checkIfPathIsMatching } from '@Config/utils'
-import { isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
+import { checkIfPathIsMatching, isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
 
 import {
     CM_SECRET_COMPONENT_NAME,
