@@ -25,6 +25,7 @@ import {
     CM_SECRET_COMPONENT_NAME,
     configMapDataTypeOptions,
     configMapSecretMountDataMap,
+    DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE,
     getSecretDataTypeOptions,
 } from './constants'
 import { hasESO, hasHashiOrAWS } from './utils'
@@ -46,6 +47,7 @@ export const ConfigMapSecretForm = ({
     isJob,
     appChartRef,
     isDraft,
+    disableDataTypeChange,
     componentType,
     isSubmitting,
     isProtected,
@@ -107,7 +109,8 @@ export const ConfigMapSecretForm = ({
                 label="Data Type"
                 placeholder={dataTypePlaceholder}
                 required
-                isDisabled={isFormDisabled}
+                isDisabled={isFormDisabled || disableDataTypeChange}
+                disabledTippyContent={disableDataTypeChange ? DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE : null}
                 options={dataTypeOptions}
                 size={ComponentSizeType.large}
                 {...register('externalType', {

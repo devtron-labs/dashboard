@@ -323,17 +323,20 @@ const ConfigToolbar = ({
                                     {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
 
                                     <div className="flexbox-col">
-                                        {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
-                                            <PopupMenuItem
-                                                key={text}
-                                                text={text}
-                                                onClick={onClick}
-                                                dataTestId={dataTestId}
-                                                disabled={disabled}
-                                                icon={icon}
-                                                variant={variant}
-                                            />
-                                        ))}
+                                        {groupItems.map(
+                                            ({ text, onClick, dataTestId, disabled, icon, variant, tooltipText }) => (
+                                                <PopupMenuItem
+                                                    key={text}
+                                                    text={text}
+                                                    onClick={onClick}
+                                                    dataTestId={dataTestId}
+                                                    disabled={disabled}
+                                                    icon={icon}
+                                                    variant={variant}
+                                                    tooltipText={tooltipText}
+                                                />
+                                            ),
+                                        )}
                                     </div>
                                 </Fragment>
                             )

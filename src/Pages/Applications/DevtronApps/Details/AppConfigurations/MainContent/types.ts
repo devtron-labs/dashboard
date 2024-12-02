@@ -168,6 +168,8 @@ export interface GetConfigToolbarPopupConfigProps {
     isProtected?: boolean
     isDeletable?: boolean
     isDeleteOverrideDraftPresent?: boolean
+    isDeleteDisabled?: boolean
+    deleteDisabledTooltip?: string
 }
 
 type ConfigDryRunManifestProps =

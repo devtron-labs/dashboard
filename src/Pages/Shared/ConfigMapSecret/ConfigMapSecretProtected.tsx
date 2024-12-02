@@ -30,6 +30,7 @@ export const ConfigMapSecretProtected = ({
     publishedConfigMapSecretData,
     cmSecretStateLabel,
     isJob,
+    disableDataTypeChange,
     appChartRef,
     selectedProtectionViewTab,
     parentName,
@@ -215,6 +216,7 @@ export const ConfigMapSecretProtected = ({
             appChartRef={appChartRef}
             isProtected
             isDraft
+            disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}
             onCancel={noop}
             onError={onError}

@@ -5,6 +5,7 @@ import {
     applyCompareDiffOnUneditedDocument,
     CMSecretExternalType,
     ConfigHeaderTabType,
+    ConfigMapSecretDataType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
     DraftAction,
@@ -36,7 +37,6 @@ import {
     CMSecretDraftData,
     CMSecretPayloadType,
     CMSecretConfigData,
-    CMSecretDTO,
     ESOSecretData,
     ConfigMapSecretDecodedDataReturnType,
     ConfigMapSecretDecodedDataProps,
@@ -637,11 +637,12 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     draftConfigDataRes,
 }: Pick<ConfigMapSecretFormProps, 'isJob'> & {
     isSecret: boolean
-    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
+    cmSecretConfigDataRes: PromiseSettledResult<ConfigMapSecretDataType | AppEnvDeploymentConfigDTO>
     draftConfigDataRes: PromiseSettledResult<DraftMetadataDTO>
 }) => {
     let configMapSecretData: CMSecretConfigData = null
     let draftData: CMSecretDraftData = null
+    let isDeleteDisabled = false
 
     // DRAFT DATA PROCESSING
     if (draftConfigDataRes.status === 'fulfilled') {
@@ -660,7 +661,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
             } catch {
                 draftData = {
                     ...draftConfigData,
-                    parsedData: { appId: 0, configData: [], id: 0 },
+                    parsedData: { appId: 0, configData: [], id: 0, isDeletable: false },
                     unAuthorized: !draftConfigData.isAppAdmin,
                 }
             }
@@ -673,12 +674,17 @@ export const getConfigMapSecretDraftAndPublishedData = ({
 
         if (cmSecretConfigData) {
             const configData = isJob
-                ? (cmSecretConfigData as CMSecretDTO).configData
+                ? (cmSecretConfigData as ConfigMapSecretDataType).configData
                 : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                       .configData
 
             // Since, jobs can only be created by super-admin users, modify this once API support is available.
             const unAuthorized = isJob ? false : !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin
+            // Flag from the API to disable the delete operation.
+            isDeleteDisabled =
+                !isJob &&
+                !(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
+                    .isDeletable
 
             if (configData?.length) {
                 configMapSecretData = {
@@ -698,7 +704,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
         }
     }
 
-    return { configMapSecretData, draftData }
+    return { configMapSecretData, draftData, isDeleteDisabled }
 }
 
 export const getConfigMapSecretInheritedData = ({
@@ -706,7 +712,7 @@ export const getConfigMapSecretInheritedData = ({
     isJob,
     isSecret,
 }: {
-    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
+    cmSecretConfigDataRes: PromiseSettledResult<ConfigMapSecretDataType | AppEnvDeploymentConfigDTO>
     isJob: boolean
     isSecret: boolean
 }): CMSecretConfigData => {
@@ -719,7 +725,7 @@ export const getConfigMapSecretInheritedData = ({
 
     const cmSecretConfigData = cmSecretConfigDataRes.value
     return isJob
-        ? { ...(cmSecretConfigData as CMSecretDTO).configData[0], unAuthorized: false }
+        ? { ...(cmSecretConfigData as ConfigMapSecretDataType).configData[0], unAuthorized: false }
         : {
               ...(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                   .configData[0],

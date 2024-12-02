@@ -14,6 +14,7 @@ import {
     DryRunEditorMode,
     ConfigHeaderTabType,
     OverrideMergeStrategyType,
+    ConfigMapSecretDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -78,7 +79,7 @@ export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
 }
 
 export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJob extends true
-    ? CMSecretDTO
+    ? ConfigMapSecretDataType
     : AppEnvDeploymentConfigDTO
 
 // SELECT PICKER OPTION TYPE
@@ -117,7 +118,7 @@ export interface ConfigMapSecretUseFormProps {
 // COMPONENT PROPS
 export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
     unAuthorized: boolean
-    parsedData: CMSecretDTO
+    parsedData: ConfigMapSecretDataType
 }
 
 export interface CMSecretWrapperProps
@@ -152,6 +153,7 @@ export interface ConfigMapSecretFormProps
     isSubmitting: boolean
     areScopeVariablesResolving: boolean
     isDraft?: boolean
+    disableDataTypeChange: boolean
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
@@ -211,6 +213,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'componentType'
         | 'cmSecretStateLabel'
         | 'isJob'
+        | 'disableDataTypeChange'
         | 'id'
         | 'onError'
         | 'onSubmit'
@@ -262,12 +265,6 @@ export interface ConfigMapSecretApproveButtonProps
 }
 
 // DTO
-export interface CMSecretDTO {
-    id: number
-    appId: number
-    configData: ConfigDatum[]
-}
-
 export interface ConfigMapSecretManifestDTO {
     manifest: string
 }

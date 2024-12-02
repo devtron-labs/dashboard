@@ -29,13 +29,13 @@ import {
     getIsRequestAborted,
     DraftMetadataDTO,
     showError,
+    ConfigMapSecretDataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import {
-    CMSecretDTO,
     CMSecretComponentType,
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,
@@ -113,7 +113,7 @@ export const getCMSecret = ({
     envId,
     name,
     signal,
-}: GetCMSecretProps): Promise<ResponseType<CMSecretDTO>> => {
+}: GetCMSecretProps): Promise<ResponseType<Omit<ConfigMapSecretDataDTO['data'], 'isDeletable'>>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${

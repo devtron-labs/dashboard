@@ -54,7 +54,7 @@ import {
     parseConfigMapSecretSearchParams,
 } from './utils'
 import { getConfigMapSecretFormValidations } from './validations'
-import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
+import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR, getDisabledDeleteTooltipText } from './constants'
 import {
     CM_SECRET_STATE,
     CMSecretComponentType,
@@ -206,7 +206,7 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
-                        // Skipped for jobs as API support is unavailable                        !isJob &&
+                        // Skipped for jobs as API support is unavailable
                         !isJob &&
                         (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
                             cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN)
@@ -240,7 +240,7 @@ export const ConfigMapSecretContainer = ({
     )
 
     // CONFIGMAP/SECRET DATA
-    const { configMapSecretData, inheritedConfigMapSecretData, draftData } = useMemo(() => {
+    const { configMapSecretData, inheritedConfigMapSecretData, draftData, isDeleteDisabled } = useMemo(() => {
         if (!configMapSecretResLoading && configMapSecretRes) {
             const data = getConfigMapSecretDraftAndPublishedData({
                 cmSecretConfigDataRes: configMapSecretRes[0],
@@ -251,6 +251,7 @@ export const ConfigMapSecretContainer = ({
 
             return {
                 ...data,
+                isDeleteDisabled: cmSecretStateLabel === CM_SECRET_STATE.BASE && data.isDeleteDisabled,
                 // For jobs: using current configuration data since inherited data is unavailable
                 // (logic is implemented to parse inherited data from the current data)
                 inheritedConfigMapSecretData: isJob
@@ -263,7 +264,12 @@ export const ConfigMapSecretContainer = ({
             }
         }
 
-        return { configMapSecretData: null, draftData: null, inheritedConfigMapSecretData: null }
+        return {
+            configMapSecretData: null,
+            draftData: null,
+            inheritedConfigMapSecretData: null,
+            isDeleteDisabled: null,
+        }
     }, [configMapSecretResLoading, configMapSecretRes])
 
     // CONFIGMAP/SECRET DELETED
@@ -441,7 +447,10 @@ export const ConfigMapSecretContainer = ({
             savedFormData.current = formData
             reset({ ...resolvedFormData, isResolvedData: true }, { keepInitialValues: true, keepDirty: true })
         } else if (savedFormData.current) {
-            reset(savedFormData.current, { keepInitialValues: true, keepDirty: true })
+            reset(
+                { ...savedFormData.current, mergeStrategy: formData.mergeStrategy, yamlMode: formData.yamlMode },
+                { keepInitialValues: true, keepDirty: true },
+            )
             savedFormData.current = null
         }
     }, [resolvedScopeVariables, resolvedFormData])
@@ -759,6 +768,8 @@ export const ConfigMapSecretContainer = ({
             handleShowEditHistory,
             handleDelete,
             handleDeleteOverride,
+            isDeleteDisabled,
+            deleteDisabledTooltip: getDisabledDeleteTooltipText(componentType),
             isDeletable:
                 cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
                 cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
@@ -795,6 +806,7 @@ export const ConfigMapSecretContainer = ({
                 updateCMSecret={updateCMSecret}
                 componentType={componentType}
                 isJob={isJob}
+                disableDataTypeChange={isDeleteDisabled}
                 parentName={parentName}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 appChartRef={appChartRef}
@@ -811,6 +823,7 @@ export const ConfigMapSecretContainer = ({
                 isJob={isJob}
                 isProtected={isProtected}
                 isSubmitting={isSubmitting}
+                disableDataTypeChange={isDeleteDisabled}
                 onSubmit={onSubmit}
                 onError={onError}
                 onCancel={onCancel}
