@@ -182,13 +182,7 @@ export const AppNavigation = () => {
                                     condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
                                     wrap={getEnvOverrideTippy}
                                 >
-                                    {item.required &&
-                                        renderNavItem(
-                                            item,
-                                            false,
-                                            // TODO: Need to be fixed
-                                            // isBaseConfigProtected
-                                        )}
+                                    {item.required && renderNavItem(item, true)}
                                 </ConditionalWrap>
                             )
                         }

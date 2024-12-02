@@ -65,15 +65,11 @@ const ApplicationRoute = ({
                 <div className="px-8 dc__overflow-auto">
                     {envAppList.map(({ name, id }) => (
                         <Fragment key={id}>
-                            {renderNavItem(
-                                {
-                                    title: name,
-                                    isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
-                                    href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
-                                },
-                                // TODO: Check with Rohit if this should be base config check
-                                appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
-                            )}
+                            {renderNavItem({
+                                title: name,
+                                isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
+                                href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
+                            })}
                         </Fragment>
                     ))}
                 </div>

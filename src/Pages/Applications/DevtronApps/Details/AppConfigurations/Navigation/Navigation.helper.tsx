@@ -32,7 +32,12 @@ const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolea
     return null
 }
 
-export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: boolean) => {
+/**
+ *
+ * @param item
+ * @param hideApprovalPolicyIcon Used to hide the policy icon (applicable for jobs atm)
+ */
+export const renderNavItem = (item: CustomNavItemsType, hideApprovalPolicyIcon?: boolean) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
 
     return (
@@ -48,7 +53,7 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
             to={item.href}
         >
             <span className="dc__truncate nav-text">{item.title}</span>
-            {renderNavItemIcon(item.isLocked, isBaseConfigProtected && item.isProtectionAllowed, linkDataTestName)}
+            {renderNavItemIcon(item.isLocked, !hideApprovalPolicyIcon && item.isProtectionAllowed, linkDataTestName)}
         </NavLink>
     )
 }

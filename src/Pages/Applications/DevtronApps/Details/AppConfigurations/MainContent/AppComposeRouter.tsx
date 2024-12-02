@@ -100,7 +100,7 @@ const AppComposeRouter = () => {
     const { currentAppName } = useAppContext()
 
     const approvalConfigMapForBaseConfiguration =
-        envIdToEnvApprovalConfigMap[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
+        envIdToEnvApprovalConfigMap?.[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
 
     const renderJobViewRoutes = (): JSX.Element => (
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also

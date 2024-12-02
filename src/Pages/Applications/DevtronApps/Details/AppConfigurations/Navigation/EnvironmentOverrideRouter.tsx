@@ -329,16 +329,12 @@ const EnvironmentOverrideRouter = ({
                                             }
                                         />
                                     ) : (
-                                        renderNavItem(
-                                            {
-                                                title: env.environmentName,
-                                                isProtectionAllowed:
-                                                    envIdToEnvApprovalConfigMap?.[env.environmentId]
-                                                        ?.isApprovalApplicable,
-                                                href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
-                                            },
-                                            envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable,
-                                        )
+                                        renderNavItem({
+                                            title: env.environmentName,
+                                            isProtectionAllowed:
+                                                envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable,
+                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
+                                        })
                                     )}
                                 </Fragment>
                             ),
