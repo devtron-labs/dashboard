@@ -123,7 +123,7 @@ export const SourceInfo = ({
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
-        const isApprovalConfigured = getIsApprovalPolicyConfigured(appDetails?.userApprovalMetadata?.approvalConfigData)
+        const isApprovalConfigured = getIsApprovalPolicyConfigured(appDetails?.approvalConfigData)
         const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
             ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
             : ''

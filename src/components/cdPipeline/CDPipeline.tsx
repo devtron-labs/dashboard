@@ -184,8 +184,6 @@ export default function CDPipeline({
             triggerType: TriggerType.Auto,
             steps: [],
         },
-        // Utilizing the null checks to get default value
-        // TODO: Remove
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
