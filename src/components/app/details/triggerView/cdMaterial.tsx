@@ -78,6 +78,8 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    GetPolicyConsequencesProps,
+    PolicyConsequencesDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -139,7 +141,6 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const getSecurityScan: ({
     appId,
     envId,
@@ -152,6 +153,9 @@ const getSecurityScan: ({
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
+    importComponentFromFELibrary('getPolicyConsequences', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -219,6 +223,26 @@ const CDMaterial = ({
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
+    const [policyConsequencesLoading, policyConsequencesResponse] = useAsync(
+        () => getPolicyConsequences({ appId, envId }),
+        [appId, envId],
+        !!getPolicyConsequences,
+    )
+
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = () => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return policyConsequencesResponse?.cd.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return policyConsequencesResponse?.cd.post.isBlocked
+            case DeploymentNodeType.CD:
+                return policyConsequencesResponse?.cd.node.isBlocked
+            default:
+                return false
+        }
+    }
+
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
         () =>
@@ -255,7 +279,7 @@ const CDMaterial = ({
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
-        !!pipelineId && !isTriggerBlockedDueToPlugin,
+        !!pipelineId && !isTriggerBlockedDueToPlugin && !policyConsequencesLoading && !getIsTriggerBlocked(),
     )
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
@@ -1075,6 +1099,9 @@ const CDMaterial = ({
         consumedImagePresent?: boolean,
         noEligibleImages?: boolean,
     ) => {
+        if (TriggerBlockEmptyState && getIsTriggerBlocked()) {
+            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
+        }
         if (isTriggerBlockedDueToPlugin && MissingPluginBlockState) {
             return (
                 <MissingPluginBlockState
@@ -1176,6 +1203,7 @@ const CDMaterial = ({
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
                             isFilterApplied={materialData.appliedFilters?.length > 0}
+                            triggerBlockedInfo={materialData.deploymentBlockedState}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1712,8 +1740,7 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    {AllowedWithWarningTippy &&
-                    showPluginWarningBeforeTrigger ? (
+                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}
@@ -1866,7 +1893,7 @@ const CDMaterial = ({
 
     // NOTE: Can make a skeleton component for loader
     // TODO: Fix this condition for aborting the request
-    if (loadingMaterials || materialsError?.code === 0) {
+    if (policyConsequencesLoading || loadingMaterials || materialsError?.code === 0) {
         return (
             <>
                 {!isFromBulkCD && (

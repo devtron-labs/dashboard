@@ -692,6 +692,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
+            triggerBlockedInfo: cdPipeline.preDeployStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
         }
         stageIndex++
@@ -744,8 +745,9 @@ function cdPipelineToNode(
         isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
         // Will populate this after initializing postCD
         showPluginWarning: false,
-        isTriggerBlocked: false,
         pluginBlockState: getParsedPluginPolicyConsequenceData(),
+        isTriggerBlocked: cdPipeline.isTriggerBlocked,
+        triggerBlockedInfo: cdPipeline.triggerBlockedInfo,
     }
     stageIndex++
 
@@ -786,6 +788,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
+            triggerBlockedInfo: cdPipeline.postDeployStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
         }
     }
@@ -804,7 +807,6 @@ function cdPipelineToNode(
     }
 
     CD.showPluginWarning = preCD?.showPluginWarning || postCD?.showPluginWarning
-    CD.isTriggerBlocked = false
     CD.pluginBlockState = getParsedPluginPolicyConsequenceData()
     return CD
 }

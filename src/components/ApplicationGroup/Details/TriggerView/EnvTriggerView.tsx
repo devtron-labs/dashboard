@@ -1785,6 +1785,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ),
                         consequence: _selectedNode.pluginBlockState,
                         warningMessage: isTriggerBlockedDueToPlugin ? `${stageText} is blocked` : '',
+                        triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
                     })
                 } else {
                     let warningMessage = ''
@@ -1981,9 +1982,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (selectedCINode?.id) {
             return (
                 <Switch>
-                     <Route
-                        path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
-                    >
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
                         <WebhookReceivedPayloadModal
                             workflowId={workflowID}
                             webhookPayloads={webhookPayloads}
