@@ -140,7 +140,6 @@ export interface AppRouterType {
     isSuperAdmin?: boolean
     appListCount: number
     loginCount: number
-    serverMode: SERVER_MODE
 }
 
 export interface ConfigOverrideWorkflowDetails {

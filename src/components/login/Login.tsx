@@ -151,7 +151,7 @@ class Login extends Component<LoginProps, LoginFormState> {
             return CommonURL.NETWORK_STATUS_INTERFACE
         }
 
-        return URLS.APP
+        return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE ? URLS.RESOURCE_BROWSER : URLS.APP
     }
 
     login(e): void {

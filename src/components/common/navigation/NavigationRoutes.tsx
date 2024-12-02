@@ -30,7 +30,7 @@ import {
     MODES,
     DEVTRON_BASE_MAIN_ID,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, useRouteMatch, useHistory, useLocation, Redirect } from 'react-router-dom'
+import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
@@ -384,6 +384,7 @@ export default function NavigationRoutes() {
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
                 {!_isOnboardingPage && (
                     <Navigation
+                        currentServerInfo={currentServerInfo}
                         history={history}
                         match={match}
                         location={location}
@@ -421,7 +422,6 @@ export default function NavigationRoutes() {
                                                     isSuperAdmin={isSuperAdmin}
                                                     appListCount={appListCount}
                                                     loginCount={loginCount}
-                                                    serverMode={serverMode}
                                                 />
                                             )}
                                         />,
@@ -482,7 +482,7 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(serverMode !== SERVER_MODE.EA_ONLY
+                                        ...(serverMode !== SERVER_MODE.EA_ONLY || currentServerInfo.serverInfo?.installationType !== 'enterprise'
                                             ? [
                                                 <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                                     <DevtronStackManager
@@ -525,7 +525,7 @@ export default function NavigationRoutes() {
     )
 }
 
-export const AppRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) => {
+export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentAppName, setCurrentAppName] = useState<string>('')
@@ -541,7 +541,6 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }
                                 isSuperAdmin={isSuperAdmin}
                                 appListCount={appListCount}
                                 loginCount={loginCount}
-                                serverMode={serverMode}
                             />
                         )}
                     />
@@ -563,11 +562,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
 
                     <Route exact path="">
-                        {serverMode === SERVER_MODE.EA_ONLY ? (
-                            <Redirect to={URLS.RESOURCE_BROWSER} />
-                        ) : (
-                            <RedirectToAppList />
-                        )}
+                        <RedirectToAppList />
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
@@ -580,7 +575,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }
     )
 }
 
-export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) => {
+export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
@@ -588,13 +583,9 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount, serverMo
     return (
         <ErrorBoundary>
             <Switch>
-                <Route exact path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
+                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
                 <Route exact path="">
-                    {serverMode === SERVER_MODE.EA_ONLY ? (
-                        <Redirect to={URLS.RESOURCE_BROWSER} />
-                    ) : (
-                        <RedirectToAppList />
-                    )}
+                    <RedirectToAppList />
                 </Route>
                 <Route>
                     <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
@@ -624,6 +615,8 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
+        } else if (window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
+            push(URLS.RESOURCE_BROWSER)
         } else {
             push(`${URLS.APP}/${URLS.APP_LIST}`)
         }
