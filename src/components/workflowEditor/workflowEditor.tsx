@@ -907,6 +907,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <div
                 className="workflow-editor bcn-0"
                 data-testid="workflow-editor-page"
+                // Added for showing the tippy on ApprovalNode
                 id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}
             >
                 <div className="flex dc__content-space pb-16">

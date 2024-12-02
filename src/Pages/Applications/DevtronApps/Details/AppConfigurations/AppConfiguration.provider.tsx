@@ -59,7 +59,6 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             hideConfigHelp,
             workflowsRes: state.workflowsRes,
             getWorkflows,
-            // isBaseConfigProtected: state.isBaseConfigProtected,
             reloadEnvironments,
             isGitOpsConfigurationRequired,
             isUnlocked: state.isUnlocked,

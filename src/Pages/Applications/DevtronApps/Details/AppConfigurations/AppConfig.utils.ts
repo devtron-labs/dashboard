@@ -270,12 +270,6 @@ export const getNavItems = (
                         flowCompletionPercent: completedPercent,
                         currentStep: completedSteps,
                     },
-                    // {
-                    //     title: 'Protect Configuration',
-                    //     href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
-                    //     stage: STAGE_NAME.PROTECT_CONFIGURATION,
-                    //     isLocked: false,
-                    // },
                     {
                         title: 'Environment Override',
                         href: `/app/${appId}/edit/env-override`,

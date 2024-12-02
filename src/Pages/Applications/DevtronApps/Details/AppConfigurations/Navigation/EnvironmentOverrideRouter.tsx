@@ -58,7 +58,6 @@ const EnvOverridesHelpNote = () => (
     </div>
 )
 
-// TODO: need to verify this
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()

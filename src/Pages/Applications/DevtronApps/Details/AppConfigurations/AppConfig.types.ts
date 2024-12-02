@@ -207,7 +207,6 @@ export interface EnvironmentOptionType {
 export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
-    // isBaseConfigProtected?: boolean
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string

@@ -9,11 +9,10 @@ interface AppOptionType extends Omit<SelectPickerOptionType<number>, 'label'> {
     label: string
 }
 
-export interface ReleaseConfigurationContextType {
+export interface ReleaseConfigurationContextType extends Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
     environments: EnvironmentOptionType[]
     applications: AppOptionType[]
     reloadEnvironments: () => void
     isAppListLoading: boolean
     isEnvListLoading: boolean
-    envIdToEnvApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
 }
