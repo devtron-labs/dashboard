@@ -22,9 +22,7 @@ import {
     ChartMetadataType,
     EnvListMinDTO,
     ResponseType,
-    SeverityCount,
     Teams,
-    SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
