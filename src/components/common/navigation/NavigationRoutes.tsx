@@ -598,6 +598,7 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
 export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { push } = useHistory()
     const { pathname } = useLocation()
+    const { serverMode } = useMainContext()
     useEffect(() => {
         if (pathname && pathname !== '/') {
             Sentry.captureMessage(
@@ -615,7 +616,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
-        } else if (window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
+        } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
             push(URLS.RESOURCE_BROWSER)
         } else {
             push(`${URLS.APP}/${URLS.APP_LIST}`)
