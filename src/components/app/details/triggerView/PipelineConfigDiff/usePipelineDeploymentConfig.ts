@@ -16,6 +16,8 @@ import {
     DeploymentConfigDiffState,
     ComponentSizeType,
     showError,
+    getCompareSecretsData,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -45,6 +47,7 @@ export const usePipelineDeploymentConfig = ({
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
+    const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
@@ -71,40 +74,61 @@ export const usePipelineDeploymentConfig = ({
 
     // FETCH PIPELINE DEPLOYMENT CONFIG
     const [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, , reloadPipelineDeploymentConfig] = useAsync(
-        async () =>
-            Promise.allSettled([
+        async () => {
+            const payloads = [
                 isLastDeployedConfigAvailable
-                    ? getAppEnvDeploymentConfig({
-                          params: {
-                              configArea: 'AppConfiguration',
-                              appName,
-                              envName,
-                              configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
-                              identifierId: previousDeployments[0].deploymentTemplateHistoryId,
-                              pipelineId,
-                          },
-                      })
+                    ? ({
+                          configArea: 'AppConfiguration',
+                          appName,
+                          envName,
+                          configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+                          wfrId: previousDeployments[0].wfrId,
+                          // NOTE: receiving pipelineId as string even tho its type is number
+                          pipelineId: Number(pipelineId),
+                      } as const)
                     : null,
-                getAppEnvDeploymentConfig({
-                    params: {
-                        configArea: 'AppConfiguration',
-                        appName,
-                        envName,
-                        configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                    },
-                }),
+                {
+                    configArea: 'AppConfiguration',
+                    appName,
+                    envName,
+                    configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                } as const,
                 isRollbackTriggerSelected && wfrId
-                    ? getAppEnvDeploymentConfig({
-                          params: {
-                              configArea: 'CdRollback',
-                              appName,
-                              envName,
-                              pipelineId,
-                              wfrId,
-                          },
-                      })
+                    ? ({
+                          configArea: 'CdRollback' as const,
+                          appName,
+                          envName,
+                          pipelineId: Number(pipelineId),
+                          wfrId,
+                      } as const)
                     : null,
-            ]),
+            ] as const
+
+            const [secretsData, ..._pipelineDeploymentConfigRes] = await Promise.allSettled([
+                isSuperAdmin ? null : getCompareSecretsData([...payloads]),
+                ...payloads.map((payload) => payload && getAppEnvDeploymentConfig({ params: payload })),
+            ])
+
+            if (secretsData.status !== 'fulfilled') {
+                return _pipelineDeploymentConfigRes
+            }
+
+            // NOTE: for security reasons secretsData from getAppEnvDeploymentConfig
+            // will be null if user has view only access. therefore need to override it
+            // with masked values from getCompareSecretsData
+            secretsData.value?.forEach((data, index) => {
+                if (
+                    _pipelineDeploymentConfigRes[index].status !== 'fulfilled' ||
+                    !_pipelineDeploymentConfigRes[index].value
+                ) {
+                    return
+                }
+
+                _pipelineDeploymentConfigRes[index].value.result.secretsData = data.secretsData
+            })
+
+            return _pipelineDeploymentConfigRes
+        },
         [isRollbackTriggerSelected && wfrId],
         !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
     )
