@@ -512,7 +512,7 @@ export const DeploymentConfigCompare = ({
         const currentSearchParams = new URLSearchParams(location.search)
 
         // NOTE: need to find the corresponding chartRefId(s) for compareWith and compareTo
-        // and set/remove them based on _isManifestView
+        // and set/delete them based on _isManifestView
         const _compareWithManifestChartRefId =
             currentSearchParams.has('compareWithIdentifierId') && _isManifestView
                 ? compareEnvOptions.previousDeployments.find(
@@ -529,13 +529,19 @@ export const DeploymentConfigCompare = ({
                   )?.chartRefId ?? null
                 : null
 
-        currentSearchParams.set(
-            'compareWithManifestChartRefId',
-            // NOTE: need to convert to string but leave null as is
-            _compareWithManifestChartRefId ? String(_compareWithManifestChartRefId) : null,
-        )
+        if (_compareWithManifestChartRefId) {
+            currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))
+        } else {
+            // NOTE: make sure to not set null as URLSearchParams will save the null as string
+            // i.e suppose we save 'hello' = null, we get ?hello=null as search param
+            currentSearchParams.delete('compareWithManifestChartRefId')
+        }
 
-        currentSearchParams.set('manifestChartRefId', _manifestChartRefId ? String(_manifestChartRefId) : null)
+        if (_manifestChartRefId) {
+            currentSearchParams.set('manifestChartRefId', String(_manifestChartRefId))
+        } else {
+            currentSearchParams.delete('manifestChartRefId')
+        }
 
         push({
             pathname: generatePath(path, {
