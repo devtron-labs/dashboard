@@ -32,12 +32,8 @@ import {
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
-    FilterParentType,
-    SetFiltersInLocalStorageParamsType,
-    AppEnvLocalStorageKeyType,
 } from './AppGroup.types'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
-import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from './Constants'
 
 let timeoutId
 
@@ -296,24 +292,3 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
 })
-
-export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
-    filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
-
-export const setFilterInLocalStorage = ({
-    filterParentType,
-    resourceId,
-    resourceList,
-    groupList,
-}: SetFiltersInLocalStorageParamsType) => {
-    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
-    try {
-        const localStorageValue = localStorage.getItem(localStorageKey)
-        const localStoredMap = new Map(localStorageValue ? JSON.parse(localStorageValue) : null)
-        localStoredMap.set(resourceId, [resourceList, groupList])
-        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
-        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
-    } catch {
-        localStorage.setItem(localStorageKey, '')
-    }
-}
