@@ -41,7 +41,6 @@ export const ValueContainer = (props): JSX.Element => {
         selectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    console.log(appListOptions)
     let selectorText
     const selectedAppsLength = props.getValue().length
     if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
