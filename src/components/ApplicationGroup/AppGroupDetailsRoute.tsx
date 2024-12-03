@@ -42,7 +42,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
-import { ErrorBoundary, sortOptionsByLabel, useAppContext } from '../common'
+import {
+    ErrorBoundary,
+    getAndSetAppGroupFilters,
+    setAppGroupFilterInLocalStorage,
+    sortOptionsByLabel,
+    useAppContext,
+} from '../common'
 import { URLS } from '../../config'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
@@ -112,6 +118,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [description, setDescription] = useState<string>(
         appGroupListData?.description ? appGroupListData?.description : '',
     )
+    const [initLoading, setInitLoading] = useState<boolean>(false)
+
+    const filterParentType = FilterParentType.env
 
     useEffect(() => {
         if (envList?.result) {
@@ -124,8 +133,22 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     useEffect(() => {
         if (envId && !showEmpty) {
-            getSavedFilterData()
-            getAppListData()
+            setInitLoading(true)
+
+            Promise.all([getSavedFilterData(), getAppListData()]).then((response) => {
+                const groupFilterOptionsList = response?.[0]
+                const appListOptionsList = response?.[1]
+
+                getAndSetAppGroupFilters({
+                    filterParentType,
+                    appListOptions: appListOptionsList,
+                    groupFilterOptions: groupFilterOptionsList,
+                    resourceId: envId,
+                    setSelectedAppList,
+                    setSelectedGroupFilter,
+                })
+            })
+            setInitLoading(false)
         }
         return () => {
             setSelectedAppList([])
@@ -136,13 +159,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }, [envId])
 
-    const getSavedFilterData = async (groupId?: number): Promise<void> => {
+    const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
 
+        const _groupFilterOption = []
         if (result) {
-            const _groupFilterOption = []
             let _selectedGroup
             for (const group of result) {
                 const processedGroupData = {
@@ -162,8 +185,15 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 for (const appId of groupAppIds) {
                     selectedAppsMap[appId] = true
                 }
-                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
+                const filteredAppList = appListOptions.filter((app) => selectedAppsMap[app.value])
+                setSelectedAppList(filteredAppList)
                 setSelectedGroupFilter([_selectedGroup])
+                setAppGroupFilterInLocalStorage({
+                    filterParentType,
+                    resourceId: envId,
+                    resourceList: filteredAppList,
+                    groupList: [_selectedGroup],
+                })
             } else {
                 setSelectedAppList([])
                 setSelectedGroupFilter([])
@@ -172,6 +202,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setGroupFilterOptions(_groupFilterOption)
         }
         setAppListLoading(false)
+        return _groupFilterOption
     }
 
     const handleSaveDescription = async (value: string) => {
@@ -197,28 +228,29 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }
 
-    const getAppListData = async (): Promise<void> => {
+    const getAppListData = async (): Promise<OptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppGroupList(+envId)
         setAppGroupListData(result)
         setDescription(result.description)
-        if (result.apps?.length) {
-            const _appListOptions = result.apps
-                .map((app): OptionType => {
-                    return {
-                        value: `${app.appId}`,
-                        label: app.appName,
-                    }
-                })
-                .sort(sortOptionsByLabel)
+        const _appListOptions = result.apps?.length
+            ? result.apps
+                  .map((app): OptionType => {
+                      return {
+                          value: `${app.appId}`,
+                          label: app.appName,
+                      }
+                  })
+                  .sort(sortOptionsByLabel)
+            : []
 
-            setAppListOptions(_appListOptions)
-            if (selectedGroupFilter.length) {
-                setSelectedAppList(_appListOptions.filter((app) => selectedGroupFilter[0].appIds.includes(+app.value)))
-            }
+        setAppListOptions(_appListOptions)
+        if (selectedGroupFilter.length) {
+            setSelectedAppList(_appListOptions.filter((app) => selectedGroupFilter[0].appIds.includes(+app.value)))
         }
         setAppListLoading(false)
+        return _appListOptions
     }
 
     const handleToast = (action: string) => {
@@ -391,7 +423,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }, [selectedAppList, appGroupListData?.apps, appGroupListData?.description])
 
     const renderRoute = () => {
-        if (loading || appListLoading) {
+        if (initLoading || loading || appListLoading) {
             return <Progressing pageLoader />
         }
         if (showEmpty) {
@@ -462,7 +494,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
-                    filterParentType={FilterParentType.env}
+                    filterParentType={filterParentType}
                 />
             )}
             {showDeleteGroup && isPopupBox && (
