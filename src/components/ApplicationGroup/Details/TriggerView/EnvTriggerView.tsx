@@ -1360,7 +1360,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
-        // setShowBulkCIModal(true)
+        setWebhookPayloads(null)
         setTimeout(() => {
             setShowBulkCIModal(true)
         }, 100)
@@ -2082,6 +2082,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 onClickTriggerBulkCI={onClickTriggerBulkCI}
                 getWebhookPayload={getWebhookPayload}
                 webhookPayloads={webhookPayloads}
+                setWebhookPayloads={setWebhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
                 responseList={responseList}

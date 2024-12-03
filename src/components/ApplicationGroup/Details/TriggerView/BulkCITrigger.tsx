@@ -100,6 +100,7 @@ const BulkCITrigger = ({
     setRuntimeParamsErrorState,
     setPageViewType,
     webhookPayloads,
+    setWebhookPayloads,
     isWebhookPayloadLoading,
 }: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
@@ -299,7 +300,10 @@ const BulkCITrigger = ({
         }
     }
 
-    const onCloseWebhookModal = () => setIsWebhookBulkCI(false)
+    const onCloseWebhookModal = () => {
+        setIsWebhookBulkCI(false)
+        setWebhookPayloads(null)
+    }
 
     const renderHeaderSection = (): JSX.Element | null => {
         if (showWebhookModal) {
