@@ -46,4 +46,11 @@ do
   fi
 done < .env
 
+SENTRY_RELEASE_VERSION="dashboard@$(git rev-parse --short HEAD)"
+
+echo "SENTRY_RELEASE_VERSION=$SENTRY_RELEASE_VERSION" >> .env
+echo "  SENTRY_RELEASE_VERSION: \"$SENTRY_RELEASE_VERSION\"," >> ./env-config.js
+
+echo "Added SENTRY_RELEASE_VERSION=$SENTRY_RELEASE_VERSION to .env & ./env-config.js"
+
 echo "}" >> ./env-config.js

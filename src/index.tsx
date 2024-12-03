@@ -65,7 +65,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
         dsn: window._env_.SENTRY_DSN || '',
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
+        ...(window._env_.SENTRY_RELEASE_VERSION ? { release: window._env_.SENTRY_RELEASE_VERSION } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
