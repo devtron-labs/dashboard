@@ -152,8 +152,9 @@ const EnvironmentOverride = ({
                             fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
+                            key={`configmap-${params.appId}-${params.envId}`}
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -168,8 +169,9 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
+                            key={`secret-${params.appId}-${params.envId}`}
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}

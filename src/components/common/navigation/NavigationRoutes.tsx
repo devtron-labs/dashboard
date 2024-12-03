@@ -28,6 +28,7 @@ import {
     URLS as CommonURLS,
     AppListConstants,
     MODES,
+    DEVTRON_BASE_MAIN_ID,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -380,9 +381,10 @@ export default function NavigationRoutes() {
                 isSuperAdmin,
             }}
         >
-            <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+            <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
                 {!_isOnboardingPage && (
                     <Navigation
+                        currentServerInfo={currentServerInfo}
                         history={history}
                         match={match}
                         location={location}
@@ -480,13 +482,17 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                            <DevtronStackManager
-                                                serverInfo={currentServerInfo.serverInfo}
-                                                getCurrentServerInfo={getCurrentServerInfo}
-                                                isSuperAdmin={isSuperAdmin}
-                                            />
-                                        </Route>,
+                                        ...(currentServerInfo.serverInfo?.installationType !== 'enterprise'
+                                            ? [
+                                                <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                                    <DevtronStackManager
+                                                        serverInfo={currentServerInfo.serverInfo}
+                                                        getCurrentServerInfo={getCurrentServerInfo}
+                                                        isSuperAdmin={isSuperAdmin}
+                                                    />
+                                                </Route>
+                                              ]
+                                            : []),
                                         <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
@@ -592,6 +598,7 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
 export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { push } = useHistory()
     const { pathname } = useLocation()
+    const { serverMode } = useMainContext()
     useEffect(() => {
         if (pathname && pathname !== '/') {
             Sentry.captureMessage(
@@ -609,6 +616,8 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
+        } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
+            push(URLS.RESOURCE_BROWSER)
         } else {
             push(`${URLS.APP}/${URLS.APP_LIST}`)
         }

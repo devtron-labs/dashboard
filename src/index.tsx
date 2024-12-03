@@ -164,8 +164,9 @@ if (!window || !window._env_) {
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
         FEATURE_PROMO_EMBEDDED_IFRAME_URL: '',
-        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
         FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
+        FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
     }
 }
 
