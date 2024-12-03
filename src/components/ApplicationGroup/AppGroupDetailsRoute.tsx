@@ -135,20 +135,23 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         if (envId && !showEmpty) {
             setInitLoading(true)
 
-            Promise.all([getSavedFilterData(), getAppListData()]).then((response) => {
-                const groupFilterOptionsList = response[0]
-                const appListOptionsList = response[1]
+            Promise.all([getSavedFilterData(), getAppListData()])
+                .then((response) => {
+                    const groupFilterOptionsList = response[0]
+                    const appListOptionsList = response[1]
 
-                getAndSetAppGroupFilters({
-                    filterParentType,
-                    appListOptions: appListOptionsList,
-                    groupFilterOptions: groupFilterOptionsList,
-                    resourceId: envId,
-                    setSelectedAppList,
-                    setSelectedGroupFilter,
+                    getAndSetAppGroupFilters({
+                        filterParentType,
+                        appListOptions: appListOptionsList,
+                        groupFilterOptions: groupFilterOptionsList,
+                        resourceId: envId,
+                        setSelectedAppList,
+                        setSelectedGroupFilter,
+                    })
                 })
-            })
-            setInitLoading(false)
+                .finally(() => {
+                    setInitLoading(false)
+                })
         }
         return () => {
             setSelectedAppList([])
