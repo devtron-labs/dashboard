@@ -71,11 +71,6 @@ const GUIView = ({
 
             setFormData(parsedValue)
             formDataRef.current = parsedValue
-
-            if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current && ConfigurableGUIViewModel) {
-                modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
-                setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
-            }
         } catch (err) {
             if (err instanceof GUIViewError) {
                 setInvalidGUISchemaError(err)
@@ -83,13 +78,28 @@ const GUIView = ({
                 handleChangeToYAMLMode()
             }
         }
+    }, [value, guiSchema])
 
-        return () => {
-            if (mergeStrategy !== OverrideMergeStrategyType.PATCH) {
-                modelRef.current = null
+    useEffect(() => {
+        try {
+            if (mergeStrategy === OverrideMergeStrategyType.PATCH && ConfigurableGUIViewModel) {
+                modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
+                setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
+            }
+        } catch (err) {
+            if (err instanceof GUIViewError) {
+                setInvalidGUISchemaError(err)
             }
         }
-    }, [value, guiSchema, mergeStrategy])
+
+        return () => {
+            // NOTE: since this is a closure; mergeStrategy value here will be the previous value
+            if (mergeStrategy === OverrideMergeStrategyType.PATCH) {
+                modelRef.current = null
+                setConfigurableGUIViewUISchema({})
+            }
+        }
+    }, [mergeStrategy])
 
     useEffect(
         () => () => {
