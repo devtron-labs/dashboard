@@ -26,6 +26,7 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
@@ -103,10 +104,6 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     manualChunks(id: string): `@${string}` | undefined {
-                        if (id.includes('node_modules/sockjs-client')) {
-                            return '@sockjs-client'
-                        }
-
                         if (
                             id.includes('/node_modules/moment') ||
                             id.includes('/node_modules/moment-timezone') ||
@@ -115,6 +112,7 @@ export default defineConfig(({ mode }) => {
                             return '@moment'
                         }
 
+                        // @react-select is generated from @devtron-labs libs; same for others
                         if (id.includes('/node_modules/react-select') || id.includes('@react-select')) {
                             return '@react-select'
                         }
@@ -126,11 +124,6 @@ export default defineConfig(({ mode }) => {
                         if (id.includes('node_modules/react-dates') || id.includes('@react-dates')) {
                             return '@react-dates'
                         }
-
-                        // FIXME: This breaks due to circular imports probably
-                        // if (id.includes('node_modules/recharts')) {
-                        //     return '@recharts'
-                        // }
 
                         if (id.includes('node_modules/@rjsf')) {
                             return '@rjsf'
@@ -162,25 +155,22 @@ export default defineConfig(({ mode }) => {
 
                         // separating the common lib chunk
                         if (id.includes('devtron-fe-common-lib')) {
-                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]?.split('.')?.[0]
+                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
 
-                            if (splittedChunk && splittedChunk !== 'index') {
+                            if (splittedChunk) {
                                 return `@devtron-common-${splittedChunk}`
                             }
-                            return '@devtron-common-index'
+                            return '@devtron-common'
                         }
-                        if (id.includes('devtron-fe-lib')) {
-                            const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]?.split('.')?.[0]
 
-                            if (splittedChunk && splittedChunk !== 'index') {
+                        if (id.includes('devtron-fe-lib')) {
+                            const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
+
+                            if (splittedChunk) {
                                 return `@devtron-fe-lib-${splittedChunk}`
                             }
-                            return '@devtron-fe-lib-index'
+                            return '@devtron-fe-lib'
                         }
-
-                        // if (id.includes('node_modules')) {
-                        //     return `@${id.toString().split('node_modules/')[1].split('/')[0].toString()}`
-                        // }
                     },
                 },
             },
@@ -201,6 +191,9 @@ export default defineConfig(({ mode }) => {
             requireTransform(),
             NodeGlobalsPolyfillPlugin({
                 process: true,
+            }),
+            ViteImageOptimizer({
+                logStats: false,
             }),
             // VitePWA and jsToBottomNoModule is not to be added for storybook
             ...(process.env.IS_STORYBOOK

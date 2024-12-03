@@ -120,10 +120,13 @@
         "prettier": "^3.1.1",
         "react-test-render": "^1.1.2",
         "sass": "^1.69.7",
+        "sharp": "^0.33.5",
         "storybook": "^8.4.2",
+        "svgo": "^3.3.2",
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
+        "vite-plugin-image-optimizer": "^1.1.8",
         "vite-plugin-pwa": "^0.21.1",
         "vite-tsconfig-paths": "5.0.1",
         "vitest": "2.0.5"
