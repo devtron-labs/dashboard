@@ -157,6 +157,7 @@ const GUIView = ({
                         // NOTE: we need to use the original document to evaluate the actual paths
                         flatMapOfJSONPaths([key], parsedUneditedDocument)
                             .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
+                            .filter((path) => !!path)
                             .map((path) => makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))),
                     ),
                     configurableGUIViewUISchema,
