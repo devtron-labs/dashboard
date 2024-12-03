@@ -165,17 +165,17 @@ export default defineConfig(({ mode }) => {
                             const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]?.split('.')?.[0]
 
                             if (splittedChunk && splittedChunk !== 'index') {
-                                return `@devtron-common/${splittedChunk}`
+                                return `@devtron-common-${splittedChunk}`
                             }
-                            return '@devtron-common/index'
+                            return '@devtron-common-index'
                         }
                         if (id.includes('devtron-fe-lib')) {
                             const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]?.split('.')?.[0]
 
                             if (splittedChunk && splittedChunk !== 'index') {
-                                return `@devtron-fe-lib/${splittedChunk}`
+                                return `@devtron-fe-lib-${splittedChunk}`
                             }
-                            return '@devtron-fe-lib/index'
+                            return '@devtron-fe-lib-index'
                         }
 
                         // if (id.includes('node_modules')) {
