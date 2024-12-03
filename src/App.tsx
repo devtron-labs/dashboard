@@ -224,7 +224,6 @@ export default function App() {
                         } catch {
                             // Do nothing
                         }
-                        swRegistration.update()
                     },
                     serviceWorkerTimeout * 1000 * 60,
                 )
