@@ -13,6 +13,7 @@ COPY vite.config.mts .
 COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html
+RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env
 RUN yarn build
 
 FROM nginx:stable
@@ -30,5 +31,6 @@ COPY --from=builder  /app/health.html .
 RUN chown -R devtron:devtron /usr/share/nginx/html
 # Make our shell script executable
 RUN chmod +x env.sh
+RUN chmod +x sentry.sh
 USER devtron
 CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && /usr/share/nginx/html/sentry.sh && nginx -g \"daemon off;\""]
