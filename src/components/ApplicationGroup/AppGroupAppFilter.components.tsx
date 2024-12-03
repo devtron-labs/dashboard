@@ -19,7 +19,7 @@ import { components } from 'react-select'
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { getOptionBGClass, setFilterInLocalStorage } from './AppGroup.utils'
+import { getOptionBGClass } from './AppGroup.utils'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -31,6 +31,7 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
+import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -40,6 +41,7 @@ export const ValueContainer = (props): JSX.Element => {
         selectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
+    console.log(appListOptions)
     let selectorText
     const selectedAppsLength = props.getValue().length
     if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
@@ -183,7 +185,7 @@ export const MenuList = (props: any): JSX.Element => {
     const clearSelection = (): void => {
         setSelectedAppList([])
         setSelectedGroupFilter([])
-        setFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
+        setAppGroupFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)
