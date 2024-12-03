@@ -1279,6 +1279,14 @@ export const getAndSetAppGroupFilters = ({
         )
         const filteredLocalStorageGroupList = localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
 
+        // this means last selected group filter has been deleted
+        if (!!localStorageGroupList.length && !filteredLocalStorageGroupList.length) {
+            setSelectedAppList([])
+            setSelectedGroupFilter([])
+            setAppGroupFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
+            return
+        }
+
         setSelectedAppList(filteredLocalStorageResourceList)
         setSelectedGroupFilter(filteredLocalStorageGroupList)
     } catch {
