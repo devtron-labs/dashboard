@@ -662,21 +662,19 @@ const BulkCITrigger = ({
         )
     }
 
-    const renderWebhookModal = (): JSX.Element => {
-        return (
-            <WebhookReceivedPayloadModal
-                workflowId={+selectedApp.workFlowId}
-                webhookPayloads={webhookPayloads}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                material={selectedApp.material}
-                pipelineId={selectedApp.ciPipelineId}
-                title={selectedApp.ciPipelineName}
-                getWebhookPayload={getWebhookPayload}
-                appId={selectedApp.appId.toString()}
-                isBulkCIWebhook={isWebhookBulkCI}
-            />
-        )
-    }
+    const renderWebhookModal = (selectedMaterialList: CIMaterialType[]): JSX.Element => (
+        <WebhookReceivedPayloadModal
+            workflowId={+selectedApp.workFlowId}
+            webhookPayloads={webhookPayloads}
+            isWebhookPayloadLoading={isWebhookPayloadLoading}
+            material={selectedMaterialList}
+            pipelineId={selectedApp.ciPipelineId}
+            title={selectedApp.ciPipelineName}
+            getWebhookPayload={getWebhookPayload}
+            appId={selectedApp.appId.toString()}
+            isBulkCIWebhook={isWebhookBulkCI}
+        />
+    )
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
@@ -701,7 +699,7 @@ const BulkCITrigger = ({
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {isWebhookBulkCI ? (
-                    renderWebhookModal()
+                    renderWebhookModal(selectedMaterialList)
                 ) : (
                     <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                         <div
