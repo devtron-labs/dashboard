@@ -59,7 +59,7 @@ export default function App() {
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
     const location = useLocation()
-    const { push, ...history } = useHistory()
+    const { push } = useHistory()
     const didMountRef = useRef(false)
     const isDirectApprovalNotification =
         location.pathname &&
@@ -209,7 +209,6 @@ export default function App() {
                         ) {
                             return
                         }
-                        // if ('connection' in navigator && !navigator.onLine) return
 
                         try {
                             const resp = await fetch(swUrl, {
@@ -232,9 +231,6 @@ export default function App() {
         },
         onRegisterError(error) {
             console.log('SW registration error', error)
-        },
-        onOfflineReady() {
-            console.log('Ready to work offline')
         },
         onNeedRefresh() {
             handleNeedRefresh()
@@ -289,7 +285,7 @@ export default function App() {
                 ToastManager.dismissToast(updateToastRef.current)
             }
         }
-    }, [history.location.pathname])
+    }, [location])
 
     useEffect(() => {
         if (!bgUpdated) {
