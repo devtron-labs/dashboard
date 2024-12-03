@@ -12,6 +12,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
@@ -207,6 +208,9 @@ export type ConfigDryRunProps = {
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
     mergeStrategy: OverrideMergeStrategyType
+    /**
+     * Is current view overridden
+     */
     isOverridden: boolean
 } & ConfigDryRunManifestProps &
     ConfigErrorHandlingProps
@@ -320,3 +324,20 @@ export type SelectMergeStrategyProps = {
      */
     variant: 'dropdown' | 'text'
 }
+
+export type EnvOverrideEditorCommonStateType = Required<
+    Pick<
+        DeploymentTemplateStateType['draftTemplateData'],
+        | 'originalTemplate'
+        | 'editorTemplate'
+        | 'editorTemplateWithoutLockedKeys'
+        | 'environmentConfig'
+        | 'mergeStrategy'
+        | 'mergedTemplate'
+        | 'mergedTemplateObject'
+        | 'mergedTemplateWithoutLockedKeys'
+        | 'isLoadingMergedTemplate'
+        | 'mergedTemplateError'
+        | 'isOverridden'
+    >
+>

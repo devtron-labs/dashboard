@@ -13,6 +13,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import YAML from 'yaml'
 import {
     BaseDeploymentTemplateParsedDraftDTO,
+    ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
@@ -29,7 +30,7 @@ import {
 } from './types'
 import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { CompareConfigViewProps } from '../types'
+import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../types'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -69,7 +70,7 @@ export const getEditorTemplateAndLockedKeys = (
 ): Pick<DeploymentTemplateEditorDataStateType, 'editorTemplate' | 'removedPatches'> => {
     const removedPatches: DeploymentTemplateEditorDataStateType['removedPatches'] = []
 
-    if (!removeLockedKeysFromYaml || !lockedConfigKeys.length) {
+    if (!removeLockedKeysFromYaml || !lockedConfigKeys.length || !template) {
         return { editorTemplate: template, removedPatches }
     }
 
@@ -92,7 +93,10 @@ export const getEditorTemplateAndLockedKeys = (
 export const getCurrentTemplateWithLockedKeys = ({
     currentEditorTemplateData,
     wasGuiOrHideLockedKeysEdited,
-}: Pick<DeploymentTemplateStateType, 'currentEditorTemplateData' | 'wasGuiOrHideLockedKeysEdited'>): string => {
+}: Pick<
+    DeploymentTemplateStateType,
+    ConfigEditorStatesType.CURRENT_EDITOR | 'wasGuiOrHideLockedKeysEdited'
+>): string => {
     const removedPatches = structuredClone(currentEditorTemplateData.removedPatches || [])
 
     if (!removedPatches.length || !reapplyRemovedLockedKeysToYaml) {
@@ -106,6 +110,7 @@ export const getCurrentTemplateWithLockedKeys = ({
         const updatedEditorObject = reapplyRemovedLockedKeysToYaml(parsedDocument, removedPatches)
 
         if (wasGuiOrHideLockedKeysEdited) {
+            // TODO: Sync regarding this originalDocument theory when we have no override should we check for mergedTemplateObject
             return YAMLStringify(applyCompareDiffOnUneditedDocument(originalDocument, updatedEditorObject), {
                 simpleKeys: true,
             })
@@ -315,6 +320,63 @@ export const getCurrentEditorPayloadForScopedVariables = ({
     return currentEditorState.editorTemplate
 }
 
+export const getEnvOverrideEditorCommonState = ({
+    id,
+    status,
+    manualReviewed,
+    active,
+    namespace,
+    lockedConfigKeys,
+    mergeStrategy: mergeStrategyFromParams,
+    envOverridePatchValues: envOverridePatchValuesFromParams,
+    mergedTemplateObject: mergedTemplateObjectFromParams,
+    isOverridden,
+}: Pick<
+    OverriddenBaseDeploymentTemplateParsedDraftDTO,
+    'id' | 'status' | 'manualReviewed' | 'active' | 'namespace' | 'mergeStrategy' | 'envOverridePatchValues'
+> &
+    Pick<EnvOverrideEditorCommonStateType, 'isOverridden'> & {
+        lockedConfigKeys: string[]
+        mergedTemplateObject: OverriddenBaseDeploymentTemplateParsedDraftDTO['envOverrideValues']
+    }): EnvOverrideEditorCommonStateType => {
+    const mergeStrategy = mergeStrategyFromParams || DEFAULT_MERGE_STRATEGY
+    const envOverridePatchValues = envOverridePatchValuesFromParams || {}
+    const mergedTemplateObject = mergedTemplateObjectFromParams || {}
+
+    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
+    const originalTemplateObjectBasedOnStrategy = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
+    const originalTemplateObject = isOverridden ? originalTemplateObjectBasedOnStrategy : {}
+
+    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
+    const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+        stringifiedTemplate,
+        lockedConfigKeys,
+    )
+
+    const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
+
+    return {
+        originalTemplate: originalTemplateObject,
+        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
+        editorTemplateWithoutLockedKeys,
+        environmentConfig: {
+            id,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+        },
+        mergeStrategy,
+        mergedTemplate: stringifiedFinalTemplate,
+        mergedTemplateObject,
+        mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
+            .editorTemplate,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
+        isOverridden,
+    }
+}
+
 export const handleInitializeDraftData = ({
     latestDraft,
     guiSchema,
@@ -356,65 +418,51 @@ export const handleInitializeDraftData = ({
             mergedTemplate: stringifiedTemplate,
             mergedTemplateObject: valuesOverride,
             mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
+            isLoadingMergedTemplate: false,
+            mergedTemplateError: null,
         }
 
         return response
     }
 
     const {
-        envOverrideValues,
         id,
-        isDraftOverriden,
-        isAppMetricsEnabled,
-        chartRefId,
         status,
         manualReviewed,
         active,
         namespace,
+        envOverrideValues,
+        mergeStrategy,
+        envOverridePatchValues,
+
+        isDraftOverriden,
+        isAppMetricsEnabled,
+        chartRefId,
         readme,
         schema,
-        mergeStrategy: mergeStrategyFromDraft,
-        envOverridePatchValues: envOverridePatchValuesFromDraft,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
 
-    const mergeStrategy = mergeStrategyFromDraft || DEFAULT_MERGE_STRATEGY
-    const envOverridePatchValues = envOverridePatchValuesFromDraft || {}
-
-    const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
-    const originalTemplateObject = isMergeStrategyPatch ? envOverridePatchValues : envOverrideValues
-
-    const stringifiedFinalTemplate = YAMLStringify(envOverrideValues, { simpleKeys: true })
-
-    const stringifiedTemplate = YAMLStringify(originalTemplateObject, { simpleKeys: true })
-    const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-        stringifiedTemplate,
-        lockedConfigKeys,
-    )
-
     const response: DeploymentTemplateStateType['draftTemplateData'] = {
-        originalTemplate: originalTemplateObject,
-        schema,
-        readme,
-        guiSchema,
-        isAppMetricsEnabled,
-        editorTemplate: !Object.keys(originalTemplateObject).length ? '' : stringifiedTemplate,
-        latestDraft,
-        selectedChartRefId: chartRefId,
-        selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
-        editorTemplateWithoutLockedKeys,
-        isOverridden: isDraftOverriden,
-        environmentConfig: {
+        ...getEnvOverrideEditorCommonState({
             id,
             status,
             manualReviewed,
             active,
             namespace,
-        },
-        mergeStrategy,
-        mergedTemplate: stringifiedFinalTemplate,
-        mergedTemplateObject: envOverrideValues,
-        mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
-            .editorTemplate,
+            mergedTemplateObject: envOverrideValues,
+            mergeStrategy,
+            envOverridePatchValues,
+            lockedConfigKeys,
+            isOverridden: isDraftOverriden,
+        }),
+
+        schema,
+        readme,
+        guiSchema,
+        isAppMetricsEnabled,
+        latestDraft,
+        selectedChartRefId: chartRefId,
+        selectedChart: chartRefsData.charts.find((chart) => chart.id === chartRefId),
     }
 
     return response
@@ -658,3 +706,18 @@ export const getEditorSchemaURIFromChartNameAndVersion = (chartName: string, ver
 
     return `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/${CHART_NAME_TO_DOC_SEGMENT[chartName]}-chart_${version.replace(/\./g, '-')}/schema.json`
 }
+
+const getIsEditorStrategyPatch = (
+    editorState: DeploymentTemplateConfigState | DeploymentTemplateEditorDataStateType,
+): boolean => editorState?.isOverridden && editorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+export const getEditorStatesWithPatchStrategy = (state: DeploymentTemplateStateType): ConfigEditorStatesType[] =>
+    Object.values(ConfigEditorStatesType)
+        .map((editorState) => {
+            if (getIsEditorStrategyPatch(state[editorState])) {
+                return editorState
+            }
+
+            return null
+        })
+        .filter(Boolean)

@@ -17,6 +17,13 @@ import {
     OverrideMergeStrategyType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+export enum ConfigEditorStatesType {
+    CURRENT_EDITOR = 'currentEditorTemplateData',
+    PUBLISHED_EDITOR = 'publishedTemplateData',
+    DRAFT_EDITOR = 'draftTemplateData',
+    BASE_EDITOR = 'baseDeploymentTemplateData',
+}
+
 type BaseDeploymentTemplateProps = {
     /**
      * If isUnSet is true would call this so that we re-direct users to next step
@@ -63,9 +70,6 @@ export interface DeploymentTemplateEditorDataStateType
     parsingError: string
     removedPatches: Operation[]
     originalTemplateState: DeploymentTemplateConfigState
-
-    isLoadingMergedTemplate: boolean
-    mergedTemplateError: ServerErrors
 }
 
 export interface DeploymentTemplateStateType {
@@ -80,22 +84,22 @@ export interface DeploymentTemplateStateType {
      * Template state that would be used in case actual deployment happens
      * (Readonly)
      */
-    publishedTemplateData: DeploymentTemplateConfigState
+    [ConfigEditorStatesType.PUBLISHED_EDITOR]: DeploymentTemplateConfigState
     /**
      * Last saved draft template data
      * Only present in case of protected config
      * (Readonly)
      */
-    draftTemplateData: DeploymentTemplateConfigState
+    [ConfigEditorStatesType.DRAFT_EDITOR]: DeploymentTemplateConfigState
     /**
      * Template state of base configuration
      * (Readonly)
      */
-    baseDeploymentTemplateData: DeploymentTemplateConfigState
+    [ConfigEditorStatesType.BASE_EDITOR]: DeploymentTemplateConfigState
     /**
      * The state of current editor
      */
-    currentEditorTemplateData: DeploymentTemplateEditorDataStateType
+    [ConfigEditorStatesType.CURRENT_EDITOR]: DeploymentTemplateEditorDataStateType
 
     /**
      * If true, would resolve scoped variables
@@ -482,4 +486,13 @@ export interface GetLockedDiffModalDocumentsReturnType {
 
 export interface DeploymentTemplateURLConfigType {
     configHeaderTab: ConfigHeaderTabType
+}
+
+export interface HandleFetchGlobalDeploymentTemplateParamsType {
+    globalChartDetails: DeploymentChartVersionType
+    /**
+     * @default `state.lockedConfigKeysWithLockType.config`
+     */
+    lockedConfigKeys?: string[]
+    abortSignal?: AbortSignal
 }

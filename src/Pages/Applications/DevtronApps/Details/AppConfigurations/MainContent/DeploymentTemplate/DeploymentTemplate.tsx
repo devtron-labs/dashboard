@@ -52,11 +52,13 @@ import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
 import {
+    ConfigEditorStatesType,
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
+    HandleFetchGlobalDeploymentTemplateParamsType,
     HandleInitializeTemplatesWithoutDraftParamsType,
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
@@ -70,9 +72,12 @@ import {
     getCompareFromEditorConfig,
     getCurrentEditorPayloadForScopedVariables,
     getCurrentEditorState,
+    getCurrentTemplateWithLockedKeys,
     getDeleteProtectedOverridePayload,
     getDeploymentTemplateResourceName,
+    getEditorStatesWithPatchStrategy,
     getEditorTemplateAndLockedKeys,
+    getEnvOverrideEditorCommonState,
     getLockedDiffModalDocuments,
     getUpdateBaseDeploymentTemplatePayload,
     getUpdateEnvironmentDTPayload,
@@ -92,7 +97,6 @@ import {
 import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
 import ConfigToolbar from '../ConfigToolbar'
-import { DEFAULT_MERGE_STRATEGY } from '../constants'
 import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
 import { getConfigToolbarPopupConfig } from '../utils'
 import ConfigDryRun from '../ConfigDryRun'
@@ -293,30 +297,89 @@ const DeploymentTemplate = ({
         })
     }
 
+    const handleFetchGlobalDeploymentTemplate = async ({
+        globalChartDetails,
+        lockedConfigKeys = lockedConfigKeysWithLockType.config,
+        abortSignal,
+    }: HandleFetchGlobalDeploymentTemplateParamsType): Promise<DeploymentTemplateConfigState> => {
+        const {
+            result: {
+                globalConfig: {
+                    defaultAppOverride,
+                    id,
+                    refChartTemplate,
+                    refChartTemplateVersion,
+                    isAppMetricsEnabled,
+                    chartRefId,
+                    readme,
+                    schema,
+                },
+                guiSchema,
+            },
+        } = await getBaseDeploymentTemplate(+appId, +globalChartDetails.id, abortSignal, globalChartDetails.name)
+
+        const stringifiedTemplate = YAMLStringify(defaultAppOverride, { simpleKeys: true })
+
+        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
+            stringifiedTemplate,
+            lockedConfigKeys,
+        )
+
+        return {
+            originalTemplate: defaultAppOverride,
+            schema,
+            readme,
+            guiSchema,
+            isAppMetricsEnabled,
+
+            chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+
+            editorTemplate: stringifiedTemplate,
+            editorTemplateWithoutLockedKeys,
+
+            selectedChart: globalChartDetails,
+            selectedChartRefId: +globalChartDetails.id,
+
+            mergedTemplate: stringifiedTemplate,
+            mergedTemplateObject: defaultAppOverride,
+            mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
+
+            isLoadingMergedTemplate: false,
+            mergedTemplateError: null,
+        }
+    }
+
     /**
-     * This method is called whenever we are going to need to update current editor template mergedTemplate
+     * This method is called whenever we are going to need to update mergedTemplates of valid states
      * We need it in two cases:
      * 1. When we are in dry run view
      * 2. When we are in compare view to show merge values checkbox
-     * Since we are not updating it onChange or Should we? TODO: Re-verify in review
+     * We will also re-fetch base deployment template when we make this call
      */
     const handleLoadMergedTemplate = async () => {
-        if (
-            !getConfigAfterOperations ||
-            !currentEditorTemplateData?.isOverridden ||
-            currentEditorTemplateData?.mergeStrategy !== OverrideMergeStrategyType.PATCH
-        ) {
-            let parsedTemplate = {}
-            try {
-                parsedTemplate = YAML.parse(currentEditorTemplateData?.editorTemplate)
-            } catch {
-                logExceptionToSentry(new Error('handleLoadMergedTemplate threw error while parsing YAML'))
-            }
+        // We will be checking if published, current and draft has patch strategy. If yes, then we will merge them
+        const requiredEditorStates = getEditorStatesWithPatchStrategy(state)
+        const currentEditorValue = getCurrentTemplateWithLockedKeys({
+            currentEditorTemplateData,
+            wasGuiOrHideLockedKeysEdited,
+        })
 
+        let currentEditorParsedValue = {}
+
+        try {
+            currentEditorParsedValue = YAML.parse(currentEditorValue)
+        } catch {
+            logExceptionToSentry(new Error('handleLoadMergedTemplate threw error while parsing YAML'))
+        }
+
+        // Need to update merged template anyway since we do not update it on every change
+        if (!getConfigAfterOperations || requiredEditorStates.length === 0) {
             dispatch({
                 type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE,
                 payload: {
-                    mergedTemplate: parsedTemplate,
+                    editorStates: [ConfigEditorStatesType.CURRENT_EDITOR],
+                    mergedTemplates: [currentEditorParsedValue],
+                    baseDeploymentTemplateData,
                 },
             })
             return
@@ -325,24 +388,56 @@ const DeploymentTemplate = ({
         try {
             dispatch({
                 type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE,
+                payload: {
+                    editorStates: requiredEditorStates,
+                    currentEditorParsedObject: currentEditorParsedValue,
+                },
             })
 
-            const parsedValues = YAML.parse(currentEditorTemplateData.editorTemplate)
-            const mergedTemplate = await abortPreviousRequests(
+            const parsedValues = requiredEditorStates.map((editorState) => {
+                try {
+                    if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                        return currentEditorParsedValue
+                    }
+
+                    return YAML.parse(state[editorState].editorTemplate)
+                } catch {
+                    // Won't need this in reality but just in case
+                    return {}
+                }
+            })
+
+            const [mergedTemplatesResponse, latestBaseDeploymentTemplateDataResponse] = await abortPreviousRequests(
                 () =>
-                    getConfigAfterOperations({
-                        values: parsedValues,
-                        resourceType: ConfigResourceType.DeploymentTemplate,
-                        appId: +appId,
-                        signal: loadMergedTemplateAbortController.current.signal,
-                    }),
+                    Promise.allSettled([
+                        getConfigAfterOperations({
+                            values: parsedValues,
+                            resourceType: ConfigResourceType.DeploymentTemplate,
+                            appId: +appId,
+                            signal: loadMergedTemplateAbortController.current.signal,
+                            shouldShowError: false,
+                        }),
+                        handleFetchGlobalDeploymentTemplate({
+                            globalChartDetails: chartDetails?.globalChartDetails,
+                            abortSignal: loadMergedTemplateAbortController.current.signal,
+                        }),
+                    ]),
                 loadMergedTemplateAbortController,
             )
+
+            if (mergedTemplatesResponse.status === 'rejected') {
+                throw mergedTemplatesResponse.reason
+            }
 
             dispatch({
                 type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE,
                 payload: {
-                    mergedTemplate,
+                    mergedTemplates: mergedTemplatesResponse.value,
+                    editorStates: requiredEditorStates,
+                    baseDeploymentTemplateData:
+                        latestBaseDeploymentTemplateDataResponse.status === 'fulfilled'
+                            ? latestBaseDeploymentTemplateDataResponse.value
+                            : null,
                 },
             })
         } catch (error) {
@@ -438,7 +533,7 @@ const DeploymentTemplate = ({
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: currentEditorTemplateData.originalTemplateState.selectedChartRefId,
-                          values: YAMLStringify(currentEditorTemplateData.originalTemplate, { simpleKeys: true }),
+                          values: currentEditorTemplateData.originalTemplateState.editorTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
                       })
@@ -631,51 +726,6 @@ const DeploymentTemplate = ({
 
     const getCurrentEditorSchema = (): DeploymentTemplateConfigState['schema'] => currentViewEditorState?.schema
 
-    const handleFetchGlobalDeploymentTemplate = async (
-        globalChartDetails: DeploymentChartVersionType,
-        lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
-    ): Promise<DeploymentTemplateConfigState> => {
-        const {
-            result: {
-                globalConfig: {
-                    defaultAppOverride,
-                    id,
-                    refChartTemplate,
-                    refChartTemplateVersion,
-                    isAppMetricsEnabled,
-                    chartRefId,
-                    readme,
-                    schema,
-                },
-                guiSchema,
-            },
-        } = await getBaseDeploymentTemplate(+appId, +globalChartDetails.id, null, globalChartDetails.name)
-
-        const stringifiedTemplate = YAMLStringify(defaultAppOverride, { simpleKeys: true })
-
-        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-            stringifiedTemplate,
-            lockedConfigKeys,
-        )
-
-        return {
-            originalTemplate: defaultAppOverride,
-            schema,
-            readme,
-            guiSchema,
-            isAppMetricsEnabled,
-            chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
-            editorTemplate: stringifiedTemplate,
-            editorTemplateWithoutLockedKeys,
-            selectedChart: globalChartDetails,
-            selectedChartRefId: +globalChartDetails.id,
-
-            mergedTemplate: stringifiedTemplate,
-            mergedTemplateObject: defaultAppOverride,
-            mergedTemplateWithoutLockedKeys: editorTemplateWithoutLockedKeys,
-        }
-    }
-
     /**
      * Fetch deployment template on basis of chart id in case of base deployment template or env override
      */
@@ -684,7 +734,7 @@ const DeploymentTemplate = ({
         lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
     ): Promise<DeploymentTemplateConfigState> => {
         if (!envId) {
-            return handleFetchGlobalDeploymentTemplate(chartInfo, lockedConfigKeys)
+            return handleFetchGlobalDeploymentTemplate({ globalChartDetails: chartInfo, lockedConfigKeys })
         }
 
         const {
@@ -698,52 +748,31 @@ const DeploymentTemplate = ({
             active,
             namespace,
             envOverrideValues,
-            mergeStrategy: mergeStrategyFromAPI,
-            envOverridePatchValues: envOverridePatchValuesFromAPI,
+            mergeStrategy,
+            envOverridePatchValues,
         } = environmentConfig || {}
-
-        const mergeStrategy = mergeStrategyFromAPI || DEFAULT_MERGE_STRATEGY
-        const envOverridePatchValues = envOverridePatchValuesFromAPI || {}
-
-        const isMergeStrategyPatch = mergeStrategy === OverrideMergeStrategyType.PATCH
-        // If not overridden, will replace the editorTemplate, originalTemplate with envOverridePatchValues
-        const mergedTemplateObject = IsOverride ? envOverrideValues || globalConfig : globalConfig
-
-        const originalTemplate = isMergeStrategyPatch ? envOverridePatchValues : mergedTemplateObject
-
-        const stringifiedTemplate = YAMLStringify(originalTemplate, { simpleKeys: true })
-
-        const { editorTemplate: editorTemplateWithoutLockedKeys } = getEditorTemplateAndLockedKeys(
-            stringifiedTemplate,
-            lockedConfigKeys,
-        )
-
-        const stringifiedFinalTemplate = YAMLStringify(mergedTemplateObject, { simpleKeys: true })
 
         // In case of no override it same as saying we have override with no patch value
         return {
-            originalTemplate,
-            schema,
-            readme,
-            guiSchema,
-            isAppMetricsEnabled: appMetrics,
-            editorTemplate: !Object.keys(originalTemplate || {}).length ? '' : stringifiedTemplate,
-            isOverridden: !!IsOverride,
-            environmentConfig: {
+            ...getEnvOverrideEditorCommonState({
                 id,
                 status,
                 manualReviewed,
                 active,
                 namespace,
-            },
-            editorTemplateWithoutLockedKeys,
+                lockedConfigKeys,
+                mergeStrategy,
+                envOverridePatchValues,
+                mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
+                isOverridden: !!IsOverride,
+            }),
+
+            schema,
+            readme,
+            guiSchema,
+            isAppMetricsEnabled: appMetrics,
             selectedChart: chartInfo,
             selectedChartRefId: +chartInfo.id,
-            mergeStrategy,
-            mergedTemplate: stringifiedFinalTemplate,
-            mergedTemplateObject,
-            mergedTemplateWithoutLockedKeys: getEditorTemplateAndLockedKeys(stringifiedFinalTemplate, lockedConfigKeys)
-                .editorTemplate,
         }
     }
 
@@ -755,7 +784,10 @@ const DeploymentTemplate = ({
         const [templateData, baseDeploymentTemplateDataResponse] = await Promise.all([
             handleFetchDeploymentTemplate(chartRefsData.selectedChart, lockedConfigKeys),
             shouldFetchBaseDeploymentData
-                ? handleFetchGlobalDeploymentTemplate(chartRefsData.globalChartDetails, lockedConfigKeys)
+                ? handleFetchGlobalDeploymentTemplate({
+                      globalChartDetails: chartRefsData.globalChartDetails,
+                      lockedConfigKeys,
+                  })
                 : null,
         ])
 
@@ -1251,16 +1283,16 @@ const DeploymentTemplate = ({
      */
     const getUneditedDocument = (): string => {
         if (!isGuiSupported) {
-            return '{}'
+            return ''
         }
 
         if (resolveScopedVariables && resolvedOriginalTemplate) {
-            return resolvedOriginalTemplate.originalTemplateString
+            return resolvedOriginalTemplate.originalTemplateString || ''
         }
 
         // Question: No need to handle other modes as we are not going to show GUIView in those cases or should we? since we have a common method?
         if (currentEditorTemplateData) {
-            return currentEditorTemplateData.originalTemplateState.mergedTemplate
+            return currentEditorTemplateData.originalTemplateState.editorTemplate || ''
         }
 
         return ''
@@ -1408,7 +1440,7 @@ const DeploymentTemplate = ({
     const hideToggleLockedKeysMenuOption =
         editMode === ConfigurationType.GUI &&
         currentViewEditorState?.isOverridden &&
-        currentViewEditorState?.mergeStrategy === OverrideMergeStrategyType.PATCH
+        currentViewEditorState.mergeStrategy === OverrideMergeStrategyType.PATCH
 
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
         menuConfig: getConfigToolbarPopupConfig({
@@ -1484,6 +1516,7 @@ const DeploymentTemplate = ({
                     isApprovalView={isApprovalView}
                     currentEditorTemplate={YAML.parse(getCurrentEditorValue())}
                     publishedEditorTemplate={YAML.parse(getCompareViewPublishedTemplate())}
+                    // This is only for current editor view to show for approval pending state
                     selectedChartVersion={
                         showDeleteOverrideDraftEmptyState ? '' : currentEditorTemplateData?.selectedChart?.version
                     }
@@ -1521,8 +1554,8 @@ const DeploymentTemplate = ({
                     manifestAbortController={manifestAbortController}
                     errorInfo={mergedTemplateError}
                     handleErrorReload={handleLoadMergedTemplate}
-                    isOverridden={currentEditorTemplateData?.isOverridden}
-                    mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                    isOverridden={currentViewEditorState?.isOverridden}
+                    mergeStrategy={currentViewEditorState?.mergeStrategy}
                 />
             )
         }
@@ -1546,11 +1579,11 @@ const DeploymentTemplate = ({
                 editedDocument={getCurrentEditorValue()}
                 uneditedDocument={getUneditedDocument()}
                 showReadMe={showReadMe}
-                readMe={currentEditorTemplateData?.readme}
+                readMe={currentViewEditorState?.readme}
                 environmentName={environmentName}
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
-                mergeStrategy={currentEditorTemplateData?.mergeStrategy}
+                mergeStrategy={currentViewEditorState?.mergeStrategy}
             />
         )
     }
