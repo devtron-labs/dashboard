@@ -136,8 +136,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setInitLoading(true)
 
             Promise.all([getSavedFilterData(), getAppListData()]).then((response) => {
-                const groupFilterOptionsList = response?.[0]
-                const appListOptionsList = response?.[1]
+                const groupFilterOptionsList = response[0]
+                const appListOptionsList = response[1]
 
                 getAndSetAppGroupFilters({
                     filterParentType,
