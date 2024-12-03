@@ -147,7 +147,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             return 'bcr-1 er-2 bw-1 cr-5 dc__opacity-1'
         }
 
-        if (this.props.isDeploymentBlocked ) {
+        if (this.props.isDeploymentBlocked) {
             return 'bcy-5 cn-9 dc__opacity-1'
         }
 

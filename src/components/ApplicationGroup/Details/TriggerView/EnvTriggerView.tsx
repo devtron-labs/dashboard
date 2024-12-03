@@ -47,6 +47,8 @@ import {
     ToastManager,
     ToastVariantType,
     BlockedStateData,
+    getStageTitle,
+    TriggerBlockType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1750,7 +1752,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     const stageType = DeploymentNodeType[_selectedNode.type]
                     const isTriggerBlockedDueToPlugin =
                         _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning
-                    const stageText = stageType === DeploymentNodeType.PRECD ? 'Pre-Deployment' : 'Post-Deployment'
+                    const isTriggerBlockedDueToMandatoryTags =
+                        _selectedNode.isTriggerBlocked &&
+                        _selectedNode.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG
+                    const stageText = getStageTitle(stageType)
 
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
@@ -1784,7 +1789,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             true,
                         ),
                         consequence: _selectedNode.pluginBlockState,
-                        warningMessage: isTriggerBlockedDueToPlugin ? `${stageText} is blocked` : '',
+                        warningMessage:
+                            isTriggerBlockedDueToPlugin || isTriggerBlockedDueToMandatoryTags
+                                ? `${stageText} is blocked`
+                                : '',
                         triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
                     })
                 } else {
