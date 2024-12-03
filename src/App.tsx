@@ -190,7 +190,7 @@ export default function App() {
             return parsedTimeout
         }
 
-        return 1
+        return 3
     })()
 
     const {
