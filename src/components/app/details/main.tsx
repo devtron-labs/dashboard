@@ -84,20 +84,23 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     useEffect(() => {
         setInitLoading(true)
         getAppMetaInfoRes()
-        Promise.all([getSavedFilterData(), getAppListData()]).then((response) => {
-            const groupFilterOptionsList = response[0]
-            const appListOptionsList = response[1]
+        Promise.all([getSavedFilterData(), getAppListData()])
+            .then((response) => {
+                const groupFilterOptionsList = response[0]
+                const appListOptionsList = response[1]
 
-            getAndSetAppGroupFilters({
-                filterParentType: FilterParentType.app,
-                resourceId: appId,
-                appListOptions: appListOptionsList,
-                groupFilterOptions: groupFilterOptionsList,
-                setSelectedAppList,
-                setSelectedGroupFilter,
+                getAndSetAppGroupFilters({
+                    filterParentType: FilterParentType.app,
+                    resourceId: appId,
+                    appListOptions: appListOptionsList,
+                    groupFilterOptions: groupFilterOptionsList,
+                    setSelectedAppList,
+                    setSelectedGroupFilter,
+                })
             })
-        })
-        setInitLoading(false)
+            .finally(() => {
+                setInitLoading(false)
+            })
         return () => {
             setSelectedAppList([])
             setSelectedGroupFilter([])
