@@ -29,6 +29,7 @@ const DeploymentTemplateForm = ({
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
             <DeploymentTemplateGUIView
+                key={mergeStrategy}
                 // NOTE: This is with locked keys so original value is passed
                 uneditedDocument={uneditedDocument || '{}'}
                 editedDocument={editedDocument || '{}'}

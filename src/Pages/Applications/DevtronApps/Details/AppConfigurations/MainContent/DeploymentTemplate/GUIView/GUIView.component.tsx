@@ -27,6 +27,8 @@ import {
     OverrideMergeStrategyType,
     GUIViewError,
     YAMLStringify,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -71,41 +73,30 @@ const GUIView = ({
 
             setFormData(parsedValue)
             formDataRef.current = parsedValue
-        } catch (err) {
-            if (err instanceof GUIViewError) {
-                setInvalidGUISchemaError(err)
-            } else {
-                handleChangeToYAMLMode()
-            }
-        }
-    }, [value, guiSchema])
 
-    useEffect(() => {
-        try {
-            if (mergeStrategy === OverrideMergeStrategyType.PATCH && ConfigurableGUIViewModel) {
+            if (ConfigurableGUIViewModel && !modelRef.current && mergeStrategy === OverrideMergeStrategyType.PATCH) {
                 modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
                 setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
             }
         } catch (err) {
             if (err instanceof GUIViewError) {
                 setInvalidGUISchemaError(err)
-            }
-        }
+            } else {
+                handleChangeToYAMLMode()
 
-        return () => {
-            // NOTE: since this is a closure; mergeStrategy value here will be the previous value
-            if (mergeStrategy === OverrideMergeStrategyType.PATCH) {
-                modelRef.current = null
-                setConfigurableGUIViewUISchema({})
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: 'Redirecting to yaml view due to empty/malformed yaml',
+                })
             }
         }
-    }, [mergeStrategy])
+    }, [value, guiSchema])
 
     useEffect(
         () => () => {
             if (modelRef.current) {
                 const newData = modelRef.current.syncCheckedFieldsInJson(formDataRef.current)
-                editorOnChange?.(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
+                editorOnChange(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
             }
         },
         [],
@@ -180,14 +171,14 @@ const GUIView = ({
     }, [guiSchema, hideLockedKeys, configurableGUIViewUISchema, invalidGUISchemaError])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        editorOnChange?.(YAML.stringify(data.formData))
+        editorOnChange(YAML.stringify(data.formData))
     }
 
     const updateNodeForPath = (path: string) => {
         if (modelRef.current) {
             const newFormData = modelRef.current.updateNodeForPath({ path, json: formData })
             setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
-            editorOnChange?.(YAML.stringify(newFormData))
+            editorOnChange(YAML.stringify(newFormData))
         }
     }
 
