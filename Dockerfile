@@ -1,5 +1,7 @@
 FROM node:20-alpine AS builder
 
+RUN apk add --no-cache git
+
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
