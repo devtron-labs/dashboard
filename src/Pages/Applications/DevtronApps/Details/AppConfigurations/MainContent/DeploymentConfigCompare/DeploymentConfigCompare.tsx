@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -57,9 +57,11 @@ export const DeploymentConfigCompare = ({
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
+    const location = useLocation()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
+    const isDefaultLandingPreviousDeploymentSet = useRef<boolean>(false)
 
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
@@ -132,6 +134,32 @@ export const DeploymentConfigCompare = ({
         () => (!optionsLoader && options ? getDefaultVersionAndPreviousDeploymentOptions(options[1].result) : null),
         [options, optionsLoader],
     )
+
+    useEffect(() => {
+        if (!compareEnvOptions || isDefaultLandingPreviousDeploymentSet.current) {
+            return
+        }
+
+        isDefaultLandingPreviousDeploymentSet.current = true
+
+        if (!compareEnvOptions.previousDeployments?.length) {
+            updateSearchParams({
+                compareWith: null,
+            })
+
+            return
+        }
+
+        const previousDeploymentData = compareEnvOptions.previousDeployments[0]
+
+        updateSearchParams({
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
+                AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+            compareWithIdentifierId: previousDeploymentData.deploymentTemplateHistoryId,
+            compareWithPipelineId: previousDeploymentData.pipelineId,
+            compareWithManifestChartRefId: isManifestView ? previousDeploymentData.chartRefId : null,
+        })
+    }, [compareEnvOptions])
 
     const fetchManifestData = async () => {
         const [{ result: currentList }, { result: compareList }] = await Promise.all([
@@ -480,13 +508,49 @@ export const DeploymentConfigCompare = ({
         if (_isManifestView) {
             setConvertVariables(false)
         }
-        push(
-            generatePath(path, {
+
+        const currentSearchParams = new URLSearchParams(location.search)
+
+        // NOTE: need to find the corresponding chartRefId(s) for compareWith and compareTo
+        // and set/delete them based on _isManifestView
+        const _compareWithManifestChartRefId =
+            currentSearchParams.has('compareWithIdentifierId') && _isManifestView
+                ? compareEnvOptions.previousDeployments.find(
+                      (prev) =>
+                          prev.deploymentTemplateHistoryId ===
+                          Number(currentSearchParams.get('compareWithIdentifierId')),
+                  )?.chartRefId ?? null
+                : null
+
+        const _manifestChartRefId =
+            currentSearchParams.has('identifierId') && _isManifestView
+                ? currentEnvOptions.previousDeployments.find(
+                      (prev) => prev.deploymentTemplateHistoryId === Number(currentSearchParams.get('identifierId')),
+                  )?.chartRefId ?? null
+                : null
+
+        if (_compareWithManifestChartRefId) {
+            currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))
+        } else {
+            // NOTE: make sure to not set null as URLSearchParams will save the null as string
+            // i.e suppose we save 'hello' = null, we get ?hello=null as search param
+            currentSearchParams.delete('compareWithManifestChartRefId')
+        }
+
+        if (_manifestChartRefId) {
+            currentSearchParams.set('manifestChartRefId', String(_manifestChartRefId))
+        } else {
+            currentSearchParams.delete('manifestChartRefId')
+        }
+
+        push({
+            pathname: generatePath(path, {
                 ...params,
                 resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
                 resourceName: null,
             }),
-        )
+            search: currentSearchParams.toString(),
+        })
     }
 
     const tabConfig: DeploymentConfigDiffProps['tabConfig'] = {

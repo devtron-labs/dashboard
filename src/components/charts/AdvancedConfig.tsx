@@ -22,12 +22,12 @@ import {
     useAsync,
     CustomInput,
     CodeEditor,
+    MarkDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
-import { MarkDown } from './discoverChartDetail/DiscoverChartDetails'
 import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'

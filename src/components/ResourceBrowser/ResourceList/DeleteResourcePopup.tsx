@@ -87,6 +87,8 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
             delete={handleDelete}
             closeDelete={toggleDeleteDialog}
             apiCallInProgress={apiCallInProgress}
+            showDeleteConfirmation
+            deleteConfirmationText={resourceData.name as string}
         >
             <DeleteDialog.Description>
                 <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
