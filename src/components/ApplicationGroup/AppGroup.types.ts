@@ -116,6 +116,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
     getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
     webhookPayloads: WebhookPayloadType
+    setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
     isWebhookPayloadLoading: boolean
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
