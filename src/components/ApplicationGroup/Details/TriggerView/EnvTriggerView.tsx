@@ -843,6 +843,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(true)
         history.push(`${url}${URLS.BUILD}/${ciNodeId}`)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
+        setWebhookPayloads(null)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()

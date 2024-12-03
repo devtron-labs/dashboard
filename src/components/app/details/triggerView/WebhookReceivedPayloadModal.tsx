@@ -42,10 +42,11 @@ export const WebhookReceivedPayloadModal = ({
         .pop()
 
     useEffect(() => {
-        if (workflowId) {
-            getWebhookPayload(workflowId)
+        // Sometime the workflow id and material's actual id differs
+        if (material[0]?.id) {
+            getWebhookPayload(material[0]?.id)
         }
-    }, [workflowId])
+    }, [JSON.stringify(material)])
 
     const onClickCloseButton = (): void => {
         triggerViewContext.closeCIModal()
