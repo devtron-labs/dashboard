@@ -18,21 +18,30 @@ RUN echo `git rev-parse --short HEAD` > health.html
 RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env
 RUN yarn build
 
-FROM nginx:stable
+FROM nginx:stable-alpine
 
-RUN useradd -ms /bin/bash devtron
+RUN apk add --no-cache nodejs npm bash
+
+RUN addgroup -S devtron && adduser -S devtron -G devtron
+
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./nginx-default.conf /etc/nginx/conf.d/default.conf
+
 WORKDIR /usr/share/nginx/html
+
 COPY --from=builder  /app/./env.sh .
 COPY --from=builder  /app/.env .
 COPY --from=builder  /app/./sentry.sh .
 COPY --from=builder  /app/health.html .
 
 RUN chown -R devtron:devtron /usr/share/nginx/html
+
+RUN npm install -g @sentry/cli
+
 # Make our shell script executable
 RUN chmod +x env.sh
 RUN chmod +x sentry.sh
+
 USER devtron
 CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && /usr/share/nginx/html/sentry.sh && nginx -g \"daemon off;\""]

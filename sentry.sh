@@ -27,19 +27,19 @@ export SENTRY_AUTH_TOKEN=$(grep '^SENTRY_AUTH_TOKEN=' "$ENV_FILE" | cut -d '=' -
 export SENTRY_RELEASE_VERSION=$(grep '^SENTRY_RELEASE_VERSION=' "$ENV_FILE" | cut -d '=' -f2-)
 
 # Verify required variables are set
-if [[ -z "$SENTRY_RELEASE_VERSION" || -z "$SENTRY_RELEASE_VERSION" ]]; then
+if [[ -z "$SENTRY_AUTH_TOKEN" || -z "$SENTRY_RELEASE_VERSION" ]]; then
   echo "Sentry credentials not provided. Skipping uploading source map"
   exit 0
 fi
 
 echo "Create a new sentry release: $SENTRY_RELEASE_VERSION"
-npx sentry-cli releases new "$SENTRY_RELEASE_VERSION"
+sentry-cli releases new "$SENTRY_RELEASE_VERSION"
 
 echo "Uploading artifacts to Sentry..."
-npx sentry-cli sourcemaps inject --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" "$FILES_PATH"
-npx sentry-cli sourcemaps upload --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" "$FILES_PATH"
+sentry-cli sourcemaps inject --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" "$FILES_PATH"
+sentry-cli sourcemaps upload --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" "$FILES_PATH"
 
 echo "Finalize the sentry release: $SENTRY_RELEASE_VERSION"
-npx sentry-cli releases finalize "$SENTRY_RELEASE_VERSION"
+sentry-cli releases finalize "$SENTRY_RELEASE_VERSION"
 
 echo "Artifacts uploaded and release finalized successfully!"
