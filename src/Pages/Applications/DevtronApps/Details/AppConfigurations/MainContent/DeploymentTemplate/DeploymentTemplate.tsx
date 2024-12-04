@@ -1070,6 +1070,13 @@ const DeploymentTemplate = ({
         return isUpdateView ? 'Updated override' : 'Overridden'
     }
 
+    const handleShowLockConfigChangesToast = () => {
+        ToastManager.showToast({
+            variant: ToastVariantType.error,
+            description: 'Changes in locked keys are only allowed via super-admin.',
+        })
+    }
+
     const handleSaveTemplate = async () => {
         dispatch({
             type: DeploymentTemplateActionType.INITIATE_SAVE,
@@ -1082,10 +1089,7 @@ const DeploymentTemplate = ({
             const isLockConfigError = !!response?.result?.isLockConfigError
 
             if (isLockConfigError && showLockedTemplateDiffModal) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: 'Changes in locked keys are not allowed.',
-                })
+                handleShowLockConfigChangesToast()
             }
 
             dispatch({
@@ -1431,6 +1435,16 @@ const DeploymentTemplate = ({
         dispatch({
             type: DeploymentTemplateActionType.CLEAR_POPUP_NODE,
         })
+    }
+
+    const handleProcessSaveDraftResponse = (response: ResponseType) => {
+        if (response?.result?.isLockConfigError) {
+            handleShowLockConfigChangesToast()
+
+            dispatch({
+                type: DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API,
+            })
+        }
     }
 
     const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
@@ -1859,6 +1873,7 @@ const DeploymentTemplate = ({
                         reload={handleReload}
                         showAsModal={!showLockedTemplateDiffModal}
                         saveEligibleChangesCb={showLockedTemplateDiffModal}
+                        handleProcessSaveResponse={handleProcessSaveDraftResponse}
                     />
                 )}
             </div>

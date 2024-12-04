@@ -86,6 +86,7 @@ export enum DeploymentTemplateActionType {
     INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE = 'INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE',
     LOAD_CURRENT_EDITOR_MERGED_TEMPLATE = 'LOAD_CURRENT_EDITOR_MERGED_TEMPLATE',
     CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
+    LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -115,6 +116,7 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
+    | DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API
 
 interface LoadMergedTemplateBasePayloadType {
     editorStates: ConfigEditorStatesType[]
@@ -919,6 +921,16 @@ export const deploymentTemplateReducer = (
                 ...getEditorStatesFromMergedTemplates(state, editorStates, mergedTemplateObjects),
             }
         }
+
+        case DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API:
+            return {
+                ...state,
+                showSaveChangesModal: false,
+                lockedDiffModalState: {
+                    showLockedTemplateDiffModal: true,
+                    showLockedDiffForApproval: false,
+                },
+            }
 
         default:
             return state
