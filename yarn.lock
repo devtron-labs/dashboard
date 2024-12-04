@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.0.tgz#d599f22081473f78950fad0b4b776b38f003efab"
-  integrity sha512-xvK0g8WA8geKRm7pZx7l9dsgVJLL+yLkf2qJcKIUKkQ0NKxTZ+ghxIOVj7hHv0191sIHZg5vIM1EHYdxvUlWPQ==
+"@devtron-labs/devtron-fe-common-lib@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.2.tgz#8edb0885fcccf87860c48a507368911b7e1c1356"
+  integrity sha512-fVeuV84SXnpRutJyD/ZLHY5S3m27RjoTRtbDuXcycEDRzI7hg49FafxPiT61bWlBwKfm2sGvGHV5DI0JfIc9hg==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -988,7 +988,6 @@
     marked "^13.0.3"
     react-dates "^21.8.0"
     react-diff-viewer-continued "^3.4.0"
-    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "2.7.0"
 
