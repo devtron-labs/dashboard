@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'hotfix-v**'
+      - 'feat/sentry-sourcemap'
 
 jobs:
   ci:
