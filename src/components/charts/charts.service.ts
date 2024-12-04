@@ -72,11 +72,9 @@ export function deleteInstalledChart(
     deleteAction?: DELETE_ACTION,
 ) {
     const baseUrl: string = `app-store/deployment/application/delete/${installedAppId}`
-    let params: DeleteInstalledChartParamsType = {}
+    const params: DeleteInstalledChartParamsType = {}
     if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
-        params = {
-            forceDelete: true,
-        }
+        params['force'] = true
     } else if (isGitops) {
         params['partialDelete'] = true
         if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {

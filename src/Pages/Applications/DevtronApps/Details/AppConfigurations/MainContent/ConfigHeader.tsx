@@ -67,15 +67,13 @@ const ConfigHeader = ({
     showNoOverride,
     parsingError,
     restoreLastSavedYAML,
-    hideDryRunTab = false,
+    hideTabs = {},
 }: ConfigHeaderProps) => {
     const validTabKeys = isOverridable
         ? CONFIG_HEADER_TAB_VALUES.OVERRIDE
         : CONFIG_HEADER_TAB_VALUES.BASE_DEPLOYMENT_TEMPLATE
 
-    const filteredTabKeys = validTabKeys.filter(
-        (currentTab: ConfigHeaderTabType) => !hideDryRunTab || currentTab !== ConfigHeaderTabType.DRY_RUN,
-    )
+    const filteredTabKeys = validTabKeys.filter((tab) => !hideTabs[tab])
 
     const activeTabIndex = filteredTabKeys.indexOf(configHeaderTab)
 

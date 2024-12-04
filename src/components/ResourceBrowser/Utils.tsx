@@ -201,6 +201,21 @@ export const convertK8sObjectMapToOptionsList = (
         child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
             switch (key.toLowerCase()) {
                 /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase():
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.nodes,
+                            '',
+                            SIDEBAR_KEYS.nodeGVK,
+                            false,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.nodes,
+                        ),
+                    )
+                    break
+
+                /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
                         newK8sObjectOption(
@@ -248,18 +263,6 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(
-        newK8sObjectOption(
-            SIDEBAR_KEYS.nodes,
-            '',
-            SIDEBAR_KEYS.nodeGVK,
-            false,
-            false,
-            '',
-            JUMP_TO_KIND_SHORT_NAMES.nodes,
-        ),
-    )
-
     return _k8sObjectOptionsList
 }
 
@@ -289,7 +292,6 @@ export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string
 export const getTabsBasedOnRole = ({
     selectedCluster,
     namespace,
-    isSuperAdmin,
     dynamicTabData,
     isTerminalSelected = false,
     isOverviewSelected = false,
@@ -311,11 +313,7 @@ export const getTabsBasedOnRole = ({
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected:
-                (!isSuperAdmin || !isTerminalSelected) &&
-                !dynamicTabData &&
-                !isOverviewSelected &&
-                !isMonitoringDashBoardSelected,
+            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
             type: 'fixed',
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
@@ -331,21 +329,17 @@ export const getTabsBasedOnRole = ({
                   ),
               ]
             : []),
-        ...(isSuperAdmin
-            ? [
-                  {
-                      id: ResourceBrowserTabsId.terminal,
-                      name: AppDetailsTabs.terminal,
-                      url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                      isSelected: isTerminalSelected,
-                      type: 'fixed',
-                      iconPath: TerminalIcon,
-                      showNameOnSelect: true,
-                      isAlive: isTerminalSelected,
-                      dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
-                  },
-              ]
-            : []),
+        {
+            id: ResourceBrowserTabsId.terminal,
+            name: AppDetailsTabs.terminal,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+            isSelected: isTerminalSelected,
+            type: 'fixed',
+            iconPath: TerminalIcon,
+            showNameOnSelect: true,
+            isAlive: isTerminalSelected,
+            dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+        },
         ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 

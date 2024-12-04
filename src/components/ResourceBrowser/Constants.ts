@@ -114,6 +114,7 @@ export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for th
 export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Nodes,
     AggregationKeys.Events,
     AggregationKeys.Namespaces,
     AggregationKeys.Workloads,
@@ -222,7 +223,7 @@ export const UPGRADE_CLUSTER_CONSTANTS = {
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
     events: null,
-    nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+    nodes: null,
     namespaces: null,
 }
 

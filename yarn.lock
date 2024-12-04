@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.1.6-beta-5":
-  version "1.1.6-beta-5"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.1.6-beta-5.tgz#3fad5a06bf840bbf620f2e2e000c0aa1a9979867"
-  integrity sha512-XnLsPe93aKqzfdmTm72yYpDLziLWQyZT+ChYyH+HgbWtPRiakxv4YdX6mIP25zqU5k71xvnjtsMhkyQPjResUA==
+"@devtron-labs/devtron-fe-common-lib@1.1.7-beta-5":
+  version "1.1.7-beta-5"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.1.7-beta-5.tgz#b0d5692031e316519177afa91c69b6fc3c925623"
+  integrity sha512-cEy1SvrQdR2hdfS6N1WXsGc7Oowp9n5Y0apDdgXNQ7yMNOBvghiHJui1NBtrvNlIFUoYBltXj6sXtrlp5wNJzw==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -1774,7 +1774,7 @@
 
 "@rollup/rollup-darwin-arm64@4.28.0":
   version "4.28.0"
-  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.28.0.tgz"
+  resolved "https://registry.yarnpkg.com/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.28.0.tgz#5b783af714f434f1e66e3cdfa3817e0b99216d84"
   integrity sha512-lmKx9yHsppblnLQZOGxdO66gT77bvdBtr/0P+TPOseowE7D9AJoBw8ZDULRasXRWf1Z86/gcOdpBrV6VDUY36Q==
 
 "@rollup/rollup-darwin-x64@4.28.0":
