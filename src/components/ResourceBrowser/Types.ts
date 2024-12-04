@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { RefObject } from 'react'
 import {
     K8SObjectBaseType,
     ResponseType,
@@ -27,8 +27,9 @@ import {
     K8sResourceDetailDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterDetail, ClusterListType } from '../ClusterNodes/types'
+import { ClusterDetail, ResourceDetail, ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
+import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -93,7 +94,6 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
-    isSuperAdmin: boolean
     clusterListLoader: boolean
     initialLoading: boolean
     refreshData: () => void
@@ -220,7 +220,6 @@ export interface K8SResourceTabComponentProps
             'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
         > {
     selectedCluster: ClusterOptionType
-    isSuperAdmin: boolean
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
@@ -229,7 +228,6 @@ export interface K8SResourceTabComponentProps
 }
 
 export interface AdminTerminalProps {
-    isSuperAdmin: boolean
     updateTerminalTabUrl: (queryParams: string) => void
 }
 
@@ -270,7 +268,6 @@ export interface RBSidebarKeysType {
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
     namespace: string
-    isSuperAdmin: boolean
     dynamicTabData: InitTabType
     /**
      * @default false
@@ -284,4 +281,45 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
+}
+
+export interface NodeRowDetail {
+    name: string
+    status: string
+    roles: string[]
+    errors: Record<string, string>[]
+    k8sVersion: string
+    podCount: number
+    taintCount: number
+    cpu: ResourceDetail
+    memory: ResourceDetail
+    age: string
+}
+
+export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
+    visibleColumns: string[]
+    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+    searchParams: Record<string, string>
+}
+
+export enum NODE_SEARCH_KEYS {
+    NAME = 'name',
+    LABEL = 'label',
+    NODE_GROUP = 'nodeGroup',
+}
+
+export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
+
+export interface NodeActionsMenuProps {
+    addTab: ReturnType<typeof useTabs>['addTab']
+    nodeData: K8sResourceDetailDataType
+    getNodeListData: () => void
+}
+
+export interface GetResourceDataType {
+    selectedResource: ApiResourceGroupType
+    selectedNamespace: BaseResourceListProps['selectedNamespace']
+    clusterId: string
+    filters: Record<string, unknown>
+    abortControllerRef: RefObject<AbortController>
 }

@@ -1411,9 +1411,9 @@ export default function CDPipeline({
                         reload={reloadAppConfig}
                     />
                 )}
-
-                {cdPipelineId && showDeleteModal && (
+                {cdPipelineId && (
                     <DeleteCDNode
+                        showDeleteDialog={showDeleteModal}
                         deleteDialog={deleteDialog}
                         setDeleteDialog={setDeleteDialog}
                         clusterName={formData.clusterName}

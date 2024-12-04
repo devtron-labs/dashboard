@@ -15,7 +15,6 @@
  */
 
 import { GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 
 export default function ClusterNodeEmptyState({
     title,

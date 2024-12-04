@@ -31,11 +31,19 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import WebWorker from '@Components/app/WebWorker'
 import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
+import { deleteNodeCapacity } from '@Components/ClusterNodes/clusterNodes.service'
+import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     ALL_NAMESPACE_OPTION,
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
+    MANDATORY_NODE_LIST_HEADERS,
+    NODE_LIST_HEADERS,
+    NODE_K8S_VERSION_FILTER_KEY,
+    NODE_LIST_HEADERS_TO_KEY_MAP,
+    NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
@@ -50,6 +58,8 @@ import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { BaseResourceListProps } from './types'
 import { deleteResource, restartWorkload } from '../ResourceBrowser.service'
+import { getAppliedColumnsFromLocalStorage } from './utils'
+import NodeListSearchFilter from './NodeListSearchFilter'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
@@ -89,6 +99,12 @@ const BaseResourceListContent = ({
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
 
+    // NOTE: this is to re-mount node filters component & avoid useEffects inside it
+    const [lastTimeStringSinceClearAllFilters, setLastTimeStringSinceClearAllFilters] = useState(null)
+
+    // NOTE: this is only being used for node listing currently
+    const [visibleColumns, setVisibleColumns] = useState(getAppliedColumnsFromLocalStorage())
+
     const searchWorkerRef = useRef(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const parentRef = useRef<HTMLDivElement>(null)
@@ -99,6 +115,8 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
+    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+
     const {
         selectedIdentifiers: bulkSelectionState,
         handleBulkSelection,
@@ -107,8 +125,24 @@ const BaseResourceListContent = ({
         getSelectedIdentifiersCount,
     } = useBulkSelection<Record<string, K8sResourceDetailDataType>>()
 
+    const headers = useMemo(() => {
+        const list = resourceList?.headers ?? []
+
+        if (!isNodeListing) {
+            return list
+        }
+
+        const visibleColumnsSet = new Set(visibleColumns)
+
+        return list.filter(
+            (header) =>
+                MANDATORY_NODE_LIST_HEADERS.includes(header as (typeof NODE_LIST_HEADERS)[number]) ||
+                visibleColumnsSet.has(header),
+        )
+    }, [resourceList, visibleColumns, isNodeListing])
+
     const { gridTemplateColumns, handleResize } = useResizableTableConfig({
-        headersConfig: (resourceList?.headers ?? []).map((columnName, index) => ({
+        headersConfig: headers.map((columnName, index) => ({
             id: columnName,
             minWidth: index === 0 ? 120 : null,
             width: index === 0 ? 350 : 180,
@@ -129,11 +163,11 @@ const BaseResourceListContent = ({
     const initialSortKey = useMemo(() => {
         // NOTE: if isEventList don't initiate sort since we already sort it; therefore return empty initialSortKey
         if (resourceList && !isEventList) {
-            const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
+            const isNameSpaceColumnPresent = headers.some((header) => header === 'namespace')
             return isNameSpaceColumnPresent ? 'namespace' : 'name'
         }
         return ''
-    }, [resourceList, isEventList])
+    }, [headers, isEventList])
 
     // SORTING HOOK
     const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })
@@ -169,6 +203,15 @@ const BaseResourceListContent = ({
                 sortBy,
                 sortOrder,
                 debounceResult,
+                nodeListingFilters: {
+                    isNodeListing,
+                    searchParams,
+                    // NOTE!: these constants need to be passed to searchWorker since we cannot import
+                    // stuff inside web worker
+                    NODE_LIST_HEADERS_TO_KEY_MAP: structuredClone(NODE_LIST_HEADERS_TO_KEY_MAP),
+                    NODE_SEARCH_KEYS_TO_OBJECT_KEYS: structuredClone(NODE_SEARCH_KEYS_TO_OBJECT_KEYS),
+                    NODE_K8S_VERSION_KEY: structuredClone(NODE_K8S_VERSION_FILTER_KEY),
+                },
                 origin: new URL(window.__BASE_URL__, window.location.href).origin,
             },
         })
@@ -207,6 +250,10 @@ const BaseResourceListContent = ({
     }, [nodeType])
 
     useEffect(() => {
+        if (!isOpen) {
+            return
+        }
+
         if (!resourceList) {
             setFilteredResourceList(null)
             return
@@ -214,7 +261,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder])
+    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -270,9 +317,7 @@ const BaseResourceListContent = ({
 
         if (bulkOperationModalState === 'restart') {
             return selections?.map((selection) => ({
-                id: selection.id,
                 name: selection.name as string,
-                namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
                 operation: async (signal: AbortSignal = null) => {
                     const payload = {
                         clusterId: Number(clusterId),
@@ -290,10 +335,21 @@ const BaseResourceListContent = ({
         }
 
         return selections.map((selection) => ({
-            id: selection.id,
             name: selection.name as string,
-            namespace: (selection.namespace as string) ?? ALL_NAMESPACE_OPTION.value,
             operation: async (signal: AbortSignal, shouldForceDelete: boolean) => {
+                if (isNodeListing) {
+                    const nodeDeletePayload = {
+                        clusterId: Number(clusterId),
+                        name: String(selection.name),
+                        version: String(selection.version),
+                        kind: String(selection.kind),
+                    }
+
+                    await deleteNodeCapacity(nodeDeletePayload, signal)
+
+                    return
+                }
+
                 const resourceDeletePayload: ResourceListPayloadType = {
                     clusterId: Number(clusterId),
                     k8sRequest: {
@@ -330,16 +386,20 @@ const BaseResourceListContent = ({
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
+        setLastTimeStringSinceClearAllFilters(new Date().toISOString())
     }
 
     const getStatusClass = (status: string) => {
         let statusPostfix = status?.toLowerCase()
 
-        if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/'))) {
-            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__')
+        if (
+            statusPostfix &&
+            (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))
+        ) {
+            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
         }
 
-        return `f-${statusPostfix}`
+        return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
     }
 
     const handleResourceClick = (e) => onResourceClick(e, shouldOverrideSelectedResourceKind)
@@ -358,6 +418,8 @@ const BaseResourceListContent = ({
         const gvkFromRawData = lowercaseKindToResourceGroupMap[lowercaseKind]?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
+        const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
+        const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
 
         return (
             <div
@@ -366,7 +428,7 @@ const BaseResourceListContent = ({
                 className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
-                {resourceList?.headers.map((columnName) =>
+                {headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
@@ -414,25 +476,32 @@ const BaseResourceListContent = ({
                                     rootClassName="p-4 dc__visible-hover--child"
                                 />
                             </div>
-                            {shouldShowRedirectionAndActions && (
-                                <ResourceBrowserActionMenu
-                                    clusterId={clusterId}
-                                    resourceData={resourceData}
-                                    getResourceListData={reloadResourceListData as () => Promise<void>}
-                                    selectedResource={{
-                                        ...selectedResource,
-                                        ...(shouldOverrideSelectedResourceKind && {
-                                            gvk: {
-                                                Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
-                                                Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
-                                                Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
-                                            } as GVKType,
-                                        }),
-                                    }}
-                                    handleResourceClick={handleResourceClick}
-                                    hideDeleteResource={hideDeleteResource}
-                                />
-                            )}
+                            {shouldShowRedirectionAndActions &&
+                                (!isNodeListing ? (
+                                    <ResourceBrowserActionMenu
+                                        clusterId={clusterId}
+                                        resourceData={resourceData}
+                                        getResourceListData={reloadResourceListData as () => Promise<void>}
+                                        selectedResource={{
+                                            ...selectedResource,
+                                            ...(shouldOverrideSelectedResourceKind && {
+                                                gvk: {
+                                                    Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
+                                                    Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
+                                                    Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
+                                                } as GVKType,
+                                            }),
+                                        }}
+                                        handleResourceClick={handleResourceClick}
+                                        hideDeleteResource={hideDeleteResource}
+                                    />
+                                ) : (
+                                    <NodeActionsMenu
+                                        getNodeListData={reloadResourceListData as () => Promise<void>}
+                                        addTab={addTab}
+                                        nodeData={resourceData}
+                                    />
+                                ))}
                         </div>
                     ) : (
                         <div
@@ -441,28 +510,55 @@ const BaseResourceListContent = ({
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
-                            }`}
+                            } ${columnName === 'errors' ? 'app-summary__status-name f-error' : ''}`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <Tooltip content={resourceData[columnName]}>
+                                {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
+                                    <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
+                                )}
+                                <Tooltip
+                                    content={renderResourceValue(
+                                        resourceData[
+                                            isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                                        ]?.toString(),
+                                    )}
+                                >
                                     <span
-                                        className="dc__truncate"
+                                        className={
+                                            columnName === 'status' && isNodeUnschedulable
+                                                ? 'dc__no-shrink'
+                                                : 'dc__truncate'
+                                        }
                                         data-testid={`${columnName}-count`}
                                         // eslint-disable-next-line react/no-danger
                                         dangerouslySetInnerHTML={{
                                             __html: DOMPurify.sanitize(
                                                 highlightSearchText({
                                                     searchText,
-                                                    text: renderResourceValue(resourceData[columnName]?.toString()),
+                                                    text: renderResourceValue(
+                                                        resourceData[
+                                                            isNodeListing
+                                                                ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName]
+                                                                : columnName
+                                                        ]?.toString(),
+                                                    ),
                                                     highlightClasses: 'p-0 fw-6 bcy-2',
                                                 }),
                                             ),
                                         }}
                                     />
                                 </Tooltip>
+                                {columnName === 'status' && isNodeUnschedulable && (
+                                    <>
+                                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
+                                        <Tooltip content="Scheduling disabled">
+                                            <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                                        </Tooltip>
+                                    </>
+                                )}
                                 <span>
                                     {columnName === 'restarts' &&
                                         Number(resourceData.restarts) !== 0 &&
@@ -483,7 +579,7 @@ const BaseResourceListContent = ({
     }
 
     const renderContent = () => {
-        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList)) {
+        if (!resourceListError && (isLoading || !resourceList || !filteredResourceList || !selectedResource)) {
             return <Progressing size={32} pageLoader />
         }
 
@@ -537,7 +633,7 @@ const BaseResourceListContent = ({
                             className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                             style={{ gridTemplateColumns }}
                         >
-                            {resourceList?.headers.map((columnName, index) => (
+                            {headers.map((columnName, index) => (
                                 <div className="flexbox dc__gap-8 dc__align-items-center" key={columnName}>
                                     {!hideBulkSelection && index === 0 && (
                                         <BulkSelection showPagination={showPaginatedView} />
@@ -583,22 +679,32 @@ const BaseResourceListContent = ({
             }`}
             ref={parentRef}
         >
-            <ResourceFilterOptions
-                key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
-                selectedResource={selectedResource}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                selectedCluster={selectedCluster}
-                searchText={searchText}
-                isOpen={isOpen}
-                resourceList={resourceList}
-                setSearchText={setSearchText}
-                isSearchInputDisabled={isLoading}
-                renderRefreshBar={renderRefreshBar}
-                updateK8sResourceTab={updateK8sResourceTab}
-                areFiltersHidden={areFiltersHidden}
-                searchPlaceholder={searchPlaceholder}
-            />
+            {isNodeListing ? (
+                <NodeListSearchFilter
+                    key={lastTimeStringSinceClearAllFilters}
+                    visibleColumns={visibleColumns}
+                    setVisibleColumns={setVisibleColumns}
+                    searchParams={searchParams}
+                    isOpen={isOpen}
+                />
+            ) : (
+                <ResourceFilterOptions
+                    key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
+                    selectedResource={selectedResource}
+                    selectedNamespace={selectedNamespace}
+                    setSelectedNamespace={setSelectedNamespace}
+                    selectedCluster={selectedCluster}
+                    searchText={searchText}
+                    isOpen={isOpen}
+                    resourceList={resourceList}
+                    setSearchText={setSearchText}
+                    isSearchInputDisabled={isLoading}
+                    renderRefreshBar={renderRefreshBar}
+                    updateK8sResourceTab={updateK8sResourceTab}
+                    areFiltersHidden={areFiltersHidden}
+                    searchPlaceholder={searchPlaceholder}
+                />
+            )}
             {renderContent()}
             {children}
             {!hideBulkSelection && (

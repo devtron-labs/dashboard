@@ -18,7 +18,7 @@ import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { RBSidebarKeysType } from './Types'
+import { RBSidebarKeysType, NODE_SEARCH_KEYS } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -114,6 +114,7 @@ export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for th
 export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Nodes,
     AggregationKeys.Events,
     AggregationKeys.Namespaces,
     AggregationKeys.Workloads,
@@ -222,7 +223,7 @@ export const UPGRADE_CLUSTER_CONSTANTS = {
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
     events: null,
-    nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+    nodes: null,
     namespaces: null,
 }
 
@@ -281,6 +282,86 @@ export const CONNECTION_TIMEOUT_TIME = 10000
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
 
 export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'
+
+export const NODE_LIST_HEADERS = [
+    'name',
+    'status',
+    'roles',
+    'errors',
+    'k8s version',
+    'node group',
+    'pods',
+    'taints',
+    'cpu usage (%)',
+    'cpu usage (absolute)',
+    'cpu allocatable',
+    'mem usage (%)',
+    'mem usage (absolute)',
+    'mem allocatable',
+    'age',
+    'unschedulable',
+] as const
+
+export const MANDATORY_NODE_LIST_HEADERS: Array<(typeof NODE_LIST_HEADERS)[number]> = [
+    'name',
+    'status',
+    'errors',
+] as const
+
+export const OPTIONAL_NODE_LIST_HEADERS = NODE_LIST_HEADERS.filter(
+    (header) => !MANDATORY_NODE_LIST_HEADERS.includes(header),
+)
+
+export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[number], string> = {
+    name: 'name',
+    status: 'status',
+    roles: 'roles',
+    errors: 'errorCount',
+    'k8s version': 'k8sVersion',
+    'node group': 'nodeGroup',
+    pods: 'podCount',
+    taints: 'taintCount',
+    'cpu usage (%)': 'cpu.usagePercentage',
+    'cpu usage (absolute)': 'cpu.usage',
+    'cpu allocatable': 'cpu.allocatable',
+    'mem usage (%)': 'memory.usagePercentage',
+    'mem usage (absolute)': 'memory.usageInBytes',
+    'mem allocatable': 'memory.allocatable',
+    age: 'age',
+    unschedulable: 'unschedulable',
+} as const
+
+export const NODE_SEARCH_KEY_OPTIONS = [
+    { value: NODE_SEARCH_KEYS.NAME, label: 'Name' },
+    { value: NODE_SEARCH_KEYS.LABEL, label: 'Label' },
+    { value: NODE_SEARCH_KEYS.NODE_GROUP, label: 'Node group' },
+] as const
+
+export const DEFAULT_NODE_K8S_VERSION = {
+    label: 'K8s version: Any',
+    value: 'K8s version: Any',
+}
+
+export const NODE_SEARCH_KEY_PLACEHOLDER: Record<NODE_SEARCH_KEYS, string> = {
+    [NODE_SEARCH_KEYS.NAME]: 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal',
+    [NODE_SEARCH_KEYS.LABEL]: 'Search by key=value Eg. environment=production, tier=frontend',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'Search by node group name Eg. mainnode',
+}
+
+export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
+    NODE_SEARCH_KEYS,
+    (typeof NODE_LIST_HEADERS_TO_KEY_MAP)[keyof typeof NODE_LIST_HEADERS_TO_KEY_MAP]
+> = {
+    [NODE_SEARCH_KEYS.LABEL]: 'labels',
+    [NODE_SEARCH_KEYS.NAME]: 'name',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
+}
+
+export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
+
+export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
+
+export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
 

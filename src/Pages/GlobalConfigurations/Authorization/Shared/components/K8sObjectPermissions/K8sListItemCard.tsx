@@ -30,6 +30,7 @@ import {
     GVKType,
     getK8sResourceList,
     EntityTypes,
+    ApiResourceGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -177,13 +178,16 @@ const K8sListItemCard = ({
     const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
         const kind = []
         let selectedGvk: GVKType
+        const isAllNamespaceSelected = k8sPermission.namespace.some((option) => option.value === SELECT_ALL_VALUE)
         if (_k8SObjectMap ?? processedData) {
             if (selected.value === SELECT_ALL_VALUE) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const value of (_k8SObjectMap ?? processedData).values()) {
                     // eslint-disable-next-line no-loop-func
-                    value?.child.forEach((ele: { gvk: GVKType }) => {
-                        kind.push({ value: ele.gvk.Kind, label: ele.gvk.Kind, gvk: ele.gvk })
+                    value?.child.forEach((ele: ApiResourceGroupType) => {
+                        if (isAllNamespaceSelected || ele.namespaced) {
+                            kind.push({ label: ele.gvk.Kind, value: ele.gvk.Kind, gvk: ele.gvk })
+                        }
                         if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                             selectedGvk = ele.gvk
                         }
@@ -192,7 +196,7 @@ const K8sListItemCard = ({
             } else {
                 const data = (_k8SObjectMap ?? processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
                 data?.child?.forEach((ele) => {
-                    if (ele.namespaced) {
+                    if (isAllNamespaceSelected || ele.namespaced) {
                         kind.push({ label: ele.gvk.Kind, value: ele.gvk.Kind, gvk: ele.gvk })
                     }
                     if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {

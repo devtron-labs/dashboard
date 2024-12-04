@@ -887,6 +887,7 @@ export const processK8SObjects = (
                 isExpanded:
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [k8sObject],
             })
@@ -896,6 +897,7 @@ export const processK8SObjects = (
                 currentData.isExpanded =
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
@@ -906,6 +908,10 @@ export const processK8SObjects = (
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
             JUMP_TO_KIND_SHORT_NAMES.namespaces = shortNames
             SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
+        }
+        if (element.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.node = shortNames
+            SIDEBAR_KEYS.nodeGVK = { ...element.gvk }
         }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {
