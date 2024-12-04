@@ -28,7 +28,12 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { ErrorBoundary, sortOptionsByLabel } from '../../common'
+import {
+    ErrorBoundary,
+    getAndSetAppGroupFilters,
+    setAppGroupFilterInLocalStorage,
+    sortOptionsByLabel,
+} from '../../common'
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
@@ -60,7 +65,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
-
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
     const [appListLoading, setAppListLoading] = useState<boolean>(false)
@@ -75,12 +79,28 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
     const [apiError, setApiError] = useState(null)
+    const [initLoading, setInitLoading] = useState<boolean>(false)
 
     useEffect(() => {
+        setInitLoading(true)
         getAppMetaInfoRes()
+        Promise.all([getSavedFilterData(), getAppListData()])
+            .then((response) => {
+                const groupFilterOptionsList = response[0]
+                const appListOptionsList = response[1]
 
-        getSavedFilterData()
-        getAppListData()
+                getAndSetAppGroupFilters({
+                    filterParentType: FilterParentType.app,
+                    resourceId: appId,
+                    appListOptions: appListOptionsList,
+                    groupFilterOptions: groupFilterOptionsList,
+                    setSelectedAppList,
+                    setSelectedGroupFilter,
+                })
+            })
+            .finally(() => {
+                setInitLoading(false)
+            })
         return () => {
             setSelectedAppList([])
             setSelectedGroupFilter([])
@@ -88,13 +108,13 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
-    const getSavedFilterData = async (groupId?: number): Promise<void> => {
+    const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
         setGroupFilterOptions([])
         const { result } = await getEnvGroupList(+appId, FilterParentType.app)
+        const _groupFilterOption = []
         if (result) {
-            const _groupFilterOption = []
             let _selectedGroup
             for (const group of result) {
                 const processedGroupData = {
@@ -115,8 +135,15 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 for (const appId of groupAppIds) {
                     selectedAppsMap[appId] = true
                 }
-                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
+                const filteredAppList = appListOptions.filter((app) => selectedAppsMap[app.value])
+                setSelectedAppList(filteredAppList)
                 setSelectedGroupFilter([_selectedGroup])
+                setAppGroupFilterInLocalStorage({
+                    filterParentType: FilterParentType.app,
+                    resourceId: appId,
+                    resourceList: filteredAppList,
+                    groupList: [_selectedGroup],
+                })
             } else {
                 setSelectedAppList([])
                 setSelectedGroupFilter([])
@@ -125,25 +152,27 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setGroupFilterOptions(_groupFilterOption)
         }
         setAppListLoading(false)
+        return _groupFilterOption
     }
 
-    const getAppListData = async (): Promise<void> => {
+    const getAppListData = async (): Promise<OptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppOtherEnvironmentMin(appId)
-        if (result?.length) {
-            setAppListOptions(
-                result
-                    .map((app): OptionType => {
-                        return {
-                            value: `${app.environmentId}`,
-                            label: app.environmentName,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
-            )
-        }
+        const appListOptionsList = result?.length
+            ? result
+                  .map((app): OptionType => {
+                      return {
+                          value: `${app.environmentId}`,
+                          label: app.environmentName,
+                      }
+                  })
+                  .sort(sortOptionsByLabel)
+            : []
+
+        setAppListOptions(appListOptionsList)
         setAppListLoading(false)
+        return appListOptionsList
     }
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
@@ -304,7 +333,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
-    if (appListLoading) {
+    if (appListLoading || initLoading) {
         return <Progressing pageLoader />
     }
 
