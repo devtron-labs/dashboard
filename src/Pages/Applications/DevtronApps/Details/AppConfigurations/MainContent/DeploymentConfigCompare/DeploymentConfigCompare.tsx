@@ -529,31 +529,39 @@ export const DeploymentConfigCompare = ({
             setConvertVariables(false)
         }
 
-        /** NOTE: retain current search params but only append manifestChartRefId(s) if _isManifestView otherwise remove them
-         * This is done to retain selection across jumps between manifest view and config view */
-        const currentSearchParamsObject = Object.fromEntries(new URLSearchParams(location.search).entries())
+        const currentSearchParams = new URLSearchParams(location.search)
 
+        // NOTE: need to find the corresponding chartRefId(s) for compareWith and compareTo
+        // and set/delete them based on _isManifestView
         const _compareWithManifestChartRefId =
-            Object.hasOwn(currentSearchParamsObject, 'compareWithIdentifierId') &&
-            _isManifestView &&
-            compareEnvOptions.previousDeployments &&
-            Array.isArray(compareEnvOptions.previousDeployments)
+            currentSearchParams.has('compareWithIdentifierId') && _isManifestView
                 ? compareEnvOptions.previousDeployments.find(
                       (prev) =>
                           prev.deploymentTemplateHistoryId ===
-                          Number(currentSearchParamsObject.compareWithIdentifierId),
+                          Number(currentSearchParams.get('compareWithIdentifierId')),
                   )?.chartRefId ?? null
                 : null
 
         const _manifestChartRefId =
-            Object.hasOwn(currentSearchParamsObject, 'identifierId') &&
-            _isManifestView &&
-            currentEnvOptions.previousDeployments &&
-            Array.isArray(currentEnvOptions.previousDeployments)
+            currentSearchParams.has('identifierId') && _isManifestView
                 ? currentEnvOptions.previousDeployments.find(
-                      (prev) => prev.deploymentTemplateHistoryId === Number(identifierId),
+                      (prev) => prev.deploymentTemplateHistoryId === Number(currentSearchParams.get('identifierId')),
                   )?.chartRefId ?? null
                 : null
+
+        if (_compareWithManifestChartRefId) {
+            currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))
+        } else {
+            // NOTE: make sure to not set null as URLSearchParams will save the null as string
+            // i.e suppose we save 'hello' = null, we get ?hello=null as search param
+            currentSearchParams.delete('compareWithManifestChartRefId')
+        }
+
+        if (_manifestChartRefId) {
+            currentSearchParams.set('manifestChartRefId', String(_manifestChartRefId))
+        } else {
+            currentSearchParams.delete('manifestChartRefId')
+        }
 
         push({
             pathname: generatePath(path, {
@@ -561,13 +569,7 @@ export const DeploymentConfigCompare = ({
                 resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
                 resourceName: null,
             }),
-            search: new URLSearchParams({
-                ...currentSearchParamsObject,
-                compareWithManifestChartRefId: _compareWithManifestChartRefId
-                    ? String(_compareWithManifestChartRefId)
-                    : null,
-                manifestChartRefId: _manifestChartRefId ? String(_manifestChartRefId) : null,
-            }).toString(),
+            search: currentSearchParams.toString(),
         })
     }
 
