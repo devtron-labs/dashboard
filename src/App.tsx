@@ -27,6 +27,7 @@ import {
     URLS as CommonURLS,
     ToastManager,
     ToastVariantType,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
@@ -189,20 +190,25 @@ export default function App() {
             return parsedTimeout
         }
 
-        return 1
+        return 3
     })()
 
     const {
-        needRefresh: [needRefresh],
+        needRefresh: [doesNeedRefresh],
         updateServiceWorker,
     } = useRegisterSW({
-        onRegisteredSW(swUrl, r) {
+        onRegisteredSW(swUrl, swRegistration) {
             console.log(`Service Worker at: ${swUrl}`)
-            r &&
+            swRegistration &&
                 setInterval(
                     async () => {
-                        if (!(!r.installing && navigator)) return
-                        if ('connection' in navigator && !navigator.onLine) return
+                        if (
+                            swRegistration.installing ||
+                            !navigator ||
+                            ('connection' in navigator && !navigator.onLine)
+                        ) {
+                            return
+                        }
 
                         try {
                             const resp = await fetch(swUrl, {
@@ -212,7 +218,9 @@ export default function App() {
                                     'cache-control': 'no-cache',
                                 },
                             })
-                            if (resp?.status === 200) await r.update()
+                            if (resp?.status === API_STATUS_CODES.OK) {
+                                await swRegistration.update()
+                            }
                         } catch {
                             // Do nothing
                         }
@@ -223,25 +231,20 @@ export default function App() {
         onRegisterError(error) {
             console.log('SW registration error', error)
         },
+        onNeedRefresh() {
+            handleNeedRefresh()
+        },
     })
 
-    function update() {
+    function handleAppUpdate() {
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
+
         updateServiceWorker(true)
     }
 
-    useEffect(() => {
-        if (window.isSecureContext && navigator.serviceWorker) {
-            // check for sw updates on page change
-            navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
-            if (needRefresh) {
-                update()
-            } else if (ToastManager.isToastActive(updateToastRef.current)) {
-                ToastManager.dismissToast(updateToastRef.current)
-            }
-        }
-    }, [location])
-
-    function onUpdate() {
+    function handleNeedRefresh() {
         if (ToastManager.isToastActive(updateToastRef.current)) {
             ToastManager.dismissToast(updateToastRef.current)
         }
@@ -254,7 +257,7 @@ export default function App() {
                 buttonProps: {
                     text: 'Reload',
                     dataTestId: 'reload-btn',
-                    onClick: update,
+                    onClick: handleAppUpdate,
                     startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,
@@ -270,10 +273,18 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (needRefresh) {
-            onUpdate()
+        if (window.isSecureContext && navigator.serviceWorker) {
+            // check for sw updates on page change
+            navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => registrations.forEach((reg) => reg.update()))
+            if (doesNeedRefresh) {
+                handleAppUpdate()
+            } else if (ToastManager.isToastActive(updateToastRef.current)) {
+                ToastManager.dismissToast(updateToastRef.current)
+            }
         }
-    }, [needRefresh])
+    }, [location])
 
     useEffect(() => {
         if (!bgUpdated) {

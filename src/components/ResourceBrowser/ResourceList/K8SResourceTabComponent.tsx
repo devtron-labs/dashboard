@@ -16,7 +16,7 @@
 
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, abortPreviousRequests, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import Sidebar from './Sidebar'
@@ -53,7 +53,15 @@ const K8SResourceTabComponent = ({
 
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
-    if (loading || (error && error.code !== 403)) {
+    if (error?.code === 403) {
+        return (
+            <div className="resource-browser bcn-0 flex">
+                <ErrorScreenManager code={403} />
+            </div>
+        )
+    }
+
+    if (loading || error) {
         return (
             <ConnectingToClusterState
                 loader={loading}
