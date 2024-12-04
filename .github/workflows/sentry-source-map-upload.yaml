@@ -8,7 +8,7 @@ on:
       - 'feat/sentry-sourcemap'
 
 jobs:
-  ci:
+  upload-source-map:
     runs-on: ubuntu-latest
 
     steps:
