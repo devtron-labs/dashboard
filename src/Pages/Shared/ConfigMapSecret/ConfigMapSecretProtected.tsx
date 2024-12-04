@@ -133,7 +133,7 @@ export const ConfigMapSecretProtected = ({
             componentType,
             configMapSecretData: {
                 ...publishedConfigMapSecretData,
-                unAuthorized: publishedConfigMapSecretData.unAuthorized && !draftData.canApprove,
+                unAuthorized: !!publishedConfigMapSecretData?.unAuthorized && !draftData.canApprove,
             },
             isJob,
         })
