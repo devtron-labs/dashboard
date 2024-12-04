@@ -110,7 +110,7 @@ export const processWorkflowStatuses = (
 export const handleSourceNotConfigured = (
     configuredMaterialList: Map<number, Set<number>>,
     wf: WorkflowType,
-    _materialList: any[],
+    _materialList: any[] = [],
     isDockerFileError: boolean,
 ) => {
     if (_materialList.length > 0) {
