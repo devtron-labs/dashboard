@@ -1,4 +1,4 @@
-name: Dashboard CI
+name: Sentry source map upload
 
 on:
   push:
@@ -13,8 +13,18 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
       with:
-        fetch-depth: 0
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build the library
+      run: yarn build
 
     - name: Set SENTRY_RELEASE_VERSION
       id: vars
