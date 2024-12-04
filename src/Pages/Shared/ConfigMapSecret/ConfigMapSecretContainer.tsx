@@ -956,12 +956,7 @@ export const ConfigMapSecretContainer = ({
                                 : formData.mergeStrategy
                         }
                         handleMergeStrategyChange={handleMergeStrategyChange}
-                        hidePatchOption={
-                            isJob ||
-                            inheritedConfigMapSecretData?.external ||
-                            configMapSecretData?.external ||
-                            formData.external
-                        }
+                        hidePatchOption={isJob || formData.external}
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
