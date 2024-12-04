@@ -270,7 +270,9 @@ export const DeploymentConfigCompare = ({
         ])
 
         secretsData?.forEach((data, index) => {
-            appConfigData[index].result.secretsData = data.secretsData
+            if (!appConfigData[index].result.isAppAdmin) {
+                appConfigData[index].result.secretsData = data.secretsData
+            }
         })
 
         return {

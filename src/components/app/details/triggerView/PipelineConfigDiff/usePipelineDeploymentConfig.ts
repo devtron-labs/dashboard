@@ -127,17 +127,29 @@ export const usePipelineDeploymentConfig = ({
             }
 
             // NOTE: for security reasons secretsData from getAppEnvDeploymentConfig
-            // will be null if user has view only access. therefore need to override it
+            // will be null if user is not app admin. therefore need to override it
             // with masked values from getCompareSecretsData api
-            if (_pipelineDeploymentConfigRes[0].status === 'fulfilled' && _pipelineDeploymentConfigRes[0].value) {
+            if (
+                _pipelineDeploymentConfigRes[0].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[0].value &&
+                !_pipelineDeploymentConfigRes[0].value.result.isAppAdmin
+            ) {
                 _pipelineDeploymentConfigRes[0].value.result.secretsData = secretsData.value[0].secretsData
             }
 
-            if (_pipelineDeploymentConfigRes[1].status === 'fulfilled' && _pipelineDeploymentConfigRes[1].value) {
+            if (
+                _pipelineDeploymentConfigRes[1].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[1].value &&
+                !_pipelineDeploymentConfigRes[1].value.result.isAppAdmin
+            ) {
                 _pipelineDeploymentConfigRes[1].value.result.secretsData = secretsData.value[1].secretsData
             }
 
-            if (_pipelineDeploymentConfigRes[2].status === 'fulfilled' && _pipelineDeploymentConfigRes[2].value) {
+            if (
+                _pipelineDeploymentConfigRes[2].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[2].value &&
+                !_pipelineDeploymentConfigRes[2].value.result.isAppAdmin
+            ) {
                 _pipelineDeploymentConfigRes[2].value.result.secretsData = secretsDataCDRollback.value[1].secretsData
             }
 
