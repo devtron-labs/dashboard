@@ -44,10 +44,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { checkIfPathIsMatching, FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '@Config/constants'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
@@ -143,12 +142,11 @@ const DeploymentTemplate = ({
         getDeploymentTemplateInitialState({ isSuperAdmin }),
     )
 
-    const { configHeaderTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<
-        never,
-        DeploymentTemplateURLConfigType
-    >({
-        parseSearchParams: parseDeploymentTemplateParams(envId),
-    })
+    const { headerTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<never, DeploymentTemplateURLConfigType>(
+        {
+            parseSearchParams: parseDeploymentTemplateParams(envId),
+        },
+    )
 
     const configHeaderTab = urlConfigHeaderTab || ConfigHeaderTabType.VALUES
 
@@ -693,7 +691,7 @@ const DeploymentTemplate = ({
         }
 
         updateSearchParams({
-            configHeaderTab: tab,
+            headerTab: tab,
         })
 
         if (tab === ConfigHeaderTabType.DRY_RUN) {
@@ -819,7 +817,7 @@ const DeploymentTemplate = ({
 
         if (!urlConfigHeaderTab) {
             updateSearchParams({
-                configHeaderTab:
+                headerTab:
                     envId && !publishedTemplateState.isOverridden
                         ? ConfigHeaderTabType.INHERITED
                         : ConfigHeaderTabType.VALUES,
@@ -922,7 +920,7 @@ const DeploymentTemplate = ({
 
         if (!urlConfigHeaderTab) {
             updateSearchParams({
-                configHeaderTab: ConfigHeaderTabType.VALUES,
+                headerTab: ConfigHeaderTabType.VALUES,
             })
         }
 
@@ -1005,7 +1003,7 @@ const DeploymentTemplate = ({
 
     const handleReload = async () => {
         updateSearchParams({
-            configHeaderTab: null,
+            headerTab: null,
         })
 
         dispatch({
@@ -1449,8 +1447,6 @@ const DeploymentTemplate = ({
 
     const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
 
-    const getPromptMessage = ({ pathname }) => location.pathname === pathname || DEFAULT_ROUTE_PROMPT_MESSAGE
-
     const hideToggleLockedKeysMenuOption =
         editMode === ConfigurationType.GUI &&
         currentViewEditorState?.isOverridden &&
@@ -1546,6 +1542,7 @@ const DeploymentTemplate = ({
                     })}
                     errorInfo={shouldMergeTemplateWithPatches ? mergedTemplateError : null}
                     handleErrorReload={handleLoadMergedTemplate}
+                    displayName="Values"
                 />
             )
         }
@@ -1897,7 +1894,7 @@ const DeploymentTemplate = ({
                 )}
             </div>
 
-            <Prompt when={areChangesPresent} message={getPromptMessage} />
+            <Prompt when={areChangesPresent} message={checkIfPathIsMatching(location.pathname)} />
         </>
     )
 }

@@ -144,6 +144,7 @@ export const getEnvConfiguration = (
                           ),
                           iconConfig: getIcon(configState, isProtected),
                           subtitle: SUBTITLE[configStage],
+                          clearQueryParamsOnNavigation: true,
                       })),
         }),
         {

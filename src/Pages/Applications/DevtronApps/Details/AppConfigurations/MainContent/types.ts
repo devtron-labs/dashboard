@@ -98,6 +98,7 @@ export type ConfigToolbarProps = {
 
     mergeStrategy: OverrideMergeStrategyType
     handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
+    hidePatchOption?: boolean
 
     /**
      * Used to place toggle editor view and chart selectors in deployment template
@@ -167,6 +168,8 @@ export interface GetConfigToolbarPopupConfigProps {
     isProtected?: boolean
     isDeletable?: boolean
     isDeleteOverrideDraftPresent?: boolean
+    isDeleteDisabled?: boolean
+    deleteDisabledTooltip?: string
 }
 
 type ConfigDryRunManifestProps =
@@ -251,6 +254,7 @@ type CMSecretDiffViewConfigType = {
     externalSubpathValues: DeploymentHistorySingleValue
     filePermission: DeploymentHistorySingleValue
     roleARN: DeploymentHistorySingleValue
+    mergeStrategy: DeploymentHistorySingleValue
 }
 
 type DeploymentTemplateDiffViewConfigType =
@@ -272,7 +276,6 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
-          mergeStrategy?: never
           isOverride?: never
       }
 
@@ -295,6 +298,10 @@ export type CompareConfigViewProps = {
      */
     editorKey?: string
     className?: string
+    /**
+     * @default 'Data'
+     */
+    displayName?: string
 } & ConfigErrorHandlingProps
 
 export interface BaseConfigurationNavigationProps {
@@ -319,6 +326,10 @@ export type SelectMergeStrategyProps = {
      * @default `dropdown`
      */
     variant: 'dropdown' | 'text'
+    /**
+     * Boolean to hide the `OverrideMergeStrategy.PATCH` option.
+     */
+    hidePatchOption?: boolean
 }
 
 export type EnvOverrideEditorCommonStateType = Required<

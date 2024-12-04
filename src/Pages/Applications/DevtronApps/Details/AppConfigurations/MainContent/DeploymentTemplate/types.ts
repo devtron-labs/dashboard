@@ -485,7 +485,7 @@ export interface GetLockedDiffModalDocumentsReturnType {
 }
 
 export interface DeploymentTemplateURLConfigType {
-    configHeaderTab: ConfigHeaderTabType
+    headerTab: ConfigHeaderTabType
 }
 
 export interface HandleFetchGlobalDeploymentTemplateParamsType {

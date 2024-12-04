@@ -81,6 +81,7 @@ const ConfigToolbar = ({
 
     mergeStrategy,
     handleMergeStrategyChange,
+    hidePatchOption,
 
     showEnableReadMeButton,
     handleEnableReadmeView,
@@ -259,6 +260,7 @@ const ConfigToolbar = ({
 
     const renderSelectMergeStrategy = () => {
         if (
+            !mergeStrategy ||
             !envId ||
             showDeleteOverrideDraftEmptyState ||
             (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
@@ -276,6 +278,7 @@ const ConfigToolbar = ({
                             handleMergeStrategyChange={handleMergeStrategyChange}
                             isDisabled={isDisabled}
                             variant={isEditView ? 'dropdown' : 'text'}
+                            hidePatchOption={hidePatchOption}
                         />
                     </div>
                 </InvalidYAMLTippyWrapper>
@@ -320,17 +323,20 @@ const ConfigToolbar = ({
                                     {index !== 0 && <div className="dc__border-bottom-n1 w-100" />}
 
                                     <div className="flexbox-col">
-                                        {groupItems.map(({ text, onClick, dataTestId, disabled, icon, variant }) => (
-                                            <PopupMenuItem
-                                                key={text}
-                                                text={text}
-                                                onClick={onClick}
-                                                dataTestId={dataTestId}
-                                                disabled={disabled}
-                                                icon={icon}
-                                                variant={variant}
-                                            />
-                                        ))}
+                                        {groupItems.map(
+                                            ({ text, onClick, dataTestId, disabled, icon, variant, tooltipText }) => (
+                                                <PopupMenuItem
+                                                    key={text}
+                                                    text={text}
+                                                    onClick={onClick}
+                                                    dataTestId={dataTestId}
+                                                    disabled={disabled}
+                                                    icon={icon}
+                                                    variant={variant}
+                                                    tooltipText={tooltipText}
+                                                />
+                                            ),
+                                        )}
                                     </div>
                                 </Fragment>
                             )
@@ -343,7 +349,7 @@ const ConfigToolbar = ({
 
     return (
         <div
-            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
+            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__no-shrink h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
         >
             <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
                 {getLHSActionNodes()}

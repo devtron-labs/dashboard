@@ -40,8 +40,13 @@ export const renderESOInfo = (isESO: boolean) =>
         />
     ) : null
 
-export const renderExternalInfo = (renderCondition: boolean, componentType: CMSecretComponentType) =>
-    renderCondition ? (
+export const renderExternalInfo = (
+    externalType: CMSecretExternalType,
+    external: boolean,
+    componentType: CMSecretComponentType,
+) =>
+    externalType === CMSecretExternalType.KubernetesSecret ||
+    (componentType === CMSecretComponentType.ConfigMap && external) ? (
         <InfoColourBar
             classname="info_bar"
             message={
