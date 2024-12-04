@@ -27,6 +27,8 @@ import {
     OverrideMergeStrategyType,
     GUIViewError,
     YAMLStringify,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import EmptyFolderImage from '@Images/Empty-folder.png'
@@ -72,7 +74,7 @@ const GUIView = ({
             setFormData(parsedValue)
             formDataRef.current = parsedValue
 
-            if (mergeStrategy === OverrideMergeStrategyType.PATCH && !modelRef.current && ConfigurableGUIViewModel) {
+            if (ConfigurableGUIViewModel && !modelRef.current && mergeStrategy === OverrideMergeStrategyType.PATCH) {
                 modelRef.current = new ConfigurableGUIViewModel(guiSchema, value)
                 setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
             }
@@ -81,21 +83,20 @@ const GUIView = ({
                 setInvalidGUISchemaError(err)
             } else {
                 handleChangeToYAMLMode()
-            }
-        }
 
-        return () => {
-            if (mergeStrategy !== OverrideMergeStrategyType.PATCH) {
-                modelRef.current = null
+                ToastManager.showToast({
+                    variant: ToastVariantType.warn,
+                    description: 'Redirecting to yaml view due to empty/malformed yaml',
+                })
             }
         }
-    }, [value, guiSchema, mergeStrategy])
+    }, [value, guiSchema])
 
     useEffect(
         () => () => {
             if (modelRef.current) {
                 const newData = modelRef.current.syncCheckedFieldsInJson(formDataRef.current)
-                editorOnChange?.(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
+                editorOnChange(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
             }
         },
         [],
@@ -147,6 +148,7 @@ const GUIView = ({
                         // NOTE: we need to use the original document to evaluate the actual paths
                         flatMapOfJSONPaths([key], parsedUneditedDocument)
                             .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
+                            .filter((path) => !!path)
                             .map((path) => makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))),
                     ),
                     configurableGUIViewUISchema,
@@ -169,14 +171,14 @@ const GUIView = ({
     }, [guiSchema, hideLockedKeys, configurableGUIViewUISchema, invalidGUISchemaError])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        editorOnChange?.(YAML.stringify(data.formData))
+        editorOnChange(YAML.stringify(data.formData))
     }
 
     const updateNodeForPath = (path: string) => {
         if (modelRef.current) {
             const newFormData = modelRef.current.updateNodeForPath({ path, json: formData })
             setConfigurableGUIViewUISchema(modelRef.current.getUISchema())
-            editorOnChange?.(YAML.stringify(newFormData))
+            editorOnChange(YAML.stringify(newFormData))
         }
     }
 
