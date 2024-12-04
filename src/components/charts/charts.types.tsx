@@ -405,7 +405,7 @@ export interface ChartHeaderFilterProps {
 }
 
 export interface DeleteInstalledChartParamsType {
-    forceDelete?: true
+    force?: true
     partialDelete?: true
     cascade?: false
 }
