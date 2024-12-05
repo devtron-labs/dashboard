@@ -25,17 +25,13 @@ import {
     CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
     CONFIG_MAP_SECRET_NO_DATA_ERROR,
+    configMapSecretMountDataMap,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import {
-    convertKeyValuePairToYAML,
-    convertYAMLToKeyValuePair,
-    getLockedYamlString,
-    getYAMLWithStringifiedNumbers,
-} from './utils'
+import { convertKeyValuePairToYAML, convertYAMLToKeyValuePair, getLockedYamlString } from './utils'
 import { ConfigMapSecretDataProps } from './types'
 
 export const ConfigMapSecretData = ({
@@ -44,6 +40,7 @@ export const ConfigMapSecretData = ({
     isESO,
     isHashiOrAWS,
     readOnly,
+    isPatchMode,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
     const { data, errors, setValue, register } = useFormProps
@@ -54,16 +51,18 @@ export const ConfigMapSecretData = ({
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
+    const isSelectedTypeVolume =
+        data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
 
     // METHODS & CONFIGURATIONS
     const config: KeyValueConfig<'k' | 'v'> = {
         headers: [
             {
-                label: data.externalType === '' && data.selectedType === 'volume' ? 'File Name' : 'Key',
+                label: isSelectedTypeVolume ? 'File Name' : 'Key',
                 key: 'k',
             },
             {
-                label: data.externalType === '' && data.selectedType === 'volume' ? 'File Content' : 'Value',
+                label: isSelectedTypeVolume ? 'File Content' : 'Value',
                 key: 'v',
             },
         ],
@@ -147,8 +146,9 @@ export const ConfigMapSecretData = ({
         const yamlMode = e.target.value
         // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the 'NO_DATA_ERROR' error.
         const hasDataError =
-            (errors.yaml || errors.currentData) &&
-            (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_NO_DATA_ERROR
+            data.hasCurrentDataErr ||
+            ((errors.yaml || errors.currentData) &&
+                (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_NO_DATA_ERROR)
 
         // If there are validation errors, show a toast notification and return the current mode without switching.
         if (hasDataError) {
@@ -199,7 +199,7 @@ export const ConfigMapSecretData = ({
             ? getLockedYamlString(data[getCodeEditorFormKey()] as string)
             : (data[getCodeEditorFormKey()] as string)
 
-        return readOnly ? getYAMLWithStringifiedNumbers(codeEditorValue) : codeEditorValue
+        return codeEditorValue
     }
 
     // RENDERERS
@@ -214,7 +214,7 @@ export const ConfigMapSecretData = ({
         return (
             <div className="flex left dc__gap-12">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className="m-0 fs-13 lh-20 dc__required-field">Data</label>
+                <label className="m-0 fs-13 lh-20 dc__required-field">{isPatchMode ? 'Patch data' : 'Data'}</label>
                 {!isESO && !isHashiOrAWS && (
                     <StyledRadioGroup
                         className="gui-yaml-switch"
@@ -277,8 +277,10 @@ export const ConfigMapSecretData = ({
         return (
             <div className="dc__border br-4 dc__overflow-hidden">
                 <CodeEditor
+                    key={codeEditorRadio}
                     value={getCodeEditorValue()}
-                    onChange={!isLocked && codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA ? onChange : noop}
+                    // Skip calling onChange if resolvedData exists
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
                     mode="yaml"
                     inline

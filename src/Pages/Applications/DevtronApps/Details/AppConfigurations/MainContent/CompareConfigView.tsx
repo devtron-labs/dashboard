@@ -1,7 +1,7 @@
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
-import { DeploymentHistoryDiffView } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentHistoryDiffView, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { CompareConfigViewProps } from './types'
 import { getCompareViewHistoryDiffConfigProps } from './utils'
 
@@ -20,6 +20,9 @@ const CompareConfigView = ({
     isDeleteOverrideView,
     editorKey = `${compareFromSelectedOptionValue || 'compare'}-draft-editor-key`,
     className = '',
+    errorInfo,
+    handleErrorReload,
+    displayName,
 }: CompareConfigViewProps) => (
     <div className={`flexbox-col ${className ?? ''}`}>
         <div className="dc__grid-half bcn-0 dc__position-sticky dc__top-0 dc__zi-10">
@@ -46,22 +49,28 @@ const CompareConfigView = ({
             </div>
         </div>
 
-        <div className="p-16">
-            <DeploymentHistoryDiffView
-                key={editorKey}
-                currentConfiguration={getCompareViewHistoryDiffConfigProps(
-                    true,
-                    publishedEditorTemplate,
-                    publishedEditorConfig,
-                )}
-                baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
-                    false,
-                    currentEditorTemplate,
-                    currentEditorConfig,
-                )}
-                previousConfigAvailable
-            />
-        </div>
+        {errorInfo ? (
+            <div className="flex flex-grow-1">
+                <ErrorScreenManager code={errorInfo.code} reload={handleErrorReload} />
+            </div>
+        ) : (
+            <div className="p-16">
+                <DeploymentHistoryDiffView
+                    key={editorKey}
+                    currentConfiguration={getCompareViewHistoryDiffConfigProps(
+                        publishedEditorTemplate,
+                        publishedEditorConfig,
+                        displayName,
+                    )}
+                    baseTemplateConfiguration={getCompareViewHistoryDiffConfigProps(
+                        currentEditorTemplate,
+                        currentEditorConfig,
+                        displayName,
+                    )}
+                    previousConfigAvailable
+                />
+            </div>
+        )}
     </div>
 )
 

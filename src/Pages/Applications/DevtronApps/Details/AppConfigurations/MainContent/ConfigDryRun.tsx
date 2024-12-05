@@ -5,6 +5,7 @@ import {
     BaseURLParams,
     CodeEditor,
     DryRunEditorMode,
+    ErrorScreenManager,
     getDeploymentManifest,
     getIsRequestAborted,
     MODES,
@@ -14,9 +15,10 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 // FIXME: Placeholder icon since no sense of git merge icon as of now
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import SelectMergeStrategy from './SelectMergeStrategy'
 import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
-import { ConfigDryRunProps } from './types'
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
+import { ConfigDryRunProps } from './types'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 
@@ -34,7 +36,11 @@ const ConfigDryRun = ({
     isDraftPresent,
     isPublishedConfigPresent,
     isApprovalPending,
+    errorInfo,
+    handleErrorReload,
     manifestAbortController,
+    mergeStrategy,
+    isOverridden,
 }: ConfigDryRunProps) => {
     const { envId, appId } = useParams<BaseURLParams>()
 
@@ -56,12 +62,16 @@ const ConfigDryRun = ({
     const [isManifestLoading, manifestResponse, manifestError, reloadManifest] = useAsync(
         getDeploymentManifestWrapper,
         [appId, envId, chartRefId, editorTemplate, showManifest, isLoading],
-        !!showManifest && !isLoading && !!editorTemplate,
+        !!showManifest && !isLoading && !!editorTemplate && !errorInfo,
     )
 
     const isManifestLoadingOrAborted = isManifestLoading || !!getIsRequestAborted(manifestError)
 
     const renderEditorBody = () => {
+        if (errorInfo) {
+            return <ErrorScreenManager code={errorInfo.code} reload={handleErrorReload} />
+        }
+
         if (isDraftPresent && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES && !isPublishedConfigPresent) {
             return <NoPublishedVersionEmptyState />
         }
@@ -96,10 +106,17 @@ const ConfigDryRun = ({
                         )}
                     </div>
 
-                    <ToggleResolveScopedVariables
-                        handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
-                        resolveScopedVariables={resolveScopedVariables}
-                    />
+                    <div className="flexbox dc__gap-8">
+                        {isOverridden && mergeStrategy && (
+                            <SelectMergeStrategy mergeStrategy={mergeStrategy} variant="text" />
+                        )}
+
+                        <ToggleResolveScopedVariables
+                            handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
+                            resolveScopedVariables={resolveScopedVariables}
+                            isDisabled={!!errorInfo}
+                        />
+                    </div>
                 </div>
 
                 {renderEditorBody()}

@@ -14,8 +14,6 @@
   - limitations under the License.
   -->
 
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Icon/ic-clock-counterclockwise">
-<path id="Vector" d="M12 7.5V12L15.8971 14.25M6.73438 9.34838H2.98438M2.98438 9.34838V5.59838M2.98438 9.34838L6.1664 6.16637C7.32018 5.01259 8.79019 4.22685 10.3905 3.90853C11.9909 3.5902 13.6497 3.75357 15.1572 4.378C16.6647 5.00242 17.9531 6.05984 18.8597 7.41655C19.7662 8.77325 20.25 10.3683 20.25 12C20.25 13.6317 19.7662 15.2268 18.8597 16.5835C17.9531 17.9402 16.6647 18.9976 15.1572 19.622C13.6497 20.2464 11.9909 20.4098 10.3905 20.0915C8.79019 19.7732 7.32018 18.9874 6.1664 17.8336" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="#3B444C" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 7.5V12l3.897 2.25M6.734 9.348h-3.75m0 0v-3.75m0 3.75 3.182-3.182a8.25 8.25 0 1 1 0 11.668" vector-effect="non-scaling-stroke"/>
 </svg>

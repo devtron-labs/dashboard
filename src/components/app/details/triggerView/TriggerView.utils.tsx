@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-    showError,
-    DeploymentWithConfigType,
-    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { prepareHistoryData } from '../cdDetails/service'
 import { TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
@@ -78,48 +73,6 @@ export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRec
         configOptionsList[0].options.push(LATEST_TRIGGER_CONFIG_OPTION)
     }
     return configOptionsList
-}
-
-export const processResolvedPromise = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resp: { status: string; value?: any; reason?: any },
-    isRecentDeployConfig?: boolean,
-) => {
-    if (resp.status === 'fulfilled') {
-        return {
-            configMap:
-                resp.value?.result?.configMap &&
-                resp.value.result.configMap.map((_configMap) => ({
-                    componentName: _configMap.componentName,
-                    ...prepareHistoryData(_configMap.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE),
-                })),
-            deploymentTemplate:
-                resp.value?.result?.deploymentTemplate &&
-                prepareHistoryData(
-                    resp.value.result.deploymentTemplate,
-                    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE,
-                ),
-            pipelineStrategy:
-                resp.value?.result?.pipelineStrategy &&
-                prepareHistoryData(
-                    resp.value.result.pipelineStrategy,
-                    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.PIPELINE_STRATEGY.VALUE,
-                ),
-            secret:
-                resp.value?.result?.secret &&
-                resp.value.result.secret.map((_secret) => ({
-                    componentName: _secret.componentName,
-                    ...prepareHistoryData(_secret.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE),
-                })),
-            wfrId: resp.value?.result?.wfrId,
-        }
-    }
-    // This will handle a corner case, no previous deployment history is present i.e for first time deployment.
-    if (!isRecentDeployConfig) {
-        showError(resp.reason)
-    }
-
-    return null
 }
 
 const compareConfigValues = (configA: DeploymentHistoryDetail, configB: DeploymentHistoryDetail): boolean => {

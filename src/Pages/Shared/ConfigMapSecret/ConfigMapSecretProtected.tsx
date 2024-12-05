@@ -2,30 +2,25 @@ import { useMemo, useState } from 'react'
 import YAML from 'yaml'
 
 import {
-    Button,
-    ButtonStyleType,
+    applyCompareDiffOnUneditedDocument,
     CompareFromApprovalOptionsValuesType,
-    ComponentSizeType,
     DraftAction,
     DraftState,
     noop,
+    OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { hasApproverAccess, importComponentFromFELibrary } from '@Components/common'
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 
-import { CM_SECRET_STATE, CMSecretComponentType, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
+import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
 import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
-import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
-
-const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy', null, 'function')
+import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
 
 export const ConfigMapSecretProtected = ({
     id,
@@ -35,21 +30,19 @@ export const ConfigMapSecretProtected = ({
     publishedConfigMapSecretData,
     cmSecretStateLabel,
     isJob,
+    disableDataTypeChange,
     appChartRef,
     selectedProtectionViewTab,
     parentName,
     inheritedConfigMapSecretData,
-    resolvedFormData,
     areScopeVariablesResolving,
     onError,
     onSubmit,
     updateCMSecret,
-    restoreYAML,
-    setRestoreYAML,
+    shouldMergeTemplateWithPatches,
+    useFormProps,
 }: ConfigMapSecretProtectedProps) => {
-    // HOOKS
-    const { email } = useUserEmail()
-    const { formDataRef } = useConfigMapSecretFormContext()
+    const { data: formData } = useFormProps
 
     // STATES
     const [compareFromSelectedOptionValue, setCompareFromSelectedOptionValue] =
@@ -63,20 +56,8 @@ export const ConfigMapSecretProtected = ({
 
     // DATA
     const configMapSecretData = useMemo<CMSecretConfigData>(
-        () => ({ ...JSON.parse(draftData.data).configData?.[0], unAuthorized: !draftData.isAppAdmin }),
+        () => ({ ...draftData.parsedData.configData?.[0], unAuthorized: !draftData.isAppAdmin }),
         [draftData],
-    )
-
-    const currentConfigMapSecretData = useMemo(
-        () =>
-            (componentType === CMSecretComponentType.ConfigMap || !configMapSecretData?.unAuthorized) &&
-            (resolvedFormData ?? formDataRef.current)
-                ? {
-                      ...configMapSecretData,
-                      ...getConfigMapSecretPayload(resolvedFormData ?? formDataRef.current),
-                  }
-                : configMapSecretData,
-        [configMapSecretData, formDataRef.current, resolvedFormData],
     )
 
     // METHODS
@@ -85,40 +66,83 @@ export const ConfigMapSecretProtected = ({
 
     const getConfigMapSecretDiffViewData = () => {
         if (draftData.action === DraftAction.Delete) {
-            return isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null
+            return {
+                diffViewData: isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null,
+                mergeStrategyToShow: inheritedConfigMapSecretData?.mergeStrategy,
+            }
         }
 
-        return isApprovalPendingOptionSelected ? configMapSecretData : currentConfigMapSecretData
+        const showFormData = !isApprovalPendingOptionSelected && !configMapSecretData.unAuthorized
+        const updatedConfigMapSecretData = {
+            ...configMapSecretData,
+            // -> !isApprovalPendingOptionSelected means "Values from draft"
+            ...(showFormData ? getConfigMapSecretPayload(formData) : {}),
+        }
+
+        const showMergedData =
+            shouldMergeTemplateWithPatches &&
+            updatedConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+        return {
+            mergeStrategyToShow: updatedConfigMapSecretData.mergeStrategy,
+            diffViewData: !showFormData
+                ? {
+                      ...updatedConfigMapSecretData,
+                      mergeStrategy: showMergedData
+                          ? OverrideMergeStrategyType.REPLACE
+                          : updatedConfigMapSecretData.mergeStrategy,
+                  }
+                : {
+                      ...updatedConfigMapSecretData,
+                      mergeStrategy: OverrideMergeStrategyType.REPLACE,
+                      ...(showMergedData
+                          ? {
+                                data: applyCompareDiffOnUneditedDocument(inheritedConfigMapSecretData?.data || {}, {
+                                    ...(inheritedConfigMapSecretData?.data || {}),
+                                    ...updatedConfigMapSecretData.data,
+                                }),
+                            }
+                          : {}),
+                  },
+        }
     }
 
     const getCurrentEditorConfig = (): Pick<
         CompareConfigViewProps,
         'currentEditorConfig' | 'currentEditorTemplate'
     > => {
+        const { diffViewData, mergeStrategyToShow } = getConfigMapSecretDiffViewData()
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             isJob,
             componentType,
-            configMapSecretData: getConfigMapSecretDiffViewData(),
+            configMapSecretData: diffViewData,
+            cmSecretStateLabel,
         })
 
         return {
-            currentEditorConfig: editorConfigData.reduce<CompareConfigViewProps['currentEditorConfig']>(
-                (acc, curr) => ({
-                    ...acc,
-                    [curr.displayName]: {
-                        displayName: curr.displayName,
-                        value: curr.value,
-                    },
-                }),
-                (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                    ? {
-                          configuration: {
-                              displayName: 'Configuration',
-                              value: 'Inherit from base',
-                          },
-                      }
-                    : {}) as CompareConfigViewProps['currentEditorConfig'],
-            ),
+            currentEditorConfig: {
+                ...editorConfigData.reduce<CompareConfigViewProps['currentEditorConfig']>(
+                    (acc, curr) => ({
+                        ...acc,
+                        [curr.key]: {
+                            displayName: curr.displayName,
+                            value: curr.value,
+                        },
+                    }),
+                    (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        ? {
+                              configuration: {
+                                  displayName: 'Configuration',
+                                  value: 'Inherit from base',
+                              },
+                          }
+                        : {}) as CompareConfigViewProps['currentEditorConfig'],
+                ),
+                mergeStrategy: {
+                    displayName: 'Merge strategy',
+                    value: mergeStrategyToShow,
+                },
+            },
             currentEditorTemplate: data ? YAML.parse(data) : undefined,
         }
     }
@@ -129,28 +153,47 @@ export const ConfigMapSecretProtected = ({
     > => {
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             componentType,
-            configMapSecretData: publishedConfigMapSecretData,
+            cmSecretStateLabel,
+            configMapSecretData:
+                publishedConfigMapSecretData && cmSecretStateLabel !== CM_SECRET_STATE.INHERITED
+                    ? {
+                          ...publishedConfigMapSecretData,
+                          ...(publishedConfigMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH
+                              ? {
+                                    mergeStrategy: shouldMergeTemplateWithPatches
+                                        ? OverrideMergeStrategyType.REPLACE
+                                        : OverrideMergeStrategyType.PATCH,
+                                }
+                              : {}),
+                      }
+                    : null,
             isJob,
         })
 
         return {
-            publishedEditorConfig: editorConfigData.reduce<CompareConfigViewProps['publishedEditorConfig']>(
-                (acc, curr) => ({
-                    ...acc,
-                    [curr.displayName]: {
-                        displayName: curr.displayName,
-                        value: curr.value,
-                    },
-                }),
-                (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                    ? {
-                          configuration: {
-                              displayName: 'Configuration',
-                              value: 'Override base',
-                          },
-                      }
-                    : {}) as CompareConfigViewProps['publishedEditorConfig'],
-            ),
+            publishedEditorConfig: {
+                ...editorConfigData.reduce<CompareConfigViewProps['publishedEditorConfig']>(
+                    (acc, curr) => ({
+                        ...acc,
+                        [curr.key]: {
+                            displayName: curr.displayName,
+                            value: curr.value,
+                        },
+                    }),
+                    (draftData.action === DraftAction.Delete && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        ? {
+                              configuration: {
+                                  displayName: 'Configuration',
+                                  value: 'Override base',
+                              },
+                          }
+                        : {}) as CompareConfigViewProps['publishedEditorConfig'],
+                ),
+                mergeStrategy: {
+                    displayName: 'Merge strategy',
+                    value: publishedConfigMapSecretData?.mergeStrategy,
+                },
+            },
             publishedEditorTemplate: data ? YAML.parse(data) : undefined,
         }
     }
@@ -159,6 +202,7 @@ export const ConfigMapSecretProtected = ({
     const renderFormView = () => (
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
+            inheritedConfigMapSecretData={inheritedConfigMapSecretData}
             id={id}
             componentType={componentType}
             cmSecretStateLabel={
@@ -172,60 +216,15 @@ export const ConfigMapSecretProtected = ({
             appChartRef={appChartRef}
             isProtected
             isDraft
+            disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}
             onCancel={noop}
             onError={onError}
             onSubmit={onSubmit}
-            resolvedFormData={resolvedFormData}
             areScopeVariablesResolving={areScopeVariablesResolving}
-            restoreYAML={restoreYAML}
-            setRestoreYAML={setRestoreYAML}
+            useFormProps={useFormProps}
         />
     )
-
-    const renderApproveButton = () => {
-        if (draftData.draftState !== DraftState.AwaitApproval || !ApproveRequestTippy) {
-            return null
-        }
-
-        const hasAccess = hasApproverAccess(email, draftData.approvers)
-
-        return (
-            <footer className="py-12 px-16 dc__border-top-n1 flex left dc__gap-12 configmap-secret-container__approval-tippy">
-                {draftData.canApprove && hasAccess ? (
-                    <ApproveRequestTippy
-                        draftId={draftData.draftId}
-                        draftVersionId={draftData.draftVersionId}
-                        resourceName={componentName}
-                        reload={updateCMSecret}
-                        envName={parentName}
-                    >
-                        <Button
-                            dataTestId="cm-secret-approve-btn"
-                            text="Approve Changes"
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.positive}
-                        />
-                    </ApproveRequestTippy>
-                ) : (
-                    <Button
-                        dataTestId="cm-secret-approve-btn"
-                        text="Approve Changes"
-                        size={ComponentSizeType.medium}
-                        style={ButtonStyleType.positive}
-                        disabled
-                        showTooltip
-                        tooltipProps={{
-                            placement: 'top-end',
-                            content: hasAccess
-                                ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                                : 'You do not have permission to approve configuration changes for this application - environment combination.',
-                        }}
-                    />
-                )}
-            </footer>
-        )
-    }
 
     const renderCompareView = () => (
         <div className="flexbox-col h-100 dc__overflow-hidden">
@@ -243,7 +242,13 @@ export const ConfigMapSecretProtected = ({
                     />
                 )}
             </div>
-            {renderApproveButton()}
+            <ConfigMapSecretApproveButton
+                componentName={componentName}
+                configMapSecretData={configMapSecretData}
+                draftData={draftData}
+                parentName={parentName}
+                updateCMSecret={updateCMSecret}
+            />
         </div>
     )
 
@@ -260,6 +265,7 @@ export const ConfigMapSecretProtected = ({
 
                 return (
                     <ConfigMapSecretReadyOnly
+                        cmSecretStateLabel={cmSecretStateLabel}
                         componentType={componentType}
                         isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}

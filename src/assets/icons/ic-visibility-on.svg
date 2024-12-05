@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8 3.5C3 3.5 1 8.00049 1 8.00049C1 8.00049 3 12.5 8 12.5C13 12.5 15 8.00049 15 8.00049C15 8.00049 13 3.5 8 3.5Z" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.5005C9.38071 10.5005 10.5 9.38124 10.5 8.00053C10.5 6.61981 9.38071 5.50053 8 5.50053C6.61929 5.50053 5.5 6.61981 5.5 8.00053C5.5 9.38124 6.61929 10.5005 8 10.5005Z" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="#3B444C" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 5.25C4.5 5.25 1.5 12 1.5 12s3 6.75 10.5 6.75S22.5 12 22.5 12s-3-6.75-10.5-6.75Z" vector-effect="non-scaling-stroke"/>
+  <path stroke="#3B444C" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" vector-effect="non-scaling-stroke"/>
 </svg>

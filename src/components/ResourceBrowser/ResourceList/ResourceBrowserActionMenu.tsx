@@ -123,7 +123,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             onClick={handleResourceClick}
                             data-testid="manifest-option-link"
                         >
-                            <ManifestIcon className="icon-dim-16 mr-8 scn-6" />
+                            <ManifestIcon className="icon-dim-16 scn-8 mr-8 dc__no-shrink" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
                         </span>
                         <span
