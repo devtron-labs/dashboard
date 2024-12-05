@@ -139,7 +139,7 @@ if (!window || !window._env_) {
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
-        SERVICE_WORKER_TIMEOUT: '1',
+        SERVICE_WORKER_TIMEOUT: '3',
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
