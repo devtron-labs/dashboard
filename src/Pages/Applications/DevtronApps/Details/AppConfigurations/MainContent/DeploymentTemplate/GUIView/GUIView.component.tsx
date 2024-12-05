@@ -26,7 +26,6 @@ import {
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
     OverrideMergeStrategyType,
     GUIViewError,
-    YAMLStringify,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -91,16 +90,6 @@ const GUIView = ({
             }
         }
     }, [value, guiSchema])
-
-    useEffect(
-        () => () => {
-            if (modelRef.current) {
-                const newData = modelRef.current.syncCheckedFieldsInJson(formDataRef.current)
-                editorOnChange(newData ? YAMLStringify(newData, { simpleKeys: true }) : '')
-            }
-        },
-        [],
-    )
 
     const state: GUIViewState = useMemo(() => {
         if (invalidGUISchemaError) {
