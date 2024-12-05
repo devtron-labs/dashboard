@@ -88,9 +88,7 @@ export const ConfigMapSecretProtected = ({
             return isApprovalPendingOptionSelected ? inheritedConfigMapSecretData : null
         }
 
-        return isApprovalPendingOptionSelected
-            ? { ...configMapSecretData, unAuthorized: configMapSecretData.unAuthorized && !draftData.canApprove }
-            : currentConfigMapSecretData
+        return isApprovalPendingOptionSelected ? configMapSecretData : currentConfigMapSecretData
     }
 
     const getCurrentEditorConfig = (): Pick<
@@ -131,10 +129,7 @@ export const ConfigMapSecretProtected = ({
     > => {
         const { configData: editorConfigData, data } = getConfigMapSecretReadOnlyValues({
             componentType,
-            configMapSecretData: {
-                ...publishedConfigMapSecretData,
-                unAuthorized: !!publishedConfigMapSecretData?.unAuthorized && !draftData.canApprove,
-            },
+            configMapSecretData: publishedConfigMapSecretData,
             isJob,
         })
 
