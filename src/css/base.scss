@@ -3443,6 +3443,10 @@ textarea,
     height: fit-content !important;
 }
 
+.dc__h-min-content {
+    height: min-content;
+}
+
 .h-0 {
     height: 0px;
 }
@@ -5274,4 +5278,12 @@ textarea::placeholder {
 
 .code-editor-red-diff {
     background: var(--R100);
+}
+
+details[open] {
+    .dc__accordion-summary {
+        &--icon-flip-90 {
+            transform: rotate(90deg);
+        }
+    }
 }
