@@ -194,6 +194,8 @@ export default defineConfig(({ mode }) => {
             }),
             ViteImageOptimizer({
                 logStats: false,
+                cache: true,
+                cacheLocation: '.build-cache/vite-image-optimizer',
             }),
             // VitePWA and jsToBottomNoModule is not to be added for storybook
             ...(process.env.IS_STORYBOOK
