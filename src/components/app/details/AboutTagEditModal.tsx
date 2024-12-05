@@ -27,10 +27,9 @@ import {
     ButtonVariantType,
     stopPropagation,
     TagsContainer,
-    getEmptyTagTableRow,
     DynamicDataTableRowType,
     TagsTableColumnsType,
-    DynamicDataTableRowDataType,
+    PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps } from '../types'
@@ -38,7 +37,7 @@ import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
 import { APP_TYPE } from '@Config/constants'
-import { parseLabels } from './utils'
+import { getLabelTags } from './utils'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 
@@ -52,12 +51,13 @@ export default function AboutTagEditModal({
     appType,
 }: AboutAppInfoModalProps) {
     const [submitting, setSubmitting] = useState(false)
-    const [labelTags, setLabelTags] = useState<DynamicDataTableRowType<TagsTableColumnsType>[]>(
-        currentLabelTags?.length ? parseLabels(currentLabelTags) : [getEmptyTagTableRow()],
-    )
+    const [labelTags, setLabelTags] = useState<DynamicDataTableRowType<TagsTableColumnsType>[]>(MandatoryTagsContainer ? [] : getLabelTags(currentLabelTags))
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
-    console.log(currentLabelTags)
+    const configuredTagsMap = new Map<string, {value: string, propagate: boolean}>()
+    currentLabelTags.forEach((configuredTag) => {
+        configuredTagsMap.set(configuredTag.key, {value: configuredTag.value, propagate: configuredTag.propagate})
+    })
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
@@ -65,12 +65,16 @@ export default function AboutTagEditModal({
         let invalidLabels = false
         for (let index = 0; index < labelTags.length; index++) {
             const element = labelTags[index]
-            // if (element.isInvalidKey || element.isInvalidValue) {
-            //     invalidLabels = true
-            //     break
-            // } else if (element.key) {
-            //     _labelTags.push({ key: element.key, value: element.value, propagate: element.propagate })
-            // }
+            const currentKey = element.data.tagKey.value
+            const currentVal = element.data.tagValue.value
+            const isKeyValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentKey)
+            const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
+            if (!isKeyValid || !isValueValid) {
+                invalidLabels = true
+                break
+            } else if (element.data.tagKey.value) {
+                customLabelTags.push({ key: currentKey, value: currentVal, propagate: element.customState.propagate })
+            }
             customLabelTags.push({
                 key: element.data.tagKey.value,
                 value: element.data.tagValue.value,
@@ -123,7 +127,7 @@ export default function AboutTagEditModal({
                             tags={labelTags}
                             setTags={setLabelTags}
                             projectId={appMetaInfo.projectId}
-                            configuredTags={parseLabels(currentLabelTags)}
+                            configuredTagsMap={configuredTagsMap}
                         />
                     ) : (
                         <TagsContainer

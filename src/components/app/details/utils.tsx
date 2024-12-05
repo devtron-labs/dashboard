@@ -3,9 +3,10 @@ import {
     DynamicDataTableRowType,
     TagType,
     TagsTableColumnsType,
+    getEmptyTagTableRow,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export const parseLabels = (currentLabelTags: TagType[]): DynamicDataTableRowType<TagsTableColumnsType>[] =>
+const parseLabels = (currentLabelTags: TagType[]): DynamicDataTableRowType<TagsTableColumnsType>[] =>
     currentLabelTags.map((currentLabelTag) => ({
         data: {
             tagKey: {
@@ -24,3 +25,6 @@ export const parseLabels = (currentLabelTags: TagType[]): DynamicDataTableRowTyp
             propagateTag: currentLabelTag.propagate,
         },
     }))
+
+export const getLabelTags = (currentLabelTags: TagType[]) =>
+    currentLabelTags?.length ? parseLabels(currentLabelTags) : [getEmptyTagTableRow()]
