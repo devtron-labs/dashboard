@@ -50,6 +50,9 @@ import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
+import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
+import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
+import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1254,3 +1257,76 @@ export const checkIfPathIsMatching =
     (currentPathName: string, customMessage = ''): PromptProps['message'] =>
     ({ pathname }: { pathname: string })  =>
         currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE
+
+export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
+    filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+
+export const getAndSetAppGroupFilters = ({
+    filterParentType,
+    resourceId,
+    appListOptions,
+    groupFilterOptions,
+    setSelectedAppList,
+    setSelectedGroupFilter,
+}: GetAndSetAppGroupFiltersParamsType) => {
+    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+
+    const localStorageValue = localStorage.getItem(localStorageKey)
+    if (!localStorageValue) {
+        return
+    }
+    try {
+        const valueForCurrentResource = new Map(JSON.parse(localStorageValue)).get(resourceId)
+        // local storage value for app list/ env list
+        const localStorageResourceList = valueForCurrentResource?.[0] || []
+        // local storage value for group filter
+        const localStorageGroupList = valueForCurrentResource?.[1] || []
+
+        const appListOptionsMap = appListOptions.reduce<Record<string, true>>((agg, curr) => {
+            agg[curr.value] = true
+            return agg
+        }, {})
+
+        const groupFilterOptionsMap = groupFilterOptions.reduce<Record<string, true>>((agg, curr) => {
+            agg[curr.value] = true
+            return agg
+        }, {})
+
+        // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
+        const filteredLocalStorageResourceList = localStorageResourceList.filter(
+            ({ value }) => appListOptionsMap[value],
+        )
+        const filteredLocalStorageGroupList = localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
+
+        // this means last selected group filter has been deleted
+        if (!!localStorageGroupList.length && !filteredLocalStorageGroupList.length) {
+            setSelectedAppList([])
+            setSelectedGroupFilter([])
+            setAppGroupFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
+            return
+        }
+
+        setSelectedAppList(filteredLocalStorageResourceList)
+        setSelectedGroupFilter(filteredLocalStorageGroupList)
+    } catch {
+        localStorage.setItem(localStorageKey, '')
+    }
+}
+
+export const setAppGroupFilterInLocalStorage = ({
+    filterParentType,
+    resourceId,
+    resourceList,
+    groupList,
+}: SetFiltersInLocalStorageParamsType) => {
+    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+    try {
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        const localStoredMap = new Map(localStorageValue ? JSON.parse(localStorageValue) : null)
+        localStoredMap.set(resourceId, [resourceList, groupList])
+        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
+    } catch {
+        localStorage.setItem(localStorageKey, '')
+    }
+}
