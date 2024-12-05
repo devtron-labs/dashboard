@@ -1,4 +1,8 @@
-import { DynamicDataTableHeaderType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DynamicDataTableHeaderType,
+    SelectPickerOptionType,
+    VariableTypeFormat,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
@@ -24,25 +28,63 @@ export const getVariableDataTableHeaders = (
     },
 ]
 
+export const VAL_COLUMN_CHOICES_DROPDOWN_LABEL = 'Default values'
+
+export const FORMAT_OPTIONS_MAP = {
+    [VariableTypeFormat.STRING]: 'String',
+    [VariableTypeFormat.NUMBER]: 'Number',
+    [VariableTypeFormat.BOOL]: 'Boolean',
+    [VariableTypeFormat.DATE]: 'Date',
+    [VariableTypeFormat.FILE]: 'File',
+}
+
 export const FORMAT_COLUMN_OPTIONS: SelectPickerOptionType<string>[] = [
     {
-        label: 'STRING',
-        value: 'STRING',
+        label: 'String',
+        value: VariableTypeFormat.STRING,
     },
     {
-        label: 'NUMBER',
-        value: 'NUMBER',
+        label: 'Number',
+        value: VariableTypeFormat.NUMBER,
     },
     {
-        label: 'BOOLEAN',
-        value: 'BOOLEAN',
+        label: 'Boolean',
+        value: VariableTypeFormat.BOOL,
     },
     {
-        label: 'FILE',
-        value: 'FILE',
+        label: 'Date',
+        value: VariableTypeFormat.DATE,
     },
     {
-        label: 'DATE',
-        value: 'DATE',
+        label: 'File',
+        value: VariableTypeFormat.FILE,
     },
 ]
+
+export const VAL_COLUMN_BOOL_OPTIONS: SelectPickerOptionType<string>[] = [
+    { label: 'TRUE', value: 'TRUE' },
+    { label: 'FALSE', value: 'FALSE' },
+]
+
+export const VAL_COLUMN_DATE_OPTIONS: SelectPickerOptionType<string>[] = [
+    { label: 'YYYY-MM-DD', value: 'YYYY-MM-DD', description: 'RFC 3339' },
+    { label: 'YYYY-MM-DD HH:mm', value: 'YYYY-MM-DD HH:mm', description: 'RFC 3339 with mins' },
+    { label: 'YYYY-MM-DD HH:mm:ss', value: 'YYYY-MM-DD HH:mm:ss', description: 'RFC 3339 with secs' },
+    { label: 'YYYY-MM-DD HH:mm:ssZ', value: 'YYYY-MM-DD HH:mm:ssZ', description: 'RFC 3339 with secs and TZ' },
+    { label: 'YYYY-MM-DDT15Z0700', value: 'ISO', description: 'ISO8601 with hours' },
+    { label: 'YYYY-MM-DDTHH:mm:ss[Z]', value: 'YYYY-MM-DDTHH:mm:ss[Z]', description: 'ISO8601 with secs' },
+    { label: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]', value: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]', description: 'ISO8601 with nanosecs' },
+]
+
+export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
+    {
+        label: 'KB',
+        value: 1024,
+    },
+    {
+        label: 'MB',
+        value: 1 / 1024,
+    },
+]
+
+export const DECIMAL_REGEX = /^\d*\.?\d*$/

@@ -26,7 +26,7 @@ import { VariableDataTable } from './VariableDataTable'
 
 export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(type !== PluginVariableType.INPUT)
-    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
+    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj  } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
             type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
@@ -66,7 +66,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                     <div className="fs-13 cn-7">No {type} variables</div>
                 )}
             </div>
-            {!collapsedSection && variableLength > 0 && <VariableDataTable type={type} />}
+            {!collapsedSection && variableLength > 0 && <VariableDataTable key={selectedTaskIndex} type={type} />}
         </div>
     )
 }

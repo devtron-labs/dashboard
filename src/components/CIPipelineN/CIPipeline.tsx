@@ -62,6 +62,7 @@ import {
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
+    uploadCIPipelineFile,
 } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
@@ -781,6 +782,8 @@ export default function CIPipeline({
         }
     }
 
+    const uploadFile = (file: File[]) => uploadCIPipelineFile({ appId: +appId, ciPipelineId: +ciPipelineId, file })
+
     const contextValue = useMemo(
         () => ({
             formData,
@@ -808,6 +811,7 @@ export default function CIPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            uploadFile,
         }),
         [
             formData,

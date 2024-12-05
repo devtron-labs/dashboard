@@ -428,3 +428,11 @@ export interface WebhookConditionType {
     deleteWebhookCondition: (index: number) => void
     canEditSelectorCondition: boolean
 }
+
+export interface UploadCIPipelineFileDTO {
+    id: number
+    name: string
+    size: number
+    mimeType: string
+    extension: string
+}

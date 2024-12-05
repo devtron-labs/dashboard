@@ -49,6 +49,7 @@ import {
     ProcessPluginDataReturnType,
     ResourceKindType,
     getEnvironmentListMinPublic,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1237,6 +1238,8 @@ export default function CDPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            // TODO: Handle for CD File Upload (Rohit)
+            uploadFile: noop
         }
     }, [
         formData,

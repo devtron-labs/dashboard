@@ -128,6 +128,7 @@ export const Routes = {
     SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
+    FILE_UPLOAD: 'file/upload',
 
     DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG_MAP_GET: 'configmap/applevel/get',

@@ -29,6 +29,7 @@ import {
     MandatoryPluginDataType,
     CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { UploadCIPipelineFileDTO } from '@Components/ciPipeline/types'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, CdPipelineResult } from '../app/details/triggerView/types'
@@ -329,6 +330,7 @@ export interface PipelineContext {
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
     mandatoryPluginData: MandatoryPluginDataType
+    uploadFile: (file: File[]) => Promise<UploadCIPipelineFileDTO>
 }
 
 export interface SourceTypeCardProps {

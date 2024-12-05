@@ -156,6 +156,7 @@ const parseInputVariablesIntoCreatePluginPayload = (
         valueType: variable.variableType,
         referenceVariableName: variable.refVariableName,
         isExposed: true,
+        // TODO: handle file type here
     })) || []
 
 export const getCreatePluginPayload = ({
