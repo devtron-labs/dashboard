@@ -37,6 +37,7 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     ServerErrors,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -399,7 +400,7 @@ export const Details: React.FC<DetailsType> = ({
                 setIsAppDeleted(true)
             }
             // NOTE: BE sends  string representation of 7000 instead of number 7000 
-            if (error['code'] === 408 || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
+            if (getIsRequestAborted(error) || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
