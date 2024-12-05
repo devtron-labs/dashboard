@@ -45,5 +45,4 @@ do
     echo "  $varname: \"$value\"," >> ./env-config.js
   fi
 done < .env
-
 echo "}" >> ./env-config.js

@@ -843,6 +843,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(true)
         history.push(`${url}${URLS.BUILD}/${ciNodeId}`)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
+        setWebhookPayloads(null)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
@@ -1359,7 +1360,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
-        // setShowBulkCIModal(true)
+        setWebhookPayloads(null)
         setTimeout(() => {
             setShowBulkCIModal(true)
         }, 100)
@@ -2079,6 +2080,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 onClickTriggerBulkCI={onClickTriggerBulkCI}
                 getWebhookPayload={getWebhookPayload}
                 webhookPayloads={webhookPayloads}
+                setWebhookPayloads={setWebhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
                 responseList={responseList}

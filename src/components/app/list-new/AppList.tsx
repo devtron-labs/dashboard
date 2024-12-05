@@ -16,7 +16,16 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { Switch, Route, useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import {
+    Switch,
+    Route,
+    useHistory,
+    useParams,
+    useRouteMatch,
+    useLocation,
+    Redirect,
+    RedirectProps,
+} from 'react-router-dom'
 import {
     Progressing,
     stopPropagation,
@@ -68,7 +77,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const location = useLocation()
     const { url } = useRouteMatch()
     const params = useParams<{ appType: string }>()
-    const { serverMode } = useMainContext()
+    const { serverMode, isSuperAdmin } = useMainContext()
     const { setCurrentAppName } = useAppContext()
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
@@ -284,70 +293,70 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             />
         )
 
-    const renderAppTabs = () => {
-        const tabs: TabProps[] = [
-            ...(serverMode === SERVER_MODE.FULL
-                ? [
-                      {
-                          id: 'devtron-apps',
-                          label: 'Devtron Apps',
-                          tabType: 'navLink' as const,
-                          props: {
-                              to: {
-                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
-                                  search: location.search,
-                              },
-                              'data-testid': 'devtron-app-list-button',
+    const tabs: TabProps[] = [
+        ...(serverMode === SERVER_MODE.FULL
+            ? [
+                  {
+                      id: AppListConstants.AppType.DEVTRON_APPS,
+                      label: 'Devtron Apps',
+                      tabType: 'navLink' as const,
+                      props: {
+                          to: {
+                              pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
+                              search: location.search,
                           },
+                          'data-testid': 'devtron-app-list-button',
                       },
-                  ]
-                : []),
-            {
-                id: 'helm-apps',
-                label: 'Helm Apps',
-                tabType: 'navLink',
-                props: {
-                    to: {
-                        pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
-                        search: location.search,
-                    },
-                    'data-testid': 'helm-app-list-button',
+                  },
+              ]
+            : []),
+        {
+            id: AppListConstants.AppType.HELM_APPS,
+            label: 'Helm Apps',
+            tabType: 'navLink',
+            props: {
+                to: {
+                    pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
+                    search: location.search,
                 },
+                'data-testid': 'helm-app-list-button',
             },
-            ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD
-                ? [
-                      {
-                          id: 'argo-cd-apps',
-                          label: AppListConstants.AppTabs.ARGO_APPS,
-                          tabType: 'navLink' as const,
-                          props: {
-                              to: {
-                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
-                                  search: location.search,
-                              },
-                              'data-testid': 'argo-app-list-button',
+        },
+        ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
+            ? [
+                  {
+                      id: AppListConstants.AppType.ARGO_APPS,
+                      label: AppListConstants.AppTabs.ARGO_APPS,
+                      tabType: 'navLink' as const,
+                      props: {
+                          to: {
+                              pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
+                              search: location.search,
                           },
+                          'data-testid': 'argo-app-list-button',
                       },
-                  ]
-                : []),
-            ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE
-                ? [
-                      {
-                          id: 'flux-cd-apps',
-                          label: AppListConstants.AppTabs.FLUX_APPS,
-                          tabType: 'navLink' as const,
-                          props: {
-                              to: {
-                                  pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
-                                  search: location.search,
-                              },
-                              'data-testid': 'flux-app-list-button',
+                  },
+              ]
+            : []),
+        ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && isSuperAdmin
+            ? [
+                  {
+                      id: AppListConstants.AppType.FLUX_APPS,
+                      label: AppListConstants.AppTabs.FLUX_APPS,
+                      tabType: 'navLink' as const,
+                      props: {
+                          to: {
+                              pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
+                              search: location.search,
                           },
+                          'data-testid': 'flux-app-list-button',
                       },
-                  ]
-                : []),
-        ]
+                  },
+              ]
+            : []),
+    ]
 
+    const renderAppTabs = () => {
         const rightComponent = (
             <div className="flex fs-13">
                 {lastDataSyncTimeString &&
@@ -503,6 +512,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     setShowPulsatingDot={setShowPulsatingDot}
                 />
             )}
+            {tabs.every((tab) => tab.id !== params.appType) && <Redirect {...(tabs[0].props as RedirectProps)} />}
         </div>
     )
 }

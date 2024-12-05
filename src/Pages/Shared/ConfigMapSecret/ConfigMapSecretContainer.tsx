@@ -182,8 +182,10 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        // Skipped for jobs as API support is unavailable
+                        !isJob &&
+                        (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN)
                             ? getConfigMapSecretConfigData({
                                   appId: +appId,
                                   appName,
@@ -372,7 +374,7 @@ export const ConfigMapSecretContainer = ({
 
     // TAB HANDLING
     useEffect(() => {
-        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
+        if (!isJob && cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !draftData) {
             setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
         } else {
             setConfigHeaderTab(ConfigHeaderTabType.VALUES)
@@ -430,7 +432,14 @@ export const ConfigMapSecretContainer = ({
 
     const handleClearPopupNode = () => setPopupNodeType(null)
 
-    const handleViewInheritedConfig = () => setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
+    const handleViewInheritedConfig = () => {
+        if (isJob) {
+            // Redirecting to the base config URL, since inherited tab is hidden
+            history.push(baseConfigurationURL)
+        } else {
+            setConfigHeaderTab(ConfigHeaderTabType.INHERITED)
+        }
+    }
 
     const handleProtectionViewTabChange = (tab: ProtectConfigTabsType) => {
         setSelectedProtectionViewTab(tab)
@@ -746,7 +755,7 @@ export const ConfigMapSecretContainer = ({
                     }
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideDryRunTab
+                    hideTabs={{ dryRun: true, inherited: isJob }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
