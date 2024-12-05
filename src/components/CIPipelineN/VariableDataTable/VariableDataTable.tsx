@@ -7,8 +7,6 @@ import {
     PluginType,
     RefVariableType,
     SelectPickerOptionType,
-    ToastManager,
-    ToastVariantType,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -33,10 +31,10 @@ import {
 import {
     convertVariableDataTableToFormData,
     getEmptyVariableDataTableRow,
+    getUploadFileConstraints,
     getValColumnRowProps,
     getValColumnRowValue,
     getVariableDataTableInitialRows,
-    validateMaxFileSize,
 } from './utils'
 
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
@@ -429,7 +427,10 @@ export const VariableDataTable = ({
                                         id: null,
                                         allowedExtensions: '',
                                         maxUploadSize: '',
-                                        mountDir: '',
+                                        mountDir: {
+                                            value: '/devtroncd',
+                                            error: '',
+                                        },
                                         unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
                                     },
                                 },
@@ -484,45 +485,37 @@ export const VariableDataTable = ({
             updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD &&
             extraData.files.length
         ) {
-            const isFileSizeValid = validateMaxFileSize(
-                extraData.files[0],
-                parseFloat(updatedRow.customState.fileInfo.maxUploadSize),
-                updatedRow.customState.fileInfo.unit.label as string,
-            )
+            // TODO: check this merge with UPDATE_FILE_UPLOAD_INFO after loading state
+            handleRowUpdateAction({
+                actionType: VariableDataTableActionType.UPDATE_ROW,
+                actionValue: value,
+                headerKey,
+                rowId: updatedRow.id,
+            })
 
-            if (isFileSizeValid) {
-                // TODO: check this merge with UPDATE_FILE_UPLOAD_INFO after loading state
-                handleRowUpdateAction({
-                    actionType: VariableDataTableActionType.UPDATE_ROW,
-                    actionValue: value,
-                    headerKey,
-                    rowId: updatedRow.id,
-                })
-
-                uploadFile(extraData.files)
-                    .then((res) => {
-                        handleRowUpdateAction({
-                            actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                            actionValue: { fileReferenceId: res.id },
-                            rowId: updatedRow.id,
-                        })
+            uploadFile({
+                file: extraData.files,
+                ...getUploadFileConstraints({
+                    unit: updatedRow.customState.fileInfo.unit.label as string,
+                    allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
+                    maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
+                }),
+            })
+                .then((res) => {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: res.id },
+                        rowId: updatedRow.id,
                     })
-                    .catch(() => {
-                        handleRowUpdateAction({
-                            actionType: VariableDataTableActionType.UPDATE_ROW,
-                            actionValue: '',
-                            headerKey,
-                            rowId: updatedRow.id,
-                        })
-                    })
-            } else {
-                // TODO: get message from Utkarsh
-                ToastManager.showToast({
-                    title: 'Large File Size',
-                    description: 'Large File Size',
-                    variant: ToastVariantType.error,
                 })
-            }
+                .catch(() => {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_ROW,
+                        actionValue: '',
+                        headerKey,
+                        rowId: updatedRow.id,
+                    })
+                })
         } else if (headerKey === 'format' && updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,

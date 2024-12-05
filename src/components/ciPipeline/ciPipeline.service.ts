@@ -30,7 +30,7 @@ import {
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { PatchAction, UploadCIPipelineFileDTO } from './types'
+import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
 import { MutableRefObject } from 'react'
@@ -606,36 +606,4 @@ export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<
     })
 
     return { result: variableList }
-}
-
-export const uploadCIPipelineFile = async ({
-    file,
-    appId,
-    ciPipelineId,
-    abortControllerRef,
-}: {
-    file: File[]
-    appId: number
-    ciPipelineId: number
-    abortControllerRef?: MutableRefObject<AbortController>
-}): Promise<UploadCIPipelineFileDTO> => {
-    const formData = new FormData()
-    formData.append('file', file[0])
-
-    try {
-        const { result } = await post(
-            `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}/${Routes.FILE_UPLOAD}`,
-            formData,
-            { abortControllerRef },
-            true,
-        )
-
-        return result
-    } catch (err) {
-        if (getIsRequestAborted(err)) {
-            return
-        }
-        showError(err)
-        throw err
-    }
 }

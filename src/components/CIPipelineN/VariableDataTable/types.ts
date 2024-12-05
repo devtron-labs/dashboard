@@ -14,7 +14,10 @@ export type VariableDataCustomState = {
     selectedValue: Record<string, any>
     fileInfo: {
         id: number
-        mountDir: string
+        mountDir: {
+            value: string
+            error: string
+        }
         allowedExtensions: string
         maxUploadSize: string
         unit: SelectPickerOptionType<number>
@@ -93,7 +96,10 @@ type VariableDataTableActionPropsMap = {
     }
     [VariableDataTableActionType.UPDATE_FILE_MOUNT]: {
         rowId: string | number
-        actionValue: string
+        actionValue: {
+            value: string
+            error: string
+        }
     }
     [VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS]: {
         rowId: string | number
@@ -120,6 +126,7 @@ export type HandleRowUpdateActionProps = VariableDataTableAction
 export interface VariableDataTablePopupMenuProps {
     heading: string
     showIcon?: boolean
+    disableClose?: boolean
     onClose?: () => void
     children: JSX.Element
 }

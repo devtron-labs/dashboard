@@ -46,6 +46,7 @@ import {
     ToastManager,
     ProcessPluginDataParamsType,
     ResourceKindType,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -62,7 +63,6 @@ import {
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
-    uploadCIPipelineFile,
 } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
@@ -784,7 +784,8 @@ export default function CIPipeline({
         }
     }
 
-    const uploadFile = (file: File[]) => uploadCIPipelineFile({ appId: +appId, ciPipelineId: +ciPipelineId, file })
+    const uploadFile: PipelineContext['uploadFile'] = ({ allowedExtensions, file, maxUploadSize }) =>
+        uploadCIPipelineFile({ appId: +appId, ciPipelineId: +ciPipelineId, file, allowedExtensions, maxUploadSize })
 
     const contextValue = useMemo(
         () => ({

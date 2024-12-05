@@ -40,6 +40,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ButtonStyleType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -526,6 +527,9 @@ const BulkCITrigger = ({
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isBulk
                 appId={selectedApp.appId.toString()}
+                runtimeParamsV2={[]}
+                handleRuntimeParamChangeV2={noop}
+                uploadFile={noop}
             />
         )
     }

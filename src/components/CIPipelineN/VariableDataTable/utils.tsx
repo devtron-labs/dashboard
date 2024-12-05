@@ -288,7 +288,10 @@ export const getEmptyVariableDataTableRow = (params: GetValColumnRowPropsType): 
             selectedValue: null,
             fileInfo: {
                 id: null,
-                mountDir: '/devtroncd',
+                mountDir: {
+                    value: '/devtroncd',
+                    error: '',
+                },
                 allowedExtensions: '',
                 maxUploadSize: '',
                 unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
@@ -330,6 +333,8 @@ export const getVariableDataTableInitialRows = ({
                         value: name,
                         required: isInputVariableRequired,
                         disabled: !isCustomTask,
+                        showTooltip: !isCustomTask && !!description,
+                        tooltipText: description,
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
                     val: getValColumnRowProps({
@@ -356,7 +361,7 @@ export const getVariableDataTableInitialRows = ({
                     selectedValue: null,
                     fileInfo: {
                         id: fileReferenceId,
-                        mountDir: fileMountDir,
+                        mountDir: { value: fileMountDir, error: '' },
                         allowedExtensions:
                             valueConstraint?.constraint?.fileProperty?.allowedExtensions.join(', ') || '',
                         maxUploadSize: (
@@ -369,6 +374,25 @@ export const getVariableDataTableInitialRows = ({
             }
         },
     )
+
+export const getUploadFileConstraints = ({
+    unit,
+    allowedExtensions,
+    maxUploadSize,
+}: {
+    unit: string
+    allowedExtensions: string
+    maxUploadSize: string
+}) => {
+    const unitMultiplier = unit === 'MB' ? 1024 : 1
+    return {
+        allowedExtensions: allowedExtensions
+            .split(',')
+            .map((value) => value.trim())
+            .filter((value) => !!value),
+        maxUploadSize: maxUploadSize ? parseFloat(maxUploadSize) * unitMultiplier * 1024 : null,
+    }
+}
 
 export const convertVariableDataTableToFormData = ({
     rows,
@@ -431,18 +455,15 @@ export const convertVariableDataTableToFormData = ({
         }
 
         if (fileInfo) {
-            const unitMultiplier = fileInfo.unit.label === 'MB' ? 1024 : 1
             variableDetail.value = data.val.value
             variableDetail.fileReferenceId = fileInfo.id
-            variableDetail.fileMountDir = fileInfo.mountDir
+            variableDetail.fileMountDir = fileInfo.mountDir.value
             variableDetail.valueConstraint.constraint = {
-                fileProperty: {
-                    allowedExtensions: fileInfo.allowedExtensions
-                        .split(',')
-                        .map((value) => value.trim())
-                        .filter((value) => !!value),
-                    maxUploadSize: parseFloat(fileInfo.maxUploadSize) * unitMultiplier * 1024,
-                },
+                fileProperty: getUploadFileConstraints({
+                    allowedExtensions: fileInfo.allowedExtensions,
+                    maxUploadSize: fileInfo.maxUploadSize,
+                    unit: fileInfo.unit.label as string,
+                }),
             }
         }
 
@@ -511,10 +532,4 @@ export const convertVariableDataTableToFormData = ({
     )
 
     return { updatedFormDataErrorObj, updatedFormData }
-}
-
-// VALIDATIONS
-export const validateMaxFileSize = (file: File, maxFileSizeInMB: number, unit: string = 'KB') => {
-    const unitMultiplier = unit === 'MB' ? 1024 : 1
-    return typeof maxFileSizeInMB !== 'number' || file.size <= maxFileSizeInMB * unitMultiplier * 1024
 }

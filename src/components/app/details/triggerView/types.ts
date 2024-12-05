@@ -43,6 +43,9 @@ import {
     CdPipeline,
     ConsequenceType,
     PolicyKindType,
+    RuntimePluginVariables,
+    UploadFileDTO,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -389,6 +392,7 @@ export interface TriggerViewState {
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     runtimeParams?: RuntimeParamsListItemType[]
+    runtimeParamsV2: RuntimePluginVariables[]
 }
 
 export interface CIMaterialProps
@@ -424,7 +428,10 @@ export interface CIMaterialProps
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange
+    runtimeParamsV2: RuntimePluginVariables[]
+    handleRuntimeParamChangeV2: (runtimeParams: RuntimePluginVariables[]) => void
     runtimeParams: KeyValueListType[]
+    uploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
 }
 
 // -- begining of response type objects for trigger view

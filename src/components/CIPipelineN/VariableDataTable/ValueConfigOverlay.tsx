@@ -84,10 +84,14 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }
 
     const handleFileMountChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const fileMountValue = e.target.value
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_MOUNT,
             rowId,
-            actionValue: e.target.value,
+            actionValue: {
+                error: !fileMountValue ? 'This field is required' : '',
+                value: fileMountValue,
+            },
         })
     }
 
@@ -139,11 +143,12 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         name="fileMount"
                         label="File mount path"
                         placeholder="Enter file mount path"
-                        value={fileInfo.mountDir}
+                        value={fileInfo.mountDir.value}
                         onChange={handleFileMountChange}
                         dataTestid={`file-mount-${rowId}`}
                         inputWrapClassName="w-100"
                         isRequiredField
+                        error={fileInfo.mountDir.error}
                     />
                     <div className="flexbox-col dc__gap-6">
                         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}

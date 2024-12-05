@@ -47,6 +47,7 @@ import {
     ToastManager,
     ToastVariantType,
     BlockedStateData,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1982,9 +1983,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (selectedCINode?.id) {
             return (
                 <Switch>
-                     <Route
-                        path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
-                    >
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
                         <WebhookReceivedPayloadModal
                             workflowId={workflowID}
                             webhookPayloads={webhookPayloads}
@@ -2030,6 +2029,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
                             resetAbortController={resetAbortController}
+                            runtimeParamsV2={[]}
+                            handleRuntimeParamChangeV2={noop}
+                            uploadFile={noop}
                         />
                     </Route>
                 </Switch>

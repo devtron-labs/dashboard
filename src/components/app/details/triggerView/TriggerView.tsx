@@ -34,6 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -104,6 +105,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
+const getRuntimeParamsV2Payload = importComponentFromFELibrary('getRuntimeParamsV2Payload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -145,6 +147,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             searchImageTag: '',
             resourceFilters: [],
             runtimeParams: [],
+            runtimeParamsV2: [],
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -713,7 +716,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       this.props.appContext.currentAppName,
                   )
                 : null,
-            getRuntimeParams?.(ciNodeId) ?? null,
+            getRuntimeParams?.(ciNodeId, true) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that
@@ -739,7 +742,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 if (resp[2]) {
                     // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
-                        runtimeParams: resp[2] || [],
+                        runtimeParamsV2: resp[2] || [],
                     })
                 }
             })
@@ -905,7 +908,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
 
         // No need to validate here since ciMaterial handles it for trigger view
-        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
+        const runtimeParamsPayload = getRuntimeParamsV2Payload?.(this.state.runtimeParamsV2 ?? [])
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
@@ -1095,7 +1098,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflowStatus()
     }
 
-
     onClickWebhookTimeStamp = () => {
         if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
             this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
@@ -1129,6 +1131,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             runtimeParams: updatedRuntimeParams,
         })
     }
+
+    handleRuntimeParamChangeV2: CIMaterialProps['handleRuntimeParamChangeV2'] = (updatedRuntimeParams) => {
+        this.setState({
+            runtimeParamsV2: updatedRuntimeParams,
+        })
+    }
+
+    uploadFile: CIMaterialProps['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCIPipelineFile({
+            appId: +this.props.match.params.appId,
+            ciPipelineId: this.getCINode().parentCiPipeline,
+            file,
+            allowedExtensions,
+            maxUploadSize,
+        })
 
     setLoader = (isLoader) => {
         this.setState({
@@ -1172,16 +1189,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.abortCIBuild = new AbortController()
     }
 
-
     renderCIMaterial = () => {
         if (this.state.ciNodeId) {
             const nd: CommonNodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
             return (
                 <Switch>
-                    <Route
-                        path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
-                    >
+                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
                         <WebhookReceivedPayloadModal
                             workflowId={this.state.workflowId}
                             webhookPayloads={this.state.webhookPayloads}
@@ -1227,9 +1241,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
                             handleRuntimeParamChange={this.handleRuntimeParamChange}
+                            runtimeParamsV2={this.state.runtimeParamsV2}
+                            handleRuntimeParamChangeV2={this.handleRuntimeParamChangeV2}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}
+                            uploadFile={this.uploadFile}
                         />
                     </Route>
                 </Switch>

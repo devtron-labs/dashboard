@@ -18,14 +18,17 @@ export const VariableDataTablePopupMenu = ({
     heading,
     children,
     onClose,
+    disableClose,
 }: VariableDataTablePopupMenuProps) => {
     // STATES
     const [visible, setVisible] = useState(false)
 
     // METHODS
     const handleClose = () => {
-        setVisible(false)
-        onClose?.()
+        if (!disableClose) {
+            setVisible(false)
+            onClose?.()
+        }
     }
 
     const handleAction = (open: boolean) => {
