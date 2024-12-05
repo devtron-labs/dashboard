@@ -154,23 +154,23 @@ export default defineConfig(({ mode }) => {
                         }
 
                         // separating the common lib chunk
-                        if (id.includes('devtron-fe-common-lib')) {
-                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
+                        // if (id.includes('devtron-fe-common-lib')) {
+                        //     const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
 
-                            if (splittedChunk) {
-                                return `@devtron-common-${splittedChunk}`
-                            }
-                            return '@devtron-common'
-                        }
+                        //     if (splittedChunk) {
+                        //         return `@devtron-common-${splittedChunk}`
+                        //     }
+                        //     return '@devtron-common'
+                        // }
 
-                        if (id.includes('devtron-fe-lib')) {
-                            const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
+                        // if (id.includes('devtron-fe-lib')) {
+                        //     const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
 
-                            if (splittedChunk) {
-                                return `@devtron-fe-lib-${splittedChunk}`
-                            }
-                            return '@devtron-fe-lib'
-                        }
+                        //     if (splittedChunk) {
+                        //         return `@devtron-fe-lib-${splittedChunk}`
+                        //     }
+                        //     return '@devtron-fe-lib'
+                        // }
                     },
                 },
             },
