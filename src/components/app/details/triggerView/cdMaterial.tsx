@@ -223,25 +223,6 @@ const CDMaterial = ({
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
-    const [policyConsequencesLoading, policyConsequencesResponse] = useAsync(
-        () => getPolicyConsequences({ appId, envId }),
-        [appId, envId],
-        !!getPolicyConsequences,
-    )
-
-    // this function can be used for other trigger block reasons once api supports it
-    const getIsTriggerBlocked = () => {
-        switch (stageType) {
-            case DeploymentNodeType.PRECD:
-                return policyConsequencesResponse?.cd.pre.isBlocked
-            case DeploymentNodeType.POSTCD:
-                return policyConsequencesResponse?.cd.post.isBlocked
-            case DeploymentNodeType.CD:
-                return policyConsequencesResponse?.cd.node.isBlocked
-            default:
-                return false
-        }
-    }
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -274,16 +255,31 @@ const CDMaterial = ({
                         getDeploymentWindowProfileMetaData && !isFromBulkCD
                             ? getDeploymentWindowProfileMetaData(appId, envId)
                             : null,
+                        getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
                     ]),
                 abortControllerRef,
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
-        !!pipelineId && !isTriggerBlockedDueToPlugin && !policyConsequencesLoading && !getIsTriggerBlocked(),
+        !!pipelineId && !isTriggerBlockedDueToPlugin,
     )
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
+
+        // this function can be used for other trigger block reasons once api supports it
+        const getIsTriggerBlocked = () => {
+            switch (stageType) {
+                case DeploymentNodeType.PRECD:
+                    return responseList[2]?.cd.pre.isBlocked
+                case DeploymentNodeType.POSTCD:
+                    return responseList[2]?.cd.post.isBlocked
+                case DeploymentNodeType.CD:
+                    return responseList[2]?.cd.node.isBlocked
+                default:
+                    return false
+            }
+        }
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
@@ -1893,7 +1889,7 @@ const CDMaterial = ({
 
     // NOTE: Can make a skeleton component for loader
     // TODO: Fix this condition for aborting the request
-    if (policyConsequencesLoading || loadingMaterials || materialsError?.code === 0) {
+    if (loadingMaterials || materialsError?.code === 0) {
         return (
             <>
                 {!isFromBulkCD && (
