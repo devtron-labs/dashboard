@@ -692,7 +692,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
-            triggerBlockedInfo: cdPipeline.preDeployStage?.triggerBlockedInfo,
+            triggerBlockedInfo: cdPipeline.preDeployStage?.triggerBlockedInfo || cdPipeline.preStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
         }
         stageIndex++
@@ -788,7 +788,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
-            triggerBlockedInfo: cdPipeline.postDeployStage?.triggerBlockedInfo,
+            triggerBlockedInfo: cdPipeline.postDeployStage?.triggerBlockedInfo || cdPipeline.postStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
         }
     }
