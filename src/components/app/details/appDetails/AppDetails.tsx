@@ -36,6 +36,7 @@ import {
     SelectPicker,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -67,6 +68,7 @@ import { ReactComponent as Disconnect } from '@Icons/ic-disconnected.svg'
 import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '@Icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
@@ -396,7 +398,8 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            if (error['code'] === 408) {
+            // NOTE: BE sends  string representation of 7000 instead of number 7000 
+            if (error['code'] === 408 || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
@@ -594,7 +597,7 @@ export const Details: React.FC<DetailsType> = ({
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !appDetails?.isPipelineTriggered
+        (!appDetails?.isPipelineTriggered || isAppDeleted)
     ) {
         return (
             <>
@@ -605,6 +608,13 @@ export const Details: React.FC<DetailsType> = ({
                             disabled={params.envId && !showCommitInfo}
                             controlStyleOverrides={{ backgroundColor: 'white' }}
                         />
+                        {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
+                            <div data-testid="deleteing-argocd-pipeline" className="flex left">
+                                <Trash className="icon-dim-16 mr-8 ml-12" />
+                                <span className="cr-5 fw-6">Deleting deployment pipeline </span>
+                                <span className="dc__loading-dots cr-5" />
+                            </div>
+                        )}
                     </div>
                 )}
                 {isAppDeleted ? (
