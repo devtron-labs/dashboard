@@ -297,7 +297,7 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsRequestRef = useRef(null)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
-    const appDetailsAbortRef = useRef(null)
+    const appDetailsAbortRef = useRef<AbortController>(null)
     const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
@@ -412,7 +412,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
+        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then(async (response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
@@ -458,7 +458,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () =>
-        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
+        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then((response) => {
                 if (
                     response.errors &&
