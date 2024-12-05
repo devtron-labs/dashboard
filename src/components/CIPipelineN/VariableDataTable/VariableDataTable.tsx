@@ -607,7 +607,7 @@ export const VariableDataTable = ({
             onRowEdit={dataTableHandleChange}
             onRowDelete={dataTableHandleDelete}
             onRowAdd={dataTableHandleAddition}
-            // showError
+            showError
             validationSchema={validationSchema}
             actionButtonConfig={getActionButtonConfig()}
         />
