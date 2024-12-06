@@ -45,7 +45,7 @@ type EnvOverrideDeploymentTemplateProps = {
 }
 
 export type DeploymentTemplateProps = {
-    isProtected: boolean
+    isApprovalPolicyConfigured: boolean
     reloadEnvironments: () => void
     fetchEnvConfig: (environmentId: number) => void
 } & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)

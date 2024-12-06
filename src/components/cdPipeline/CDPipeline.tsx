@@ -34,9 +34,6 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
-    sanitizeUserApprovalConfig,
-    UserApprovalConfigType,
-    UserApprovalConfigPayloadType,
     Environment,
     PipelineFormType,
     ReleaseMode,
@@ -115,8 +112,6 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType =
-    importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
 const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
@@ -189,8 +184,6 @@ export default function CDPipeline({
             triggerType: TriggerType.Auto,
             steps: [],
         },
-        // Utilizing the null checks to get default value
-        userApprovalConfig: sanitizeUserApprovalConfig(null),
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
@@ -246,9 +239,6 @@ export default function CDPipeline({
         },
         postBuildStage: {
             steps: [],
-            isValid: true,
-        },
-        userApprovalConfig: {
             isValid: true,
         },
     })
@@ -593,7 +583,6 @@ export default function CDPipeline({
         form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
-        form.userApprovalConfig = sanitizeUserApprovalConfig(pipelineConfigFromRes.userApprovalConfig)
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         form.customTag = pipelineConfigFromRes.customTag
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
@@ -709,11 +698,6 @@ export default function CDPipeline({
             deploymentAppName: formData.deploymentAppName,
             releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
-            ...(getUserApprovalConfigPayload
-                ? {
-                      userApprovalConfig: getUserApprovalConfigPayload(formData.userApprovalConfig),
-                  }
-                : {}),
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -876,7 +860,6 @@ export default function CDPipeline({
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid &&
                 _formDataErrorObj.envNameError.isValid &&
-                _formDataErrorObj.userApprovalConfig?.isValid &&
                 isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
@@ -969,18 +952,6 @@ export default function CDPipeline({
                     description: MULTI_REQUIRED_FIELDS_MSG,
                 })
             }
-            return
-        }
-
-        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } =
-            formDataErrorObj.userApprovalConfig ?? {}
-
-        if (!isUserApprovalConfigValid) {
-            setLoadingData(false)
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: userApprovalConfigErrorMessage,
-            })
             return
         }
 
