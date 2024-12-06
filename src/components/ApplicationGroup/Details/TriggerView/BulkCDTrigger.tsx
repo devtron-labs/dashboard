@@ -42,14 +42,15 @@ import {
     ToastManager,
     ToastVariantType,
     CommonNodeAttr,
+    TriggerBlockType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
+import { ReactComponent as Close } from '@Icons/ic-cross.svg'
+import { ReactComponent as DeployIcon } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as PlayIcon } from '@Icons/ic-play-medium.svg'
+import { ReactComponent as Error } from '@Icons/ic-warning.svg'
+import { ReactComponent as UnAuthorized } from '@Icons/ic-locked.svg'
+import { ReactComponent as Tag } from '@Icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
@@ -77,6 +78,7 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
+const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -426,16 +428,16 @@ export default function BulkCDTrigger({
             )
         }
 
+        if (app.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockedError stageType={app.stageType} />
+        }
+
         if (tagNotFoundWarningsMap.has(app.appId)) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error
-                        className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp"
-                    />
+                    <Error className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp" />
 
-                    <span className="fw-4 fs-12 cr-5 dc__truncate">
-                        {tagNotFoundWarningsMap.get(app.appId)}
-                    </span>
+                    <span className="fw-4 fs-12 cr-5 dc__truncate">{tagNotFoundWarningsMap.get(app.appId)}</span>
                 </div>
             )
         }
@@ -454,13 +456,9 @@ export default function BulkCDTrigger({
         if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error
-                        className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7"
-                    />
+                    <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
 
-                    <span className="fw-4 fs-12 cy-7 dc__truncate">
-                        {warningMessage}
-                    </span>
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
         }
@@ -473,7 +471,7 @@ export default function BulkCDTrigger({
                     nodeType={commonNodeAttrType}
                     shouldRenderAdditionalInfo={isAppSelected}
                 />
-            )   
+            )
         }
 
         return null
