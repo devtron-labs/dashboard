@@ -525,7 +525,7 @@ const NavItem = ({ serverMode }) => {
                                     key={URLS.GLOBAL_CONFIG_TAGS}
                                     activeClassName="active-route"
                                 >
-                                    <div className="flexbox flex-justify">Tags</div>
+                                    <div className="flexbox flex-justify">Tags Policy</div>
                                 </NavLink>
                             )}
                             {FilterConditions && (
