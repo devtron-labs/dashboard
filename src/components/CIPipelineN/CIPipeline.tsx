@@ -982,7 +982,7 @@ export default function CIPipeline({
         <>
             {renderFloatingVariablesWidget()}
 
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
                 {renderCIPipelineModal()}
             </Drawer>
         </>

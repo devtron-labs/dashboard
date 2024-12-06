@@ -1874,10 +1874,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }
 
-    const uploadFile: CIMaterialProps['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) => null
-    // TODO: rohit confirm with BE
-    // uploadCIPipelineFile({ file, allowedExtensions, maxUploadSize, appId: +appId, ciPipelineId: null })
-
     const createBulkCITriggerData = (): BulkCIDetailType[] => {
         const _selectedAppWorkflowList: BulkCIDetailType[] = []
         filteredWorkflows.forEach((wf) => {
@@ -2030,7 +2026,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
                             handleRuntimeParamChange={handleRuntimeParamChange}
-                            uploadFile={uploadFile}
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
                             resetAbortController={resetAbortController}

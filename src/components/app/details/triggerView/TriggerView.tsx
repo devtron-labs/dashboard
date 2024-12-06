@@ -1130,15 +1130,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    uploadFile: CIMaterialProps['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) =>
-        uploadCIPipelineFile({
-            appId: +this.props.match.params.appId,
-            ciPipelineId: this.getCINode().parentCiPipeline,
-            file,
-            allowedExtensions,
-            maxUploadSize,
-        })
-
     setLoader = (isLoader) => {
         this.setState({
             loader: isLoader,
@@ -1236,7 +1227,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}
-                            uploadFile={this.uploadFile}
                         />
                     </Route>
                 </Switch>

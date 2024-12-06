@@ -36,6 +36,7 @@ import {
     getValColumnRowValue,
     getVariableDataTableInitialRows,
 } from './utils'
+import { variableDataTableValidationSchema } from './validationSchema'
 
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 import { VariableConfigOverlay } from './VariableConfigOverlay'
@@ -93,11 +94,6 @@ export const VariableDataTable = ({
             type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
         ]
 
-    const ioVariablesError: { isValid: boolean; message: string }[] =
-        formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
-            type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
-        ]
-
     // STATES
     const [rows, setRows] = useState<VariableDataRowType[]>([])
 
@@ -105,17 +101,9 @@ export const VariableDataTable = ({
     const initialRowsSet = useRef('')
 
     useEffect(() => {
-        setRows(
-            ioVariables?.length
-                ? getVariableDataTableInitialRows({ emptyRowParams, ioVariables, isCustomTask, type })
-                : [getEmptyVariableDataTableRow(emptyRowParams)],
-        )
+        setRows(getVariableDataTableInitialRows({ emptyRowParams, ioVariables, isCustomTask, type }))
         initialRowsSet.current = 'set'
     }, [])
-
-    // useEffect(() => {
-    //     console.log('meg', rows, ioVariables, formDataErrorObj)
-    // }, [JSON.stringify(ioVariables)])
 
     // METHODS
     const handleRowUpdateAction = (rowAction: HandleRowUpdateActionProps) => {
@@ -310,9 +298,6 @@ export const VariableDataTable = ({
 
                 case VariableDataTableActionType.DELETE_ROW:
                     updatedRows = updatedRows.filter((row) => row.id !== rowAction.rowId)
-                    if (updatedRows.length === 0) {
-                        updatedRows = [getEmptyVariableDataTableRow(emptyRowParams)]
-                    }
                     break
 
                 case VariableDataTableActionType.UPDATE_ROW:
@@ -464,7 +449,7 @@ export const VariableDataTable = ({
     const dataTableHandleAddition = () => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.ADD_ROW,
-            actionValue: rows.length,
+            actionValue: Math.floor(new Date().valueOf() * Math.random()),
         })
     }
 
@@ -548,22 +533,7 @@ export const VariableDataTable = ({
         })
     }
 
-    const validationSchema: DynamicDataTableProps<VariableDataKeys, VariableDataCustomState>['validationSchema'] = (
-        _,
-        key,
-        { id },
-    ) => {
-        if (key === 'val') {
-            const index = rows.findIndex((row) => row.id === id)
-            if (index > -1 && ioVariablesError[index]) {
-                const { isValid, message } = ioVariablesError[index]
-                return { isValid, errorMessages: [message] }
-            }
-        }
-
-        return { isValid: true, errorMessages: [] }
-    }
-
+    // RENDERERS
     const actionButtonRenderer = (row: VariableDataRowType) => (
         <VariableDataTablePopupMenu
             heading={row.data.variable.value || 'Value configuration'}
@@ -573,27 +543,15 @@ export const VariableDataTable = ({
         </VariableDataTablePopupMenu>
     )
 
-    const getActionButtonConfig = (): DynamicDataTableProps<VariableDataKeys>['actionButtonConfig'] => {
-        if (type === PluginVariableType.INPUT) {
-            return {
-                renderer: actionButtonRenderer,
-                key: 'val',
-                position: 'end',
-            }
-        }
-        return null
-    }
+    const variableTrailingCellIcon = (row: VariableDataRowType) => (
+        <VariableDataTablePopupMenu showIcon heading="Variable configuration">
+            <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
+        </VariableDataTablePopupMenu>
+    )
 
-    const getTrailingCellIcon = (): DynamicDataTableProps<VariableDataKeys>['trailingCellIcon'] => ({
-        variable:
-            isCustomTask && type === PluginVariableType.INPUT
-                ? (row: VariableDataRowType) => (
-                      <VariableDataTablePopupMenu showIcon heading="Variable configuration">
-                          <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
-                      </VariableDataTablePopupMenu>
-                  )
-                : null,
-    })
+    const trailingCellIcon: DynamicDataTableProps<VariableDataKeys>['trailingCellIcon'] = {
+        variable: isCustomTask && type === PluginVariableType.INPUT ? variableTrailingCellIcon : null,
+    }
 
     return (
         <DynamicDataTable<VariableDataKeys, VariableDataCustomState>
@@ -603,13 +561,21 @@ export const VariableDataTable = ({
             readOnly={!isCustomTask && type === PluginVariableType.OUTPUT}
             isAdditionNotAllowed={!isCustomTask}
             isDeletionNotAllowed={!isCustomTask}
-            trailingCellIcon={getTrailingCellIcon()}
+            trailingCellIcon={trailingCellIcon}
             onRowEdit={dataTableHandleChange}
             onRowDelete={dataTableHandleDelete}
             onRowAdd={dataTableHandleAddition}
             showError
-            validationSchema={validationSchema}
-            actionButtonConfig={getActionButtonConfig()}
+            validationSchema={variableDataTableValidationSchema}
+            {...(type === PluginVariableType.INPUT
+                ? {
+                      actionButtonConfig: {
+                          renderer: actionButtonRenderer,
+                          key: 'val',
+                          position: 'end',
+                      },
+                  }
+                : {})}
         />
     )
 }

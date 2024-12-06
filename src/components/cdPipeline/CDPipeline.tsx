@@ -49,7 +49,6 @@ import {
     ProcessPluginDataReturnType,
     ResourceKindType,
     getEnvironmentListMinPublic,
-    noop,
     uploadCDPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'

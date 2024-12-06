@@ -308,7 +308,7 @@ export const getVariableDataTableInitialRows = ({
     isCustomTask,
     emptyRowParams,
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
-    ioVariables.map(
+    (ioVariables || []).map(
         ({
             name,
             allowEmptyValue,
@@ -502,10 +502,6 @@ export const convertVariableDataTableToFormData = ({
 
     if (type === PluginVariableType.OUTPUT) {
         calculateLastStepDetail(false, updatedFormData, activeStageName, selectedTaskIndex)
-    }
-
-    if (updatedIOVariables.length === 1 && !updatedIOVariables[0].name && !updatedIOVariables[0].value) {
-        updatedIOVariables.pop()
     }
 
     if (updatedIOVariables.length === 0) {

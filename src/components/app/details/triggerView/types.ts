@@ -684,7 +684,7 @@ export interface RenderCTAType {
     disableSelection: boolean
 }
 
-export interface CIMaterialModalProps extends CIMaterialProps {
+export interface CIMaterialModalProps extends Omit<CIMaterialProps, 'uploadFile'> {
     closeCIModal: () => void
     abortController: AbortController
     resetAbortController: () => void
