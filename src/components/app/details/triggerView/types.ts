@@ -262,6 +262,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     deploymentAppType: DeploymentAppTypes
     appId: number
     isDeploymentBlocked?: boolean
+    isTriggerBlocked?: boolean
 }
 
 export interface TriggerCDNodeState {
