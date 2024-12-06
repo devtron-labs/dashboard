@@ -52,7 +52,7 @@ const ExternalFluxAppDetails = () => {
 
     useEffect(
         () => () => {
-            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_FLUX_APP)
+            IndexStore.clearAppDetails()
             clearTimeout(initTimer)
         },
         [],
