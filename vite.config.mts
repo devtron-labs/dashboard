@@ -163,14 +163,14 @@ export default defineConfig(({ mode }) => {
                             return '@devtron-common'
                         }
 
-                        if (id.includes('devtron-fe-lib')) {
-                            const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
+                        // if (id.includes('devtron-fe-lib')) {
+                        //     const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
 
-                            if (splittedChunk) {
-                                return `@devtron-fe-lib-${splittedChunk}`
-                            }
-                            return '@devtron-fe-lib'
-                        }
+                        //     if (splittedChunk) {
+                        //         return `@devtron-fe-lib-${splittedChunk}`
+                        //     }
+                        //     return '@devtron-fe-lib'
+                        // }
                     },
                 },
             },
