@@ -65,7 +65,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
         dsn: window._env_.SENTRY_DSN || '',
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
+        ...(window._env_.SENTRY_RELEASE_VERSION ? { release: window._env_.SENTRY_RELEASE_VERSION } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
@@ -139,7 +139,7 @@ if (!window || !window._env_) {
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
-        SERVICE_WORKER_TIMEOUT: '1',
+        SERVICE_WORKER_TIMEOUT: '3',
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
