@@ -21,6 +21,7 @@ import {
     ServerErrors,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { fetchAppDetailsInTime } from '@Components/app/service'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -185,7 +186,7 @@ export interface NodeSelectorsType {
 
 export interface DetailsType {
     environment?: any
-    appDetailsAPI: (appId: string, envId: string, timeout: number, signal?: AbortSignal) => Promise<any>
+    appDetailsAPI: typeof fetchAppDetailsInTime
     setAppDetailResultInParent?: (appDetails) => void
     isAppDeployment?: boolean
     environments: any
