@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    BASE_CONFIGURATION_ENV_ID,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -124,7 +125,8 @@ export const EnvConfigurationsNav = ({
                 config,
                 path,
                 params,
-                envIdToEnvApprovalConfigurationMap?.[envId]?.approvalConfigurationMap,
+                envIdToEnvApprovalConfigurationMap?.[showBaseConfigurations ? BASE_CONFIGURATION_ENV_ID : envId]
+                    ?.approvalConfigurationMap,
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
