@@ -384,6 +384,10 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    useEffect(() => () => {
+        IndexStore.clearAppDetails()
+    }, [])
+
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
         return () => {
