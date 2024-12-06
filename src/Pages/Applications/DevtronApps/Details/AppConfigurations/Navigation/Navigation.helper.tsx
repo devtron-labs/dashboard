@@ -26,7 +26,7 @@ const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolea
     if (isLocked) {
         return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
     }
-    if (!isLocked && isApprovalPolicyConfigured) {
+    if (isApprovalPolicyConfigured) {
         return <ICStamp className="icon-dim-20" data-testid={`${dataTestId}-protectedicon`} />
     }
     return null

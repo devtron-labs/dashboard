@@ -44,7 +44,6 @@ export enum STAGE_NAME {
     SECRETS = 'SECRETS',
     ENV_OVERRIDE = 'ENV_OVERRIDE',
     EXTERNAL_LINKS = 'EXTERNAL_LINKS',
-    // PROTECT_CONFIGURATION = 'PROTECT_CONFIGURATION',
     REDIRECT_ITEM = 'REDIRECT_ITEM',
 }
 
@@ -93,7 +92,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    envIdToEnvApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
+    envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
 }
@@ -158,7 +157,7 @@ interface CommonAppConfigurationProps {
 
 export interface AppConfigurationContextType
     extends CommonAppConfigurationProps,
-        Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
+        Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
@@ -167,7 +166,7 @@ export interface AppConfigurationContextType
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envIdToEnvApprovalConfigMap: ResourceIdToResourceApprovalPolicyConfigMapType
+    envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
@@ -204,7 +203,7 @@ export interface EnvironmentOptionType {
     id: number
 }
 
-export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'> {
+export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     environments: EnvironmentOptionType[]
@@ -245,7 +244,7 @@ export interface DeploymentConfigParams {
 }
 
 export type DeploymentConfigCompareProps = {
-    appOrEnvIdToAppOrEnvApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     environments: EnvironmentOptionType[]
     goBackURL?: string
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string

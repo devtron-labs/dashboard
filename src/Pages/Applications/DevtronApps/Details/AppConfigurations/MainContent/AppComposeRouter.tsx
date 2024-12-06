@@ -93,12 +93,12 @@ const AppComposeRouter = () => {
         lastUnlockedStage,
         envConfig,
         fetchEnvConfig,
-        envIdToEnvApprovalConfigMap,
+        envIdToEnvApprovalConfigurationMap,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
     const approvalConfigMapForBaseConfiguration =
-        envIdToEnvApprovalConfigMap?.[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
+        envIdToEnvApprovalConfigurationMap?.[BASE_CONFIGURATION_ENV_ID]?.approvalConfigurationMap
 
     const renderJobViewRoutes = (): JSX.Element => (
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -171,7 +171,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                            appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         />
                     )}
                 </Route>,
@@ -289,7 +289,7 @@ const AppComposeRouter = () => {
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
-                            appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                            appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         />
                     )}
                 </Route>,
@@ -322,7 +322,7 @@ const AppComposeRouter = () => {
                                 getNavItemHref={(resourceType, resourceName) =>
                                     `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                                 }
-                                appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                                appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                             />
                         )
                     }}

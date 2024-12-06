@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    BASE_CONFIGURATION_ENV_ID,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -49,7 +50,7 @@ export const EnvConfigurationsNav = ({
     isCMSecretLocked,
     hideEnvSelector,
     compareWithURL,
-    envIdToEnvApprovalConfigMap,
+    envIdToEnvApprovalConfigurationMap,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -124,11 +125,12 @@ export const EnvConfigurationsNav = ({
                 config,
                 path,
                 params,
-                envIdToEnvApprovalConfigMap?.[envId]?.approvalConfigurationMap,
+                envIdToEnvApprovalConfigurationMap?.[showBaseConfigurations ? BASE_CONFIGURATION_ENV_ID : envId]
+                    ?.approvalConfigurationMap,
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, envIdToEnvApprovalConfigMap])
+    }, [isLoading, config, pathname, envIdToEnvApprovalConfigurationMap])
 
     useEffect(() => {
         if (!isLoading && config) {

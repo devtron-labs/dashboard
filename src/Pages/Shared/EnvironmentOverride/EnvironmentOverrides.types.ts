@@ -60,7 +60,7 @@ export interface EnvironmentOverrideComponentProps {
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
-    appOrEnvIdToAppOrEnvApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigMap']
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
 export interface CommonEnvironmentOverridesProps {

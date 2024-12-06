@@ -788,6 +788,9 @@ export const ConfigMapSecretContainer = ({
                         shouldMergeTemplateWithPatches={null}
                         parsingError={parsingError}
                         restoreLastSavedYAML={restoreLastSavedYAML}
+                        draftId={draftData?.draftId}
+                        draftVersionId={draftData?.draftVersionId}
+                        handleReload={updateCMSecret}
                     />
                 )}
                 {renderConfigHeaderTabContent()}

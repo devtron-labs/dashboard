@@ -205,8 +205,8 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
 }
 
 const EnvironmentOverrideRouter = ({
-    envIdToEnvApprovalConfigMap,
-}: Pick<AppConfigState, 'envIdToEnvApprovalConfigMap'>) => {
+    envIdToEnvApprovalConfigurationMap,
+}: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'>) => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -313,8 +313,11 @@ const EnvironmentOverrideRouter = ({
         if (environments.length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {environments.map(
-                        (env) =>
+                    {environments.map((env) => {
+                        const isApprovalApplicable =
+                            envIdToEnvApprovalConfigurationMap?.[env.environmentId]?.isApprovalApplicable
+
+                        return (
                             !env.deploymentAppDeleteRequest && (
                                 <Fragment key={env.environmentId}>
                                     {isJobView ? (
@@ -323,21 +326,19 @@ const EnvironmentOverrideRouter = ({
                                             envOverride={env}
                                             ciPipelines={ciPipelines}
                                             reload={reloadEnvData}
-                                            isEnvProtected={
-                                                envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable
-                                            }
+                                            isEnvProtected={isApprovalApplicable}
                                         />
                                     ) : (
                                         renderNavItem({
                                             title: env.environmentName,
-                                            isProtectionAllowed:
-                                                envIdToEnvApprovalConfigMap?.[env.environmentId]?.isApprovalApplicable,
+                                            isProtectionAllowed: isApprovalApplicable,
                                             href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
                                         })
                                     )}
                                 </Fragment>
-                            ),
-                    )}
+                            )
+                        )
+                    })}
                 </div>
             )
         }

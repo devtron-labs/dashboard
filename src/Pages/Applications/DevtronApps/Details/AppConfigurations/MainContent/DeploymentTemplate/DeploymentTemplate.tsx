@@ -1,6 +1,7 @@
 import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
+    BASE_CONFIGURATION_ENV_ID,
     BaseURLParams,
     ConfigurationType,
     DeploymentChartVersionType,
@@ -54,7 +55,7 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
-import { BASE_DEPLOYMENT_TEMPLATE_ENV_ID, NO_SCOPED_VARIABLES_MESSAGE } from './constants'
+import { NO_SCOPED_VARIABLES_MESSAGE } from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
@@ -704,7 +705,7 @@ const DeploymentTemplate = ({
         const [draftPromiseResponse, publishedAndBaseTemplateDataResponse] = await Promise.allSettled([
             getDraftByResourceName(
                 +appId,
-                +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
+                +envId || BASE_CONFIGURATION_ENV_ID,
                 3,
                 getDeploymentTemplateResourceName(environmentName),
             ),
@@ -793,7 +794,7 @@ const DeploymentTemplate = ({
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
                 getChartList({ appId, envId }),
-                getJsonPath ? getJsonPath(appId, envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID) : Promise.resolve(null),
+                getJsonPath ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID) : Promise.resolve(null),
             ])
 
             if (chartRefsDataResponse.status === 'rejected') {
@@ -840,7 +841,7 @@ const DeploymentTemplate = ({
             },
         })
 
-        fetchEnvConfig(+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
+        fetchEnvConfig(+envId || BASE_CONFIGURATION_ENV_ID)
         reloadEnvironments()
         await handleInitialDataLoad()
     }
@@ -1530,6 +1531,9 @@ const DeploymentTemplate = ({
                         restoreLastSavedYAML={restoreLastSavedTemplate}
                         showEnableReadMeButton={isEditMode}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                        draftId={draftTemplateData?.latestDraft?.draftId}
+                        draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                        handleReload={handleReload}
                     >
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader
@@ -1614,14 +1618,14 @@ const DeploymentTemplate = ({
                         isSaving={isSaving}
                         documents={getLockedDiffModalDocuments(isApprovalView, state)}
                         appId={appId}
-                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        envId={+envId || BASE_CONFIGURATION_ENV_ID}
                     />
                 )}
 
                 {SaveChangesModal && showSaveChangesModal && (
                     <SaveChangesModal
                         appId={Number(appId)}
-                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        envId={+envId || BASE_CONFIGURATION_ENV_ID}
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={prepareDataToSave}

@@ -142,7 +142,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                             getNavItemHref={(resourceType, resourceName) =>
                                 `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                             }
-                            appOrEnvIdToAppOrEnvApprovalConfigMap={appIdToAppApprovalConfigMap}
+                            appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                         />
                     )
                 }}
@@ -170,7 +170,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={refetch}
                                 onErrorRedirectURL={generatePath(path, { envId })}
-                                appOrEnvIdToAppOrEnvApprovalConfigMap={appIdToAppApprovalConfigMap}
+                                appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                             />
                         </div>
                     ) : (

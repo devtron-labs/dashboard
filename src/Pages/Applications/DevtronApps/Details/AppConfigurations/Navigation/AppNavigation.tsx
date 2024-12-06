@@ -59,7 +59,7 @@ export const AppNavigation = () => {
         fetchEnvConfig,
         isUnlocked,
         lastUnlockedStage,
-        envIdToEnvApprovalConfigMap,
+        envIdToEnvApprovalConfigurationMap,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -143,7 +143,7 @@ export const AppNavigation = () => {
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
-                        envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                     />
                 )}
             </Route>
@@ -182,7 +182,7 @@ export const AppNavigation = () => {
                                     condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
                                     wrap={getEnvOverrideTippy}
                                 >
-                                    {item.required && renderNavItem(item, true)}
+                                    {item.required && renderNavItem(item, isJobView)}
                                 </ConditionalWrap>
                             )
                         }
@@ -190,7 +190,7 @@ export const AppNavigation = () => {
                         return (
                             <EnvironmentOverrideRouter
                                 key={item.stage}
-                                envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                                envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                             />
                         )
                     })}

@@ -739,7 +739,7 @@ function cdPipelineToNode(
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
-        approvalConfigData: cdPipeline.approvalConfigData,
+        approvalConfigData: sanitizeApprovalConfigData(cdPipeline.approvalConfigData),
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
