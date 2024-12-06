@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { FilterParentType, GroupFilterType, GroupOptionType } from '@Components/ApplicationGroup/AppGroup.types'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
-
 export enum FILE_EXTENSION {
     JSON = 'json',
     YAML = 'yaml',
@@ -36,20 +32,4 @@ export enum MIME_TYPE {
 export enum URL_PARAM_MODE_TYPE {
     REVIEW_CONFIG = 'review-config',
     LIST = 'list',
-}
-
-export interface GetAndSetAppGroupFiltersParamsType
-    extends Pick<
-        GroupFilterType,
-        'appListOptions' | 'groupFilterOptions' | 'setSelectedAppList' | 'setSelectedGroupFilter'
-    > {
-    filterParentType: FilterParentType
-    resourceId: string
-}
-
-export interface SetFiltersInLocalStorageParamsType {
-    filterParentType: FilterParentType
-    resourceId: string
-    resourceList: MultiValue<OptionType>
-    groupList: MultiValue<GroupOptionType>
 }

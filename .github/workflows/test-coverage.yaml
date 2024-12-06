@@ -1,0 +1,22 @@
+name: Test Coverage
+on: pull_request
+jobs:
+    test-coverage:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Jest coverage report
+              uses: ArtiomTr/jest-coverage-report-action@v2.1.2
+              id: coverage
+              with:
+                  package-manager: yarn
+                  annotations: failed-tests
+                  test-script: yarn test:ci
+                  output: report-markdown
+            - name: Comment on pull request
+              uses: marocchino/sticky-pull-request-comment@v2
+              if: always()
+              with:
+                  recreate: true
+                  message: ${{ steps.coverage.outputs.report }}

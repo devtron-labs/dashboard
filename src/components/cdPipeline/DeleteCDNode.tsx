@@ -51,7 +51,7 @@ const DeleteCDNode = ({
         handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
-    if (deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showForceDeleteDialog) {
         return (
             <ForceDeleteDialog
                 forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
@@ -62,7 +62,7 @@ const DeleteCDNode = ({
         )
     }
 
-    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog) {
         return (
             <ClusterNotReachableDailog
                 clusterName={clusterName}

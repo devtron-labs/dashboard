@@ -1,7 +1,5 @@
 FROM node:20-alpine AS builder
 
-RUN apk add --no-cache git
-
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
@@ -15,9 +13,6 @@ COPY vite.config.mts .
 COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html
-
-RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env
-
 RUN yarn build
 
 FROM nginx:stable

@@ -17,12 +17,11 @@
 import { useEffect, useRef, useState } from 'react'
 import ReactSelect, { SelectInstance } from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { appGroupAppSelectorStyle } from './AppGroup.utils'
+import { appGroupAppSelectorStyle, getAppFilterLocalStorageKey, setFilterInLocalStorage } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
 import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
-import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
 export default function AppGroupAppFilter() {
     const {
@@ -89,19 +88,14 @@ export default function AppGroupAppFilter() {
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             setSelectedAppList(selectedValue)
             setSelectedGroupFilter([])
-            setAppGroupFilterInLocalStorage({
-                filterParentType,
-                resourceId,
-                resourceList: selectedValue,
-                groupList: [],
-            })
+            setFilterInLocalStorage({ filterParentType, resourceId, resourceList: selectedValue, groupList: [] })
         } else {
             const _selectedGroup = selectedValue.pop()
             setSelectedGroupFilter([_selectedGroup])
             if (_selectedGroup) {
                 const updatedAppList = appListOptions.filter((app) => _selectedGroup.appIds.indexOf(+app.value) >= 0)
                 setSelectedAppList(updatedAppList)
-                setAppGroupFilterInLocalStorage({
+                setFilterInLocalStorage({
                     filterParentType,
                     resourceId,
                     resourceList: updatedAppList,
@@ -122,6 +116,53 @@ export default function AppGroupAppFilter() {
         appGroupFilterRef.current.focus()
         appGroupFilterRef.current.onMenuOpen()
     }
+
+    const getAndSetItem = () => {
+        const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        if (!localStorageValue) {
+            return
+        }
+        try {
+            const valueForCurrentResource = new Map(JSON.parse(localStorageValue)).get(resourceId)
+            // local storage value for app list/ env list
+            const localStorageResourceList = valueForCurrentResource?.[0] || []
+            // local storage value for group filter
+            const localStorageGroupList = valueForCurrentResource?.[1] || []
+
+            const appListOptionsMap = appListOptions.reduce<Record<string, true>>((agg, curr) => {
+                agg[curr.value] = true
+                return agg
+            }, {})
+
+            const groupFilterOptionsMap = groupFilterOptions.reduce<Record<string, true>>((agg, curr) => {
+                agg[curr.value] = true
+                return agg
+            }, {})
+
+            // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
+            const filteredLocalStorageResourceList = localStorageResourceList.filter(
+                ({ value }) => appListOptionsMap[value],
+            )
+            const filteredLocalStorageGroupList = localStorageGroupList.filter(
+                ({ value }) => groupFilterOptionsMap[value],
+            )
+
+            setSelectedAppList(filteredLocalStorageResourceList)
+            setSelectedGroupFilter(filteredLocalStorageGroupList)
+        } catch {
+            localStorage.setItem(localStorageKey, '')
+        }
+    }
+
+    useEffect(() => {
+        if (!appListOptions || !groupFilterOptions) {
+            return
+        }
+
+        getAndSetItem()
+    }, [appListOptions, groupFilterOptions])
 
     useEffect(() => {
         registerShortcut({ keys: ['F'], callback: handleFilterFocus })

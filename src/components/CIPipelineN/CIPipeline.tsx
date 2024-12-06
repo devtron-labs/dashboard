@@ -256,9 +256,7 @@ export default function CIPipeline({
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
-                    const canApplyPluginOnBranch =
-                        material.type !== SourceTypeMap.WEBHOOK && (!material.isRegex || material.value)
-                    if (canApplyPluginOnBranch) {
+                    if (!material.isRegex || material.value) {
                         branchName += `${branchName ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
                     }
                 }

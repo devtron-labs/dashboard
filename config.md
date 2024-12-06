@@ -43,7 +43,6 @@
 | SENTRY_ERROR_ENABLED                         | false      | To send uncaught errors to sentry                                                                                |
 | SENTRY_PERFORMANCE_ENABLED                   | false      | To send persormance sentry                                                                                       |
 | SENTRY_DSN                                   | ''         | SENTRY Data Source Name                                                                                          |
-| SENTRY_AUTH_TOKEN | "" | Auth token for uploading the source maps to sentry |
 | SENTRY_TRACES_SAMPLE_RATE                    | 0.2        | Rate at which data send to sentry.(min=0 max=1)                                                                  |
 | SIDEBAR_DT_LOGO                              | ""         | Devtron logo for sidebar (would work if ORGANIZATION_NAME is not given)                                          |
 | SERVICE_WORKER_TIMEOUT                       | "1"        | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle |
