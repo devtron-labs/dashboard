@@ -5,10 +5,10 @@ import {
     ConfigToolbarPopupNodeType,
     DeploymentHistorySingleValue,
     DeploymentTemplateConfigState,
+    DraftMetadataDTO,
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    UserApprovalMetadataType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
@@ -71,7 +71,7 @@ type ConfigToolbarReadMeProps =
           handleEnableReadmeView?: never
       }
 
-export type ConfigToolbarProps = {
+export type ConfigToolbarProps = Pick<DraftMetadataDTO, 'draftId' | 'draftVersionId' | 'userApprovalMetadata'> & {
     configHeaderTab: ConfigHeaderTabType
     handleToggleScopedVariablesView: () => void
     resolveScopedVariables: boolean
@@ -116,7 +116,6 @@ export type ConfigToolbarProps = {
      */
     isApprovalPending?: boolean
     isDraftPresent?: boolean
-    userApprovalMetadata: UserApprovalMetadataType
     /**
      * @default - false
      * If given would disable all the actions
@@ -132,6 +131,7 @@ export type ConfigToolbarProps = {
     isPublishedConfigPresent?: boolean
     headerMessage?: string
     showDeleteOverrideDraftEmptyState: boolean
+    handleReload: () => void
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {

@@ -59,7 +59,7 @@ export const AppNavigation = () => {
         fetchEnvConfig,
         isUnlocked,
         lastUnlockedStage,
-        envIdToEnvApprovalConfigMap,
+        envIdToEnvApprovalConfigurationMap,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -143,7 +143,7 @@ export const AppNavigation = () => {
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
-                        envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                     />
                 )}
             </Route>
@@ -190,7 +190,7 @@ export const AppNavigation = () => {
                         return (
                             <EnvironmentOverrideRouter
                                 key={item.stage}
-                                envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                                envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                             />
                         )
                     })}

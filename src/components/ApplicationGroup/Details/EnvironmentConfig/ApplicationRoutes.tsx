@@ -42,15 +42,13 @@ const ApplicationRoute = ({
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     fetchEnvConfig={fetchEnvConfig}
-                    environments={envAppList.map((env) => ({
-                        ...env,
-                    }))}
+                    environments={envAppList}
                     goBackURL={generatePath(path, { envId })}
                     showDeploymentTemplate
                     paramToCheck="appId"
                     compareWithURL={path}
                     showComparison
-                    envIdToEnvApprovalConfigMap={appIdToAppApprovalConfigMap}
+                    envIdToEnvApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                 />
             </Route>
             <Route key="default-navigation">

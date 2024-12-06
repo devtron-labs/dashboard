@@ -46,7 +46,7 @@ export const Configurations = () => {
         reloadEnvironments,
         isAppListLoading,
         isEnvListLoading,
-        envIdToEnvApprovalConfigMap,
+        envIdToEnvApprovalConfigurationMap,
     }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
     // ASYNC CALLS
@@ -69,7 +69,7 @@ export const Configurations = () => {
         () => (environments ? environments.find(({ id }) => +envId === id) : null),
         [environments, envId, isEnvListLoading],
     )
-    const approvalConfigForEnv = envIdToEnvApprovalConfigMap[selectedEnv?.id]?.approvalConfigurationMap
+    const approvalConfigForEnv = envIdToEnvApprovalConfigurationMap[selectedEnv?.id]?.approvalConfigurationMap
     const showConfig = !!selectedApp && !!selectedEnv
 
     // RENDERERS
@@ -85,7 +85,7 @@ export const Configurations = () => {
                     showDeploymentTemplate
                     showComparison
                     hideEnvSelector
-                    envIdToEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                 />
             </Route>
         </Switch>
@@ -169,7 +169,7 @@ export const Configurations = () => {
                             getNavItemHref={(resourceType, resourceName) =>
                                 `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
                             }
-                            appOrEnvIdToAppOrEnvApprovalConfigMap={envIdToEnvApprovalConfigMap}
+                            appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         />
                     ) : (
                         <Progressing fullHeight pageLoader />

@@ -68,7 +68,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             environments: state.environmentList,
             userRole,
             setRepoState: setShowRepoOnDelete,
-            envIdToEnvApprovalConfigMap: state.envIdToEnvApprovalConfigMap,
+            envIdToEnvApprovalConfigurationMap: state.envIdToEnvApprovalConfigurationMap,
             filteredEnvIds,
             reloadAppConfig,
             lastUnlockedStage: state.redirectionUrl,

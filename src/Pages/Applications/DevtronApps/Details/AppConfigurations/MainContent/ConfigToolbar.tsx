@@ -96,6 +96,9 @@ const ConfigToolbar = ({
     isApprovalPolicyConfigured = false,
     isApprovalPending,
     isDraftPresent,
+    draftId,
+    draftVersionId,
+    handleReload,
     userApprovalMetadata,
     disableAllActions = false,
     parsingError = '',
@@ -209,7 +212,12 @@ const ConfigToolbar = ({
         return (
             <>
                 {shouldRenderApproverInfoTippy && (
-                    <ConfigApproversInfoTippy userApprovalMetadata={userApprovalMetadata} />
+                    <ConfigApproversInfoTippy
+                        userApprovalMetadata={userApprovalMetadata}
+                        draftId={draftId}
+                        draftVersionId={draftVersionId}
+                        handleReload={handleReload}
+                    />
                 )}
                 {shouldRenderCommentsView && (
                     <ProtectConfigShowCommentsButton

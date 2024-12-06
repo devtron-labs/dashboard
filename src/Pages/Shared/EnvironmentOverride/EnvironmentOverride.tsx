@@ -47,7 +47,7 @@ const EnvironmentOverride = ({
     onErrorRedirectURL,
     envConfig,
     fetchEnvConfig,
-    appOrEnvIdToAppOrEnvApprovalConfigMap,
+    appOrEnvIdToResourceApprovalConfigurationMap,
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
@@ -60,11 +60,9 @@ const EnvironmentOverride = ({
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
-    const approvalConfigMap = (
-        isAppGroupView
-            ? appOrEnvIdToAppOrEnvApprovalConfigMap[+params.appId]
-            : appOrEnvIdToAppOrEnvApprovalConfigMap[+params.envId]
-    )?.approvalConfigurationMap
+    const approvalConfigMap =
+        appOrEnvIdToResourceApprovalConfigurationMap[+(isAppGroupView ? params.appId : params.envId)]
+            ?.approvalConfigurationMap
 
     useEffect(() => {
         if (params.envId) {
