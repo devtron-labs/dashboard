@@ -1,4 +1,5 @@
-import { getConfigDiffData, getManifestData } from './service.utils'
+import { getAppEnvDeploymentConfig } from '@devtron-labs/devtron-fe-common-lib'
+import { getManifestData } from './service.utils'
 
 type ManifestComparisonDataType = {
     isManifestComparison: true
@@ -8,7 +9,10 @@ type ManifestComparisonDataType = {
 
 type AppConfigComparisonDataType = {
     isManifestComparison: false
-    appConfigData: [Awaited<ReturnType<typeof getConfigDiffData>>, Awaited<ReturnType<typeof getConfigDiffData>>]
+    appConfigData: [
+        Awaited<ReturnType<typeof getAppEnvDeploymentConfig>>,
+        Awaited<ReturnType<typeof getAppEnvDeploymentConfig>>,
+    ]
     manifestData?: never
 }
 

@@ -8,35 +8,8 @@ import {
     ResponseType,
     TemplateListType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { GetConfigDiffDataProps, GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
+import { GetDeploymentTemplateDataProps, GetManifestDataProps } from '../../AppConfig.types'
 import { getAppAndEnvIds } from './utils'
-
-export const getConfigDiffData = ({
-    type,
-    appName,
-    envName,
-    compareName,
-    configType,
-    identifierId,
-    pipelineId,
-}: GetConfigDiffDataProps) =>
-    getAppEnvDeploymentConfig({
-        params: {
-            configArea: 'AppConfiguration',
-            ...(type === 'app'
-                ? {
-                      appName,
-                      envName: compareName || '',
-                  }
-                : {
-                      appName: compareName || '',
-                      envName,
-                  }),
-            configType,
-            identifierId,
-            pipelineId,
-        },
-    })
 
 export const getDeploymentTemplateData = ({
     configType,
