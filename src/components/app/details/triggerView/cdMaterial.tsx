@@ -819,7 +819,8 @@ const CDMaterial = ({
             serverError instanceof ServerErrors &&
             Array.isArray(serverError.errors) &&
             serverError.code !== 403 &&
-            serverError.code !== 408
+            serverError.code !== 408 &&
+            !getIsRequestAborted(searchParams)
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 ToastManager.showToast(
