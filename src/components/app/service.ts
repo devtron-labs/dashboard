@@ -84,21 +84,21 @@ export function fetchAppDetails(appId: number | string, envId: number | string):
 export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
-    reloadTimeOut: number,
-    signal?: AbortSignal,
+    reloadTimeOut: APIOptions['timeout'],
+    abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, abortControllerRef })
 }
 
 export function fetchResourceTreeInTime(
     appId: number | string,
     envId: number | string,
-    reloadTimeOut: number,
-    signal?: AbortSignal,
+    reloadTimeOut: APIOptions['timeout'],
+    abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
         timeout: reloadTimeOut,
-        signal,
+        abortControllerRef,
     })
 }
 
