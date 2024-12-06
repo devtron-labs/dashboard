@@ -309,8 +309,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
                         handleRuntimeParamError={this.handleRuntimeParamError}
                         appId={this.props.appId}
-                        runtimeParamsV2={this.props.runtimeParamsV2}
-                        handleRuntimeParamChangeV2={this.props.handleRuntimeParamChangeV2}
                         uploadFile={this.props.uploadFile}
                     />
                     {this.props.isCITriggerBlocked ? null : this.renderMaterialStartBuild(canTrigger)}

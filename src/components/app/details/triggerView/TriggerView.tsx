@@ -105,7 +105,6 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-const getRuntimeParamsV2Payload = importComponentFromFELibrary('getRuntimeParamsV2Payload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -147,7 +146,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             searchImageTag: '',
             resourceFilters: [],
             runtimeParams: [],
-            runtimeParamsV2: [],
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -742,7 +740,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 if (resp[2]) {
                     // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
-                        runtimeParamsV2: resp[2] || [],
+                        runtimeParams: resp[2] || [],
                     })
                 }
             })
@@ -908,7 +906,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
 
         // No need to validate here since ciMaterial handles it for trigger view
-        const runtimeParamsPayload = getRuntimeParamsV2Payload?.(this.state.runtimeParamsV2 ?? [])
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
@@ -1132,12 +1130,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    handleRuntimeParamChangeV2: CIMaterialProps['handleRuntimeParamChangeV2'] = (updatedRuntimeParams) => {
-        this.setState({
-            runtimeParamsV2: updatedRuntimeParams,
-        })
-    }
-
     uploadFile: CIMaterialProps['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) =>
         uploadCIPipelineFile({
             appId: +this.props.match.params.appId,
@@ -1241,8 +1233,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
                             handleRuntimeParamChange={this.handleRuntimeParamChange}
-                            runtimeParamsV2={this.state.runtimeParamsV2}
-                            handleRuntimeParamChangeV2={this.handleRuntimeParamChangeV2}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}

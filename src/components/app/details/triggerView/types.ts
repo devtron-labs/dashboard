@@ -31,13 +31,10 @@ import {
     PipelineType,
     WorkflowType,
     Material,
-    KeyValueListType,
     CIMaterialSidebarType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
-    RuntimeParamsListItemType,
-    KeyValueTableProps,
     CDMaterialSidebarType,
     CiPipeline,
     CdPipeline,
@@ -55,15 +52,16 @@ import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { TIME_STAMP_ORDER } from './Constants'
 import { Offset, WorkflowDimensions } from './config'
 
-export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimePluginVariables[]) => void
 
 type CDMaterialBulkRuntimeParams =
     | {
           isFromBulkCD: true
-          bulkRuntimeParams: RuntimeParamsListItemType[]
+          bulkRuntimeParams: RuntimePluginVariables[]
           handleBulkRuntimeParamChange: HandleRuntimeParamChange
-          handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
+          handleBulkRuntimeParamError: (errorState: boolean) => void
           bulkSidebarTab: CDMaterialSidebarType
+          bulkUploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
       }
     | {
           isFromBulkCD?: false
@@ -71,6 +69,7 @@ type CDMaterialBulkRuntimeParams =
           handleBulkRuntimeParamChange?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
+          bulkUploadFile?: never
       }
 
 type CDMaterialPluginWarningProps =
@@ -391,8 +390,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    runtimeParams?: RuntimeParamsListItemType[]
-    runtimeParamsV2: RuntimePluginVariables[]
+    runtimeParams?: RuntimePluginVariables[]
 }
 
 export interface CIMaterialProps
@@ -428,9 +426,7 @@ export interface CIMaterialProps
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange
-    runtimeParamsV2: RuntimePluginVariables[]
-    handleRuntimeParamChangeV2: (runtimeParams: RuntimePluginVariables[]) => void
-    runtimeParams: KeyValueListType[]
+    runtimeParams: RuntimePluginVariables[]
     uploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
 }
 

@@ -74,6 +74,8 @@ export const GitInfoMaterial = ({
     // Not required for BulkCI
     currentSidebarTab,
     handleSidebarTabChange,
+    runtimeParams,
+    handleRuntimeParamChange,
     handleRuntimeParamError,
     isBulkCIWebhook,
     webhookPayloads,
@@ -81,8 +83,6 @@ export const GitInfoMaterial = ({
     setIsWebhookBulkCI,
     isBulk = false,
     appId,
-    runtimeParamsV2,
-    handleRuntimeParamChangeV2,
     uploadFile,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
@@ -372,8 +372,8 @@ export const GitInfoMaterial = ({
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
                     heading={getRuntimeParametersHeading()}
-                    parameters={runtimeParamsV2}
-                    handleChange={handleRuntimeParamChangeV2}
+                    parameters={runtimeParams}
+                    handleChange={handleRuntimeParamChange}
                     onError={handleRuntimeParamError}
                     uploadFile={uploadFile}
                 />

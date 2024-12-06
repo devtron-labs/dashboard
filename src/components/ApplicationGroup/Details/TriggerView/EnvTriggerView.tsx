@@ -42,12 +42,12 @@ import {
     ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
-    RuntimeParamsListItemType,
     preventBodyScroll,
     ToastManager,
     ToastVariantType,
     BlockedStateData,
-    noop,
+    RuntimePluginVariables,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -186,7 +186,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
-    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimeParamsListItemType[]>>({})
+    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, boolean>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
 
@@ -873,7 +873,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                       _appName,
                   )
                 : null,
-            getRuntimeParams ? getRuntimeParams(ciNodeId) : null,
+            getRuntimeParams ? getRuntimeParams(ciNodeId, true) : null,
         ])
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList
@@ -1874,6 +1874,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }
 
+    const uploadFile: CIMaterialProps['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) => null
+    // TODO: rohit confirm with BE
+    // uploadCIPipelineFile({ file, allowedExtensions, maxUploadSize, appId: +appId, ciPipelineId: null })
+
     const createBulkCITriggerData = (): BulkCIDetailType[] => {
         const _selectedAppWorkflowList: BulkCIDetailType[] = []
         filteredWorkflows.forEach((wf) => {
@@ -2026,12 +2030,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
                             handleRuntimeParamChange={handleRuntimeParamChange}
+                            uploadFile={uploadFile}
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
                             resetAbortController={resetAbortController}
-                            runtimeParamsV2={[]}
-                            handleRuntimeParamChangeV2={noop}
-                            uploadFile={noop}
                         />
                     </Route>
                 </Switch>
