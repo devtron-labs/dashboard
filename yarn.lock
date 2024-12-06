@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.2.3-beta-3":
-  version "1.2.3-beta-3"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.3-beta-3.tgz#ec5c2eaa6c27936444094266d9c653c2f9448674"
-  integrity sha512-b4yQZN0ykzlVfBeanxDLqHhTCyrSSefeudlbaXygzUvzLaF4ckSDvQvOyGVqc3nScJxguFmeW0pa793SEGCnDg==
+"@devtron-labs/devtron-fe-common-lib@1.2.4-beta-4":
+  version "1.2.4-beta-4"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.4-beta-4.tgz#29c1222e9ffced35308044783d455b98f3ee3e6a"
+  integrity sha512-Jy75bTUWRfnNQFdsRMTT/lg1LZVCidqfII8lq+wvlihYoTTOMNN6sL9xzI80QZBkEid/FW7IgH3ol3XanPXMBg==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
