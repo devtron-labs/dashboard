@@ -453,7 +453,7 @@ export const VariableDataTable = ({
         })
     }
 
-    const dataTableHandleChange: DynamicDataTableProps<VariableDataKeys, VariableDataCustomState>['onRowEdit'] = (
+    const dataTableHandleChange: DynamicDataTableProps<VariableDataKeys, VariableDataCustomState>['onRowEdit'] = async (
         updatedRow,
         headerKey,
         value,
@@ -478,29 +478,29 @@ export const VariableDataTable = ({
                 rowId: updatedRow.id,
             })
 
-            uploadFile({
-                file: extraData.files,
-                ...getUploadFileConstraints({
-                    unit: updatedRow.customState.fileInfo.unit.label as string,
-                    allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
-                    maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
-                }),
-            })
-                .then((res) => {
-                    handleRowUpdateAction({
-                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: res.id },
-                        rowId: updatedRow.id,
-                    })
+            try {
+                const { id } = await uploadFile({
+                    file: extraData.files,
+                    ...getUploadFileConstraints({
+                        unit: updatedRow.customState.fileInfo.unit.label as string,
+                        allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
+                        maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
+                    }),
                 })
-                .catch(() => {
-                    handleRowUpdateAction({
-                        actionType: VariableDataTableActionType.UPDATE_ROW,
-                        actionValue: '',
-                        headerKey,
-                        rowId: updatedRow.id,
-                    })
+
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                    actionValue: { fileReferenceId: id },
+                    rowId: updatedRow.id,
                 })
+            } catch {
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_ROW,
+                    actionValue: '',
+                    headerKey,
+                    rowId: updatedRow.id,
+                })
+            }
         } else if (headerKey === 'format' && updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,
