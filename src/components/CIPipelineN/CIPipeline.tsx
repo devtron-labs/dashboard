@@ -46,6 +46,7 @@ import {
     ToastManager,
     ProcessPluginDataParamsType,
     ResourceKindType,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -783,6 +784,9 @@ export default function CIPipeline({
         }
     }
 
+    const uploadFile: PipelineContext['uploadFile'] = ({ allowedExtensions, file, maxUploadSize }) =>
+        uploadCIPipelineFile({ appId: +appId, ciPipelineId: +ciPipelineId, file, allowedExtensions, maxUploadSize })
+
     const contextValue = useMemo(
         () => ({
             formData,
@@ -810,6 +814,7 @@ export default function CIPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            uploadFile,
         }),
         [
             formData,
@@ -977,7 +982,7 @@ export default function CIPipeline({
         <>
             {renderFloatingVariablesWidget()}
 
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
                 {renderCIPipelineModal()}
             </Drawer>
         </>

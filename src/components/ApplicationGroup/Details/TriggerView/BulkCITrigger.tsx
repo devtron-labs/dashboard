@@ -27,7 +27,6 @@ import {
     GenericEmptyState,
     CIMaterialSidebarType,
     ApiQueuingWithBatch,
-    RuntimeParamsListItemType,
     ModuleNameMap,
     SourceTypeMap,
     ToastManager,
@@ -40,6 +39,10 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ButtonStyleType,
+    noop,
+    RuntimePluginVariables,
+    uploadCIPipelineFile,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -168,14 +171,14 @@ const BulkCITrigger = ({
                     [appDetails.ciPipelineId]: [],
                 })
             }
-            return () => getRuntimeParams(appDetails.ciPipelineId)
+            return () => getRuntimeParams(appDetails.ciPipelineId, true)
         })
 
         if (runtimeParamsServiceList.length) {
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
                 const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, true)
-                const _runtimeParams: Record<string, RuntimeParamsListItemType[]> = {}
+                const _runtimeParams: Record<string, RuntimePluginVariables[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
                 })
@@ -247,6 +250,15 @@ const BulkCITrigger = ({
         updatedRuntimeParams[selectedApp.ciPipelineId] = currentAppRuntimeParams
         setRuntimeParams(updatedRuntimeParams)
     }
+
+    const uploadFile = ({ file, allowedExtensions, maxUploadSize }: UploadFileProps) =>
+        uploadCIPipelineFile({
+            file,
+            allowedExtensions,
+            maxUploadSize,
+            appId: selectedApp.appId,
+            ciPipelineId: +selectedApp.ciPipelineId,
+        })
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
@@ -519,6 +531,7 @@ const BulkCITrigger = ({
                 runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
                 handleRuntimeParamChange={handleRuntimeParamChange}
                 handleRuntimeParamError={handleRuntimeParamError}
+                uploadFile={uploadFile}
                 appName={selectedApp?.name}
                 isBulkCIWebhook={isWebhookBulkCI}
                 setIsWebhookBulkCI={setIsWebhookBulkCI}

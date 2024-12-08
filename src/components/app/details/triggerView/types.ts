@@ -31,18 +31,18 @@ import {
     PipelineType,
     WorkflowType,
     Material,
-    KeyValueListType,
     CIMaterialSidebarType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
-    RuntimeParamsListItemType,
-    KeyValueTableProps,
     CDMaterialSidebarType,
     CiPipeline,
     CdPipeline,
     ConsequenceType,
     PolicyKindType,
+    RuntimePluginVariables,
+    UploadFileDTO,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -52,15 +52,16 @@ import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { TIME_STAMP_ORDER } from './Constants'
 import { Offset, WorkflowDimensions } from './config'
 
-export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimePluginVariables[]) => void
 
 type CDMaterialBulkRuntimeParams =
     | {
           isFromBulkCD: true
-          bulkRuntimeParams: RuntimeParamsListItemType[]
+          bulkRuntimeParams: RuntimePluginVariables[]
           handleBulkRuntimeParamChange: HandleRuntimeParamChange
-          handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
+          handleBulkRuntimeParamError: (errorState: boolean) => void
           bulkSidebarTab: CDMaterialSidebarType
+          bulkUploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
       }
     | {
           isFromBulkCD?: false
@@ -68,6 +69,7 @@ type CDMaterialBulkRuntimeParams =
           handleBulkRuntimeParamChange?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
+          bulkUploadFile?: never
       }
 
 type CDMaterialPluginWarningProps =
@@ -388,7 +390,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    runtimeParams?: RuntimeParamsListItemType[]
+    runtimeParams?: RuntimePluginVariables[]
 }
 
 export interface CIMaterialProps
@@ -424,7 +426,8 @@ export interface CIMaterialProps
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     isJobCI?: boolean
     handleRuntimeParamChange: HandleRuntimeParamChange
-    runtimeParams: KeyValueListType[]
+    runtimeParams: RuntimePluginVariables[]
+    uploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
 }
 
 // -- begining of response type objects for trigger view
@@ -681,7 +684,7 @@ export interface RenderCTAType {
     disableSelection: boolean
 }
 
-export interface CIMaterialModalProps extends CIMaterialProps {
+export interface CIMaterialModalProps extends Omit<CIMaterialProps, 'uploadFile'> {
     closeCIModal: () => void
     abortController: AbortController
     resetAbortController: () => void

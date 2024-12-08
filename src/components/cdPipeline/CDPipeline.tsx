@@ -49,6 +49,7 @@ import {
     ProcessPluginDataReturnType,
     ResourceKindType,
     getEnvironmentListMinPublic,
+    uploadCDPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1199,6 +1200,9 @@ export default function CDPipeline({
         setFormData({ ...formData, releaseMode: ReleaseMode.NEW_DEPLOYMENT })
     }
 
+    const uploadFile: PipelineContext['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId: +appId, envId: formData.environmentId })
+
     const contextValue = useMemo(() => {
         return {
             formData,
@@ -1237,6 +1241,7 @@ export default function CDPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            uploadFile,
         }
     }, [
         formData,

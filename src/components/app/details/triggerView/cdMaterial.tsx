@@ -65,7 +65,6 @@ import {
     useDownload,
     SearchBar,
     CDMaterialSidebarType,
-    RuntimeParamsListItemType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
@@ -78,6 +77,8 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    RuntimePluginVariables,
+    uploadCDPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -134,7 +135,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
-const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
+const RuntimeParametersV2 = importComponentFromFELibrary('RuntimeParametersV2', null, 'function')
 const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
@@ -186,6 +187,7 @@ const CDMaterial = ({
     consequence,
     configurePluginURL,
     isTriggerBlockedDueToPlugin,
+    bulkUploadFile,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -270,7 +272,7 @@ const CDMaterial = ({
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
     // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
-    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
+    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimePluginVariables[]>([])
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
@@ -561,15 +563,16 @@ const CDMaterial = ({
         }))
     }
 
-    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (
-        updatedRuntimeParams: RuntimeParamsListItemType[],
-    ) => {
+    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (updatedRuntimeParams) => {
         setRuntimeParamsList(updatedRuntimeParams)
     }
 
     const handleRuntimeParamError = (errorState: boolean) => {
         setRuntimeParamsErrorState(errorState)
     }
+
+    const uploadFile: typeof bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId, envId })
 
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
@@ -1496,7 +1499,7 @@ const CDMaterial = ({
                 <ConditionalWrap condition={isPreOrPostCD && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
                     {(bulkSidebarTab
                         ? bulkSidebarTab === CDMaterialSidebarType.IMAGE
-                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParameters ? (
+                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParametersV2 ? (
                         <>
                             {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
                             <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
@@ -1543,11 +1546,11 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <RuntimeParameters
-                            rootClassName=""
+                        <RuntimeParametersV2
                             parameters={bulkRuntimeParams || runtimeParamsList}
                             handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
                             onError={handleBulkRuntimeParamError || handleRuntimeParamError}
+                            uploadFile={bulkUploadFile || uploadFile}
                             headingClassName="pb-14 flexbox dc__gap-4"
                         />
                     )}
@@ -1713,8 +1716,7 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    {AllowedWithWarningTippy &&
-                    showPluginWarningBeforeTrigger ? (
+                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}

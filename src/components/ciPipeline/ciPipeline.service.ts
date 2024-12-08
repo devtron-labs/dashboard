@@ -23,6 +23,9 @@ import {
     PluginType,
     RefVariableType,
     PipelineBuildStageType,
+    VariableTypeFormat,
+    getIsRequestAborted,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -30,6 +33,7 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
+import { MutableRefObject } from 'react'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -407,13 +411,20 @@ function migrateOldData(
 ): PipelineBuildStageType {
     const commonFields = {
         value: '',
-        format: 'STRING',
+        format: VariableTypeFormat.STRING,
         description: '',
         defaultValue: '',
         variableType: RefVariableType.GLOBAL,
         refVariableStepIndex: 0,
         allowEmptyValue: false,
+        fileMountDir: null,
+        fileReferenceId: null,
+        valueConstraintId: null,
+        valueConstraint: null,
+        isRuntimeArg: null,
+        refVariableUsed: null,
     }
+
     const updatedData = {
         id: 0,
         steps: oldDataArr.map((data) => {

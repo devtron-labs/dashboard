@@ -38,10 +38,12 @@ import {
     SelectPicker,
     CDMaterialSidebarType,
     CD_MATERIAL_SIDEBAR_TABS,
-    RuntimeParamsListItemType,
     ToastManager,
     ToastVariantType,
     CommonNodeAttr,
+    RuntimePluginVariables,
+    uploadCDPipelineFile,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -166,11 +168,20 @@ export default function BulkCDTrigger({
         }))
     }
 
-    const handleRuntimeParamChange = (currentAppRuntimeParams: RuntimeParamsListItemType[]) => {
+    const handleRuntimeParamChange = (currentAppRuntimeParams: RuntimePluginVariables[]) => {
         const clonedRuntimeParams = structuredClone(runtimeParams)
         clonedRuntimeParams[selectedApp.appId] = currentAppRuntimeParams
         setRuntimeParams(clonedRuntimeParams)
     }
+
+    const bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }: UploadFileProps) =>
+        uploadCDPipelineFile({
+            file,
+            allowedExtensions,
+            maxUploadSize,
+            appId: selectedApp.appId,
+            envId: selectedApp.envId,
+        })
 
     const getDeploymentWindowData = async (_cdMaterialResponse) => {
         const currentEnv = appList[0].envId
@@ -429,13 +440,9 @@ export default function BulkCDTrigger({
         if (tagNotFoundWarningsMap.has(app.appId)) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error
-                        className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp"
-                    />
+                    <Error className="icon-dim-12 dc__no-shrink mt-5 alert-icon-r5-imp" />
 
-                    <span className="fw-4 fs-12 cr-5 dc__truncate">
-                        {tagNotFoundWarningsMap.get(app.appId)}
-                    </span>
+                    <span className="fw-4 fs-12 cr-5 dc__truncate">{tagNotFoundWarningsMap.get(app.appId)}</span>
                 </div>
             )
         }
@@ -454,13 +461,9 @@ export default function BulkCDTrigger({
         if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error
-                        className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7"
-                    />
+                    <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
 
-                    <span className="fw-4 fs-12 cy-7 dc__truncate">
-                        {warningMessage}
-                    </span>
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
         }
@@ -473,7 +476,7 @@ export default function BulkCDTrigger({
                     nodeType={commonNodeAttrType}
                     shouldRenderAdditionalInfo={isAppSelected}
                 />
-            )   
+            )
         }
 
         return null
@@ -795,6 +798,7 @@ export default function BulkCDTrigger({
                                 bulkRuntimeParams={runtimeParams[selectedApp.appId] || []}
                                 handleBulkRuntimeParamChange={handleRuntimeParamChange}
                                 handleBulkRuntimeParamError={handleRuntimeParamError}
+                                bulkUploadFile={bulkUploadFile}
                                 bulkSidebarTab={currentSidebarTab}
                                 selectedAppName={selectedApp.name}
                             />

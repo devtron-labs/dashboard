@@ -26,9 +26,9 @@ import {
     WorkflowType,
     AppInfoListType,
     GVKType,
-    RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
     CommonNodeAttr,
+    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
@@ -103,8 +103,8 @@ export interface ResponseRowType {
 }
 
 interface BulkRuntimeParamsType {
-    runtimeParams: Record<string, RuntimeParamsListItemType[]>
-    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsListItemType[]>>>
+    runtimeParams: Record<string, RuntimePluginVariables[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimePluginVariables[]>>>
     runtimeParamsErrorState: Record<string, boolean>
     setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }

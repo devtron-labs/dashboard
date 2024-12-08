@@ -15,6 +15,7 @@ export interface GitInfoMaterialProps
             | 'pipelineId'
             | 'runtimeParams'
             | 'appId'
+            | 'uploadFile'
         > {
     dataTestId?: string
     material: CIMaterialType[]

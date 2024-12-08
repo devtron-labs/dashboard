@@ -52,7 +52,7 @@ import { ReceivedWebhookRedirectButton } from './ReceivedWebhookRedirectButton'
 
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
-const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
+const RuntimeParametersV2 = importComponentFromFELibrary('RuntimeParametersV2', null, 'function')
 
 export const GitInfoMaterial = ({
     dataTestId = '',
@@ -83,6 +83,7 @@ export const GitInfoMaterial = ({
     setIsWebhookBulkCI,
     isBulk = false,
     appId,
+    uploadFile,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
@@ -365,15 +366,16 @@ export const GitInfoMaterial = ({
             )
         }
 
-        if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
+        if (RuntimeParametersV2 && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
-                <RuntimeParameters
+                <RuntimeParametersV2
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}
                     onError={handleRuntimeParamError}
+                    uploadFile={uploadFile}
                 />
             )
         }
