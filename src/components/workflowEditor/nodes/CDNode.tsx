@@ -158,6 +158,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         this.props.getWorkflows?.()
                         this.props.reloadEnvironments?.()
                     }
+                } else if (response.errors) {
+                    this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
+                    this.handleForceDeleteDataUpdate({
+                        forceDeleteDialogTitle: 'Something went wrong',
+                        forceDeleteDialogMessage: response.errors[0].userMessage,
+                    })
                 }
             })
             .catch((error: ServerErrors) => {
