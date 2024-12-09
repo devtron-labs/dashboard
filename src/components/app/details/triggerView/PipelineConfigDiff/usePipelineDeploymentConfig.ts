@@ -16,6 +16,8 @@ import {
     DeploymentConfigDiffState,
     ComponentSizeType,
     showError,
+    getCompareSecretsData,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -45,6 +47,7 @@ export const usePipelineDeploymentConfig = ({
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
+    const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
@@ -71,40 +74,84 @@ export const usePipelineDeploymentConfig = ({
 
     // FETCH PIPELINE DEPLOYMENT CONFIG
     const [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, , reloadPipelineDeploymentConfig] = useAsync(
-        async () =>
-            Promise.allSettled([
+        async () => {
+            const payloads = [
                 isLastDeployedConfigAvailable
-                    ? getAppEnvDeploymentConfig({
-                          params: {
-                              configArea: 'AppConfiguration',
-                              appName,
-                              envName,
-                              configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
-                              identifierId: previousDeployments[0].deploymentTemplateHistoryId,
-                              pipelineId,
-                          },
-                      })
+                    ? ({
+                          configArea: 'AppConfiguration',
+                          appName,
+                          envName,
+                          configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+                          wfrId: previousDeployments[0].wfrId,
+                          // NOTE: receiving pipelineId as string even tho its type is number
+                          pipelineId: Number(pipelineId),
+                      } as const)
                     : null,
-                getAppEnvDeploymentConfig({
-                    params: {
-                        configArea: 'AppConfiguration',
-                        appName,
-                        envName,
-                        configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                    },
-                }),
+                // NOTE: this is to fetch the last saved config
+                {
+                    configArea: 'AppConfiguration',
+                    appName,
+                    envName,
+                    configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                } as const,
+                // NOTE: this is to fetch the Config deployed at the selected deployment
                 isRollbackTriggerSelected && wfrId
-                    ? getAppEnvDeploymentConfig({
-                          params: {
-                              configArea: 'CdRollback',
-                              appName,
-                              envName,
-                              pipelineId,
-                              wfrId,
-                          },
-                      })
+                    ? ({
+                          configArea: 'CdRollback' as const,
+                          appName,
+                          envName,
+                          // NOTE: receiving pipelineId as string even tho its type is number
+                          pipelineId: Number(pipelineId),
+                          wfrId,
+                      } as const)
                     : null,
-            ]),
+            ] as const
+
+            // NOTE: since we can only ever compare against last deployed config
+            // in rollback modal; we need 2 sets of comparison:
+            // 1. b/w Last deployed & Last saved
+            // 1. b/w Last deployed & Config deployed at selected
+            const [secretsData, secretsDataCDRollback, ..._pipelineDeploymentConfigRes] = await Promise.allSettled([
+                !isSuperAdmin && payloads[0] && payloads[1] ? getCompareSecretsData([payloads[0], payloads[1]]) : null,
+                !isSuperAdmin && payloads[0] && payloads[2] ? getCompareSecretsData([payloads[0], payloads[2]]) : null,
+                ...payloads.map((payload) => payload && getAppEnvDeploymentConfig({ params: payload })),
+            ])
+
+            // NOTE: for security reasons secretsData from getAppEnvDeploymentConfig
+            // will be null if user is not app admin. therefore need to override it
+            // with masked values from getCompareSecretsData api
+            if (
+                _pipelineDeploymentConfigRes[0].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[0].value &&
+                !_pipelineDeploymentConfigRes[0].value.result.isAppAdmin &&
+                secretsData.status === 'fulfilled' &&
+                secretsData.value?.[0]
+            ) {
+                _pipelineDeploymentConfigRes[0].value.result.secretsData = secretsData.value[0].secretsData
+            }
+
+            if (
+                _pipelineDeploymentConfigRes[1].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[1].value &&
+                !_pipelineDeploymentConfigRes[1].value.result.isAppAdmin &&
+                secretsData.status === 'fulfilled' &&
+                secretsData.value?.[1]
+            ) {
+                _pipelineDeploymentConfigRes[1].value.result.secretsData = secretsData.value[1].secretsData
+            }
+
+            if (
+                _pipelineDeploymentConfigRes[2].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[2].value &&
+                !_pipelineDeploymentConfigRes[2].value.result.isAppAdmin &&
+                secretsDataCDRollback.status === 'fulfilled' &&
+                secretsDataCDRollback.value?.[1]
+            ) {
+                _pipelineDeploymentConfigRes[2].value.result.secretsData = secretsDataCDRollback.value[1].secretsData
+            }
+
+            return _pipelineDeploymentConfigRes
+        },
         [isRollbackTriggerSelected && wfrId],
         !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
     )
