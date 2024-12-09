@@ -273,12 +273,10 @@ export const TaskDetailComponent = () => {
                 </div>
                 <hr />
                 {selectedStep.stepType === PluginType.INLINE ? (
-                    <>
-                        <VariableDataTable key={selectedTaskIndex} type={PluginVariableType.INPUT} isCustomTask />
-                    </>
+                    <VariableDataTable key={selectedTaskIndex} type={PluginVariableType.INPUT} isCustomTask />
                 ) : (
                     <VariableContainer type={PluginVariableType.INPUT} />
-                )}{' '}
+                )}
                 <hr />
                 {selectedStep[currentStepTypeVariable]?.inputVariables?.length > 0 && (
                     <>
@@ -291,13 +289,7 @@ export const TaskDetailComponent = () => {
                         <TaskTypeDetailComponent />
                         {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                             ScriptType.CONTAINERIMAGE && (
-                            <>
-                                <VariableDataTable
-                                    key={selectedTaskIndex}
-                                    type={PluginVariableType.OUTPUT}
-                                    isCustomTask
-                                />
-                            </>
+                            <VariableDataTable key={selectedTaskIndex} type={PluginVariableType.OUTPUT} isCustomTask />
                         )}
                     </>
                 ) : (

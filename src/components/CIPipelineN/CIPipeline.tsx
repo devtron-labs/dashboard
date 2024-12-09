@@ -785,7 +785,14 @@ export default function CIPipeline({
     }
 
     const uploadFile: PipelineContext['uploadFile'] = ({ allowedExtensions, file, maxUploadSize }) =>
-        uploadCIPipelineFile({ appId: +appId, ciPipelineId: +ciPipelineId, file, allowedExtensions, maxUploadSize })
+        uploadCIPipelineFile({
+            appId: +appId,
+            envId: isJobView ? selectedEnv?.id : null,
+            ciPipelineId: +ciPipelineId,
+            file,
+            allowedExtensions,
+            maxUploadSize,
+        })
 
     const contextValue = useMemo(
         () => ({

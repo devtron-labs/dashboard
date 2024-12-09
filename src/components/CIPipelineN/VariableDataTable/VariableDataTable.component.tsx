@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef } from 'react'
+import { useContext, useState, useEffect, useRef, useMemo } from 'react'
 
 import {
     DynamicDataTable,
@@ -6,49 +6,43 @@ import {
     DynamicDataTableRowDataType,
     PluginType,
     RefVariableType,
-    SelectPickerOptionType,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
-import { ExtendedOptionType } from '@Components/app/types'
 
 import {
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
     VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
 } from './constants'
-import { getSystemVariableIcon } from './helpers'
 import {
     HandleRowUpdateActionProps,
     VariableDataCustomState,
     VariableDataKeys,
     VariableDataRowType,
     VariableDataTableActionType,
+    VariableDataTableProps,
 } from './types'
 import {
+    checkForSystemVariable,
     convertVariableDataTableToFormData,
     getEmptyVariableDataTableRow,
+    getSystemVariableIcon,
     getUploadFileConstraints,
     getValColumnRowProps,
     getValColumnRowValue,
     getVariableDataTableInitialRows,
 } from './utils'
-import { variableDataTableValidationSchema } from './validationSchema'
+import { getVariableDataTableValidationSchema } from './validationSchema'
 
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
 
-export const VariableDataTable = ({
-    type,
-    isCustomTask = false,
-}: {
-    type: PluginVariableType
-    isCustomTask?: boolean
-}) => {
+export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTableProps) => {
     // CONTEXTS
     const {
         inputVariablesListFromPrevStep,
@@ -96,6 +90,22 @@ export const VariableDataTable = ({
 
     // STATES
     const [rows, setRows] = useState<VariableDataRowType[]>([])
+
+    // KEYS FREQUENCY MAP
+    const keysFrequencyMap: Record<string, number> = useMemo(
+        () =>
+            rows.reduce(
+                (acc, curr) => {
+                    const currentKey = curr.data.variable.value
+                    if (currentKey) {
+                        acc[currentKey] = (acc[currentKey] || 0) + 1
+                    }
+                    return acc
+                },
+                {} as Record<string, number>,
+            ),
+        [rows],
+    )
 
     // REFS
     const initialRowsSet = useRef('')
@@ -340,13 +350,8 @@ export const VariableDataTable = ({
                             row.id === rowAction.rowId &&
                             row.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT
                         ) {
-                            const { selectedValue, value } = rowAction.actionValue as {
-                                selectedValue: SelectPickerOptionType<string> & ExtendedOptionType
-                                value: string
-                            }
-                            const isSystemVariable =
-                                !!selectedValue.refVariableStage ||
-                                (selectedValue?.variableType && selectedValue.variableType !== RefVariableType.NEW)
+                            const { selectedValue, value } = rowAction.actionValue
+                            const isSystemVariable = checkForSystemVariable(selectedValue)
 
                             return {
                                 ...row,
@@ -355,11 +360,9 @@ export const VariableDataTable = ({
                                     val: {
                                         ...row.data.val,
                                         value: getValColumnRowValue(
-                                            row.data.val.value,
                                             row.data.format.value as VariableTypeFormat,
                                             value,
                                             selectedValue,
-                                            isSystemVariable,
                                         ),
                                         props: {
                                             ...row.data.val.props,
@@ -538,6 +541,9 @@ export const VariableDataTable = ({
         <VariableDataTablePopupMenu
             heading={row.data.variable.value || 'Value configuration'}
             onClose={onActionButtonPopupClose(row.id)}
+            disableClose={
+                row.data.format.value === VariableTypeFormat.FILE && !!row.customState.fileInfo.mountDir.error
+            }
         >
             <ValueConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
         </VariableDataTablePopupMenu>
@@ -566,7 +572,7 @@ export const VariableDataTable = ({
             onRowDelete={dataTableHandleDelete}
             onRowAdd={dataTableHandleAddition}
             showError
-            validationSchema={variableDataTableValidationSchema}
+            validationSchema={getVariableDataTableValidationSchema({ keysFrequencyMap, pluginVariableType: type })}
             {...(type === PluginVariableType.INPUT
                 ? {
                       actionButtonConfig: {

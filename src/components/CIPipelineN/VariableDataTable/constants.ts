@@ -67,13 +67,46 @@ export const VAL_COLUMN_BOOL_OPTIONS: SelectPickerOptionType<string>[] = [
 ]
 
 export const VAL_COLUMN_DATE_OPTIONS: SelectPickerOptionType<string>[] = [
-    { label: 'YYYY-MM-DD', value: 'YYYY-MM-DD', description: 'RFC 3339' },
-    { label: 'YYYY-MM-DD HH:mm', value: 'YYYY-MM-DD HH:mm', description: 'RFC 3339 with mins' },
-    { label: 'YYYY-MM-DD HH:mm:ss', value: 'YYYY-MM-DD HH:mm:ss', description: 'RFC 3339 with secs' },
-    { label: 'YYYY-MM-DD HH:mm:ssZ', value: 'YYYY-MM-DD HH:mm:ssZ', description: 'RFC 3339 with secs and TZ' },
-    { label: 'YYYY-MM-DDT15Z0700', value: 'ISO', description: 'ISO8601 with hours' },
-    { label: 'YYYY-MM-DDTHH:mm:ss[Z]', value: 'YYYY-MM-DDTHH:mm:ss[Z]', description: 'ISO8601 with secs' },
-    { label: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]', value: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]', description: 'ISO8601 with nanosecs' },
+    {
+        label: 'YYYY-MM-DD',
+        value: 'YYYY-MM-DD',
+        description: 'RFC 3339',
+    },
+    {
+        label: 'YYYY-MM-DD HH:mm',
+        value: 'YYYY-MM-DD HH:mm',
+        description: 'RFC 3339 with minutes',
+    },
+    {
+        label: 'YYYY-MM-DD HH:mm:ss',
+        value: 'YYYY-MM-DD HH:mm:ss',
+        description: 'RFC 3339 with seconds',
+    },
+    {
+        label: 'YYYY-MM-DD HH:mm:ssZ',
+        value: 'YYYY-MM-DD HH:mm:ssZ',
+        description: 'RFC 3339 with seconds and timezone',
+    },
+    {
+        label: 'YYYY-MM-DDTHH[Z]',
+        value: 'YYYY-MM-DDTHH[Z]',
+        description: 'ISO8601 with hour',
+    },
+    {
+        label: 'YYYY-MM-DDTHH:mm[Z]',
+        value: 'YYYY-MM-DDTHH:mm[Z]',
+        description: 'ISO8601 with minutes',
+    },
+    {
+        label: 'YYYY-MM-DDTHH:mm:ss[Z]',
+        value: 'YYYY-MM-DDTHH:mm:ss[Z]',
+        description: 'ISO8601 with seconds',
+    },
+    {
+        label: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]',
+        value: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]',
+        description: 'ISO8601 with nanoseconds',
+    },
 ]
 
 export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
@@ -87,4 +120,4 @@ export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
     },
 ]
 
-export const DECIMAL_REGEX = /^\d*\.?\d*$/
+export const DECIMAL_WITH_SCOPE_VARIABLES_REGEX = /^(\d+(\.\d+)?|@{{[a-zA-Z0-9-]+}})$/

@@ -1,6 +1,25 @@
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PipelineContext } from '@Components/workflowEditor/types'
-import { DynamicDataTableRowType, SelectPickerOptionType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DynamicDataTableRowType,
+    RefVariableStageType,
+    RefVariableType,
+    SelectPickerOptionType,
+    VariableType,
+    VariableTypeFormat,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+export interface VariableDataTableProps {
+    type: PluginVariableType
+    isCustomTask?: boolean
+}
+
+export interface VariableDataTableSelectPickerOptionType extends SelectPickerOptionType<string> {
+    format?: VariableTypeFormat
+    variableType?: RefVariableType
+    refVariableStage?: RefVariableStageType
+    refVariableName?: string
+}
 
 export type VariableDataKeys = 'variable' | 'format' | 'val'
 
@@ -11,7 +30,7 @@ export type VariableDataCustomState = {
     askValueAtRuntime: boolean
     blockCustomValue: boolean
     // Check for support in the TableRowTypes
-    selectedValue: Record<string, any>
+    selectedValue: VariableDataTableSelectPickerOptionType & Record<string, any>
     fileInfo: {
         id: number
         mountDir: {
@@ -62,7 +81,7 @@ type VariableDataTableActionPropsMap = {
     [VariableDataTableActionType.UPDATE_VAL_COLUMN]: {
         actionValue: {
             value: string
-            selectedValue: SelectPickerOptionType<string>
+            selectedValue: VariableDataTableSelectPickerOptionType
             files: File[]
         }
         rowId: string | number
@@ -70,7 +89,7 @@ type VariableDataTableActionPropsMap = {
     [VariableDataTableActionType.UPDATE_FORMAT_COLUMN]: {
         actionValue: {
             value: string
-            selectedValue: SelectPickerOptionType<string>
+            selectedValue: VariableDataTableSelectPickerOptionType
         }
         rowId: string | number
     }

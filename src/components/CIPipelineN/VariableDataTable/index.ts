@@ -1,1 +1,1 @@
-export * from './VariableDataTable'
+export * from './VariableDataTable.component'

@@ -42,7 +42,7 @@ export const VariableDataTablePopupMenu = ({
     }
 
     return (
-        <PopupMenu autoPosition onToggleCallback={handleAction}>
+        <PopupMenu autoPosition onToggleCallback={handleAction} disableClose={disableClose}>
             <PopupMenu.Button rootClassName="dc__transparent h-100 flex top py-10 px-8 dc__no-border-imp dc__no-border-radius dc__hover-n50">
                 <ICSlidersVertical className="icon-dim-16" />
             </PopupMenu.Button>

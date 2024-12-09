@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import moment from 'moment'
 
 import {
     ConditionType,
@@ -9,24 +9,29 @@ import {
     SelectPickerOptionType,
     VariableType,
     VariableTypeFormat,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as Var } from '@Icons/ic-var-initial.svg'
 import { BuildStageVariable } from '@Config/constants'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
-import { ExtendedOptionType } from '@Components/app/types'
-import { excludeVariables } from '../Constants'
+import { excludeVariables, TIPPY_VAR_MSG } from '../Constants'
 import {
-    DECIMAL_REGEX,
+    DECIMAL_WITH_SCOPE_VARIABLES_REGEX,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     FORMAT_COLUMN_OPTIONS,
     VAL_COLUMN_BOOL_OPTIONS,
     VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
     VAL_COLUMN_DATE_OPTIONS,
 } from './constants'
-import { GetValColumnRowPropsType, GetVariableDataTableInitialRowsProps, VariableDataRowType } from './types'
-import { getSystemVariableIcon } from './helpers'
+import {
+    GetValColumnRowPropsType,
+    GetVariableDataTableInitialRowsProps,
+    VariableDataTableSelectPickerOptionType,
+    VariableDataRowType,
+} from './types'
 
 export const getOptionsForValColumn = ({
     inputVariablesListFromPrevStep,
@@ -152,6 +157,14 @@ export const getOptionsForValColumn = ({
     ]
 }
 
+export const getSystemVariableIcon = () => (
+    <Tooltip content={TIPPY_VAR_MSG} placement="left" animation="shift-away" alwaysShowTippyOnHover>
+        <div className="flex">
+            <Var className="icon-dim-18 icon-n4" />
+        </div>
+    </Tooltip>
+)
+
 export const getVariableColumnRowProps = () => {
     const data: VariableDataRowType['data']['variable'] = {
         value: '',
@@ -248,24 +261,27 @@ export const getValColumnRowProps = ({
     }
 }
 
-export const testValueForNumber = (value: string) => !value || DECIMAL_REGEX.test(value)
+export const testValueForNumber = (value: string) => !value || DECIMAL_WITH_SCOPE_VARIABLES_REGEX.test(value)
+
+export const checkForSystemVariable = (option: VariableDataTableSelectPickerOptionType) => {
+    const isSystemVariable =
+        !!option?.refVariableStage || (option?.variableType && option.variableType !== RefVariableType.NEW)
+
+    return isSystemVariable
+}
 
 export const getValColumnRowValue = (
-    currentValue: string,
     format: VariableTypeFormat,
     value: string,
-    selectedValue: SelectPickerOptionType<string> & ExtendedOptionType,
-    isSystemVariable: boolean,
+    selectedValue: VariableDataTableSelectPickerOptionType,
 ) => {
-    const isNumberFormat = !isSystemVariable && format === VariableTypeFormat.NUMBER
-    if (isNumberFormat && !testValueForNumber(value)) {
-        return currentValue
-    }
+    const isSystemVariable = checkForSystemVariable(selectedValue)
 
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
     if (isDateFormat && selectedValue.description) {
-        const now = dayjs()
-        return selectedValue.value !== 'ISO' ? now.format(selectedValue.value) : now.toISOString()
+        const now = moment.now()
+        const formattedDate = moment(now).format(selectedValue.value)
+        return formattedDate.replace('Z', moment().format('Z'))
     }
 
     return value
@@ -447,23 +463,29 @@ export const convertVariableDataTableToFormData = ({
             description: variableDescription,
             allowEmptyValue: !isVariableRequired,
             isRuntimeArg: askValueAtRuntime,
-            valueConstraint: {
+        }
+
+        if (choices.length) {
+            variableDetail.valueConstraint = {
+                ...variableDetail.valueConstraint,
                 choices: choices.map(({ value }) => value),
                 blockCustomValue,
-                constraint: null,
-            },
+            }
         }
 
         if (fileInfo) {
             variableDetail.value = data.val.value
             variableDetail.fileReferenceId = fileInfo.id
             variableDetail.fileMountDir = fileInfo.mountDir.value
-            variableDetail.valueConstraint.constraint = {
-                fileProperty: getUploadFileConstraints({
-                    allowedExtensions: fileInfo.allowedExtensions,
-                    maxUploadSize: fileInfo.maxUploadSize,
-                    unit: fileInfo.unit.label as string,
-                }),
+            variableDetail.valueConstraint = {
+                ...variableDetail.valueConstraint,
+                constraint: {
+                    fileProperty: getUploadFileConstraints({
+                        allowedExtensions: fileInfo.allowedExtensions,
+                        maxUploadSize: fileInfo.maxUploadSize,
+                        unit: fileInfo.unit.label as string,
+                    }),
+                },
             }
         }
 
@@ -472,22 +494,27 @@ export const convertVariableDataTableToFormData = ({
                 variableDetail.value = ''
                 variableDetail.variableType = RefVariableType.FROM_PREVIOUS_STEP
                 variableDetail.refVariableStepIndex = selectedValue.refVariableStepIndex
-                variableDetail.refVariableName = selectedValue.label
+                variableDetail.refVariableName = selectedValue.label as string
                 variableDetail.format = selectedValue.format
                 variableDetail.refVariableStage = selectedValue.refVariableStage
             } else if (selectedValue.variableType === RefVariableType.GLOBAL) {
                 variableDetail.variableType = RefVariableType.GLOBAL
                 variableDetail.refVariableStepIndex = 0
-                variableDetail.refVariableName = selectedValue.label
+                variableDetail.refVariableName = selectedValue.label as string
                 variableDetail.format = selectedValue.format
                 variableDetail.value = ''
                 variableDetail.refVariableStage = null
             } else {
                 variableDetail.variableType = RefVariableType.NEW
-                variableDetail.value = selectedValue.label
+                if (data.format.value === VariableTypeFormat.DATE) {
+                    variableDetail.value = data.val.value
+                } else {
+                    variableDetail.value = selectedValue.label as string
+                }
                 variableDetail.refVariableName = ''
                 variableDetail.refVariableStage = null
             }
+
             if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
                 variableDetail.format = selectedIOVariable.format
             }

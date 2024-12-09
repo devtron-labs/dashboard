@@ -92,6 +92,7 @@ export class ValidationRules {
                     (value['variableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
                         value['refVariableStepIndex'] &&
                         value['refVariableStage'])))
+
         if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
         }
