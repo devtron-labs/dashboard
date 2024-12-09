@@ -13,13 +13,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Var } from '@Icons/ic-var-initial.svg'
-import { BuildStageVariable } from '@Config/constants'
+import { BuildStageVariable, PATTERNS } from '@Config/constants'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
 import { excludeVariables, TIPPY_VAR_MSG } from '../Constants'
 import {
-    DECIMAL_WITH_SCOPE_VARIABLES_REGEX,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     FORMAT_COLUMN_OPTIONS,
     VAL_COLUMN_BOOL_OPTIONS,
@@ -261,7 +260,7 @@ export const getValColumnRowProps = ({
     }
 }
 
-export const testValueForNumber = (value: string) => !value || DECIMAL_WITH_SCOPE_VARIABLES_REGEX.test(value)
+export const testValueForNumber = (value: string) => !value || PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES.test(value)
 
 export const checkForSystemVariable = (option: VariableDataTableSelectPickerOptionType) => {
     const isSystemVariable =
@@ -276,12 +275,13 @@ export const getValColumnRowValue = (
     selectedValue: VariableDataTableSelectPickerOptionType,
 ) => {
     const isSystemVariable = checkForSystemVariable(selectedValue)
-
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
+
     if (isDateFormat && selectedValue.description) {
-        const now = moment.now()
-        const formattedDate = moment(now).format(selectedValue.value)
-        return formattedDate.replace('Z', moment().format('Z'))
+        const now = moment()
+        const formattedDate = now.format(selectedValue.value)
+        const timezone = now.format('Z').replace(/([+/-])(\d{2})[:.](\d{2})/, '$1$2$3')
+        return formattedDate.replace('Z', timezone)
     }
 
     return value

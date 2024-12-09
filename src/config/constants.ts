@@ -305,6 +305,7 @@ export const PATTERNS = {
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
+    NUMBERS_WITH_SCOPE_VARIABLES: /^(\d+(\.\d+)?|@{{[a-zA-Z0-9-]+}})$/
 }
 
 export const TriggerType = {

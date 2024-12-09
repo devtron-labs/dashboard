@@ -22,6 +22,7 @@ const CreatePluginButton = () => {
         validateTask(
             formData[activeStageName].steps[selectedTaskIndex],
             clonedFormErrorObj[activeStageName].steps[selectedTaskIndex],
+            true,
         )
 
         setFormDataErrorObj(clonedFormErrorObj)

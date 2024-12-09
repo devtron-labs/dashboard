@@ -278,7 +278,7 @@ export interface PipelineContext {
     }
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
-    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj, isSaveAsPlugin?: boolean) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (
         stageName: string,

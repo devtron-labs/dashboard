@@ -52,6 +52,7 @@ export const CIMaterialModal = ({
             maxUploadSize,
             appId: +props.appId,
             ciPipelineId: +props.pipelineId,
+            envId: props.isJobView && props.selectedEnv ? +props.selectedEnv : null,
         })
 
     usePrompt({ shouldPrompt: isLoading })

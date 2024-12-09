@@ -53,7 +53,7 @@ export const ValueContainer = (props) => {
     )
 }
 
-export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): void => {
+export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj, isSaveAsPlugin = false): void => {
     const validationRules = new ValidationRules()
     if (taskData && taskErrorObj) {
         taskErrorObj.name = validationRules.requiredField(taskData.name)
@@ -68,7 +68,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
             taskErrorObj[currentStepTypeVariable].inputVariables = []
             taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                 taskErrorObj[currentStepTypeVariable].inputVariables.push(
-                    validationRules.inputVariable(element, inputVarMap),
+                    validationRules.inputVariable(element, inputVarMap, isSaveAsPlugin),
                 )
                 taskErrorObj.isValid =
                     taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid

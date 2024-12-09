@@ -83,28 +83,28 @@ export const VAL_COLUMN_DATE_OPTIONS: SelectPickerOptionType<string>[] = [
         description: 'RFC 3339 with seconds',
     },
     {
-        label: 'YYYY-MM-DD HH:mm:ssZ',
+        label: 'YYYY-MM-DD HH:mm:ss-TZ',
         value: 'YYYY-MM-DD HH:mm:ssZ',
         description: 'RFC 3339 with seconds and timezone',
     },
     {
-        label: 'YYYY-MM-DDTHH[Z]',
+        label: "YYYY-MM-DDTHH'Z'ZZZZ",
         value: 'YYYY-MM-DDTHH[Z]',
         description: 'ISO8601 with hour',
     },
     {
-        label: 'YYYY-MM-DDTHH:mm[Z]',
+        label: "YYYY-MM-DDTHH:mm'Z'ZZZZ",
         value: 'YYYY-MM-DDTHH:mm[Z]',
         description: 'ISO8601 with minutes',
     },
     {
-        label: 'YYYY-MM-DDTHH:mm:ss[Z]',
+        label: "YYYY-MM-DDTHH:mm:ss'Z'ZZZZ",
         value: 'YYYY-MM-DDTHH:mm:ss[Z]',
         description: 'ISO8601 with seconds',
     },
     {
-        label: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]',
-        value: 'YYYY-MM-DDTHH:mm:ss.SSS[Z]',
+        label: "YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'Z'ZZZZ",
+        value: 'YYYY-MM-DDTHH:mm:ss.SSSSSSSSS[Z]',
         description: 'ISO8601 with nanoseconds',
     },
 ]
@@ -119,5 +119,3 @@ export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
         value: 1 / 1024,
     },
 ]
-
-export const DECIMAL_WITH_SCOPE_VARIABLES_REGEX = /^(\d+(\.\d+)?|@{{[a-zA-Z0-9-]+}})$/

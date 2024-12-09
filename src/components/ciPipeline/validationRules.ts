@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { RefVariableType, VariableTypeFormat } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import {
     CHARACTER_ERROR_MIN,
@@ -81,10 +81,14 @@ export class ValidationRules {
     inputVariable = (
         value: object,
         availableInputVariables: Map<string, boolean>,
+        /** disable value check when save as plugin is true */
+        isSaveAsPlugin = false,
     ): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
+        const numberReg = new RegExp(PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
         const variableValue =
             value['allowEmptyValue'] ||
+            (!value['allowEmptyValue'] && value['isRuntimeArg']) ||
             (!value['allowEmptyValue'] && value['defaultValue'] && value['defaultValue'] !== '') ||
             (value['variableType'] === RefVariableType.NEW && value['value']) ||
             (value['refVariableName'] &&
@@ -108,8 +112,14 @@ export class ValidationRules {
         if (!re.test(value['name'])) {
             return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         }
-        if (!variableValue) {
-            return { message: 'Variable value is required', isValid: false }
+        if (!isSaveAsPlugin) {
+            if (!variableValue) {
+                return { message: 'Variable value is required', isValid: false }
+            }
+            // test for numbers and scope variables when format is "NUMBER".
+            if (value['format'] === VariableTypeFormat.NUMBER && variableValue && !numberReg.test(value['value'])) {
+                return { message: 'Variable value is not a number', isValid: false }
+            }
         }
         return { message: null, isValid: true }
     }
