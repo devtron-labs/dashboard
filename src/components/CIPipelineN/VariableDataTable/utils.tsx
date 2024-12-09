@@ -458,61 +458,70 @@ export const convertVariableDataTableToFormData = ({
 
         const variableDetail: VariableType = {
             ...selectedIOVariable,
+            value: data.val.value,
             format: data.format.value as VariableTypeFormat,
             name: data.variable.value,
-            description: variableDescription,
-            allowEmptyValue: !isVariableRequired,
-            isRuntimeArg: askValueAtRuntime,
+            description: type === PluginVariableType.INPUT ? variableDescription : data.val.value,
+            variableType: selectedIOVariable?.variableType ?? RefVariableType.NEW,
         }
 
-        if (choices.length) {
-            variableDetail.valueConstraint = {
-                ...variableDetail.valueConstraint,
-                choices: choices.map(({ value }) => value),
-                blockCustomValue,
-            }
-        }
+        if (type === PluginVariableType.INPUT) {
+            variableDetail.allowEmptyValue = !isVariableRequired
+            variableDetail.isRuntimeArg = askValueAtRuntime
 
-        if (fileInfo) {
-            variableDetail.value = data.val.value
-            variableDetail.fileReferenceId = fileInfo.id
-            variableDetail.fileMountDir = fileInfo.mountDir.value
-            variableDetail.valueConstraint = {
-                ...variableDetail.valueConstraint,
-                constraint: {
-                    fileProperty: getUploadFileConstraints({
-                        allowedExtensions: fileInfo.allowedExtensions,
-                        maxUploadSize: fileInfo.maxUploadSize,
-                        unit: fileInfo.unit.label as string,
-                    }),
-                },
-            }
-        }
-
-        if (selectedValue) {
-            if (selectedValue.refVariableStepIndex) {
-                variableDetail.value = ''
-                variableDetail.variableType = RefVariableType.FROM_PREVIOUS_STEP
-                variableDetail.refVariableStepIndex = selectedValue.refVariableStepIndex
-                variableDetail.refVariableName = selectedValue.label as string
-                variableDetail.format = selectedValue.format
-                variableDetail.refVariableStage = selectedValue.refVariableStage
-            } else if (selectedValue.variableType === RefVariableType.GLOBAL) {
-                variableDetail.variableType = RefVariableType.GLOBAL
-                variableDetail.refVariableStepIndex = 0
-                variableDetail.refVariableName = selectedValue.label as string
-                variableDetail.format = selectedValue.format
-                variableDetail.value = ''
-                variableDetail.refVariableStage = null
-            } else {
-                variableDetail.variableType = RefVariableType.NEW
-                if (data.format.value === VariableTypeFormat.DATE) {
-                    variableDetail.value = data.val.value
-                } else {
-                    variableDetail.value = selectedValue.label as string
+            if (
+                (variableDetail.format === VariableTypeFormat.STRING ||
+                    variableDetail.format === VariableTypeFormat.NUMBER) &&
+                choices.length
+            ) {
+                variableDetail.valueConstraint = {
+                    ...variableDetail.valueConstraint,
+                    choices: choices.map(({ value }) => value),
+                    blockCustomValue,
                 }
+            }
+
+            if (variableDetail.format === VariableTypeFormat.FILE && fileInfo) {
+                variableDetail.variableType = RefVariableType.NEW
                 variableDetail.refVariableName = ''
                 variableDetail.refVariableStage = null
+                variableDetail.fileReferenceId = fileInfo.id
+                variableDetail.fileMountDir = fileInfo.mountDir.value
+                variableDetail.valueConstraint = {
+                    ...variableDetail.valueConstraint,
+                    constraint: {
+                        fileProperty: getUploadFileConstraints({
+                            allowedExtensions: fileInfo.allowedExtensions,
+                            maxUploadSize: fileInfo.maxUploadSize,
+                            unit: fileInfo.unit.label as string,
+                        }),
+                    },
+                }
+            }
+
+            if (selectedValue) {
+                if (selectedValue.refVariableStepIndex) {
+                    variableDetail.value = ''
+                    variableDetail.variableType = RefVariableType.FROM_PREVIOUS_STEP
+                    variableDetail.refVariableStepIndex = selectedValue.refVariableStepIndex
+                    variableDetail.refVariableName = selectedValue.label as string
+                    variableDetail.format = selectedValue.format
+                    variableDetail.refVariableStage = selectedValue.refVariableStage
+                } else if (selectedValue.variableType === RefVariableType.GLOBAL) {
+                    variableDetail.value = ''
+                    variableDetail.variableType = RefVariableType.GLOBAL
+                    variableDetail.refVariableStepIndex = 0
+                    variableDetail.refVariableName = selectedValue.label as string
+                    variableDetail.format = selectedValue.format
+                    variableDetail.refVariableStage = null
+                } else {
+                    if (variableDetail.format !== VariableTypeFormat.DATE) {
+                        variableDetail.value = selectedValue.label as string
+                    }
+                    variableDetail.variableType = RefVariableType.NEW
+                    variableDetail.refVariableName = ''
+                    variableDetail.refVariableStage = null
+                }
             }
         }
 
