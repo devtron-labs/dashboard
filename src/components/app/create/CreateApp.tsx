@@ -174,6 +174,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             const currentTag = this.state.tags[index]
             const currentKey = currentTag.data.tagKey.value
             const currentVal = currentTag.data.tagValue.value
+            if (!currentKey && !currentVal) {
+                continue
+            }
             const isKeyValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentKey)
             const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
             if (!isKeyValid || !isValueValid) {

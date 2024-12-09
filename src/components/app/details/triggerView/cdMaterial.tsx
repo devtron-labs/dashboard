@@ -1095,9 +1095,6 @@ const CDMaterial = ({
         consumedImagePresent?: boolean,
         noEligibleImages?: boolean,
     ) => {
-        if (TriggerBlockEmptyState && getIsTriggerBlocked()) {
-            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
-        }
         if (isTriggerBlockedDueToPlugin && MissingPluginBlockState) {
             return (
                 <MissingPluginBlockState
@@ -1185,7 +1182,7 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 || materialData.deploymentBlockedState?.isBlocked || materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
@@ -1932,6 +1929,20 @@ const CDMaterial = ({
                 )}
 
                 <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
+            </>
+        )
+    }
+
+    if (TriggerBlockEmptyState && getIsTriggerBlocked()) {
+        return (
+            <>
+                <div className="trigger-modal__header">
+                    <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
+                        <img alt="close" src={close} />
+                    </button>
+                </div>
+                <TriggerBlockEmptyState appId={appId} stageType={stageType} />
             </>
         )
     }
