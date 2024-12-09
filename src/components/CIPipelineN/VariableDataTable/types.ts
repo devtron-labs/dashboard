@@ -87,10 +87,7 @@ type VariableDataTableActionPropsMap = {
         rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FORMAT_COLUMN]: {
-        actionValue: {
-            value: string
-            selectedValue: VariableDataTableSelectPickerOptionType
-        }
+        actionValue: VariableTypeFormat
         rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO]: {

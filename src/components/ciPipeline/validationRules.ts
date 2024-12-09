@@ -117,7 +117,12 @@ export class ValidationRules {
                 return { message: 'Variable value is required', isValid: false }
             }
             // test for numbers and scope variables when format is "NUMBER".
-            if (value['format'] === VariableTypeFormat.NUMBER && variableValue && !numberReg.test(value['value'])) {
+            if (
+                value['format'] === VariableTypeFormat.NUMBER &&
+                variableValue &&
+                !!value['value'] &&
+                !numberReg.test(value['value'])
+            ) {
                 return { message: 'Variable value is not a number', isValid: false }
             }
         }

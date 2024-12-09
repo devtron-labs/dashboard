@@ -514,10 +514,6 @@ export const convertVariableDataTableToFormData = ({
                 variableDetail.refVariableName = ''
                 variableDetail.refVariableStage = null
             }
-
-            if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
-                variableDetail.format = selectedIOVariable.format
-            }
         }
 
         return variableDetail

@@ -393,21 +393,21 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                     ...row.data,
                                     format: {
                                         ...row.data.format,
-                                        value: rowAction.actionValue.value,
+                                        value: rowAction.actionValue,
                                     },
                                     val: getValColumnRowProps({
                                         ...emptyRowParams,
                                         activeStageName,
                                         formData,
                                         type,
-                                        format: rowAction.actionValue.value as VariableTypeFormat,
+                                        format: rowAction.actionValue,
                                         id: rowAction.rowId as number,
                                     }),
                                 },
                                 customState: {
                                     isVariableRequired: false,
                                     variableDescription: '',
-                                    selectedValue: rowAction.actionValue.selectedValue,
+                                    selectedValue: null,
                                     choices: [],
                                     blockCustomValue: false,
                                     askValueAtRuntime: false,
@@ -507,7 +507,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         } else if (headerKey === 'format' && updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,
-                actionValue: { value, selectedValue: extraData.selectedValue },
+                actionValue: value as VariableTypeFormat,
                 rowId: updatedRow.id,
             })
         } else {
