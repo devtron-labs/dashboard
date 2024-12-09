@@ -3,6 +3,7 @@ import {
     InvalidYAMLTippyWrapper,
     SegmentedControl,
     CONFIGURATION_TYPE_OPTIONS,
+    SegmentedControlVariant,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DTChartSelector from './DTChartSelector'
 import { DeploymentTemplateOptionsHeaderProps } from './types'
@@ -52,6 +53,7 @@ const DeploymentTemplateOptionsHeader = ({
                                 onChange={handleToggleEditMode}
                                 disabled={!!parsingError}
                                 rootClassName="h-20"
+                                variant={SegmentedControlVariant.GRAY_ON_WHITE}
                             />
                         </div>
                     </InvalidYAMLTippyWrapper>

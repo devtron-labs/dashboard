@@ -449,7 +449,7 @@ const NodeDetailComponent = ({
                 !showManifestCompareView &&
                 !isResourceMissing && (
                     <>
-                        <div className="ml-4 mr-12 tab-cell-border" />
+                        <div className="ml-12 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
                                 {ToggleManifestConfigurationMode && !isExternalApp && (
