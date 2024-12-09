@@ -58,7 +58,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
-            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_HELM_CHART) // Cleared out the data on unmount
+            IndexStore.clearAppDetails() // Cleared out the data on unmount
         }
     }, [])
 
