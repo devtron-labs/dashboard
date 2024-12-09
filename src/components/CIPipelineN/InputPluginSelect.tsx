@@ -236,8 +236,7 @@ export const InputPluginSelection = ({
                     placeholder={placeholder}
                     refVar={refVar}
                     tabIndex={selectedVariableIndex}
-                    // Breaking change in devtron-fe-common-lib
-                    // handleKeyDown={handleOnKeyDown}
+                    onKeyDown={handleOnKeyDown}
                 />
                 {(variableData.refVariableStage ||
                     (variableData?.variableType && variableData.variableType !== 'NEW')) && (

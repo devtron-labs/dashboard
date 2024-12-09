@@ -223,7 +223,6 @@ const CDMaterial = ({
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
-
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
         () =>
@@ -267,19 +266,19 @@ const CDMaterial = ({
     const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
 
-        // this function can be used for other trigger block reasons once api supports it
-        const getIsTriggerBlocked = () => {
-            switch (stageType) {
-                case DeploymentNodeType.PRECD:
-                    return responseList[2]?.cd.pre.isBlocked
-                case DeploymentNodeType.POSTCD:
-                    return responseList[2]?.cd.post.isBlocked
-                case DeploymentNodeType.CD:
-                    return responseList[2]?.cd.node.isBlocked
-                default:
-                    return false
-            }
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = () => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return responseList[2]?.cd.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return responseList[2]?.cd.post.isBlocked
+            case DeploymentNodeType.CD:
+                return responseList[2]?.cd.node.isBlocked
+            default:
+                return false
         }
+    }
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
@@ -819,7 +818,8 @@ const CDMaterial = ({
             serverError instanceof ServerErrors &&
             Array.isArray(serverError.errors) &&
             serverError.code !== 403 &&
-            serverError.code !== 408
+            serverError.code !== 408 &&
+            !getIsRequestAborted(searchParams)
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 ToastManager.showToast(

@@ -692,7 +692,7 @@ function cdPipelineToNode(
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
             isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
-            triggerBlockedInfo: cdPipeline.preDeployStage?.triggerBlockedInfo || cdPipeline.preStage?.triggerBlockedInfo,
+            triggerBlockedInfo: (cdPipeline.preDeployStage || cdPipeline.preStage)?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
         }
         stageIndex++
