@@ -2,6 +2,7 @@ import YAML from 'yaml'
 
 import {
     CMSecretExternalType,
+    hasESO,
     UseFormValidation,
     UseFormValidations,
     YAMLStringify,
@@ -11,7 +12,7 @@ import { PATTERNS } from '@Config/constants'
 import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
-import { getESOSecretDataFromYAML, hasESO } from './utils'
+import { getESOSecretDataFromYAML } from './utils'
 import { CMSecretYamlData, ConfigMapSecretUseFormProps } from './types'
 
 /**

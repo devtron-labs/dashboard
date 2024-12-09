@@ -12,6 +12,8 @@ import {
     DryRunEditorMode,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
+    hasESO,
+    hasHashiOrAWS,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
@@ -49,12 +51,10 @@ import {
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
-    hasESO,
-    hasHashiOrAWS,
     parseConfigMapSecretSearchParams,
 } from './utils'
 import { getConfigMapSecretFormValidations } from './validations'
-import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR, getDisabledDeleteTooltipText } from './constants'
+import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
     CM_SECRET_STATE,
     CMSecretComponentType,
@@ -79,6 +79,7 @@ import './styles.scss'
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
+const DISABLE_DELETE_TOOLTIP_TEXT = importComponentFromFELibrary('DISABLE_DELETE_TOOLTIP_TEXT', null, 'function')
 
 export const ConfigMapSecretContainer = ({
     componentType = CMSecretComponentType.ConfigMap,
@@ -768,8 +769,8 @@ export const ConfigMapSecretContainer = ({
             handleShowEditHistory,
             handleDelete,
             handleDeleteOverride,
-            isDeleteDisabled,
-            deleteDisabledTooltip: getDisabledDeleteTooltipText(componentType),
+            isDeleteDisabled: !!DISABLE_DELETE_TOOLTIP_TEXT && isDeleteDisabled,
+            deleteDisabledTooltip: DISABLE_DELETE_TOOLTIP_TEXT || '',
             isDeletable:
                 cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
                 cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&

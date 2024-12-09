@@ -28,10 +28,10 @@ import { renderExternalInfo } from './helpers'
 import { getDryRunConfigMapSecretData } from './utils'
 
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
-import { ConfigMapSecretApproveButton } from './ConfigMapSecretApproveButton'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
+const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
 
 export const ConfigMapSecretDryRun = ({
     id = null,

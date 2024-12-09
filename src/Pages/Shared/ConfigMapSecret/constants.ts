@@ -281,9 +281,3 @@ export const SECRET_TOAST_INFO = {
     BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE: 'Please use either esoData or esoDataFrom',
     BOTH_ESO_DATA_AND_DATA_FROM_UNAVAILABLE: 'Please provide esoData or esoDataFrom',
 }
-
-export const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE =
-    'Cannot change data type as it is overridden with patch strategy in environment(s)'
-
-export const getDisabledDeleteTooltipText = (componentType: CMSecretComponentType) =>
-    `Cannot delete ${CM_SECRET_COMPONENT_NAME[componentType]} as it is overridden with patch strategy in environment(s)`

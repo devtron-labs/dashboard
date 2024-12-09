@@ -9,6 +9,8 @@ import {
     ComponentSizeType,
     CustomInput,
     getSelectPickerOptionByValue,
+    hasESO,
+    hasHashiOrAWS,
     OverrideMergeStrategyType,
     Progressing,
     RadioGroup,
@@ -19,16 +21,19 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
-import { checkIfPathIsMatching, isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
+import {
+    checkIfPathIsMatching,
+    importComponentFromFELibrary,
+    isChartRef3090OrBelow,
+    isVersionLessThanOrEqualToTarget,
+} from '@Components/common'
 
 import {
     CM_SECRET_COMPONENT_NAME,
     configMapDataTypeOptions,
     configMapSecretMountDataMap,
-    DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE,
     getSecretDataTypeOptions,
 } from './constants'
-import { hasESO, hasHashiOrAWS } from './utils'
 import {
     renderChartVersionBelow3090NotSupportedText,
     renderESOInfo,
@@ -38,6 +43,12 @@ import {
 import { ConfigMapSecretFormProps, ConfigMapSecretDataTypeOptionType, CM_SECRET_STATE } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
+
+const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
+    'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
+    null,
+    'function',
+)
 
 export const ConfigMapSecretForm = ({
     id = null,
@@ -109,8 +120,12 @@ export const ConfigMapSecretForm = ({
                 label="Data Type"
                 placeholder={dataTypePlaceholder}
                 required
-                isDisabled={isFormDisabled || disableDataTypeChange}
-                disabledTippyContent={disableDataTypeChange ? DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE : null}
+                isDisabled={isFormDisabled || (DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE && disableDataTypeChange)}
+                disabledTippyContent={
+                    DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE && disableDataTypeChange
+                        ? DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE
+                        : null
+                }
                 options={dataTypeOptions}
                 size={ComponentSizeType.large}
                 {...register('externalType', {

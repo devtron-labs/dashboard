@@ -1,6 +1,6 @@
-import { ClipboardButton, CodeEditor, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, CodeEditor, hasHashiOrAWS, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getConfigMapSecretReadOnlyValues, hasHashiOrAWS } from './utils'
+import { getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretReadyOnlyProps } from './types'
 import { renderHashiOrAwsDeprecatedInfo } from './helpers'
 

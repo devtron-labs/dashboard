@@ -259,11 +259,6 @@ export type ConfigMapSecretDryRunProps = Pick<
         showCrudButtons: boolean
     }
 
-export interface ConfigMapSecretApproveButtonProps
-    extends Pick<ConfigMapSecretProtectedProps, 'updateCMSecret' | 'parentName' | 'componentName' | 'draftData'> {
-    configMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
-}
-
 // DTO
 export interface ConfigMapSecretManifestDTO {
     manifest: string
