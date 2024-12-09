@@ -79,6 +79,7 @@ const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -381,6 +382,10 @@ export default function BulkCDTrigger({
     }
 
     const renderEmptyView = (): JSX.Element => {
+        if (selectedApp.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockEmptyState stageType={selectedApp.stageType} appId={selectedApp.appId} />
+        }
+
         if (selectedApp.isTriggerBlockedDueToPlugin) {
             const commonNodeAttrType: CommonNodeAttr['type'] =
                 selectedApp.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
@@ -395,16 +400,16 @@ export default function BulkCDTrigger({
 
         if (unauthorizedAppList[selectedApp.appId]) {
             return (
-                <EmptyView
-                    imgSrc={notAuthorized}
+                <GenericEmptyState
+                    image={notAuthorized}
                     title={BULK_CD_MESSAGING.unauthorized.title}
                     subTitle={BULK_CD_MESSAGING.unauthorized.subTitle}
                 />
             )
         }
         return (
-            <EmptyView
-                imgSrc={emptyPreDeploy}
+            <GenericEmptyState
+                image={emptyPreDeploy}
                 title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
                 subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />

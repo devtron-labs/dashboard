@@ -1182,7 +1182,7 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 || materialData.deploymentBlockedState?.isBlocked || materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
