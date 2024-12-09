@@ -67,19 +67,17 @@ export default function AboutTagEditModal({
             const element = labelTags[index]
             const currentKey = element.data.tagKey.value
             const currentVal = element.data.tagValue.value
+            if (!currentKey && !currentVal) {
+                continue
+            }
             const isKeyValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentKey)
             const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
                 break
             } else if (element.data.tagKey.value) {
-                customLabelTags.push({ key: currentKey, value: currentVal, propagate: element.customState.propagate })
+                customLabelTags.push({ key: currentKey, value: currentVal, propagate: element.customState.propagateTag })
             }
-            customLabelTags.push({
-                key: element.data.tagKey.value,
-                value: element.data.tagValue.value,
-                propagate: element.customState.propagate,
-            })
         }
         if (invalidLabels) {
             ToastManager.showToast({
