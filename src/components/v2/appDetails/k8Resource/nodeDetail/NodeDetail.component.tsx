@@ -30,8 +30,6 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
-    SegmentedControl,
-    CONFIGURATION_TYPE_OPTIONS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -455,12 +453,10 @@ const NodeDetailComponent = ({
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
                                 {ToggleManifestConfigurationMode && !isExternalApp && (
-                                    <SegmentedControl
-                                        tabs={CONFIGURATION_TYPE_OPTIONS}
-                                        initialTab={manifestFormConfigurationType}
-                                        onChange={handleToggleManifestConfigurationMode}
-                                        disabled={unableToParseManifest || doesManifestGUIContainsError}
-                                        rootClassName="h-20"
+                                    <ToggleManifestConfigurationMode
+                                        mode={manifestFormConfigurationType}
+                                        handleToggle={handleToggleManifestConfigurationMode}
+                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
                                     />
                                 )}
 
