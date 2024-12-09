@@ -73,12 +73,12 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 const secureValues = (data: Record<string, string>, decodeData: boolean): CMSecretYamlData[] => {
     let decodedData = data || DEFAULT_SECRET_PLACEHOLDER
 
-    try {
-        if (decodeData) {
+    if (decodeData) {
+        try {
             decodedData = decode(data)
+        } catch {
+            noop()
         }
-    } catch {
-        noop()
     }
 
     return Object.keys(decodedData).map((k, id) => ({
