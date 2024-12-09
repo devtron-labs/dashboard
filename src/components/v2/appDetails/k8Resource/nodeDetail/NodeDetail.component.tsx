@@ -423,10 +423,8 @@ const NodeDetailComponent = ({
         )
     }
 
-    const handleToggleManifestConfigurationMode = () => {
-        setManifestFormConfigurationType((prev) =>
-            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
-        )
+    const handleToggleManifestConfigurationMode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setManifestFormConfigurationType(e.target.value as ConfigurationType)
     }
 
     const handleSwitchToYAMLMode = () => {

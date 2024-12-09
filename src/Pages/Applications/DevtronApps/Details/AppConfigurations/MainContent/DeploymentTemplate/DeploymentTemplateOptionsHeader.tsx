@@ -29,13 +29,13 @@ const DeploymentTemplateOptionsHeader = ({
         return null
     }
 
-    const handleToggleEditMode = () => {
-        if (editMode === ConfigurationType.YAML) {
-            handleChangeToGUIMode()
+    const handleToggleEditMode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value === ConfigurationType.YAML) {
+            handleChangeToYAMLMode()
             return
         }
 
-        handleChangeToYAMLMode()
+        handleChangeToGUIMode()
     }
 
     return (
