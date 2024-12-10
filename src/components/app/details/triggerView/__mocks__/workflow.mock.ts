@@ -591,7 +591,6 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
                 status: DEFAULT_STATUS,
                 description: 'test',
                 triggerType: 'Auto',
@@ -685,7 +684,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -717,7 +716,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -814,7 +813,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -908,7 +907,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -940,7 +939,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1062,7 +1061,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1229,7 +1228,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1261,7 +1260,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1358,7 +1357,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1452,7 +1451,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1484,7 +1483,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1840,7 +1839,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1958,7 +1957,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1990,7 +1989,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2087,7 +2086,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2181,7 +2180,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2213,7 +2212,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2310,7 +2309,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2404,7 +2403,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2436,7 +2435,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2533,7 +2532,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2676,7 +2675,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2708,7 +2707,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',

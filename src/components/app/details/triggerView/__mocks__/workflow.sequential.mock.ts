@@ -162,7 +162,6 @@ export const workflowsTriggerWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -205,7 +204,7 @@ export const workflowsTriggerWithSequential = [
                 title: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -288,7 +287,7 @@ export const workflowsTriggerWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -320,7 +319,7 @@ export const workflowsTriggerWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -363,7 +362,7 @@ export const workflowsTriggerWithSequential = [
                 title: 'amit-16-jan-replica-dep2',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -449,7 +448,7 @@ export const workflowsCreateWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -492,7 +491,7 @@ export const workflowsCreateWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -575,7 +574,7 @@ export const workflowsCreateWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -607,7 +606,7 @@ export const workflowsCreateWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -650,7 +649,7 @@ export const workflowsCreateWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -761,7 +760,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -877,7 +876,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
                 title: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -960,7 +959,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -992,7 +991,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1035,7 +1034,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
                 title: 'amit-16-jan-replica-dep2',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -1146,7 +1145,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1335,7 +1334,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
                 title: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -1443,7 +1442,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1475,7 +1474,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1591,7 +1590,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
                 title: 'amit-16-jan-replica-dep2',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -1702,7 +1701,7 @@ export const workflowsCreatePrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1744,7 +1743,7 @@ export const workflowsCreatePrePostCDWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 width: 240,
                 x: 0,
@@ -1828,7 +1827,7 @@ export const workflowsCreatePrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1860,7 +1859,7 @@ export const workflowsCreatePrePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1903,7 +1902,7 @@ export const workflowsCreatePrePostCDWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -1989,7 +1988,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -2032,7 +2031,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
                 title: 'Pre-deploy, Deploy, Post-deploy',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -2115,7 +2114,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2147,7 +2146,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2190,7 +2189,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
                 title: 'Pre-deploy, Deploy, Post-deploy',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -2449,7 +2448,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2516,7 +2515,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
                 title: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -2599,7 +2598,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2631,7 +2630,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2674,7 +2673,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
                 title: 'amit-16-jan-replica-dep2',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -2760,7 +2759,7 @@ export const workflowsCreatePreCDRespWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2803,7 +2802,7 @@ export const workflowsCreatePreCDRespWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -2887,7 +2886,7 @@ export const workflowsCreatePreCDRespWithSequential = [
                 downstreams: [],
                 description: 'test',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev2',
@@ -2918,7 +2917,7 @@ export const workflowsCreatePreCDRespWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2961,7 +2960,7 @@ export const workflowsCreatePreCDRespWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -3047,7 +3046,7 @@ export const workflowsCreatePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -3090,7 +3089,7 @@ export const workflowsCreatePostCDWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -3173,7 +3172,7 @@ export const workflowsCreatePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -3205,7 +3204,7 @@ export const workflowsCreatePostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -3248,7 +3247,7 @@ export const workflowsCreatePostCDWithSequential = [
                 title: 'Deploy',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 240,
                 x: 0,
                 y: 0,
@@ -3332,7 +3331,7 @@ export const workflowsTriggerPostCDWithSequential = [
                 deploymentAppDeleteRequest: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -3426,7 +3425,7 @@ export const workflowsTriggerPostCDWithSequential = [
                 title: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 triggerType: 'Auto',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,
@@ -3509,7 +3508,7 @@ export const workflowsTriggerPostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -3542,7 +3541,7 @@ export const workflowsTriggerPostCDWithSequential = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev4',
@@ -3584,7 +3583,7 @@ export const workflowsTriggerPostCDWithSequential = [
                 title: 'amit-16-jan-replica-dep2',
                 triggerType: 'Manual',
                 type: 'CD',
-                userApprovalConfig: undefined,
+
                 width: 200,
                 x: 0,
                 y: 0,

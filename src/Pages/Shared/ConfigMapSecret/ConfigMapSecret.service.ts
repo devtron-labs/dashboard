@@ -181,7 +181,7 @@ export const getConfigMapSecretConfigDraftData = async ({
 >) => {
     try {
         const res = await (getDraftByResourceName
-            ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef.current.signal)
+            ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef)
             : null)
 
         return res ? (res.result as DraftMetadataDTO) : null

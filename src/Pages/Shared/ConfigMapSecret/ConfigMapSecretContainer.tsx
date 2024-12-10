@@ -78,7 +78,7 @@ export const ConfigMapSecretContainer = ({
     isJob = false,
     clusterId,
     envConfig,
-    isProtected,
+    isApprovalPolicyConfigured,
     fetchEnvConfig,
     onErrorRedirectURL,
     envName,
@@ -199,7 +199,7 @@ export const ConfigMapSecretContainer = ({
                               })
                             : null,
                         // Fetch Draft Configuration
-                        isProtected
+                        isApprovalPolicyConfigured
                             ? getConfigMapSecretConfigDraftData({
                                   appId: +appId,
                                   envId: envId ? +envId : -1,
@@ -414,7 +414,7 @@ export const ConfigMapSecretContainer = ({
 
     const toggleDraftComments = () => setShowComments(!showComments)
 
-    const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
+    const handleDelete = () => setOpenDeleteModal(isApprovalPolicyConfigured ? 'protectedDeleteModal' : 'deleteModal')
 
     const handleDeleteOverride = () => {
         handleDelete()
@@ -522,7 +522,7 @@ export const ConfigMapSecretContainer = ({
     const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (formData) => {
         const payloadData = getConfigMapSecretPayload(resolvedScopeVariables ? formDataRef.current : formData)
 
-        if (isProtected) {
+        if (isApprovalPolicyConfigured) {
             setDraftPayload({
                 id: id ?? 0,
                 appId: +appId,
@@ -597,7 +597,7 @@ export const ConfigMapSecretContainer = ({
         menuConfig: getConfigToolbarPopupConfig({
             configHeaderTab,
             isOverridden: cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN,
-            isProtected,
+            isApprovalPolicyConfigured,
             isPublishedValuesView: selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED,
             isPublishedConfigPresent: !!configMapSecretData,
             unableToParseData: !!parsingError,
@@ -629,7 +629,7 @@ export const ConfigMapSecretContainer = ({
 
     // RENDERERS
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
-        isProtected && draftData ? (
+        isApprovalPolicyConfigured && draftData ? (
             <ConfigMapSecretProtected
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentName={componentName}
@@ -657,7 +657,7 @@ export const ConfigMapSecretContainer = ({
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
                 isJob={isJob}
-                isProtected={isProtected}
+                isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                 isSubmitting={isSubmitting}
                 onSubmit={onSubmit}
                 onError={onError}
@@ -762,10 +762,10 @@ export const ConfigMapSecretContainer = ({
                         configHeaderTab={configHeaderTab}
                         mergeStrategy={mergeStrategy}
                         handleMergeStrategyChange={handleMergeStrategyChange}
-                        approvalUsers={draftData?.approvers}
+                        userApprovalMetadata={draftData?.userApprovalMetadata}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError || isHashiOrAWS}
-                        isProtected={isProtected}
+                        isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                         isDraftPresent={!!draftData}
                         isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
                         isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
@@ -788,6 +788,9 @@ export const ConfigMapSecretContainer = ({
                         shouldMergeTemplateWithPatches={null}
                         parsingError={parsingError}
                         restoreLastSavedYAML={restoreLastSavedYAML}
+                        draftId={draftData?.draftId}
+                        draftVersionId={draftData?.draftVersionId}
+                        handleReload={updateCMSecret}
                     />
                 )}
                 {renderConfigHeaderTabContent()}

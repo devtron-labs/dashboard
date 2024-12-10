@@ -1,6 +1,7 @@
 import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
+    BASE_CONFIGURATION_ENV_ID,
     BaseURLParams,
     ConfigurationType,
     DeploymentChartVersionType,
@@ -54,7 +55,7 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
-import { BASE_DEPLOYMENT_TEMPLATE_ENV_ID, NO_SCOPED_VARIABLES_MESSAGE } from './constants'
+import { NO_SCOPED_VARIABLES_MESSAGE } from './constants'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateCTA from './DeploymentTemplateCTA'
@@ -114,7 +115,7 @@ const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isUnSet = false,
     isCiPipeline = false,
-    isProtected,
+    isApprovalPolicyConfigured,
     reloadEnvironments,
     environmentName,
     clusterId,
@@ -169,7 +170,7 @@ const DeploymentTemplate = ({
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
     const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED
-    const isDraftAvailable = isProtected && !!draftTemplateData?.latestDraft
+    const isDraftAvailable = isApprovalPolicyConfigured && !!draftTemplateData?.latestDraft
 
     const isPublishedValuesView = !!(
         isDraftAvailable &&
@@ -178,7 +179,7 @@ const DeploymentTemplate = ({
             (isDryRunView && dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES))
     )
     const isCompareView = !!(
-        isProtected &&
+        isApprovalPolicyConfigured &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE
     )
@@ -216,7 +217,7 @@ const DeploymentTemplate = ({
 
     const isEditMode =
         configHeaderTab === ConfigHeaderTabType.VALUES &&
-        (!isProtected || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
+        (!isApprovalPolicyConfigured || selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
@@ -704,7 +705,7 @@ const DeploymentTemplate = ({
         const [draftPromiseResponse, publishedAndBaseTemplateDataResponse] = await Promise.allSettled([
             getDraftByResourceName(
                 +appId,
-                +envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID,
+                +envId || BASE_CONFIGURATION_ENV_ID,
                 3,
                 getDeploymentTemplateResourceName(environmentName),
             ),
@@ -793,7 +794,7 @@ const DeploymentTemplate = ({
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
                 getChartList({ appId, envId }),
-                getJsonPath ? getJsonPath(appId, envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID) : Promise.resolve(null),
+                getJsonPath ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID) : Promise.resolve(null),
             ])
 
             if (chartRefsDataResponse.status === 'rejected') {
@@ -808,7 +809,7 @@ const DeploymentTemplate = ({
                 ? structuredClone(lockedKeysConfigResponse.value.result)
                 : structuredClone(DEFAULT_LOCKED_KEYS_CONFIG)
 
-            const shouldFetchDraftDetails = isProtected && typeof getDraftByResourceName === 'function'
+            const shouldFetchDraftDetails = isApprovalPolicyConfigured && typeof getDraftByResourceName === 'function'
 
             if (shouldFetchDraftDetails) {
                 await handleLoadProtectedDeploymentTemplate(chartRefsData, lockedKeysConfig)
@@ -840,7 +841,7 @@ const DeploymentTemplate = ({
             },
         })
 
-        fetchEnvConfig(+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID)
+        fetchEnvConfig(+envId || BASE_CONFIGURATION_ENV_ID)
         reloadEnvironments()
         await handleInitialDataLoad()
     }
@@ -964,7 +965,7 @@ const DeploymentTemplate = ({
             }
         }
 
-        if (isProtected) {
+        if (isApprovalPolicyConfigured) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
             })
@@ -976,7 +977,7 @@ const DeploymentTemplate = ({
     }
 
     const handleTriggerSaveFromLockedModal = async () => {
-        if (isProtected) {
+        if (isApprovalPolicyConfigured) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
             })
@@ -1141,7 +1142,7 @@ const DeploymentTemplate = ({
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG,
                 payload: {
-                    isProtected,
+                    isApprovalPolicyConfigured,
                 },
             })
             return
@@ -1249,7 +1250,7 @@ const DeploymentTemplate = ({
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             showDeleteOverrideDraftEmptyState,
-            isProtected,
+            isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
         }),
         popupNodeType,
@@ -1388,7 +1389,7 @@ const DeploymentTemplate = ({
 
         const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
 
-        if (isProtected && ProtectedDeploymentTemplateCTA) {
+        if (isApprovalPolicyConfigured && ProtectedDeploymentTemplateCTA) {
             return (
                 <ProtectedDeploymentTemplateCTA
                     isPublishedView={isPublishedValuesView}
@@ -1522,14 +1523,17 @@ const DeploymentTemplate = ({
                         disableAllActions={isLoadingSideEffects}
                         parsingError={currentEditorTemplateData?.parsingError}
                         configHeaderTab={configHeaderTab}
-                        isProtected={isProtected}
+                        isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                         isApprovalPending={isApprovalPending}
                         isDraftPresent={isDraftAvailable}
-                        approvalUsers={draftTemplateData?.latestDraft?.approvers}
+                        userApprovalMetadata={draftTemplateData?.latestDraft?.userApprovalMetadata}
                         isPublishedConfigPresent={isPublishedConfigPresent}
                         restoreLastSavedYAML={restoreLastSavedTemplate}
                         showEnableReadMeButton={isEditMode}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                        draftId={draftTemplateData?.latestDraft?.draftId}
+                        draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                        handleReload={handleReload}
                     >
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader
@@ -1614,14 +1618,14 @@ const DeploymentTemplate = ({
                         isSaving={isSaving}
                         documents={getLockedDiffModalDocuments(isApprovalView, state)}
                         appId={appId}
-                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        envId={+envId || BASE_CONFIGURATION_ENV_ID}
                     />
                 )}
 
                 {SaveChangesModal && showSaveChangesModal && (
                     <SaveChangesModal
                         appId={Number(appId)}
-                        envId={+envId || BASE_DEPLOYMENT_TEMPLATE_ENV_ID}
+                        envId={+envId || BASE_CONFIGURATION_ENV_ID}
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={prepareDataToSave}
