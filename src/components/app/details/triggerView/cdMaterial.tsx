@@ -270,11 +270,11 @@ const CDMaterial = ({
     const getIsTriggerBlocked = () => {
         switch (stageType) {
             case DeploymentNodeType.PRECD:
-                return responseList[2]?.cd.pre.isBlocked
+                return responseList?.[2]?.cd.pre.isBlocked
             case DeploymentNodeType.POSTCD:
-                return responseList[2]?.cd.post.isBlocked
+                return responseList?.[2]?.cd.post.isBlocked
             case DeploymentNodeType.CD:
-                return responseList[2]?.cd.node.isBlocked
+                return responseList?.[2]?.cd.node.isBlocked
             default:
                 return false
         }
@@ -1182,7 +1182,9 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentBlockedState?.isBlocked || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 ||
+                        materialData.deploymentBlockedState?.isBlocked ||
+                        materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
