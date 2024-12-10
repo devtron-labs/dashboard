@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import {
@@ -33,7 +33,6 @@ import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
-import { DO_NOT_DEPLOY } from '../../Constants'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -143,7 +142,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
     }
 
     renderCardContent() {
-        const { heading, className } = getNodeSideHeadingAndClass(
+        const { heading, className: nodeSideClass } = getNodeSideHeadingAndClass(
             this.props.isTriggerBlocked,
             this.props.isDeploymentBlocked,
             this.props.triggerType,
@@ -155,7 +154,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                         <>
                             <div className="workflow-node">
                                 <div
-                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 flex ${className}`}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 flex ${nodeSideClass}`}
                                 >
                                     <span>{heading}</span>
                                 </div>

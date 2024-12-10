@@ -58,7 +58,6 @@ import { BulkSelectionEvents, MATERIAL_TYPE } from '../../../app/details/trigger
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
-import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
