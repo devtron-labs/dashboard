@@ -28,6 +28,8 @@ import {
     RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
+    DynamicDataTableRowType,
+    TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -75,12 +77,13 @@ export interface AddNewAppState {
         cloneId: number
         appCreationType: string
     }
-    tags: TagType[]
+    tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     isValid: {
         projectId: boolean
         appName: boolean
         cloneAppId: boolean
         description: boolean
+        tags: boolean
     }
     createAppLoader: boolean
 }
