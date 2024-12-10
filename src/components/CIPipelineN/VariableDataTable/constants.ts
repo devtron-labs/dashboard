@@ -40,72 +40,24 @@ export const FORMAT_OPTIONS_MAP = {
 
 export const FORMAT_COLUMN_OPTIONS: SelectPickerOptionType<string>[] = [
     {
-        label: 'String',
+        label: FORMAT_OPTIONS_MAP.STRING,
         value: VariableTypeFormat.STRING,
     },
     {
-        label: 'Number',
+        label: FORMAT_OPTIONS_MAP.NUMBER,
         value: VariableTypeFormat.NUMBER,
     },
     {
-        label: 'Boolean',
+        label: FORMAT_OPTIONS_MAP.BOOL,
         value: VariableTypeFormat.BOOL,
     },
     {
-        label: 'Date',
+        label: FORMAT_OPTIONS_MAP.DATE,
         value: VariableTypeFormat.DATE,
     },
     {
-        label: 'File',
+        label: FORMAT_OPTIONS_MAP.FILE,
         value: VariableTypeFormat.FILE,
-    },
-]
-
-export const VAL_COLUMN_BOOL_OPTIONS: SelectPickerOptionType<string>[] = [
-    { label: 'TRUE', value: 'TRUE' },
-    { label: 'FALSE', value: 'FALSE' },
-]
-
-export const VAL_COLUMN_DATE_OPTIONS: SelectPickerOptionType<string>[] = [
-    {
-        label: 'YYYY-MM-DD',
-        value: 'YYYY-MM-DD',
-        description: 'RFC 3339',
-    },
-    {
-        label: 'YYYY-MM-DD HH:mm',
-        value: 'YYYY-MM-DD HH:mm',
-        description: 'RFC 3339 with minutes',
-    },
-    {
-        label: 'YYYY-MM-DD HH:mm:ss',
-        value: 'YYYY-MM-DD HH:mm:ss',
-        description: 'RFC 3339 with seconds',
-    },
-    {
-        label: 'YYYY-MM-DD HH:mm:ss-TZ',
-        value: 'YYYY-MM-DD HH:mm:ssZ',
-        description: 'RFC 3339 with seconds and timezone',
-    },
-    {
-        label: "YYYY-MM-DDTHH'Z'ZZZZ",
-        value: 'YYYY-MM-DDTHH[Z]',
-        description: 'ISO8601 with hour',
-    },
-    {
-        label: "YYYY-MM-DDTHH:mm'Z'ZZZZ",
-        value: 'YYYY-MM-DDTHH:mm[Z]',
-        description: 'ISO8601 with minutes',
-    },
-    {
-        label: "YYYY-MM-DDTHH:mm:ss'Z'ZZZZ",
-        value: 'YYYY-MM-DDTHH:mm:ss[Z]',
-        description: 'ISO8601 with seconds',
-    },
-    {
-        label: "YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'Z'ZZZZ",
-        value: 'YYYY-MM-DDTHH:mm:ss.SSSSSSSSS[Z]',
-        description: 'ISO8601 with nanoseconds',
     },
 ]
 

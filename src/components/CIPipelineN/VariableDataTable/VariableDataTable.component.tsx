@@ -6,6 +6,7 @@ import {
     DynamicDataTableRowDataType,
     PluginType,
     RefVariableType,
+    SystemVariableIcon,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -30,7 +31,6 @@ import {
     checkForSystemVariable,
     convertVariableDataTableToFormData,
     getEmptyVariableDataTableRow,
-    getSystemVariableIcon,
     getUploadFileConstraints,
     getValColumnRowProps,
     getValColumnRowValue,
@@ -371,7 +371,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                         ),
                                         props: {
                                             ...row.data.val.props,
-                                            Icon: value && isSystemVariable ? getSystemVariableIcon() : null,
+                                            Icon: value && isSystemVariable ? <SystemVariableIcon /> : null,
                                         },
                                     },
                                 },
