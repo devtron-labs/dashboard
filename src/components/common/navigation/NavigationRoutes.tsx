@@ -61,21 +61,7 @@ import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
-// Monaco Editor worker dependency
-import 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
-
-// Monaco Editor worker initialization
-self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === MODES.YAML) {
-            return new YamlWorker()
-        }
-        return new editorWorker()
-    },
-}
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))

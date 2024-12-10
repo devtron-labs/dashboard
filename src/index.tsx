@@ -22,6 +22,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
 import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import './monacoEditorWorkers'
 
 declare global {
     interface Window {
