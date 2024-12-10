@@ -660,7 +660,7 @@ function cdPipelineToNode(
 
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
         const preDeployStageFallback = cdPipeline.preDeployStage || cdPipeline.preStage
-        const trigger = preDeployStageFallback?.triggerType.toLowerCase() || ''
+        const trigger = preDeployStageFallback?.triggerType?.toLowerCase() || ''
         preCD = {
             // Need this for Release Tags in CDMaterials
             connectingCiPipelineId: cdPipeline.ciPipelineId,
