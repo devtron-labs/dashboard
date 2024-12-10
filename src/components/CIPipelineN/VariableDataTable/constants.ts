@@ -28,7 +28,13 @@ export const getVariableDataTableHeaders = (
     },
 ]
 
-export const VAL_COLUMN_CHOICES_DROPDOWN_LABEL = 'Default values'
+export const VAL_COLUMN_DROPDOWN_LABEL = {
+    CHOICES: 'Default values',
+    SYSTEM_VARIABLES: 'System variables',
+    PRE_BUILD_STAGE: 'From Pre-build Stage',
+    POST_BUILD_STAGE: 'From Post-build Stage',
+    PREVIOUS_STEPS: 'From Previous Steps',
+}
 
 export const FORMAT_OPTIONS_MAP = {
     [VariableTypeFormat.STRING]: 'String',

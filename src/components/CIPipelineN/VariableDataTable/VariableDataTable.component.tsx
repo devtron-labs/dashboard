@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useRef, useMemo } from 'react'
+import Tippy from '@tippyjs/react'
 
 import {
     DynamicDataTable,
@@ -11,14 +12,11 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
-import {
-    FILE_UPLOAD_SIZE_UNIT_OPTIONS,
-    getVariableDataTableHeaders,
-    VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
-} from './constants'
+import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, getVariableDataTableHeaders } from './constants'
 import {
     HandleRowUpdateActionProps,
     VariableDataCustomState,
@@ -31,6 +29,7 @@ import {
     checkForSystemVariable,
     convertVariableDataTableToFormData,
     getEmptyVariableDataTableRow,
+    getOptionsForValColumn,
     getUploadFileConstraints,
     getValColumnRowProps,
     getValColumnRowValue,
@@ -125,11 +124,13 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 case VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS:
                     updatedRows = updatedRows.map((row) => {
                         const { id, data, customState } = row
-                        const choicesOptions = customState.choices
-                            .filter(({ value }) => !!value)
-                            .map(({ value }) => ({ label: value, value }))
+                        // FILTERING EMPTY CHOICE VALUES
+                        const choicesOptions = customState.choices.filter(({ value }) => !!value)
 
-                        if (id === rowAction.rowId && choicesOptions.length > 0) {
+                        // RESETTING TO DEFAULT STATE IF CHOICES ARE EMPTY
+                        const blockCustomValue = choicesOptions.length ? row.customState.blockCustomValue : false
+
+                        if (id === rowAction.rowId) {
                             return {
                                 ...row,
                                 data: {
@@ -140,22 +141,35 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                                   ...data.val,
                                                   props: {
                                                       ...data.val.props,
-                                                      options: data.val.props.options.map((option) =>
-                                                          option.label === VAL_COLUMN_CHOICES_DROPDOWN_LABEL
-                                                              ? {
-                                                                    label: VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
-                                                                    options: choicesOptions,
-                                                                }
-                                                              : option,
-                                                      ),
+                                                      options: getOptionsForValColumn({
+                                                          activeStageName,
+                                                          format: row.data.format.value as VariableTypeFormat,
+                                                          formData,
+                                                          globalVariables,
+                                                          selectedTaskIndex,
+                                                          inputVariablesListFromPrevStep,
+                                                          isCdPipeline,
+                                                          valueConstraint: {
+                                                              blockCustomValue,
+                                                              choices: choicesOptions.map(({ value }) => value),
+                                                          },
+                                                      }),
                                                   },
                                               }
                                             : getValColumnRowProps({
                                                   ...emptyRowParams,
+                                                  value: data.val.value,
+                                                  format: data.format.value as VariableTypeFormat,
                                                   valueConstraint: {
-                                                      choices: choicesOptions.map(({ label }) => label),
+                                                      blockCustomValue,
+                                                      choices: choicesOptions.map(({ value }) => value),
                                                   },
                                               }),
+                                },
+                                customState: {
+                                    ...row.customState,
+                                    blockCustomValue,
+                                    choices: choicesOptions,
                                 },
                             }
                         }
@@ -191,11 +205,26 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                                     ...row.data.val,
                                                     props: {
                                                         ...row.data.val.props,
+                                                        options: getOptionsForValColumn({
+                                                            activeStageName,
+                                                            format: row.data.format.value as VariableTypeFormat,
+                                                            formData,
+                                                            globalVariables,
+                                                            selectedTaskIndex,
+                                                            inputVariablesListFromPrevStep,
+                                                            isCdPipeline,
+                                                            valueConstraint: {
+                                                                blockCustomValue: rowAction.actionValue,
+                                                                choices: row.customState.choices.map(
+                                                                    ({ value }) => value,
+                                                                ),
+                                                            },
+                                                        }),
                                                         selectPickerProps: {
                                                             isCreatable:
                                                                 row.data.format.value !== VariableTypeFormat.BOOL &&
                                                                 row.data.format.value !== VariableTypeFormat.DATE &&
-                                                                !row.customState?.blockCustomValue,
+                                                                !rowAction.actionValue,
                                                         },
                                                     },
                                                 },
@@ -544,21 +573,49 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             heading={row.data.variable.value || 'Value configuration'}
             onClose={onActionButtonPopupClose(row.id)}
             disableClose={
-                row.data.format.value === VariableTypeFormat.FILE && !!row.customState.fileInfo.mountDir.error
+                (row.data.format.value === VariableTypeFormat.FILE && !!row.customState.fileInfo.mountDir.error) ||
+                (row.data.format.value === VariableTypeFormat.NUMBER &&
+                    row.customState.choices.some(({ error }) => !!error))
             }
         >
             <ValueConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
         </VariableDataTablePopupMenu>
     )
 
-    const variableTrailingCellIcon = (row: VariableDataRowType) => (
-        <VariableDataTablePopupMenu showIcon heading="Variable configuration">
-            <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
-        </VariableDataTablePopupMenu>
-    )
+    const variableTrailingCellIcon = (row: VariableDataRowType) =>
+        isCustomTask && type === PluginVariableType.INPUT ? (
+            <VariableDataTablePopupMenu showIcon heading="Variable configuration">
+                <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
+            </VariableDataTablePopupMenu>
+        ) : null
+
+    const valTrailingCellIcon = (row: VariableDataRowType) =>
+        row.data.format.value === VariableTypeFormat.FILE ? (
+            <Tippy
+                trigger="click"
+                arrow={false}
+                className="default-tt w-200"
+                content={
+                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                        <p className="m-0 fw-6 cn-0">File mount path</p>
+                        <p className="m-0 cn-50">
+                            {row.customState.fileInfo.mountDir.value}
+                            <br />
+                            <br />
+                            Ensure the uploaded file name is unique to avoid conflicts or overrides.
+                        </p>
+                    </div>
+                }
+            >
+                <div className="cursor flex">
+                    <Info className="icon-dim-18 info-icon-n6" />
+                </div>
+            </Tippy>
+        ) : null
 
     const trailingCellIcon: DynamicDataTableProps<VariableDataKeys>['trailingCellIcon'] = {
-        variable: isCustomTask && type === PluginVariableType.INPUT ? variableTrailingCellIcon : null,
+        variable: variableTrailingCellIcon,
+        val: valTrailingCellIcon,
     }
 
     return (

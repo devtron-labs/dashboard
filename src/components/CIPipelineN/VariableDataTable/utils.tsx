@@ -18,7 +18,7 @@ import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
 import { excludeVariables } from '../Constants'
-import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_COLUMN_OPTIONS, VAL_COLUMN_CHOICES_DROPDOWN_LABEL } from './constants'
+import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_COLUMN_OPTIONS, VAL_COLUMN_DROPDOWN_LABEL } from './constants'
 import {
     GetValColumnRowPropsType,
     GetVariableDataTableInitialRowsProps,
@@ -115,12 +115,14 @@ export const getOptionsForValColumn = ({
         }
     }
 
+    const filteredGlobalVariablesBasedOnFormat = globalVariables.filter((variable) => variable.format === format)
+
     const isOptionsEmpty =
         !defaultValues.length &&
         (isBuildStagePostBuild
             ? !preBuildStageVariables.length && !previousStepVariables.length
             : !previousStepVariables.length) &&
-        !globalVariables.length
+        !filteredGlobalVariablesBasedOnFormat.length
 
     if (isOptionsEmpty) {
         return []
@@ -128,36 +130,40 @@ export const getOptionsForValColumn = ({
 
     return [
         {
-            label: VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
+            label: VAL_COLUMN_DROPDOWN_LABEL.CHOICES,
             options: defaultValues,
         },
-        ...(isBuildStagePostBuild
+        ...(!valueConstraint?.blockCustomValue
             ? [
+                  ...(isBuildStagePostBuild
+                      ? [
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.PRE_BUILD_STAGE,
+                                options: preBuildStageVariables,
+                            },
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.POST_BUILD_STAGE,
+                                options: previousStepVariables,
+                            },
+                        ]
+                      : [
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.PREVIOUS_STEPS,
+                                options: previousStepVariables,
+                            },
+                        ]),
                   {
-                      label: 'From Pre-build Stage',
-                      options: preBuildStageVariables,
-                  },
-                  {
-                      label: 'From Post-build Stage',
-                      options: previousStepVariables,
+                      label: VAL_COLUMN_DROPDOWN_LABEL.SYSTEM_VARIABLES,
+                      options: isBuildStagePostBuild
+                          ? filteredGlobalVariablesBasedOnFormat
+                          : filteredGlobalVariablesBasedOnFormat.filter(
+                                (variable) =>
+                                    (isCdPipeline && variable.stageType !== 'post-cd') ||
+                                    !excludeVariables.includes(variable.value),
+                            ),
                   },
               ]
-            : [
-                  {
-                      label: 'From Previous Steps',
-                      options: previousStepVariables,
-                  },
-              ]),
-        {
-            label: 'System variables',
-            options: isBuildStagePostBuild
-                ? globalVariables
-                : globalVariables.filter(
-                      (variable) =>
-                          (isCdPipeline && variable.stageType !== 'post-cd') ||
-                          !excludeVariables.includes(variable.value),
-                  ),
-        },
+            : []),
     ]
 }
 
@@ -351,8 +357,9 @@ export const getVariableDataTableInitialRows = ({
                         value: name,
                         required: isInputVariableRequired,
                         disabled: !isCustomTask,
-                        showTooltip: !isCustomTask && !!description,
-                        tooltipText: description,
+                        tooltip: {
+                            content: !isCustomTask && description,
+                        },
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
                     val: getValColumnRowProps({
@@ -373,6 +380,7 @@ export const getVariableDataTableInitialRows = ({
                     choices: (valueConstraint?.choices || []).map((choiceValue, index) => ({
                         id: index,
                         value: choiceValue,
+                        error: '',
                     })),
                     askValueAtRuntime: isRuntimeArg ?? false,
                     blockCustomValue: valueConstraint?.blockCustomValue ?? false,
