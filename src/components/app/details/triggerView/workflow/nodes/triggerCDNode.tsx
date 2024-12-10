@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import {
@@ -28,12 +28,11 @@ import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
-import { envDescriptionTippy } from './workflow.utils'
+import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
-import { DO_NOT_DEPLOY } from '../../Constants'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -142,31 +141,12 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         this.handleShowGitOpsRepoConfiguredWarning()
     }
 
-    getNodeSideHeadingContainerClassName = (): string => {
-        if (this.props.isTriggerBlocked) {
-            return 'bcr-1 er-2 bw-1 cr-5 dc__opacity-1'
-        }
-
-        if (this.props.isDeploymentBlocked) {
-            return 'bcy-5 cn-9 dc__opacity-1'
-        }
-
-        return ''
-    }
-
-    getNodeSideHeadingText = (): string => {
-        if (this.props.isTriggerBlocked) {
-            return 'BLOCKED'
-        }
-
-        if (this.props.isDeploymentBlocked) {
-            return DO_NOT_DEPLOY
-        }
-
-        return this.props.triggerType
-    }
-
     renderCardContent() {
+        const { heading, className: nodeSideClass } = getNodeSideHeadingAndClass(
+            this.props.isTriggerBlocked,
+            this.props.isDeploymentBlocked,
+            this.props.triggerType,
+        )
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
@@ -174,9 +154,9 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                         <>
                             <div className="workflow-node">
                                 <div
-                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.getNodeSideHeadingContainerClassName()}`}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 flex ${nodeSideClass}`}
                                 >
-                                    {this.getNodeSideHeadingText()}
+                                    <span>{heading}</span>
                                 </div>
                                 <div className="workflow-node__title flex">
                                     <div className="workflow-node__full-width-minus-Icon">

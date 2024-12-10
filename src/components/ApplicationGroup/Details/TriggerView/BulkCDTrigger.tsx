@@ -58,7 +58,6 @@ import { BulkSelectionEvents, MATERIAL_TYPE } from '../../../app/details/trigger
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
-import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
@@ -462,7 +461,6 @@ export default function BulkCDTrigger({
             return (
                 <div className="flex left top dc__gap-4">
                     <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
-
                     <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
