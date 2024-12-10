@@ -462,7 +462,6 @@ export default function BulkCDTrigger({
             return (
                 <div className="flex left top dc__gap-4">
                     <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
-
                     <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
