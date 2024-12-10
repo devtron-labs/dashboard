@@ -45,16 +45,19 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
     const handleChoiceChange = (choiceId: number) => (e: ChangeEvent<HTMLInputElement>) => {
         const choiceValue = e.target.value
-        if (isFormatNumber && !testValueForNumber(choiceValue)) {
-            return
-        }
 
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_CHOICES,
             rowId,
             actionValue: (currentChoices) =>
                 currentChoices.map((choice) =>
-                    choice.id === choiceId ? { id: choiceId, value: choiceValue } : choice,
+                    choice.id === choiceId
+                        ? {
+                              id: choiceId,
+                              value: choiceValue,
+                              error: isFormatNumber && !testValueForNumber(choiceValue) ? 'Choice is not a number' : '',
+                          }
+                        : choice,
                 ),
         })
     }
@@ -215,7 +218,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         />
                     </div>
                     <div className="flexbox-col dc__gap-6 dc__overflow-auto pb-12 px-12">
-                        {choices.map(({ id, value }) => (
+                        {choices.map(({ id, value, error }) => (
                             <div key={id} className="flexbox dc__align-items-center dc__gap-4 w-100">
                                 <CustomInput
                                     placeholder="Enter choice"
@@ -224,17 +227,20 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                                     onChange={handleChoiceChange(id)}
                                     dataTestid={`tag-choice-${id}`}
                                     inputWrapClassName="w-100"
+                                    error={error}
                                 />
-                                <Button
-                                    dataTestId="delete-tag-choice"
-                                    ariaLabel="Delete tag choice"
-                                    showAriaLabelInTippy={false}
-                                    icon={<ICClose />}
-                                    variant={ButtonVariantType.borderLess}
-                                    size={ComponentSizeType.medium}
-                                    onClick={handleChoiceDelete(id)}
-                                    style={ButtonStyleType.negativeGrey}
-                                />
+                                <div className="mt-2 dc__align-self-start">
+                                    <Button
+                                        dataTestId="delete-tag-choice"
+                                        ariaLabel="Delete tag choice"
+                                        showAriaLabelInTippy={false}
+                                        icon={<ICClose />}
+                                        variant={ButtonVariantType.borderLess}
+                                        size={ComponentSizeType.medium}
+                                        onClick={handleChoiceDelete(id)}
+                                        style={ButtonStyleType.negativeGrey}
+                                    />
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -282,7 +288,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             className="w-200"
                             placement="bottom-start"
                             content={
-                                <div className="fs-12 lh-18">
+                                <div className="fs-12 lh-18 flexbox-col dc__gap-2">
                                     <p className="m-0 fw-6 cn-0">Allow custom input</p>
                                     <p className="m-0 cn-50">Allow entering any value other than provided choices</p>
                                 </div>
@@ -304,7 +310,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         className="w-200"
                         placement="bottom-start"
                         content={
-                            <div className="fs-12 lh-18">
+                            <div className="fs-12 lh-18 flexbox-col dc__gap-2">
                                 <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
                                 <p className="m-0 cn-50">
                                     Value can be provided at runtime. Entered value will be pre-filled as default

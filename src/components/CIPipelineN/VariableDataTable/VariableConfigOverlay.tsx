@@ -69,7 +69,7 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
                         className="w-200"
                         placement="bottom-start"
                         content={
-                            <div className="fs-12 lh-18">
+                            <div className="fs-12 lh-18 flexbox-col dc__gap-2">
                                 <p className="m-0 fw-6 cn-0">Value is required</p>
                                 <p className="m-0 cn-50">Get this tooltip from Utkarsh</p>
                             </div>

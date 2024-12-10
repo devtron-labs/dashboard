@@ -24,8 +24,6 @@ import {
     RefVariableType,
     PipelineBuildStageType,
     VariableTypeFormat,
-    getIsRequestAborted,
-    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -597,13 +595,4 @@ function createCurlRequest(externalCiConfig): string {
     const json = externalCiConfig.payload
     const curl = `curl -X POST -H 'Content-type: application/json' --data '${json}' ${url}/${externalCiConfig.accessKey}`
     return curl
-}
-
-export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
-    let variableList = []
-    await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
-        variableList = response.result?.filter((item) => (isCD ? item.stageType !== 'ci' : item.stageType === 'ci'))
-    })
-
-    return { result: variableList }
 }

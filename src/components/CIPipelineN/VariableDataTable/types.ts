@@ -26,10 +26,9 @@ export type VariableDataKeys = 'variable' | 'format' | 'val'
 export type VariableDataCustomState = {
     variableDescription: string
     isVariableRequired: boolean
-    choices: { id: number; value: string }[]
+    choices: { id: number; value: string; error: string }[]
     askValueAtRuntime: boolean
     blockCustomValue: boolean
-    // Check for support in the TableRowTypes
     selectedValue: VariableDataTableSelectPickerOptionType & Record<string, any>
     fileInfo: {
         id: number

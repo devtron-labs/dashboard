@@ -371,6 +371,7 @@ export const GitInfoMaterial = ({
                 <RuntimeParametersV2
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
+                    appId={+appId}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}

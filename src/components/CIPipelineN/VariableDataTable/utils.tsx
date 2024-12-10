@@ -1,30 +1,24 @@
-import moment from 'moment'
-
 import {
     ConditionType,
     DynamicDataTableRowDataType,
+    getGoLangFormattedDateWithTimezone,
+    IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
+    IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS,
     PluginType,
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
+    SystemVariableIcon,
     VariableType,
     VariableTypeFormat,
-    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Var } from '@Icons/ic-var-initial.svg'
 import { BuildStageVariable, PATTERNS } from '@Config/constants'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
-import { excludeVariables, TIPPY_VAR_MSG } from '../Constants'
-import {
-    FILE_UPLOAD_SIZE_UNIT_OPTIONS,
-    FORMAT_COLUMN_OPTIONS,
-    VAL_COLUMN_BOOL_OPTIONS,
-    VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
-    VAL_COLUMN_DATE_OPTIONS,
-} from './constants'
+import { excludeVariables } from '../Constants'
+import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_COLUMN_OPTIONS, VAL_COLUMN_DROPDOWN_LABEL } from './constants'
 import {
     GetValColumnRowPropsType,
     GetVariableDataTableInitialRowsProps,
@@ -51,18 +45,22 @@ export const getOptionsForValColumn = ({
     | 'isCdPipeline'
 > &
     Pick<VariableType, 'format' | 'valueConstraint'>) => {
+    const isBuildStagePostBuild = activeStageName === BuildStageVariable.PostBuild
+
     const previousStepVariables = []
+    const preBuildStageVariables = []
+
     const defaultValues = (valueConstraint?.choices || []).map<SelectPickerOptionType<string>>((value) => ({
         label: value,
         value,
     }))
 
     if (format === VariableTypeFormat.BOOL) {
-        defaultValues.push(...VAL_COLUMN_BOOL_OPTIONS)
+        defaultValues.push(...IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS)
     }
 
     if (format === VariableTypeFormat.DATE) {
-        defaultValues.push(...VAL_COLUMN_DATE_OPTIONS)
+        defaultValues.push(...IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS)
     }
 
     if (format)
@@ -77,8 +75,7 @@ export const getOptionsForValColumn = ({
             })
         }
 
-    if (activeStageName === BuildStageVariable.PostBuild) {
-        const preBuildStageVariables = []
+    if (isBuildStagePostBuild) {
         const preBuildTaskLength = formData[BuildStageVariable.PreBuild]?.steps?.length
         if (preBuildTaskLength >= 1 && !isCdPipeline) {
             if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
@@ -116,53 +113,59 @@ export const getOptionsForValColumn = ({
                 }
             }
         }
+    }
 
-        return [
-            {
-                label: VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
-                options: defaultValues,
-            },
-            {
-                label: 'From Pre-build Stage',
-                options: preBuildStageVariables,
-            },
-            {
-                label: 'From Post-build Stage',
-                options: previousStepVariables,
-            },
-            {
-                label: 'System variables',
-                options: globalVariables,
-            },
-        ]
+    const filteredGlobalVariablesBasedOnFormat = globalVariables.filter((variable) => variable.format === format)
+
+    const isOptionsEmpty =
+        !defaultValues.length &&
+        (isBuildStagePostBuild
+            ? !preBuildStageVariables.length && !previousStepVariables.length
+            : !previousStepVariables.length) &&
+        !filteredGlobalVariablesBasedOnFormat.length
+
+    if (isOptionsEmpty) {
+        return []
     }
 
     return [
         {
-            label: VAL_COLUMN_CHOICES_DROPDOWN_LABEL,
+            label: VAL_COLUMN_DROPDOWN_LABEL.CHOICES,
             options: defaultValues,
         },
-        {
-            label: 'From Previous Steps',
-            options: previousStepVariables,
-        },
-        {
-            label: 'System variables',
-            options: globalVariables.filter(
-                (variable) =>
-                    (isCdPipeline && variable.stageType !== 'post-cd') || !excludeVariables.includes(variable.value),
-            ),
-        },
+        ...(!valueConstraint?.blockCustomValue
+            ? [
+                  ...(isBuildStagePostBuild
+                      ? [
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.PRE_BUILD_STAGE,
+                                options: preBuildStageVariables,
+                            },
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.POST_BUILD_STAGE,
+                                options: previousStepVariables,
+                            },
+                        ]
+                      : [
+                            {
+                                label: VAL_COLUMN_DROPDOWN_LABEL.PREVIOUS_STEPS,
+                                options: previousStepVariables,
+                            },
+                        ]),
+                  {
+                      label: VAL_COLUMN_DROPDOWN_LABEL.SYSTEM_VARIABLES,
+                      options: isBuildStagePostBuild
+                          ? filteredGlobalVariablesBasedOnFormat
+                          : filteredGlobalVariablesBasedOnFormat.filter(
+                                (variable) =>
+                                    (isCdPipeline && variable.stageType !== 'post-cd') ||
+                                    !excludeVariables.includes(variable.value),
+                            ),
+                  },
+              ]
+            : []),
     ]
 }
-
-export const getSystemVariableIcon = () => (
-    <Tooltip content={TIPPY_VAR_MSG} placement="left" animation="shift-away" alwaysShowTippyOnHover>
-        <div className="flex">
-            <Var className="icon-dim-18 icon-n4" />
-        </div>
-    </Tooltip>
-)
 
 export const getVariableColumnRowProps = () => {
     const data: VariableDataRowType['data']['variable'] = {
@@ -225,30 +228,42 @@ export const getValColumnRowProps = ({
             }
         }
 
+        const optionsForValColumn = getOptionsForValColumn({
+            activeStageName,
+            formData,
+            globalVariables,
+            isCdPipeline,
+            selectedTaskIndex,
+            inputVariablesListFromPrevStep,
+            format,
+            valueConstraint,
+        })
+
+        if (!optionsForValColumn.length) {
+            return {
+                type: DynamicDataTableRowDataType.TEXT,
+                value,
+                props: {
+                    placeholder: 'Enter value or variable',
+                },
+            }
+        }
+
         return {
             type: DynamicDataTableRowDataType.SELECT_TEXT,
             value: variableType === RefVariableType.NEW ? value : refVariableName || '',
             props: {
                 placeholder: 'Enter value or variable',
-                options: getOptionsForValColumn({
-                    activeStageName,
-                    formData,
-                    globalVariables,
-                    isCdPipeline,
-                    selectedTaskIndex,
-                    inputVariablesListFromPrevStep,
-                    format,
-                    valueConstraint,
-                }),
+                options: optionsForValColumn,
                 selectPickerProps: {
                     isCreatable:
                         format !== VariableTypeFormat.BOOL &&
                         (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
                 },
                 Icon:
-                    refVariableStage || (variableType && variableType !== RefVariableType.NEW)
-                        ? getSystemVariableIcon()
-                        : null,
+                    refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
+                        <SystemVariableIcon />
+                    ) : null,
             },
         }
     }
@@ -277,14 +292,7 @@ export const getValColumnRowValue = (
     const isSystemVariable = checkForSystemVariable(selectedValue)
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
 
-    if (isDateFormat && selectedValue.description) {
-        const now = moment()
-        const formattedDate = now.format(selectedValue.value)
-        const timezone = now.format('Z').replace(/([+/-])(\d{2})[:.](\d{2})/, '$1$2$3')
-        return formattedDate.replace('Z', timezone)
-    }
-
-    return value
+    return isDateFormat ? getGoLangFormattedDateWithTimezone(selectedValue.value) : value
 }
 
 export const getEmptyVariableDataTableRow = (params: GetValColumnRowPropsType): VariableDataRowType => {
@@ -349,8 +357,9 @@ export const getVariableDataTableInitialRows = ({
                         value: name,
                         required: isInputVariableRequired,
                         disabled: !isCustomTask,
-                        showTooltip: !isCustomTask && !!description,
-                        tooltipText: description,
+                        tooltip: {
+                            content: !isCustomTask && description,
+                        },
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
                     val: getValColumnRowProps({
@@ -371,6 +380,7 @@ export const getVariableDataTableInitialRows = ({
                     choices: (valueConstraint?.choices || []).map((choiceValue, index) => ({
                         id: index,
                         value: choiceValue,
+                        error: '',
                     })),
                     askValueAtRuntime: isRuntimeArg ?? false,
                     blockCustomValue: valueConstraint?.blockCustomValue ?? false,
