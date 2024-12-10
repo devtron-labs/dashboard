@@ -135,9 +135,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 }}
                             >
                                 <div
-                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.getNodeSideHeadingContainerClassName()}`}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd flex fw-6 ${this.getNodeSideHeadingContainerClassName()}`}
                                 >
-                                    {this.getNodeSideHeadingText()}
+                                    <span>{this.getNodeSideHeadingText()}</span>
                                 </div>
                                 <div className="workflow-node__title flex">
                                     <div className="workflow-node__full-width-minus-Icon">

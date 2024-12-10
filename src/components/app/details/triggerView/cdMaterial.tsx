@@ -78,6 +78,8 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    GetPolicyConsequencesProps,
+    PolicyConsequencesDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -139,7 +141,6 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const getSecurityScan: ({
     appId,
     envId,
@@ -152,6 +153,9 @@ const getSecurityScan: ({
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
+    importComponentFromFELibrary('getPolicyConsequences', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -250,6 +254,7 @@ const CDMaterial = ({
                         getDeploymentWindowProfileMetaData && !isFromBulkCD
                             ? getDeploymentWindowProfileMetaData(appId, envId)
                             : null,
+                        getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
                     ]),
                 abortControllerRef,
             ),
@@ -260,6 +265,20 @@ const CDMaterial = ({
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
+
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = () => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return responseList?.[2]?.cd.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return responseList?.[2]?.cd.post.isBlocked
+            case DeploymentNodeType.CD:
+                return responseList?.[2]?.cd.node.isBlocked
+            default:
+                return false
+        }
+    }
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
@@ -1163,7 +1182,9 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 ||
+                        materialData.deploymentBlockedState?.isBlocked ||
+                        materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
@@ -1177,6 +1198,7 @@ const CDMaterial = ({
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
                             isFilterApplied={materialData.appliedFilters?.length > 0}
+                            triggerBlockedInfo={materialData.deploymentBlockedState}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1713,8 +1735,7 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    {AllowedWithWarningTippy &&
-                    showPluginWarningBeforeTrigger ? (
+                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}
@@ -1910,6 +1931,20 @@ const CDMaterial = ({
                 )}
 
                 <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
+            </>
+        )
+    }
+
+    if (TriggerBlockEmptyState && getIsTriggerBlocked()) {
+        return (
+            <>
+                <div className="trigger-modal__header">
+                    <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
+                        <img alt="close" src={close} />
+                    </button>
+                </div>
+                <TriggerBlockEmptyState appId={appId} stageType={stageType} />
             </>
         )
     }
