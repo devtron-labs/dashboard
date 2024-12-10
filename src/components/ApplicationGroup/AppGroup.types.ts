@@ -69,7 +69,10 @@ export interface BulkCDDetailTypeResponse {
     uniqueReleaseTags: string[]
 }
 
-export interface BulkCDDetailType extends BulkTriggerAppDetailType, Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>, Partial<Pick<CommonNodeAttr, 'showPluginWarning'>> {
+export interface BulkCDDetailType
+    extends BulkTriggerAppDetailType,
+        Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>,
+        Partial<Pick<CommonNodeAttr, 'showPluginWarning'>> {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
@@ -113,6 +116,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
     getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
     webhookPayloads: WebhookPayloadType
+    setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
     isWebhookPayloadLoading: boolean
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
@@ -316,7 +320,7 @@ export interface AppGroupDetailDefaultType {
     isVirtualEnv?: boolean
     envName?: string
     description?: string
-    getAppListData?: () => Promise<void>
+    getAppListData?: () => Promise<OptionType[]>
     handleSaveDescription?: (description: string) => Promise<void>
 }
 
@@ -608,12 +612,5 @@ export enum AppGroupUrlFilters {
 }
 
 export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
-
-export interface SetFiltersInLocalStorageParamsType {
-    filterParentType: FilterParentType,
-    resourceId: string,
-    resourceList: MultiValue<OptionType>,
-    groupList: MultiValue<GroupOptionType>,
-}
 
 export type AppEnvLocalStorageKeyType = `${string}__filter`

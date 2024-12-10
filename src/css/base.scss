@@ -2492,7 +2492,7 @@ button.anchor {
 }
 
 .dc__bs-contain {
-    background-size: contain;
+    background-size: contain !important;
 }
 
 .dc__registry-icon,
@@ -4037,6 +4037,10 @@ textarea,
     margin-bottom: 0px !important;
 }
 
+.mt-40 {
+    margin-top: 40px;
+}
+
 .mt-120 {
     margin-top: 120px;
 }
@@ -5286,4 +5290,10 @@ details[open] {
             transform: rotate(90deg);
         }
     }
+}
+
+.backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    z-index: var(--modal-index);
+    backdrop-filter: blur(1px);
 }

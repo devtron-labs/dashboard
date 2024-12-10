@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { generatePath, useHistory, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -14,6 +14,9 @@ import {
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
     EnvResourceType,
+    useMainContext,
+    getCompareSecretsData,
+    getAppEnvDeploymentConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
@@ -39,8 +42,9 @@ import {
     getAppAndEnvIds,
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
+    getAppEnvDeploymentConfigPayload,
 } from './utils'
-import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
+import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
 
 export const DeploymentConfigCompare = ({
@@ -57,9 +61,12 @@ export const DeploymentConfigCompare = ({
     const { push } = useHistory()
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
+    const location = useLocation()
+    const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
+    const isDefaultLandingPreviousDeploymentSet = useRef<boolean>(false)
 
     // GLOBAL CONSTANTS
     const isManifestView = resourceType === EnvResourceType.Manifest
@@ -133,6 +140,32 @@ export const DeploymentConfigCompare = ({
         [options, optionsLoader],
     )
 
+    useEffect(() => {
+        if (!compareEnvOptions || isDefaultLandingPreviousDeploymentSet.current) {
+            return
+        }
+
+        isDefaultLandingPreviousDeploymentSet.current = true
+
+        if (!compareEnvOptions.previousDeployments?.length) {
+            updateSearchParams({
+                compareWith: null,
+            })
+
+            return
+        }
+
+        const previousDeploymentData = compareEnvOptions.previousDeployments[0]
+
+        updateSearchParams({
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
+                AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+            compareWithIdentifierId: previousDeploymentData.wfrId,
+            compareWithPipelineId: previousDeploymentData.pipelineId,
+            compareWithManifestChartRefId: isManifestView ? previousDeploymentData.chartRefId : null,
+        })
+    }, [compareEnvOptions])
+
     const fetchManifestData = async () => {
         const [{ result: currentList }, { result: compareList }] = await Promise.all([
             getDeploymentTemplateData({ type, appName, envName, configType, compareName: compareTo }),
@@ -204,8 +237,9 @@ export const DeploymentConfigCompare = ({
             }
         }
 
-        const appConfigData = await Promise.all([
-            getConfigDiffData({
+        // NOTE: ensure order of compare_to (rhs) and compare_with (lhs)
+        const payloads = [
+            getAppEnvDeploymentConfigPayload({
                 type,
                 appName,
                 envName,
@@ -214,7 +248,7 @@ export const DeploymentConfigCompare = ({
                 identifierId,
                 pipelineId,
             }),
-            getConfigDiffData({
+            getAppEnvDeploymentConfigPayload({
                 type,
                 appName,
                 envName,
@@ -223,7 +257,23 @@ export const DeploymentConfigCompare = ({
                 identifierId: chartRefId || compareWithIdentifierId,
                 pipelineId: compareWithPipelineId,
             }),
+        ] as const
+
+        const [secretsData, ...appConfigData] = await Promise.all([
+            !isSuperAdmin ? getCompareSecretsData([...payloads]) : null,
+            getAppEnvDeploymentConfig({
+                params: payloads[0],
+            }),
+            getAppEnvDeploymentConfig({
+                params: payloads[1],
+            }),
         ])
+
+        secretsData?.forEach((data, index) => {
+            if (!appConfigData[index].result.isAppAdmin) {
+                appConfigData[index].result.secretsData = data.secretsData
+            }
+        })
 
         return {
             isManifestComparison: false,
@@ -480,13 +530,49 @@ export const DeploymentConfigCompare = ({
         if (_isManifestView) {
             setConvertVariables(false)
         }
-        push(
-            generatePath(path, {
+
+        const currentSearchParams = new URLSearchParams(location.search)
+
+        // NOTE: need to find the corresponding chartRefId(s) for compareWith and compareTo
+        // and set/delete them based on _isManifestView
+        const _compareWithManifestChartRefId =
+            currentSearchParams.has('compareWithIdentifierId') && _isManifestView
+                ? compareEnvOptions.previousDeployments.find(
+                      (prev) =>
+                          prev.deploymentTemplateHistoryId ===
+                          Number(currentSearchParams.get('compareWithIdentifierId')),
+                  )?.chartRefId ?? null
+                : null
+
+        const _manifestChartRefId =
+            currentSearchParams.has('identifierId') && _isManifestView
+                ? currentEnvOptions.previousDeployments.find(
+                      (prev) => prev.deploymentTemplateHistoryId === Number(currentSearchParams.get('identifierId')),
+                  )?.chartRefId ?? null
+                : null
+
+        if (_compareWithManifestChartRefId) {
+            currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))
+        } else {
+            // NOTE: make sure to not set null as URLSearchParams will save the null as string
+            // i.e suppose we save 'hello' = null, we get ?hello=null as search param
+            currentSearchParams.delete('compareWithManifestChartRefId')
+        }
+
+        if (_manifestChartRefId) {
+            currentSearchParams.set('manifestChartRefId', String(_manifestChartRefId))
+        } else {
+            currentSearchParams.delete('manifestChartRefId')
+        }
+
+        push({
+            pathname: generatePath(path, {
                 ...params,
                 resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
                 resourceName: null,
             }),
-        )
+            search: currentSearchParams.toString(),
+        })
     }
 
     const tabConfig: DeploymentConfigDiffProps['tabConfig'] = {

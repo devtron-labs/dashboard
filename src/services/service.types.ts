@@ -22,7 +22,6 @@ import {
     ChartMetadataType,
     EnvListMinDTO,
     ResponseType,
-    SeverityCount,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
 
