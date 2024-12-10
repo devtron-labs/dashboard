@@ -225,21 +225,35 @@ export const getValColumnRowProps = ({
             }
         }
 
+        const optionsForValColumn = getOptionsForValColumn({
+            activeStageName,
+            formData,
+            globalVariables,
+            isCdPipeline,
+            selectedTaskIndex,
+            inputVariablesListFromPrevStep,
+            format,
+            valueConstraint,
+        })
+
+        const isOptionsEmpty = optionsForValColumn.every(({ options }) => !options.length)
+
+        if (isOptionsEmpty) {
+            return {
+                type: DynamicDataTableRowDataType.TEXT,
+                value,
+                props: {
+                    placeholder: 'Enter value or variable',
+                },
+            }
+        }
+
         return {
             type: DynamicDataTableRowDataType.SELECT_TEXT,
             value: variableType === RefVariableType.NEW ? value : refVariableName || '',
             props: {
                 placeholder: 'Enter value or variable',
-                options: getOptionsForValColumn({
-                    activeStageName,
-                    formData,
-                    globalVariables,
-                    isCdPipeline,
-                    selectedTaskIndex,
-                    inputVariablesListFromPrevStep,
-                    format,
-                    valueConstraint,
-                }),
+                options: optionsForValColumn,
                 selectPickerProps: {
                     isCreatable:
                         format !== VariableTypeFormat.BOOL &&

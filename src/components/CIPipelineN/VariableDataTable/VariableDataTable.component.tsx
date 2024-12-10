@@ -150,7 +150,12 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                                       ),
                                                   },
                                               }
-                                            : data.val,
+                                            : getValColumnRowProps({
+                                                  ...emptyRowParams,
+                                                  valueConstraint: {
+                                                      choices: choicesOptions.map(({ label }) => label),
+                                                  },
+                                              }),
                                 },
                             }
                         }
@@ -397,9 +402,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                     },
                                     val: getValColumnRowProps({
                                         ...emptyRowParams,
-                                        activeStageName,
-                                        formData,
-                                        type,
                                         format: rowAction.actionValue,
                                         id: rowAction.rowId as number,
                                     }),
