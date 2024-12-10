@@ -30,7 +30,6 @@ import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
@@ -40,6 +39,7 @@ import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Resource
 import { URLS } from '../../config'
 import { ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'
+import { ClusterMapLoading } from './ClusterMapLoading'
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
@@ -151,24 +151,10 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
         if (ClusterStatusCell && status) {
-            return <ClusterStatusCell status={status} />
+            return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
         }
 
-        return (
-            <div className="flexbox dc__align-items-center dc__gap-8">
-                {errorInNodeListing ? (
-                    <>
-                        <Error className="icon-dim-16 dc__no-shrink" />
-                        <span>Failed</span>
-                    </>
-                ) : (
-                    <>
-                        <Success className="icon-dim-16 dc__no-shrink" />
-                        <span>Connected</span>
-                    </>
-                )}
-            </div>
-        )
+        return <ClusterMapLoading errorInNodeListing={errorInNodeListing} />
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
@@ -204,12 +190,9 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                         </div>
                     </div>
                 </div>
-                <Tooltip
-                    alwaysShowTippyOnHover={!!clusterData.errorInNodeListing}
-                    content={clusterData.errorInNodeListing}
-                >
-                    {renderClusterStatus(clusterData)}
-                </Tooltip>
+
+                {renderClusterStatus(clusterData)}
+
                 <div className="child-shimmer-loading">
                     {hideDataOnLoad(clusterData.isProd ? 'Production' : 'Non Production')}
                 </div>
@@ -287,13 +270,15 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            {ClusterMap && <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />}
+            {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
+                <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+            )}
             {!filteredList.length ? (
                 <div className="flex-grow-1">
                     <ClusterNodeEmptyState actionHandler={clearFilters} />
                 </div>
             ) : (
-                <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
+                <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
                         <div>Cluster</div>
                         <div data-testid="cluster-list-connection-status">Status</div>
