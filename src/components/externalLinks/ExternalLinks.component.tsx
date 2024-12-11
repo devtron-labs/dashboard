@@ -56,6 +56,7 @@ import {
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
+import { ReactComponent as ICBrowser } from '@Icons/ic-browser.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 
@@ -201,6 +202,8 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
     const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
 
+    const openOverlayOnIcon: boolean = `${linkOption.value}`.includes('devtronIframePrimary=false')
+
     const getTippyForLink = (children) => (
         <TippyCustomized
             theme={TippyTheme.white}
@@ -224,7 +227,11 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                 <button
                     className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3"
                     type="button"
-                    onClick={handleTextClick}
+                    onClick={
+                        openOverlayOnIcon
+                            ? getHandleOpenURL(externalLinkURL)
+                            : handleTextClick
+                    }
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
                     <span
@@ -236,12 +243,16 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                 </button>
                 <a
                     key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value.toString(), details)}
-                    target="_blank"
-                    className="flex p-4 open-link-button dc__hover-n50 dc__right-radius-3"
-                    rel="noreferrer"
+                    {...(openOverlayOnIcon
+                        ? { onClick: handleTextClick }
+                        : {
+                              href: getParsedURL(true, linkOption.value.toString(), details),
+                              target: '_blank',
+                              rel: 'noreferrer',
+                          })}
+                    className="flex p-4 open-link-button dc__hover-n50 dc__border-left dc__right-radius-3 cursor"
                 >
-                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
+                    {openOverlayOnIcon ? <ICBrowser className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" /> : <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />}
                 </a>
             </div>
         </ConditionalWrap>

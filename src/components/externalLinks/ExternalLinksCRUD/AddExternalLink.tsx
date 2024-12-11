@@ -15,7 +15,20 @@
  */
 
 import { Fragment, useEffect, useState } from 'react'
-import { showError, Progressing, Drawer, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    ToastVariantType,
+    ToastManager,
+    ClipboardButton,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
+    getHandleOpenURL,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION } from '@Config/constants'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -33,7 +46,7 @@ import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ExternalLinksLearnMore } from '../ExternalLinks.component'
+import { ReactComponent as ICOpenBook } from '@Icons/ic-book-open.svg'
 import './AddExternalLink.scss'
 
 export default function AddExternalLink({
@@ -288,10 +301,26 @@ export default function AddExternalLink({
 
     const renderConfigureLinkInfoColumn = (): JSX.Element => {
         return (
-            <div className="configure-link-info-container">
-                <div className="configure-link-info-heading">
-                    <Help />
-                    <span className="cn-9">Configuring an external link</span>
+            <div className="configure-link-info-container px-16 py-20">
+                <div className="flexbox dc__content-space dc__align-items-center">
+                    <div className="flexbox dc__gap-8 dc__align-items-center">
+                        <Help className="icon-dim-20 fcv-5" />
+                        <span className="cn-9 fs-13 lh-20 fw-6">Configuring an external link</span>
+                    </div>
+                    <Button
+                        ariaLabel="learn-more-external-link"
+                        dataTestId="learn-more-external-link"
+                        icon={<ICOpenBook />}
+                        style={ButtonStyleType.neutral}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.small}
+                        onClick={getHandleOpenURL(DOCUMENTATION.EXTERNAL_LINKS)}
+                        showAriaLabelInTippy={false}
+                        showTooltip
+                        tooltipProps={{
+                            content: 'View Documentation',
+                        }}
+                    />
                 </div>
                 <ol className="configure-link-info-list">
                     <li>Link name</li>
@@ -320,12 +349,30 @@ export default function AddExternalLink({
                     <p className="mb-12 fw-4 dc__italic-font-style">
                         {`http://www.domain.com/{namespace}/{appName}/details/{appId}/env/{envId}/details/{podName}`}
                     </p>
-                    <ul className="available-link-variables fs-12 fw-4">
-                        {availableVariables.map((_var) => (
-                            <li key={_var}>{_var}</li>
+                    <div className="flexbox-col dc__gap-6">
+                        {availableVariables.map((variable) => (
+                            <div className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent">
+                                <span className="bcn-1 px-4 br-6">{variable}</span>
+                                <span className='dc__visible-hover--child'>
+                                    <ClipboardButton content={variable} />
+                                </span>
+                            </div>
                         ))}
-                    </ul>
-                    <ExternalLinksLearnMore />
+                    </div>
+                    <li className="pt-16">Open link in new tab or overlay</li>
+                    <div className="fs-13 lh-20 fw-4 flexbox-col dc__gap-4">
+                        <span>
+                            <span>
+                                Links open in an overlay by default. To open the link in a new tab by default, add
+                            </span>
+                            &nbsp;<span className="bcn-1 px-4 br-6">devtronIframePrimary=false</span>&nbsp;
+                            <span>in URLs query parameters</span>
+                        </span>
+                        <span>Example 1:</span>
+                        <i>http://test.com?devtronIframePrimary=false</i>
+                        <span>Example 2:</span>
+                        <i>http://example.com?search=keyword&devtronIframePrimary=false</i>
+                    </div>
                 </ol>
             </div>
         )
