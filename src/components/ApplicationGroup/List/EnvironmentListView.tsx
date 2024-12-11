@@ -142,7 +142,7 @@ export default function EnvironmentsListView({
     ) : (
         <>
             <div className="dc__overflow-scroll" data-testid="app-group-container">
-                <div className="env-list-row fw-6 cn-7 fs-12 pt-8 pb-8 pr-20 pl-20 dc__uppercase bc-n50">
+                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-0">
                     <div />
                     <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
                     <div>{GROUP_LIST_HEADER.NAMESPACE}</div>
