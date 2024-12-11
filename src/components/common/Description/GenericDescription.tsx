@@ -108,16 +108,14 @@ export default function GenericDescription({
     }
 
     const toggleDescriptionView = () => {
-        if (isAuthorized()) {
-            let isConfirmed: boolean = true
-            if (isDescriptionModified) {
-                isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
-            }
-            if (isConfirmed) {
-                setModifiedDescriptionText(descriptionText)
-                setEditDescriptionView(!isEditDescriptionView)
-                setSelectedTab(MD_EDITOR_TAB.WRITE)
-            }
+        let isConfirmed: boolean = true
+        if (isDescriptionModified) {
+            isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
+        }
+        if (isConfirmed) {
+            setModifiedDescriptionText(descriptionText)
+            setEditDescriptionView(!isEditDescriptionView)
+            setSelectedTab(MD_EDITOR_TAB.WRITE)
         }
     }
 
@@ -127,17 +125,6 @@ export default function GenericDescription({
         } else {
             updateApplicationAbout()
         }
-    }
-
-    const isAuthorized = (): boolean => {
-        if (isClusterTerminal) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-            return false
-        }
-        return true
     }
 
     const updateApplicationAbout = (): void => {
