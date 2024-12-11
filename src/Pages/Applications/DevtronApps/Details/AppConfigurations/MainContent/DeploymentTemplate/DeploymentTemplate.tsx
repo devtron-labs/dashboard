@@ -510,6 +510,7 @@ const DeploymentTemplate = ({
             const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
             // Fetching LHS of compare view
             const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isCompareView
+            const shouldUseMergedTemplate: boolean = isDryRunView || (isCompareView && shouldMergeTemplateWithPatches)
 
             const [currentEditorTemplate, originalTemplate, publishedTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
@@ -523,7 +524,7 @@ const DeploymentTemplate = ({
                         isInheritedView,
                         isPublishedValuesView,
                         showApprovalPendingEditorInCompareView,
-                        shouldUseMergedTemplate: isDryRunView || (isCompareView && shouldMergeTemplateWithPatches),
+                        shouldUseMergedTemplate,
                     }),
                     valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
@@ -543,7 +544,9 @@ const DeploymentTemplate = ({
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: publishedTemplateData.selectedChartRefId,
-                          values: publishedTemplateData.mergedTemplate,
+                          values: shouldUseMergedTemplate
+                              ? publishedTemplateData.mergedTemplate
+                              : publishedTemplateData.editorTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
                       })
