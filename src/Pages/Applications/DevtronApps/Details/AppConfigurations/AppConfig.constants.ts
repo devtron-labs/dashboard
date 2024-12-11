@@ -1,7 +1,7 @@
-import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import { BASE_CONFIGURATION_ENV_ID, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const BASE_CONFIGURATIONS = {
-    id: -1,
+    id: BASE_CONFIGURATION_ENV_ID,
     name: 'Base Configurations',
 }
 
