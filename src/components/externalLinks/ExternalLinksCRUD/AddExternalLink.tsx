@@ -28,7 +28,7 @@ import {
     ComponentSizeType,
     getHandleOpenURL,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION } from '@Config/constants'
+import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION } from '@Config/constants'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -352,7 +352,7 @@ export default function AddExternalLink({
                     <div className="flexbox-col dc__gap-6">
                         {availableVariables.map((variable) => (
                             <div key={variable} className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent">
-                                <span className="bcn-1 px-4 br-6">{variable}</span>
+                                <span className="bcn-1 px-4 br-6 dc__truncate">{variable}</span>
                                 <span className='dc__visible-hover--child'>
                                     <ClipboardButton content={variable} />
                                 </span>
@@ -365,13 +365,13 @@ export default function AddExternalLink({
                             <span>
                                 Links open in an overlay by default. To open the link in a new tab by default, add
                             </span>
-                            &nbsp;<span className="bcn-1 px-4 br-6">devtronIframePrimary=false</span>&nbsp;
+                            &nbsp;<span className="bcn-1 px-4 br-6">{DEVTRON_IFRAME_PRIMARY}=false</span>&nbsp;
                             <span>in URLs query parameters</span>
                         </span>
                         <span>Example 1:</span>
-                        <i>http://test.com?devtronIframePrimary=false</i>
+                        <i>http://test.com?{DEVTRON_IFRAME_PRIMARY}=false</i>
                         <span>Example 2:</span>
-                        <i>http://example.com?search=keyword&devtronIframePrimary=false</i>
+                        <i>http://example.com?search=keyword&{DEVTRON_IFRAME_PRIMARY}=false</i>
                     </div>
                 </ol>
             </div>

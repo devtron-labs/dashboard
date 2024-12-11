@@ -21,7 +21,7 @@ import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { DOCUMENTATION, URLS } from '../../config'
+import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
@@ -52,6 +52,7 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ImageWithFallback,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
@@ -199,10 +200,16 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
 )
 
 const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
-    const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
+    let externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
 
-    const openOverlayOnIcon: boolean = `${linkOption.value}`.includes('devtronIframePrimary=false')
+    const [baseUrl, searchString] = externalLinkURL.split('?')
+    const params = new URLSearchParams(searchString)
+    const openOverlayOnIcon: boolean = params.get(DEVTRON_IFRAME_PRIMARY) === 'false'
+    params.delete(DEVTRON_IFRAME_PRIMARY)
+    externalLinkURL = getUrlWithSearchParams(baseUrl, params)
+
+    const commonExpandIconClassname = 'flex p-4 open-link-button dc__hover-n50 dc__right-radius-3'
 
     const getTippyForLink = (children) => (
         <TippyCustomized
@@ -225,13 +232,9 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
         >
             <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
                 <button
-                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3"
+                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3 dc__border-right"
                     type="button"
-                    onClick={
-                        openOverlayOnIcon
-                            ? getHandleOpenURL(externalLinkURL)
-                            : handleTextClick
-                    }
+                    onClick={openOverlayOnIcon ? getHandleOpenURL(externalLinkURL) : handleTextClick}
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
                     <span
@@ -241,19 +244,25 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                         {linkOption.label}
                     </span>
                 </button>
-                <a
-                    key={linkOption.label}
-                    {...(openOverlayOnIcon
-                        ? { onClick: handleTextClick }
-                        : {
-                              href: getParsedURL(true, linkOption.value.toString(), details),
-                              target: '_blank',
-                              rel: 'noreferrer',
-                          })}
-                    className="flex p-4 open-link-button dc__hover-n50 dc__border-left dc__right-radius-3 cursor"
-                >
-                    {openOverlayOnIcon ? <ICBrowser className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" /> : <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />}
-                </a>
+                {openOverlayOnIcon ? (
+                    <button
+                        onClick={handleTextClick}
+                        type="button"
+                        className={`dc__unset-button-styles ${commonExpandIconClassname}`}
+                    >
+                        <ICBrowser className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
+                    </button>
+                ) : (
+                    <a
+                        key={linkOption.label}
+                        href={externalLinkURL}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={commonExpandIconClassname}
+                    >
+                        <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
+                    </a>
+                )}
             </div>
         </ConditionalWrap>
     )
