@@ -1745,6 +1745,10 @@ button.anchor {
 .dc__opacity-hover {
     .dc__opacity-hover--child {
         opacity: 0;
+
+        &:focus {
+            opacity: 1;
+        }
     }
 
     &.dc__opacity-hover--parent:hover {
