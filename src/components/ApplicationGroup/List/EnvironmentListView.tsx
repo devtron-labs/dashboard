@@ -16,7 +16,6 @@
 
 import { useState, useEffect } from 'react'
 import {
-    Progressing,
     useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
@@ -24,12 +23,13 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
-import EnvEmptyStates from '../EnvEmptyStates'
+import { EnvEmptyStates } from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
+import { LoadingShimmerList } from './LoadingShimmer/LoadingShimmerList'
 
 const EnvironmentLink = ({
     namespace,
@@ -57,13 +57,13 @@ const EnvironmentLink = ({
     )
 }
 
-export default function EnvironmentsListView({
+const EnvironmentsListView = ({
     isSuperAdmin,
     filterConfig,
     clearFilters,
     changePage,
     changePageSize,
-}: EnvironmentsListViewType) {
+}: EnvironmentsListViewType) => {
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
     const [envCount, setEnvCount] = useState<number>(0)
     const { cluster } = filterConfig
@@ -73,7 +73,7 @@ export default function EnvironmentsListView({
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        const appListResult: EnvApp = appListResponse?.result || {envCount: 0, envList: []}
+        const appListResult: EnvApp = appListResponse?.result || { envCount: 0, envList: [] }
         setFilteredEnvList(appListResult.envList)
         setEnvCount(appListResult.envCount)
     }, [appListResponse?.result])
@@ -91,6 +91,7 @@ export default function EnvironmentsListView({
                 />
             )
         }
+        return null
     }
 
     const handleClusterClick = (e: any): void => {
@@ -111,48 +112,35 @@ export default function EnvironmentsListView({
         }
     }
 
-    const renderEmptyLoader = () => {
-        if (appListLoading) {
-            return <Progressing pageLoader />
-        }
-        return (
+    const renderEmptyView = () => (
+        <div className="flex dc__gap-12 dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
             <EnvEmptyStates
                 title={emptyStateData.title}
                 subTitle={emptyStateData.subTitle}
                 actionHandler={clearFilters}
             />
-        )
-    }
-
-    const renderApplicationCount = (envData) => {
-        return (
-            <div>
-                {envData.appCount || 0}&nbsp;
-                {envData.appCount == 0 || envData.appCount == 1
-                    ? GROUP_LIST_HEADER.APPLICATION
-                    : GROUP_LIST_HEADER.APPLICATIONS}
-            </div>
-        )
-    }
-
-    return filteredEnvList.length === 0 || appListLoading ? (
-        <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
-            {renderEmptyLoader()}
         </div>
-    ) : (
-        <>
-            <div className="dc__overflow-scroll" data-testid="app-group-container">
-                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-0">
-                    <div />
-                    <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
-                    <div>{GROUP_LIST_HEADER.NAMESPACE}</div>
-                    <div>{GROUP_LIST_HEADER.CLUSTER}</div>
-                    <div>{GROUP_LIST_HEADER.APPLICATIONS}</div>
-                </div>
+    )
+
+    const renderApplicationCount = (envData) => (
+        <div>
+            {envData.appCount || 0}&nbsp;
+            {envData.appCount === 0 || envData.appCount === 1
+                ? GROUP_LIST_HEADER.APPLICATION
+                : GROUP_LIST_HEADER.APPLICATIONS}
+        </div>
+    )
+    const renderAppGroupListContent = () =>
+        !filteredEnvList.length ? (
+            <div className="flexbox-col dc__gap-12">
+                <LoadingShimmerList shimmerRowClassName="pl-20 env-list-row" />
+            </div>
+        ) : (
+            <div className="dc__overflow-scroll">
                 {filteredEnvList?.map((envData) => (
                     <div
                         key={envData.id}
-                        className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 "
+                        className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
                         data-testid="env-list-row"
                     >
                         <span className="icon-dim-24 bcb-1 flex br-6">
@@ -177,7 +165,25 @@ export default function EnvironmentsListView({
                     </div>
                 ))}
             </div>
+        )
+
+    return filteredEnvList.length === 0 && !appListLoading ? (
+        renderEmptyView()
+    ) : (
+        <>
+            <div data-testid="app-group-container">
+                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-0">
+                    <div />
+                    <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
+                    <div>{GROUP_LIST_HEADER.NAMESPACE}</div>
+                    <div>{GROUP_LIST_HEADER.CLUSTER}</div>
+                    <div>{GROUP_LIST_HEADER.APPLICATIONS}</div>
+                </div>
+                {renderAppGroupListContent()}
+            </div>
             {renderPagination()}
         </>
     )
 }
+
+export default EnvironmentsListView

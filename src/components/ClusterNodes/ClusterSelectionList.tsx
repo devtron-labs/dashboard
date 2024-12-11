@@ -25,6 +25,8 @@ import {
     ClusterStatusType,
     SortableTableHeaderCell,
     stringComparatorBySortOrder,
+    numberComparatorBySortOrder,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -241,10 +243,40 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const handleCellSorting = (list: ClusterDetail[], cellToSort: ClusterMapListSortableKeys) => {
+    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys, isNumber?: boolean) => {
         handleSorting(cellToSort)
 
-        list.sort((a, b) => stringComparatorBySortOrder(a[cellToSort], b[cellToSort], sortOrder))
+        if (cellToSort === ClusterMapListSortableKeys.CPU_CAPACITY) {
+            return filteredList.sort((a, b) =>
+                numberComparatorBySortOrder(
+                    parseFloat(a.cpu?.capacity?.replace('m', '')) || 0,
+                    parseFloat(b.cpu?.capacity?.replace('m', '')) || 0,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (cellToSort === ClusterMapListSortableKeys.MEMORY_CAPACITY) {
+            return filteredList.sort((a, b) =>
+                numberComparatorBySortOrder(
+                    parseFloat(a.memory?.capacity?.replace('Mi', '')) || 0,
+                    parseFloat(b.memory?.capacity?.replace('Mi', '')) || 0,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (cellToSort === ClusterMapListSortableKeys.K8S_VERSION) {
+            return filteredList.sort((a, b) =>
+                versionComparatorBySortOrder(a[cellToSort] || '', b[cellToSort] || '', sortOrder),
+            )
+        }
+
+        return filteredList.sort((a, b) =>
+            isNumber
+                ? numberComparatorBySortOrder(a[cellToSort] || 0, b[cellToSort] || 0, sortOrder)
+                : stringComparatorBySortOrder(a[cellToSort] || '', b[cellToSort || ''], sortOrder),
+        )
     }
 
     return (
@@ -303,9 +335,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() =>
-                                handleCellSorting(filteredList, ClusterMapListSortableKeys.CLUSTER_NAME)
-                            }
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.CLUSTER_NAME)}
                         />
                         <SortableTableHeaderCell
                             title="Status"
@@ -313,7 +343,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() => handleCellSorting(filteredList, ClusterMapListSortableKeys.STATUS)}
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.STATUS)}
                         />
                         <SortableTableHeaderCell
                             title="Type"
@@ -321,7 +351,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() => handleCellSorting(filteredList, ClusterMapListSortableKeys.TYPE)}
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.TYPE)}
                         />
                         <SortableTableHeaderCell
                             title="Nodes"
@@ -329,27 +359,16 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() => handleCellSorting(filteredList, ClusterMapListSortableKeys.NODES)}
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODES, true)}
                         />
-                        <SortableTableHeaderCell
-                            title="Node Errors"
-                            isSorted={sortBy === ClusterMapListSortableKeys.NODE_ERRORS}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() =>
-                                handleCellSorting(filteredList, ClusterMapListSortableKeys.NODE_ERRORS)
-                            }
-                        />
+                        <div>Node Errors</div>
                         <SortableTableHeaderCell
                             title="K8S version"
                             isSorted={sortBy === ClusterMapListSortableKeys.K8S_VERSION}
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() =>
-                                handleCellSorting(filteredList, ClusterMapListSortableKeys.K8S_VERSION)
-                            }
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.K8S_VERSION)}
                         />
                         <SortableTableHeaderCell
                             title="CPU Capacity"
@@ -357,9 +376,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() =>
-                                handleCellSorting(filteredList, ClusterMapListSortableKeys.CPU_CAPACITY)
-                            }
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.CPU_CAPACITY)}
                         />
                         <SortableTableHeaderCell
                             title="Memory Capacity"
@@ -367,9 +384,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() =>
-                                handleCellSorting(filteredList, ClusterMapListSortableKeys.MEMORY_CAPACITY)
-                            }
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.MEMORY_CAPACITY)}
                         />
                     </div>
                     {filteredList.map((clusterData) => renderClusterRow(clusterData))}

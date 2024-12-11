@@ -366,7 +366,7 @@ export enum ClusterMapListSortableKeys {
     TYPE = 'type',
     NODES = 'nodeCount',
     NODE_ERRORS = 'nodeErrors',
-    K8S_VERSION = 'nodeK8sVersions',
+    K8S_VERSION = 'serverVersion',
     CPU_CAPACITY = 'cpu',
     MEMORY_CAPACITY = 'memory',
 }
