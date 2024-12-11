@@ -110,7 +110,7 @@ export const processWorkflowStatuses = (
 export const handleSourceNotConfigured = (
     configuredMaterialList: Map<number, Set<number>>,
     wf: WorkflowType,
-    _materialList: any[],
+    _materialList: any[] = [],
     isDockerFileError: boolean,
 ) => {
     if (_materialList.length > 0) {
@@ -268,7 +268,9 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
                 if (selectedCIPipeline?.ciMaterial) {
                     for (const mat of selectedCIPipeline.ciMaterial) {
                         if (mat.source.type !== SourceTypeMap.WEBHOOK) {
-                            branchValues += `${branchValues ? ',' : ''}${getParsedBranchValuesForPlugin(mat.source.value)}`
+                            const parsedValue = getParsedBranchValuesForPlugin(mat.source.value)
+
+                            branchValues += `${branchValues && parsedValue ? ',' : ''}${parsedValue}`
                         }
                     }
                 }
@@ -276,6 +278,7 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
             }
         }
     }
+
     return branchValues
 }
 
