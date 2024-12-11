@@ -351,7 +351,7 @@ export default function AddExternalLink({
                     </p>
                     <div className="flexbox-col dc__gap-6">
                         {availableVariables.map((variable) => (
-                            <div className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent">
+                            <div key={variable} className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent">
                                 <span className="bcn-1 px-4 br-6">{variable}</span>
                                 <span className='dc__visible-hover--child'>
                                     <ClipboardButton content={variable} />
