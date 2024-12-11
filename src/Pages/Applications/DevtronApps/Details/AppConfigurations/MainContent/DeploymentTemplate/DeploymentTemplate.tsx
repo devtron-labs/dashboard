@@ -124,7 +124,6 @@ const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOpe
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
-    isUnSet = false,
     isCiPipeline = false,
     isProtected,
     reloadEnvironments,
@@ -239,12 +238,15 @@ const DeploymentTemplate = ({
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
-    const hasNoGlobalConfig = !envId && !chartDetails.latestAppChartRef
+    /**
+     * Means has no global config
+     */
+    const isUnSet = !envId && !chartDetails.latestAppChartRef
     const shouldValidateLockChanges =
         !!getLockConfigEligibleAndIneligibleChanges &&
         lockedConfigKeysWithLockType.config.length > 0 &&
         !isSuperAdmin &&
-        !hasNoGlobalConfig
+        !isUnSet
 
     const disableCodeEditor = resolveScopedVariables || !isEditMode
 
