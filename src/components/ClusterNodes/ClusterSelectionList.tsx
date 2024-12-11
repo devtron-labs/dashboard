@@ -39,20 +39,9 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
-import { ClusterStatusByFilter } from './constants'
+import { ClusterMapListSortableKeys, ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'
 import { ClusterMapLoading } from './ClusterMapLoading'
-
-enum ClusterMapListSortableKeys {
-    CLUSTER_NAME = 'name',
-    STATUS = 'status',
-    TYPE = 'type',
-    NODES = 'nodeCount',
-    NODE_ERRORS = 'nodeErrors',
-    K8S_VERSION = 'nodeK8sVersions',
-    CPU_CAPACITY = 'cpu',
-    MEMORY_CAPACITY = 'memory',
-}
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
