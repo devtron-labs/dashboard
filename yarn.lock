@@ -974,10 +974,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.5.tgz#a18a766f4be8e4bb9bf81a94aa1a4dadfc7f704d"
-  integrity sha512-LDikm5cYQqQvsdqJsd8tkWtGgHjh3fweK4WiIZ3UNvVoYCKEwuVFToIFCJwDTfqyS5ncVCXXIvWlQBKJW/B+uQ==
+"@devtron-labs/devtron-fe-common-lib@1.2.5-beta-11":
+  version "1.2.5-beta-11"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.2.5-beta-11.tgz#443d66edd3c564386f93c6e7e415ee0d83358c9d"
+  integrity sha512-KJqmuosLLf6a2xvIpXTrKk0sbRk+GPOfYrQRdwZDqpHynKifnIPLbgmBd6otjIDaRoJCSRVZ7YkTR6Okb+5jbw==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -988,6 +988,7 @@
     marked "^13.0.3"
     react-dates "^21.8.0"
     react-diff-viewer-continued "^3.4.0"
+    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "2.7.0"
 
@@ -6829,6 +6830,13 @@ react-moment-proptypes@^1.6.0:
   integrity sha512-Er940DxWoObfIqPrZNfwXKugjxMIuk1LAuEzn23gytzV6hKS/sw108wibi9QubfMN4h+nrlje8eUCSbQRJo2fQ==
   dependencies:
     moment ">=1.6.0"
+
+react-monaco-editor@^0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
+  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
+  dependencies:
+    prop-types "^15.8.1"
 
 react-monaco-editor@^0.55.0:
   version "0.55.0"
