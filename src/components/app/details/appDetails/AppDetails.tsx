@@ -388,6 +388,7 @@ export const Details: React.FC<DetailsType> = ({
     )
 
     useEffect(() => () => {
+        clearPollingInterval()
         IndexStore.clearAppDetails()
     }, [])
 
