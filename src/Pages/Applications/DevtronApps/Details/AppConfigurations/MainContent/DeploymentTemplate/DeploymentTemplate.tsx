@@ -124,7 +124,6 @@ const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOpe
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
-    isUnSet = false,
     isCiPipeline = false,
     isProtected,
     reloadEnvironments,
@@ -239,12 +238,15 @@ const DeploymentTemplate = ({
 
     const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
-    const hasNoGlobalConfig = !envId && !chartDetails.latestAppChartRef
+    /**
+     * Means has no global config
+     */
+    const isUnSet = !envId && !chartDetails.latestAppChartRef
     const shouldValidateLockChanges =
         !!getLockConfigEligibleAndIneligibleChanges &&
         lockedConfigKeysWithLockType.config.length > 0 &&
         !isSuperAdmin &&
-        !hasNoGlobalConfig
+        !isUnSet
 
     const disableCodeEditor = resolveScopedVariables || !isEditMode
 
@@ -508,6 +510,7 @@ const DeploymentTemplate = ({
             const shouldFetchOriginalTemplate: boolean = !!isGuiSupported
             // Fetching LHS of compare view
             const shouldFetchPublishedTemplate: boolean = isPublishedConfigPresent && isCompareView
+            const shouldUseMergedTemplate: boolean = isDryRunView || (isCompareView && shouldMergeTemplateWithPatches)
 
             const [currentEditorTemplate, originalTemplate, publishedTemplate] = await Promise.all([
                 getResolvedDeploymentTemplate({
@@ -521,7 +524,7 @@ const DeploymentTemplate = ({
                         isInheritedView,
                         isPublishedValuesView,
                         showApprovalPendingEditorInCompareView,
-                        shouldUseMergedTemplate: isDryRunView || (isCompareView && shouldMergeTemplateWithPatches),
+                        shouldUseMergedTemplate,
                     }),
                     valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                     ...(envId && { envId: +envId }),
@@ -541,7 +544,9 @@ const DeploymentTemplate = ({
                     ? getResolvedDeploymentTemplate({
                           appId: +appId,
                           chartRefId: publishedTemplateData.selectedChartRefId,
-                          values: publishedTemplateData.mergedTemplate,
+                          values: shouldUseMergedTemplate
+                              ? publishedTemplateData.mergedTemplate
+                              : publishedTemplateData.editorTemplate,
                           valuesAndManifestFlag: ValuesAndManifestFlagDTO.DEPLOYMENT_TEMPLATE,
                           ...(envId && { envId: +envId }),
                       })

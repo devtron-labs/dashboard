@@ -30,12 +30,7 @@ type BaseDeploymentTemplateProps = {
      */
     respondOnSuccess: (redirection: boolean) => void
     /**
-     * Given in case we have'nt saved any deployment template
-     * If true, would show chart type selector.
-     */
-    isUnSet: boolean
-    /**
-     * Something related to git-ops
+     * Would cause re-direction to next step on save
      */
     isCiPipeline: boolean
 
@@ -48,7 +43,6 @@ type EnvOverrideDeploymentTemplateProps = {
     clusterId?: string
 
     respondOnSuccess?: never
-    isUnSet?: never
     isCiPipeline?: never
 }
 
@@ -176,8 +170,7 @@ export interface DeploymentTemplateStateType {
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
-    extends Pick<DeploymentTemplateProps, 'isUnSet'>,
-        Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
+    extends Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
         Pick<DeploymentTemplateStateType, 'showReadMe' | 'editMode' | 'chartDetails'> {
     disableVersionSelect: boolean
     handleChangeToGUIMode: () => void
@@ -188,11 +181,12 @@ export interface DeploymentTemplateOptionsHeaderProps
     isGuiSupported: boolean
     areChartsLoading: boolean
     showDeleteOverrideDraftEmptyState: boolean
+    isUnSet: boolean
 }
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends Pick<DeploymentTemplateProps, 'isUnSet' | 'environmentName'>,
+    extends Pick<DeploymentTemplateProps, 'environmentName'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
         Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
         Pick<
@@ -206,6 +200,7 @@ export interface DeploymentTemplateFormProps
     readMe: string
     handleChangeToYAMLMode: () => void
     isGuiSupported: boolean
+    isUnSet: boolean
 }
 
 export interface DeploymentTemplateGUIViewProps
@@ -267,10 +262,10 @@ export interface DTChartSelectorProps
 
 export interface ChartSelectorDropdownProps
     extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
-        Pick<DeploymentTemplateProps, 'isUnSet'>,
         Pick<DTChartSelectorProps, 'areChartsLoading'>,
         Pick<DeploymentTemplateConfigState, 'selectedChart'> {
     selectedChartRefId: number
+    isUnSet: boolean
     selectChart: (
         selectedChart: DeploymentChartVersionType,
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
