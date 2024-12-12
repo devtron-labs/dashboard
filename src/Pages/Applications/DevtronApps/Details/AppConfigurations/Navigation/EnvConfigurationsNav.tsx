@@ -122,7 +122,7 @@ export const EnvConfigurationsNav = ({
     useEffect(() => {
         if (!isLoading && config) {
             // For base configurations, the env id is undefined
-            const environmentId = +envId ?? BASE_CONFIGURATION_ENV_ID
+            const environmentId = +envId || BASE_CONFIGURATION_ENV_ID
 
             const newEnvConfig = getEnvConfiguration(
                 config,
