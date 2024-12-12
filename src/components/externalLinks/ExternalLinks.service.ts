@@ -57,14 +57,14 @@ export const getExternalLinks = async (
             ...response.result,
             ExternalLinks: (response.result?.ExternalLinks || []).map((link: ExternalLink) => {
                 const linkUrl = new URL(link.url)
-                const openOverlayOnIcon: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
+                const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
                 linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
                 const sanitizedUrl = getUrlWithSearchParams(linkUrl.origin, linkUrl.searchParams)
                 
                 return {
                     ...link,
                     url: sanitizedUrl,
-                    openOverlayOnIcon,
+                    openInNewTab,
                 }
             }),
         },

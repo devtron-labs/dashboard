@@ -87,6 +87,7 @@ export default function AddExternalLink({
                     identifiers: initSelectedIdentifiers(),
                     isEditable: selectedLink.isEditable,
                     type: selectedLink.type,
+                    openInNewTab: selectedLink.openInNewTab,
                 },
             ])
         } else {
@@ -105,6 +106,7 @@ export default function AddExternalLink({
                     identifiers: [],
                     isEditable: false,
                     type: ExternalLinkScopeType.ClusterLevel,
+                    openInNewTab: false,
                 },
             ])
         }
@@ -230,6 +232,9 @@ export default function AddExternalLink({
             case 'onEditableFlagToggle':
                 linksData[key].isEditable = value as boolean
                 break
+            case 'onNewTabToggle':
+                linksData[key].openInNewTab = value as boolean
+                break
             default:
                 break
         }
@@ -351,27 +356,16 @@ export default function AddExternalLink({
                     </p>
                     <div className="flexbox-col dc__gap-6">
                         {availableVariables.map((variable) => (
-                            <div key={variable} className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent">
+                            <div
+                                key={variable}
+                                className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent"
+                            >
                                 <span className="bcn-1 px-4 br-6 dc__truncate">{variable}</span>
-                                <span className='dc__visible-hover--child'>
+                                <span className="dc__visible-hover--child">
                                     <ClipboardButton content={variable} />
                                 </span>
                             </div>
                         ))}
-                    </div>
-                    <li className="pt-16">Open link in new tab or overlay</li>
-                    <div className="fs-13 lh-20 fw-4 flexbox-col dc__gap-4">
-                        <span>
-                            <span>
-                                Links open in an overlay by default. To open the link in a new tab by default, add
-                            </span>
-                            &nbsp;<span className="bcn-1 px-4 br-6">{DEVTRON_IFRAME_PRIMARY}=false</span>&nbsp;
-                            <span>in URLs query parameters</span>
-                        </span>
-                        <span>Example 1:</span>
-                        <i>http://test.com?{DEVTRON_IFRAME_PRIMARY}=false</i>
-                        <span>Example 2:</span>
-                        <i>http://example.com?search=keyword&{DEVTRON_IFRAME_PRIMARY}=false</i>
                     </div>
                 </ol>
             </div>
@@ -379,7 +373,7 @@ export default function AddExternalLink({
     }
 
     const getValidatedLinksData = (): LinkAction[] => {
-        const validatedLinksData = linksData.map((link) => ({
+        const validatedLinksData: LinkAction[] = linksData.map((link) => ({
             tool: link.tool,
             invalidTool: !link.tool,
             name: link.name.trim(),
@@ -392,6 +386,7 @@ export default function AddExternalLink({
             invalidProtocol: link.urlTemplate.trim() && !link.urlTemplate.trim().startsWith('http'),
             type: link.type,
             isEditable: link.isEditable,
+            openInNewTab: link.openInNewTab,
         }))
         setLinksData(validatedLinksData)
 
@@ -425,6 +420,13 @@ export default function AddExternalLink({
         return []
     }
 
+    const appendDevtronPrimaryIframe = (urlTemplate: string, openInNewTab: boolean): string => {
+        if (!openInNewTab) return urlTemplate
+        const linkURL = new URL(urlTemplate)
+        linkURL.searchParams.append(DEVTRON_IFRAME_PRIMARY, 'false')
+        return `${linkURL.origin}${linkURL.search}`
+    }
+
     const saveLinks = async (): Promise<void> => {
         try {
             const validatedLinksData = getValidatedLinksData()
@@ -454,7 +456,7 @@ export default function AddExternalLink({
                     description: link.description || '',
                     type: link.type,
                     identifiers: processIdentifiers(link.identifiers, selectedLink),
-                    url: link.urlTemplate,
+                    url: appendDevtronPrimaryIframe(link.urlTemplate, link.openInNewTab),
                     isEditable: link.isEditable,
                 }
 
@@ -473,7 +475,7 @@ export default function AddExternalLink({
                     description: link.description || '',
                     type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
                     identifiers: processIdentifiers(link.identifiers),
-                    url: link.urlTemplate,
+                    url: appendDevtronPrimaryIframe(link.urlTemplate, link.openInNewTab),
                     isEditable: isAppConfigView ? true : link.isEditable,
                 }))
 

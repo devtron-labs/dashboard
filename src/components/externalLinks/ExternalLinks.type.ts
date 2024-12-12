@@ -28,7 +28,7 @@ export interface OptionTypeWithIcon {
     category?: number
     description?: string
     icon?: string
-    openOverlayOnIcon?: boolean
+    openInNewTab?: boolean
 }
 
 export interface ExpandedExternalLink extends OptionTypeWithIcon {
@@ -59,7 +59,7 @@ export interface ExternalLinkIdentifierProps {
     clusterId: number
 }
 
-export interface ExternalLink extends Pick<OptionTypeWithIcon, 'openOverlayOnIcon'> {
+export interface ExternalLink extends Pick<OptionTypeWithIcon, 'openInNewTab'> {
     id?: number
     monitoringToolId: number
     name: string
@@ -71,7 +71,7 @@ export interface ExternalLink extends Pick<OptionTypeWithIcon, 'openOverlayOnIco
     isEditable: boolean
 }
 
-export interface LinkAction {
+export interface LinkAction extends Pick<OptionTypeWithIcon, 'openInNewTab'> {
     tool: OptionTypeWithIcon
     invalidTool?: boolean
     name: string

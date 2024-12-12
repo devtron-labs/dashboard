@@ -22,7 +22,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
-    InfoIconTippy,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -89,6 +89,10 @@ export default function ConfigureLinkAction({
 
     const onEditableFlagToggle = () => {
         handleLinksDataActions('onEditableFlagToggle', index, !link.isEditable)
+    }
+
+    const onNewTabToggle = () => {
+        handleLinksDataActions('onNewTabToggle', index, !link.openInNewTab)
     }
 
     const onUrlTemplateChange = (e) => {
@@ -232,23 +236,33 @@ export default function ConfigureLinkAction({
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
                 </div>
-                {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
-                    <div className="flex left">
+                <div className="flex left dc__gap-16">
+                    {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                         <Checkbox
                             isChecked={link.isEditable}
                             rootClassName="link-admin-scope mb-0-imp"
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={onEditableFlagToggle}
                         >
-                            <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
+                            <Tooltip
+                                content="If checked, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
+                                alwaysShowTippyOnHover
+                            >
+                                <span className="fs-13 fw-4 lh-20 cn-9 dc__underline-dotted">App admins can edit</span>
+                            </Tooltip>
                         </Checkbox>
-                        <InfoIconTippy
-                            heading="Who can edit this link?"
-                            infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
-                            iconClassName="icon-dim-16 fcn-6 ml-4"
-                        />
-                    </div>
-                )}
+                    )}
+                    <Checkbox
+                        isChecked={link.openInNewTab}
+                        rootClassName="link-admin-scope mb-0-imp"
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={onNewTabToggle}
+                    >
+                        <Tooltip content="If checked, links always open in a new tab" alwaysShowTippyOnHover>
+                            <span className="fs-13 fw-4 lh-20 cn-9 dc__underline-dotted">Always open in new tab</span>
+                        </Tooltip>
+                    </Checkbox>
+                </div>
             </div>
             {showDelete && (
                 <div className="link-delete icon-dim-20 cursor" data-testid="close-link">
