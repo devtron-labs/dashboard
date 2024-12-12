@@ -438,6 +438,7 @@ export default function CIPipeline({
                 if (!_formDataErrorObj[stageName].steps[i]) {
                     _formDataErrorObj[stageName].steps.push({ isValid: true })
                 }
+                _formDataErrorObj.triggerValidation = true
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }

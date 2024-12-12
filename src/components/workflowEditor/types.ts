@@ -254,6 +254,7 @@ export interface PipelineFormDataErrorType {
         isValid: boolean
     }
     userApprovalConfig?: ValidationResponseType
+    triggerValidation?: boolean
 }
 
 interface HandleValidateMandatoryPluginsParamsType {
@@ -278,7 +279,14 @@ export interface PipelineContext {
     }
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
-    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj, isSaveAsPlugin?: boolean) => void
+    validateTask: (
+        taskData: StepType,
+        taskErrorobj: TaskErrorObj,
+        options?: {
+            isSaveAsPlugin?: boolean
+            validateIOVariables?: boolean
+        },
+    ) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (
         stageName: string,

@@ -1,6 +1,7 @@
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import {
+    DynamicDataTableHeaderType,
     DynamicDataTableRowType,
     RefVariableStageType,
     RefVariableType,
@@ -24,6 +25,7 @@ export interface VariableDataTableSelectPickerOptionType extends SelectPickerOpt
 export type VariableDataKeys = 'variable' | 'format' | 'val'
 
 export type VariableDataCustomState = {
+    defaultValue: string
     variableDescription: string
     isVariableRequired: boolean
     choices: { id: number; value: string; error: string }[]
@@ -68,7 +70,7 @@ export enum VariableDataTableActionType {
 }
 
 type VariableDataTableActionPropsMap = {
-    [VariableDataTableActionType.ADD_ROW]: { actionValue: number }
+    [VariableDataTableActionType.ADD_ROW]: { rowId: number }
     [VariableDataTableActionType.UPDATE_ROW]: {
         actionValue: string
         headerKey: VariableDataKeys
@@ -81,7 +83,6 @@ type VariableDataTableActionPropsMap = {
         actionValue: {
             value: string
             selectedValue: VariableDataTableSelectPickerOptionType
-            files: File[]
         }
         rowId: string | number
     }
@@ -90,7 +91,10 @@ type VariableDataTableActionPropsMap = {
         rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO]: {
-        actionValue: Pick<VariableType, 'fileReferenceId'>
+        actionValue: Pick<VariableType, 'fileReferenceId'> & {
+            fileName: string
+            isLoading: boolean
+        }
         rowId: string | number
     }
 
@@ -162,19 +166,29 @@ export type GetValColumnRowPropsType = Pick<
 > &
     Pick<
         VariableType,
-        | 'format'
-        | 'value'
-        | 'refVariableName'
-        | 'refVariableStage'
-        | 'valueConstraint'
-        | 'description'
-        | 'variableType'
-        | 'id'
+        'format' | 'value' | 'refVariableName' | 'refVariableStage' | 'valueConstraint' | 'description' | 'variableType'
     > & { type: PluginVariableType }
 
-export interface GetVariableDataTableInitialRowsProps {
+export interface GetVariableDataTableInitialRowsProps
+    extends Omit<
+        GetValColumnRowPropsType,
+        'description' | 'format' | 'variableType' | 'value' | 'refVariableName' | 'refVariableStage' | 'valueConstraint'
+    > {
     ioVariables: VariableType[]
     type: PluginVariableType
     isCustomTask: boolean
-    emptyRowParams: GetValColumnRowPropsType
+}
+
+export interface GetValidateCellProps {
+    pluginVariableType: PluginVariableType
+    keysFrequencyMap: Record<string, number>
+    key: VariableDataKeys
+    row: VariableDataRowType
+    value?: string
+}
+
+export interface ValidateVariableDataTableProps
+    extends Pick<GetValidateCellProps, 'keysFrequencyMap' | 'pluginVariableType'> {
+    rows: VariableDataRowType[]
+    headers: DynamicDataTableHeaderType<VariableDataKeys>[]
 }

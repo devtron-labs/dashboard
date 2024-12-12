@@ -1,5 +1,7 @@
 import {
     ConditionType,
+    DynamicDataTableCellErrorType,
+    DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
     getGoLangFormattedDateWithTimezone,
     IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
@@ -24,6 +26,7 @@ import {
     GetVariableDataTableInitialRowsProps,
     VariableDataTableSelectPickerOptionType,
     VariableDataRowType,
+    VariableDataKeys,
 } from './types'
 
 export const getOptionsForValColumn = ({
@@ -115,13 +118,28 @@ export const getOptionsForValColumn = ({
         }
     }
 
-    const filteredGlobalVariablesBasedOnFormat = globalVariables.filter((variable) => variable.format === format)
+    const filteredGlobalVariables = isBuildStagePostBuild
+        ? globalVariables
+        : globalVariables.filter(
+              (variable) =>
+                  (isCdPipeline && variable.stageType !== 'post-cd') || !excludeVariables.includes(variable.value),
+          )
+
+    const filteredGlobalVariablesBasedOnFormat = filteredGlobalVariables.filter(
+        (variable) => variable.format === format,
+    )
+    const filteredPreBuildStageVariablesBasedOnFormat = preBuildStageVariables.filter(
+        (variable) => variable.format === format,
+    )
+    const filteredPreviousStepVariablesBasedOnFormat = previousStepVariables.filter(
+        (variable) => variable.format === format,
+    )
 
     const isOptionsEmpty =
         !defaultValues.length &&
         (isBuildStagePostBuild
-            ? !preBuildStageVariables.length && !previousStepVariables.length
-            : !previousStepVariables.length) &&
+            ? !filteredPreBuildStageVariablesBasedOnFormat.length && !filteredPreviousStepVariablesBasedOnFormat.length
+            : !filteredPreviousStepVariablesBasedOnFormat.length) &&
         !filteredGlobalVariablesBasedOnFormat.length
 
     if (isOptionsEmpty) {
@@ -139,28 +157,22 @@ export const getOptionsForValColumn = ({
                       ? [
                             {
                                 label: VAL_COLUMN_DROPDOWN_LABEL.PRE_BUILD_STAGE,
-                                options: preBuildStageVariables,
+                                options: filteredPreBuildStageVariablesBasedOnFormat,
                             },
                             {
                                 label: VAL_COLUMN_DROPDOWN_LABEL.POST_BUILD_STAGE,
-                                options: previousStepVariables,
+                                options: filteredPreviousStepVariablesBasedOnFormat,
                             },
                         ]
                       : [
                             {
                                 label: VAL_COLUMN_DROPDOWN_LABEL.PREVIOUS_STEPS,
-                                options: previousStepVariables,
+                                options: filteredPreviousStepVariablesBasedOnFormat,
                             },
                         ]),
                   {
                       label: VAL_COLUMN_DROPDOWN_LABEL.SYSTEM_VARIABLES,
-                      options: isBuildStagePostBuild
-                          ? filteredGlobalVariablesBasedOnFormat
-                          : filteredGlobalVariablesBasedOnFormat.filter(
-                                (variable) =>
-                                    (isCdPipeline && variable.stageType !== 'post-cd') ||
-                                    !excludeVariables.includes(variable.value),
-                            ),
+                      options: filteredGlobalVariablesBasedOnFormat,
                   },
               ]
             : []),
@@ -270,7 +282,7 @@ export const getValColumnRowProps = ({
 
     return {
         type: DynamicDataTableRowDataType.TEXT,
-        value: description,
+        value: description || 'No description available',
         props: {},
     }
 }
@@ -295,15 +307,19 @@ export const getValColumnRowValue = (
     return isDateFormat ? getGoLangFormattedDateWithTimezone(selectedValue.value) : value
 }
 
-export const getEmptyVariableDataTableRow = (params: GetValColumnRowPropsType): VariableDataRowType => {
+export const getEmptyVariableDataTableRow = ({
+    id,
+    ...params
+}: GetValColumnRowPropsType & { id: number }): VariableDataRowType => {
     const data: VariableDataRowType = {
         data: {
             variable: getVariableColumnRowProps(),
             format: getFormatColumnRowProps({ format: VariableTypeFormat.STRING, isCustomTask: true }),
             val: getValColumnRowProps(params),
         },
-        id: params.id,
+        id,
         customState: {
+            defaultValue: '',
             variableDescription: '',
             isVariableRequired: false,
             choices: [],
@@ -330,7 +346,7 @@ export const getVariableDataTableInitialRows = ({
     ioVariables,
     type,
     isCustomTask,
-    emptyRowParams,
+    ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
         ({
@@ -346,6 +362,7 @@ export const getVariableDataTableInitialRows = ({
             isRuntimeArg,
             fileMountDir,
             fileReferenceId,
+            defaultValue,
             id,
         }) => {
             const isInputVariableRequired = type === PluginVariableType.INPUT && !allowEmptyValue
@@ -363,18 +380,19 @@ export const getVariableDataTableInitialRows = ({
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
                     val: getValColumnRowProps({
-                        ...emptyRowParams,
+                        ...restProps,
+                        type,
                         description,
                         format,
-                        variableType,
                         value,
+                        variableType,
                         refVariableName,
                         refVariableStage,
                         valueConstraint,
-                        id,
                     }),
                 },
                 customState: {
+                    defaultValue,
                     isVariableRequired: isInputVariableRequired,
                     variableDescription: description ?? '',
                     choices: (valueConstraint?.choices || []).map((choiceValue, index) => ({
@@ -384,7 +402,13 @@ export const getVariableDataTableInitialRows = ({
                     })),
                     askValueAtRuntime: isRuntimeArg ?? false,
                     blockCustomValue: valueConstraint?.blockCustomValue ?? false,
-                    selectedValue: null,
+                    selectedValue: {
+                        label: refVariableName || value,
+                        value: refVariableName || value,
+                        refVariableName,
+                        refVariableStage,
+                        variableType: refVariableName ? RefVariableType.GLOBAL : RefVariableType.NEW,
+                    },
                     fileInfo: {
                         id: fileReferenceId,
                         mountDir: { value: fileMountDir, error: '' },
@@ -400,6 +424,21 @@ export const getVariableDataTableInitialRows = ({
             }
         },
     )
+
+export const getVariableDataTableInitialCellError = (
+    rows: VariableDataRowType[],
+    headers: DynamicDataTableHeaderType<VariableDataKeys>[],
+) =>
+    rows.reduce((acc, curr) => {
+        if (!acc[curr.id]) {
+            acc[curr.id] = headers.reduce(
+                (headerAcc, { key }) => ({ ...headerAcc, [key]: { isValid: true, errorMessages: [] } }),
+                {},
+            )
+        }
+
+        return acc
+    }, {})
 
 export const getUploadFileConstraints = ({
     unit,
@@ -422,6 +461,7 @@ export const getUploadFileConstraints = ({
 
 export const convertVariableDataTableToFormData = ({
     rows,
+    cellError,
     type,
     activeStageName,
     selectedTaskIndex,
@@ -440,6 +480,7 @@ export const convertVariableDataTableToFormData = ({
 > & {
     type: PluginVariableType
     rows: VariableDataRowType[]
+    cellError: DynamicDataTableCellErrorType<VariableDataKeys>
 }) => {
     const updatedFormData = structuredClone(formData)
     const updatedFormDataErrorObj = structuredClone(formDataErrorObj)
@@ -564,9 +605,16 @@ export const convertVariableDataTableToFormData = ({
         updatedFormData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails = conditionDetails
     }
 
+    const isValid = Object.values(cellError).reduce(
+        (acc, curr) => acc && !Object.values(curr).some((item) => !item.isValid),
+        true,
+    )
+    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].isValid = isValid
+
     validateTask(
         updatedFormData[activeStageName].steps[selectedTaskIndex],
         updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex],
+        { validateIOVariables: false },
     )
 
     return { updatedFormDataErrorObj, updatedFormData }
