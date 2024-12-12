@@ -12,6 +12,7 @@ on:
       - 'main'
       - 'release-**'
       - 'develop'
+      - 'hotfix-**'
 
 jobs:
   validate-PR-issue:
