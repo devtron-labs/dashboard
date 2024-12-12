@@ -53,7 +53,15 @@ export const ValueContainer = (props) => {
     )
 }
 
-export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj, isSaveAsPlugin = false): void => {
+export const validateTask = (
+    taskData: StepType,
+    taskErrorObj: TaskErrorObj,
+    options?: {
+        isSaveAsPlugin?: boolean
+        validateIOVariables?: boolean
+    },
+) => {
+    const { isSaveAsPlugin = false, validateIOVariables = true } = options ?? {}
     const validationRules = new ValidationRules()
     if (taskData && taskErrorObj) {
         taskErrorObj.name = validationRules.requiredField(taskData.name)
@@ -65,26 +73,37 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj, isS
             const currentStepTypeVariable =
                 taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
 
+            taskErrorObj[currentStepTypeVariable].isValid = taskErrorObj[currentStepTypeVariable].isValid ?? true
+
             taskErrorObj[currentStepTypeVariable].inputVariables = []
-            taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
-                taskErrorObj[currentStepTypeVariable].inputVariables.push(
-                    validationRules.inputVariable(element, inputVarMap, isSaveAsPlugin),
-                )
-                taskErrorObj.isValid =
-                    taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
-                inputVarMap.set(element.name, true)
-            })
+            if (validateIOVariables) {
+                taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
+                    taskErrorObj[currentStepTypeVariable].inputVariables.push(
+                        validationRules.inputVariable(element, inputVarMap, isSaveAsPlugin),
+                    )
+                    taskErrorObj[currentStepTypeVariable].isValid =
+                        taskErrorObj[currentStepTypeVariable].isValid &&
+                        taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
+                    inputVarMap.set(element.name, true)
+                })
+            }
+            taskErrorObj.isValid = taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].isValid
 
             if (taskData.stepType === PluginType.INLINE) {
                 taskErrorObj.inlineStepDetail.outputVariables = []
-                taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
-                    taskErrorObj.inlineStepDetail.outputVariables.push(
-                        validationRules.outputVariable(element, outputVarMap),
-                    )
-                    taskErrorObj.isValid =
-                        taskErrorObj.isValid && taskErrorObj.inlineStepDetail.outputVariables[index].isValid
-                    outputVarMap.set(element.name, true)
-                })
+                if (validateIOVariables) {
+                    taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
+                        taskErrorObj.inlineStepDetail.outputVariables.push(
+                            validationRules.outputVariable(element, outputVarMap),
+                        )
+                        taskErrorObj[currentStepTypeVariable].isValid =
+                            taskErrorObj[currentStepTypeVariable].isValid &&
+                            taskErrorObj.inlineStepDetail.outputVariables[index].isValid
+                        outputVarMap.set(element.name, true)
+                    })
+                }
+                taskErrorObj.isValid = taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].isValid
+
                 if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
                     taskErrorObj.inlineStepDetail['script'] = validationRules.requiredField(
                         taskData.inlineStepDetail['script'],

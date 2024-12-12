@@ -1547,11 +1547,12 @@ const CDMaterial = ({
                         </>
                     ) : (
                         <RuntimeParametersV2
+                            appId={appId}
                             parameters={bulkRuntimeParams || runtimeParamsList}
                             handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
                             onError={handleBulkRuntimeParamError || handleRuntimeParamError}
                             uploadFile={bulkUploadFile || uploadFile}
-                            headingClassName="pb-14 flexbox dc__gap-4"
+                            isCD
                         />
                     )}
                 </ConditionalWrap>

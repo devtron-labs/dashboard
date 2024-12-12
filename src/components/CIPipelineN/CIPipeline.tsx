@@ -47,6 +47,7 @@ import {
     ProcessPluginDataParamsType,
     ResourceKindType,
     uploadCIPipelineFile,
+    getGlobalVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -59,7 +60,6 @@ import {
 import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
-    getGlobalVariable,
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
@@ -121,7 +121,7 @@ export default function CIPipeline({
     const [apiInProgress, setApiInProgress] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
-    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
+    const [globalVariables, setGlobalVariables] = useState<PipelineContext['globalVariables']>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
@@ -346,23 +346,12 @@ export default function CIPipeline({
         }
     }
 
-    const getGlobalVariables = async (): Promise<void> => {
+    const callGlobalVariables = async () => {
         try {
-            const globalVariablesResponse = await getGlobalVariable(Number(appId))
-            const globalVariablesResult = globalVariablesResponse?.result ?? []
-            const _globalVariableOptions = globalVariablesResult.map((variable) => {
-                variable.label = variable.name
-                variable.value = variable.name
-                variable.description = variable.description || ''
-                variable.variableType = RefVariableType.GLOBAL
-                delete variable.name
-                return variable
-            })
-            setGlobalVariables(_globalVariableOptions || [])
-        } catch (error) {
-            if (error instanceof ServerErrors && error.code !== 403) {
-                showError(error)
-            }
+            const globalVariableOptions = await getGlobalVariables({ appId: Number(appId) })
+            setGlobalVariables(globalVariableOptions)
+        } catch {
+            // HANDLED IN SERVICE
         }
     }
 
@@ -449,6 +438,7 @@ export default function CIPipeline({
                 if (!_formDataErrorObj[stageName].steps[i]) {
                     _formDataErrorObj[stageName].steps.push({ isValid: true })
                 }
+                _formDataErrorObj.triggerValidation = true
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
@@ -499,7 +489,7 @@ export default function CIPipeline({
                     await getEnvironments(0)
                 }
             }
-            await getGlobalVariables()
+            await callGlobalVariables()
             setPageState(ViewType.FORM)
         } catch (error) {
             setPageState(ViewType.ERROR)
