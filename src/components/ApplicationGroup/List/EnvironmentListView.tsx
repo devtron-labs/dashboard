@@ -132,8 +132,8 @@ const EnvironmentsListView = ({
     )
     const renderAppGroupListContent = () =>
         !filteredEnvList.length ? (
-            <div className="flexbox-col dc__gap-12">
-                <LoadingShimmerList shimmerRowClassName="pl-20 env-list-row" />
+            <div className="flexbox-col">
+                <LoadingShimmerList shimmerRowClassName="px-20 py-12 env-list-row" />
             </div>
         ) : (
             <div className="dc__overflow-scroll">
@@ -172,7 +172,7 @@ const EnvironmentsListView = ({
     ) : (
         <>
             <div data-testid="app-group-container">
-                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-48 bcn-0">
+                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-48 bcn-0 dc__border-bottom">
                     <div />
                     <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
                     <div>{GROUP_LIST_HEADER.NAMESPACE}</div>

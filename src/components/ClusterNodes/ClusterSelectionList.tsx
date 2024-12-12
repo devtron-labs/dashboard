@@ -88,6 +88,63 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     const filteredList: ClusterDetail[] = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
+
+        if (sortBy === ClusterMapListSortableKeys.CPU_CAPACITY) {
+            return clusterOptions.sort((a, b) =>
+                numberComparatorBySortOrder(
+                    parseFloat(a.cpu?.capacity?.replace('m', '')) || 0,
+                    parseFloat(b.cpu?.capacity?.replace('m', '')) || 0,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.MEMORY_CAPACITY) {
+            return clusterOptions.sort((a, b) =>
+                numberComparatorBySortOrder(
+                    parseFloat(a.memory?.capacity?.replace('Mi', '')) || 0,
+                    parseFloat(b.memory?.capacity?.replace('Mi', '')) || 0,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.K8S_VERSION) {
+            return clusterOptions.sort((a, b) =>
+                versionComparatorBySortOrder(a[sortBy] || '', b[sortBy] || '', sortOrder),
+            )
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.TYPE) {
+            return clusterOptions.sort((a, b) =>
+                stringComparatorBySortOrder(
+                    a.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    b.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.NODE_ERRORS) {
+            return clusterOptions.sort((a, b) => {
+                const errorsA = a.nodeErrors ? Object.keys(a.nodeErrors).length : 0
+                const errorsB = b.nodeErrors ? Object.keys(b.nodeErrors).length : 0
+                return numberComparatorBySortOrder(errorsA, errorsB, sortOrder)
+            })
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.NODES) {
+            return clusterOptions.sort((a, b) =>
+                numberComparatorBySortOrder((a[sortBy] as number) || 0, (b[sortBy] as number) || 0, sortOrder),
+            )
+        }
+
+        if (sortBy === ClusterMapListSortableKeys.STATUS || sortBy === ClusterMapListSortableKeys.CLUSTER_NAME) {
+            return clusterOptions.sort((a, b) =>
+                stringComparatorBySortOrder((a[sortBy] as string) || '', b[(sortBy as string) || ''], sortOrder),
+            )
+        }
+
         return clusterOptions.filter((option) => {
             const filterCondition =
                 clusterFilter === ClusterFiltersType.ALL_CLUSTERS ||
@@ -96,7 +153,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
-    }, [searchKey, clusterOptions, `${clusterFilter}`])
+    }, [searchKey, clusterOptions, `${clusterFilter}`, sortBy, sortOrder])
 
     const treeMapData = useMemo(() => {
         const { prodClusters, nonProdClusters } = filteredList.reduce(
@@ -245,54 +302,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys, isNumber?: boolean) => {
+    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys) => {
         handleSorting(cellToSort)
-
-        if (cellToSort === ClusterMapListSortableKeys.CPU_CAPACITY) {
-            return filteredList.sort((a, b) =>
-                numberComparatorBySortOrder(
-                    parseFloat(a.cpu?.capacity?.replace('m', '')) || 0,
-                    parseFloat(b.cpu?.capacity?.replace('m', '')) || 0,
-                    sortOrder,
-                ),
-            )
-        }
-
-        if (cellToSort === ClusterMapListSortableKeys.MEMORY_CAPACITY) {
-            return filteredList.sort((a, b) =>
-                numberComparatorBySortOrder(
-                    parseFloat(a.memory?.capacity?.replace('Mi', '')) || 0,
-                    parseFloat(b.memory?.capacity?.replace('Mi', '')) || 0,
-                    sortOrder,
-                ),
-            )
-        }
-
-        if (cellToSort === ClusterMapListSortableKeys.K8S_VERSION) {
-            return filteredList.sort((a, b) =>
-                versionComparatorBySortOrder(a[cellToSort] || '', b[cellToSort] || '', sortOrder),
-            )
-        }
-
-        if (cellToSort === ClusterMapListSortableKeys.TYPE) {
-            return filteredList.sort((a, b) =>
-                stringComparatorBySortOrder(
-                    a.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
-                    b.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
-                    sortOrder,
-                ),
-            )
-        }
-
-        if (isNumber) {
-            return filteredList.sort((a, b) =>
-                numberComparatorBySortOrder((a[cellToSort] as number) || 0, (b[cellToSort] as number) || 0, sortOrder),
-            )
-        }
-
-        return filteredList.sort((a, b) =>
-            stringComparatorBySortOrder((a[cellToSort] as string) || '', b[(cellToSort as string) || ''], sortOrder),
-        )
     }
 
     return (
@@ -375,9 +386,16 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                             sortOrder={sortOrder}
                             isSortable
                             disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODES, true)}
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODES)}
                         />
-                        <div>Node Errors</div>
+                        <SortableTableHeaderCell
+                            title="Node Errors"
+                            isSorted={sortBy === ClusterMapListSortableKeys.NODE_ERRORS}
+                            sortOrder={sortOrder}
+                            isSortable
+                            disabled={false}
+                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODE_ERRORS)}
+                        />
                         <SortableTableHeaderCell
                             title="K8S version"
                             isSorted={sortBy === ClusterMapListSortableKeys.K8S_VERSION}
