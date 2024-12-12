@@ -17,7 +17,7 @@ export const ClusterMapLoading = ({ errorInNodeListing }: ClusterMapLoadingType)
             ) : (
                 <>
                     <Success className="icon-dim-16 dc__no-shrink" />
-                    <span>Healthy</span>
+                    <span>Connected</span>
                 </>
             )}
         </div>

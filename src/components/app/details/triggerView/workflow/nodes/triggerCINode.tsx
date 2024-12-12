@@ -206,7 +206,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                             context.onClickCIMaterial(this.props.id, this.props.title)
                         }}
                     >
-                       {this.props.isJobView ? 'Run Job' :  'Select Material'}
+                        Select Material
                     </button>
                 </div>
             </div>
