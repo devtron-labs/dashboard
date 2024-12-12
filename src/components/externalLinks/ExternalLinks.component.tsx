@@ -56,7 +56,6 @@ import {
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
-import { ReactComponent as ICBrowser } from '@Icons/ic-browser.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 
