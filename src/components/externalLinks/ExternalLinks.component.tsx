@@ -202,13 +202,6 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
 const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
     let externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
-
-    const [baseUrl, searchString] = externalLinkURL.split('?')
-    const params = new URLSearchParams(searchString)
-    const openOverlayOnIcon: boolean = params.get(DEVTRON_IFRAME_PRIMARY) === 'false'
-    params.delete(DEVTRON_IFRAME_PRIMARY)
-    externalLinkURL = getUrlWithSearchParams(baseUrl, params)
-
     const commonExpandIconClassname = 'flex p-4 open-link-button dc__hover-n50 dc__right-radius-3'
 
     const getTippyForLink = (children) => (
@@ -234,7 +227,7 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                 <button
                     className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3 dc__border-right"
                     type="button"
-                    onClick={openOverlayOnIcon ? getHandleOpenURL(externalLinkURL) : handleTextClick}
+                    onClick={linkOption.openOverlayOnIcon ? getHandleOpenURL(externalLinkURL) : handleTextClick}
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
                     <span
@@ -244,7 +237,7 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                         {linkOption.label}
                     </span>
                 </button>
-                {openOverlayOnIcon ? (
+                {linkOption.openOverlayOnIcon ? (
                     <button
                         onClick={handleTextClick}
                         type="button"
@@ -312,6 +305,7 @@ export const AppLevelExternalLinks = ({
                     icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                     startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                     description: link.description,
+                    openOverlayOnIcon: link.openOverlayOnIcon,
                 })),
             )
         } else {

@@ -28,6 +28,7 @@ export interface OptionTypeWithIcon {
     category?: number
     description?: string
     icon?: string
+    openOverlayOnIcon?: boolean
 }
 
 export interface ExpandedExternalLink extends OptionTypeWithIcon {
@@ -58,7 +59,7 @@ export interface ExternalLinkIdentifierProps {
     clusterId: number
 }
 
-export interface ExternalLink {
+export interface ExternalLink extends Pick<OptionTypeWithIcon, 'openOverlayOnIcon'> {
     id?: number
     monitoringToolId: number
     name: string
