@@ -199,7 +199,7 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
 )
 
 const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
-    let externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
+    const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
     const commonExpandIconClassname = 'flex p-4 open-link-button dc__hover-n50 dc__right-radius-3'
 
