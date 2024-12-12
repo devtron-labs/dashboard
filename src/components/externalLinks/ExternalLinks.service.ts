@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { DEVTRON_IFRAME_PRIMARY, Routes } from '../../config'
 import {
     ExternalLink,
@@ -59,11 +59,11 @@ export const getExternalLinks = async (
                 const linkUrl = new URL(link.url)
                 const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
                 linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
-                const sanitizedUrl = new URL(linkUrl)
+                const sanitizedUrl = linkUrl.href
                 
                 return {
                     ...link,
-                    url: sanitizedUrl.href,
+                    url: sanitizedUrl,
                     openInNewTab,
                 }
             }),
