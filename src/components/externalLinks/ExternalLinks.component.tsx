@@ -21,7 +21,7 @@ import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION, URLS } from '../../config'
+import { DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
@@ -52,7 +52,6 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ImageWithFallback,
-    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
