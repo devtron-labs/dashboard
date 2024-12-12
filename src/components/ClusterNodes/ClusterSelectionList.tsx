@@ -41,7 +41,7 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
-import { ClusterMapListSortableKeys, ClusterStatusByFilter } from './constants'
+import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys, ClusterStatusByFilter } from './constants'
 import './clusterNodes.scss'
 import { ClusterMapLoading } from './ClusterMapLoading'
 
@@ -207,7 +207,9 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 {renderClusterStatus(clusterData)}
 
                 <div className="child-shimmer-loading">
-                    {hideDataOnLoad(clusterData.isProd ? 'Production' : 'Non Production')}
+                    {hideDataOnLoad(
+                        clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    )}
                 </div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
@@ -272,16 +274,30 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             )
         }
 
+        if (cellToSort === ClusterMapListSortableKeys.TYPE) {
+            return filteredList.sort((a, b) =>
+                stringComparatorBySortOrder(
+                    a.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    b.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    sortOrder,
+                ),
+            )
+        }
+
+        if (isNumber) {
+            return filteredList.sort((a, b) =>
+                numberComparatorBySortOrder((a[cellToSort] as number) || 0, (b[cellToSort] as number) || 0, sortOrder),
+            )
+        }
+
         return filteredList.sort((a, b) =>
-            isNumber
-                ? numberComparatorBySortOrder(a[cellToSort] || 0, b[cellToSort] || 0, sortOrder)
-                : stringComparatorBySortOrder(a[cellToSort] || '', b[cellToSort || ''], sortOrder),
+            stringComparatorBySortOrder((a[cellToSort] as string) || '', b[(cellToSort as string) || ''], sortOrder),
         )
     }
 
     return (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
-            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
+            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
                 <div className="flex dc__gap-12">
                     <SearchBar
                         initialSearchText={searchKey}
@@ -328,7 +344,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 </div>
             ) : (
                 <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
                         <SortableTableHeaderCell
                             title="Cluster"
                             isSorted={sortBy === ClusterMapListSortableKeys.CLUSTER_NAME}

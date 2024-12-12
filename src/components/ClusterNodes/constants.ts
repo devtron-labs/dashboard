@@ -370,3 +370,9 @@ export enum ClusterMapListSortableKeys {
     CPU_CAPACITY = 'cpu',
     MEMORY_CAPACITY = 'memory',
 }
+
+export enum CLUSTER_PROD_TYPE {
+    PRODUCTION= 'Production',
+    NON_PRODUCTION= 'Non Production',
+
+}
