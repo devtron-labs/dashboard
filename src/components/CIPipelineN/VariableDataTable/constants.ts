@@ -4,9 +4,12 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
 import { VariableDataKeys } from './types'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const getVariableDataTableHeaders = (
     type: PluginVariableType,
@@ -61,10 +64,14 @@ export const FORMAT_COLUMN_OPTIONS: SelectPickerOptionType<string>[] = [
         label: FORMAT_OPTIONS_MAP.DATE,
         value: VariableTypeFormat.DATE,
     },
-    {
-        label: FORMAT_OPTIONS_MAP.FILE,
-        value: VariableTypeFormat.FILE,
-    },
+    ...(isFELibAvailable
+        ? [
+              {
+                  label: FORMAT_OPTIONS_MAP.FILE,
+                  value: VariableTypeFormat.FILE,
+              },
+          ]
+        : []),
 ]
 
 export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
@@ -77,3 +84,12 @@ export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
         value: 1 / 1024,
     },
 ]
+
+export const VARIABLE_DATA_TABLE_CELL_ERROR_MSGS = {
+    EMPTY_ROW: 'Please complete or remove this variable',
+    VARIABLE_NAME_REQUIRED: 'Variable name is required',
+    INVALID_VARIABLE_NAME: 'Invalid name. Only alphanumeric chars and (_) is allowed',
+    UNIQUE_VARIABLE_NAME: 'Variable name should be unique',
+    VARIABLE_VALUE_REQUIRED: 'Variable value is required',
+    VARIABLE_VALUE_NOT_A_NUMBER: 'Variable value is not a number',
+}

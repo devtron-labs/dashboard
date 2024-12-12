@@ -180,16 +180,15 @@ export interface GetVariableDataTableInitialRowsProps
     isCustomTask: boolean
 }
 
-export interface GetValidateCellProps {
+export type GetValidateCellProps = {
     pluginVariableType: PluginVariableType
-    keysFrequencyMap: Record<string, number>
-    key: VariableDataKeys
     row: VariableDataRowType
     value?: string
+    key: VariableDataKeys
+    keysFrequencyMap?: Record<string, number>
 }
 
-export interface ValidateVariableDataTableProps
-    extends Pick<GetValidateCellProps, 'keysFrequencyMap' | 'pluginVariableType'> {
+export interface ValidateVariableDataTableProps extends Pick<GetValidateCellProps, 'pluginVariableType'> {
     rows: VariableDataRowType[]
     headers: DynamicDataTableHeaderType<VariableDataKeys>[]
 }

@@ -1,17 +1,38 @@
-import { DynamicDataTableCellValidationState, VariableTypeFormat } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DynamicDataTableCellErrorType,
+    DynamicDataTableCellValidationState,
+    VariableTypeFormat,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PATTERNS } from '@Config/constants'
 
-import { GetValidateCellProps, ValidateVariableDataTableProps } from './types'
+import { GetValidateCellProps, ValidateVariableDataTableProps, VariableDataKeys, VariableDataRowType } from './types'
 import { checkForSystemVariable, testValueForNumber } from './utils'
+import { VARIABLE_DATA_TABLE_CELL_ERROR_MSGS } from './constants'
+
+export const getVariableDataTableVariableKeysFrequency = (
+    rows: VariableDataRowType[],
+    rowId?: string | number,
+    value?: string,
+) => {
+    const keysFrequencyMap: Record<string, number> = rows.reduce((acc, curr) => {
+        const currentKey = curr.id === rowId ? value : curr.data.variable.value
+        if (currentKey) {
+            acc[currentKey] = (acc[currentKey] ?? 0) + 1
+        }
+        return acc
+    }, {})
+
+    return keysFrequencyMap
+}
 
 export const getVariableDataTableCellValidateState = ({
-    pluginVariableType,
-    keysFrequencyMap,
     row: { data, customState },
     key,
     value: latestValue,
+    pluginVariableType,
+    keysFrequencyMap = {},
 }: GetValidateCellProps): DynamicDataTableCellValidationState => {
     const value = latestValue ?? data[key].value
     const { variableDescription, isVariableRequired, valColumnSelectedValue, askValueAtRuntime, defaultValue } =
@@ -22,35 +43,35 @@ export const getVariableDataTableCellValidateState = ({
         const variableValue = !isVariableRequired || data.val.value
 
         if (!value && !variableValue && !variableDescription) {
-            return { errorMessages: ['Please complete or remove this variable'], isValid: false }
+            return { errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.EMPTY_ROW], isValid: false }
         }
 
         if (!value) {
-            return { errorMessages: ['Variable name is required'], isValid: false }
+            return { errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_NAME_REQUIRED], isValid: false }
         }
 
         if (!re.test(value)) {
             return {
-                errorMessages: [`Invalid name. Only alphanumeric chars and (_) is allowed`],
+                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.INVALID_VARIABLE_NAME],
                 isValid: false,
             }
         }
 
         if ((keysFrequencyMap[value] || 0) > 1) {
-            return { errorMessages: ['Variable name should be unique'], isValid: false }
+            return { errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.UNIQUE_VARIABLE_NAME], isValid: false }
         }
     }
 
     if (pluginVariableType === PluginVariableType.INPUT && key === 'val') {
         const checkForVariable = isVariableRequired && !askValueAtRuntime && !defaultValue
         if (checkForVariable && !value) {
-            return { errorMessages: ['Variable value is required'], isValid: false }
+            return { errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_VALUE_REQUIRED], isValid: false }
         }
 
         if (data.format.value === VariableTypeFormat.NUMBER) {
             return {
                 isValid: checkForSystemVariable(valColumnSelectedValue) || testValueForNumber(value),
-                errorMessages: ['Variable value is not a number'],
+                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_VALUE_NOT_A_NUMBER],
             }
         }
     }
@@ -58,12 +79,42 @@ export const getVariableDataTableCellValidateState = ({
     return { errorMessages: [], isValid: true }
 }
 
-export const validateVariableDataTable = ({
+export const validateVariableDataTableVariableKeys = ({
     rows,
-    headers,
-    keysFrequencyMap,
-    pluginVariableType,
-}: ValidateVariableDataTableProps) => {
+    rowId,
+    value,
+    cellError,
+}: Pick<ValidateVariableDataTableProps, 'rows'> & {
+    cellError: DynamicDataTableCellErrorType<VariableDataKeys>
+    rowId?: string | number
+    value?: string
+}) => {
+    const updatedCellError = cellError
+    const keysFrequencyMap = getVariableDataTableVariableKeysFrequency(rows, rowId, value)
+
+    rows.forEach(({ data, id }) => {
+        const cellValue = rowId === id ? value : data.variable.value
+        const variableErrorState = updatedCellError[id].variable
+        if (variableErrorState.isValid && keysFrequencyMap[cellValue] > 1) {
+            updatedCellError[id].variable = {
+                isValid: false,
+                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.UNIQUE_VARIABLE_NAME],
+            }
+        } else if (
+            keysFrequencyMap[cellValue] < 2 &&
+            variableErrorState.errorMessages[0] === VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.UNIQUE_VARIABLE_NAME
+        ) {
+            updatedCellError[id].variable = {
+                isValid: true,
+                errorMessages: [],
+            }
+        }
+    })
+}
+
+export const validateVariableDataTable = ({ rows, headers, pluginVariableType }: ValidateVariableDataTableProps) => {
+    const keysFrequencyMap = getVariableDataTableVariableKeysFrequency(rows)
+
     const cellError = rows.reduce((acc, row) => {
         acc[row.id] = headers.reduce(
             (headerAcc, { key }) => ({

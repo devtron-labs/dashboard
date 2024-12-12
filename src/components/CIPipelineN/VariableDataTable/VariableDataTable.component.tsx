@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef, useMemo } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 
 import {
     DynamicDataTable,
@@ -33,7 +33,11 @@ import {
     getVariableDataTableInitialCellError,
     getVariableDataTableInitialRows,
 } from './utils'
-import { getVariableDataTableCellValidateState, validateVariableDataTable } from './validations'
+import {
+    getVariableDataTableCellValidateState,
+    validateVariableDataTable,
+    validateVariableDataTableVariableKeys,
+} from './validations'
 
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 import { VariableConfigOverlay } from './VariableConfigOverlay'
@@ -93,22 +97,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
     const [rows, setRows] = useState<VariableDataRowType[]>([])
     const [cellError, setCellError] = useState<DynamicDataTableCellErrorType<VariableDataKeys>>({})
 
-    // KEYS FREQUENCY MAP
-    const keysFrequencyMap: Record<string, number> = useMemo(
-        () =>
-            rows.reduce(
-                (acc, curr) => {
-                    const currentKey = curr.data.variable.value
-                    if (currentKey) {
-                        acc[currentKey] = (acc[currentKey] || 0) + 1
-                    }
-                    return acc
-                },
-                {} as Record<string, number>,
-            ),
-        [rows],
-    )
-
     // REFS
     const initialRowsSet = useRef('')
 
@@ -143,7 +131,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 validateVariableDataTable({
                     headers,
                     rows,
-                    keysFrequencyMap,
                     pluginVariableType: type,
                 }),
             )
@@ -175,11 +162,12 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         const isCurrentValueValid =
                             !blockCustomValue ||
                             ((!customState.valColumnSelectedValue ||
-                                customState.valColumnSelectedValue?.variableType === RefVariableType.NEW) &&
+                                (customState.valColumnSelectedValue?.variableType !== RefVariableType.GLOBAL &&
+                                    customState.valColumnSelectedValue?.variableType !==
+                                        RefVariableType.FROM_PREVIOUS_STEP)) &&
                                 choicesOptions.some(({ value }) => value === data.val.value))
 
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             key: 'val',
                             row,
@@ -201,6 +189,13 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                     value: isCurrentValueValid ? data.val.value : '',
                                     format: data.format.value as VariableTypeFormat,
                                     valueConstraint: {
+                                        constraint: {
+                                            fileProperty: getUploadFileConstraints({
+                                                allowedExtensions: customState.fileInfo.allowedExtensions,
+                                                maxUploadSize: customState.fileInfo.maxUploadSize,
+                                                unit: customState.fileInfo.unit.label as string,
+                                            }),
+                                        },
                                         blockCustomValue,
                                         choices: choicesOptions.map(({ value }) => value),
                                     },
@@ -280,13 +275,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             customState: { ...row.customState, isVariableRequired: rowAction.actionValue },
                         }
                         updatedCellError[row.id].variable = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             key: 'variable',
                             row: updatedRow,
                         })
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             key: 'val',
                             row: updatedRow,
@@ -365,7 +358,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 updatedRows = updatedRows.map((row) => {
                     if (row.id === rowAction.rowId && row.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             value: rowAction.actionValue.fileName,
                             key: 'val',
@@ -410,18 +402,29 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             case VariableDataTableActionType.DELETE_ROW:
                 updatedRows = updatedRows.filter((row) => row.id !== rowAction.rowId)
                 delete updatedCellError[rowAction.rowId]
+                validateVariableDataTableVariableKeys({
+                    rows: updatedRows,
+                    cellError: updatedCellError,
+                })
                 break
 
             case VariableDataTableActionType.UPDATE_ROW:
                 updatedRows = rows.map<VariableDataRowType>((row) => {
                     if (row.id === rowAction.rowId) {
-                        updatedCellError[row.id][rowAction.headerKey] = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
+                        updatedCellError[rowAction.rowId][rowAction.headerKey] = getVariableDataTableCellValidateState({
                             pluginVariableType: type,
                             value: rowAction.actionValue,
-                            key: rowAction.headerKey,
                             row,
+                            key: rowAction.headerKey,
                         })
+                        if (rowAction.headerKey === 'variable') {
+                            validateVariableDataTableVariableKeys({
+                                rows,
+                                cellError: updatedCellError,
+                                rowId: rowAction.rowId,
+                                value: rowAction.actionValue,
+                            })
+                        }
 
                         return {
                             ...row,
@@ -449,7 +452,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         )
 
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             value: valColumnRowValue,
                             key: 'val',
@@ -494,7 +496,6 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 updatedRows = updatedRows.map((row) => {
                     if (row.id === rowAction.rowId && row.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
                             pluginVariableType: type,
                             key: 'val',
                             row,
