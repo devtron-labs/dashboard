@@ -387,6 +387,11 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    useEffect(() => () => {
+        clearPollingInterval()
+        IndexStore.clearAppDetails()
+    }, [])
+
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
         return () => {
