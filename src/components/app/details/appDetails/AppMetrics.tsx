@@ -90,7 +90,7 @@ export const AppMetrics: React.FC<{
     })
     const addSpace: string = addExtraSpace ? 'mb-16' : ''
     const pod = podMap?.values().next().value
-    const newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash']
+    const newPodHash = pod?.networkingInfo?.labels?.['rollouts-pod-template-hash']
 
     function handleTabChange(event): void {
         const tab = event.target.value
