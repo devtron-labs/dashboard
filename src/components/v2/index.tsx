@@ -79,7 +79,7 @@ const RouterComponent = ({ envType }) => {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
-            IndexStore.publishAppDetails({} as AppDetails, AppType.DEVTRON_HELM_CHART) // Cleared out the data on unmount
+            IndexStore.clearAppDetails() // Cleared out the data on unmount
         }
     }, [])
 
