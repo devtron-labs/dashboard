@@ -12,6 +12,7 @@ import {
     DraftState,
     DryRunEditorMode,
     GenericEmptyState,
+    hasHashiOrAWS,
     MODES,
     useAsync,
     usePrompt,
@@ -101,6 +102,12 @@ export const ConfigMapSecretDryRun = ({
             !publishedConfigMapSecretData)
     const hideManifest =
         isJob || dryRunConfigMapSecretData?.external || fileDeletionRequest || publishedVersionDoesNotExist
+    const isSaveButtonDisabled =
+        isSubmitting ||
+        areScopeVariablesResolving ||
+        hasHashiOrAWS(dryRunConfigMapSecretData?.externalType) ||
+        resolveScopedVariables ||
+        (formData.isSecret && dryRunConfigMapSecretData?.unAuthorized)
 
     useEffect(() => {
         abortControllerRef.current = new AbortController()
@@ -264,7 +271,7 @@ export const ConfigMapSecretDryRun = ({
                     size={ComponentSizeType.medium}
                     onClick={handleSubmit}
                     isLoading={isSubmitting}
-                    disabled={isSubmitting || areScopeVariablesResolving}
+                    disabled={isSaveButtonDisabled}
                 />
             </footer>
         )

@@ -153,7 +153,7 @@ export const ConfigMapSecretForm = ({
             data-testid={`${componentName}-name`}
             label="Name"
             placeholder={`Eg. ${!data.isSecret ? 'sample-configmap' : 'sample-secret'}`}
-            disabled={!isCreateView}
+            disabled={!isCreateView || isFormDisabled}
             isRequiredField
             error={errors.name}
             noTrim

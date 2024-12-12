@@ -119,7 +119,7 @@ export const ConfigMapSecretContainer = ({
     const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
     const [showDraftSaveModal, setShowDraftSaveModal] = useState(false)
     const [draftPayload, setDraftPayload] = useState<CMSecretDraftPayloadType>(null)
-    const [resolvedScopeVariables, setResolvedScopeVariables] = useState(false)
+    const [resolveScopedVariables, setResolveScopedVariables] = useState(false)
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState(false)
@@ -184,7 +184,7 @@ export const ConfigMapSecretContainer = ({
         return () => {
             abortControllerRef.current.abort()
         }
-    }, [envId, resolvedScopeVariables])
+    }, [envId, resolveScopedVariables])
 
     // ASYNC CALL - CONFIGMAP/SECRET DATA
     const [configMapSecretResLoading, configMapSecretRes, , reloadConfigMapSecret] = useAsync(
@@ -314,8 +314,8 @@ export const ConfigMapSecretContainer = ({
                     abortControllerRef.current.signal,
                 )
             }, abortControllerRef),
-        [resolvedScopeVariables],
-        resolvedScopeVariables,
+        [resolveScopedVariables],
+        resolveScopedVariables,
     )
 
     // RESOLVED CONFIGMAP/SECRET DATA
@@ -415,7 +415,7 @@ export const ConfigMapSecretContainer = ({
         }
 
         if (reloadResolvedScopeVariablesResErr) {
-            setResolvedScopeVariables(false)
+            setResolveScopedVariables(false)
         }
     }, [
         configMapSecretData,
@@ -433,7 +433,7 @@ export const ConfigMapSecretContainer = ({
             resolvedScopeVariablesRes &&
             !resolvedScopeVariablesRes.areVariablesPresent
         ) {
-            setResolvedScopeVariables(false)
+            setResolveScopedVariables(false)
             ToastManager.showToast({
                 title: 'Error',
                 description: 'No valid variable found on this page',
@@ -444,7 +444,7 @@ export const ConfigMapSecretContainer = ({
 
     // SET RESOLVE VALUES IN FORM STATE
     useEffect(() => {
-        if (resolvedScopeVariables && resolvedFormData) {
+        if (resolveScopedVariables && resolvedFormData) {
             savedFormData.current = formData
             reset({ ...resolvedFormData, isResolvedData: true }, { keepInitialValues: true, keepDirty: true })
         } else if (savedFormData.current) {
@@ -454,7 +454,7 @@ export const ConfigMapSecretContainer = ({
             )
             savedFormData.current = null
         }
-    }, [resolvedScopeVariables, resolvedFormData])
+    }, [resolveScopedVariables, resolvedFormData])
 
     // TAB HANDLING
     useEffect(() => {
@@ -486,7 +486,7 @@ export const ConfigMapSecretContainer = ({
 
     // METHODS
     const updateCMSecret = (configName?: string) => {
-        setResolvedScopeVariables(false)
+        setResolveScopedVariables(false)
         setHideNoOverrideEmptyState(false)
         fetchEnvConfig(+envId || -1)
 
@@ -579,13 +579,13 @@ export const ConfigMapSecretContainer = ({
     const handleToggleScopedVariablesView = () => {
         ReactGA.event({
             category: gaEventCategory,
-            action: resolvedScopeVariables ? 'clicked-unresolve-scoped-variable' : 'clicked-resolve-scoped-variable',
+            action: resolveScopedVariables ? 'clicked-unresolve-scoped-variable' : 'clicked-resolve-scoped-variable',
         })
-        setResolvedScopeVariables(!resolvedScopeVariables)
+        setResolveScopedVariables(!resolveScopedVariables)
     }
 
     const handleCreateOverride = () => {
-        setResolvedScopeVariables(false)
+        setResolveScopedVariables(false)
         setHideNoOverrideEmptyState(true)
         ReactGA.event({
             category: gaEventCategory,
@@ -879,7 +879,7 @@ export const ConfigMapSecretContainer = ({
                             resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData
                         }
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                        resolveScopedVariables={resolvedScopeVariables}
+                        resolveScopedVariables={resolveScopedVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         dryRunEditorMode={dryRunEditorMode}
                         handleChangeDryRunEditorMode={setDryRunEditorMode}
@@ -981,7 +981,7 @@ export const ConfigMapSecretContainer = ({
                         selectedProtectionViewTab={selectedProtectionViewTab}
                         handleProtectionViewTabChange={handleActionWithFormValidation(handleProtectionViewTabChange)}
                         handleToggleCommentsView={toggleDraftComments}
-                        resolveScopedVariables={resolvedScopeVariables}
+                        resolveScopedVariables={resolveScopedVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         popupConfig={toolbarPopupConfig}
                         handleToggleShowTemplateMergedWithPatch={handleToggleShowTemplateMergedWithPatch}
