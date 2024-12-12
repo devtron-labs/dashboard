@@ -216,7 +216,7 @@ export const getFormatColumnRowProps = ({
 export const getValColumnRowProps = ({
     format,
     type,
-    variableType,
+    variableType = RefVariableType.NEW,
     value,
     refVariableName,
     refVariableStage,
@@ -299,12 +299,12 @@ export const checkForSystemVariable = (option: VariableDataTableSelectPickerOpti
 export const getValColumnRowValue = (
     format: VariableTypeFormat,
     value: string,
-    selectedValue: VariableDataTableSelectPickerOptionType,
+    valColumnSelectedValue: VariableDataTableSelectPickerOptionType,
 ) => {
-    const isSystemVariable = checkForSystemVariable(selectedValue)
+    const isSystemVariable = checkForSystemVariable(valColumnSelectedValue)
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
 
-    return isDateFormat ? getGoLangFormattedDateWithTimezone(selectedValue.value) : value
+    return isDateFormat ? getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value) : value
 }
 
 export const getEmptyVariableDataTableRow = ({
@@ -325,7 +325,7 @@ export const getEmptyVariableDataTableRow = ({
             choices: [],
             askValueAtRuntime: false,
             blockCustomValue: false,
-            selectedValue: null,
+            valColumnSelectedValue: null,
             fileInfo: {
                 id: null,
                 mountDir: {
@@ -349,23 +349,37 @@ export const getVariableDataTableInitialRows = ({
     ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
-        ({
-            name,
-            allowEmptyValue,
-            description,
-            format,
-            variableType,
-            value,
-            refVariableName,
-            refVariableStage,
-            valueConstraint,
-            isRuntimeArg,
-            fileMountDir,
-            fileReferenceId,
-            defaultValue,
-            id,
-        }) => {
+        (
+            {
+                name,
+                allowEmptyValue,
+                description,
+                format,
+                variableType,
+                value,
+                refVariableName,
+                refVariableStage,
+                valueConstraint,
+                isRuntimeArg,
+                fileMountDir,
+                fileReferenceId,
+                defaultValue,
+                id,
+            },
+            index,
+        ) => {
             const isInputVariableRequired = type === PluginVariableType.INPUT && !allowEmptyValue
+            const valColumnValue = getValColumnRowProps({
+                ...restProps,
+                type,
+                description,
+                format,
+                value,
+                variableType,
+                refVariableName,
+                refVariableStage,
+                valueConstraint,
+            })
 
             return {
                 data: {
@@ -379,36 +393,30 @@ export const getVariableDataTableInitialRows = ({
                         },
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
-                    val: getValColumnRowProps({
-                        ...restProps,
-                        type,
-                        description,
-                        format,
-                        value,
-                        variableType,
-                        refVariableName,
-                        refVariableStage,
-                        valueConstraint,
-                    }),
+                    val: valColumnValue,
                 },
                 customState: {
                     defaultValue,
                     isVariableRequired: isInputVariableRequired,
                     variableDescription: description ?? '',
-                    choices: (valueConstraint?.choices || []).map((choiceValue, index) => ({
-                        id: index,
+                    choices: (valueConstraint?.choices || []).map((choiceValue, choiceIndex) => ({
+                        id: choiceIndex,
                         value: choiceValue,
                         error: '',
                     })),
                     askValueAtRuntime: isRuntimeArg ?? false,
                     blockCustomValue: valueConstraint?.blockCustomValue ?? false,
-                    selectedValue: {
-                        label: refVariableName || value,
-                        value: refVariableName || value,
-                        refVariableName,
-                        refVariableStage,
-                        variableType: refVariableName ? RefVariableType.GLOBAL : RefVariableType.NEW,
-                    },
+                    valColumnSelectedValue:
+                        valColumnValue.type === DynamicDataTableRowDataType.SELECT_TEXT
+                            ? {
+                                  label: refVariableName || value,
+                                  value: refVariableName || value,
+                                  refVariableName,
+                                  refVariableStage,
+                                  variableType: refVariableName ? RefVariableType.GLOBAL : RefVariableType.NEW,
+                                  format,
+                              }
+                            : null,
                     fileInfo: {
                         id: fileReferenceId,
                         mountDir: { value: fileMountDir, error: '' },
@@ -420,7 +428,7 @@ export const getVariableDataTableInitialRows = ({
                         unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
                     },
                 },
-                id,
+                id: id || index,
             }
         },
     )
@@ -501,7 +509,7 @@ export const convertVariableDataTableToFormData = ({
             askValueAtRuntime,
             blockCustomValue,
             choices,
-            selectedValue,
+            valColumnSelectedValue,
             isVariableRequired,
             variableDescription,
             fileInfo,
@@ -550,24 +558,24 @@ export const convertVariableDataTableToFormData = ({
                 }
             }
 
-            if (selectedValue) {
-                if (selectedValue.refVariableStepIndex) {
+            if (valColumnSelectedValue) {
+                if (valColumnSelectedValue.refVariableStepIndex) {
                     variableDetail.value = ''
                     variableDetail.variableType = RefVariableType.FROM_PREVIOUS_STEP
-                    variableDetail.refVariableStepIndex = selectedValue.refVariableStepIndex
-                    variableDetail.refVariableName = selectedValue.label as string
-                    variableDetail.format = selectedValue.format
-                    variableDetail.refVariableStage = selectedValue.refVariableStage
-                } else if (selectedValue.variableType === RefVariableType.GLOBAL) {
+                    variableDetail.refVariableStepIndex = valColumnSelectedValue.refVariableStepIndex
+                    variableDetail.refVariableName = valColumnSelectedValue.label as string
+                    variableDetail.format = valColumnSelectedValue.format
+                    variableDetail.refVariableStage = valColumnSelectedValue.refVariableStage
+                } else if (valColumnSelectedValue.variableType === RefVariableType.GLOBAL) {
                     variableDetail.value = ''
                     variableDetail.variableType = RefVariableType.GLOBAL
                     variableDetail.refVariableStepIndex = 0
-                    variableDetail.refVariableName = selectedValue.label as string
-                    variableDetail.format = selectedValue.format
+                    variableDetail.refVariableName = valColumnSelectedValue.label as string
+                    variableDetail.format = valColumnSelectedValue.format
                     variableDetail.refVariableStage = null
                 } else {
                     if (variableDetail.format !== VariableTypeFormat.DATE) {
-                        variableDetail.value = selectedValue.label as string
+                        variableDetail.value = valColumnSelectedValue.label as string
                     }
                     variableDetail.variableType = RefVariableType.NEW
                     variableDetail.refVariableName = ''

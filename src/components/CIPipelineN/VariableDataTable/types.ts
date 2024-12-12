@@ -20,6 +20,7 @@ export interface VariableDataTableSelectPickerOptionType extends SelectPickerOpt
     variableType?: RefVariableType
     refVariableStage?: RefVariableStageType
     refVariableName?: string
+    refVariableStepIndex?: number
 }
 
 export type VariableDataKeys = 'variable' | 'format' | 'val'
@@ -31,7 +32,7 @@ export type VariableDataCustomState = {
     choices: { id: number; value: string; error: string }[]
     askValueAtRuntime: boolean
     blockCustomValue: boolean
-    selectedValue: VariableDataTableSelectPickerOptionType & Record<string, any>
+    valColumnSelectedValue: VariableDataTableSelectPickerOptionType
     fileInfo: {
         id: number
         mountDir: {
@@ -82,7 +83,7 @@ type VariableDataTableActionPropsMap = {
     [VariableDataTableActionType.UPDATE_VAL_COLUMN]: {
         actionValue: {
             value: string
-            selectedValue: VariableDataTableSelectPickerOptionType
+            valColumnSelectedValue: VariableDataTableSelectPickerOptionType
         }
         rowId: string | number
     }

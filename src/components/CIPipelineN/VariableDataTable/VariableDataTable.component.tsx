@@ -135,25 +135,23 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
     useEffect(() => {
         // Validate the table when:
-        // 1. Rows have been initialized (`initialRowsSet.current` is 'set').
+        // 1. Rows have been initialized (`initialRowsSet.current` is 'set' & rows is not empty).
         // 2. Validation is explicitly triggered (`formDataErrorObj.triggerValidation` is true)
         //    or the table is currently invalid (`!isTableValid` -> this is only triggered on mount)
-        if (initialRowsSet.current === 'set') {
-            if (formDataErrorObj.triggerValidation || !isTableValid) {
-                setCellError(
-                    validateVariableDataTable({
-                        headers,
-                        rows,
-                        keysFrequencyMap,
-                        pluginVariableType: type,
-                    }),
-                )
-                // Reset the triggerValidation flag after validation is complete.
-                setFormDataErrorObj((prevState) => ({
-                    ...prevState,
-                    triggerValidation: false,
-                }))
-            }
+        if (initialRowsSet.current === 'set' && rows.length && (formDataErrorObj.triggerValidation || !isTableValid)) {
+            setCellError(
+                validateVariableDataTable({
+                    headers,
+                    rows,
+                    keysFrequencyMap,
+                    pluginVariableType: type,
+                }),
+            )
+            // Reset the triggerValidation flag after validation is complete.
+            setFormDataErrorObj((prevState) => ({
+                ...prevState,
+                triggerValidation: false,
+            }))
         }
     }, [initialRowsSet.current, formDataErrorObj.triggerValidation])
 
@@ -176,8 +174,8 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
                         const isCurrentValueValid =
                             !blockCustomValue ||
-                            ((!customState.selectedValue ||
-                                customState.selectedValue?.variableType === RefVariableType.NEW) &&
+                            ((!customState.valColumnSelectedValue ||
+                                customState.valColumnSelectedValue?.variableType === RefVariableType.NEW) &&
                                 choicesOptions.some(({ value }) => value === data.val.value))
 
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
@@ -193,11 +191,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                 ...data,
                                 val: getValColumnRowProps({
                                     ...defaultRowValColumnParams,
-                                    ...(!blockCustomValue && customState.selectedValue
+                                    ...(!blockCustomValue && customState.valColumnSelectedValue
                                         ? {
-                                              variableType: customState.selectedValue.variableType,
-                                              refVariableName: customState.selectedValue.value,
-                                              refVariableStage: customState.selectedValue.refVariableStage,
+                                              variableType: customState.valColumnSelectedValue.variableType,
+                                              refVariableName: customState.valColumnSelectedValue.value,
+                                              refVariableStage: customState.valColumnSelectedValue.refVariableStage,
                                           }
                                         : {}),
                                     value: isCurrentValueValid ? data.val.value : '',
@@ -210,7 +208,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             },
                             customState: {
                                 ...customState,
-                                selectedValue: !blockCustomValue ? customState.selectedValue : null,
+                                valColumnSelectedValue: !blockCustomValue ? customState.valColumnSelectedValue : null,
                                 blockCustomValue,
                                 choices: choicesOptions,
                             },
@@ -443,11 +441,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             case VariableDataTableActionType.UPDATE_VAL_COLUMN:
                 updatedRows = updatedRows.map((row) => {
                     if (row.id === rowAction.rowId && row.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT) {
-                        const { selectedValue, value } = rowAction.actionValue
+                        const { valColumnSelectedValue, value } = rowAction.actionValue
                         const valColumnRowValue = getValColumnRowValue(
                             row.data.format.value as VariableTypeFormat,
                             value,
-                            selectedValue,
+                            valColumnSelectedValue,
                         )
 
                         updatedCellError[row.id].val = getVariableDataTableCellValidateState({
@@ -465,11 +463,13 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                 val: getValColumnRowProps({
                                     ...defaultRowValColumnParams,
                                     value: valColumnRowValue,
-                                    ...(!row.customState.blockCustomValue && rowAction.actionValue.selectedValue
+                                    ...(!row.customState.blockCustomValue &&
+                                    rowAction.actionValue.valColumnSelectedValue
                                         ? {
-                                              variableType: rowAction.actionValue.selectedValue.variableType,
-                                              refVariableName: rowAction.actionValue.selectedValue.value,
-                                              refVariableStage: rowAction.actionValue.selectedValue.refVariableStage,
+                                              variableType: rowAction.actionValue.valColumnSelectedValue.variableType,
+                                              refVariableName: rowAction.actionValue.valColumnSelectedValue.value,
+                                              refVariableStage:
+                                                  rowAction.actionValue.valColumnSelectedValue.refVariableStage,
                                           }
                                         : {}),
                                     format: row.data.format.value as VariableTypeFormat,
@@ -481,7 +481,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             },
                             customState: {
                                 ...row.customState,
-                                selectedValue: rowAction.actionValue.selectedValue,
+                                valColumnSelectedValue: rowAction.actionValue.valColumnSelectedValue,
                             },
                         }
                     }
@@ -515,7 +515,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             },
                             customState: {
                                 ...row.customState,
-                                selectedValue: null,
+                                valColumnSelectedValue: null,
                                 choices: [],
                                 blockCustomValue: false,
                                 fileInfo: {
@@ -573,7 +573,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         if (headerKey === 'val' && updatedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_VAL_COLUMN,
-                actionValue: { value, selectedValue: extraData.selectedValue },
+                actionValue: { value, valColumnSelectedValue: extraData.selectedValue },
                 rowId: updatedRow.id,
             })
         } else if (

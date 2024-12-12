@@ -14,7 +14,8 @@ export const getVariableDataTableCellValidateState = ({
     value: latestValue,
 }: GetValidateCellProps): DynamicDataTableCellValidationState => {
     const value = latestValue ?? data[key].value
-    const { variableDescription, isVariableRequired, selectedValue, askValueAtRuntime, defaultValue } = customState
+    const { variableDescription, isVariableRequired, valColumnSelectedValue, askValueAtRuntime, defaultValue } =
+        customState
     const re = new RegExp(PATTERNS.VARIABLE)
 
     if (key === 'variable') {
@@ -48,7 +49,7 @@ export const getVariableDataTableCellValidateState = ({
 
         if (data.format.value === VariableTypeFormat.NUMBER) {
             return {
-                isValid: checkForSystemVariable(selectedValue) || testValueForNumber(value),
+                isValid: checkForSystemVariable(valColumnSelectedValue) || testValueForNumber(value),
                 errorMessages: ['Variable value is not a number'],
             }
         }
