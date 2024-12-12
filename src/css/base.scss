@@ -1158,7 +1158,11 @@ button.anchor {
         background-size: contain, contain;
     }
 
-    &.failed,
+    &.failed {
+        background: url('../assets/icons/ic-error-cross.svg'), $background;
+        background-size: contain, contain;
+    }
+
     &.error {
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
         background-size: contain, contain;
