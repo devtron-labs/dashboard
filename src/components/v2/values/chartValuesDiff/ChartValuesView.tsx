@@ -1069,7 +1069,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
                 })
-                IndexStore.publishAppDetails({} as AppDetails, null)
+                IndexStore.clearAppDetails()
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 ToastManager.showToast({
