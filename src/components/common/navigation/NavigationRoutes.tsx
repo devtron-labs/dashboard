@@ -260,7 +260,7 @@ export default function NavigationRoutes() {
                 _serverMode = SERVER_MODE.FULL
             }
             getInit(_serverMode)
-            setServerMode(SERVER_MODE.FULL)
+            setServerMode(_serverMode)
             setPageState(ViewType.FORM)
         } catch (err) {
             setPageState(ViewType.ERROR)
