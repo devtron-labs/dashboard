@@ -371,6 +371,17 @@ export enum ClusterMapListSortableKeys {
     MEMORY_CAPACITY = 'memory',
 }
 
+export enum ClusterMapListSortableTitle {
+    CLUSTER_NAME = 'Cluster',
+    STATUS = 'Status',
+    TYPE = 'Type',
+    NODES = 'Nodes',
+    NODE_ERRORS = 'Node Errors',
+    K8S_VERSION = 'K8S version',
+    CPU_CAPACITY = 'CPU Capacity',
+    MEMORY_CAPACITY = 'Memory Capacity',
+}
+
 export enum CLUSTER_PROD_TYPE {
     PRODUCTION= 'Production',
     NON_PRODUCTION= 'Non Production',

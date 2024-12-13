@@ -41,7 +41,12 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
-import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys, ClusterStatusByFilter } from './constants'
+import {
+    CLUSTER_PROD_TYPE,
+    ClusterMapListSortableKeys,
+    ClusterMapListSortableTitle,
+    ClusterStatusByFilter,
+} from './constants'
 import './clusterNodes.scss'
 import { ClusterMapLoading } from './ClusterMapLoading'
 
@@ -346,9 +351,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
-                <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
-            )}
+            {ClusterMap && <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />}
             {!filteredList.length ? (
                 <div className="flex-grow-1">
                     <ClusterNodeEmptyState actionHandler={clearFilters} />
@@ -356,70 +359,17 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             ) : (
                 <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
-                        <SortableTableHeaderCell
-                            title="Cluster"
-                            isSorted={sortBy === ClusterMapListSortableKeys.CLUSTER_NAME}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.CLUSTER_NAME)}
-                        />
-                        <SortableTableHeaderCell
-                            title="Status"
-                            isSorted={sortBy === ClusterMapListSortableKeys.STATUS}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.STATUS)}
-                        />
-                        <SortableTableHeaderCell
-                            title="Type"
-                            isSorted={sortBy === ClusterMapListSortableKeys.TYPE}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.TYPE)}
-                        />
-                        <SortableTableHeaderCell
-                            title="Nodes"
-                            isSorted={sortBy === ClusterMapListSortableKeys.NODES}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODES)}
-                        />
-                        <SortableTableHeaderCell
-                            title="Node Errors"
-                            isSorted={sortBy === ClusterMapListSortableKeys.NODE_ERRORS}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.NODE_ERRORS)}
-                        />
-                        <SortableTableHeaderCell
-                            title="K8S version"
-                            isSorted={sortBy === ClusterMapListSortableKeys.K8S_VERSION}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.K8S_VERSION)}
-                        />
-                        <SortableTableHeaderCell
-                            title="CPU Capacity"
-                            isSorted={sortBy === ClusterMapListSortableKeys.CPU_CAPACITY}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.CPU_CAPACITY)}
-                        />
-                        <SortableTableHeaderCell
-                            title="Memory Capacity"
-                            isSorted={sortBy === ClusterMapListSortableKeys.MEMORY_CAPACITY}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={() => handleCellSorting(ClusterMapListSortableKeys.MEMORY_CAPACITY)}
-                        />
+                        {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
+                            <SortableTableHeaderCell
+                                key={cellName}
+                                title={ClusterMapListSortableTitle[cellName]}
+                                isSorted={sortBy === cellKey}
+                                sortOrder={sortOrder}
+                                isSortable
+                                disabled={false}
+                                triggerSorting={() => handleCellSorting(cellKey)}
+                            />
+                        ))}
                     </div>
                     {filteredList.map((clusterData) => renderClusterRow(clusterData))}
                 </div>

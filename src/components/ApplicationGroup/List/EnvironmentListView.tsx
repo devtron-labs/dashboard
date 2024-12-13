@@ -29,7 +29,7 @@ import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
-import { LoadingShimmerList } from './LoadingShimmer/LoadingShimmerList'
+import { LoadingShimmerList } from './LoadingShimmer'
 
 const EnvironmentLink = ({
     namespace,
@@ -113,7 +113,7 @@ const EnvironmentsListView = ({
     }
 
     const renderEmptyView = () => (
-        <div className="flex dc__gap-12 dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
+        <div className="dc__align-reload-center">
             <EnvEmptyStates
                 title={emptyStateData.title}
                 subTitle={emptyStateData.subTitle}
@@ -132,9 +132,7 @@ const EnvironmentsListView = ({
     )
     const renderAppGroupListContent = () =>
         !filteredEnvList.length ? (
-            <div className="flexbox-col">
-                <LoadingShimmerList shimmerRowClassName="px-20 py-12 env-list-row" />
-            </div>
+            <LoadingShimmerList shimmerRowClassName="px-20 py-12 env-list-row" />
         ) : (
             <div className="dc__overflow-scroll">
                 {filteredEnvList?.map((envData) => (
