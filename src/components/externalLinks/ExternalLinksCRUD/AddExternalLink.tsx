@@ -178,6 +178,7 @@ export default function AddExternalLink({
                     identifiers: [],
                     urlTemplate: '',
                     isEditable: false,
+                    openInNewTab: false,
                     type: ExternalLinkScopeType.ClusterLevel,
                 })
                 break
@@ -347,11 +348,11 @@ export default function AddExternalLink({
                         </>
                     )}
                     <li>Enter link or Create URL template</li>
-                    <p className="mb-20">
+                    <p className="mb-8">
                         You can choose to enter a direct link or create a URL template using available variables.
                     </p>
-                    <p className="mb-20">A dynamic link can be created using variables as shown below.</p>
-                    <p className="mb-12 fw-4 dc__italic-font-style">
+                    <p className="mb-8">A dynamic link can be created using variables as shown below.</p>
+                    <p className="mb-8 fw-4 dc__italic-font-style">
                         {`http://www.domain.com/{namespace}/{appName}/details/{appId}/env/{envId}/details/{podName}`}
                     </p>
                     <div className="flexbox-col dc__gap-6">

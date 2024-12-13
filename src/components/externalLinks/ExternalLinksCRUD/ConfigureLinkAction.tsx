@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
 import ReactSelect from 'react-select'
 import {
     Checkbox,
@@ -50,8 +49,6 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-    const [linkScope, setLinkScope] = useState<ExternalLinkScopeType>(link.type || ExternalLinkScopeType.ClusterLevel)
-
     const getErrorLabel = (field: string, type?: string): JSX.Element => {
         const errorLabel = (label: string): JSX.Element => {
             return (
@@ -104,7 +101,6 @@ export default function ConfigureLinkAction({
     }
 
     const handleLinkScope = (e) => {
-        setLinkScope(e.target.value)
         handleLinksDataActions('onScopeChange', index, e.target.value)
     }
 
@@ -183,14 +179,14 @@ export default function ConfigureLinkAction({
                         <label className="mr-16">Show link in:</label>
                         <RadioGroup
                             className="external-link-scope__radio-group"
-                            value={linkScope}
+                            value={link.type}
                             name={`external-link-scope-${index}`}
                             onChange={handleLinkScope}
                         >
-                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
+                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel} >
                                 <span
                                     className={`dc__no-text-transform ${
-                                        linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
+                                        link.type === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
                                     }`}
                                     data-testid="specific-clusters-select"
                                 >
@@ -200,7 +196,7 @@ export default function ConfigureLinkAction({
                             <RadioGroupItem value={ExternalLinkScopeType.AppLevel}>
                                 <span
                                     className={`dc__no-text-transform ${
-                                        linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
+                                        link.type === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
                                     }`}
                                     data-testid="specific-applications-select"
                                 >
@@ -236,7 +232,7 @@ export default function ConfigureLinkAction({
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
                 </div>
-                <div className="flex left dc__gap-16">
+                <div className="flex left dc__gap-20">
                     {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                         <Checkbox
                             isChecked={link.isEditable}
@@ -245,7 +241,7 @@ export default function ConfigureLinkAction({
                             onChange={onEditableFlagToggle}
                         >
                             <Tooltip
-                                content="If checked, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
+                                content="When checked, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
                                 alwaysShowTippyOnHover
                             >
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__underline-dotted">App admins can edit</span>
@@ -258,7 +254,10 @@ export default function ConfigureLinkAction({
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={onNewTabToggle}
                     >
-                        <Tooltip content="If checked, links always open in a new tab" alwaysShowTippyOnHover>
+                        <Tooltip
+                            content="When checked, links always open in a new tab. By default, links open in a popup modal."
+                            alwaysShowTippyOnHover
+                        >
                             <span className="fs-13 fw-4 lh-20 cn-9 dc__underline-dotted">Always open in new tab</span>
                         </Tooltip>
                     </Checkbox>
