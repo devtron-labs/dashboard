@@ -132,7 +132,7 @@ const EnvironmentsListView = ({
     )
     const renderAppGroupListContent = () =>
         !filteredEnvList.length ? (
-            <LoadingShimmerList shimmerRowClassName="px-20 py-12 env-list-row" />
+            <LoadingShimmerList />
         ) : (
             <div className="dc__overflow-scroll">
                 {filteredEnvList?.map((envData) => (

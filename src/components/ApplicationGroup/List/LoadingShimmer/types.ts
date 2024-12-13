@@ -3,6 +3,5 @@
  */
 
 export interface LoadingShimmerListType {
-    shimmerRowClassName?: string
     hideLastColumn?: boolean
 }
