@@ -69,7 +69,7 @@ export const getExternalLinks = async (
                 } catch {
                     return {
                         ...link,
-                        openInNewTab: false,
+                        openInNewTab: true,
                     }
                 }
                 
