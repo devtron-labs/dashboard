@@ -93,64 +93,56 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     const filteredList: ClusterDetail[] = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
+        const updatedClusterOptions = [...clusterOptions]
 
-        if (sortBy === ClusterMapListSortableKeys.CPU_CAPACITY) {
-            return clusterOptions.sort((a, b) =>
-                numberComparatorBySortOrder(
-                    parseFloat(a.cpu?.capacity?.replace('m', '')) || 0,
-                    parseFloat(b.cpu?.capacity?.replace('m', '')) || 0,
-                    sortOrder,
-                ),
-            )
+        switch (sortBy) {
+            case ClusterMapListSortableKeys.NODES:
+                updatedClusterOptions.sort((a, b) =>
+                    numberComparatorBySortOrder(a.nodeCount || 0, b.nodeCount || 0, sortOrder),
+                )
+                break
+            case ClusterMapListSortableKeys.STATUS:
+            case ClusterMapListSortableKeys.CLUSTER_NAME:
+                updatedClusterOptions.sort((a, b) =>
+                    stringComparatorBySortOrder(a[sortBy] || '', b[sortBy] || '', sortOrder),
+                )
+                break
+            case ClusterMapListSortableKeys.CPU_CAPACITY:
+            case ClusterMapListSortableKeys.MEMORY_CAPACITY:
+                updatedClusterOptions.sort((a, b) =>
+                    numberComparatorBySortOrder(
+                        parseFloat(a[sortBy]?.capacity?.replace('m', '')) || 0,
+                        parseFloat(b[sortBy]?.capacity?.replace('m', '')) || 0,
+                        sortOrder,
+                    ),
+                )
+                break
+            case ClusterMapListSortableKeys.K8S_VERSION:
+                updatedClusterOptions.sort((a, b) =>
+                    versionComparatorBySortOrder(a[sortBy] || '', b[sortBy] || '', sortOrder),
+                )
+                break
+            case ClusterMapListSortableKeys.TYPE:
+                updatedClusterOptions.sort((a, b) =>
+                    stringComparatorBySortOrder(
+                        a.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                        b.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                        sortOrder,
+                    ),
+                )
+                break
+            case ClusterMapListSortableKeys.NODE_ERRORS:
+                updatedClusterOptions.sort((a, b) => {
+                    const errorsA = a.nodeErrors ? Object.keys(a.nodeErrors).length : 0
+                    const errorsB = b.nodeErrors ? Object.keys(b.nodeErrors).length : 0
+                    return numberComparatorBySortOrder(errorsA, errorsB, sortOrder)
+                })
+                break
+            default:
+                break
         }
 
-        if (sortBy === ClusterMapListSortableKeys.MEMORY_CAPACITY) {
-            return clusterOptions.sort((a, b) =>
-                numberComparatorBySortOrder(
-                    parseFloat(a.memory?.capacity?.replace('Mi', '')) || 0,
-                    parseFloat(b.memory?.capacity?.replace('Mi', '')) || 0,
-                    sortOrder,
-                ),
-            )
-        }
-
-        if (sortBy === ClusterMapListSortableKeys.K8S_VERSION) {
-            return clusterOptions.sort((a, b) =>
-                versionComparatorBySortOrder(a[sortBy] || '', b[sortBy] || '', sortOrder),
-            )
-        }
-
-        if (sortBy === ClusterMapListSortableKeys.TYPE) {
-            return clusterOptions.sort((a, b) =>
-                stringComparatorBySortOrder(
-                    a.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
-                    b.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
-                    sortOrder,
-                ),
-            )
-        }
-
-        if (sortBy === ClusterMapListSortableKeys.NODE_ERRORS) {
-            return clusterOptions.sort((a, b) => {
-                const errorsA = a.nodeErrors ? Object.keys(a.nodeErrors).length : 0
-                const errorsB = b.nodeErrors ? Object.keys(b.nodeErrors).length : 0
-                return numberComparatorBySortOrder(errorsA, errorsB, sortOrder)
-            })
-        }
-
-        if (sortBy === ClusterMapListSortableKeys.NODES) {
-            return clusterOptions.sort((a, b) =>
-                numberComparatorBySortOrder((a[sortBy] as number) || 0, (b[sortBy] as number) || 0, sortOrder),
-            )
-        }
-
-        if (sortBy === ClusterMapListSortableKeys.STATUS || sortBy === ClusterMapListSortableKeys.CLUSTER_NAME) {
-            return clusterOptions.sort((a, b) =>
-                stringComparatorBySortOrder((a[sortBy] as string) || '', b[(sortBy as string) || ''], sortOrder),
-            )
-        }
-
-        return clusterOptions.filter((option) => {
+        return updatedClusterOptions.filter((option) => {
             const filterCondition =
                 clusterFilter === ClusterFiltersType.ALL_CLUSTERS ||
                 !option.status ||
