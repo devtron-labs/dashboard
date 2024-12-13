@@ -69,23 +69,26 @@ export const Build = ({
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
-        const _formData = { ...formData }
+        const _formData = structuredClone(formData)
         const isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
+        
+        const materialIndexToUpdate = _formData.materials.findIndex((mat) => mat.gitMaterialId === gitMaterialId)
+        if (materialIndexToUpdate !== -1) {
+             const materialToUpdate = _formData.materials[materialIndexToUpdate]
+             const sourceType =
+                 gitMaterialId === materialToUpdate.gitMaterialId ? selectedSource.value : materialToUpdate.type
+             const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
 
-        const allMaterials = _formData.materials.map((mat) => {
-            const sourceType = gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type
-            const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
-            return {
-                ...mat,
+            _formData.materials[materialIndexToUpdate] = {
+                ...materialToUpdate,
                 type: sourceType,
                 isRegex: isBranchRegexType,
-                regex: isBranchRegexType ? mat.regex : '',
-                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
+                regex: isBranchRegexType ? materialToUpdate.regex : '',
+                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : materialToUpdate.value,
             }
-        })
+        }
 
-        _formData.materials = allMaterials
         // update source type selected option in dropdown
         const _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
             return {
