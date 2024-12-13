@@ -791,6 +791,7 @@ export const ConfigMapSecretContainer = ({
                         draftId={draftData?.draftId}
                         draftVersionId={draftData?.draftVersionId}
                         handleReload={updateCMSecret}
+                        requestedUserId={draftData?.requestedUserId}
                     />
                 )}
                 {renderConfigHeaderTabContent()}

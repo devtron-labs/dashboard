@@ -71,7 +71,10 @@ type ConfigToolbarReadMeProps =
           handleEnableReadmeView?: never
       }
 
-export type ConfigToolbarProps = Pick<DraftMetadataDTO, 'draftId' | 'draftVersionId' | 'userApprovalMetadata'> & {
+export type ConfigToolbarProps = Pick<
+    DraftMetadataDTO,
+    'draftId' | 'draftVersionId' | 'userApprovalMetadata' | 'requestedUserId'
+> & {
     configHeaderTab: ConfigHeaderTabType
     handleToggleScopedVariablesView: () => void
     resolveScopedVariables: boolean

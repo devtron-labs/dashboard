@@ -1534,6 +1534,7 @@ const DeploymentTemplate = ({
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         handleReload={handleReload}
+                        requestedUserId={draftTemplateData?.latestDraft?.requestedUserId}
                     >
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader
