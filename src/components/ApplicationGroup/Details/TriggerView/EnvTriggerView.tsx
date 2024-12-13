@@ -873,7 +873,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                       _appName,
                   )
                 : null,
-            getRuntimeParams ? getRuntimeParams(ciNodeId, true) : null,
+            getRuntimeParams ? getRuntimeParams(ciNodeId) : null,
         ])
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList

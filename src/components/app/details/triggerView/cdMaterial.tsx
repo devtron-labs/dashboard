@@ -135,7 +135,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
-const RuntimeParametersV2 = importComponentFromFELibrary('RuntimeParametersV2', null, 'function')
+const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
@@ -1499,7 +1499,7 @@ const CDMaterial = ({
                 <ConditionalWrap condition={isPreOrPostCD && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
                     {(bulkSidebarTab
                         ? bulkSidebarTab === CDMaterialSidebarType.IMAGE
-                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParametersV2 ? (
+                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParameters ? (
                         <>
                             {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
                             <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
@@ -1546,7 +1546,7 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <RuntimeParametersV2
+                        <RuntimeParameters
                             appId={appId}
                             parameters={bulkRuntimeParams || runtimeParamsList}
                             handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}

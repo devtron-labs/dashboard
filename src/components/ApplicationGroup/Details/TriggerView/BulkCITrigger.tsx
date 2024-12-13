@@ -171,7 +171,7 @@ const BulkCITrigger = ({
                     [appDetails.ciPipelineId]: [],
                 })
             }
-            return () => getRuntimeParams(appDetails.ciPipelineId, true)
+            return () => getRuntimeParams(appDetails.ciPipelineId)
         })
 
         if (runtimeParamsServiceList.length) {

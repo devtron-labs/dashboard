@@ -52,7 +52,7 @@ import { ReceivedWebhookRedirectButton } from './ReceivedWebhookRedirectButton'
 
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
-const RuntimeParametersV2 = importComponentFromFELibrary('RuntimeParametersV2', null, 'function')
+const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 export const GitInfoMaterial = ({
     dataTestId = '',
@@ -366,9 +366,9 @@ export const GitInfoMaterial = ({
             )
         }
 
-        if (RuntimeParametersV2 && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
+        if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
-                <RuntimeParametersV2
+                <RuntimeParameters
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
                     appId={+appId}
