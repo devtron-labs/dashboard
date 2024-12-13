@@ -56,16 +56,25 @@ export const getExternalLinks = async (
         result: {
             ...response.result,
             ExternalLinks: (response.result?.ExternalLinks || []).map((link: ExternalLink) => {
-                const linkUrl = new URL(link.url)
-                const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
-                linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
-                const sanitizedUrl = linkUrl.href
-                
-                return {
-                    ...link,
-                    url: sanitizedUrl,
-                    openInNewTab,
+                try {
+                    const linkUrl = new URL(link.url)
+                    const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
+                    linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
+                    const sanitizedUrl = linkUrl.href
+                    return {
+                        ...link,
+                        url: sanitizedUrl,
+                        openInNewTab,
+                    }
+                } catch {
+                    return {
+                        ...link,
+                        openInNewTab: false,
+                    }
                 }
+                
+                
+                
             }),
         },
     }
