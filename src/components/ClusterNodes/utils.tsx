@@ -7,7 +7,7 @@ import {
 import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys } from './constants'
 import { ClusterDetail } from './types'
 
-export const getFilteredClusterNodes = (
+export const getSortedClusterList = (
     updatedClusterOptions: ClusterDetail[],
     sortBy: ClusterMapListSortableKeys,
     sortOrder: SortingOrder,

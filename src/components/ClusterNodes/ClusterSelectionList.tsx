@@ -45,8 +45,8 @@ import {
     ClusterStatusByFilter,
 } from './constants'
 import './clusterNodes.scss'
-import { ClusterMapLoading } from './ClusterMapLoading'
-import { getFilteredClusterNodes } from './utils'
+import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
+import { getSortedClusterList } from './utils'
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
@@ -93,7 +93,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         const loweredSearchKey = searchKey.toLowerCase()
         const updatedClusterOptions = [...clusterOptions]
         // Sort the cluster list based on the selected sorting key
-        getFilteredClusterNodes(updatedClusterOptions, sortBy, sortOrder)
+        getSortedClusterList(updatedClusterOptions, sortBy, sortOrder)
 
         // Filter the cluster list based on the search key and cluster filter
         return updatedClusterOptions.filter((option) => {
@@ -175,7 +175,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
         }
 
-        return <ClusterMapLoading errorInNodeListing={errorInNodeListing} />
+        return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {

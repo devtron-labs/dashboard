@@ -347,6 +347,6 @@ export interface ClusterOverviewProps {
     addTab: ReturnType<typeof useTabs>['addTab']
 }
 
-export interface ClusterMapLoadingType {
+export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
 }
