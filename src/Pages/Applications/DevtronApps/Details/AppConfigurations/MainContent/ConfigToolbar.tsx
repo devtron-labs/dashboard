@@ -98,6 +98,7 @@ const ConfigToolbar = ({
     isDraftPresent,
     draftId,
     draftVersionId,
+    requestedUserId,
     handleReload,
     userApprovalMetadata,
     disableAllActions = false,
@@ -213,6 +214,7 @@ const ConfigToolbar = ({
             <>
                 {shouldRenderApproverInfoTippy && (
                     <ConfigApproversInfoTippy
+                        requestedUserId={requestedUserId}
                         userApprovalMetadata={userApprovalMetadata}
                         draftId={draftId}
                         draftVersionId={draftVersionId}

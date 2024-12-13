@@ -121,12 +121,14 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
+            // For base configurations, the env id is undefined
+            const environmentId = +envId || BASE_CONFIGURATION_ENV_ID
+
             const newEnvConfig = getEnvConfiguration(
                 config,
                 path,
                 params,
-                envIdToEnvApprovalConfigurationMap?.[showBaseConfigurations ? BASE_CONFIGURATION_ENV_ID : envId]
-                    ?.approvalConfigurationMap,
+                envIdToEnvApprovalConfigurationMap?.[environmentId]?.approvalConfigurationMap,
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }

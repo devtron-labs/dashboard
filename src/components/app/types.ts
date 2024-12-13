@@ -103,7 +103,7 @@ export interface AppDetails extends CDModalProps {
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
-    approvalConfigData?: ApprovalConfigDataType
+    isApprovalPolicyApplicable?: boolean
     ciArtifactId?: number
     parentArtifactId?: number
     deprecated?: boolean

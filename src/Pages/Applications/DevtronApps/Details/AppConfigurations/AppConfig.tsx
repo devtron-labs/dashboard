@@ -250,7 +250,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }
     }
 
-    const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
+    const processConfigStatusData = (
+        configStatusRes: AppConfigStatusItemType[],
+        envIdToEnvApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap'],
+    ) => {
         const _isGitOpsConfigurationRequired = configStatusRes.find(
             ({ stageName }) => stageName === STAGE_NAME.GITOPS_CONFIG,
         )?.required
@@ -258,7 +261,13 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             configStatusRes,
             _isGitOpsConfigurationRequired,
         )
-        const { navItems } = getNavItems(configs, appId, resourceKind, _isGitOpsConfigurationRequired)
+        const { navItems } = getNavItems({
+            _isUnlocked: configs,
+            appId,
+            resourceKind,
+            isGitOpsConfigurationRequired: _isGitOpsConfigurationRequired,
+            envIdToEnvApprovalConfigurationMap,
+        })
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
         if (index < 0) {
@@ -275,7 +284,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             // SET APP CONFIG DATA IN STATE
             const [configStatusRes, workflowRes, { updatedEnvs, envIdToEnvApprovalConfigurationMap }] = appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
-                processConfigStatusData(configStatusRes.result)
+                processConfigStatusData(configStatusRes.result, envIdToEnvApprovalConfigurationMap)
 
             setState({
                 ...state,
@@ -347,6 +356,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             .then((configStatusRes) => {
                 const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl } = processConfigStatusData(
                     configStatusRes.result,
+                    state.envIdToEnvApprovalConfigurationMap,
                 )
                 setState((prevState) => ({
                     ...prevState,

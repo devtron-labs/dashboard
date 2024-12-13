@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { ResourceKindType, stringComparatorBySortOrder, ConfigResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResourceKindType,
+    stringComparatorBySortOrder,
+    ConfigResourceType,
+    BASE_CONFIGURATION_ENV_ID,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { DOCUMENTATION } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
-import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
+import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -92,12 +97,18 @@ export const getCompletedStep = (
     return 0
 }
 
-export const getNavItems = (
-    _isUnlocked: AppStageUnlockedType,
-    appId: string,
-    resourceKind: ResourceKindType,
-    isGitOpsConfigurationRequired: boolean,
-): { navItems: CustomNavItemsType[] } => {
+export const getNavItems = ({
+    _isUnlocked,
+    appId,
+    resourceKind,
+    isGitOpsConfigurationRequired,
+    envIdToEnvApprovalConfigurationMap,
+}: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> & {
+    _isUnlocked: AppStageUnlockedType
+    appId: string
+    resourceKind: ResourceKindType
+    isGitOpsConfigurationRequired: boolean
+}): { navItems: CustomNavItemsType[] } => {
     const completedSteps = getCompletedStep(
         _isUnlocked,
         resourceKind === ResourceKindType.job,
@@ -203,7 +214,8 @@ export const getNavItems = (
                         href: `/app/${appId}/edit/deployment-template`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.deploymentTemplate,
-                        isProtectionAllowed: true,
+                        isProtectionAllowed:
+                            envIdToEnvApprovalConfigurationMap?.[BASE_CONFIGURATION_ENV_ID]?.isApprovalApplicable,
                         required: true,
                     },
                     {

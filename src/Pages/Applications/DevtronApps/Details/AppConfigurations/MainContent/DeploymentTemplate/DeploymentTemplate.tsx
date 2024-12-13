@@ -1298,7 +1298,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
-                    className="dc__overflow-scroll"
+                    className="dc__overflow-scroll flex-grow-1"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1534,6 +1534,7 @@ const DeploymentTemplate = ({
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         handleReload={handleReload}
+                        requestedUserId={draftTemplateData?.latestDraft?.requestedUserId}
                     >
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader

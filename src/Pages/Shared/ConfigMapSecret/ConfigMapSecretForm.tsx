@@ -370,7 +370,7 @@ export const ConfigMapSecretForm = ({
 
     const renderFormButtons = () => (
         <div className="py-12 px-16 dc__border-top-n1">
-            <div className="flex left dc__gap-12 dc__mxw-1200">
+            <div className="flex left right dc__gap-12 dc__mxw-1200">
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
                     text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
