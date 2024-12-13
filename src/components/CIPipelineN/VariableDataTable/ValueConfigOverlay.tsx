@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 
 import {
     Button,
@@ -23,51 +23,45 @@ import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey
 import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
 import { testValueForNumber } from './utils'
+import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 
 export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlayProps) => {
     const { id: rowId, data, customState } = row
-    const { choices, askValueAtRuntime, blockCustomValue, fileInfo } = customState
+    const { choices: initialChoices, askValueAtRuntime, blockCustomValue, fileInfo } = customState
+
+    // STATES
+    const [choices, setChoices] = useState(initialChoices.map((choice, id) => ({ id, value: choice, error: '' })))
 
     // CONSTANTS
     const isFormatNumber = data.format.value === VariableTypeFormat.NUMBER
     const isFormatBoolOrDate =
         data.format.value === VariableTypeFormat.BOOL || data.format.value === VariableTypeFormat.DATE
     const isFormatFile = data.format.value === VariableTypeFormat.FILE
+    const hasChoicesError = choices.some(({ error }) => !!error)
+    const hasFileMountError = !fileInfo.fileMountDir
 
     // METHODS
     const handleAddChoices = () => {
-        handleRowUpdateAction({
-            actionType: VariableDataTableActionType.UPDATE_CHOICES,
-            rowId,
-            actionValue: (currentChoices) => [{ value: '', id: currentChoices.length, error: '' }, ...currentChoices],
-        })
+        setChoices([{ value: '', id: choices.length + 1, error: '' }, ...choices])
     }
 
     const handleChoiceChange = (choiceId: number) => (e: ChangeEvent<HTMLInputElement>) => {
         const choiceValue = e.target.value
-
-        handleRowUpdateAction({
-            actionType: VariableDataTableActionType.UPDATE_CHOICES,
-            rowId,
-            actionValue: (currentChoices) =>
-                currentChoices.map((choice) =>
-                    choice.id === choiceId
-                        ? {
-                              id: choiceId,
-                              value: choiceValue,
-                              error: isFormatNumber && !testValueForNumber(choiceValue) ? 'Choice is not a number' : '',
-                          }
-                        : choice,
-                ),
-        })
+        setChoices(
+            choices.map((choice) =>
+                choice.id === choiceId
+                    ? {
+                          id: choiceId,
+                          value: choiceValue,
+                          error: isFormatNumber && !testValueForNumber(choiceValue) ? 'Choice is not a number' : '',
+                      }
+                    : choice,
+            ),
+        )
     }
 
     const handleChoiceDelete = (choiceId: number) => () => {
-        handleRowUpdateAction({
-            actionType: VariableDataTableActionType.UPDATE_CHOICES,
-            rowId,
-            actionValue: (currentChoices) => currentChoices.filter(({ id }) => id !== choiceId),
-        })
+        setChoices(choices.filter(({ id }) => id !== choiceId))
     }
 
     const handleAllowCustomInput = () => {
@@ -87,14 +81,11 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }
 
     const handleFileMountChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const fileMountValue = e.target.value
+        const fileMountDir = e.target.value
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_MOUNT,
             rowId,
-            actionValue: {
-                error: !fileMountValue ? 'This field is required' : '',
-                value: fileMountValue,
-            },
+            actionValue: fileMountDir,
         })
     }
 
@@ -137,6 +128,14 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         }
     }
 
+    const handlePopupClose = () => {
+        handleRowUpdateAction({
+            actionType: VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS,
+            rowId,
+            actionValue: choices.filter(({ value }) => !!value).map(({ value }) => value),
+        })
+    }
+
     // RENDERERS
     const renderContent = () => {
         if (isFormatFile) {
@@ -146,12 +145,13 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         name="fileMount"
                         label="File mount path"
                         placeholder="Enter file mount path"
-                        value={fileInfo.mountDir.value}
+                        value={fileInfo.fileMountDir}
                         onChange={handleFileMountChange}
                         dataTestid={`file-mount-${rowId}`}
                         inputWrapClassName="w-100"
                         isRequiredField
-                        error={fileInfo.mountDir.error}
+                        error={hasFileMountError ? 'This field is required' : ''}
+                        autoFocus
                     />
                     <div className="flexbox-col dc__gap-6">
                         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -218,21 +218,22 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         />
                     </div>
                     <div className="flexbox-col dc__gap-6 dc__overflow-auto pb-12 px-12">
-                        {choices.map(({ id, value, error }) => (
+                        {choices.map(({ id, value, error }, index) => (
                             <div key={id} className="flexbox dc__align-items-center dc__gap-4 w-100">
                                 <CustomInput
                                     placeholder="Enter choice"
-                                    name={`${id}`}
+                                    name={`choice-${id}`}
+                                    autoFocus={index === 0}
                                     value={value}
                                     onChange={handleChoiceChange(id)}
-                                    dataTestid={`tag-choice-${id}`}
+                                    dataTestid={`choice-${id}`}
                                     inputWrapClassName="w-100"
                                     error={error}
                                 />
                                 <div className="mt-2 dc__align-self-start">
                                     <Button
-                                        dataTestId="delete-tag-choice"
-                                        ariaLabel="Delete tag choice"
+                                        dataTestId="delete-choice"
+                                        ariaLabel="Delete choice"
                                         showAriaLabelInTippy={false}
                                         icon={<ICClose />}
                                         variant={ButtonVariantType.borderLess}
@@ -272,16 +273,48 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }
 
     return (
-        <>
-            {renderContent()}
-            <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
-                {!!choices.length && (
+        <VariableDataTablePopupMenu
+            heading={row.data.variable.value || 'Value configuration'}
+            onClose={handlePopupClose}
+            disableClose={
+                (row.data.format.value === VariableTypeFormat.FILE && hasFileMountError) ||
+                (row.data.format.value === VariableTypeFormat.NUMBER && hasChoicesError)
+            }
+        >
+            <>
+                {renderContent()}
+                <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
+                    {!!choices.length && (
+                        <Checkbox
+                            isChecked={!blockCustomValue}
+                            rootClassName="mb-0 flex top dc_max-width__max-content"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={handleAllowCustomInput}
+                            data-testid="allow-custom-input"
+                        >
+                            <Tooltip
+                                alwaysShowTippyOnHover
+                                className="w-200"
+                                placement="bottom-start"
+                                content={
+                                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                                        <p className="m-0 fw-6 cn-0">Allow custom input</p>
+                                        <p className="m-0 cn-50">
+                                            Allow entering any value other than provided choices
+                                        </p>
+                                    </div>
+                                }
+                            >
+                                <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Allow Custom input</div>
+                            </Tooltip>
+                        </Checkbox>
+                    )}
                     <Checkbox
-                        isChecked={!blockCustomValue}
+                        isChecked={askValueAtRuntime}
                         rootClassName="mb-0 flex top dc_max-width__max-content"
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleAllowCustomInput}
-                        data-testid="allow-custom-input"
+                        onChange={handleAskValueAtRuntime}
+                        data-testid="ask-value-at-runtime"
                     >
                         <Tooltip
                             alwaysShowTippyOnHover
@@ -289,39 +322,18 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             placement="bottom-start"
                             content={
                                 <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                    <p className="m-0 fw-6 cn-0">Allow custom input</p>
-                                    <p className="m-0 cn-50">Allow entering any value other than provided choices</p>
+                                    <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
+                                    <p className="m-0 cn-50">
+                                        Value can be provided at runtime. Entered value will be pre-filled as default
+                                    </p>
                                 </div>
                             }
                         >
-                            <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Allow Custom input</div>
+                            <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Ask value at runtime</div>
                         </Tooltip>
                     </Checkbox>
-                )}
-                <Checkbox
-                    isChecked={askValueAtRuntime}
-                    rootClassName="mb-0 flex top dc_max-width__max-content"
-                    value={CHECKBOX_VALUE.CHECKED}
-                    onChange={handleAskValueAtRuntime}
-                    data-testid="ask-value-at-runtime"
-                >
-                    <Tooltip
-                        alwaysShowTippyOnHover
-                        className="w-200"
-                        placement="bottom-start"
-                        content={
-                            <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
-                                <p className="m-0 cn-50">
-                                    Value can be provided at runtime. Entered value will be pre-filled as default
-                                </p>
-                            </div>
-                        }
-                    >
-                        <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Ask value at runtime</div>
-                    </Tooltip>
-                </Checkbox>
-            </div>
-        </>
+                </div>
+            </>
+        </VariableDataTablePopupMenu>
     )
 }

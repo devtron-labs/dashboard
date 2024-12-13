@@ -1,5 +1,6 @@
 import {
     DynamicDataTableHeaderType,
+    InputOutputVariablesHeaderKeys,
     SelectPickerOptionType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -7,26 +8,24 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
-import { VariableDataKeys } from './types'
-
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const getVariableDataTableHeaders = (
     type: PluginVariableType,
-): DynamicDataTableHeaderType<VariableDataKeys>[] => [
+): DynamicDataTableHeaderType<InputOutputVariablesHeaderKeys>[] => [
     {
         label: 'VARIABLE',
-        key: 'variable',
+        key: InputOutputVariablesHeaderKeys.VARIABLE,
         width: '200px',
     },
     {
         label: 'TYPE',
-        key: 'format',
+        key: InputOutputVariablesHeaderKeys.FORMAT,
         width: '100px',
     },
     {
         label: type === PluginVariableType.INPUT ? 'VALUE' : 'DESCRIPTION',
-        key: 'val',
+        key: InputOutputVariablesHeaderKeys.VALUE,
         width: '1fr',
     },
 ]
@@ -39,7 +38,7 @@ export const VAL_COLUMN_DROPDOWN_LABEL = {
     PREVIOUS_STEPS: 'From Previous Steps',
 }
 
-export const FORMAT_OPTIONS_MAP = {
+export const FORMAT_OPTIONS_MAP: Record<VariableTypeFormat, string> = {
     [VariableTypeFormat.STRING]: 'String',
     [VariableTypeFormat.NUMBER]: 'Number',
     [VariableTypeFormat.BOOL]: 'Boolean',
@@ -84,6 +83,13 @@ export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
         value: 1 / 1024,
     },
 ]
+
+export const VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE: Record<PluginVariableType, string> = {
+    [PluginVariableType.INPUT]:
+        'Input variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
+    [PluginVariableType.OUTPUT]:
+        'Output variables must be set in the environment variables and can be used as input variables in other scripts.',
+}
 
 export const VARIABLE_DATA_TABLE_CELL_ERROR_MSGS = {
     EMPTY_ROW: 'Please complete or remove this variable',

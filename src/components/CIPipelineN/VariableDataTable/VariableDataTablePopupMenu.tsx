@@ -47,7 +47,7 @@ export const VariableDataTablePopupMenu = ({
                 heading={<p className="m-0 fw-6 fs-13 lh-20">{heading}</p>}
                 Icon={showIcon ? ICSlidersVertical : null}
                 iconSize={16}
-                additionalContent={<div className="flexbox-col w-300 mxh-300">{children}</div>}
+                additionalContent={visible && <div className="flexbox-col w-300 mxh-300">{children}</div>}
             >
                 <button
                     type="button"

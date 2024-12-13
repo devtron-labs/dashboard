@@ -4,6 +4,7 @@ import {
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
     getGoLangFormattedDateWithTimezone,
+    InputOutputVariablesHeaderKeys,
     IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
     IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS,
     PluginType,
@@ -26,7 +27,6 @@ import {
     GetVariableDataTableInitialRowsProps,
     VariableDataTableSelectPickerOptionType,
     VariableDataRowType,
-    VariableDataKeys,
 } from './types'
 
 export const getOptionsForValColumn = ({
@@ -282,8 +282,10 @@ export const getValColumnRowProps = ({
 
     return {
         type: DynamicDataTableRowDataType.TEXT,
-        value: description || 'No description available',
-        props: {},
+        value: description ?? '',
+        props: {
+            placeholder: !description ? 'No description available' : '',
+        },
     }
 }
 
@@ -327,11 +329,8 @@ export const getEmptyVariableDataTableRow = ({
             blockCustomValue: false,
             valColumnSelectedValue: null,
             fileInfo: {
-                id: null,
-                mountDir: {
-                    value: '/devtroncd',
-                    error: '',
-                },
+                fileReferenceId: null,
+                fileMountDir: '/devtroncd',
                 allowedExtensions: '',
                 maxUploadSize: '',
                 unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
@@ -342,32 +341,29 @@ export const getEmptyVariableDataTableRow = ({
     return data
 }
 
-export const getVariableDataTableInitialRows = ({
+export const getVariableDataTableRows = ({
     ioVariables,
     type,
     isCustomTask,
     ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
-        (
-            {
-                name,
-                allowEmptyValue,
-                description,
-                format,
-                variableType,
-                value,
-                refVariableName,
-                refVariableStage,
-                valueConstraint,
-                isRuntimeArg,
-                fileMountDir,
-                fileReferenceId,
-                defaultValue,
-                id,
-            },
-            index,
-        ) => {
+        ({
+            name,
+            allowEmptyValue,
+            description,
+            format,
+            variableType,
+            value,
+            refVariableName,
+            refVariableStage,
+            valueConstraint,
+            isRuntimeArg,
+            fileMountDir,
+            fileReferenceId,
+            defaultValue,
+            id,
+        }) => {
             const isInputVariableRequired = type === PluginVariableType.INPUT && !allowEmptyValue
             const valColumnValue = getValColumnRowProps({
                 ...restProps,
@@ -389,7 +385,7 @@ export const getVariableDataTableInitialRows = ({
                         required: isInputVariableRequired,
                         disabled: !isCustomTask,
                         tooltip: {
-                            content: !isCustomTask && description,
+                            content: type === PluginVariableType.INPUT && !isCustomTask && description,
                         },
                     },
                     format: getFormatColumnRowProps({ format, isCustomTask }),
@@ -399,11 +395,7 @@ export const getVariableDataTableInitialRows = ({
                     defaultValue,
                     isVariableRequired: isInputVariableRequired,
                     variableDescription: description ?? '',
-                    choices: (valueConstraint?.choices || []).map((choiceValue, choiceIndex) => ({
-                        id: choiceIndex,
-                        value: choiceValue,
-                        error: '',
-                    })),
+                    choices: valueConstraint?.choices || [],
                     askValueAtRuntime: isRuntimeArg ?? false,
                     blockCustomValue: valueConstraint?.blockCustomValue ?? false,
                     valColumnSelectedValue:
@@ -418,8 +410,8 @@ export const getVariableDataTableInitialRows = ({
                               }
                             : null,
                     fileInfo: {
-                        id: fileReferenceId,
-                        mountDir: { value: fileMountDir, error: '' },
+                        fileReferenceId,
+                        fileMountDir,
                         allowedExtensions:
                             valueConstraint?.constraint?.fileProperty?.allowedExtensions.join(', ') || '',
                         maxUploadSize: (
@@ -428,14 +420,14 @@ export const getVariableDataTableInitialRows = ({
                         unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
                     },
                 },
-                id: id || index,
+                id,
             }
         },
     )
 
 export const getVariableDataTableInitialCellError = (
     rows: VariableDataRowType[],
-    headers: DynamicDataTableHeaderType<VariableDataKeys>[],
+    headers: DynamicDataTableHeaderType<InputOutputVariablesHeaderKeys>[],
 ) =>
     rows.reduce((acc, curr) => {
         if (!acc[curr.id]) {
@@ -488,7 +480,7 @@ export const convertVariableDataTableToFormData = ({
 > & {
     type: PluginVariableType
     rows: VariableDataRowType[]
-    cellError: DynamicDataTableCellErrorType<VariableDataKeys>
+    cellError: DynamicDataTableCellErrorType<InputOutputVariablesHeaderKeys>
 }) => {
     const updatedFormData = structuredClone(formData)
     const updatedFormDataErrorObj = structuredClone(formDataErrorObj)
@@ -498,13 +490,9 @@ export const convertVariableDataTableToFormData = ({
             ? 'inlineStepDetail'
             : 'pluginRefStepDetail'
 
-    const ioVariables: VariableType[] =
-        updatedFormData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
-            type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
-        ]
+    const isInputVariable = type === PluginVariableType.INPUT
 
     const updatedIOVariables = rows.map<VariableType>(({ data, customState, id }) => {
-        const selectedIOVariable = ioVariables?.find((ioVariable) => ioVariable.id === id)
         const {
             askValueAtRuntime,
             blockCustomValue,
@@ -516,15 +504,28 @@ export const convertVariableDataTableToFormData = ({
         } = customState
 
         const variableDetail: VariableType = {
-            ...selectedIOVariable,
+            // setting undefined will not send these keys in payload
+            allowEmptyValue: undefined,
+            refVariableStepIndex: undefined,
+            refVariableName: undefined,
+            refVariableStage: undefined,
+            variableStepIndexInPlugin: undefined,
+            fileMountDir: undefined,
+            fileReferenceId: undefined,
+            valueConstraintId: undefined,
+            valueConstraint: undefined,
+            isRuntimeArg: undefined,
+            refVariableUsed: undefined,
+            defaultValue: customState.defaultValue,
+            id: +id,
             value: data.val.value,
             format: data.format.value as VariableTypeFormat,
             name: data.variable.value,
-            description: type === PluginVariableType.INPUT ? variableDescription : data.val.value,
-            variableType: selectedIOVariable?.variableType ?? RefVariableType.NEW,
+            description: isInputVariable ? variableDescription : data.val.value,
+            variableType: RefVariableType.NEW,
         }
 
-        if (type === PluginVariableType.INPUT) {
+        if (isInputVariable) {
             variableDetail.allowEmptyValue = !isVariableRequired
             variableDetail.isRuntimeArg = askValueAtRuntime
 
@@ -535,7 +536,7 @@ export const convertVariableDataTableToFormData = ({
             ) {
                 variableDetail.valueConstraint = {
                     ...variableDetail.valueConstraint,
-                    choices: choices.map(({ value }) => value),
+                    choices,
                     blockCustomValue,
                 }
             }
@@ -544,8 +545,8 @@ export const convertVariableDataTableToFormData = ({
                 variableDetail.variableType = RefVariableType.NEW
                 variableDetail.refVariableName = ''
                 variableDetail.refVariableStage = null
-                variableDetail.fileReferenceId = fileInfo.id
-                variableDetail.fileMountDir = fileInfo.mountDir.value
+                variableDetail.fileReferenceId = fileInfo.fileReferenceId
+                variableDetail.fileMountDir = fileInfo.fileMountDir
                 variableDetail.valueConstraint = {
                     ...variableDetail.valueConstraint,
                     constraint: {
@@ -588,7 +589,7 @@ export const convertVariableDataTableToFormData = ({
     })
 
     updatedFormData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
-        type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
+        isInputVariable ? 'inputVariables' : 'outputVariables'
     ] = updatedIOVariables
 
     if (type === PluginVariableType.OUTPUT) {
@@ -602,7 +603,7 @@ export const convertVariableDataTableToFormData = ({
                 (type === PluginVariableType.OUTPUT &&
                     (conditionDetails[i].conditionType === ConditionType.PASS ||
                         conditionDetails[i].conditionType === ConditionType.FAIL)) ||
-                (type === PluginVariableType.INPUT &&
+                (isInputVariable &&
                     (conditionDetails[i].conditionType === ConditionType.TRIGGER ||
                         conditionDetails[i].conditionType === ConditionType.SKIP))
             ) {
@@ -617,12 +618,19 @@ export const convertVariableDataTableToFormData = ({
         (acc, curr) => acc && !Object.values(curr).some((item) => !item.isValid),
         true,
     )
-    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].isValid = isValid
+
+    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
+        isInputVariable ? 'isInputVariablesValid' : 'isOutputVariablesValid'
+    ] = isValid
+
+    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
+        isInputVariable ? 'inputVariables' : 'outputVariables'
+    ] = cellError
 
     validateTask(
         updatedFormData[activeStageName].steps[selectedTaskIndex],
         updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex],
-        { validateIOVariables: false },
+        { validateVariableDataTable: false },
     )
 
     return { updatedFormDataErrorObj, updatedFormData }

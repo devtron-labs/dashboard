@@ -31,7 +31,6 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
-import { MutableRefObject } from 'react'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -515,6 +514,7 @@ function parseCIResponse(
                 value: ciPipeline.dockerArgs[arg],
             }
         })
+
         return {
             code: responseCode,
             view: ViewType.FORM,

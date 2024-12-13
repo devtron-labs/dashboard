@@ -235,14 +235,14 @@ export interface PipelineFormDataErrorType {
     containerRegistryError?: { isValid: boolean; message?: string }
     repositoryError?: { isValid: boolean; message?: string }
     preBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     buildStage: {
         isValid: boolean
     }
     postBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     customTag?: {
@@ -254,7 +254,6 @@ export interface PipelineFormDataErrorType {
         isValid: boolean
     }
     userApprovalConfig?: ValidationResponseType
-    triggerValidation?: boolean
 }
 
 interface HandleValidateMandatoryPluginsParamsType {
@@ -284,7 +283,7 @@ export interface PipelineContext {
         taskErrorobj: TaskErrorObj,
         options?: {
             isSaveAsPlugin?: boolean
-            validateIOVariables?: boolean
+            validateVariableDataTable?: boolean
         },
     ) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>

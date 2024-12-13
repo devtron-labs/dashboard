@@ -27,12 +27,14 @@ import {
     TaskErrorObj,
     VariableType,
     PipelineFormType,
+    InputOutputVariablesHeaderKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'
+import { PluginVariableType } from '@Components/ciPipeline/types'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -58,51 +60,83 @@ export const validateTask = (
     taskErrorObj: TaskErrorObj,
     options?: {
         isSaveAsPlugin?: boolean
-        validateIOVariables?: boolean
+        validateVariableDataTable?: boolean
     },
 ) => {
-    const { isSaveAsPlugin = false, validateIOVariables = true } = options ?? {}
+    const { isSaveAsPlugin = false, validateVariableDataTable = true } = options ?? {}
     const validationRules = new ValidationRules()
     if (taskData && taskErrorObj) {
         taskErrorObj.name = validationRules.requiredField(taskData.name)
         taskErrorObj.isValid = taskErrorObj.name.isValid
 
         if (taskData.stepType) {
-            const inputVarMap: Map<string, boolean> = new Map()
-            const outputVarMap: Map<string, boolean> = new Map()
             const currentStepTypeVariable =
                 taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
 
-            taskErrorObj[currentStepTypeVariable].isValid = taskErrorObj[currentStepTypeVariable].isValid ?? true
+            const inputVarMap = (taskData[currentStepTypeVariable].inputVariables ?? []).reduce((acc, curr) => {
+                acc[curr.name] = (acc[curr.name] || 0) + 1
+                return acc
+            }, {})
 
-            taskErrorObj[currentStepTypeVariable].inputVariables = []
-            if (validateIOVariables) {
-                taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
-                    taskErrorObj[currentStepTypeVariable].inputVariables.push(
-                        validationRules.inputVariable(element, inputVarMap, isSaveAsPlugin),
-                    )
-                    taskErrorObj[currentStepTypeVariable].isValid =
-                        taskErrorObj[currentStepTypeVariable].isValid &&
-                        taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
-                    inputVarMap.set(element.name, true)
-                })
+            const outputVarMap = (taskData[currentStepTypeVariable].outputVariables ?? []).reduce((acc, curr) => {
+                acc[curr.name] = (acc[curr.name] || 0) + 1
+                return acc
+            }, {})
+
+            if (validateVariableDataTable) {
+                taskErrorObj[currentStepTypeVariable].isInputVariablesValid = true
+                taskErrorObj[currentStepTypeVariable].inputVariables = (
+                    taskData[currentStepTypeVariable].inputVariables ?? []
+                ).reduce((acc, element) => {
+                    acc[element.id] = Object.values(InputOutputVariablesHeaderKeys).reduce((keyAcc, key) => {
+                        const validationState =
+                            !isSaveAsPlugin || key !== InputOutputVariablesHeaderKeys.VALUE
+                                ? validationRules.validateInputOutputVariableCell({
+                                      variable: element,
+                                      key,
+                                      type: PluginVariableType.INPUT,
+                                      keysFrequencyMap: inputVarMap,
+                                  })
+                                : { isValid: true, errorMessages: [] }
+
+                        taskErrorObj[currentStepTypeVariable].isInputVariablesValid =
+                            taskErrorObj[currentStepTypeVariable].isInputVariablesValid && validationState.isValid
+                        keyAcc[key] = validationState
+                        return keyAcc
+                    }, {})
+
+                    return acc
+                }, {})
             }
-            taskErrorObj.isValid = taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].isValid
+
+            taskErrorObj.isValid =
+                taskErrorObj.isValid && (taskErrorObj[currentStepTypeVariable].isInputVariablesValid ?? true)
 
             if (taskData.stepType === PluginType.INLINE) {
-                taskErrorObj.inlineStepDetail.outputVariables = []
-                if (validateIOVariables) {
-                    taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
-                        taskErrorObj.inlineStepDetail.outputVariables.push(
-                            validationRules.outputVariable(element, outputVarMap),
-                        )
-                        taskErrorObj[currentStepTypeVariable].isValid =
-                            taskErrorObj[currentStepTypeVariable].isValid &&
-                            taskErrorObj.inlineStepDetail.outputVariables[index].isValid
-                        outputVarMap.set(element.name, true)
-                    })
+                if (validateVariableDataTable) {
+                    taskErrorObj[currentStepTypeVariable].isOutputVariablesValid = true
+                    taskErrorObj[currentStepTypeVariable].outputVariables = (
+                        taskData[currentStepTypeVariable].outputVariables ?? []
+                    ).reduce((acc, element) => {
+                        acc[element.id] = Object.values(InputOutputVariablesHeaderKeys).reduce((keyAcc, key) => {
+                            const validationState = validationRules.validateInputOutputVariableCell({
+                                variable: element,
+                                key,
+                                type: PluginVariableType.OUTPUT,
+                                keysFrequencyMap: outputVarMap,
+                            })
+                            taskErrorObj[currentStepTypeVariable].isOutputVariablesValid =
+                                taskErrorObj[currentStepTypeVariable].isOutputVariablesValid && validationState.isValid
+                            keyAcc[key] = validationState
+                            return keyAcc
+                        }, {})
+
+                        return acc
+                    }, {})
                 }
-                taskErrorObj.isValid = taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].isValid
+
+                taskErrorObj.isValid =
+                    taskErrorObj.isValid && (taskErrorObj[currentStepTypeVariable].isOutputVariablesValid ?? true)
 
                 if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
                     taskErrorObj.inlineStepDetail['script'] = validationRules.requiredField(
@@ -152,8 +186,8 @@ export const validateTask = (
                     }
                 }
             } else {
-                taskData.pluginRefStepDetail.outputVariables?.forEach((element, index) => {
-                    outputVarMap.set(element.name, true)
+                taskData.pluginRefStepDetail.outputVariables?.forEach((element) => {
+                    outputVarMap[element.name] = (outputVarMap[element.name] || 0) + 1
                 })
             }
 
@@ -163,10 +197,10 @@ export const validateTask = (
                     if (
                         ((element.conditionType === ConditionType.FAIL ||
                             element.conditionType === ConditionType.PASS) &&
-                            !outputVarMap.get(element.conditionOnVariable)) ||
+                            !outputVarMap[element.conditionOnVariable]) ||
                         ((element.conditionType === ConditionType.TRIGGER ||
                             element.conditionType === ConditionType.SKIP) &&
-                            !inputVarMap.get(element.conditionOnVariable))
+                            !inputVarMap[element.conditionOnVariable])
                     ) {
                         element.conditionOnVariable = ''
                     }

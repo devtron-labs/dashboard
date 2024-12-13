@@ -1,8 +1,9 @@
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import {
-    DynamicDataTableHeaderType,
+    DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
+    InputOutputVariablesHeaderKeys,
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
@@ -23,29 +24,22 @@ export interface VariableDataTableSelectPickerOptionType extends SelectPickerOpt
     refVariableStepIndex?: number
 }
 
-export type VariableDataKeys = 'variable' | 'format' | 'val'
-
 export type VariableDataCustomState = {
     defaultValue: string
     variableDescription: string
     isVariableRequired: boolean
-    choices: { id: number; value: string; error: string }[]
+    choices: string[]
     askValueAtRuntime: boolean
     blockCustomValue: boolean
     valColumnSelectedValue: VariableDataTableSelectPickerOptionType
-    fileInfo: {
-        id: number
-        mountDir: {
-            value: string
-            error: string
-        }
+    fileInfo: Pick<VariableType, 'fileReferenceId' | 'fileMountDir'> & {
         allowedExtensions: string
         maxUploadSize: string
         unit: SelectPickerOptionType<number>
     }
 }
 
-export type VariableDataRowType = DynamicDataTableRowType<VariableDataKeys, VariableDataCustomState>
+export type VariableDataRowType = DynamicDataTableRowType<InputOutputVariablesHeaderKeys, VariableDataCustomState>
 
 export enum VariableDataTableActionType {
     // GENERAL ACTIONS
@@ -58,7 +52,6 @@ export enum VariableDataTableActionType {
 
     // TABLE ROW ACTIONS
     ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS = 'add_choices_to_value_column_options',
-    UPDATE_CHOICES = 'update_choices',
     UPDATE_ASK_VALUE_AT_RUNTIME = 'update_ask_value_at_runtime',
     UPDATE_ALLOW_CUSTOM_INPUT = 'update_allow_custom_input',
     UPDATE_FILE_MOUNT = 'update_file_mount',
@@ -74,7 +67,7 @@ type VariableDataTableActionPropsMap = {
     [VariableDataTableActionType.ADD_ROW]: { rowId: number }
     [VariableDataTableActionType.UPDATE_ROW]: {
         actionValue: string
-        headerKey: VariableDataKeys
+        headerKey: InputOutputVariablesHeaderKeys
         rowId: string | number
     }
     [VariableDataTableActionType.DELETE_ROW]: {
@@ -107,19 +100,13 @@ type VariableDataTableActionPropsMap = {
         actionValue: VariableDataCustomState['askValueAtRuntime']
         rowId: string | number
     }
-    [VariableDataTableActionType.UPDATE_CHOICES]: {
-        actionValue: (currentChoices: VariableDataCustomState['choices']) => VariableDataCustomState['choices']
-        rowId: string | number
-    }
     [VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS]: {
         rowId: string | number
+        actionValue: string[]
     }
     [VariableDataTableActionType.UPDATE_FILE_MOUNT]: {
         rowId: string | number
-        actionValue: {
-            value: string
-            error: string
-        }
+        actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS]: {
         rowId: string | number
@@ -184,11 +171,32 @@ export type GetValidateCellProps = {
     pluginVariableType: PluginVariableType
     row: VariableDataRowType
     value?: string
-    key: VariableDataKeys
-    keysFrequencyMap?: Record<string, number>
+    key: InputOutputVariablesHeaderKeys
 }
 
-export interface ValidateVariableDataTableProps extends Pick<GetValidateCellProps, 'pluginVariableType'> {
+export interface ValidateVariableDataTableKeysProps {
     rows: VariableDataRowType[]
-    headers: DynamicDataTableHeaderType<VariableDataKeys>[]
+    cellError: DynamicDataTableCellErrorType<InputOutputVariablesHeaderKeys>
+    rowId?: string | number
+    value?: string
+}
+
+export interface ValidateInputOutputVariableCellProps {
+    variable: Pick<
+        VariableType,
+        | 'allowEmptyValue'
+        | 'isRuntimeArg'
+        | 'defaultValue'
+        | 'variableType'
+        | 'refVariableName'
+        | 'value'
+        | 'description'
+        | 'name'
+        | 'refVariableStepIndex'
+        | 'refVariableStage'
+        | 'format'
+    >
+    key: InputOutputVariablesHeaderKeys
+    type: PluginVariableType
+    keysFrequencyMap?: Record<string, number>
 }
