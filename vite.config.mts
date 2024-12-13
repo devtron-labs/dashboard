@@ -26,7 +26,7 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
-import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
+// import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
@@ -201,9 +201,13 @@ export default defineConfig(({ mode }) => {
             NodeGlobalsPolyfillPlugin({
                 process: true,
             }),
-            ViteImageOptimizer({
-                logStats: false,
-            }),
+            // Commented since it merges the attributes of svg there by messing up with
+            // the styles
+            // ViteImageOptimizer({
+            //     logStats: false,
+            //     cache: true,
+            //     cacheLocation: '.build-cache/vite-image-optimizer',
+            // }),
             // VitePWA and jsToBottomNoModule is not to be added for storybook
             ...(process.env.IS_STORYBOOK
                 ? []
