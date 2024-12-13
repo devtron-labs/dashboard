@@ -53,6 +53,7 @@ const DeploymentTemplateOptionsHeader = ({
                                 onChange={handleToggleEditMode}
                                 disabled={!!parsingError}
                                 rootClassName="h-20"
+                                name="dt-yaml-gui-segmented-control"
                                 variant={SegmentedControlVariant.GRAY_ON_WHITE}
                             />
                         </div>
