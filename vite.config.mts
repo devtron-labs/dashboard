@@ -32,17 +32,6 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
 
-const serverConfig = {
-    port: 3000,
-    proxy: {
-        '/orchestrator': {
-            target: TARGET_URL,
-            changeOrigin: true,
-        },
-        '/grafana': TARGET_URL,
-    }
-}
-
 function reactVirtualized(): PluginOption {
     return {
         name: 'flat:react-virtualized',
@@ -107,7 +96,9 @@ export default defineConfig(({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
     const baseConfig: UserConfig = {
         base: '/dashboard',
-        preview: serverConfig,
+        preview: {
+            port: 3000,
+        },
         build: {
             sourcemap: true,
             rollupOptions: {
@@ -255,7 +246,16 @@ export default defineConfig(({ mode }) => {
         //         exclude: [],
         //     },
         // },
-        server: serverConfig,
+        server: {
+            port: 3000,
+            proxy: {
+                '/orchestrator': {
+                    target: TARGET_URL,
+                    changeOrigin: true,
+                },
+                '/grafana': TARGET_URL,
+            },
+        },
     }
     if (mode === 'development') {
         console.log(mode)
