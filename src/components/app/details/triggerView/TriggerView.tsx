@@ -1240,6 +1240,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.cdNodeId) {
             for (const _workflow of this.state.workflows) {
                 node = _workflow.nodes.find((el) => {
+                    // NOTE: cdNodeId is not a number here
                     return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
                 })
 
@@ -1269,7 +1270,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             <CDMaterial
                 materialType={this.state.materialType}
                 appId={Number(this.props.match.params.appId)}
-                pipelineId={this.state.cdNodeId}
+                pipelineId={Number(this.state.cdNodeId)}
                 stageType={DeploymentNodeType[this.state.nodeType]}
                 envName={cdNode?.environmentName}
                 envId={cdNode?.environmentId}

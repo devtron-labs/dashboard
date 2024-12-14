@@ -943,3 +943,5 @@ export const EDITOR_VIEW = {
     BASIC: 'BASIC',
     ADVANCED: 'ADVANCED',
 }
+
+export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'
