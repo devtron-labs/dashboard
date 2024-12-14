@@ -8,6 +8,7 @@ import {
     CHECKBOX_VALUE,
     ComponentSizeType,
     CustomInput,
+    PATTERNS,
     ResizableTextarea,
     SelectPicker,
     SelectPickerOptionType,
@@ -22,7 +23,6 @@ import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey
 
 import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
-import { testValueForNumber } from './utils'
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 
 export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlayProps) => {
@@ -53,7 +53,10 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                     ? {
                           id: choiceId,
                           value: choiceValue,
-                          error: isFormatNumber && !testValueForNumber(choiceValue) ? 'Choice is not a number' : '',
+                          error:
+                              isFormatNumber && !PATTERNS.NATURAL_NUMBERS.test(choiceValue)
+                                  ? 'Choice is not a number'
+                                  : '',
                       }
                     : choice,
             ),
@@ -99,7 +102,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
     const handleFileMaxSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const maxSize = e.target.value
-        if (!testValueForNumber(maxSize)) {
+        if (!PATTERNS.NATURAL_NUMBERS.test(maxSize)) {
             return
         }
         handleRowUpdateAction({
@@ -129,10 +132,13 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }
 
     const handlePopupClose = () => {
+        // FILTERING EMPTY VALUES
+        const filteredChoices = choices.filter(({ value }) => !!value)
+        setChoices(filteredChoices)
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS,
             rowId,
-            actionValue: choices.filter(({ value }) => !!value).map(({ value }) => value),
+            actionValue: filteredChoices.map(({ value }) => value),
         })
     }
 

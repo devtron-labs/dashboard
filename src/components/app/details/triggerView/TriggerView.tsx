@@ -714,7 +714,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       this.props.appContext.currentAppName,
                   )
                 : null,
-            getRuntimeParams?.(ciNodeId, true) ?? null,
+            getRuntimeParams?.(ciNodeId) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that

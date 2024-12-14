@@ -89,6 +89,7 @@ import {
     TriggerViewContextType,
     BulkSelectionEvents,
     RenderCTAType,
+    RuntimeParamsErrorState,
 } from './types'
 import close from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
@@ -140,7 +141,6 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const getSecurityScan: ({
     appId,
     envId,
@@ -153,6 +153,7 @@ const getSecurityScan: ({
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -181,6 +182,7 @@ const CDMaterial = ({
     selectedAppName,
     bulkRuntimeParams,
     handleBulkRuntimeParamChange,
+    bulkRuntimeParamErrorState,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
     showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
@@ -273,7 +275,10 @@ const CDMaterial = ({
     // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimePluginVariables[]>([])
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
+        isValid: true,
+        cellError: {},
+    })
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -387,7 +392,7 @@ const CDMaterial = ({
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                    setRuntimeParamsList(materialsResult.runtimeParams || [])
+                    setRuntimeParamsList(materialsResult.runtimeParams)
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
@@ -407,7 +412,7 @@ const CDMaterial = ({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                setRuntimeParamsList(materialsResult.runtimeParams || [])
+                setRuntimeParamsList(materialsResult.runtimeParams)
 
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
@@ -567,12 +572,19 @@ const CDMaterial = ({
         setRuntimeParamsList(updatedRuntimeParams)
     }
 
-    const handleRuntimeParamError = (errorState: boolean) => {
-        setRuntimeParamsErrorState(errorState)
+    const onRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
     }
 
-    const uploadFile: typeof bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
+    const handleUploadFile: typeof bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
         uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId, envId })
+
+    // RUNTIME PARAMETERS PROPS
+    const parameters = bulkRuntimeParams || runtimeParamsList
+    const errorState = bulkRuntimeParamErrorState || runtimeParamsErrorState
+    const handleRuntimeParamsChange = handleBulkRuntimeParamChange || handleRuntimeParamChange
+    const handleRuntimeParamsError = handleBulkRuntimeParamError || onRuntimeParamsError
+    const uploadRuntimeParamsFile = bulkUploadFile || handleUploadFile
 
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
@@ -704,14 +716,6 @@ const CDMaterial = ({
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (runtimeParamsErrorState) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please resolve all the errors before switching tabs',
-            })
-            return
-        }
-
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
@@ -869,7 +873,9 @@ const CDMaterial = ({
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => {
-        if (runtimeParamsErrorState) {
+        const updatedRuntimeParamsErrorState = validateRuntimeParameters(parameters)
+        handleRuntimeParamsError(updatedRuntimeParamsErrorState)
+        if (!updatedRuntimeParamsErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please resolve all the errors before deploying',
@@ -1467,6 +1473,9 @@ const CDMaterial = ({
                             tabs={CD_MATERIAL_SIDEBAR_TABS}
                             initialTab={currentSidebarTab}
                             onChange={areTabsDisabled ? noop : handleSidebarTabChange}
+                            hasError={{
+                                [CDMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 )}
@@ -1548,10 +1557,11 @@ const CDMaterial = ({
                     ) : (
                         <RuntimeParameters
                             appId={appId}
-                            parameters={bulkRuntimeParams || runtimeParamsList}
-                            handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
-                            onError={handleBulkRuntimeParamError || handleRuntimeParamError}
-                            uploadFile={bulkUploadFile || uploadFile}
+                            parameters={parameters}
+                            handleChange={handleRuntimeParamsChange}
+                            errorState={errorState}
+                            handleError={handleRuntimeParamsError}
+                            uploadFile={uploadRuntimeParamsFile}
                             isCD
                         />
                     )}

@@ -61,7 +61,11 @@ import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../.
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
-import { HandleRuntimeParamChange, RegexValueType } from '../../../app/details/triggerView/types'
+import {
+    HandleRuntimeParamChange,
+    HandleRuntimeParamErrorState,
+    RegexValueType,
+} from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
@@ -86,6 +90,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
 )
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
 
 const BulkCITrigger = ({
     appList,
@@ -238,7 +243,7 @@ const BulkCITrigger = ({
         }
     }
 
-    const handleRuntimeParamError = (errorState: boolean) => {
+    const handleRuntimeParamError: HandleRuntimeParamErrorState = (errorState) => {
         setRuntimeParamsErrorState((prevErrorState) => ({
             ...prevErrorState,
             [selectedApp.ciPipelineId]: errorState,
@@ -261,14 +266,6 @@ const BulkCITrigger = ({
         })
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
-            })
-            return
-        }
-
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
     }
 
@@ -370,7 +367,9 @@ const BulkCITrigger = ({
     }
 
     const changeApp = (e): void => {
-        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
+        const updatedErrorState = validateRuntimeParameters(runtimeParams[selectedApp.ciPipelineId])
+        handleRuntimeParamError(updatedErrorState)
+        if (!updatedErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
@@ -530,6 +529,9 @@ const BulkCITrigger = ({
                 handleSidebarTabChange={handleSidebarTabChange}
                 runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
                 handleRuntimeParamChange={handleRuntimeParamChange}
+                runtimeParamsErrorState={
+                    runtimeParamsErrorState[selectedApp.ciPipelineId] || { cellError: {}, isValid: true }
+                }
                 handleRuntimeParamError={handleRuntimeParamError}
                 uploadFile={uploadFile}
                 appName={selectedApp?.name}
@@ -724,6 +726,11 @@ const BulkCITrigger = ({
                                     tabs={sidebarTabs}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}
+                                    hasError={{
+                                        [CIMaterialSidebarType.PARAMETERS]:
+                                            runtimeParamsErrorState[selectedApp.ciPipelineId] &&
+                                            !runtimeParamsErrorState[selectedApp.ciPipelineId].isValid,
+                                    }}
                                 />
                             ) : (
                                 'Applications'

@@ -76,6 +76,7 @@ export const GitInfoMaterial = ({
     handleSidebarTabChange,
     runtimeParams,
     handleRuntimeParamChange,
+    runtimeParamsErrorState,
     handleRuntimeParamError,
     isBulkCIWebhook,
     webhookPayloads,
@@ -158,6 +159,9 @@ export const GitInfoMaterial = ({
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}
+                            hasError={{
+                                [CIMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 ) : (
@@ -375,7 +379,8 @@ export const GitInfoMaterial = ({
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}
-                    onError={handleRuntimeParamError}
+                    errorState={runtimeParamsErrorState}
+                    handleError={handleRuntimeParamError}
                     uploadFile={uploadFile}
                 />
             )

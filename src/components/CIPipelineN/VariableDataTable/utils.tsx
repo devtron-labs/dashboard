@@ -16,7 +16,7 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BuildStageVariable, PATTERNS } from '@Config/constants'
+import { BuildStageVariable } from '@Config/constants'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
@@ -288,8 +288,6 @@ export const getValColumnRowProps = ({
         },
     }
 }
-
-export const testValueForNumber = (value: string) => !value || PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES.test(value)
 
 export const checkForSystemVariable = (option: VariableDataTableSelectPickerOptionType) => {
     const isSystemVariable =

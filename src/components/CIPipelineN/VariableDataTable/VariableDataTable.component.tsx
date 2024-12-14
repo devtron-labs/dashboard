@@ -540,36 +540,43 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             })
         } else if (
             headerKey === InputOutputVariablesHeaderKeys.VALUE &&
-            updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD &&
-            extraData.files.length
+            updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD
         ) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                actionValue: { fileReferenceId: null, isLoading: true, fileName: value },
+                actionValue: { fileReferenceId: null, isLoading: false, fileName: value },
                 rowId: updatedRow.id,
             })
 
-            try {
-                const { id, name } = await uploadFile({
-                    file: extraData.files,
-                    ...getUploadFileConstraints({
-                        unit: updatedRow.customState.fileInfo.unit.label as string,
-                        allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
-                        maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
-                    }),
-                })
+            if (extraData.files.length) {
+                try {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: null, isLoading: true, fileName: value },
+                        rowId: updatedRow.id,
+                    })
 
-                handleRowUpdateAction({
-                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                    actionValue: { fileReferenceId: id, isLoading: false, fileName: name },
-                    rowId: updatedRow.id,
-                })
-            } catch {
-                handleRowUpdateAction({
-                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                    actionValue: { fileReferenceId: null, isLoading: false, fileName: '' },
-                    rowId: updatedRow.id,
-                })
+                    const { id, name } = await uploadFile({
+                        file: extraData.files,
+                        ...getUploadFileConstraints({
+                            unit: updatedRow.customState.fileInfo.unit.label as string,
+                            allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
+                            maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
+                        }),
+                    })
+
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: id, isLoading: false, fileName: name },
+                        rowId: updatedRow.id,
+                    })
+                } catch {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: null, isLoading: false, fileName: '' },
+                        rowId: updatedRow.id,
+                    })
+                }
             }
         } else if (
             headerKey === InputOutputVariablesHeaderKeys.FORMAT &&

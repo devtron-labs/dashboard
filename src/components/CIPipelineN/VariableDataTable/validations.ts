@@ -1,5 +1,6 @@
 import {
     DynamicDataTableCellValidationState,
+    PATTERNS as FE_COMMON_LIB_PATTERNS,
     RefVariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -52,7 +53,7 @@ export const validateInputOutputVariableCell = ({
     } = variable
 
     const variableNameReg = new RegExp(PATTERNS.VARIABLE)
-    const numberReg = new RegExp(PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
+    const numberReg = new RegExp(FE_COMMON_LIB_PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
 
     const isInputVariable = type === PluginVariableType.INPUT
 
