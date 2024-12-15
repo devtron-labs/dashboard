@@ -5291,8 +5291,8 @@ textarea::placeholder {
 
 details[open] {
     .dc__accordion-summary {
-        &--icon-flip-90 {
-            transform: rotate(90deg);
+        &--icon-flip-neg-90 {
+            transform: rotate(-90deg);
         }
     }
 }
