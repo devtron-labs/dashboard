@@ -28,6 +28,7 @@ import {
     ToastManager,
     ToastVariantType,
     API_STATUS_CODES,
+    logExceptionToSentry,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
@@ -229,7 +230,8 @@ export default function App() {
                 )
         },
         onRegisterError(error) {
-            console.log('SW registration error', error)
+            console.error('SW registration error', error)
+            logExceptionToSentry(error)
         },
         onNeedRefresh() {
             handleNeedRefresh()
