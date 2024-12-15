@@ -10,6 +10,7 @@ import {
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
     YAMLStringify,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
@@ -69,15 +70,20 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean): CMSecretYamlData[] => {
-    const decodedData = !hideData && decodeData ? decode(data) : data
-    const hiddenData = hideData && DEFAULT_SECRET_PLACEHOLDER
+const secureValues = (data: Record<string, string>, decodeData: boolean): CMSecretYamlData[] => {
+    let decodedData = data || DEFAULT_SECRET_PLACEHOLDER
+
+    if (decodeData) {
+        try {
+            decodedData = decode(data)
+        } catch {
+            noop()
+        }
+    }
+
     return Object.keys(decodedData).map((k, id) => ({
         k,
-        v:
-            typeof decodedData[k] === 'object'
-                ? hiddenData || YAMLStringify(decodedData[k])
-                : hiddenData || decodedData[k],
+        v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
         id,
     }))
 }
@@ -90,18 +96,10 @@ const processCurrentData = ({
     isSecret: boolean
 }) => {
     if (configMapSecretData.data) {
-        return secureValues(
-            configMapSecretData.data,
-            isSecret && configMapSecretData.externalType === '',
-            isSecret && configMapSecretData.unAuthorized,
-        )
+        return secureValues(configMapSecretData.data, isSecret && configMapSecretData.externalType === '')
     }
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
-        return secureValues(
-            configMapSecretData.defaultData,
-            isSecret && configMapSecretData.externalType === '',
-            isSecret && configMapSecretData.unAuthorized,
-        )
+        return secureValues(configMapSecretData.defaultData, isSecret && configMapSecretData.externalType === '')
     }
 
     return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
