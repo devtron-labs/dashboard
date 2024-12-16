@@ -215,7 +215,7 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                         <div key={`custom-input-variable${index}-${variable.id}`} className="pl-220 mb-8">
                             <div className="flexbox justify-space">
                                 <div className="custom-variable-container w-100">
-                                    <Equal className="icon-dim-40 variable-equal-icon" />
+                                    <Equal className="icon-dim-40 variable-equal-icon scn-0 dc__no-shrink" />
 
                                     <div className="tp-4 fs-12 fw-4">
                                         <div className="flexbox">
