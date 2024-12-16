@@ -215,12 +215,12 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderCTAButtonWithIcon = (canTrigger, isCTAActionable: boolean = true) => (
         <Button
             dataTestId="ci-trigger-start-build-button"
-            text={this.props.isJobView ? 'Run Job' : 'Start Build'}
+            text={this.props.isJobView || this.props.isJobCI ? 'Run Job' : 'Start Build'}
             disabled={!canTrigger}
             isLoading={this.props.isLoading}
             onClick={isCTAActionable ? this.handleStartBuildAction : noop}
             size={ComponentSizeType.large}
-            startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
+            startIcon={this.props.isJobView || this.props.isJobCI ? <RunIcon /> : <Play />}
         />
     )
 
