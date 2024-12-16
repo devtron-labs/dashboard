@@ -30,6 +30,7 @@ import {
     DynamicDataTableRowType,
     TagsTableColumnsType,
     PATTERNS,
+    DynamicDataTableCellErrorType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps } from '../types'
@@ -51,12 +52,15 @@ export default function AboutTagEditModal({
     appType,
 }: AboutAppInfoModalProps) {
     const [submitting, setSubmitting] = useState(false)
-    const [labelTags, setLabelTags] = useState<DynamicDataTableRowType<TagsTableColumnsType>[]>(MandatoryTagsContainer ? [] : getLabelTags(currentLabelTags))
+    const [labelTags, setLabelTags] = useState<DynamicDataTableRowType<TagsTableColumnsType>[]>(
+        MandatoryTagsContainer ? [] : getLabelTags(currentLabelTags),
+    )
+    const [tagsError, setTagErrors] = useState<DynamicDataTableCellErrorType<TagsTableColumnsType>>({})
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
-    const configuredTagsMap = new Map<string, {value: string, propagate: boolean}>()
+    const configuredTagsMap = new Map<string, { value: string; propagate: boolean }>()
     currentLabelTags.forEach((configuredTag) => {
-        configuredTagsMap.set(configuredTag.key, {value: configuredTag.value, propagate: configuredTag.propagate})
+        configuredTagsMap.set(configuredTag.key, { value: configuredTag.value, propagate: configuredTag.propagate })
     })
 
     const handleSaveAction = async (e): Promise<void> => {
@@ -74,9 +78,29 @@ export default function AboutTagEditModal({
             const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
-                break
+                setTagErrors({
+                    ...tagsError,
+                    [element.id]: {
+                        tagKey: {
+                            isValid: isKeyValid,
+                            errorMessages: isKeyValid
+                                ? []
+                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                        },
+                        tagValue: {
+                            isValid: isValueValid,
+                            errorMessages: isValueValid
+                                ? []
+                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                        },
+                    },
+                })
             } else if (element.data.tagKey.value) {
-                customLabelTags.push({ key: currentKey, value: currentVal, propagate: element.customState.propagateTag })
+                customLabelTags.push({
+                    key: currentKey,
+                    value: currentVal,
+                    propagate: element.customState.propagateTag,
+                })
             }
         }
         if (invalidLabels) {
@@ -126,12 +150,17 @@ export default function AboutTagEditModal({
                             setTags={setLabelTags}
                             projectId={appMetaInfo.projectId}
                             configuredTagsMap={configuredTagsMap}
+                            tagsError={tagsError}
+                            setTagErrors={setTagErrors}
+                            hidePropagateTags={appType === APP_TYPE.HELM_CHART}
                         />
                     ) : (
                         <TagsContainer
                             rows={labelTags}
                             setRows={setLabelTags}
                             hidePropagateTags={appType === APP_TYPE.HELM_CHART}
+                            tagsError={tagsError}
+                            setTagErrors={setTagErrors}
                         />
                     )}
                 </div>
