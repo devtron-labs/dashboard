@@ -43,7 +43,7 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
     }
 
     return (
-        <VariableDataTablePopupMenu showIcon heading="Variable configuration">
+        <VariableDataTablePopupMenu showIcon heading="Variable configuration" placement="right">
             <>
                 <div className="p-12 flexbox-col dc__gap-12">
                     <CustomInput
@@ -81,7 +81,9 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
                             content={
                                 <div className="fs-12 lh-18 flexbox-col dc__gap-2">
                                     <p className="m-0 fw-6 cn-0">Value is required</p>
-                                    <p className="m-0 cn-50">Get this tooltip from Utkarsh</p>
+                                    <p className="m-0 cn-50">
+                                        Value for required variables must be provided for pipeline execution
+                                    </p>
                                 </div>
                             }
                         >

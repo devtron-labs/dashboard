@@ -286,6 +286,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                 (row.data.format.value === VariableTypeFormat.FILE && hasFileMountError) ||
                 (row.data.format.value === VariableTypeFormat.NUMBER && hasChoicesError)
             }
+            placement="left"
         >
             <>
                 {renderContent()}

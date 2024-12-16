@@ -12,6 +12,7 @@ export const VariableDataTablePopupMenu = ({
     children,
     onClose,
     disableClose = false,
+    placement,
 }: VariableDataTablePopupMenuProps) => {
     // STATES
     const [visible, setVisible] = useState(false)
@@ -40,7 +41,7 @@ export const VariableDataTablePopupMenu = ({
                       }
                     : {})}
                 disableClose={disableClose}
-                placement="left"
+                placement={placement}
                 appendTo={document.getElementById('visible-modal')}
                 showCloseButton
                 onClose={handleClose}

@@ -7,6 +7,7 @@ import {
     DynamicDataTableCellErrorType,
     DynamicDataTableProps,
     DynamicDataTableRowDataType,
+    FileConfigTippy,
     InputOutputVariablesHeaderKeys,
     PluginType,
     RefVariableType,
@@ -48,7 +49,6 @@ import {
 
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
-import { ValueConfigFileTippy } from './ValueConfigFileTippy'
 
 export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTableProps) => {
     // CONTEXTS
@@ -623,7 +623,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
     const getTrailingCellIconForValueColumn = (row: VariableDataRowType) =>
         isInputPluginVariable && row.data.format.value === VariableTypeFormat.FILE ? (
-            <ValueConfigFileTippy fileMountDir={row.customState.fileInfo.fileMountDir} />
+            <FileConfigTippy fileMountDir={row.customState.fileInfo.fileMountDir} />
         ) : null
 
     const trailingCellIcon: DynamicDataTableProps<InputOutputVariablesHeaderKeys>['trailingCellIcon'] = {

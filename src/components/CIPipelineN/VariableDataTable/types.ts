@@ -7,6 +7,7 @@ import {
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
+    TippyCustomizedProps,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -130,7 +131,7 @@ export type VariableDataTableAction<
 
 export type HandleRowUpdateActionProps = VariableDataTableAction
 
-export interface VariableDataTablePopupMenuProps {
+export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps, 'placement'> {
     heading: string
     showIcon?: boolean
     disableClose?: boolean

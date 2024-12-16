@@ -31,7 +31,8 @@ export const getVariableDataTableHeaders = (
 ]
 
 export const VAL_COLUMN_DROPDOWN_LABEL = {
-    CHOICES: 'Default values',
+    CHOICES: 'Choices',
+    SUPPORTED_DATE_FORMATS: 'Supported date formats',
     SYSTEM_VARIABLES: 'System variables',
     PRE_BUILD_STAGE: 'From Pre-build Stage',
     POST_BUILD_STAGE: 'From Post-build Stage',

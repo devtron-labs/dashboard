@@ -53,17 +53,18 @@ export const getOptionsForValColumn = ({
     const previousStepVariables = []
     const preBuildStageVariables = []
 
-    const defaultValues = (valueConstraint?.choices || []).map<SelectPickerOptionType<string>>((value) => ({
+    const supportedDataFormats = []
+    const choices = (valueConstraint?.choices || []).map<SelectPickerOptionType<string>>((value) => ({
         label: value,
         value,
     }))
 
     if (format === VariableTypeFormat.BOOL) {
-        defaultValues.push(...IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS)
+        choices.push(...IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS)
     }
 
     if (format === VariableTypeFormat.DATE) {
-        defaultValues.push(...IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS)
+        supportedDataFormats.push(...IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS)
     }
 
     if (format)
@@ -136,7 +137,8 @@ export const getOptionsForValColumn = ({
     )
 
     const isOptionsEmpty =
-        !defaultValues.length &&
+        !choices.length &&
+        !supportedDataFormats.length &&
         (isBuildStagePostBuild
             ? !filteredPreBuildStageVariablesBasedOnFormat.length && !filteredPreviousStepVariablesBasedOnFormat.length
             : !filteredPreviousStepVariablesBasedOnFormat.length) &&
@@ -149,7 +151,11 @@ export const getOptionsForValColumn = ({
     return [
         {
             label: VAL_COLUMN_DROPDOWN_LABEL.CHOICES,
-            options: defaultValues,
+            options: choices,
+        },
+        {
+            label: VAL_COLUMN_DROPDOWN_LABEL.SUPPORTED_DATE_FORMATS,
+            options: supportedDataFormats,
         },
         ...(!valueConstraint?.blockCustomValue
             ? [
@@ -271,6 +277,7 @@ export const getValColumnRowProps = ({
                     isCreatable:
                         format !== VariableTypeFormat.BOOL &&
                         (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
+                    formatCreateLabel: (inputValue) => `Use ${inputValue}`,
                 },
                 Icon:
                     refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
