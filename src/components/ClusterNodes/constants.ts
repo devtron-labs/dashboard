@@ -359,3 +359,31 @@ export const ClusterStatusByFilter: Record<ClusterFiltersType, ClusterStatusType
     [ClusterFiltersType.UNHEALTHY]: ClusterStatusType.UNHEALTHY,
     [ClusterFiltersType.ALL_CLUSTERS]: null,
 }
+
+export enum ClusterMapListSortableKeys {
+    CLUSTER_NAME = 'name',
+    STATUS = 'status',
+    TYPE = 'type',
+    NODES = 'nodeCount',
+    NODE_ERRORS = 'nodeErrors',
+    K8S_VERSION = 'serverVersion',
+    CPU_CAPACITY = 'cpu',
+    MEMORY_CAPACITY = 'memory',
+}
+
+export enum ClusterMapListSortableTitle {
+    CLUSTER_NAME = 'Cluster',
+    STATUS = 'Status',
+    TYPE = 'Type',
+    NODES = 'Nodes',
+    NODE_ERRORS = 'Node Errors',
+    K8S_VERSION = 'K8S version',
+    CPU_CAPACITY = 'CPU Capacity',
+    MEMORY_CAPACITY = 'Memory Capacity',
+}
+
+export enum CLUSTER_PROD_TYPE {
+    PRODUCTION= 'Production',
+    NON_PRODUCTION= 'Non Production',
+
+}
