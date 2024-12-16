@@ -51,7 +51,7 @@
 
         .modal__content {
             display: grid;
-            grid-template-columns: 1fr 279px;
+            grid-template-columns: 1fr 320px;
             height: calc(100% - 110px);
 
             .configure-link-action-container,
@@ -101,7 +101,7 @@
 
                 .configure-link-action-wrapper {
                     display: grid;
-                    grid-template-columns: 40px 604px 16px;
+                    grid-template-columns: 40px 1fr 16px;
                     column-gap: 12px;
 
                     .error-label {
@@ -177,25 +177,6 @@
             }
 
             .configure-link-info-container {
-                padding: 20px;
-
-                .configure-link-info-heading {
-                    display: flex;
-                    align-items: center;
-                    font-size: 13px;
-                    font-weight: 600;
-                    line-height: 1.5;
-
-                    svg {
-                        width: 20px;
-                        height: 20px;
-                        margin-right: 10px;
-
-                        path {
-                            fill: var(--V500);
-                        }
-                    }
-                }
 
                 .configure-link-info-list {
                     padding: 20px 15px 0;
@@ -215,22 +196,11 @@
 
                     li {
                         font-weight: 600;
-                        margin-bottom: 4px;
                     }
 
                     ul {
                         padding: 0 0 0 21px;
                         margin: 0 0 12px;
-
-                        &.available-link-variables {
-                            padding: 0;
-
-                            li {
-                                list-style: none;
-                                background-color: var(--N100);
-                                padding: 2px 4px;
-                            }
-                        }
 
                         li {
                             font-size: 12px;

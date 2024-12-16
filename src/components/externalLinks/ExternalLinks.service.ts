@@ -15,7 +15,7 @@
  */
 
 import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
+import { DEVTRON_IFRAME_PRIMARY, Routes } from '../../config'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
@@ -45,12 +45,39 @@ const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: E
     return _url
 }
 
-export const getExternalLinks = (
+export const getExternalLinks = async (
     clusterId?: number,
     identifier?: string,
     type?: ExternalLinkIdentifierType,
 ): Promise<ExternalLinkResponse> => {
-    return get(getURLWithQueryParams(clusterId, identifier, type))
+    const response = await get(getURLWithQueryParams(clusterId, identifier, type))
+    return {
+        ...response,
+        result: {
+            ...response.result,
+            ExternalLinks: (response.result?.ExternalLinks || []).map((link: ExternalLink) => {
+                try {
+                    const linkUrl = new URL(link.url)
+                    const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
+                    linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
+                    const sanitizedUrl = linkUrl.href
+                    return {
+                        ...link,
+                        url: sanitizedUrl,
+                        openInNewTab,
+                    }
+                } catch {
+                    return {
+                        ...link,
+                        openInNewTab: true,
+                    }
+                }
+                
+                
+                
+            }),
+        },
+    }
 }
 
 export const saveExternalLinks = (request: ExternalLink[], appId?: string): Promise<ExternalLinkUpdateResponse> => {

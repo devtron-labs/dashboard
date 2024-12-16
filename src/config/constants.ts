@@ -259,7 +259,8 @@ export const Routes = {
     GVK: 'gvk',
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
-    SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure'
+    SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
+    CONFIG_MANIFEST: 'config/manifest'
 }
 
 export enum ViewType {
@@ -939,3 +940,5 @@ export const EDITOR_VIEW = {
     BASIC: 'BASIC',
     ADVANCED: 'ADVANCED',
 }
+
+export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'

@@ -55,7 +55,7 @@ const JobListContainer = ({
 
     const payload: JobListPayload = useMemo(
         () => ({
-            appNameSearch: searchKey,
+            appNameSearch: searchKey.toLowerCase(),
             appStatuses: status,
             environments: environment.map((envId) => +envId),
             teams: project.map((projectId) => +projectId),

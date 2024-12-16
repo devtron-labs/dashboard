@@ -54,24 +54,17 @@ const EnvironmentOverride = ({
     const { push } = useHistory()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
-    const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
     const isProtected =
         environmentsMap.get(+params.envId)?.isProtected ?? appMap.get(+params.appId)?.isProtected ?? false
+    const isDeploymentOverride = !!location.pathname.includes(URLS.APP_DEPLOYMENT_CONFIG)
+
     useEffect(() => {
         if (params.envId) {
             setEnvironmentId(+params.envId)
         }
     }, [params.envId])
-
-    useEffect(() => {
-        if (!location.pathname.includes(URLS.APP_CM_CONFIG) && !location.pathname.includes(URLS.APP_CS_CONFIG)) {
-            setIsDeploymentOverride(true)
-        } else {
-            setIsDeploymentOverride(false)
-        }
-    }, [location.pathname])
 
     useEffect(() => {
         if (params.envId) {

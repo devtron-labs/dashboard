@@ -144,7 +144,6 @@ const getIsImageApproverFromUserApprovalMetaData: (
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
 const getSecurityScan: ({
     appId,
-    envId,
     installedAppId,
 }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
     'getSecurityScan',
