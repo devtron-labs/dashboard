@@ -203,7 +203,6 @@ const AppComposeRouter = () => {
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                     <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
-                        isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                         isProtected={isBaseConfigProtected}
                         reloadEnvironments={reloadEnvironments}

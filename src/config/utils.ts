@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DEVTRON_DEFAULT_RELEASE_NAME, DEVTRON_DEFAULT_NAMESPACE, DEVTRON_DEFAULT_CLUSTER_ID } from '.'
+import {
+    DEVTRON_DEFAULT_RELEASE_NAME,
+    DEVTRON_DEFAULT_NAMESPACE,
+    DEVTRON_DEFAULT_CLUSTER_ID,
+} from '.'
 
 export const checkIfDevtronOperatorHelmRelease = (
     releaseName: string,

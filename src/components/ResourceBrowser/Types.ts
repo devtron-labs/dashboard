@@ -17,7 +17,6 @@
 import React, { RefObject } from 'react'
 import {
     K8SObjectBaseType,
-    ResponseType,
     OptionType,
     ApiResourceGroupType,
     GVKType,
@@ -25,6 +24,7 @@ import {
     InitTabType,
     K8sResourceDetailType,
     K8sResourceDetailDataType,
+    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail, ResourceDetail, ClusterListType } from '../ClusterNodes/types'
@@ -84,10 +84,6 @@ export interface ResourceType {
     error: string
 }
 
-export interface CreateResourceResponse extends ResponseType {
-    result?: ResourceType[]
-}
-
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
 }
@@ -123,7 +119,7 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
-    selectedNamespace?: OptionType
+    selectedNamespace?: typeof ALL_NAMESPACE_OPTION
     setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
     searchText?: string
     isOpen: boolean
