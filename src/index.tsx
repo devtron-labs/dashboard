@@ -167,6 +167,7 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
         FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
+        FEATURE_CLUSTER_MAP_ENABLE: false,
     }
 }
 

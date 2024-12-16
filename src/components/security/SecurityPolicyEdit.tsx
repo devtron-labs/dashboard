@@ -15,7 +15,6 @@
  */
 
 import { Component } from 'react'
-import ReactSelect from 'react-select'
 import {
     showError,
     Progressing,
@@ -26,7 +25,6 @@ import {
     getCVEUrlFromCVEName,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
-import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
     VulnerabilityUIMetaData,
     GetVulnerabilityPolicyResponse,
@@ -117,7 +115,7 @@ export class SecurityPolicyEdit extends Component<
     }
 
     private fetchVulnerabilities(level: string, id?: number): void {
-        this.setState({ view: ViewType.LOADING })
+            this.setState({ view: ViewType.LOADING })
         getVulnerabilities(this.props.level, this.props.id)
             .then((response) => {
                 this.setState({
@@ -146,7 +144,6 @@ export class SecurityPolicyEdit extends Component<
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.ERROR })
             })
     }
 
