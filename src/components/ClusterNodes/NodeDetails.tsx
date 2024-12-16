@@ -635,16 +635,8 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then((isAdded) => {
-            if (isAdded) {
-                push(_url)
-                return
-            }
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
-                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
-            })
+        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then(() => {
+            push(_url)
         })
     }
 
