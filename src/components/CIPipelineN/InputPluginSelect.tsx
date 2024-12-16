@@ -236,7 +236,7 @@ export const InputPluginSelection = ({
                     placeholder={placeholder}
                     refVar={refVar}
                     tabIndex={selectedVariableIndex}
-                    handleKeyDown={handleOnKeyDown}
+                    onKeyDown={handleOnKeyDown}
                 />
                 {(variableData.refVariableStage ||
                     (variableData?.variableType && variableData.variableType !== 'NEW')) && (
