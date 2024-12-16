@@ -112,7 +112,7 @@ const ResourceFilterOptions = ({
             return
         }
         const matchedOption = namespaceOptions.find((option) => option.value === namespace)
-        handleNamespaceChange(!matchedOption ? ALL_NAMESPACE_OPTION : matchedOption)
+        handleNamespaceChange(!matchedOption ? (ALL_NAMESPACE_OPTION as any) : matchedOption)
     }, [namespace, namespaceOptions])
 
     const handleInputBlur = () => setIsInputFocused(false)
