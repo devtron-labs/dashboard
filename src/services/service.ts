@@ -118,7 +118,7 @@ export function getAppListMin(
     }
 
     if (appName) {
-        queryString.set('appName', appName)
+        queryString.set('appName', appName.toLowerCase())
     }
 
     if (isJobView) {

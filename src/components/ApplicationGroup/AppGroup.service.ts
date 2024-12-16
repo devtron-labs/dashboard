@@ -200,7 +200,7 @@ export const getEnvAppList = (
     const options = signal ? { signal } : null
     const { searchKey = '', cluster = [], offset, pageSize } = filterConfig ?? {}
     const params: GetEnvAppListParamsType = {
-        envName: searchKey,
+        envName: searchKey.toLowerCase(),
         clusterIds: cluster?.join(),
         offset,
         size: pageSize,
