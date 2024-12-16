@@ -535,13 +535,12 @@ export const convertVariableDataTableToFormData = ({
             variableDetail.isRuntimeArg = askValueAtRuntime
 
             if (
-                (variableDetail.format === VariableTypeFormat.STRING ||
-                    variableDetail.format === VariableTypeFormat.NUMBER) &&
-                choices.length
+                variableDetail.format === VariableTypeFormat.STRING ||
+                variableDetail.format === VariableTypeFormat.NUMBER
             ) {
                 variableDetail.valueConstraint = {
                     ...variableDetail.valueConstraint,
-                    choices,
+                    choices: choices.length ? choices : null,
                     blockCustomValue,
                 }
             } else if (variableDetail.format === VariableTypeFormat.FILE && fileInfo) {
