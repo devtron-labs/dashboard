@@ -132,7 +132,8 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
     const handleRowUpdateAction = (rowAction: HandleRowUpdateActionProps) => {
         const { actionType, rowId } = rowAction
         let updatedRows = rows
-        const selectedRow = rows.find((row) => row.id === rowId)
+        const selectedRowIndex = rows.findIndex((row) => row.id === rowId)
+        const selectedRow = rows[selectedRowIndex]
         const updatedCellError = cellError
 
         switch (actionType) {
@@ -365,10 +366,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
         // Not updating selectedRow for ADD/DELETE row, since these actions update the rows array directly.
         if (
-            rowAction.actionType !== VariableDataTableActionType.ADD_ROW &&
-            rowAction.actionType !== VariableDataTableActionType.DELETE_ROW
+            actionType !== VariableDataTableActionType.ADD_ROW &&
+            actionType !== VariableDataTableActionType.DELETE_ROW &&
+            selectedRowIndex > -1
         ) {
-            updatedRows = updatedRows.map((row) => (row.id === selectedRow.id ? selectedRow : row))
+            updatedRows[selectedRowIndex] = selectedRow
         }
 
         const { updatedFormData, updatedFormDataErrorObj } = convertVariableDataTableToFormData({

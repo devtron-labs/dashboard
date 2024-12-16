@@ -39,6 +39,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     const isFormatFile = data.format.value === VariableTypeFormat.FILE
     const hasChoicesError = choices.some(({ error }) => !!error)
     const hasFileMountError = !fileInfo.fileMountDir
+    const showIconDot = !!choices.length || askValueAtRuntime || blockCustomValue || isFormatFile
 
     // METHODS
     const handleAddChoices = () => {
@@ -282,6 +283,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         <VariableDataTablePopupMenu
             heading={row.data.variable.value || 'Value configuration'}
             onClose={handlePopupClose}
+            showIconDot={showIconDot}
             disableClose={
                 (row.data.format.value === VariableTypeFormat.FILE && hasFileMountError) ||
                 (row.data.format.value === VariableTypeFormat.NUMBER && hasChoicesError)

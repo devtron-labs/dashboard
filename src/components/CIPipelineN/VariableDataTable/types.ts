@@ -127,7 +127,8 @@ export type HandleRowUpdateActionProps = VariableDataTableAction
 
 export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps, 'placement'> {
     heading: string
-    showIcon?: boolean
+    showHeaderIcon?: boolean
+    showIconDot?: boolean
     disableClose?: boolean
     onClose?: () => void
     children: JSX.Element
