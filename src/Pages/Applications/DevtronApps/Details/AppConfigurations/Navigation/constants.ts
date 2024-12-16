@@ -20,7 +20,7 @@ export const RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP: Record<
     },
     [ResourceConfigState.Published]: {
         Icon: ICStamp,
-        tippyContent: 'Approval required for configuration change',
+        tippyContent: 'Approval(s) will be required for configuration change',
     },
     [ResourceConfigState.Unnamed]: {
         Icon: null,
