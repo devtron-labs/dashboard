@@ -656,7 +656,7 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
                 }`}
             >
-                <List className="dc__border" key={clusterId} onClick={editModeToggle}>
+                <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>
                     {!clusterId && (
                         <List.Logo>
                             <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />

@@ -124,6 +124,8 @@ const NodeDetailComponent = ({
         [lowercaseKindToResourceGroupMap, params.nodeType],
     )
 
+    const resourceName = isResourceBrowserView ? params.node : params.podName
+
     const selectedResource = {
         clusterId: +params.clusterId,
         clusterName,
@@ -131,7 +133,7 @@ const NodeDetailComponent = ({
         version: _selectedResource?.gvk.Version,
         group: _selectedResource?.gvk.Group,
         namespace: params.namespace,
-        name: params.node,
+        name: resourceName,
         containers: [],
     }
 
@@ -208,19 +210,19 @@ const NodeDetailComponent = ({
             isResourceBrowserView &&
             !loadingResources &&
             selectedResource &&
-            params.node &&
+            resourceName &&
             params.nodeType === Nodes.Pod.toLowerCase()
         ) {
             getContainersFromManifest()
         }
-    }, [loadingResources, params.node, params.namespace])
+    }, [loadingResources, resourceName, params.namespace])
 
     const getContainersFromManifest = async () => {
         try {
-            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? params.node : ''
+            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
             const { result } = await getManifestResource(
                 appDetails,
-                params.node,
+                resourceName,
                 params.nodeType,
                 isResourceBrowserView,
                 {
@@ -329,10 +331,7 @@ const NodeDetailComponent = ({
     }
 
     const currentTab = applicationObjectTabs.filter((tab) => {
-        return (
-            tab.name.toLowerCase() ===
-            `${params.nodeType}/...${(isResourceBrowserView ? params.node : params.podName)?.slice(-6)}`
-        )
+        return tab.name.toLowerCase() === `${params.nodeType}/...${resourceName?.slice(-6)}`
     })
     const isDeleted =
         (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
@@ -423,10 +422,8 @@ const NodeDetailComponent = ({
         )
     }
 
-    const handleToggleManifestConfigurationMode = () => {
-        setManifestFormConfigurationType((prev) =>
-            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
-        )
+    const handleToggleManifestConfigurationMode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setManifestFormConfigurationType(e.target.value as ConfigurationType)
     }
 
     const handleSwitchToYAMLMode = () => {
@@ -449,7 +446,7 @@ const NodeDetailComponent = ({
                 !showManifestCompareView &&
                 !isResourceMissing && (
                     <>
-                        <div className="ml-4 mr-12 tab-cell-border" />
+                        <div className="ml-12 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
                                 {ToggleManifestConfigurationMode && !isExternalApp && (

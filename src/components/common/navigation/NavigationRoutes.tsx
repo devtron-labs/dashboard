@@ -397,7 +397,7 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
+                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bcn-0' : ''} ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >
