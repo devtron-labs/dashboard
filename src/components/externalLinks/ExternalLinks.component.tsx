@@ -220,11 +220,13 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
             condition={!!linkOption.description}
             wrap={(children) => getTippyForLink(children)}
         >
-            <div className="dc__grid br-4 dc__border dc__align-items-center external-link-chip">
+            <div
+                className={`dc__grid br-4 dc__border dc__align-items-center ${linkOption.openInNewTab ? '' : 'external-link-chip'}`}
+            >
                 <button
-                    className="flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3"
+                    className={`flexbox dc__gap-4 px-6 py-2 dc__align-items-center dc__unset-button-styles dc__hover-n50 dc__left-radius-3 ${linkOption.openInNewTab ? 'dc__right-radius-3' : ''}`}
                     type="button"
-                    onClick={handleTextClick}
+                    onClick={linkOption.openInNewTab ? getHandleOpenURL(externalLinkURL) : handleTextClick}
                 >
                     <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
                     <span
@@ -234,15 +236,17 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                         {linkOption.label}
                     </span>
                 </button>
-                <a
-                    key={linkOption.label}
-                    href={getParsedURL(true, linkOption.value.toString(), details)}
-                    target="_blank"
-                    className="flex p-4 open-link-button dc__hover-n50 dc__right-radius-3"
-                    rel="noreferrer"
-                >
-                    <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
-                </a>
+                {!linkOption.openInNewTab && (
+                    <a
+                        key={linkOption.label}
+                        href={externalLinkURL}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex p-4 open-link-button dc__hover-n50 dc__right-radius-3 dc__border-left"
+                    >
+                        <ICArrowOut className="icon-dim-16 scn-6 dc__no-shrink arrow-out-icon" />
+                    </a>
+                )}
             </div>
         </ConditionalWrap>
     )
@@ -292,6 +296,7 @@ export const AppLevelExternalLinks = ({
                     icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                     startIcon: getExternalLinkIcon(getMonitoringToolIcon(monitoringTools, link.monitoringToolId)),
                     description: link.description,
+                    openInNewTab: link.openInNewTab,
                 })),
             )
         } else {
