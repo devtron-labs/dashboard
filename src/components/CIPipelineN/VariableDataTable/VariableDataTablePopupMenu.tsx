@@ -3,15 +3,18 @@ import { useState } from 'react'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
+import { ReactComponent as ICDot } from '@Icons/ic-dot.svg'
 
 import { VariableDataTablePopupMenuProps } from './types'
 
 export const VariableDataTablePopupMenu = ({
-    showIcon,
+    showHeaderIcon,
+    showIconDot,
     heading,
     children,
     onClose,
     disableClose = false,
+    placement,
 }: VariableDataTablePopupMenuProps) => {
     // STATES
     const [visible, setVisible] = useState(false)
@@ -40,14 +43,14 @@ export const VariableDataTablePopupMenu = ({
                       }
                     : {})}
                 disableClose={disableClose}
-                placement="left"
+                placement={placement}
                 appendTo={document.getElementById('visible-modal')}
                 showCloseButton
                 onClose={handleClose}
                 heading={<p className="m-0 fw-6 fs-13 lh-20">{heading}</p>}
-                Icon={showIcon ? ICSlidersVertical : null}
+                Icon={showHeaderIcon ? ICSlidersVertical : null}
                 iconSize={16}
-                additionalContent={<div className="flexbox-col w-300 mxh-300">{children}</div>}
+                additionalContent={visible ? <div className="flexbox-col w-300 mxh-300">{children}</div> : null}
             >
                 <button
                     type="button"
@@ -55,7 +58,10 @@ export const VariableDataTablePopupMenu = ({
                     className="dc__transparent h-100 flex top py-10 px-8 dc__no-border-imp dc__no-border-radius dc__hover-n50"
                     onClick={handleOpen}
                 >
-                    <ICSlidersVertical className="icon-dim-16" />
+                    <span className="show-icon-dot-16">
+                        <ICSlidersVertical className="icon-dim-16" />
+                        {showIconDot && <ICDot className="ic-dot" />}
+                    </span>
                 </button>
             </TippyCustomized>
             {visible && <div className="dc__position-fixed dc__top-0 dc__right-0 dc__left-0 dc__bottom-0 dc__zi-20" />}

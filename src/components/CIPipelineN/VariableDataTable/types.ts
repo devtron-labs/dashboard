@@ -1,11 +1,13 @@
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PipelineContext } from '@Components/workflowEditor/types'
 import {
-    DynamicDataTableHeaderType,
+    DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
+    InputOutputVariablesHeaderKeys,
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
+    TippyCustomizedProps,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -23,29 +25,22 @@ export interface VariableDataTableSelectPickerOptionType extends SelectPickerOpt
     refVariableStepIndex?: number
 }
 
-export type VariableDataKeys = 'variable' | 'format' | 'val'
-
 export type VariableDataCustomState = {
     defaultValue: string
     variableDescription: string
     isVariableRequired: boolean
-    choices: { id: number; value: string; error: string }[]
+    choices: string[]
     askValueAtRuntime: boolean
     blockCustomValue: boolean
     valColumnSelectedValue: VariableDataTableSelectPickerOptionType
-    fileInfo: {
-        id: number
-        mountDir: {
-            value: string
-            error: string
-        }
+    fileInfo: Pick<VariableType, 'fileReferenceId' | 'fileMountDir'> & {
         allowedExtensions: string
         maxUploadSize: string
         unit: SelectPickerOptionType<number>
     }
 }
 
-export type VariableDataRowType = DynamicDataTableRowType<VariableDataKeys, VariableDataCustomState>
+export type VariableDataRowType = DynamicDataTableRowType<InputOutputVariablesHeaderKeys, VariableDataCustomState>
 
 export enum VariableDataTableActionType {
     // GENERAL ACTIONS
@@ -58,7 +53,6 @@ export enum VariableDataTableActionType {
 
     // TABLE ROW ACTIONS
     ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS = 'add_choices_to_value_column_options',
-    UPDATE_CHOICES = 'update_choices',
     UPDATE_ASK_VALUE_AT_RUNTIME = 'update_ask_value_at_runtime',
     UPDATE_ALLOW_CUSTOM_INPUT = 'update_allow_custom_input',
     UPDATE_FILE_MOUNT = 'update_file_mount',
@@ -71,81 +65,70 @@ export enum VariableDataTableActionType {
 }
 
 type VariableDataTableActionPropsMap = {
-    [VariableDataTableActionType.ADD_ROW]: { rowId: number }
+    [VariableDataTableActionType.ADD_ROW]: {}
     [VariableDataTableActionType.UPDATE_ROW]: {
         actionValue: string
-        headerKey: VariableDataKeys
-        rowId: string | number
+        headerKey: InputOutputVariablesHeaderKeys
     }
-    [VariableDataTableActionType.DELETE_ROW]: {
-        rowId: string | number
-    }
+    [VariableDataTableActionType.DELETE_ROW]: {}
     [VariableDataTableActionType.UPDATE_VAL_COLUMN]: {
         actionValue: {
             value: string
             valColumnSelectedValue: VariableDataTableSelectPickerOptionType
         }
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FORMAT_COLUMN]: {
         actionValue: VariableTypeFormat
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO]: {
         actionValue: Pick<VariableType, 'fileReferenceId'> & {
             fileName: string
             isLoading: boolean
         }
-        rowId: string | number
     }
 
     [VariableDataTableActionType.UPDATE_ALLOW_CUSTOM_INPUT]: {
         actionValue: VariableDataCustomState['blockCustomValue']
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_ASK_VALUE_AT_RUNTIME]: {
         actionValue: VariableDataCustomState['askValueAtRuntime']
-        rowId: string | number
-    }
-    [VariableDataTableActionType.UPDATE_CHOICES]: {
-        actionValue: (currentChoices: VariableDataCustomState['choices']) => VariableDataCustomState['choices']
-        rowId: string | number
     }
     [VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS]: {
-        rowId: string | number
+        actionValue: string[]
     }
     [VariableDataTableActionType.UPDATE_FILE_MOUNT]: {
-        rowId: string | number
-        actionValue: {
-            value: string
-            error: string
-        }
+        actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS]: {
-        rowId: string | number
         actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_MAX_SIZE]: {
-        rowId: string | number
         actionValue: {
             size: string
             unit: SelectPickerOptionType<number>
         }
     }
 
-    [VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION]: { actionValue: string; rowId: string | number }
-    [VariableDataTableActionType.UPDATE_VARIABLE_REQUIRED]: { actionValue: boolean; rowId: string | number }
+    [VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION]: {
+        actionValue: VariableDataCustomState['variableDescription']
+    }
+    [VariableDataTableActionType.UPDATE_VARIABLE_REQUIRED]: {
+        actionValue: VariableDataCustomState['isVariableRequired']
+    }
 }
 
 export type VariableDataTableAction<
     T extends keyof VariableDataTableActionPropsMap = keyof VariableDataTableActionPropsMap,
-> = T extends keyof VariableDataTableActionPropsMap ? { actionType: T } & VariableDataTableActionPropsMap[T] : never
+> = T extends keyof VariableDataTableActionPropsMap
+    ? { actionType: T; rowId: string | number } & VariableDataTableActionPropsMap[T]
+    : never
 
 export type HandleRowUpdateActionProps = VariableDataTableAction
 
-export interface VariableDataTablePopupMenuProps {
+export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps, 'placement'> {
     heading: string
-    showIcon?: boolean
+    showHeaderIcon?: boolean
+    showIconDot?: boolean
     disableClose?: boolean
     onClose?: () => void
     children: JSX.Element
@@ -180,16 +163,36 @@ export interface GetVariableDataTableInitialRowsProps
     isCustomTask: boolean
 }
 
-export interface GetValidateCellProps {
+export type GetValidateCellProps = {
     pluginVariableType: PluginVariableType
-    keysFrequencyMap: Record<string, number>
-    key: VariableDataKeys
     row: VariableDataRowType
+    value?: string
+    key: InputOutputVariablesHeaderKeys
+}
+
+export interface ValidateVariableDataTableKeysProps {
+    rows: VariableDataRowType[]
+    cellError: DynamicDataTableCellErrorType<InputOutputVariablesHeaderKeys>
+    rowId?: string | number
     value?: string
 }
 
-export interface ValidateVariableDataTableProps
-    extends Pick<GetValidateCellProps, 'keysFrequencyMap' | 'pluginVariableType'> {
-    rows: VariableDataRowType[]
-    headers: DynamicDataTableHeaderType<VariableDataKeys>[]
+export interface ValidateInputOutputVariableCellProps {
+    variable: Pick<
+        VariableType,
+        | 'allowEmptyValue'
+        | 'isRuntimeArg'
+        | 'defaultValue'
+        | 'variableType'
+        | 'refVariableName'
+        | 'value'
+        | 'description'
+        | 'name'
+        | 'refVariableStepIndex'
+        | 'refVariableStage'
+        | 'format'
+    >
+    key: InputOutputVariablesHeaderKeys
+    type: PluginVariableType
+    keysFrequencyMap?: Record<string, number>
 }

@@ -55,7 +55,7 @@ import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { BulkSelectionEvents, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { BulkSelectionEvents, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
@@ -79,6 +79,7 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
+const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -150,18 +151,10 @@ export default function BulkCDTrigger({
     })
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (runtimeParamsErrorState[selectedApp.appId]) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB,
-            })
-            return
-        }
-
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
-    const handleRuntimeParamError = (errorState: boolean) => {
+    const handleRuntimeParamError = (errorState: RuntimeParamsErrorState) => {
         setRuntimeParamsErrorState((prevErrorState) => ({
             ...prevErrorState,
             [selectedApp.appId]: errorState,
@@ -363,7 +356,9 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
-        if (runtimeParamsErrorState[selectedApp.appId]) {
+        const updatedErrorState = validateRuntimeParameters(runtimeParams[selectedApp.appId])
+        handleRuntimeParamError(updatedErrorState)
+        if (!updatedErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: BULK_ERROR_MESSAGES.CHANGE_APPLICATION,
@@ -714,6 +709,11 @@ export default function BulkCDTrigger({
                                     tabs={CD_MATERIAL_SIDEBAR_TABS}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}
+                                    hasError={{
+                                        [CDMaterialSidebarType.PARAMETERS]:
+                                            runtimeParamsErrorState[selectedApp.appId] &&
+                                            !runtimeParamsErrorState[selectedApp.appId].isValid,
+                                    }}
                                 />
                             </div>
                         )}
@@ -797,6 +797,9 @@ export default function BulkCDTrigger({
                                 isSuperAdmin={isSuperAdmin}
                                 bulkRuntimeParams={runtimeParams[selectedApp.appId] || []}
                                 handleBulkRuntimeParamChange={handleRuntimeParamChange}
+                                bulkRuntimeParamErrorState={
+                                    runtimeParamsErrorState[selectedApp.appId] || { cellError: {}, isValid: true }
+                                }
                                 handleBulkRuntimeParamError={handleRuntimeParamError}
                                 bulkUploadFile={bulkUploadFile}
                                 bulkSidebarTab={currentSidebarTab}

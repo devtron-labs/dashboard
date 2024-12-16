@@ -33,9 +33,9 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
         ]?.length || 0
     useEffect(() => {
         if (collapsedSection) {
-            const invalidInputVariables = formDataErrorObj[activeStageName].steps[
+            const invalidInputVariables = !formDataErrorObj[activeStageName].steps[
                 selectedTaskIndex
-            ].pluginRefStepDetail.inputVariables?.some((inputVariable) => !inputVariable.isValid)
+            ].pluginRefStepDetail.isValid
             if (invalidInputVariables) {
                 setCollapsedSection(false) // expand input variables in case of error
             }

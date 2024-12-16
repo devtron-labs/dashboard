@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RefVariableType, VariableTypeFormat } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import {
     CHARACTER_ERROR_MIN,
@@ -25,6 +24,7 @@ import {
     MAX_LENGTH_30,
     REPO_NAME_VALIDATION,
 } from '../../config/constantMessaging'
+import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
@@ -78,73 +78,7 @@ export class ValidationRules {
         return { message: null, isValid: true }
     }
 
-    inputVariable = (
-        value: object,
-        availableInputVariables: Map<string, boolean>,
-        /** disable value check when save as plugin is true */
-        isSaveAsPlugin = false,
-    ): { message: string | null; isValid: boolean } => {
-        const re = new RegExp(PATTERNS.VARIABLE)
-        const numberReg = new RegExp(PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
-        const variableValue =
-            value['allowEmptyValue'] ||
-            (!value['allowEmptyValue'] && value['isRuntimeArg']) ||
-            (!value['allowEmptyValue'] && value['defaultValue'] && value['defaultValue'] !== '') ||
-            (value['variableType'] === RefVariableType.NEW && value['value']) ||
-            (value['refVariableName'] &&
-                (value['variableType'] === RefVariableType.GLOBAL ||
-                    (value['variableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
-                        value['refVariableStepIndex'] &&
-                        value['refVariableStage'])))
-
-        if (!value['name'] && !variableValue && !value['description']) {
-            return { message: 'Please complete or remove this variable', isValid: false }
-        }
-        if (!value['name'] && !variableValue) {
-            return { message: 'Variable name and Value both are required', isValid: false }
-        }
-        if (!value['name']) {
-            return { message: 'Variable name is required', isValid: false }
-        }
-        if (availableInputVariables.get(value['name'])) {
-            return { message: 'Variable name should be unique', isValid: false }
-        }
-        if (!re.test(value['name'])) {
-            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
-        }
-        if (!isSaveAsPlugin) {
-            if (!variableValue) {
-                return { message: 'Variable value is required', isValid: false }
-            }
-            // test for numbers and scope variables when format is "NUMBER".
-            if (
-                value['format'] === VariableTypeFormat.NUMBER &&
-                variableValue &&
-                !!value['value'] &&
-                !numberReg.test(value['value'])
-            ) {
-                return { message: 'Variable value is not a number', isValid: false }
-            }
-        }
-        return { message: null, isValid: true }
-    }
-
-    outputVariable = (
-        value: object,
-        availableInputVariables: Map<string, boolean>,
-    ): { message: string | null; isValid: boolean } => {
-        const re = new RegExp(PATTERNS.VARIABLE)
-        if (!value['name']) {
-            return { message: 'Variable name is required', isValid: false }
-        }
-        if (availableInputVariables.get(value['name'])) {
-            return { message: 'Variable name should be unique', isValid: false }
-        }
-        if (!re.test(value['name'])) {
-            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
-        }
-        return { message: null, isValid: true }
-    }
+    validateInputOutputVariableCell = validateInputOutputVariableCell
 
     conditionDetail = (value: object): { message: string | null; isValid: boolean } => {
         if (!value['conditionOnVariable'] && !value['conditionalValue']) {

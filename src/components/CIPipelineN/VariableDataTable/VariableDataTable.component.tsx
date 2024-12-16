@@ -1,25 +1,33 @@
-import { useContext, useState, useEffect, useRef, useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 
 import {
+    Button,
+    ButtonVariantType,
     DynamicDataTable,
     DynamicDataTableCellErrorType,
     DynamicDataTableProps,
     DynamicDataTableRowDataType,
+    FileConfigTippy,
+    InputOutputVariablesHeaderKeys,
     PluginType,
     RefVariableType,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
-import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, getVariableDataTableHeaders } from './constants'
+import {
+    FILE_UPLOAD_SIZE_UNIT_OPTIONS,
+    getVariableDataTableHeaders,
+    VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
+} from './constants'
 import {
     GetValColumnRowPropsType,
     HandleRowUpdateActionProps,
     VariableDataCustomState,
-    VariableDataKeys,
     VariableDataRowType,
     VariableDataTableActionType,
     VariableDataTableProps,
@@ -31,14 +39,16 @@ import {
     getValColumnRowProps,
     getValColumnRowValue,
     getVariableDataTableInitialCellError,
-    getVariableDataTableInitialRows,
+    getVariableDataTableRows,
 } from './utils'
-import { getVariableDataTableCellValidateState, validateVariableDataTable } from './validations'
+import {
+    getVariableDataTableCellValidateState,
+    getVariableDataTableRowEmptyValidationState,
+    validateVariableDataTableVariableKeys,
+} from './validations'
 
-import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
-import { ValueConfigFileTippy } from './ValueConfigFileTippy'
 
 export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTableProps) => {
     // CONTEXTS
@@ -76,6 +86,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         valueConstraint: null,
     }
 
+    const isInputPluginVariable = type === PluginVariableType.INPUT
     const currentStepTypeVariable =
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
             ? 'inlineStepDetail'
@@ -83,320 +94,167 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
     const ioVariables: VariableType[] =
         formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
-            type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
+            isInputPluginVariable ? 'inputVariables' : 'outputVariables'
         ]
 
-    const isTableValid =
-        formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].isValid ?? true
+    const ioVariablesError =
+        formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable][
+            isInputPluginVariable ? 'inputVariables' : 'outputVariables'
+        ]
 
-    // STATES
-    const [rows, setRows] = useState<VariableDataRowType[]>([])
-    const [cellError, setCellError] = useState<DynamicDataTableCellErrorType<VariableDataKeys>>({})
-
-    // KEYS FREQUENCY MAP
-    const keysFrequencyMap: Record<string, number> = useMemo(
+    // TABLE ROWS
+    const rows = useMemo<VariableDataRowType[]>(
         () =>
-            rows.reduce(
-                (acc, curr) => {
-                    const currentKey = curr.data.variable.value
-                    if (currentKey) {
-                        acc[currentKey] = (acc[currentKey] || 0) + 1
-                    }
-                    return acc
-                },
-                {} as Record<string, number>,
-            ),
-        [rows],
+            getVariableDataTableRows({
+                ioVariables,
+                isCustomTask,
+                type,
+                activeStageName,
+                formData,
+                globalVariables,
+                selectedTaskIndex,
+                inputVariablesListFromPrevStep,
+                isCdPipeline,
+            }),
+        [ioVariables],
     )
 
-    // REFS
-    const initialRowsSet = useRef('')
-
-    useEffect(() => {
-        // SETTING INITIAL ROWS & ERROR STATE
-        const initialRows = getVariableDataTableInitialRows({
-            ioVariables,
-            isCustomTask,
-            type,
-            activeStageName,
-            formData,
-            globalVariables,
-            selectedTaskIndex,
-            inputVariablesListFromPrevStep,
-            isCdPipeline,
-        })
-        const updatedCellError = getVariableDataTableInitialCellError(initialRows, headers)
-
-        setRows(initialRows)
-        setCellError(updatedCellError)
-
-        initialRowsSet.current = 'set'
-    }, [])
-
-    useEffect(() => {
-        // Validate the table when:
-        // 1. Rows have been initialized (`initialRowsSet.current` is 'set' & rows is not empty).
-        // 2. Validation is explicitly triggered (`formDataErrorObj.triggerValidation` is true)
-        //    or the table is currently invalid (`!isTableValid` -> this is only triggered on mount)
-        if (initialRowsSet.current === 'set' && rows.length && (formDataErrorObj.triggerValidation || !isTableValid)) {
-            setCellError(
-                validateVariableDataTable({
-                    headers,
-                    rows,
-                    keysFrequencyMap,
-                    pluginVariableType: type,
-                }),
-            )
-            // Reset the triggerValidation flag after validation is complete.
-            setFormDataErrorObj((prevState) => ({
-                ...prevState,
-                triggerValidation: false,
-            }))
-        }
-    }, [initialRowsSet.current, formDataErrorObj.triggerValidation])
+    // TABLE CELL ERROR
+    const cellError = useMemo<DynamicDataTableCellErrorType<InputOutputVariablesHeaderKeys>>(
+        () =>
+            Object.keys(ioVariablesError).length
+                ? ioVariablesError
+                : getVariableDataTableInitialCellError(rows, headers),
+        [ioVariablesError, rows],
+    )
 
     // METHODS
     const handleRowUpdateAction = (rowAction: HandleRowUpdateActionProps) => {
-        const { actionType } = rowAction
+        const { actionType, rowId } = rowAction
         let updatedRows = rows
-        const updatedCellError = structuredClone(cellError)
+        const selectedRowIndex = rows.findIndex((row) => row.id === rowId)
+        const selectedRow = rows[selectedRowIndex]
+        const updatedCellError = cellError
 
         switch (actionType) {
             case VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS:
-                updatedRows = updatedRows.map((row) => {
-                    const { id, data, customState } = row
+                if (selectedRow) {
+                    const { id, data, customState } = selectedRow
 
-                    if (id === rowAction.rowId) {
-                        // FILTERING EMPTY CHOICE VALUES
-                        const choicesOptions = customState.choices.filter(({ value }) => !!value)
-                        // RESETTING TO DEFAULT STATE IF CHOICES ARE EMPTY
-                        const blockCustomValue = !!choicesOptions.length && row.customState.blockCustomValue
+                    const choicesOptions = rowAction.actionValue
+                    // RESETTING TO DEFAULT STATE IF CHOICES ARE EMPTY
+                    const blockCustomValue = !!choicesOptions.length && customState.blockCustomValue
 
-                        const isCurrentValueValid =
-                            !blockCustomValue ||
-                            ((!customState.valColumnSelectedValue ||
-                                customState.valColumnSelectedValue?.variableType === RefVariableType.NEW) &&
-                                choicesOptions.some(({ value }) => value === data.val.value))
+                    const isCurrentValueValid =
+                        !blockCustomValue ||
+                        ((!customState.valColumnSelectedValue ||
+                            !customState.valColumnSelectedValue?.variableType ||
+                            customState.valColumnSelectedValue.variableType === RefVariableType.NEW) &&
+                            choicesOptions.some((value) => value === data.val.value))
 
-                        updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            key: 'val',
-                            row,
-                        })
+                    updatedCellError[id].val = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        key: InputOutputVariablesHeaderKeys.VALUE,
+                        row: selectedRow,
+                    })
 
-                        return {
-                            ...row,
-                            data: {
-                                ...data,
-                                val: getValColumnRowProps({
-                                    ...defaultRowValColumnParams,
-                                    ...(!blockCustomValue && customState.valColumnSelectedValue
-                                        ? {
-                                              variableType: customState.valColumnSelectedValue.variableType,
-                                              refVariableName: customState.valColumnSelectedValue.value,
-                                              refVariableStage: customState.valColumnSelectedValue.refVariableStage,
-                                          }
-                                        : {}),
-                                    value: isCurrentValueValid ? data.val.value : '',
-                                    format: data.format.value as VariableTypeFormat,
-                                    valueConstraint: {
-                                        blockCustomValue,
-                                        choices: choicesOptions.map(({ value }) => value),
-                                    },
+                    selectedRow.data.val = getValColumnRowProps({
+                        ...defaultRowValColumnParams,
+                        ...(!blockCustomValue && customState.valColumnSelectedValue
+                            ? {
+                                  variableType: customState.valColumnSelectedValue.variableType,
+                                  refVariableName: customState.valColumnSelectedValue.value,
+                                  refVariableStage: customState.valColumnSelectedValue.refVariableStage,
+                              }
+                            : {}),
+                        value: isCurrentValueValid ? data.val.value : '',
+                        format: data.format.value as VariableTypeFormat,
+                        valueConstraint: {
+                            constraint: {
+                                fileProperty: getUploadFileConstraints({
+                                    allowedExtensions: customState.fileInfo.allowedExtensions,
+                                    maxUploadSize: customState.fileInfo.maxUploadSize,
+                                    unit: customState.fileInfo.unit.label as string,
                                 }),
                             },
-                            customState: {
-                                ...customState,
-                                valColumnSelectedValue: !blockCustomValue ? customState.valColumnSelectedValue : null,
-                                blockCustomValue,
-                                choices: choicesOptions,
-                            },
-                        }
+                            blockCustomValue,
+                            choices: choicesOptions,
+                        },
+                    })
+
+                    selectedRow.customState = {
+                        ...customState,
+                        valColumnSelectedValue: !blockCustomValue ? customState.valColumnSelectedValue : null,
+                        blockCustomValue,
+                        choices: choicesOptions,
                     }
-
-                    return row
-                })
-                break
-
-            case VariableDataTableActionType.UPDATE_CHOICES:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              customState: {
-                                  ...row.customState,
-                                  choices: rowAction.actionValue(row.customState.choices),
-                              },
-                          }
-                        : row,
-                )
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_ALLOW_CUSTOM_INPUT:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              customState: {
-                                  ...row.customState,
-                                  blockCustomValue: rowAction.actionValue,
-                              },
-                          }
-                        : row,
-                )
+                if (selectedRow) {
+                    selectedRow.customState.blockCustomValue = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_ASK_VALUE_AT_RUNTIME:
-                updatedRows = updatedRows.map((row) => {
-                    if (row.id === rowAction.rowId) {
-                        return { ...row, customState: { ...row.customState, askValueAtRuntime: rowAction.actionValue } }
-                    }
-
-                    return row
-                })
+                if (selectedRow) {
+                    selectedRow.customState.askValueAtRuntime = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              customState: { ...row.customState, variableDescription: rowAction.actionValue },
-                          }
-                        : row,
-                )
+                if (selectedRow) {
+                    selectedRow.customState.variableDescription = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_VARIABLE_REQUIRED:
-                updatedRows = updatedRows.map((row) => {
-                    if (row.id === rowAction.rowId) {
-                        const updatedRow = {
-                            ...row,
-                            data: {
-                                ...row.data,
-                                variable: { ...row.data.variable, required: rowAction.actionValue },
-                            },
-                            customState: { ...row.customState, isVariableRequired: rowAction.actionValue },
-                        }
-                        updatedCellError[row.id].variable = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            key: 'variable',
-                            row: updatedRow,
-                        })
-                        updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            key: 'val',
-                            row: updatedRow,
-                        })
-
-                        return updatedRow
-                    }
-
-                    return row
-                })
+                if (selectedRow) {
+                    const { id } = selectedRow
+                    selectedRow.data.variable.required = rowAction.actionValue
+                    selectedRow.customState.isVariableRequired = rowAction.actionValue
+                    updatedCellError[id].variable = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        key: InputOutputVariablesHeaderKeys.VARIABLE,
+                        row: selectedRow,
+                    })
+                    updatedCellError[id].val = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        key: InputOutputVariablesHeaderKeys.VALUE,
+                        row: selectedRow,
+                    })
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_FILE_MOUNT:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              customState: {
-                                  ...row.customState,
-                                  fileInfo: { ...row.customState.fileInfo, mountDir: rowAction.actionValue },
-                              },
-                          }
-                        : row,
-                )
+                if (selectedRow) {
+                    selectedRow.customState.fileInfo.fileMountDir = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              data:
-                                  row.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD
-                                      ? {
-                                            ...row.data,
-                                            val: {
-                                                ...row.data.val,
-                                                props: {
-                                                    ...row.data.val.props,
-                                                    fileTypes: rowAction.actionValue.split(','),
-                                                },
-                                            },
-                                        }
-                                      : row.data,
-                              customState: {
-                                  ...row.customState,
-                                  fileInfo: {
-                                      ...row.customState.fileInfo,
-                                      allowedExtensions: rowAction.actionValue,
-                                  },
-                              },
-                          }
-                        : row,
-                )
+                if (selectedRow) {
+                    if (selectedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
+                        selectedRow.data.val.props.fileTypes = rowAction.actionValue.split(',')
+                    }
+                    selectedRow.customState.fileInfo.allowedExtensions = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_FILE_MAX_SIZE:
-                updatedRows = updatedRows.map((row) =>
-                    row.id === rowAction.rowId
-                        ? {
-                              ...row,
-                              customState: {
-                                  ...row.customState,
-                                  fileInfo: {
-                                      ...row.customState.fileInfo,
-                                      maxUploadSize: rowAction.actionValue.size,
-                                      unit: rowAction.actionValue.unit,
-                                  },
-                              },
-                          }
-                        : row,
-                )
+                if (selectedRow) {
+                    selectedRow.customState.fileInfo.maxUploadSize = rowAction.actionValue.size
+                    selectedRow.customState.fileInfo.unit = rowAction.actionValue.unit
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO:
-                updatedRows = updatedRows.map((row) => {
-                    if (row.id === rowAction.rowId && row.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
-                        updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            value: rowAction.actionValue.fileName,
-                            key: 'val',
-                            row,
-                        })
-
-                        return {
-                            ...row,
-                            data: {
-                                ...row.data,
-                                val: {
-                                    ...row.data.val,
-                                    value: rowAction.actionValue.fileName,
-                                    props: {
-                                        ...row.data.val.props,
-                                        isLoading: rowAction.actionValue.isLoading,
-                                    },
-                                },
-                            },
-                            customState: {
-                                ...row.customState,
-                                fileInfo: {
-                                    ...row.customState.fileInfo,
-                                    id: rowAction.actionValue.fileReferenceId,
-                                },
-                            },
-                        }
-                    }
-
-                    return row
-                })
+                if (selectedRow && selectedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
+                    selectedRow.data.val.value = rowAction.actionValue.fileName
+                    selectedRow.data.val.props.isLoading = rowAction.actionValue.isLoading
+                    selectedRow.customState.fileInfo.fileReferenceId = rowAction.actionValue.fileReferenceId
+                }
                 break
 
             case VariableDataTableActionType.ADD_ROW:
@@ -404,139 +262,115 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     getEmptyVariableDataTableRow({ ...defaultRowValColumnParams, id: rowAction.rowId }),
                     ...updatedRows,
                 ]
-                updatedCellError[rowAction.rowId] = {}
+                updatedCellError[rowAction.rowId] = getVariableDataTableRowEmptyValidationState()
                 break
 
             case VariableDataTableActionType.DELETE_ROW:
                 updatedRows = updatedRows.filter((row) => row.id !== rowAction.rowId)
                 delete updatedCellError[rowAction.rowId]
+                validateVariableDataTableVariableKeys({
+                    rows: updatedRows,
+                    cellError: updatedCellError,
+                })
                 break
 
             case VariableDataTableActionType.UPDATE_ROW:
-                updatedRows = rows.map<VariableDataRowType>((row) => {
-                    if (row.id === rowAction.rowId) {
-                        updatedCellError[row.id][rowAction.headerKey] = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
+                if (selectedRow) {
+                    updatedCellError[rowAction.rowId][rowAction.headerKey] = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        value: rowAction.actionValue,
+                        row: selectedRow,
+                        key: rowAction.headerKey,
+                    })
+                    if (rowAction.headerKey === InputOutputVariablesHeaderKeys.VARIABLE) {
+                        validateVariableDataTableVariableKeys({
+                            rows,
+                            cellError: updatedCellError,
+                            rowId: rowAction.rowId,
                             value: rowAction.actionValue,
-                            key: rowAction.headerKey,
-                            row,
                         })
-
-                        return {
-                            ...row,
-                            data: {
-                                ...row.data,
-                                [rowAction.headerKey]: {
-                                    ...row.data[rowAction.headerKey],
-                                    value: rowAction.actionValue,
-                                },
-                            },
-                        }
                     }
-                    return row
-                })
+                    selectedRow.data[rowAction.headerKey].value = rowAction.actionValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_VAL_COLUMN:
-                updatedRows = updatedRows.map((row) => {
-                    if (row.id === rowAction.rowId && row.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT) {
-                        const { valColumnSelectedValue, value } = rowAction.actionValue
-                        const valColumnRowValue = getValColumnRowValue(
-                            row.data.format.value as VariableTypeFormat,
-                            value,
-                            valColumnSelectedValue,
-                        )
+                if (selectedRow && selectedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT) {
+                    const { id, data, customState } = selectedRow
+                    const { valColumnSelectedValue, value } = rowAction.actionValue
+                    const valColumnRowValue = getValColumnRowValue(
+                        data.format.value as VariableTypeFormat,
+                        value,
+                        valColumnSelectedValue,
+                    )
 
-                        updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            value: valColumnRowValue,
-                            key: 'val',
-                            row,
-                        })
+                    updatedCellError[id].val = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        value: valColumnRowValue,
+                        key: InputOutputVariablesHeaderKeys.VALUE,
+                        row: selectedRow,
+                    })
 
-                        return {
-                            ...row,
-                            data: {
-                                ...row.data,
-                                val: getValColumnRowProps({
-                                    ...defaultRowValColumnParams,
-                                    value: valColumnRowValue,
-                                    ...(!row.customState.blockCustomValue &&
-                                    rowAction.actionValue.valColumnSelectedValue
-                                        ? {
-                                              variableType: rowAction.actionValue.valColumnSelectedValue.variableType,
-                                              refVariableName: rowAction.actionValue.valColumnSelectedValue.value,
-                                              refVariableStage:
-                                                  rowAction.actionValue.valColumnSelectedValue.refVariableStage,
-                                          }
-                                        : {}),
-                                    format: row.data.format.value as VariableTypeFormat,
-                                    valueConstraint: {
-                                        blockCustomValue: row.customState.blockCustomValue,
-                                        choices: row.customState.choices.map((choice) => choice.value),
-                                    },
-                                }),
-                            },
-                            customState: {
-                                ...row.customState,
-                                valColumnSelectedValue: rowAction.actionValue.valColumnSelectedValue,
-                            },
-                        }
-                    }
-
-                    return row
-                })
+                    selectedRow.data.val = getValColumnRowProps({
+                        ...defaultRowValColumnParams,
+                        value: valColumnRowValue,
+                        ...(!customState.blockCustomValue && rowAction.actionValue.valColumnSelectedValue
+                            ? {
+                                  variableType: rowAction.actionValue.valColumnSelectedValue.variableType,
+                                  refVariableName: rowAction.actionValue.valColumnSelectedValue.value,
+                                  refVariableStage: rowAction.actionValue.valColumnSelectedValue.refVariableStage,
+                              }
+                            : {}),
+                        format: data.format.value as VariableTypeFormat,
+                        valueConstraint: {
+                            blockCustomValue: customState.blockCustomValue,
+                            choices: customState.choices,
+                        },
+                    })
+                    selectedRow.customState.valColumnSelectedValue = rowAction.actionValue.valColumnSelectedValue
+                }
                 break
 
             case VariableDataTableActionType.UPDATE_FORMAT_COLUMN:
-                updatedRows = updatedRows.map((row) => {
-                    if (row.id === rowAction.rowId && row.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
-                        updatedCellError[row.id].val = getVariableDataTableCellValidateState({
-                            keysFrequencyMap,
-                            pluginVariableType: type,
-                            key: 'val',
-                            row,
-                        })
-
-                        return {
-                            ...row,
-                            data: {
-                                ...row.data,
-                                format: {
-                                    ...row.data.format,
-                                    value: rowAction.actionValue,
-                                },
-                                val: getValColumnRowProps({
-                                    ...defaultRowValColumnParams,
-                                    format: rowAction.actionValue,
-                                }),
-                            },
-                            customState: {
-                                ...row.customState,
-                                valColumnSelectedValue: null,
-                                choices: [],
-                                blockCustomValue: false,
-                                fileInfo: {
-                                    id: null,
-                                    allowedExtensions: '',
-                                    maxUploadSize: '',
-                                    mountDir: {
-                                        value: '/devtroncd',
-                                        error: '',
-                                    },
-                                    unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
-                                },
-                            },
-                        }
+                if (selectedRow && selectedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
+                    const { id, customState } = selectedRow
+                    updatedCellError[id].val = getVariableDataTableCellValidateState({
+                        pluginVariableType: type,
+                        key: InputOutputVariablesHeaderKeys.VALUE,
+                        row: selectedRow,
+                    })
+                    selectedRow.data.format.value = rowAction.actionValue
+                    selectedRow.data.val = getValColumnRowProps({
+                        ...defaultRowValColumnParams,
+                        format: rowAction.actionValue,
+                    })
+                    selectedRow.customState = {
+                        ...customState,
+                        valColumnSelectedValue: null,
+                        choices: [],
+                        blockCustomValue: false,
+                        fileInfo: {
+                            fileReferenceId: null,
+                            allowedExtensions: '',
+                            maxUploadSize: '',
+                            fileMountDir: '/devtroncd',
+                            unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
+                        },
                     }
-                    return row
-                })
+                }
                 break
 
             default:
                 break
+        }
+
+        // Not updating selectedRow for ADD/DELETE row, since these actions update the rows array directly.
+        if (
+            actionType !== VariableDataTableActionType.ADD_ROW &&
+            actionType !== VariableDataTableActionType.DELETE_ROW &&
+            selectedRowIndex > -1
+        ) {
+            updatedRows[selectedRowIndex] = selectedRow
         }
 
         const { updatedFormData, updatedFormDataErrorObj } = convertVariableDataTableToFormData({
@@ -552,64 +386,72 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         })
         setFormDataErrorObj(updatedFormDataErrorObj)
         setFormData(updatedFormData)
-
-        setRows(updatedRows)
-        setCellError(updatedCellError)
     }
 
-    const dataTableHandleAddition = () => {
+    const handleRowAdd = () => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.ADD_ROW,
             rowId: Math.floor(new Date().valueOf() * Math.random()),
         })
     }
 
-    const dataTableHandleChange: DynamicDataTableProps<VariableDataKeys, VariableDataCustomState>['onRowEdit'] = async (
-        updatedRow,
-        headerKey,
-        value,
-        extraData,
-    ) => {
-        if (headerKey === 'val' && updatedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT) {
+    const handleRowEdit: DynamicDataTableProps<
+        InputOutputVariablesHeaderKeys,
+        VariableDataCustomState
+    >['onRowEdit'] = async (updatedRow, headerKey, value, extraData) => {
+        if (
+            headerKey === InputOutputVariablesHeaderKeys.VALUE &&
+            updatedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT
+        ) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_VAL_COLUMN,
                 actionValue: { value, valColumnSelectedValue: extraData.selectedValue },
                 rowId: updatedRow.id,
             })
         } else if (
-            headerKey === 'val' &&
-            updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD &&
-            extraData.files.length
+            headerKey === InputOutputVariablesHeaderKeys.VALUE &&
+            updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD
         ) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                actionValue: { fileReferenceId: null, isLoading: true, fileName: value },
+                actionValue: { fileReferenceId: null, isLoading: false, fileName: value },
                 rowId: updatedRow.id,
             })
 
-            try {
-                const { id, name } = await uploadFile({
-                    file: extraData.files,
-                    ...getUploadFileConstraints({
-                        unit: updatedRow.customState.fileInfo.unit.label as string,
-                        allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
-                        maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
-                    }),
-                })
+            if (extraData.files.length) {
+                try {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: null, isLoading: true, fileName: value },
+                        rowId: updatedRow.id,
+                    })
 
-                handleRowUpdateAction({
-                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                    actionValue: { fileReferenceId: id, isLoading: false, fileName: name },
-                    rowId: updatedRow.id,
-                })
-            } catch {
-                handleRowUpdateAction({
-                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                    actionValue: { fileReferenceId: null, isLoading: false, fileName: '' },
-                    rowId: updatedRow.id,
-                })
+                    const { id, name } = await uploadFile({
+                        file: extraData.files,
+                        ...getUploadFileConstraints({
+                            unit: updatedRow.customState.fileInfo.unit.label as string,
+                            allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
+                            maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
+                        }),
+                    })
+
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: id, isLoading: false, fileName: name },
+                        rowId: updatedRow.id,
+                    })
+                } catch {
+                    handleRowUpdateAction({
+                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                        actionValue: { fileReferenceId: null, isLoading: false, fileName: '' },
+                        rowId: updatedRow.id,
+                    })
+                }
             }
-        } else if (headerKey === 'format' && updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN) {
+        } else if (
+            headerKey === InputOutputVariablesHeaderKeys.FORMAT &&
+            updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN
+        ) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,
                 actionValue: value as VariableTypeFormat,
@@ -625,76 +467,81 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         }
     }
 
-    const dataTableHandleDelete: DynamicDataTableProps<VariableDataKeys, VariableDataCustomState>['onRowDelete'] = (
-        row,
-    ) => {
+    const handleRowDelete: DynamicDataTableProps<
+        InputOutputVariablesHeaderKeys,
+        VariableDataCustomState
+    >['onRowDelete'] = (row) => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.DELETE_ROW,
             rowId: row.id,
         })
     }
 
-    const onActionButtonPopupClose = (rowId: string | number) => () => {
-        handleRowUpdateAction({
-            actionType: VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS,
-            rowId,
-        })
-    }
-
     // RENDERERS
     const actionButtonRenderer = (row: VariableDataRowType) => (
-        <VariableDataTablePopupMenu
-            heading={row.data.variable.value || 'Value configuration'}
-            onClose={onActionButtonPopupClose(row.id)}
-            disableClose={
-                (row.data.format.value === VariableTypeFormat.FILE && !!row.customState.fileInfo.mountDir.error) ||
-                (row.data.format.value === VariableTypeFormat.NUMBER &&
-                    row.customState.choices.some(({ error }) => !!error))
-            }
-        >
-            <ValueConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
-        </VariableDataTablePopupMenu>
+        <ValueConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
     )
 
     const getTrailingCellIconForVariableColumn = (row: VariableDataRowType) =>
-        isCustomTask && type === PluginVariableType.INPUT ? (
-            <VariableDataTablePopupMenu showIcon heading="Variable configuration">
-                <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
-            </VariableDataTablePopupMenu>
+        isCustomTask && isInputPluginVariable ? (
+            <VariableConfigOverlay row={row} handleRowUpdateAction={handleRowUpdateAction} />
         ) : null
 
     const getTrailingCellIconForValueColumn = (row: VariableDataRowType) =>
-        row.data.format.value === VariableTypeFormat.FILE ? (
-            <ValueConfigFileTippy mountDir={row.customState.fileInfo.mountDir.value} />
+        isInputPluginVariable && row.data.format.value === VariableTypeFormat.FILE ? (
+            <FileConfigTippy fileMountDir={row.customState.fileInfo.fileMountDir} />
         ) : null
 
-    const trailingCellIcon: DynamicDataTableProps<VariableDataKeys>['trailingCellIcon'] = {
+    const trailingCellIcon: DynamicDataTableProps<InputOutputVariablesHeaderKeys>['trailingCellIcon'] = {
         variable: getTrailingCellIconForVariableColumn,
         val: getTrailingCellIconForValueColumn,
     }
 
     return (
-        <DynamicDataTable<VariableDataKeys, VariableDataCustomState>
-            key={initialRowsSet.current}
-            headers={headers}
-            rows={rows}
-            cellError={cellError}
-            readOnly={!isCustomTask && type === PluginVariableType.OUTPUT}
-            isAdditionNotAllowed={!isCustomTask}
-            isDeletionNotAllowed={!isCustomTask}
-            trailingCellIcon={trailingCellIcon}
-            onRowEdit={dataTableHandleChange}
-            onRowDelete={dataTableHandleDelete}
-            onRowAdd={dataTableHandleAddition}
-            {...(type === PluginVariableType.INPUT
-                ? {
-                      actionButtonConfig: {
-                          renderer: actionButtonRenderer,
-                          key: 'val',
-                          position: 'end',
-                      },
-                  }
-                : {})}
-        />
+        <div className="flexbox-col dc__gap-12">
+            {isCustomTask && (
+                <div className="flexbox dc__align-items-center dc__content-space">
+                    <h4 className="m-0 fs-13 lh-20 fw-6">
+                        {isInputPluginVariable ? 'Input variables' : 'Output variables'}
+                    </h4>
+                    {!rows.length && (
+                        <Button
+                            dataTestId="add-io-variable-row"
+                            variant={ButtonVariantType.text}
+                            text="Add Variable"
+                            startIcon={<ICAdd />}
+                            onClick={handleRowAdd}
+                        />
+                    )}
+                </div>
+            )}
+            {rows.length ? (
+                <DynamicDataTable<InputOutputVariablesHeaderKeys, VariableDataCustomState>
+                    headers={headers}
+                    rows={rows}
+                    cellError={cellError}
+                    readOnly={!isCustomTask && !isInputPluginVariable}
+                    isAdditionNotAllowed={!isCustomTask}
+                    isDeletionNotAllowed={!isCustomTask}
+                    trailingCellIcon={trailingCellIcon}
+                    onRowEdit={handleRowEdit}
+                    onRowDelete={handleRowDelete}
+                    onRowAdd={handleRowAdd}
+                    {...(isInputPluginVariable
+                        ? {
+                              actionButtonConfig: {
+                                  renderer: actionButtonRenderer,
+                                  key: InputOutputVariablesHeaderKeys.VALUE,
+                                  position: 'end',
+                              },
+                          }
+                        : {})}
+                />
+            ) : (
+                <div className="p-8 bcn-50 dc__border-dashed--n3 br-4">
+                    <p className="m-0 fs-12 lh-18 cn-7">{VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE[type]}</p>
+                </div>
+            )}
+        </div>
     )
 }

@@ -30,7 +30,7 @@ import {
     CommonNodeAttr,
     RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CDMaterialProps } from '../app/details/triggerView/types'
+import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
@@ -105,8 +105,8 @@ export interface ResponseRowType {
 interface BulkRuntimeParamsType {
     runtimeParams: Record<string, RuntimePluginVariables[]>
     setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimePluginVariables[]>>>
-    runtimeParamsErrorState: Record<string, boolean>
-    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+    runtimeParamsErrorState: Record<string, RuntimeParamsErrorState>
+    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsErrorState>>>
 }
 
 export interface BulkCITriggerType extends BulkRuntimeParamsType {
