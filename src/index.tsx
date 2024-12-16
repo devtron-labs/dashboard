@@ -163,9 +163,10 @@ if (!window || !window._env_) {
         FEATURE_CONFIG_DRIFT_ENABLE: false,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
+        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployment,rollout,daemonset,statefulset',
+        FEATURE_RB_SYNC_CLUSTER_ENABLE: true,
         FEATURE_PROMO_EMBEDDED_IFRAME_URL: '',
         FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
-        FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployMent,rOllOut,daemonset, statefulset',
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: false,
     }

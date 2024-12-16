@@ -23,6 +23,7 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
     Nodes,
+    ALL_NAMESPACE_OPTION,
     useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
@@ -36,7 +37,6 @@ import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeAction
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
-    ALL_NAMESPACE_OPTION,
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
     MANDATORY_NODE_LIST_HEADERS,
