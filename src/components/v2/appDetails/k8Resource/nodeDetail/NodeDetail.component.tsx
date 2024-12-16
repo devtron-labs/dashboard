@@ -422,10 +422,8 @@ const NodeDetailComponent = ({
         )
     }
 
-    const handleToggleManifestConfigurationMode = () => {
-        setManifestFormConfigurationType((prev) =>
-            prev === ConfigurationType.YAML ? ConfigurationType.GUI : ConfigurationType.YAML,
-        )
+    const handleToggleManifestConfigurationMode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setManifestFormConfigurationType(e.target.value as ConfigurationType)
     }
 
     const handleSwitchToYAMLMode = () => {
@@ -448,7 +446,7 @@ const NodeDetailComponent = ({
                 !showManifestCompareView &&
                 !isResourceMissing && (
                     <>
-                        <div className="ml-4 mr-12 tab-cell-border" />
+                        <div className="ml-12 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
                                 {ToggleManifestConfigurationMode && !isExternalApp && (
