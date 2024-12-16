@@ -43,6 +43,8 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
 import './nodeType.scss'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { followCursor } from 'tippy.js'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -356,7 +358,7 @@ const NodeComponent = ({
                             )}
                             <div>
                                 <div className="resource__title-name flex left">
-                                    <Tooltip content={node.name}>
+                                    <Tooltip content={node.name} followCursor={"horizontal"} plugins={[followCursor]}>
                                         <span data-testid="resource-node-name" className="fs-13 lh-20 dc__truncate">
                                             {node.name}
                                         </span>
@@ -433,6 +435,8 @@ const NodeComponent = ({
                                                 interactive
                                                 content={node.health.message.toLowerCase()}
                                                 className="dc__mxw-250--imp"
+                                                followCursor={"horizontal"}
+                                                plugins={[followCursor]}
                                             >
                                                 <span className="dc__truncate">
                                                     {node.health.message.toLowerCase()}

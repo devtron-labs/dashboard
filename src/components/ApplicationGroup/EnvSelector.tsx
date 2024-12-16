@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import AsyncSelect from 'react-select/async'
+import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import { appSelectorStyle, DropdownIndicator, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
-import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 
 export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const defaultOptions = { value: envId, label: envName }
 
-    const handleFetchOptions = (inputValue: string) => {
-        return abortPreviousRequests(
-            () => envListOptions(inputValue, abortControllerRef.current.signal),
-            abortControllerRef,
-        )
-    }
+    const handleFetchOptions = (inputValue: string) =>
+        abortPreviousRequests(() => envListOptions(inputValue, abortControllerRef.current.signal), abortControllerRef)
 
     return (
         <AsyncSelect
