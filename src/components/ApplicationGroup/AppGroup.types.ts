@@ -270,9 +270,9 @@ export interface GetEnvAppListParamsType extends Pick<AppGroupFilterConfig, 'off
 }
 
 export interface EnvironmentsListViewType
-    extends Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'> {
+    extends Partial<Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>> {
     isSuperAdmin: boolean
-    filterConfig: AppGroupFilterConfig
+    filterConfig?: AppGroupFilterConfig
 }
 
 export interface EnvironmentLinkProps {

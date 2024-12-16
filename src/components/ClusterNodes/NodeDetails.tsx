@@ -115,9 +115,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
-                    setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
+                    setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
-                    const resourceList = response.result.resources
+                    const resourceList = response.result.resources ?? []
                     for (let index = 0; index < resourceList.length; ) {
                         if (resourceList[index].name === 'cpu') {
                             setCpuData(resourceList[index])
@@ -429,7 +429,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         )
     }
     const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
-        const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
+        const isCPUOverCommitted = Number(cpuData?.usagePercentage?.slice(0, -1) || 0) > 100
         const issueCount =
             (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taints?.length > 0 ? 1 : 0)
         if (!issueCount) {
@@ -532,6 +532,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderResourceList = (): JSX.Element => {
+        if (!nodeDetail.resources?.length) {
+            return null
+        }
         return (
             <div className="en-2 bw-1 br-4 bcn-0">
                 <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
@@ -632,16 +635,8 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then((isAdded) => {
-            if (isAdded) {
-                push(_url)
-                return
-            }
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
-                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
-            })
+        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then(() => {
+            push(_url)
         })
     }
 
@@ -739,7 +734,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             return (
                 <>
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
-                        {nodeDetail.unschedulable ? (
+                        {nodeDetail?.unschedulable ? (
                             <>
                                 <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
