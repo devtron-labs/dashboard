@@ -17,7 +17,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
-    getUserRole,
     BreadCrumb,
     useBreadcrumb,
     ErrorScreenManager,
@@ -90,20 +89,12 @@ const ResourceList = () => {
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
-    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
-        gvk: SIDEBAR_KEYS.nodeGVK,
-        namespaced: false,
-        isGrouped: false,
-    })
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
-    const [loading, data, error] = useAsync(() =>
-        Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
-    )
-
-    const [clusterListData = null, userRole = null] = data || []
+    const [loading, clusterListData, error] = useAsync(() => getClusterListMin())
 
     const clusterList = clusterListData?.result || null
 
@@ -144,8 +135,6 @@ const ResourceList = () => {
             ),
         [k8SObjectMapRaw],
     )
-
-    const isSuperAdmin = !!userRole?.result.superAdmin
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
@@ -201,25 +190,33 @@ const ResourceList = () => {
     })
 
     const initTabsBasedOnRole = (reInit: boolean) => {
-        /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
         const _tabs = getTabsBasedOnRole({
             selectedCluster,
             namespace,
-            isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             dynamicTabData: (node || isUpgradeClusterNodeType) && getDynamicTabData(),
             isTerminalSelected: isTerminalNodeType,
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
         })
-        initTabs(
-            _tabs,
-            reInit,
-            !isSuperAdmin ? [getTabId(ResourceBrowserTabsId.terminal, AppDetailsTabs.terminal, '')] : null,
-        )
+        initTabs(_tabs, reInit)
     }
 
-    useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
+    useEffect(() => initTabsBasedOnRole(false), [])
+    useEffect(() => {
+        const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
+        const newLabel = `Terminal '${selectedCluster.label}'`
+
+        // NOTE: we don't have cluster name on mount therefore need
+        // to update the dynamicTitle once we have fetched the cluster name
+        if (terminalTab && terminalTab.dynamicTitle !== newLabel) {
+            updateTabUrl({
+                id: terminalTab.id,
+                url: terminalTab.url,
+                dynamicTitle: newLabel,
+            })
+        }
+    }, [getTabById(ResourceBrowserTabsId.terminal)?.dynamicTitle, selectedCluster])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffectAfterMount(() => {
@@ -362,7 +359,7 @@ const ResourceList = () => {
         let _group: string =
             (shouldOverrideSelectedResourceKind
                 ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
-                : selectedResource?.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+                : selectedResource.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
         const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
         let resourceParam: string
@@ -417,7 +414,6 @@ const ResourceList = () => {
         return nodeType.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() ? (
             <NodeDetails
                 key={dynamicActiveTab.componentKey}
-                isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
@@ -440,7 +436,7 @@ const ResourceList = () => {
     }
 
     const fixedTabComponents = [
-        <ClusterOverview isSuperAdmin={isSuperAdmin} selectedCluster={selectedCluster} addTab={addTab} />,
+        <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />,
         <K8SResourceTabComponent
             selectedCluster={selectedCluster}
             selectedResource={selectedResource}
@@ -451,7 +447,6 @@ const ResourceList = () => {
                 getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
                 refreshData,
             )}
-            isSuperAdmin={isSuperAdmin}
             isOpen={!!getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected}
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)}
@@ -462,8 +457,8 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
-        ...(isSuperAdmin && getTabById(ResourceBrowserTabsId.terminal)?.isAlive
-            ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
+        ...(getTabById(ResourceBrowserTabsId.terminal)?.isAlive
+            ? [<AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
     ]
 
@@ -479,7 +474,7 @@ const ResourceList = () => {
             return <ErrorScreenManager code={error.code} />
         }
 
-        if (loading) {
+        if (loading || !tabs.length) {
             return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
         }
 

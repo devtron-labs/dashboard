@@ -20,7 +20,7 @@ import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { showError, TOAST_ACCESS_DENIED, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { MarkDown, showError, TOAST_ACCESS_DENIED, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { MDEditorSelectedTabType } from '../../ClusterNodes/types'
 import { ReactComponent as HeaderIcon } from '../../../assets/icons/mdeditor/ic-header.svg'
 import { ReactComponent as BoldIcon } from '../../../assets/icons/mdeditor/ic-bold.svg'
@@ -47,13 +47,11 @@ import {
     MARKDOWN_EDITOR_COMMAND_TITLE,
 } from '../../ClusterNodes/constants'
 import './GenericDescription.scss'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { AppMetaInfo } from '../../app/types'
 
 export default function GenericDescription({
     isClusterTerminal,
     clusterId,
-    isSuperAdmin,
     appId,
     descriptionId,
     initialDescriptionText,
@@ -66,7 +64,6 @@ export default function GenericDescription({
 }: {
     isClusterTerminal: boolean
     clusterId?: string
-    isSuperAdmin: boolean
     appId?: number
     descriptionId?: number
     initialDescriptionText?: string
@@ -111,16 +108,14 @@ export default function GenericDescription({
     }
 
     const toggleDescriptionView = () => {
-        if (isAuthorized()) {
-            let isConfirmed: boolean = true
-            if (isDescriptionModified) {
-                isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
-            }
-            if (isConfirmed) {
-                setModifiedDescriptionText(descriptionText)
-                setEditDescriptionView(!isEditDescriptionView)
-                setSelectedTab(MD_EDITOR_TAB.WRITE)
-            }
+        let isConfirmed: boolean = true
+        if (isDescriptionModified) {
+            isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
+        }
+        if (isConfirmed) {
+            setModifiedDescriptionText(descriptionText)
+            setEditDescriptionView(!isEditDescriptionView)
+            setSelectedTab(MD_EDITOR_TAB.WRITE)
         }
     }
 
@@ -130,17 +125,6 @@ export default function GenericDescription({
         } else {
             updateApplicationAbout()
         }
-    }
-
-    const isAuthorized = (): boolean => {
-        if (!isSuperAdmin && isClusterTerminal) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-            return false
-        }
-        return true
     }
 
     const updateApplicationAbout = (): void => {

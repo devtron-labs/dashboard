@@ -454,7 +454,7 @@ const ManifestComponent = ({
                 })
                 .finally(resolve)
         })
-    
+
     const uneditedManifest = useMemo(() => {
         try {
             const object = YAML.parse(manifest)
@@ -466,7 +466,6 @@ const ManifestComponent = ({
             return {}
         }
     }, [manifest, hideManagedFields])
-
 
     const handleApplyChanges = async () => {
         setLoading(true)
@@ -681,12 +680,12 @@ const ManifestComponent = ({
                     {renderEditorInfo()}
                     {renderErrorBar()}
                     <ManifestGUIView
+                        manifestGUIFormRef={manifestGUIFormRef}
                         guiSchema={guiSchema}
                         handleChange={handleGUIViewValueChange}
                         // For uniformity have called method but as of now in this case it will always be trimedManifestEditorData
                         manifestYAMLString={getCodeEditorValue()}
                         handleSwitchToYAMLMode={handleSwitchToYAMLMode}
-                        manifestGUIFormRef={manifestGUIFormRef}
                     />
                 </>
             )
@@ -769,9 +768,11 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className={`${
-                    manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
-                } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}>
+                <div
+                    className={`${
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
+                    } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
+                >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
                             msg="Manifest not available"

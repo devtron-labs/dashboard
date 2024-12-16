@@ -15,7 +15,20 @@
  */
 
 import { Fragment, useEffect, useState } from 'react'
-import { showError, Progressing, Drawer, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    ToastVariantType,
+    ToastManager,
+    ClipboardButton,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
+    getHandleOpenURL,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION } from '@Config/constants'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -33,7 +46,7 @@ import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ExternalLinksLearnMore } from '../ExternalLinks.component'
+import { ReactComponent as ICOpenBook } from '@Icons/ic-book-open.svg'
 import './AddExternalLink.scss'
 
 export default function AddExternalLink({
@@ -74,6 +87,7 @@ export default function AddExternalLink({
                     identifiers: initSelectedIdentifiers(),
                     isEditable: selectedLink.isEditable,
                     type: selectedLink.type,
+                    openInNewTab: selectedLink.openInNewTab,
                 },
             ])
         } else {
@@ -92,6 +106,7 @@ export default function AddExternalLink({
                     identifiers: [],
                     isEditable: false,
                     type: ExternalLinkScopeType.ClusterLevel,
+                    openInNewTab: false,
                 },
             ])
         }
@@ -163,6 +178,7 @@ export default function AddExternalLink({
                     identifiers: [],
                     urlTemplate: '',
                     isEditable: false,
+                    openInNewTab: false,
                     type: ExternalLinkScopeType.ClusterLevel,
                 })
                 break
@@ -216,6 +232,9 @@ export default function AddExternalLink({
                 break
             case 'onEditableFlagToggle':
                 linksData[key].isEditable = value as boolean
+                break
+            case 'onNewTabToggle':
+                linksData[key].openInNewTab = value as boolean
                 break
             default:
                 break
@@ -288,10 +307,26 @@ export default function AddExternalLink({
 
     const renderConfigureLinkInfoColumn = (): JSX.Element => {
         return (
-            <div className="configure-link-info-container">
-                <div className="configure-link-info-heading">
-                    <Help />
-                    <span className="cn-9">Configuring an external link</span>
+            <div className="configure-link-info-container px-16 py-20">
+                <div className="flexbox dc__content-space dc__align-items-center">
+                    <div className="flexbox dc__gap-8 dc__align-items-center">
+                        <Help className="icon-dim-20 fcv-5" />
+                        <span className="cn-9 fs-13 lh-20 fw-6">Configuring an external link</span>
+                    </div>
+                    <Button
+                        ariaLabel="learn-more-external-link"
+                        dataTestId="learn-more-external-link"
+                        icon={<ICOpenBook />}
+                        style={ButtonStyleType.neutral}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.small}
+                        onClick={getHandleOpenURL(DOCUMENTATION.EXTERNAL_LINKS)}
+                        showAriaLabelInTippy={false}
+                        showTooltip
+                        tooltipProps={{
+                            content: 'View Documentation',
+                        }}
+                    />
                 </div>
                 <ol className="configure-link-info-list">
                     <li>Link name</li>
@@ -313,26 +348,33 @@ export default function AddExternalLink({
                         </>
                     )}
                     <li>Enter link or Create URL template</li>
-                    <p className="mb-20">
+                    <p className="mb-8">
                         You can choose to enter a direct link or create a URL template using available variables.
                     </p>
-                    <p className="mb-20">A dynamic link can be created using variables as shown below.</p>
-                    <p className="mb-12 fw-4 dc__italic-font-style">
+                    <p className="mb-8">A dynamic link can be created using variables as shown below.</p>
+                    <p className="mb-8 fw-4 dc__italic-font-style">
                         {`http://www.domain.com/{namespace}/{appName}/details/{appId}/env/{envId}/details/{podName}`}
                     </p>
-                    <ul className="available-link-variables fs-12 fw-4">
-                        {availableVariables.map((_var) => (
-                            <li key={_var}>{_var}</li>
+                    <div className="flexbox-col dc__gap-6">
+                        {availableVariables.map((variable) => (
+                            <div
+                                key={variable}
+                                className="flexbox dc__gap-4 dc__align-items-center dc__visible-hover dc__visible-hover--parent"
+                            >
+                                <span className="bcn-1 px-4 br-6 dc__truncate">{variable}</span>
+                                <span className="dc__visible-hover--child">
+                                    <ClipboardButton content={variable} />
+                                </span>
+                            </div>
                         ))}
-                    </ul>
-                    <ExternalLinksLearnMore />
+                    </div>
                 </ol>
             </div>
         )
     }
 
     const getValidatedLinksData = (): LinkAction[] => {
-        const validatedLinksData = linksData.map((link) => ({
+        const validatedLinksData: LinkAction[] = linksData.map((link) => ({
             tool: link.tool,
             invalidTool: !link.tool,
             name: link.name.trim(),
@@ -345,6 +387,7 @@ export default function AddExternalLink({
             invalidProtocol: link.urlTemplate.trim() && !link.urlTemplate.trim().startsWith('http'),
             type: link.type,
             isEditable: link.isEditable,
+            openInNewTab: link.openInNewTab,
         }))
         setLinksData(validatedLinksData)
 
@@ -378,6 +421,13 @@ export default function AddExternalLink({
         return []
     }
 
+    const appendDevtronPrimaryIframe = (urlTemplate: string, openInNewTab: boolean): string => {
+        if (!openInNewTab) return urlTemplate
+        const linkURL = new URL(urlTemplate)
+        linkURL.searchParams.append(DEVTRON_IFRAME_PRIMARY, 'false')
+        return linkURL.href
+    }
+
     const saveLinks = async (): Promise<void> => {
         try {
             const validatedLinksData = getValidatedLinksData()
@@ -407,7 +457,7 @@ export default function AddExternalLink({
                     description: link.description || '',
                     type: link.type,
                     identifiers: processIdentifiers(link.identifiers, selectedLink),
-                    url: link.urlTemplate,
+                    url: appendDevtronPrimaryIframe(link.urlTemplate, link.openInNewTab),
                     isEditable: link.isEditable,
                 }
 
@@ -426,7 +476,7 @@ export default function AddExternalLink({
                     description: link.description || '',
                     type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
                     identifiers: processIdentifiers(link.identifiers),
-                    url: link.urlTemplate,
+                    url: appendDevtronPrimaryIframe(link.urlTemplate, link.openInNewTab),
                     isEditable: isAppConfigView ? true : link.isEditable,
                 }))
 

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    ForceDeleteDialog,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
 const DeleteCDNode = ({
+    showDeleteDialog,
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -45,7 +51,7 @@ const DeleteCDNode = ({
         handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
-    if (deleteDialog === DeleteDialogType.showForceDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog) {
         return (
             <ForceDeleteDialog
                 forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
@@ -56,7 +62,7 @@ const DeleteCDNode = ({
         )
     }
 
-    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog) {
         return (
             <ClusterNotReachableDailog
                 clusterName={clusterName}
@@ -67,14 +73,28 @@ const DeleteCDNode = ({
     }
 
     return (
-        <DeleteDialog
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
             title={`Delete pipeline for '${deleteTitleName}' environment ?`}
-            description={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
-            delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)}
-            closeDelete={hideDeleteModal}
-            apiCallInProgress={isLoading}
-            showDeleteConfirmation
-            deleteConfirmationText={deleteTitleName}
+            subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: hideDeleteModal,
+                    disabled: isLoading,
+                },
+                primaryButtonConfig: {
+                    text: 'Delete',
+                    onClick: () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes),
+                    isLoading,
+                },
+            }}
+            customInputConfig={{
+                identifier: 'delete-cd-node-input',
+                confirmationKeyword: deleteTitleName,
+            }}
+            showConfirmationModal={showDeleteDialog}
+            handleClose={hideDeleteModal}
         />
     )
 }

@@ -139,10 +139,8 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const getSecurityScan: ({
     appId,
-    envId,
     installedAppId,
 }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
     'getSecurityScan',
@@ -799,7 +797,8 @@ const CDMaterial = ({
             serverError instanceof ServerErrors &&
             Array.isArray(serverError.errors) &&
             serverError.code !== 403 &&
-            serverError.code !== 408
+            serverError.code !== 408 &&
+            !getIsRequestAborted(searchParams)
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 ToastManager.showToast(

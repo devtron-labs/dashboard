@@ -20,8 +20,14 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import {
+    OverrideMergeStrategyType,
+    ToastManagerContainer,
+    UseRegisterShortcutProvider,
+    UserEmailProvider,
+    customEnv,
+} from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
-import { ToastManagerContainer, UseRegisterShortcutProvider, UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -65,7 +71,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
         dsn: window._env_.SENTRY_DSN || '',
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
+        ...(window._env_.SENTRY_RELEASE_VERSION ? { release: window._env_.SENTRY_RELEASE_VERSION } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
@@ -105,7 +111,7 @@ if (!window || !window._env_) {
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
-        APPLICATION_METRICS_ENABLED: false,
+        APPLICATION_METRICS_ENABLED: true,
         POSTHOG_ENABLED: false,
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
@@ -127,7 +133,7 @@ if (!window || !window._env_) {
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
-        ENABLE_SCOPED_VARIABLES: false,
+        ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
@@ -139,7 +145,7 @@ if (!window || !window._env_) {
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
-        SERVICE_WORKER_TIMEOUT: '1',
+        SERVICE_WORKER_TIMEOUT: '3',
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         ENABLE_RESOURCE_SCAN_V2: false,
@@ -157,9 +163,12 @@ if (!window || !window._env_) {
         FEATURE_CONFIG_DRIFT_ENABLE: false,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
         FEATURE_PROMO_EMBEDDED_MODAL_TITLE: '',
-        FEATURE_PROMO_EMBEDDED_IFRAME_URL:'',
         FEATURE_BULK_RESTART_WORKLOADS_FROM_RB: 'deployment,rollout,daemonset,statefulset',
         FEATURE_RB_SYNC_CLUSTER_ENABLE: true,
+        FEATURE_PROMO_EMBEDDED_IFRAME_URL: '',
+        FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
+        FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
+        FEATURE_CLUSTER_MAP_ENABLE: false,
     }
 }
 

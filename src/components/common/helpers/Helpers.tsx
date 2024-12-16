@@ -31,7 +31,7 @@ import {
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { Link } from 'react-router-dom'
+import { Link, PromptProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
@@ -44,12 +44,15 @@ import {
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { PATTERNS } from '../../../config/constants'
+import { PATTERNS, UNSAVED_CHANGES_PROMPT_MESSAGE } from '../../../config/constants'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
+import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
+import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
+import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -884,6 +887,7 @@ export const processK8SObjects = (
                 isExpanded:
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [k8sObject],
             })
@@ -893,6 +897,7 @@ export const processK8SObjects = (
                 currentData.isExpanded =
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
@@ -903,6 +908,10 @@ export const processK8SObjects = (
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
             JUMP_TO_KIND_SHORT_NAMES.namespaces = shortNames
             SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
+        }
+        if (element.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.node = shortNames
+            SIDEBAR_KEYS.nodeGVK = { ...element.gvk }
         }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {
@@ -1096,18 +1105,7 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-export const hasApproverAccess = (email: string, approverList: string[]): boolean => {
-    let hasAccess = false
-    if (approverList?.length > 0) {
-        for (const approver of approverList) {
-            if (approver === email) {
-                hasAccess = true
-                break
-            }
-        }
-    }
-    return hasAccess
-}
+
 
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
@@ -1234,4 +1232,90 @@ export const getParsedBranchValuesForPlugin = (branchName: string): string => {
     }
 
     return branchName
+}
+
+/**
+ * Checks if the provided pathname matches the current path.
+ * If the paths do not match, returns a custom message or a default unsaved changes prompt.
+ *
+ * @param currentPathName - The current path to compare against.
+ * @param customMessage - Optional custom message to display when the path does not match.
+ * @returns A function that takes an object with a `pathname` property and performs the path match check.
+ */
+export const checkIfPathIsMatching =
+    (currentPathName: string, customMessage = ''): PromptProps['message'] =>
+    ({ pathname }: { pathname: string })  =>
+        currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE
+
+export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
+    filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
+
+export const getAndSetAppGroupFilters = ({
+    filterParentType,
+    resourceId,
+    appListOptions,
+    groupFilterOptions,
+    setSelectedAppList,
+    setSelectedGroupFilter,
+}: GetAndSetAppGroupFiltersParamsType) => {
+    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+
+    const localStorageValue = localStorage.getItem(localStorageKey)
+    if (!localStorageValue) {
+        return
+    }
+    try {
+        const valueForCurrentResource = new Map(JSON.parse(localStorageValue)).get(resourceId)
+        // local storage value for app list/ env list
+        const localStorageResourceList = valueForCurrentResource?.[0] || []
+        // local storage value for group filter
+        const localStorageGroupList = valueForCurrentResource?.[1] || []
+
+        const appListOptionsMap = appListOptions.reduce<Record<string, true>>((agg, curr) => {
+            agg[curr.value] = true
+            return agg
+        }, {})
+
+        const groupFilterOptionsMap = groupFilterOptions.reduce<Record<string, true>>((agg, curr) => {
+            agg[curr.value] = true
+            return agg
+        }, {})
+
+        // filtering local storage lists acc to new appList/ envList or groupFilterList as local values might be deleted or does not exist anymore
+        const filteredLocalStorageResourceList = localStorageResourceList.filter(
+            ({ value }) => appListOptionsMap[value],
+        )
+        const filteredLocalStorageGroupList = localStorageGroupList.filter(({ value }) => groupFilterOptionsMap[value])
+
+        // this means last selected group filter has been deleted
+        if (!!localStorageGroupList.length && !filteredLocalStorageGroupList.length) {
+            setSelectedAppList([])
+            setSelectedGroupFilter([])
+            setAppGroupFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
+            return
+        }
+
+        setSelectedAppList(filteredLocalStorageResourceList)
+        setSelectedGroupFilter(filteredLocalStorageGroupList)
+    } catch {
+        localStorage.setItem(localStorageKey, '')
+    }
+}
+
+export const setAppGroupFilterInLocalStorage = ({
+    filterParentType,
+    resourceId,
+    resourceList,
+    groupList,
+}: SetFiltersInLocalStorageParamsType) => {
+    const localStorageKey = getAppFilterLocalStorageKey(filterParentType)
+    try {
+        const localStorageValue = localStorage.getItem(localStorageKey)
+        const localStoredMap = new Map(localStorageValue ? JSON.parse(localStorageValue) : null)
+        localStoredMap.set(resourceId, [resourceList, groupList])
+        // Set filter in local storage as Array from Map of resourceId vs [selectedAppList, selectedGroupFilter]
+        localStorage.setItem(localStorageKey, JSON.stringify(Array.from(localStoredMap)))
+    } catch {
+        localStorage.setItem(localStorageKey, '')
+    }
 }

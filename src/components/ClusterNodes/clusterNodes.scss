@@ -17,97 +17,13 @@
 .cluster-list-main-container {
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 100px 50px 90px 100px 100px 120px;
+        grid-template-columns: auto 150px 100px 60px 100px 100px 100px 130px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
             width: 12px;
         }
     }
-}
-
-.node-list {
-    .list-min-height {
-        min-height: calc(100vh - 120px);
-        &.no-result-container {
-            overflow: hidden;
-            display: grid;
-            grid-template-rows: 32px;
-        }
-        &.sync-error {
-            min-height: calc(100vh - 152px);
-        }
-        &.with-error-bar {
-            min-height: calc(100vh - 270px);
-        }
-    }
-    .search-wrapper {
-        display: grid;
-        grid-template-columns: auto 160px 1px 180px;
-        column-gap: 8px;
-
-        .outline-none {
-            outline: none !important;
-        }
-        .bottom-2px {
-            bottom: 2px;
-        }
-        .search-popup {
-            z-index: 6;
-            .search-title {
-                background: var(--window-bg);
-            }
-        }
-    }
-
-    .setting-icon path {
-        stroke: var(--N600);
-    }
-
-    .node-list-row {
-        display: grid;
-        column-gap: 16px;
-        width: max-content;
-        min-width: 100%;
-
-        &:hover > :first-child {
-            background-color: var(--N50);
-        }
-
-        & > :first-child {
-            position: sticky;
-            left: 0;
-            z-index: 1;
-            padding-left: 20px;
-            background-color: var(--N0);
-            border-right: 1px solid var(--N200);
-        }
-
-        & > :last-child {
-            padding-right: 20px;
-        }
-
-        &.no-hover-bg {
-            &:hover > :first-child {
-                background-color: var(--N0);
-            }
-        }
-    }
-
-    .node-actions-menu-icon {
-        path:nth-child(2) {
-            fill: var(--N600);
-        }
-    }
-
-    &.show-terminal {
-        height: calc(50vh - 78px) !important;
-    }
-}
-
-.node-list-search-key {
-    right: 10px;
-    top: 6px;
 }
 
 .node-details-container {
@@ -237,7 +153,6 @@
     }
 }
 .cluster-list-main-container,
-.node-list,
 .node-details-container {
     .top-3 {
         top: 3px;

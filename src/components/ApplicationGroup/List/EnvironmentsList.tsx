@@ -30,8 +30,7 @@ import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
 import { parseSearchParams } from '../AppGroup.utils'
 
-export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
-
+const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({
         parseSearchParams,
     })
@@ -48,24 +47,28 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         changePageSize,
     } = urlFilters
 
-    const filterConfig = useMemo(() => {
-        return { searchKey, cluster, offset, pageSize }
-    }, [searchKey, JSON.stringify(cluster), offset, pageSize])
+    const filterConfig = useMemo(
+        () => ({ searchKey, cluster, offset, pageSize }),
+        [searchKey, JSON.stringify(cluster), offset, pageSize],
+    )
 
-    const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] = useAsync(getClusterListMinWithoutAuth)
+    const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] =
+        useAsync(getClusterListMinWithoutAuth)
 
-    const clusterOptions: SelectPickerOptionType[] = useMemo(() => {
-        return clusterListRes?.result.map((clusterItem) => ({
-            label: clusterItem.cluster_name,
-            value: String(clusterItem.id),
-        })) ?? []
-    }, [clusterListRes])
+    const clusterOptions: SelectPickerOptionType[] = useMemo(
+        () =>
+            clusterListRes?.result.map((clusterItem) => ({
+                label: clusterItem.cluster_name,
+                value: String(clusterItem.id),
+            })) ?? [],
+        [clusterListRes],
+    )
 
-    const handleApplyClusterFilter = (clusterOptions: SelectPickerOptionType[]) => {
-        updateSearchParams({ cluster: clusterOptions.map((clusterItem) => String(clusterItem.value)) })
+    const handleApplyClusterFilter = (_clusterOptions: SelectPickerOptionType[]) => {
+        updateSearchParams({ cluster: _clusterOptions.map((clusterItem) => String(clusterItem.value)) })
     }
 
-    const getFormattedValue = (filterKey: AppGroupUrlFilters , filterValue: string) => {
+    const getFormattedValue = (filterKey: AppGroupUrlFilters, filterValue: string) => {
         if (filterKey === AppGroupUrlFilters.cluster) {
             return clusterOptions.find((clusterItem) => clusterItem.value === filterValue)?.label
         }
@@ -77,20 +80,18 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         value: clusterItem,
     }))
 
-    const renderSearch = (): JSX.Element => {
-        return (
-            <SearchBar
-                initialSearchText={searchKey}
-                containerClassName="w-250"
-                handleEnter={handleSearch}
-                inputProps={{
-                    placeholder: 'Search environment',
-                    autoFocus: true,
-                }}
-                dataTestId="environment-search-box"
-            />
-        )
-    }
+    const renderSearch = (): JSX.Element => (
+        <SearchBar
+            initialSearchText={searchKey}
+            containerClassName="w-250"
+            handleEnter={handleSearch}
+            inputProps={{
+                placeholder: 'Search environment',
+                autoFocus: true,
+            }}
+            dataTestId="environment-search-box"
+        />
+    )
 
     const renderAppliedFilters = () => (
         <FilterChips<AppGroupUrlFiltersType>
@@ -103,7 +104,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     )
 
     return (
-        <div>
+        <div className="flexbox-col h-100 dc__overflow-scroll">
             <PageHeader headerName="Application Groups" showAnnouncementHeader />
             <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
@@ -133,3 +134,5 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         </div>
     )
 }
+
+export default EnvironmentsList

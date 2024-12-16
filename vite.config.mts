@@ -16,7 +16,7 @@
 
 // Changed to .mts to support importing from ESM module
 
-import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin } from 'vite'
+import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
@@ -26,6 +26,7 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+// import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
@@ -93,7 +94,7 @@ const jsToBottomNoModule = () => {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
-    const baseConfig = {
+    const baseConfig: UserConfig = {
         base: '/dashboard',
         preview: {
             port: 3000,
@@ -102,17 +103,78 @@ export default defineConfig(({ mode }) => {
             sourcemap: true,
             rollupOptions: {
                 output: {
-                    manualChunks(id: string) {
+                    manualChunks(id: string): `@${string}` | undefined {
+                        if (
+                            id.includes('/node_modules/moment') ||
+                            id.includes('/node_modules/moment-timezone') ||
+                            id.includes('@moment')
+                        ) {
+                            return '@moment'
+                        }
+
+                        // @react-select is generated from @devtron-labs libs; same for others
+                        if (id.includes('/node_modules/react-select') || id.includes('@react-select')) {
+                            return '@react-select'
+                        }
+
+                        if (id.includes('node_modules/react-virtualized')) {
+                            return '@react-virtualized'
+                        }
+
+                        if (id.includes('node_modules/react-dates') || id.includes('@react-dates')) {
+                            return '@react-dates'
+                        }
+
+                        if (id.includes('node_modules/@rjsf')) {
+                            return '@rjsf'
+                        }
+
+                        if (id.includes('node_modules/react-mde')) {
+                            return '@react-mde'
+                        }
+
+                        if (
+                            id.includes('node_modules/monaco-editor') ||
+                            id.includes('node_modules/react-monaco-editor') ||
+                            id.includes('dist/@monaco-editor')
+                        ) {
+                            return '@monaco-editor'
+                        }
+
+                        if (id.includes('node_modules/@rxjs')) {
+                            return '@rxjs'
+                        }
+
+                        if (id.includes('node_modules/@sentry')) {
+                            return '@sentry'
+                        }
+
+                        if (id.includes('react-router-dom') || id.includes('react-router')) {
+                            return '@react-router'
+                        }
+
                         // separating the common lib chunk
                         if (id.includes('devtron-fe-common-lib')) {
+                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
+
+                            if (splittedChunk) {
+                                return `@devtron-common-${splittedChunk}`
+                            }
                             return '@devtron-common'
                         }
-                        if (id.includes('@devtron')) {
-                            return '@devtron'
-                        }
+
+                        // if (id.includes('devtron-fe-lib')) {
+                        //     const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
+
+                        //     if (splittedChunk) {
+                        //         return `@devtron-fe-lib-${splittedChunk}`
+                        //     }
+                        //     return '@devtron-fe-lib'
+                        // }
                     },
                 },
             },
+            assetsInlineLimit: 0,
         },
         plugins: [
             tsconfigPaths(),
@@ -130,17 +192,44 @@ export default defineConfig(({ mode }) => {
             NodeGlobalsPolyfillPlugin({
                 process: true,
             }),
+            // Commented since it merges the attributes of svg there by messing up with
+            // the styles
+            // ViteImageOptimizer({
+            //     logStats: false,
+            //     cache: true,
+            //     cacheLocation: '.build-cache/vite-image-optimizer',
+            // }),
             // VitePWA and jsToBottomNoModule is not to be added for storybook
             ...(process.env.IS_STORYBOOK
                 ? []
                 : [
                       VitePWA({
-                          srcDir: 'src',
-                          filename: 'service-worker.ts',
-                          strategies: 'injectManifest',
-                          injectManifest: {
-                              maximumFileSizeToCacheInBytes: 8000000,
+                          filename: 'service-worker.js',
+                          injectRegister: 'script',
+                          workbox: {
+                              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                              cleanupOutdatedCaches: true,
+                              maximumFileSizeToCacheInBytes: 10000000,
                           },
+                          manifest: {
+                              short_name: 'Devtron',
+                              name: 'Devtron Dashboard',
+                              description:
+                                  'Easily containerize your application to move it to Kubernetes in the cloud or in your own data center. Build, test, secure, deploy, and manage your applications on Kubernetes using open-source software.',
+                              icons: [
+                                  {
+                                      src: 'favicon.ico',
+                                      sizes: '64x64 32x32 24x24 16x16',
+                                      type: 'image/x-icon',
+                                  },
+                              ],
+                              start_url: '.',
+                              display: 'standalone',
+                              theme_color: '#0066cc',
+                              background_color: '#ffffff',
+                          },
+                          strategies: 'generateSW',
+                          registerType: 'prompt',
                       }),
                       jsToBottomNoModule(),
                   ]),

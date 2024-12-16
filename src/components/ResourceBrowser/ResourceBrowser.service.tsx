@@ -20,6 +20,11 @@ import {
     post,
     ResponseType,
     convertJSONPointerToJSONPath,
+    getK8sResourceList,
+    getIsRequestAborted,
+    showError,
+    getUrlWithSearchParams,
+    getK8sResourceListPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getManifestResource,
@@ -28,9 +33,12 @@ import {
 import { applyOperation, escapePathComponent } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
 import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
+import { RefObject } from 'react'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { ResourceListPayloadType, ResourceType } from './Types'
+import { ResourceListPayloadType, ResourceType, GetResourceDataType, NodeRowDetail, URLParams } from './Types'
+import { SIDEBAR_KEYS } from './Constants'
+import { parseNodeList } from './Utils'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
 
@@ -116,4 +124,40 @@ export const restartWorkload = async (resource: SelectedResourceType, signal: Ab
     }
 
     await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
+}
+
+export const getNodeList = (
+    clusterId: string,
+    abortControllerRef: RefObject<AbortController>,
+): Promise<ResponseType<NodeRowDetail[]>> =>
+    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), {
+        abortControllerRef,
+    })
+
+export const getResourceData = async ({
+    selectedResource,
+    selectedNamespace,
+    clusterId,
+    filters,
+    abortControllerRef,
+}: GetResourceDataType) => {
+    try {
+        if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+            const response = await getNodeList(clusterId, abortControllerRef)
+
+            return parseNodeList(response)
+        }
+
+        return await getK8sResourceList(
+            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            abortControllerRef.current.signal,
+        )
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+            throw err
+        }
+
+        return null
+    }
 }

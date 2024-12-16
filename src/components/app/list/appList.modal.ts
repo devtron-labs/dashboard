@@ -133,7 +133,7 @@ export const getDevtronAppListPayload = (
     const { searchKey, offset, pageSize, sortBy, sortOrder, appStatus, environment, cluster, namespace, project } =
         filterConfig
     return {
-        appNameSearch: searchKey,
+        appNameSearch: searchKey.toLowerCase(),
         offset,
         size: pageSize,
         sortBy,

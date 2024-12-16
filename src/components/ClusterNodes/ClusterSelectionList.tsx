@@ -24,6 +24,7 @@ import {
     ClusterFiltersType,
     ClusterStatusType,
     ALL_NAMESPACE_OPTION,
+    SortableTableHeaderCell,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -31,7 +32,6 @@ import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
@@ -39,8 +39,15 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
-import { ClusterStatusByFilter } from './constants'
+import {
+    CLUSTER_PROD_TYPE,
+    ClusterMapListSortableKeys,
+    ClusterMapListSortableTitle,
+    ClusterStatusByFilter,
+} from './constants'
 import './clusterNodes.scss'
+import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
+import { getSortedClusterList } from './utils'
 
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
@@ -62,7 +69,6 @@ const parseSearchParams = (searchParams: URLSearchParams) => ({
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
-    isSuperAdmin,
     clusterListLoader,
     initialLoading,
     refreshData,
@@ -71,14 +77,28 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     const history = useHistory()
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
 
-    const { searchKey, clusterFilter, updateSearchParams, handleSearch, clearFilters } = useUrlFilters<
-        void,
-        { clusterFilter: ClusterFiltersType }
-    >({ parseSearchParams })
+    const {
+        searchKey,
+        clusterFilter,
+        updateSearchParams,
+        handleSearch,
+        clearFilters,
+        sortBy,
+        sortOrder,
+        handleSorting,
+    } = useUrlFilters<ClusterMapListSortableKeys, { clusterFilter: ClusterFiltersType }>({
+        parseSearchParams,
+        initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
+    })
 
-    const filteredList = useMemo(() => {
+    const filteredList: ClusterDetail[] = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
-        return clusterOptions.filter((option) => {
+        const updatedClusterOptions = [...clusterOptions]
+        // Sort the cluster list based on the selected sorting key
+        getSortedClusterList(updatedClusterOptions, sortBy, sortOrder)
+
+        // Filter the cluster list based on the search key and cluster filter
+        return updatedClusterOptions.filter((option) => {
             const filterCondition =
                 clusterFilter === ClusterFiltersType.ALL_CLUSTERS ||
                 !option.status ||
@@ -86,7 +106,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
-    }, [searchKey, clusterOptions, `${clusterFilter}`])
+    }, [searchKey, clusterOptions, `${clusterFilter}`, sortBy, sortOrder])
 
     const treeMapData = useMemo(() => {
         const { prodClusters, nonProdClusters } = filteredList.reduce(
@@ -154,24 +174,10 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
         if (ClusterStatusCell && status) {
-            return <ClusterStatusCell status={status} />
+            return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
         }
 
-        return (
-            <div className="flexbox dc__align-items-center dc__gap-8">
-                {errorInNodeListing ? (
-                    <>
-                        <Error className="icon-dim-16 dc__no-shrink" />
-                        <span>Failed</span>
-                    </>
-                ) : (
-                    <>
-                        <Success className="icon-dim-16 dc__no-shrink" />
-                        <span>Connected</span>
-                    </>
-                )}
-            </div>
-        )
+        return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
@@ -192,7 +198,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
                     <div className="cursor dc__visible-hover--child ml-8">
                         <div className="flexbox dc__align-items-center dc__gap-4">
-                            {!!clusterData.nodeCount && !clusterListLoader && isSuperAdmin && (
+                            {!!clusterData.nodeCount && !clusterListLoader && (
                                 <Tooltip alwaysShowTippyOnHover content="View terminal">
                                     <div className="flex">
                                         <TerminalIcon
@@ -212,14 +218,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                         </div>
                     </div>
                 </div>
-                <Tooltip
-                    alwaysShowTippyOnHover={!!clusterData.errorInNodeListing}
-                    content={clusterData.errorInNodeListing}
-                >
-                    {renderClusterStatus(clusterData)}
-                </Tooltip>
+
+                {renderClusterStatus(clusterData)}
+
                 <div className="child-shimmer-loading">
-                    {hideDataOnLoad(clusterData.isProd ? 'Production' : 'Non Production')}
+                    {hideDataOnLoad(
+                        clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                    )}
                 </div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
@@ -255,9 +260,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
+    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys) => {
+        handleSorting(cellToSort)
+    }
+
     return (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
-            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
+            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
                 <div className="flex dc__gap-12">
                     <SearchBar
                         initialSearchText={searchKey}
@@ -295,22 +304,27 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            {ClusterMap && <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />}
+            {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
+                <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+            )}
             {!filteredList.length ? (
                 <div className="flex-grow-1">
                     <ClusterNodeEmptyState actionHandler={clearFilters} />
                 </div>
             ) : (
-                <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
+                <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
-                        <div>Cluster</div>
-                        <div data-testid="cluster-list-connection-status">Status</div>
-                        <div>Type</div>
-                        <div>Nodes</div>
-                        <div>NODE Errors</div>
-                        <div>K8S version</div>
-                        <div>CPU Capacity</div>
-                        <div>Memory Capacity</div>
+                        {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
+                            <SortableTableHeaderCell
+                                key={cellName}
+                                title={ClusterMapListSortableTitle[cellName]}
+                                isSorted={sortBy === cellKey}
+                                sortOrder={sortOrder}
+                                isSortable
+                                disabled={false}
+                                triggerSorting={() => handleCellSorting(cellKey)}
+                            />
+                        ))}
                     </div>
                     {filteredList.map((clusterData) => renderClusterRow(clusterData))}
                 </div>

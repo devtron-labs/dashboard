@@ -17,7 +17,7 @@
 import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { ColumnMetadataType, EFFECT_TYPE } from './types'
+import { EFFECT_TYPE } from './types'
 
 export const clusterSelectStyle = {
     ...multiSelectStyles,
@@ -61,119 +61,6 @@ export const CLUSTER_STATUS = {
     SESSION_LIMIT_REACHED: 'session-limit-reached',
     POD_TERMINATED: 'pod-terminated',
 }
-
-export const COLUMN_METADATA: ColumnMetadataType[] = [
-    {
-        sortType: 'string',
-        columnIndex: 0,
-        label: 'Node',
-        value: 'name',
-        isDefault: true,
-        isSortingAllowed: true,
-        isDisabled: true,
-        sortingFieldName: 'name',
-    },
-    { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isDisabled: true },
-    { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true },
-    {
-        sortType: 'number',
-        columnIndex: 3,
-        label: 'Errors',
-        value: 'errorCount',
-        isDefault: true,
-        isDisabled: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'errorCount',
-    },
-    { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
-    {
-        sortType: 'string',
-        columnIndex: 5,
-        label: 'Node Group',
-        value: 'nodeGroup',
-        isSortingAllowed: true,
-        isDefault: true,
-        sortingFieldName: 'nodeGroup',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 6,
-        label: 'No.of pods',
-        value: 'podCount',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'podCount',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 7,
-        label: 'Taints',
-        value: 'taintCount',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'taintCount',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 8,
-        label: 'CPU Usage (%)',
-        value: 'cpu.usagePercentage',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.usagePercentage',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 9,
-        label: 'CPU Usage (Absolute)',
-        value: 'cpu.usage',
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.usageInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 10,
-        label: 'CPU Allocatable',
-        value: 'cpu.allocatable',
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.allocatableInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 11,
-        label: 'Mem Usage (%)',
-        value: 'memory.usagePercentage',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.usagePercentage',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 12,
-        label: 'Mem Usage (Absolute)',
-        value: 'memory.usage',
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.usageInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 13,
-        label: 'Mem Allocatable',
-        value: 'memory.allocatable',
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.allocatableInBytes',
-    },
-    {
-        sortType: 'string',
-        columnIndex: 14,
-        label: 'Age',
-        value: 'age',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'createdAt',
-    },
-    { sortType: 'boolean', columnIndex: 15, label: 'Unschedulable', value: 'unschedulable' },
-]
 
 export const NODE_DETAILS_TABS = {
     summary: 'Summary',
@@ -322,13 +209,6 @@ export const SELECT_TITLE = {
 
 export const AUTO_SELECT = { label: 'Auto select', value: 'autoSelectNode' }
 
-export const NODE_SEARCH_TEXT = {
-    NAME: 'name',
-    LABEL: 'label',
-    LABELS: 'labels',
-    NODE_GROUP: 'nodeGroup',
-} as const
-
 export const clusterImageSelect = {
     ...clusterSelectStyle,
     menu: (base, state) => ({
@@ -343,19 +223,6 @@ export const clusterImageSelect = {
         maxWidth: '300px',
     }),
 }
-
-export const SEARCH_OPTION_LABEL = {
-    NAME: NODE_SEARCH_TEXT.NAME,
-    LABEL: NODE_SEARCH_TEXT.LABEL,
-    NODE_GROUP: NODE_SEARCH_TEXT.NODE_GROUP,
-    NODE_GROUP_TEXT: 'node group',
-}
-
-export const NodeSearchOption = [
-    { value: 1, label: SEARCH_OPTION_LABEL.NAME, type: 'main' },
-    { value: 2, label: SEARCH_OPTION_LABEL.LABEL, type: 'main' },
-    { value: 3, label: SEARCH_OPTION_LABEL.NODE_GROUP, type: 'main' },
-]
 
 export const nodeSelect = {
     ...clusterSelectStyle,
@@ -491,4 +358,32 @@ export const ClusterStatusByFilter: Record<ClusterFiltersType, ClusterStatusType
     [ClusterFiltersType.HEALTHY]: ClusterStatusType.HEALTHY,
     [ClusterFiltersType.UNHEALTHY]: ClusterStatusType.UNHEALTHY,
     [ClusterFiltersType.ALL_CLUSTERS]: null,
+}
+
+export enum ClusterMapListSortableKeys {
+    CLUSTER_NAME = 'name',
+    STATUS = 'status',
+    TYPE = 'type',
+    NODES = 'nodeCount',
+    NODE_ERRORS = 'nodeErrors',
+    K8S_VERSION = 'serverVersion',
+    CPU_CAPACITY = 'cpu',
+    MEMORY_CAPACITY = 'memory',
+}
+
+export enum ClusterMapListSortableTitle {
+    CLUSTER_NAME = 'Cluster',
+    STATUS = 'Status',
+    TYPE = 'Type',
+    NODES = 'Nodes',
+    NODE_ERRORS = 'Node Errors',
+    K8S_VERSION = 'K8S version',
+    CPU_CAPACITY = 'CPU Capacity',
+    MEMORY_CAPACITY = 'Memory Capacity',
+}
+
+export enum CLUSTER_PROD_TYPE {
+    PRODUCTION= 'Production',
+    NON_PRODUCTION= 'Non Production',
+
 }

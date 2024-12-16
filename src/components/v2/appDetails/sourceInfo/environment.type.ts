@@ -15,6 +15,7 @@
  */
 
 import { AppEnvironment as BaseAppEnvironmentType } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
 import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
 import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../appDetails.type'
@@ -46,9 +47,16 @@ export interface ChartUsedCardType {
     notes: string
     onClickShowNotes: () => void
     cardLoading: boolean
+    onClickUpgrade: () => void
 }
 
 export interface HelmAppConfigApplyStatusCardType {
     releaseStatus: HelmReleaseStatus
     cardLoading: boolean
+}
+
+export interface ChartToolTipType extends Pick<ChartUsedCardType, 'onClickUpgrade'> {
+    children: React.ReactElement<any>
+    isDeprecated: boolean
+    chartRef: React.RefObject<HTMLDivElement>
 }

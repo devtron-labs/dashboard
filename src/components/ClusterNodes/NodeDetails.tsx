@@ -79,7 +79,7 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
+const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -115,9 +115,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
-                    setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
+                    setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
-                    const resourceList = response.result.resources
+                    const resourceList = response.result.resources ?? []
                     for (let index = 0; index < resourceList.length; ) {
                         if (resourceList[index].name === 'cpu') {
                             setCpuData(resourceList[index])
@@ -429,7 +429,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         )
     }
     const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
-        const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
+        const isCPUOverCommitted = Number(cpuData?.usagePercentage?.slice(0, -1) || 0) > 100
         const issueCount =
             (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taints?.length > 0 ? 1 : 0)
         if (!issueCount) {
@@ -532,6 +532,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const renderResourceList = (): JSX.Element => {
+        if (!nodeDetail.resources?.length) {
+            return null
+        }
         return (
             <div className="en-2 bw-1 br-4 bcn-0">
                 <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
@@ -632,16 +635,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then((isAdded) => {
-            if (isAdded) {
-                push(_url)
-                return
-            }
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                title: K8S_RESOURCE_LIST.tabError.maxTabTitle,
-                description: K8S_RESOURCE_LIST.tabError.maxTabSubTitle,
-            })
+        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then(() => {
+            push(_url)
         })
     }
 
@@ -739,7 +734,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
             return (
                 <>
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
-                        {nodeDetail.unschedulable ? (
+                        {nodeDetail?.unschedulable ? (
                             <>
                                 <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
@@ -799,12 +794,10 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         return (
             <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
                 <div className="flex left">
-                    {isSuperAdmin && (
-                        <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
-                            <TerminalLineIcon className="icon-dim-16 mr-5" />
-                            {NODE_DETAILS_TABS.debug}
-                        </span>
-                    )}
+                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                        <TerminalLineIcon className="icon-dim-16 mr-5" />
+                        {NODE_DETAILS_TABS.debug}
+                    </span>
                     <span className="cn-2 mr-16 ml-16">|</span>
                     {renderTabControls()}
                 </div>
@@ -996,21 +989,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
         return renderSummary()
     }
 
-    const isAuthorized = (): boolean => {
-        if (!isSuperAdmin) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-            return false
-        }
-        return true
-    }
-
     const showCordonNodeModal = (): void => {
-        if (isAuthorized()) {
-            setCordonNodeDialog(true)
-        }
+        setCordonNodeDialog(true)
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
@@ -1021,9 +1001,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showDrainNodeModal = (): void => {
-        if (isAuthorized()) {
-            setDrainNodeDialog(true)
-        }
+        setDrainNodeDialog(true)
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
@@ -1034,9 +1012,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showDeleteNodeModal = (): void => {
-        if (isAuthorized()) {
-            setDeleteNodeDialog(true)
-        }
+        setDeleteNodeDialog(true)
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
@@ -1047,9 +1023,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, lowercaseKindToResourceGroupMap, up
     }
 
     const showEditTaintsModal = (): void => {
-        if (isAuthorized()) {
-            setShowEditTaints(true)
-        }
+        setShowEditTaints(true)
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
