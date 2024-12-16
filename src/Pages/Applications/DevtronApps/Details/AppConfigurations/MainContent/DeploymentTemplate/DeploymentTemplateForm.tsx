@@ -2,8 +2,9 @@ import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-l
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { DeploymentTemplateFormProps } from './types'
-import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import { GUIView as DeploymentTemplateGUIView } from './GUIView'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -23,13 +24,15 @@ const DeploymentTemplateForm = ({
     environmentName,
     latestDraft,
     isGuiSupported,
+    mergeStrategy,
 }: DeploymentTemplateFormProps) => {
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
             <DeploymentTemplateGUIView
+                key={`gui-view-${mergeStrategy}`}
                 // NOTE: This is with locked keys so original value is passed
-                uneditedDocument={uneditedDocument}
-                editedDocument={editedDocument}
+                uneditedDocument={uneditedDocument || '{}'}
+                editedDocument={editedDocument || '{}'}
                 value={editedDocument}
                 readOnly={readOnly}
                 hideLockedKeys={hideLockedKeys}
@@ -39,7 +42,7 @@ const DeploymentTemplateForm = ({
                 selectedChart={selectedChart}
                 guiSchema={guiSchema}
                 handleChangeToYAMLMode={handleChangeToYAMLMode}
-                rootClassName="flexbox-col flex-grow-1"
+                mergeStrategy={mergeStrategy}
             />
         )
     }
@@ -99,7 +102,7 @@ const DeploymentTemplateForm = ({
             <div className="flexbox-col dc__overflow-scroll flex-grow-1">
                 <CodeEditor
                     value={editedDocument}
-                    chartVersion={selectedChart?.version.replace(/\./g, '-')}
+                    schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
                     onChange={readOnly ? noop : editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={schema}

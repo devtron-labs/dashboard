@@ -37,9 +37,7 @@ const AppListFilters = ({
 }: AppListFiltersProps) => {
     const { isSuperAdmin } = useSuperAdmin()
 
-    const { appStatus, cluster, environment, namespace, project, templateType, searchKey } = filterConfig
-
-    const clusterIdsCsv = cluster.join()
+    const { searchKey } = filterConfig
 
     const { projectOptions, clusterOptions, environmentOptions, namespaceOptions } = useFilterOptions({
         appListFiltersResponse,
@@ -60,40 +58,50 @@ const AppListFilters = ({
     const getIsAppStatusDisabled = (option: SelectPickerOptionType): boolean =>
         appType === AppListConstants.AppType.HELM_APPS && option.label === AppStatuses.NOT_DEPLOYED
 
-    const selectedAppStatus = useMemo(
-        () => appStatus.map((status) => ({ label: status, value: status })) || [],
-        [appStatus],
-    )
+    const {
+        selectedAppStatus,
+        selectedProjects,
+        selectedEnvironments,
+        selectedClusters,
+        selectedNamespaces,
+        selectedTemplateTypes,
+        clusterIdsCsv,
+    } = useMemo(() => {
+        const { appStatus, cluster, environment, namespace, project, templateType } = filterConfig
 
-    const selectedProjects =
-        project.map((team) => ({
-            label: getFormattedFilterValue(AppListUrlFilters.project, team),
-            value: team,
-        })) || []
+        return {
+            selectedAppStatus: appStatus.map((status) => ({ label: status, value: status })) || [],
+            selectedProjects:
+                project.map((team) => ({
+                    label: getFormattedFilterValue(AppListUrlFilters.project, team),
+                    value: team,
+                })) || [],
 
-    const selectedEnvironments =
-        environment.map((env) => ({
-            label: getFormattedFilterValue(AppListUrlFilters.environment, env),
-            value: env,
-        })) || []
+            selectedEnvironments:
+                environment.map((env) => ({
+                    label: getFormattedFilterValue(AppListUrlFilters.environment, env),
+                    value: env,
+                })) || [],
 
-    const selectedClusters =
-        cluster.map((clusterId) => ({
-            label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterId),
-            value: clusterId,
-        })) || []
+            selectedClusters:
+                cluster.map((clusterId) => ({
+                    label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterId),
+                    value: clusterId,
+                })) || [],
 
-    const selectedNamespaces =
-        namespace.map((namespaceOption) => ({
-            label: getFormattedFilterValue(AppListUrlFilters.namespace, namespaceOption),
-            value: namespaceOption,
-        })) || []
-
-    const selectedTemplateTypes =
-        templateType.map((templateTypeItem) => ({
-            label: templateTypeItem,
-            value: templateTypeItem,
-        })) || []
+            selectedNamespaces:
+                namespace.map((namespaceOption) => ({
+                    label: getFormattedFilterValue(AppListUrlFilters.namespace, namespaceOption),
+                    value: namespaceOption,
+                })) || [],
+            selectedTemplateTypes:
+                templateType.map((templateTypeItem) => ({
+                    label: templateTypeItem,
+                    value: templateTypeItem,
+                })) || [],
+            clusterIdsCsv: cluster.join(),
+        }
+    }, [filterConfig])
 
     const appStatusFilters: SelectPickerOptionType[] = structuredClone(APP_STATUS_FILTER_OPTIONS)
 
@@ -197,7 +205,7 @@ const AppListFilters = ({
                 )}
                 <Tooltip
                     content="Remove environment filters to use cluster filter"
-                    alwaysShowTippyOnHover={!(isExternalArgo || isExternalFlux) && !!environment.length}
+                    alwaysShowTippyOnHover={!(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length}
                     wordBreak={false}
                 >
                     <div className="flexbox dc__position-rel">
@@ -206,7 +214,7 @@ const AppListFilters = ({
                             inputId="app-list-cluster-filter"
                             options={clusterOptions}
                             appliedFilterOptions={selectedClusters}
-                            isDisabled={!(isExternalArgo || isExternalFlux) && !!environment.length}
+                            isDisabled={!(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length}
                             isLoading={appListFiltersLoading}
                             handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                             optionListError={appListFiltersError}

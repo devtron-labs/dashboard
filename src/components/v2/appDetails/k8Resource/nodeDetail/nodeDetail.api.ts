@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps, createResourceRequestBody, GVKType, ResourceManifestDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
 import {
@@ -69,7 +69,7 @@ export const getManifestResource = (
         return getDesiredAndLiveManifest(requestData, signal)
     }
 
-    return post(Routes.MANIFEST, requestData, { signal })
+    return post<ResourceManifestDTO>(Routes.MANIFEST, requestData, { signal })
 }
 
 export const getDesiredManifestResource = (
@@ -106,29 +106,6 @@ export const getEvent = (
     selectedResource?: SelectedResourceType,
 ) => {
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
-}
-
-// TODO: This should be moved into common since going to use it in resource-scan
-function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
-    const requestBody = {
-        appId: '',
-        clusterId: selectedResource.clusterId,
-        k8sRequest: {
-            resourceIdentifier: {
-                groupVersionKind: {
-                    Group: selectedResource.group || '',
-                    Version: selectedResource.version || 'v1',
-                    Kind: selectedResource.kind,
-                },
-                namespace: selectedResource.namespace,
-                name: selectedResource.name,
-            },
-        },
-    }
-    if (updatedManifest) {
-        requestBody.k8sRequest['patch'] = updatedManifest
-    }
-    return requestBody
 }
 
 export const getAppDetailsForManifest = (appDetails: AppDetails) => {
@@ -180,7 +157,15 @@ export const getResourceRequestPayload = ({
     updatedManifest,
 }: GetResourceRequestPayloadParamsType) => {
     return isResourceBrowserView
-        ? createResourceRequestBody(selectedResource, updatedManifest)
+        ? createResourceRequestBody({
+            clusterId: selectedResource.clusterId,
+            group: selectedResource.group,
+            version: selectedResource.version,
+            kind: selectedResource.kind as GVKType['Kind'],
+            name: selectedResource.name,
+            namespace: selectedResource.namespace,
+            updatedManifest,
+        })
         : createBody(appDetails, nodeName, nodeType, updatedManifest)
 }
 

@@ -23,6 +23,7 @@ import {
     Tooltip,
     ClusterFiltersType,
     ClusterStatusType,
+    ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
@@ -36,7 +37,7 @@ import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
 import {
     CLUSTER_PROD_TYPE,
@@ -51,6 +52,7 @@ import { getSortedClusterList } from './utils'
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
 
 const getClusterMapData = (data: ClusterDetail[]) =>
@@ -207,6 +209,11 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                                     </div>
                                 </Tooltip>
                             )}
+
+                            {CompareClusterButton && (
+                                <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
+                            )}
+
                             {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
                         </div>
                     </div>
