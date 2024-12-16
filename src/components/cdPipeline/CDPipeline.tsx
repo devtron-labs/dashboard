@@ -49,6 +49,8 @@ import {
     ProcessPluginDataReturnType,
     ResourceKindType,
     getEnvironmentListMinPublic,
+    uploadCDPipelineFile,
+    getGlobalVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -75,7 +77,6 @@ import {
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
-import { getGlobalVariable } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import './cdPipeline.scss'
 import {
@@ -355,10 +356,10 @@ export default function CDPipeline({
     const getInit = () => {
         Promise.all([
             getDeploymentStrategyList(appId),
-            getGlobalVariable(Number(appId), true),
+            getGlobalVariables({ appId: Number(appId), isCD: true }),
             getDockerRegistryMinAuth(appId, true),
         ])
-            .then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+            .then(([pipelineStrategyResponse, globalVariablesOptions, dockerResponse]) => {
                 const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
                 const dockerRegistries = dockerResponse.result || []
                 const _allStrategies = {}
@@ -384,16 +385,7 @@ export default function CDPipeline({
                     }
                 }
 
-                const _globalVariableOptions = envResponse.result?.map((variable) => {
-                    variable.label = variable.name
-                    variable.value = variable.name
-                    variable.description = variable.description || ''
-                    variable.variableType = RefVariableType.GLOBAL
-                    delete variable.name
-                    return variable
-                })
-
-                setGlobalVariables(_globalVariableOptions || [])
+                setGlobalVariables(globalVariablesOptions)
                 setDockerRegistries(dockerRegistries)
             })
             .catch((error: ServerErrors) => {
@@ -1199,6 +1191,9 @@ export default function CDPipeline({
         setFormData({ ...formData, releaseMode: ReleaseMode.NEW_DEPLOYMENT })
     }
 
+    const uploadFile: PipelineContext['uploadFile'] = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId: +appId, envId: formData.environmentId })
+
     const contextValue = useMemo(() => {
         return {
             formData,
@@ -1237,6 +1232,7 @@ export default function CDPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            uploadFile,
         }
     }, [
         formData,

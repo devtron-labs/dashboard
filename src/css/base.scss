@@ -445,6 +445,10 @@ a:focus {
     right: -3px;
 }
 
+.dc__right-8 {
+    right: 8px;
+}
+
 .dc__right-10 {
     right: 10px;
 }
@@ -1529,6 +1533,12 @@ button.anchor {
     line-height: 1.6;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background-color: var(--N900);
+
+    &.no-content-padding {
+        .tippy-content {
+            padding: 0;
+        }
+    }
 }
 
 .tippy-box.default-white {
