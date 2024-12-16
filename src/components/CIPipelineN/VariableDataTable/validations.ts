@@ -1,6 +1,7 @@
 import {
     DynamicDataTableCellValidationState,
     PATTERNS as FE_COMMON_LIB_PATTERNS,
+    InputOutputVariablesHeaderKeys,
     RefVariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -16,7 +17,7 @@ import {
 } from './types'
 import { VARIABLE_DATA_TABLE_CELL_ERROR_MSGS } from './constants'
 
-export const getVariableDataTableVariableKeysFrequency = (
+const getVariableDataTableVariableKeysFrequency = (
     rows: VariableDataRowType[],
     rowId?: string | number,
     value?: string,
@@ -31,6 +32,24 @@ export const getVariableDataTableVariableKeysFrequency = (
 
     return keysFrequencyMap
 }
+
+export const getVariableDataTableRowEmptyValidationState = (): Record<
+    InputOutputVariablesHeaderKeys,
+    DynamicDataTableCellValidationState
+> => ({
+    [InputOutputVariablesHeaderKeys.VARIABLE]: {
+        isValid: true,
+        errorMessages: [],
+    },
+    [InputOutputVariablesHeaderKeys.FORMAT]: {
+        isValid: true,
+        errorMessages: [],
+    },
+    [InputOutputVariablesHeaderKeys.VALUE]: {
+        isValid: true,
+        errorMessages: [],
+    },
+})
 
 export const validateInputOutputVariableCell = ({
     variable,

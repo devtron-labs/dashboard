@@ -40,7 +40,11 @@ import {
     getVariableDataTableInitialCellError,
     getVariableDataTableRows,
 } from './utils'
-import { getVariableDataTableCellValidateState, validateVariableDataTableVariableKeys } from './validations'
+import {
+    getVariableDataTableCellValidateState,
+    getVariableDataTableRowEmptyValidationState,
+    validateVariableDataTableVariableKeys,
+} from './validations'
 
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
@@ -362,7 +366,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     getEmptyVariableDataTableRow({ ...defaultRowValColumnParams, id: rowAction.rowId }),
                     ...updatedRows,
                 ]
-                updatedCellError[rowAction.rowId] = {}
+                updatedCellError[rowAction.rowId] = getVariableDataTableRowEmptyValidationState()
                 break
 
             case VariableDataTableActionType.DELETE_ROW:
