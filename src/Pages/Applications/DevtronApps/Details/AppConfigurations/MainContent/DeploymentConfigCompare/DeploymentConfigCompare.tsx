@@ -539,16 +539,14 @@ export const DeploymentConfigCompare = ({
             chartRefId ??
             (currentSearchParams.has('compareWithIdentifierId') && _isManifestView
                 ? compareEnvOptions.previousDeployments.find(
-                      (prev) =>
-                          prev.deploymentTemplateHistoryId ===
-                          Number(currentSearchParams.get('compareWithIdentifierId')),
+                      (prev) => prev.wfrId === Number(currentSearchParams.get('compareWithIdentifierId')),
                   )?.chartRefId ?? null
                 : null)
 
         const _manifestChartRefId =
             currentSearchParams.has('identifierId') && _isManifestView
                 ? currentEnvOptions.previousDeployments.find(
-                      (prev) => prev.deploymentTemplateHistoryId === Number(currentSearchParams.get('identifierId')),
+                      (prev) => prev.wfrId === Number(currentSearchParams.get('identifierId')),
                   )?.chartRefId ?? null
                 : null
 
