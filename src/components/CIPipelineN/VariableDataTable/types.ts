@@ -65,69 +65,63 @@ export enum VariableDataTableActionType {
 }
 
 type VariableDataTableActionPropsMap = {
-    [VariableDataTableActionType.ADD_ROW]: { rowId: number }
+    [VariableDataTableActionType.ADD_ROW]: {}
     [VariableDataTableActionType.UPDATE_ROW]: {
         actionValue: string
         headerKey: InputOutputVariablesHeaderKeys
-        rowId: string | number
     }
-    [VariableDataTableActionType.DELETE_ROW]: {
-        rowId: string | number
-    }
+    [VariableDataTableActionType.DELETE_ROW]: {}
     [VariableDataTableActionType.UPDATE_VAL_COLUMN]: {
         actionValue: {
             value: string
             valColumnSelectedValue: VariableDataTableSelectPickerOptionType
         }
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FORMAT_COLUMN]: {
         actionValue: VariableTypeFormat
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO]: {
         actionValue: Pick<VariableType, 'fileReferenceId'> & {
             fileName: string
             isLoading: boolean
         }
-        rowId: string | number
     }
 
     [VariableDataTableActionType.UPDATE_ALLOW_CUSTOM_INPUT]: {
         actionValue: VariableDataCustomState['blockCustomValue']
-        rowId: string | number
     }
     [VariableDataTableActionType.UPDATE_ASK_VALUE_AT_RUNTIME]: {
         actionValue: VariableDataCustomState['askValueAtRuntime']
-        rowId: string | number
     }
     [VariableDataTableActionType.ADD_CHOICES_TO_VALUE_COLUMN_OPTIONS]: {
-        rowId: string | number
         actionValue: string[]
     }
     [VariableDataTableActionType.UPDATE_FILE_MOUNT]: {
-        rowId: string | number
         actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS]: {
-        rowId: string | number
         actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_MAX_SIZE]: {
-        rowId: string | number
         actionValue: {
             size: string
             unit: SelectPickerOptionType<number>
         }
     }
 
-    [VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION]: { actionValue: string; rowId: string | number }
-    [VariableDataTableActionType.UPDATE_VARIABLE_REQUIRED]: { actionValue: boolean; rowId: string | number }
+    [VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION]: {
+        actionValue: VariableDataCustomState['variableDescription']
+    }
+    [VariableDataTableActionType.UPDATE_VARIABLE_REQUIRED]: {
+        actionValue: VariableDataCustomState['isVariableRequired']
+    }
 }
 
 export type VariableDataTableAction<
     T extends keyof VariableDataTableActionPropsMap = keyof VariableDataTableActionPropsMap,
-> = T extends keyof VariableDataTableActionPropsMap ? { actionType: T } & VariableDataTableActionPropsMap[T] : never
+> = T extends keyof VariableDataTableActionPropsMap
+    ? { actionType: T; rowId: string | number } & VariableDataTableActionPropsMap[T]
+    : never
 
 export type HandleRowUpdateActionProps = VariableDataTableAction
 

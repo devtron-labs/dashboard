@@ -317,7 +317,7 @@ export const getValColumnRowValue = (
 export const getEmptyVariableDataTableRow = ({
     id,
     ...params
-}: GetValColumnRowPropsType & { id: number }): VariableDataRowType => {
+}: GetValColumnRowPropsType & { id: string | number }): VariableDataRowType => {
     const data: VariableDataRowType = {
         data: {
             variable: getVariableColumnRowProps(),
@@ -544,9 +544,7 @@ export const convertVariableDataTableToFormData = ({
                     choices,
                     blockCustomValue,
                 }
-            }
-
-            if (variableDetail.format === VariableTypeFormat.FILE && fileInfo) {
+            } else if (variableDetail.format === VariableTypeFormat.FILE && fileInfo) {
                 variableDetail.variableType = RefVariableType.NEW
                 variableDetail.refVariableName = ''
                 variableDetail.refVariableStage = null
