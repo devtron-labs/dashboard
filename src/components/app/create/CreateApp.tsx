@@ -77,12 +77,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appCreationType: AppCreationType.Blank,
             },
             tags: [getEmptyTagTableRow()],
+            tagsError: {},
             isValid: {
                 projectId: false,
                 appName: false,
                 cloneAppId: true,
                 description: true,
-                tags: true,
             },
             createAppLoader: false,
         }
@@ -166,6 +166,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
+    setTagsError = (updatedTagsError: typeof this.state.tagsError): void => {
+        this.setState({ tagsError: updatedTagsError })
+    }
+
     createApp(e): void {
         e.preventDefault()
         const labelTags = []
@@ -181,7 +185,23 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
-                break
+                this.setTagsError({
+                    ...this.state.tagsError,
+                    [currentTag.id]: {
+                        tagKey: {
+                            isValid: isKeyValid,
+                            errorMessages: isKeyValid
+                                ? []
+                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                        },
+                        tagValue: {
+                            isValid: isValueValid,
+                            errorMessages: isValueValid
+                                ? []
+                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                        },
+                    },
+                })
             } else if (currentKey) {
                 labelTags.push({
                     key: currentKey,
@@ -489,9 +509,17 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         projectId={this.state.form.projectId}
                         tags={this.state.tags}
                         setTags={this.setTags}
+                        tagsError={this.state.tagsError}
+                        setTagErrors={this.setTagsError}
                     />
                 ) : (
-                    <TagsContainer isCreateApp rows={this.state.tags} setRows={this.setTags} />
+                    <TagsContainer
+                        isCreateApp
+                        rows={this.state.tags}
+                        setRows={this.setTags}
+                        tagsError={this.state.tagsError}
+                        setTagErrors={this.setTagsError}
+                    />
                 )}
             </div>
         )

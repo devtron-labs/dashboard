@@ -238,7 +238,7 @@ const CDMaterial = ({
         }
     }
 
-    const getMaterialResponseList = async(): Promise<[CDMaterialResponseType, any, PolicyConsequencesDTO]> => {
+    const getMaterialResponseList = async (): Promise<[CDMaterialResponseType, any, PolicyConsequencesDTO]> => {
         const response = await Promise.all([
             genericCDMaterialsService(
                 materialType === MATERIAL_TYPE.rollbackMaterialList
@@ -276,11 +276,7 @@ const CDMaterial = ({
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () => getMaterialResponseList(),
-                abortControllerRef,
-            ),
+        () => abortPreviousRequests(() => getMaterialResponseList(), abortControllerRef),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
         !!pipelineId && !isTriggerBlockedDueToPlugin,
@@ -1113,6 +1109,10 @@ const CDMaterial = ({
             )
         }
 
+        if (TriggerBlockEmptyState && getIsTriggerBlocked(responseList?.[2]?.cd)) {
+            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
+        }
+
         if (
             resourceFilters?.length &&
             noEligibleImages &&
@@ -1940,20 +1940,6 @@ const CDMaterial = ({
                 )}
 
                 <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
-            </>
-        )
-    }
-
-    if (TriggerBlockEmptyState && getIsTriggerBlocked(responseList[2].cd)) {
-        return (
-            <>
-                <div className="trigger-modal__header">
-                    <h2 className="modal__title">{renderCDModalHeader()}</h2>
-                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                        <img alt="close" src={close} />
-                    </button>
-                </div>
-                <TriggerBlockEmptyState appId={appId} stageType={stageType} />
             </>
         )
     }
