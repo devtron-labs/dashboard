@@ -17,7 +17,7 @@
 .add-external-link-dialog {
     .modal__body {
         width: calc(100% - 80px);
-        max-width: 1000px;
+        max-width: 1200px;
         height: calc(100% - 40px);
         border-radius: 0 0 8px 8px;
         margin-top: 0;
@@ -159,8 +159,6 @@
             }
 
             .configure-link-info-container {
-                width: 279px;
-                padding: 20px;
 
                 .configure-link-info-heading {
                     display: flex;
@@ -198,7 +196,6 @@
 
                     li {
                         font-weight: 600;
-                        margin-bottom: 4px;
                     }
 
                     ul {
@@ -209,10 +206,7 @@
                         li {
                             font-size: 12px;
                             font-weight: 400;
-                            background-color: var(--N100);
                             width: fit-content;
-                            padding: 2px 4px;
-                            margin-bottom: 8px;
                         }
                     }
 
