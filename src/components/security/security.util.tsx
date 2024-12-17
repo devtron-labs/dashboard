@@ -14,71 +14,7 @@
  * limitations under the License.
  */
 
-import { components } from 'react-select'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { VulnerabilityExposureFilterKeys, VulnerabilityExposureSearchParams } from './security.types'
-
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        height: '30px',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-        }
-    },
-    valueContainer: (base, state) => {
-        return {
-            ...base,
-            fontSize: '14px',
-            fontWeight: 'normal',
-            color: 'var(--N900)',
-            cursor: 'pointer',
-        }
-    },
-    indicatorSeparator: (base, state) => ({
-        ...base,
-        display: 'none',
-    }),
-    option: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        }
-    },
-}
-
-export const portalStyles = {
-    control: (base, state) => ({
-        ...base,
-        border: 'none',
-    }),
-    valueContainer: (base, state) => {
-        return {
-            ...base,
-            padding: '0px',
-            textTransform: 'none',
-            cursor: 'pointer',
-        }
-    },
-    menu: (base, state) => {
-        return {
-            ...base,
-            top: `0px`,
-        }
-    },
-}
-
-export const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
-        </components.DropdownIndicator>
-    )
-}
 
 export const parseVulnerabilityExposureSearchParams = (searchParams: URLSearchParams) => ({
     [VulnerabilityExposureFilterKeys.cluster]: searchParams.getAll(VulnerabilityExposureFilterKeys.cluster),

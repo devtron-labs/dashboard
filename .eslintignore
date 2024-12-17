@@ -38,11 +38,6 @@ src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
 src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.tsx
 src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
 src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
-src/components/ApplicationGroup/EnvEmptyStates.tsx
-src/components/ApplicationGroup/EnvSelector.tsx
-src/components/ApplicationGroup/List/EnvironmentListView.tsx
-src/components/ApplicationGroup/List/EnvironmentsList.tsx
-src/components/ApplicationGroup/List/__tests__/EnvironmentListView.test.tsx
 src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
