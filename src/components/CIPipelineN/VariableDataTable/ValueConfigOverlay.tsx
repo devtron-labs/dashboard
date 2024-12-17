@@ -8,6 +8,7 @@ import {
     CHECKBOX_VALUE,
     ComponentSizeType,
     CustomInput,
+    FilePropertyTypeSizeUnit,
     PATTERNS,
     ResizableTextarea,
     SelectPicker,
@@ -26,7 +27,7 @@ import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const AskValueAtRuntimeCheckbox = importComponentFromFELibrary('AskValueAtRuntimeCheckbox', null, 'function')
 
 export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlayProps) => {
     const { id: rowId, data, customState } = row
@@ -130,7 +131,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     const handleFileSizeUnitChange = (unit: SelectPickerOptionType<number>) => {
         if (fileInfo.sizeUnit.value !== unit.value) {
             // MULTIPLIER IS SWITCHING BETWEEN 'KB' and 'MB'
-            const unitMultiplier = unit.label === 'MB' ? 1 / 1024 : 1024
+            const unitMultiplier = unit.label === FilePropertyTypeSizeUnit.MB ? 1 / 1024 : 1024
             const maxSize = fileInfo.maxUploadSize
                 ? (parseFloat(fileInfo.maxUploadSize) * unitMultiplier).toString()
                 : fileInfo.maxUploadSize
@@ -301,61 +302,44 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         >
             <>
                 {renderContent()}
-                <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
-                    {!!choices.length && (
-                        <Checkbox
-                            isChecked={!blockCustomValue}
-                            rootClassName="mb-0 flex top dc_max-width__max-content"
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={handleAllowCustomInput}
-                            data-testid="allow-custom-input"
-                        >
-                            <Tooltip
-                                alwaysShowTippyOnHover
-                                className="w-200"
-                                placement="bottom-start"
-                                content={
-                                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                        <p className="m-0 fw-6 cn-0">Allow custom input</p>
-                                        <p className="m-0 cn-50">
-                                            Allow entering any value other than provided choices
-                                        </p>
-                                    </div>
-                                }
+                {(choices.length || AskValueAtRuntimeCheckbox) && (
+                    <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
+                        {!!choices.length && (
+                            <Checkbox
+                                isChecked={!blockCustomValue}
+                                rootClassName="mb-0 flex top dc_max-width__max-content"
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleAllowCustomInput}
+                                data-testid="allow-custom-input"
                             >
-                                <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Allow Custom input</div>
-                            </Tooltip>
-                        </Checkbox>
-                    )}
-                    {isFELibAvailable && (
-                        <Checkbox
-                            isChecked={askValueAtRuntime}
-                            rootClassName="mb-0 flex top dc_max-width__max-content"
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={handleAskValueAtRuntime}
-                            data-testid="ask-value-at-runtime"
-                        >
-                            <Tooltip
-                                alwaysShowTippyOnHover
-                                className="w-200"
-                                placement="bottom-start"
-                                content={
-                                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                        <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
-                                        <p className="m-0 cn-50">
-                                            Value can be provided at runtime. Entered value will be pre-filled as
-                                            default
-                                        </p>
+                                <Tooltip
+                                    alwaysShowTippyOnHover
+                                    className="w-200"
+                                    placement="bottom-start"
+                                    content={
+                                        <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                                            <p className="m-0 fw-6 cn-0">Allow custom input</p>
+                                            <p className="m-0 cn-50">
+                                                Allow entering any value other than provided choices
+                                            </p>
+                                        </div>
+                                    }
+                                >
+                                    <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">
+                                        Allow Custom input
                                     </div>
-                                }
-                            >
-                                <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">
-                                    Ask value at runtime
-                                </div>
-                            </Tooltip>
-                        </Checkbox>
-                    )}
-                </div>
+                                </Tooltip>
+                            </Checkbox>
+                        )}
+                        {AskValueAtRuntimeCheckbox && (
+                            <AskValueAtRuntimeCheckbox
+                                isChecked={askValueAtRuntime}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleAskValueAtRuntime}
+                            />
+                        )}
+                    </div>
+                )}
             </>
         </VariableDataTablePopupMenu>
     )

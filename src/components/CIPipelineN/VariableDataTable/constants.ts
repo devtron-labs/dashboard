@@ -1,5 +1,6 @@
 import {
     DynamicDataTableHeaderType,
+    FilePropertyTypeSizeUnit,
     InputOutputVariablesHeaderKeys,
     SelectPickerOptionType,
     VariableTypeFormat,
@@ -78,11 +79,11 @@ export const FILE_MOUNT_DIR = '/devtroncd'
 
 export const FILE_UPLOAD_SIZE_UNIT_OPTIONS: SelectPickerOptionType<number>[] = [
     {
-        label: 'KB',
+        label: FilePropertyTypeSizeUnit.KB,
         value: 1,
     },
     {
-        label: 'MB',
+        label: FilePropertyTypeSizeUnit.MB,
         value: 1024,
     },
 ]

@@ -24,7 +24,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
-        zIndex: 9999,
+        zIndex: 5,
         textAlign: 'left',
     }),
     control: (base, state) => ({
@@ -74,7 +74,6 @@ export const KIND_SEARCH_COMMON_STYLES = {
         paddingLeft: '24px',
         maxWidth: '135px',
     }),
-    menu: (base) => ({ ...base, zIndex: 5 }),
     valueContainer: (base) => ({
         ...FILTER_SELECT_COMMON_STYLES.valueContainer(base),
         height: 'inherit',

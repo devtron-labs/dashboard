@@ -4,6 +4,7 @@ import {
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
     FilePropertyType,
+    FilePropertyTypeSizeUnit,
     getGoLangFormattedDateWithTimezone,
     InputOutputVariablesHeaderKeys,
     IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
@@ -356,9 +357,10 @@ export const getEmptyVariableDataTableRow = ({
 const getFileProperties = ({
     allowedExtensions,
     maxUploadSize,
-    sizeUnit = 'KB',
+    sizeUnit = FilePropertyTypeSizeUnit.KB,
 }: FilePropertyType): Pick<VariableDataCustomState['fileInfo'], 'allowedExtensions' | 'maxUploadSize' | 'sizeUnit'> => {
-    const sizeUnitValue = sizeUnit === 'MB' ? FILE_UPLOAD_SIZE_UNIT_OPTIONS[1] : FILE_UPLOAD_SIZE_UNIT_OPTIONS[0]
+    const sizeUnitValue =
+        sizeUnit === FilePropertyTypeSizeUnit.MB ? FILE_UPLOAD_SIZE_UNIT_OPTIONS[1] : FILE_UPLOAD_SIZE_UNIT_OPTIONS[0]
     const maxUploadSizeValue = maxUploadSize ? String(maxUploadSize / (sizeUnitValue.value * 1024)) : ''
 
     return {
@@ -483,7 +485,7 @@ export const getUploadFileConstraints = ({
             .map((value) => value.trim())
             .filter((value) => !!value),
         maxUploadSize: Math.ceil(maxUploadSizeValue),
-        sizeUnit: sizeUnit.label as FilePropertyType['sizeUnit'],
+        sizeUnit: sizeUnit.label as FilePropertyTypeSizeUnit,
     }
 }
 
