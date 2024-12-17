@@ -5316,11 +5316,3 @@ details[open] {
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
 }
-
-summary {
-    list-style: none;
-}
-
-summary::-webkit-details-marker {
-    display: none;
-}
