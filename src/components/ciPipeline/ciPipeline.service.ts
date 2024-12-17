@@ -26,12 +26,15 @@ import {
     getModuleConfigured,
     ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { PatchAction } from './types'
+import { CIPipelineBuildType, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -55,11 +58,11 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
 export function getInitData(
     appId: string | number,
     includeWebhookData: boolean = false,
-    preFillName: boolean = true,
+    isJobCard: boolean
 ): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
-        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
+        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     ]).then(([pipelineNameRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const scanEnabled =
@@ -67,7 +70,7 @@ export function getInitData(
         return {
             result: {
                 form: {
-                    name: preFillName ? pipelineNameRes.result : '',
+                    name: !isJobCard ? pipelineNameRes.result : '',
                     args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,
@@ -96,8 +99,11 @@ export function getCIPipeline(appId: string, ciPipelineId: string): Promise<any>
     return get(URL)
 }
 
-function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
-    return getSourceConfig(appId).then((response) => {
+function getPipelineBaseMetaConfiguration(
+    appId: string,
+    queryParams: Record<'pipelineType', CIPipelineBuildType.CI_BUILD | CIPipelineBuildType.CI_JOB>
+): Promise<any> {
+    return getSourceConfig(appId, queryParams).then((response) => {
         const materials = response?.result?.material?.map((mat) => {
             return {
                 id: 0,
@@ -120,6 +126,7 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
                 ciPipelineSourceTypeOptions: _baseCiPipelineSourceTypeOptions,
+                workflowCacheConfig: response?.result?.workflowCacheConfig ?? null
             },
         }
     })
@@ -129,8 +136,13 @@ export function getPipelineMetaConfiguration(
     appId: string,
     includeWebhookData: boolean = false,
     isNewPipeline: boolean = true,
+    isJobCard = false,
 ): Promise<any> {
-    return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
+    return getPipelineBaseMetaConfiguration(appId, isFELibAvailable ? {
+        // NOTE: need to send pipelineType to get corresponding workflowCacheConfig;
+        // since its enterprise only feature, will send queryParams only if fe-lib is present
+        pipelineType: isJobCard ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
+    } : null).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         const _materials = baseResponse.result.materials || []
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
@@ -174,7 +186,10 @@ export function getInitDataWithCIPipeline(
 ): Promise<any> {
     return Promise.all([
         getCIPipeline(appId, ciPipelineId),
-        getPipelineMetaConfiguration(appId, includeWebhookData, false),
+        // NOTE: isJobCard parameter does not matter in this case
+        // isJobCard is only relevant to fetch workflowCacheConfig in meta config
+        // by default BE will send global cache config for that pipelineType (JOB or CI_BUILD)
+        getPipelineMetaConfiguration(appId, includeWebhookData, false, false),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     ]).then(([ciPipelineRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const ciPipeline = ciPipelineRes?.result

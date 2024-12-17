@@ -494,7 +494,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, !isJobCard)
+                const ciPipelineResponse = await getInitData(appId, true, isJobCard)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     await getInitialPlugins(ciPipelineResponse.result.form)
