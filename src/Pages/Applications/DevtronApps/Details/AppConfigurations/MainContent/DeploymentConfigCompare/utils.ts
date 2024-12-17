@@ -239,10 +239,16 @@ export const getEnvironmentConfigTypeOptions = (
         : []),
     {
         label: 'Previous deployments',
-        options: previousDeploymentsList.map(({ finishedOn, chartVersion, pipelineId, wfrId, chartRefId }) => ({
-            label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
-            value: getPreviousDeploymentOptionValue(wfrId, pipelineId, isManifestView ? chartRefId : null),
-        })),
+        options: previousDeploymentsList.map(
+            ({ finishedOn, chartVersion, pipelineId, wfrId, chartRefId, deploymentTemplateHistoryId }) => ({
+                label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
+                value: getPreviousDeploymentOptionValue(
+                    isManifestView ? deploymentTemplateHistoryId : wfrId,
+                    pipelineId,
+                    isManifestView ? chartRefId : null,
+                ),
+            }),
+        ),
     },
 ]
 
@@ -321,6 +327,6 @@ export const getAppEnvDeploymentConfigPayload = ({
                   envName,
               }),
         configType,
-        wfrId: identifierId,
+        [configType === AppEnvDeploymentConfigType.DEFAULT_VERSION ? 'identifierId' : 'wfrId']: identifierId,
         pipelineId,
     }) as const

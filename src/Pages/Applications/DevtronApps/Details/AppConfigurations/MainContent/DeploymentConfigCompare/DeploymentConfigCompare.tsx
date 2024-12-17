@@ -550,6 +550,26 @@ export const DeploymentConfigCompare = ({
                   )?.chartRefId ?? null
                 : null
 
+        if (identifierId) {
+            const _identifierId = _isManifestView
+                ? currentEnvOptions.previousDeployments.find((prev) => prev.wfrId === identifierId)
+                      ?.deploymentTemplateHistoryId ?? null
+                : currentEnvOptions.previousDeployments.find(
+                      (prev) => prev.deploymentTemplateHistoryId === identifierId,
+                  )?.wfrId ?? null
+            currentSearchParams.set('identifierId', String(_identifierId))
+        }
+
+        if (compareWithIdentifierId) {
+            const _compareWithIdentifierId = _isManifestView
+                ? compareEnvOptions.previousDeployments.find((prev) => prev.wfrId === compareWithIdentifierId)
+                      ?.deploymentTemplateHistoryId ?? null
+                : compareEnvOptions.previousDeployments.find(
+                      (prev) => prev.deploymentTemplateHistoryId === compareWithIdentifierId,
+                  )?.wfrId ?? null
+            currentSearchParams.set('compareWithIdentifierId', String(_compareWithIdentifierId))
+        }
+
         if (_compareWithManifestChartRefId) {
             currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))
         } else {
