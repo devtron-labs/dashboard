@@ -282,8 +282,8 @@ export const Sidebar = ({
         const triggerValue = isPreBuildTab ? formData.preBuildStage.triggerType : formData.postBuildStage.triggerType
 
         return (
-            <div className="sidebar-action-container sidebar-action-container-border">
-                <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">
+            <div className="sidebar-action-container sidebar-action-container-border flexbox-col dc__gap-4">
+                <div className="dc__uppercase fw-6 fs-12 cn-6">
                     Trigger {isPreBuildTab ? 'PRE' : 'POST'}-DEPLOYMENT STAGE
                 </div>
                 <div>
@@ -380,8 +380,8 @@ export const Sidebar = ({
                     )}
                 </div>
             ) : (
-                <div className="sidebar-action-container pr-20">
-                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">
+                <div className="sidebar-action-container pr-20 flexbox-col dc__gap-4">
+                    <div className="dc__uppercase fw-6 fs-12 cn-6">
                         Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE
                     </div>
                     <div>

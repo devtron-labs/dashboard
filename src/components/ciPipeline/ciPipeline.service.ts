@@ -60,7 +60,8 @@ export function getInitData(
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
-    ]).then(([pipelineNameRes, pipelineMetaConfig]) => {
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    ]).then(([pipelineNameRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const scanEnabled =
             window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
         return {
@@ -80,9 +81,11 @@ export function getInitData(
                     postBuildStage: emptyStepsData(),
                     scanEnabled,
                     ciPipelineEditable: true,
+                    workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null
                 },
                 loadingData: false,
                 isAdvanced: false,
+                isBlobStorageConfigured,
             },
         }
     })
