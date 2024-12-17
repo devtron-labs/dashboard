@@ -99,6 +99,7 @@ export type ConfigToolbarProps = {
     mergeStrategy: OverrideMergeStrategyType
     handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
     hidePatchOption?: boolean
+    isMergeStrategySelectorDisabled?: boolean
 
     /**
      * Used to place toggle editor view and chart selectors in deployment template
