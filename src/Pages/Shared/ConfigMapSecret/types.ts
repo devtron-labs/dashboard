@@ -9,10 +9,15 @@ import {
     SelectPickerOptionType,
     useForm,
     UseFormErrorHandler,
-    UseFormErrors,
     UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
+    DryRunEditorMode,
+    ConfigHeaderTabType,
+    OverrideMergeStrategyType,
+    ConfigMapSecretDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ConfigToolbarProps } from '@Pages/Applications'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
@@ -44,6 +49,7 @@ export type CMSecretPayloadType = Pick<
     | 'esoSecretData'
     | 'filePermission'
     | 'esoSubPath'
+    | 'mergeStrategy'
 >
 
 export interface ESOSecretData {
@@ -73,7 +79,7 @@ export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
 }
 
 export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJob extends true
-    ? CMSecretDTO
+    ? ConfigMapSecretDataType
     : AppEnvDeploymentConfigDTO
 
 // SELECT PICKER OPTION TYPE
@@ -105,11 +111,14 @@ export interface ConfigMapSecretUseFormProps {
     esoSecretYaml: string
     hasCurrentDataErr: boolean
     isResolvedData: boolean
+    mergeStrategy: ConfigToolbarProps['mergeStrategy']
+    skipValidation: boolean
 }
 
 // COMPONENT PROPS
-export interface CMSecretDraftData extends DraftMetadataDTO {
+export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
     unAuthorized: boolean
+    parsedData: ConfigMapSecretDataType
 }
 
 export interface CMSecretWrapperProps
@@ -139,30 +148,33 @@ export interface ConfigMapSecretFormProps
     extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType' | 'appChartRef'>> {
     id: number
     configMapSecretData: CMSecretConfigData
+    inheritedConfigMapSecretData: CMSecretConfigData
     cmSecretStateLabel: CM_SECRET_STATE
-    restoreYAML: boolean
-    setRestoreYAML: Dispatch<SetStateAction<boolean>>
     isSubmitting: boolean
     areScopeVariablesResolving: boolean
-    resolvedFormData: ConfigMapSecretUseFormProps
     isDraft?: boolean
+    disableDataTypeChange: boolean
     onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
     onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
     onCancel: () => void
+    useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
 
-export interface ConfigMapSecretDataProps {
+export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
     readOnly: boolean
-    useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
+    isPatchMode: boolean
 }
 
-export type ConfigMapSecretReadyOnlyProps = Pick<
-    ConfigMapSecretFormProps,
-    'configMapSecretData' | 'componentType' | 'isJob' | 'areScopeVariablesResolving'
->
+export interface ConfigMapSecretReadyOnlyProps
+    extends Pick<
+        ConfigMapSecretFormProps,
+        'configMapSecretData' | 'componentType' | 'cmSecretStateLabel' | 'isJob' | 'areScopeVariablesResolving'
+    > {
+    hideCodeEditor?: boolean
+}
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
@@ -201,14 +213,13 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'componentType'
         | 'cmSecretStateLabel'
         | 'isJob'
+        | 'disableDataTypeChange'
         | 'id'
         | 'onError'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
-        | 'resolvedFormData'
-        | 'restoreYAML'
-        | 'setRestoreYAML'
         | 'appChartRef'
+        | 'useFormProps'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         componentName: string
@@ -216,55 +227,41 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         inheritedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
         draftData: CMSecretDraftData
         selectedProtectionViewTab: ProtectConfigTabsType
+    } & {
+        shouldMergeTemplateWithPatches: boolean
     }
 
-// CONTEXT TYPES
-type SetFormStateParams =
-    | {
-          type: 'SET_DATA'
-          data: ConfigMapSecretUseFormProps
-          errors: UseFormErrors<ConfigMapSecretUseFormProps>
-          isDirty: boolean
-      }
-    | {
-          type: 'RESET'
-          data?: never
-          errors?: never
-          isDirty?: never
-      }
-
-export interface ConfigMapSecretFormContextType {
-    /**
-     * Reference to the current state of the form data.
-     * This persists the form values across renders, preventing data loss when the component unmounts.
-     */
-    formDataRef: MutableRefObject<ConfigMapSecretUseFormProps>
-    /**
-     * Boolean indicating whether the form has unsaved changes.
-     * This tracks the "dirty" state of the form.
-     */
-    isFormDirty: boolean
-    /**
-     * String containing any error messages related to parsing, \
-     * such as issues encountered when processing YAML.
-     */
-    parsingError: string
-    /**
-     * Function to update the form state based on the provided parameters.
-     * @param params - The new form state parameters to apply.
-     */
-    setFormState: (params: SetFormStateParams) => void
-}
-
-export interface ConfigMapSecretFormProviderProps {
-    children: JSX.Element
-}
+export type ConfigMapSecretDryRunProps = Pick<
+    ConfigMapSecretFormProps,
+    | 'cmSecretStateLabel'
+    | 'componentType'
+    | 'isProtected'
+    | 'isSubmitting'
+    | 'onSubmit'
+    | 'isJob'
+    | 'areScopeVariablesResolving'
+> &
+    Pick<ConfigToolbarProps, 'resolveScopedVariables' | 'handleToggleScopedVariablesView'> &
+    Pick<
+        ConfigMapSecretProtectedProps,
+        | 'id'
+        | 'inheritedConfigMapSecretData'
+        | 'publishedConfigMapSecretData'
+        | 'draftData'
+        | 'updateCMSecret'
+        | 'componentName'
+        | 'parentName'
+    > & {
+        formData: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>['data']
+        isFormDirty: boolean
+        dryRunEditorMode: DryRunEditorMode
+        handleChangeDryRunEditorMode: (mode: DryRunEditorMode) => void
+        showCrudButtons: boolean
+    }
 
 // DTO
-export interface CMSecretDTO {
-    id: number
-    appId: number
-    configData: ConfigDatum[]
+export interface ConfigMapSecretManifestDTO {
+    manifest: string
 }
 
 // API CALLS PROPS
@@ -294,6 +291,15 @@ export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'i
     envId?: number
 }
 
+export interface ConfigMapSecretManifestProps {
+    appId: number
+    mergeStrategy: OverrideMergeStrategyType
+    resourceType: CMSecretComponentType
+    resourceName: string
+    environmentId: number
+    values: Record<string, any>
+}
+
 // UTILS TYPES
 export type ConfigMapSecretDecodedDataReturnType<IsDraft extends boolean> = IsDraft extends false
     ? CMSecretConfigData & { isDecoded?: boolean }
@@ -312,4 +318,8 @@ export type ConfigMapSecretDecodedDataProps<IsDraft extends boolean> = {
 export type ConfigMapSecretEncodedDataProps<IsDraft extends boolean> = {
     configMapSecretData: ConfigMapSecretDecodedDataReturnType<IsDraft>
     isDraft?: IsDraft
+}
+
+export interface ConfigMapSecretQueryParamsType {
+    headerTab: ConfigHeaderTabType
 }

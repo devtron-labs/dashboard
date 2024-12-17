@@ -23,6 +23,7 @@ import {
     PluginType,
     RefVariableType,
     PipelineBuildStageType,
+    VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -407,13 +408,20 @@ function migrateOldData(
 ): PipelineBuildStageType {
     const commonFields = {
         value: '',
-        format: 'STRING',
+        format: VariableTypeFormat.STRING,
         description: '',
         defaultValue: '',
         variableType: RefVariableType.GLOBAL,
         refVariableStepIndex: 0,
         allowEmptyValue: false,
+        fileMountDir: null,
+        fileReferenceId: null,
+        valueConstraintId: null,
+        valueConstraint: null,
+        isRuntimeArg: null,
+        refVariableUsed: null,
     }
+
     const updatedData = {
         id: 0,
         steps: oldDataArr.map((data) => {
@@ -506,6 +514,7 @@ function parseCIResponse(
                 value: ciPipeline.dockerArgs[arg],
             }
         })
+
         return {
             code: responseCode,
             view: ViewType.FORM,
@@ -586,13 +595,4 @@ function createCurlRequest(externalCiConfig): string {
     const json = externalCiConfig.payload
     const curl = `curl -X POST -H 'Content-type: application/json' --data '${json}' ${url}/${externalCiConfig.accessKey}`
     return curl
-}
-
-export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
-    let variableList = []
-    await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
-        variableList = response.result?.filter((item) => (isCD ? item.stageType !== 'ci' : item.stageType === 'ci'))
-    })
-
-    return { result: variableList }
 }

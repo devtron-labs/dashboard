@@ -1,5 +1,5 @@
 import { useTabs } from '@Components/common/DynamicTabs'
-import { K8sResourceDetailType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { K8sResourceDetailType, ServerErrors, ALL_NAMESPACE_OPTION } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import {
@@ -9,7 +9,6 @@ import {
     SidebarType,
     URLParams,
 } from '../Types'
-import { ALL_NAMESPACE_OPTION } from '../Constants'
 
 export interface BaseResourceListProps
     extends Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>,
