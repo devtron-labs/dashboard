@@ -26,8 +26,10 @@ import {
     CustomTagType,
     PipelineFormType,
     OptionType,
+    DynamicDataTableCellValidationState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
+import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '../../services/service.types'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
 
@@ -360,8 +362,9 @@ export enum VariableFieldType {
 export interface ValidationRulesType {
     name: (value: string) => ErrorObj
     requiredField: (value: string) => ErrorObj
-    inputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
-    outputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
+    validateInputOutputVariableCell: (
+        props: ValidateInputOutputVariableCellProps,
+    ) => DynamicDataTableCellValidationState
     conditionDetail: (value: object) => ErrorObj
     sourceValue: (value: string) => ErrorObj
     mountPathMap: (value: object) => ErrorObj

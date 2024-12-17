@@ -24,6 +24,7 @@ import {
     Progressing,
     VisibleModal,
     stopPropagation,
+    uploadCIPipelineFile,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CIMaterial from './ciMaterial'
@@ -43,6 +44,16 @@ export const CIMaterialModal = ({
         () => props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id === props.pipelineId),
         [props.filteredCIPipelines, props.pipelineId],
     )
+
+    const uploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCIPipelineFile({
+            file,
+            allowedExtensions,
+            maxUploadSize,
+            appId: +props.appId,
+            ciPipelineId: +props.pipelineId,
+            envId: props.isJobView && props.selectedEnv ? +props.selectedEnv : null,
+        })
 
     usePrompt({ shouldPrompt: isLoading })
 
@@ -84,7 +95,13 @@ export const CIMaterialModal = ({
                         </div>
                     </>
                 ) : (
-                    <CIMaterial {...props} loader={loader} isLoading={isLoading} pipelineId={ciNodeId} />
+                    <CIMaterial
+                        {...props}
+                        loader={loader}
+                        isLoading={isLoading}
+                        pipelineId={ciNodeId}
+                        uploadFile={uploadFile}
+                    />
                 )}
             </div>
             )

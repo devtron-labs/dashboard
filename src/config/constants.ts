@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -171,14 +171,14 @@ export const Routes = {
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
     HELM_RELEASE_DEPLOYMENT_MANIFEST_DETAILS_API: 'application/deployment-history/info',
     HELM_RELEASE_APP_DETAIL_API: 'application/app',
-    MANIFEST: 'k8s/resource',
+    MANIFEST: COMMON_ROUTES.K8S_RESOURCE,
     DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
     NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
     NONCASCADE_DELETE_DEVTRON_APP: 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
-    CREATE_RESOURCE: 'k8s/resource/create',
+    CREATE_RESOURCE: COMMON_ROUTES.CREATE_RESOURCE,
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
     UPDATE_APP_API: 'app-store/deployment/application/update',
@@ -189,7 +189,6 @@ export const Routes = {
     APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
-    GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
     PLUGIN_GLOBAL_CREATE: 'plugin/global/create',
     DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
@@ -234,7 +233,6 @@ export const Routes = {
     POD_EVENTS: 'pod/events',
     UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
-    K8S_RESOURCE_CREATE: 'k8s/resources/apply',
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
