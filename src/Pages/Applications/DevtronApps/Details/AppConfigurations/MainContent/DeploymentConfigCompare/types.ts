@@ -1,5 +1,6 @@
-import { getAppEnvDeploymentConfig } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppEnvDeploymentConfig, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { getManifestData } from './service.utils'
+import { AppEnvDeploymentConfigQueryParamsType } from '../../AppConfig.types'
 
 type ManifestComparisonDataType = {
     isManifestComparison: true
@@ -17,3 +18,9 @@ type AppConfigComparisonDataType = {
 }
 
 export type DeploymentConfigComparisonDataType = ManifestComparisonDataType | AppConfigComparisonDataType
+
+export interface SetIdentifierIdBasedOnConfigurationProps {
+    identifierId: AppEnvDeploymentConfigQueryParamsType['identifierId']
+    isManifestView: boolean
+    previousDeployments: TemplateListDTO[]
+}
