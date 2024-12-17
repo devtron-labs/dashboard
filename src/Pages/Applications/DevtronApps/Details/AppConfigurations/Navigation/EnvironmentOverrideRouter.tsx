@@ -196,7 +196,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
                 to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
-                {isEnvProtected && <ICStamp className="icon-dim-20" />}
+                {isEnvProtected && <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" />}
             </NavLink>
             {deletePopUpMenu()}
             {showDelete && showDeleteDialog(deletePipeline)}

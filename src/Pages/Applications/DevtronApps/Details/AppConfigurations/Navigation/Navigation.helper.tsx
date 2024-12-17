@@ -27,7 +27,7 @@ const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolea
         return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
     }
     if (isApprovalPolicyConfigured) {
-        return <ICStamp className="icon-dim-20" data-testid={`${dataTestId}-protectedicon`} />
+        return <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" data-testid={`${dataTestId}-protectedicon`} />
     }
     return null
 }
@@ -87,7 +87,7 @@ const getIcon = (
     const isApprovalPolicyConfigured = getIsApprovalPolicyConfigured(approvalConfig)
 
     if (isApprovalPolicyConfigured && configState !== ResourceConfigState.Unnamed) {
-        const { Icon, tippyContent } = RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP[configState]
+        const { Icon, tippyContent, iconClass } = RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP[configState]
 
         return {
             Icon,
@@ -98,7 +98,7 @@ const getIcon = (
                 className: 'default-tt',
             },
             props: {
-                className: `p-2 dc__no-shrink ${configState === ResourceConfigState.Draft ? 'scv-5' : ''}`,
+                className: `p-2 dc__no-shrink ${iconClass ?? ''}`,
             },
         }
     }
