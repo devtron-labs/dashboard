@@ -332,3 +332,28 @@
         }
     }
 }
+
+@mixin dot-icon-size($size) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    width: 0.625em;
+    height: 0.625em;
+
+    > circle {
+        stroke-width: 0.125em;
+    }
+}
+
+@each $size in 16, 24, 32, 48 {
+    .show-icon-dot-#{$size} {
+        position: relative;
+        font-size: #{$size}px;
+        display: flex;
+
+        & .ic-dot {
+            @include dot-icon-size($size);
+        }
+    }
+}

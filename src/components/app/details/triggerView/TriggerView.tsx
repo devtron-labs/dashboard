@@ -34,6 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
