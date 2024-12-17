@@ -20,6 +20,7 @@ import {
     GetAppEnvDeploymentConfigProps,
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
+import { SetIdentifierIdBasedOnConfigurationProps } from './types'
 
 export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {
     if (identifierId && pipelineId) {
@@ -330,3 +331,15 @@ export const getAppEnvDeploymentConfigPayload = ({
         [configType === AppEnvDeploymentConfigType.DEFAULT_VERSION ? 'identifierId' : 'wfrId']: identifierId,
         pipelineId,
     }) as const
+
+export const getIdentifierIdBasedOnConfiguration = ({
+    identifierId,
+    isManifestView,
+    previousDeployments,
+}: SetIdentifierIdBasedOnConfigurationProps) => {
+    const _identifierId = isManifestView
+        ? previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null
+        : previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null
+
+    return String(_identifierId)
+}

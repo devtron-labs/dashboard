@@ -43,6 +43,7 @@ import {
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
     getAppEnvDeploymentConfigPayload,
+    getIdentifierIdBasedOnConfiguration,
 } from './utils'
 import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
@@ -551,23 +552,25 @@ export const DeploymentConfigCompare = ({
                 : null
 
         if (identifierId) {
-            const _identifierId = _isManifestView
-                ? currentEnvOptions.previousDeployments.find((prev) => prev.wfrId === identifierId)
-                      ?.deploymentTemplateHistoryId ?? null
-                : currentEnvOptions.previousDeployments.find(
-                      (prev) => prev.deploymentTemplateHistoryId === identifierId,
-                  )?.wfrId ?? null
-            currentSearchParams.set('identifierId', String(_identifierId))
+            currentSearchParams.set(
+                'identifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: currentEnvOptions.previousDeployments,
+                }),
+            )
         }
 
         if (compareWithIdentifierId) {
-            const _compareWithIdentifierId = _isManifestView
-                ? compareEnvOptions.previousDeployments.find((prev) => prev.wfrId === compareWithIdentifierId)
-                      ?.deploymentTemplateHistoryId ?? null
-                : compareEnvOptions.previousDeployments.find(
-                      (prev) => prev.deploymentTemplateHistoryId === compareWithIdentifierId,
-                  )?.wfrId ?? null
-            currentSearchParams.set('compareWithIdentifierId', String(_compareWithIdentifierId))
+            currentSearchParams.set(
+                'compareWithIdentifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId: compareWithIdentifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: compareEnvOptions.previousDeployments,
+                }),
+            )
         }
 
         if (_compareWithManifestChartRefId) {
