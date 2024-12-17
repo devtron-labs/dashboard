@@ -264,7 +264,7 @@ export const ConfigMapSecretDryRun = ({
                 parentName={parentName}
             />
         ) : (
-            <footer className="py-12 px-16 dc__border-top-n1">
+            <footer className="flex right py-12 px-16 dc__border-top-n1">
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
                     text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
