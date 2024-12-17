@@ -958,6 +958,7 @@ export const ConfigMapSecretContainer = ({
                         }
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         hidePatchOption={isJob || formData.external}
+                        isMergeStrategySelectorDisabled={resolveScopedVariables}
                         approvalUsers={draftData?.approvers}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
