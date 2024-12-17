@@ -20,6 +20,7 @@ import {
     GetAppEnvDeploymentConfigProps,
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
+import { SetIdentifierIdBasedOnConfigurationProps } from './types'
 
 export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {
     if (identifierId && pipelineId) {
@@ -239,10 +240,16 @@ export const getEnvironmentConfigTypeOptions = (
         : []),
     {
         label: 'Previous deployments',
-        options: previousDeploymentsList.map(({ finishedOn, chartVersion, pipelineId, wfrId, chartRefId }) => ({
-            label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
-            value: getPreviousDeploymentOptionValue(wfrId, pipelineId, isManifestView ? chartRefId : null),
-        })),
+        options: previousDeploymentsList.map(
+            ({ finishedOn, chartVersion, pipelineId, wfrId, chartRefId, deploymentTemplateHistoryId }) => ({
+                label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
+                value: getPreviousDeploymentOptionValue(
+                    isManifestView ? deploymentTemplateHistoryId : wfrId,
+                    pipelineId,
+                    isManifestView ? chartRefId : null,
+                ),
+            }),
+        ),
     },
 ]
 
@@ -321,6 +328,18 @@ export const getAppEnvDeploymentConfigPayload = ({
                   envName,
               }),
         configType,
-        wfrId: identifierId,
+        [configType === AppEnvDeploymentConfigType.DEFAULT_VERSION ? 'identifierId' : 'wfrId']: identifierId,
         pipelineId,
     }) as const
+
+export const getIdentifierIdBasedOnConfiguration = ({
+    identifierId,
+    isManifestView,
+    previousDeployments,
+}: SetIdentifierIdBasedOnConfigurationProps) => {
+    const _identifierId = isManifestView
+        ? previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null
+        : previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null
+
+    return String(_identifierId)
+}
