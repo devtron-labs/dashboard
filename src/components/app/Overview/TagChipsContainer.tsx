@@ -17,8 +17,10 @@
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InjectTag } from '@Icons/inject-tag.svg'
 import { TagChipsContainerType } from '../types'
+import { APP_TYPE } from '@Config/constants'
 
 export default function TagChipsContainer({
+    appType,
     labelTags,
     onAddTagButtonClick,
     resourceName,
@@ -36,7 +38,9 @@ export default function TagChipsContainer({
                                 !tag.value ? ' br-4' : ' dc__left-radius-4'
                             }`}
                         >
-                            {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4 mw-16" />}
+                            {appType !== APP_TYPE.HELM_CHART && tag.propagate && (
+                                <InjectTag className="icon-dim-16 mt-2 mr-4 mw-16" />
+                            )}
                             <Tippy
                                 className="default-tt dc__word-break-all"
                                 arrow={false}

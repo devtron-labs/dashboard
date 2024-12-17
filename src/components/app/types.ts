@@ -577,6 +577,7 @@ export interface JobPipeline {
 }
 
 export interface TagChipsContainerType {
+    appType: APP_TYPE
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
     resourceName: string

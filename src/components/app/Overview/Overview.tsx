@@ -351,6 +351,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleTagsUpdateModal} />
                 </div>
                 <TagChipsContainer
+                    appType={appType}
                     labelTags={currentLabelTags}
                     onAddTagButtonClick={toggleTagsUpdateModal}
                     resourceName={resourceName}
