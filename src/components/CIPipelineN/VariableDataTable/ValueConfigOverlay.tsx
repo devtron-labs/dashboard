@@ -20,10 +20,13 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICChoicesDropdown } from '@Icons/ic-choices-dropdown.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlayProps) => {
     const { id: rowId, data, customState } = row
@@ -31,6 +34,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
     // STATES
     const [choices, setChoices] = useState(initialChoices.map((choice, id) => ({ id, value: choice, error: '' })))
+    const [fileSize, setFileSize] = useState({ value: fileInfo.maxUploadSize, error: '' })
 
     // CONSTANTS
     const isFormatNumber = data.format.value === VariableTypeFormat.NUMBER
@@ -101,34 +105,37 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         })
     }
 
-    const handleFileMaxSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const maxSize = e.target.value
-        if (!PATTERNS.NATURAL_NUMBERS.test(maxSize)) {
-            return
-        }
+    const handleFilePropertyChange = ({
+        maxUploadSize = fileInfo.maxUploadSize,
+        sizeUnit = fileInfo.sizeUnit,
+    }: Partial<Pick<typeof fileInfo, 'maxUploadSize' | 'sizeUnit'>>) => {
+        setFileSize({
+            value: maxUploadSize,
+            error: maxUploadSize && !PATTERNS.DECIMAL_NUMBERS.test(maxUploadSize) ? 'File size must be a number' : '',
+        })
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_MAX_SIZE,
             rowId,
             actionValue: {
-                size: maxSize,
-                unit: fileInfo.unit,
+                maxUploadSize,
+                sizeUnit,
             },
         })
     }
 
+    const handleFileMaxSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
+        handleFilePropertyChange({ maxUploadSize: e.target.value })
+    }
+
     const handleFileSizeUnitChange = (unit: SelectPickerOptionType<number>) => {
-        if (fileInfo.unit !== unit) {
+        if (fileInfo.sizeUnit.value !== unit.value) {
+            // MULTIPLIER IS SWITCHING BETWEEN 'KB' and 'MB'
+            const unitMultiplier = unit.label === 'MB' ? 1 / 1024 : 1024
             const maxSize = fileInfo.maxUploadSize
-                ? (parseFloat(fileInfo.maxUploadSize) * unit.value).toString()
+                ? (parseFloat(fileInfo.maxUploadSize) * unitMultiplier).toString()
                 : fileInfo.maxUploadSize
-            handleRowUpdateAction({
-                actionType: VariableDataTableActionType.UPDATE_FILE_MAX_SIZE,
-                rowId,
-                actionValue: {
-                    size: maxSize,
-                    unit,
-                },
-            })
+
+            handleFilePropertyChange({ maxUploadSize: maxSize, sizeUnit: unit })
         }
     }
 
@@ -176,20 +183,22 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             <CustomInput
                                 name="fileMaxSize"
                                 onChange={handleFileMaxSizeChange}
-                                value={fileInfo.maxUploadSize}
+                                value={fileSize.value}
                                 label="Restrict file size"
                                 placeholder="Enter size"
+                                error={fileSize.error}
                             />
                         </div>
-                        <div className="dc__align-self-end">
+                        <div className={`${fileSize.error ? 'mt-2 dc__align-self-center' : 'dc__align-self-end'}`}>
                             <SelectPicker
                                 inputId="file-max-size-unit-selector"
                                 classNamePrefix="file-max-size-unit-selector"
-                                value={fileInfo.unit}
+                                value={fileInfo.sizeUnit}
                                 onChange={handleFileSizeUnitChange}
                                 options={FILE_UPLOAD_SIZE_UNIT_OPTIONS}
                                 size={ComponentSizeType.large}
                                 menuSize={ComponentSizeType.xs}
+                                isDisabled={!!fileSize.error}
                             />
                         </div>
                     </div>
@@ -318,29 +327,34 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             </Tooltip>
                         </Checkbox>
                     )}
-                    <Checkbox
-                        isChecked={askValueAtRuntime}
-                        rootClassName="mb-0 flex top dc_max-width__max-content"
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleAskValueAtRuntime}
-                        data-testid="ask-value-at-runtime"
-                    >
-                        <Tooltip
-                            alwaysShowTippyOnHover
-                            className="w-200"
-                            placement="bottom-start"
-                            content={
-                                <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                    <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
-                                    <p className="m-0 cn-50">
-                                        Value can be provided at runtime. Entered value will be pre-filled as default
-                                    </p>
-                                </div>
-                            }
+                    {isFELibAvailable && (
+                        <Checkbox
+                            isChecked={askValueAtRuntime}
+                            rootClassName="mb-0 flex top dc_max-width__max-content"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={handleAskValueAtRuntime}
+                            data-testid="ask-value-at-runtime"
                         >
-                            <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Ask value at runtime</div>
-                        </Tooltip>
-                    </Checkbox>
+                            <Tooltip
+                                alwaysShowTippyOnHover
+                                className="w-200"
+                                placement="bottom-start"
+                                content={
+                                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                                        <p className="m-0 fw-6 cn-0">Ask value at runtime</p>
+                                        <p className="m-0 cn-50">
+                                            Value can be provided at runtime. Entered value will be pre-filled as
+                                            default
+                                        </p>
+                                    </div>
+                                }
+                            >
+                                <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">
+                                    Ask value at runtime
+                                </div>
+                            </Tooltip>
+                        </Checkbox>
+                    )}
                 </div>
             </>
         </VariableDataTablePopupMenu>

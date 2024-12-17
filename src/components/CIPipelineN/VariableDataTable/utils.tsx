@@ -3,6 +3,7 @@ import {
     DynamicDataTableCellErrorType,
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
+    FilePropertyType,
     getGoLangFormattedDateWithTimezone,
     InputOutputVariablesHeaderKeys,
     IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
@@ -21,12 +22,18 @@ import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 
 import { excludeVariables } from '../Constants'
-import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_COLUMN_OPTIONS, VAL_COLUMN_DROPDOWN_LABEL } from './constants'
+import {
+    FILE_MOUNT_DIR,
+    FILE_UPLOAD_SIZE_UNIT_OPTIONS,
+    FORMAT_COLUMN_OPTIONS,
+    VAL_COLUMN_DROPDOWN_LABEL,
+} from './constants'
 import {
     GetValColumnRowPropsType,
     GetVariableDataTableInitialRowsProps,
     VariableDataTableSelectPickerOptionType,
     VariableDataRowType,
+    VariableDataCustomState,
 } from './types'
 
 export const getOptionsForValColumn = ({
@@ -335,15 +342,30 @@ export const getEmptyVariableDataTableRow = ({
             valColumnSelectedValue: null,
             fileInfo: {
                 fileReferenceId: null,
-                fileMountDir: '/devtroncd',
+                fileMountDir: FILE_MOUNT_DIR,
                 allowedExtensions: '',
                 maxUploadSize: '',
-                unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
+                sizeUnit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
             },
         },
     }
 
     return data
+}
+
+const getFileProperties = ({
+    allowedExtensions,
+    maxUploadSize,
+    sizeUnit = 'KB',
+}: FilePropertyType): Pick<VariableDataCustomState['fileInfo'], 'allowedExtensions' | 'maxUploadSize' | 'sizeUnit'> => {
+    const sizeUnitValue = sizeUnit === 'MB' ? FILE_UPLOAD_SIZE_UNIT_OPTIONS[1] : FILE_UPLOAD_SIZE_UNIT_OPTIONS[0]
+    const maxUploadSizeValue = maxUploadSize ? String(maxUploadSize / (sizeUnitValue.value * 1024)) : ''
+
+    return {
+        maxUploadSize: maxUploadSizeValue,
+        sizeUnit: sizeUnitValue,
+        allowedExtensions: allowedExtensions?.join(', ') || '',
+    }
 }
 
 export const getVariableDataTableRows = ({
@@ -417,12 +439,11 @@ export const getVariableDataTableRows = ({
                     fileInfo: {
                         fileReferenceId,
                         fileMountDir,
-                        allowedExtensions:
-                            valueConstraint?.constraint?.fileProperty?.allowedExtensions.join(', ') || '',
-                        maxUploadSize: (
-                            (valueConstraint?.constraint?.fileProperty?.maxUploadSize || null) / 1024 || ''
-                        ).toString(),
-                        unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
+                        ...getFileProperties({
+                            allowedExtensions: valueConstraint?.constraint?.fileProperty?.allowedExtensions,
+                            maxUploadSize: valueConstraint?.constraint?.fileProperty?.maxUploadSize,
+                            sizeUnit: valueConstraint?.constraint?.fileProperty?.sizeUnit,
+                        }),
                     },
                 },
                 id,
@@ -446,21 +467,23 @@ export const getVariableDataTableInitialCellError = (
     }, {})
 
 export const getUploadFileConstraints = ({
-    unit,
+    sizeUnit,
     allowedExtensions,
     maxUploadSize,
 }: {
-    unit: string
+    sizeUnit: SelectPickerOptionType<number>
     allowedExtensions: string
     maxUploadSize: string
 }) => {
-    const unitMultiplier = unit === 'MB' ? 1024 : 1
+    const maxUploadSizeValue = maxUploadSize ? parseFloat(maxUploadSize) * (sizeUnit.value * 1024) : null
+
     return {
         allowedExtensions: allowedExtensions
             .split(',')
             .map((value) => value.trim())
             .filter((value) => !!value),
-        maxUploadSize: maxUploadSize ? parseFloat(maxUploadSize) * unitMultiplier * 1024 : null,
+        maxUploadSize: Math.ceil(maxUploadSizeValue),
+        sizeUnit: sizeUnit.label as FilePropertyType['sizeUnit'],
     }
 }
 
@@ -523,7 +546,7 @@ export const convertVariableDataTableToFormData = ({
             refVariableUsed: undefined,
             defaultValue: customState.defaultValue,
             id: +id,
-            value: data.val.value,
+            value: isInputVariable ? data.val.value : '',
             format: data.format.value as VariableTypeFormat,
             name: data.variable.value,
             description: isInputVariable ? variableDescription : data.val.value,
@@ -555,7 +578,7 @@ export const convertVariableDataTableToFormData = ({
                         fileProperty: getUploadFileConstraints({
                             allowedExtensions: fileInfo.allowedExtensions,
                             maxUploadSize: fileInfo.maxUploadSize,
-                            unit: fileInfo.unit.label as string,
+                            sizeUnit: fileInfo.sizeUnit,
                         }),
                     },
                 }

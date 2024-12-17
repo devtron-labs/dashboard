@@ -58,9 +58,9 @@ export const VariableDataTablePopupMenu = ({
                     className="dc__transparent h-100 flex top py-10 px-8 dc__no-border-imp dc__no-border-radius dc__hover-n50"
                     onClick={handleOpen}
                 >
-                    <span className="show-icon-dot-16">
-                        <ICSlidersVertical className="icon-dim-16" />
-                        {showIconDot && <ICDot className="ic-dot" />}
+                    <span className={`icon-dot-16 ${showIconDot ? 'visible' : ''}`}>
+                        <ICSlidersVertical />
+                        <ICDot />
                     </span>
                 </button>
             </TippyCustomized>
