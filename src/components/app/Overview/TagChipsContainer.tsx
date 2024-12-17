@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
+import { ReactComponent as InjectTag } from '@Icons/inject-tag.svg'
 import { TagChipsContainerType } from '../types'
 
 export default function TagChipsContainer({
@@ -26,7 +25,7 @@ export default function TagChipsContainer({
     whiteBackground = false,
 }: TagChipsContainerType) {
     return (
-        <div className="flex left flex-wrap dc__gap-8" data-testid="tag-chip-container">
+        <div className="flex left flex-wrap dc__gap-6" data-testid="tag-chip-container">
             {labelTags.length > 0 ? (
                 labelTags.map((tag, index) => (
                     <div key={tag.id} className="display-grid grid-auto-flow-column">

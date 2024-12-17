@@ -432,10 +432,6 @@ export default function BulkCDTrigger({
             )
         }
 
-        if (app.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
-            return <TriggerBlockedError stageType={app.stageType} />
-        }
-
         if (tagNotFoundWarningsMap.has(app.appId)) {
             return (
                 <div className="flex left top dc__gap-4">
@@ -455,6 +451,10 @@ export default function BulkCDTrigger({
                     shouldRenderAdditionalInfo={isAppSelected}
                 />
             )
+        }
+
+        if (app.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockedError stageType={app.stageType} />
         }
 
         if (!!warningMessage && !app.showPluginWarning) {
