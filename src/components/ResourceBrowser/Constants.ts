@@ -74,6 +74,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
         paddingLeft: '24px',
         maxWidth: '135px',
     }),
+    menu: (base) => ({ ...base, zIndex: 5 }),
     valueContainer: (base) => ({
         ...FILTER_SELECT_COMMON_STYLES.valueContainer(base),
         height: 'inherit',
