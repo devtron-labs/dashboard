@@ -25,10 +25,9 @@ import {
     ReleaseMode,
     AppEnvironment,
     DeploymentNodeType,
-    RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
-    ApprovalConfigDataType,
+    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -650,7 +649,7 @@ export interface TriggerCDNodeServiceProps {
     /**
      * Would be available only case of PRE/POST CD
      */
-    runtimeParams?: RuntimeParamsListItemType[]
+    runtimeParams?: RuntimePluginVariables[]
 }
 
 export interface TriggerCDPipelinePayloadType {

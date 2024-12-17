@@ -25,12 +25,12 @@ import {
     WorkflowType,
     AppInfoListType,
     GVKType,
-    RuntimeParamsListItemType,
     UseUrlFiltersReturnType,
     CommonNodeAttr,
     ApprovalConfigDataType,
+    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CDMaterialProps } from '../app/details/triggerView/types'
+import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
@@ -102,10 +102,10 @@ export interface ResponseRowType {
 }
 
 interface BulkRuntimeParamsType {
-    runtimeParams: Record<string, RuntimeParamsListItemType[]>
-    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsListItemType[]>>>
-    runtimeParamsErrorState: Record<string, boolean>
-    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+    runtimeParams: Record<string, RuntimePluginVariables[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimePluginVariables[]>>>
+    runtimeParamsErrorState: Record<string, RuntimeParamsErrorState>
+    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsErrorState>>>
 }
 
 export interface BulkCITriggerType extends BulkRuntimeParamsType {
@@ -269,9 +269,9 @@ export interface GetEnvAppListParamsType extends Pick<AppGroupFilterConfig, 'off
 }
 
 export interface EnvironmentsListViewType
-    extends Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'> {
+    extends Partial<Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>> {
     isSuperAdmin: boolean
-    filterConfig: AppGroupFilterConfig
+    filterConfig?: AppGroupFilterConfig
 }
 
 export interface EnvironmentLinkProps {

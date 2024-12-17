@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
@@ -80,12 +80,15 @@ export const EnvConfigurationsNav = ({
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
-    const isCreate = pathname.includes('/create')
+    const envConfigKey =
+        resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
+
+    const isCreate = useMemo(
+        () => !!pathname.match(/\bcreate\b/) && !updatedEnvConfig[envConfigKey].some(({ title }) => title === 'create'),
+        [pathname, updatedEnvConfig, resourceType],
+    )
 
     const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration> = updatedEnvConfig) => {
-        const envConfigKey =
-            resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
-
         setExpandedIds({ ...expandedIds, [resourceType]: true })
 
         return {
@@ -132,7 +135,7 @@ export const EnvConfigurationsNav = ({
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, envIdToEnvApprovalConfigurationMap])
+    }, [isLoading, config, pathname, isCreate, envIdToEnvApprovalConfigurationMap])
 
     useEffect(() => {
         if (!isLoading && config) {
@@ -181,7 +184,7 @@ export const EnvConfigurationsNav = ({
      * @param _resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`${_resourceType}/create`) || isCMSecretLocked) {
+        if ((resourceType === _resourceType && isCreate) || isCMSecretLocked) {
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
@@ -236,10 +239,7 @@ export const EnvConfigurationsNav = ({
                       }
                     : {}),
             },
-            items: updatedEnvConfig.secrets.map((secret) => {
-                const { title, subtitle, href, iconConfig } = secret
-                return { title, subtitle, href, iconConfig }
-            }),
+            items: updatedEnvConfig.secrets,
             noItemsText: 'No secrets',
             isExpanded: expandedIds?.secrets,
         },
@@ -370,7 +370,7 @@ export const EnvConfigurationsNav = ({
                             <NavLink
                                 data-testid="env-deployment-template"
                                 className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
-                                to={updatedEnvConfig.deploymentTemplate.href}
+                                to={{ pathname: updatedEnvConfig.deploymentTemplate.href, search: '' }}
                                 onClick={handleDeploymentTemplateNavLinkOnClick}
                             >
                                 <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />

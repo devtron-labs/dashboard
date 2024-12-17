@@ -84,19 +84,24 @@ export const PopupMenuItem = ({
     disabled,
     icon,
     variant,
+    tooltipText,
 }: ConfigToolbarPopupMenuConfigType) => (
-    <button
-        className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
-        onClick={onClick}
-        data-testid={dataTestId}
-        disabled={disabled}
-        type="button"
-    >
-        {icon}
-        <Tooltip content={text}>
-            <span className="fs-13 fw-4 lh-20 dc__truncate">{text}</span>
-        </Tooltip>
-    </button>
+    <Tooltip alwaysShowTippyOnHover={!!tooltipText} content={tooltipText}>
+        <div>
+            <button
+                className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
+                onClick={onClick}
+                data-testid={dataTestId}
+                disabled={disabled}
+                type="button"
+            >
+                {icon}
+                <Tooltip content={text}>
+                    <span className="fs-13 fw-4 lh-20 dc__truncate">{text}</span>
+                </Tooltip>
+            </button>
+        </div>
+    </Tooltip>
 )
 
 export const getConfigToolbarPopupConfig = ({
@@ -116,6 +121,8 @@ export const getConfigToolbarPopupConfig = ({
     isApprovalPolicyConfigured = false,
     isDeletable = false,
     isDeleteOverrideDraftPresent = false,
+    isDeleteDisabled = false,
+    deleteDisabledTooltip = '',
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -167,9 +174,10 @@ export const getConfigToolbarPopupConfig = ({
             text: `Delete${isApprovalPolicyConfigured ? '...' : ''}`,
             onClick: handleDelete,
             dataTestId: 'delete-config-map-secret',
-            disabled: isLoading,
+            disabled: isLoading || isDeleteDisabled,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
             variant: 'negative',
+            tooltipText: isDeleteDisabled ? deleteDisabledTooltip : '',
         })
     }
 
@@ -180,14 +188,14 @@ export const getConfigToolbarPopupConfig = ({
 }
 
 export const getCompareViewHistoryDiffConfigProps = (
-    showDisplayName: boolean,
     editorTemplate: Record<string | number, unknown>,
     editorConfig: CompareConfigViewEditorConfigType,
+    displayName = 'Data',
 ):
     | DeploymentTemplateHistoryType['baseTemplateConfiguration']
     | DeploymentTemplateHistoryType['currentConfiguration'] => ({
     codeEditorValue: {
-        displayName: showDisplayName ? 'Data' : '',
+        displayName,
         ...(editorTemplate && { value: JSON.stringify(editorTemplate) }),
     },
     values: editorConfig,

@@ -34,6 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -1095,7 +1096,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflowStatus()
     }
 
-
     onClickWebhookTimeStamp = () => {
         if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
             this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
@@ -1172,16 +1172,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.abortCIBuild = new AbortController()
     }
 
-
     renderCIMaterial = () => {
         if (this.state.ciNodeId) {
             const nd: CommonNodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
             return (
                 <Switch>
-                    <Route
-                        path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
-                    >
+                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
                         <WebhookReceivedPayloadModal
                             workflowId={this.state.workflowId}
                             webhookPayloads={this.state.webhookPayloads}

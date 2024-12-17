@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { Prompt } from 'react-router-dom'
+import { Prompt, useLocation } from 'react-router-dom'
 
 import {
     Button,
@@ -10,75 +9,70 @@ import {
     ComponentSizeType,
     CustomInput,
     getSelectPickerOptionByValue,
+    hasESO,
+    hasHashiOrAWS,
+    OverrideMergeStrategyType,
     Progressing,
     RadioGroup,
     RadioGroupItem,
     SelectPicker,
     stopPropagation,
-    useForm,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ROLLOUT_DEPLOYMENT, UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
-import { isChartRef3090OrBelow, isVersionLessThanOrEqualToTarget } from '@Components/common'
+import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
+import {
+    checkIfPathIsMatching,
+    importComponentFromFELibrary,
+    isChartRef3090OrBelow,
+    isVersionLessThanOrEqualToTarget,
+} from '@Components/common'
 
-import { useConfigMapSecretFormContext } from './ConfigMapSecretFormContext'
 import {
     CM_SECRET_COMPONENT_NAME,
     configMapDataTypeOptions,
     configMapSecretMountDataMap,
     getSecretDataTypeOptions,
 } from './constants'
-import { getConfigMapSecretFormInitialValues, hasESO, hasHashiOrAWS } from './utils'
-import { getConfigMapSecretFormValidations } from './validations'
 import {
     renderChartVersionBelow3090NotSupportedText,
     renderESOInfo,
     renderExternalInfo,
     renderHashiOrAwsDeprecatedInfo,
 } from './helpers'
-import {
-    ConfigMapSecretFormProps,
-    ConfigMapSecretDataTypeOptionType,
-    ConfigMapSecretUseFormProps,
-    CM_SECRET_STATE,
-} from './types'
+import { ConfigMapSecretFormProps, ConfigMapSecretDataTypeOptionType, CM_SECRET_STATE } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
+import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
+
+const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
+    'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
+    null,
+    'function',
+)
 
 export const ConfigMapSecretForm = ({
     id = null,
     configMapSecretData,
+    inheritedConfigMapSecretData,
     cmSecretStateLabel,
     isJob,
     appChartRef,
     isDraft,
+    disableDataTypeChange,
     componentType,
     isSubmitting,
     isApprovalPolicyConfigured,
     areScopeVariablesResolving,
-    resolvedFormData,
-    restoreYAML,
-    setRestoreYAML,
+    useFormProps,
     onSubmit,
     onError,
     onCancel,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
-    const { setFormState, formDataRef } = useConfigMapSecretFormContext()
+    const location = useLocation()
 
-    // INITIAL FORM VALUES
-    const formInitialValues = getConfigMapSecretFormInitialValues({
-        configMapSecretData,
-        componentType,
-        cmSecretStateLabel,
-    })
-
-    // FORM INITIALIZATION
-    const useFormProps = useForm<ConfigMapSecretUseFormProps>({
-        initialValues: formInitialValues,
-        validations: getConfigMapSecretFormValidations,
-    })
-    const { data, errors, formState, setValue, register, handleSubmit, reset } = useFormProps
+    // FORM PROPS
+    const { data, errors, formState, setValue, register, handleSubmit } = useFormProps
 
     // CONSTANTS
     const isCreateView = id === null
@@ -87,6 +81,7 @@ export const ConfigMapSecretForm = ({
     const isESO = data.isSecret && hasESO(data.externalType)
     const isHashiOrAWS = data.isSecret && hasHashiOrAWS(data.externalType)
     const isFormDisabled = isHashiOrAWS || data.isResolvedData || (data.isSecret && isUnAuthorized)
+    const isPatchMode = data.mergeStrategy === OverrideMergeStrategyType.PATCH
     const isChartVersion309OrBelow =
         appChartRef &&
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
@@ -98,51 +93,6 @@ export const ConfigMapSecretForm = ({
      * * Non-create mode is being handled by the parent component.
      */
     const shouldPrompt = isCreateView && formState.isDirty
-
-    // USE EFFECTS
-    useEffect(() => {
-        /*
-         * When resolved form data is available, we reset the form with this resolved form data.
-         * isResolvedData check determines whether the current formState contains resolved data or not.
-         * @note resolvedFormData means show scope variables is true.
-         */
-        if (resolvedFormData) {
-            reset({ ...resolvedFormData, isResolvedData: true }, { keepDirty: true })
-        } else if (formDataRef.current) {
-            /*
-             * We use formDataRef (is present) to restore form values after mounting & when `resolvedFormData` is null.
-             * The form reset is triggered with the keepDirty option, which resets the form using the stored values while preserving the “dirty” state.
-             * During the reset, we also ensure that yamlMode is preserved.
-             */
-            reset({ ...formDataRef.current, yamlMode: data.yamlMode, isResolvedData: false }, { keepDirty: true })
-        }
-    }, [resolvedFormData])
-
-    useEffect(() => {
-        /*
-         * We update formDataRef whenever the form’s data state changes, \
-         * but only if resolvedFormData is null. \
-         * Since resolvedFormData represents a read-only view, it doesn’t require form updates. \
-         * Also, formDataRef is required to restore the form data state when `resolvedFormData` is null.
-         */
-        if (!resolvedFormData) {
-            setFormState({ type: 'SET_DATA', data, isDirty: formState.isDirty, errors })
-        }
-    }, [data, formState.isDirty, errors, resolvedFormData])
-
-    useEffect(() => {
-        /*
-         * When the 'Restore Last Saved YAML' button is clicked, it sets the restoreYAML state to true. \
-         * This triggers a reset of the YAML to its initial state (i.e., the latest valid state). \
-         * Depending on the type of ConfigMap or Secret, we set the appropriate YAML form field accordingly. \
-         * Once the above is done, we reset restoreYAML state back to false to denote YAML has been restored to initial state.
-         */
-        if (restoreYAML) {
-            const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
-            setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
-            setRestoreYAML(false)
-        }
-    }, [restoreYAML])
 
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
@@ -170,7 +120,12 @@ export const ConfigMapSecretForm = ({
                 label="Data Type"
                 placeholder={dataTypePlaceholder}
                 required
-                isDisabled={isFormDisabled}
+                isDisabled={isFormDisabled || (DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE && disableDataTypeChange)}
+                disabledTippyContent={
+                    DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE && disableDataTypeChange
+                        ? DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE
+                        : null
+                }
                 options={dataTypeOptions}
                 size={ComponentSizeType.large}
                 {...register('externalType', {
@@ -198,7 +153,7 @@ export const ConfigMapSecretForm = ({
             data-testid={`${componentName}-name`}
             label="Name"
             placeholder={`Eg. ${!data.isSecret ? 'sample-configmap' : 'sample-secret'}`}
-            disabled={!isCreateView}
+            disabled={!isCreateView || isFormDisabled}
             isRequiredField
             error={errors.name}
             noTrim
@@ -369,60 +324,68 @@ export const ConfigMapSecretForm = ({
         )
 
     const renderFormButtons = () => (
-        <div className="py-12 px-16 dc__border-top-n1">
-            <div className="flex left right dc__gap-12 dc__mxw-1200">
+        <footer className="py-12 px-16 flex right dc__gap-12 dc__border-top-n1">
+            <Button
+                dataTestId="cm-secret-form-submit-btn"
+                text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
+                size={ComponentSizeType.medium}
+                onClick={handleSubmit(onSubmit, onError)}
+                isLoading={isSubmitting}
+                disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
+            />
+            {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
                 <Button
-                    dataTestId="cm-secret-form-submit-btn"
-                    text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
+                    dataTestId="cm-secret-form-cancel-btn"
+                    text="Cancel"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.neutral}
                     size={ComponentSizeType.medium}
-                    onClick={handleSubmit(onSubmit, onError)}
-                    isLoading={isSubmitting}
-                    disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
+                    onClick={onCancel}
+                    disabled={areScopeVariablesResolving}
                 />
-                {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
-                    <Button
-                        dataTestId="cm-secret-form-cancel-btn"
-                        text="Cancel"
-                        variant={ButtonVariantType.secondary}
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.medium}
-                        onClick={onCancel}
-                        disabled={areScopeVariablesResolving}
-                    />
-                )}
-            </div>
-        </div>
+            )}
+        </footer>
     )
 
     return (
         <>
-            <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <form className="configmap-secret flexbox-col h-100 dc__overflow-hidden">
                 {areScopeVariablesResolving ? (
                     <Progressing fullHeight pageLoader />
                 ) : (
                     <div className="p-16 flex-grow-1 dc__overflow-auto">
                         <div className="flexbox-col dc__gap-16 dc__mxw-1200">
-                            {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
-                            <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
-                                {renderDataTypeSelector()}
-                                {renderName()}
-                            </div>
-                            {renderESOInfo(isESO)}
-                            {renderExternalInfo(
-                                data.externalType === CMSecretExternalType.KubernetesSecret ||
-                                    (!data.isSecret && data.external),
-                                componentType,
+                            {isPatchMode ? (
+                                <ConfigMapSecretReadyOnly
+                                    cmSecretStateLabel={cmSecretStateLabel}
+                                    componentType={componentType}
+                                    isJob={isJob}
+                                    configMapSecretData={inheritedConfigMapSecretData}
+                                    areScopeVariablesResolving={areScopeVariablesResolving}
+                                    hideCodeEditor
+                                />
+                            ) : (
+                                <>
+                                    {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
+                                    <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
+                                        {renderDataTypeSelector()}
+                                        {renderName()}
+                                    </div>
+                                    {renderESOInfo(isESO)}
+                                    {renderExternalInfo(data.externalType, data.external, componentType)}
+                                    {renderMountData()}
+                                    {renderVolumeMountPath()}
+                                    {renderRollARN()}
+                                </>
                             )}
-                            {renderMountData()}
-                            {renderVolumeMountPath()}
-                            {renderRollARN()}
                             <ConfigMapSecretData
                                 isESO={isESO}
                                 isHashiOrAWS={isHashiOrAWS}
                                 isUnAuthorized={isUnAuthorized}
                                 useFormProps={useFormProps}
                                 readOnly={isFormDisabled}
+                                isPatchMode={isPatchMode}
                             />
                         </div>
                     </div>

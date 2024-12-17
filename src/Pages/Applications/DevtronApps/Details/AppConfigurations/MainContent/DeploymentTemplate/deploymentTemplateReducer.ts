@@ -1,21 +1,25 @@
 import YAML from 'yaml'
 import {
-    BaseURLParams,
     CompareFromApprovalOptionsValuesType,
-    ConfigHeaderTabType,
     ConfigToolbarPopupNodeType,
     ConfigurationType,
     DEFAULT_LOCKED_KEYS_CONFIG,
     DeploymentChartVersionType,
     DeploymentTemplateConfigState,
     DryRunEditorMode,
+    OverrideMergeStrategyType,
     ProtectConfigTabsType,
     ServerErrors,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentTemplateEditorDataStateType, DeploymentTemplateProps, DeploymentTemplateStateType } from './types'
+import {
+    ConfigEditorStatesType,
+    DeploymentTemplateEditorDataStateType,
+    DeploymentTemplateProps,
+    DeploymentTemplateStateType,
+} from './types'
 import {
     applyCompareDiffOfTempFormDataOnOriginalData,
     getCurrentTemplateWithLockedKeys,
@@ -25,7 +29,10 @@ import {
 interface InitializeStateBasePayloadType
     extends Pick<
         DeploymentTemplateStateType,
-        'baseDeploymentTemplateData' | 'publishedTemplateData' | 'chartDetails' | 'lockedConfigKeysWithLockType'
+        | ConfigEditorStatesType.BASE_EDITOR
+        | ConfigEditorStatesType.PUBLISHED_EDITOR
+        | 'chartDetails'
+        | 'lockedConfigKeysWithLockType'
     > {}
 
 interface GetDeploymentTemplateInitialStateParamsType {
@@ -76,6 +83,10 @@ export enum DeploymentTemplateActionType {
     CLOSE_SAVE_CHANGES_MODAL = 'CLOSE_SAVE_CHANGES_MODAL',
     CLOSE_LOCKED_DIFF_MODAL = 'CLOSE_LOCKED_DIFF_MODAL',
     UPDATE_ARE_COMMENTS_PRESENT = 'UPDATE_ARE_COMMENTS_PRESENT',
+    INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE = 'INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE',
+    LOAD_CURRENT_EDITOR_MERGED_TEMPLATE = 'LOAD_CURRENT_EDITOR_MERGED_TEMPLATE',
+    CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
+    LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -104,6 +115,12 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL
     | DeploymentTemplateActionType.CLOSE_SAVE_CHANGES_MODAL
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
+    | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
+    | DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API
+
+interface LoadMergedTemplateBasePayloadType {
+    editorStates: ConfigEditorStatesType[]
+}
 
 export type DeploymentTemplateActionState =
     | {
@@ -123,15 +140,16 @@ export type DeploymentTemplateActionState =
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITHOUT_DRAFT
           payload: InitializeStateBasePayloadType &
-              Pick<DeploymentTemplateStateType, 'currentEditorTemplateData'> &
-              Pick<BaseURLParams, 'envId'>
+              Pick<DeploymentTemplateStateType, ConfigEditorStatesType.CURRENT_EDITOR>
       }
     | {
           type: DeploymentTemplateActionType.INITIALIZE_TEMPLATES_WITH_DRAFT
           payload: InitializeStateBasePayloadType &
               Pick<
                   DeploymentTemplateStateType,
-                  'currentEditorTemplateData' | 'draftTemplateData' | 'selectedProtectionViewTab'
+                  | ConfigEditorStatesType.CURRENT_EDITOR
+                  | ConfigEditorStatesType.DRAFT_EDITOR
+                  | 'selectedProtectionViewTab'
               >
       }
     | {
@@ -162,10 +180,6 @@ export type DeploymentTemplateActionState =
     | {
           type: DeploymentTemplateActionType.UPDATE_HIDE_LOCKED_KEYS
           payload: Pick<DeploymentTemplateStateType, 'hideLockedKeys'>
-      }
-    | {
-          type: DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
-          payload: Pick<DeploymentTemplateStateType, 'configHeaderTab'>
       }
     | {
           type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB
@@ -202,6 +216,24 @@ export type DeploymentTemplateActionState =
     | {
           type: DeploymentTemplateActionType.UPDATE_ARE_COMMENTS_PRESENT
           payload: Pick<DeploymentTemplateStateType, 'areCommentsPresent'>
+      }
+    | {
+          type: DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE
+          payload: LoadMergedTemplateBasePayloadType &
+              Pick<DeploymentTemplateStateType, ConfigEditorStatesType.BASE_EDITOR> & {
+                  mergedTemplates: Record<string, any>[]
+              }
+      }
+    | {
+          type: DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE
+          payload: LoadMergedTemplateBasePayloadType & {
+              // Ideally should compute this inside reducer but already computed outside for other cases so passing it to avoid recomputation
+              currentEditorParsedObject: Record<string, any>
+          }
+      }
+    | {
+          type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
+          payload: Pick<DeploymentTemplateStateType['currentEditorTemplateData'], 'mergedTemplateError'>
       }
 
 export const getDeploymentTemplateInitialState = ({
@@ -250,7 +282,6 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
     editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
-    configHeaderTab: ConfigHeaderTabType.VALUES,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
@@ -311,6 +342,8 @@ const handleRestoreLastSavedTemplate = (state: DeploymentTemplateStateType): Dep
         removedPatches: state.hideLockedKeys ? removedPatches : [],
         parsingError: '',
         originalTemplateState: originalTemplateData,
+        isLoadingMergedTemplate: false,
+        mergedTemplateError: null,
     }
 
     // When restoring would restore everything, including schema, readme, etc, that is why not using originalTemplate from currentEditorTemplate
@@ -350,6 +383,47 @@ const handleReApplyLockedKeys = (state: DeploymentTemplateStateType): Deployment
     }
 }
 
+const getEditorStatesFromMergedTemplates = (
+    state: DeploymentTemplateStateType,
+    editorStates: ConfigEditorStatesType[],
+    mergedTemplateObjects: Record<string, any>[],
+) =>
+    editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
+        (acc, editorState, index) => {
+            const editorStateData = state[editorState]
+
+            const mergedTemplateObject = mergedTemplateObjects[index]
+            const mergedTemplate = YAMLStringify(mergedTemplateObject)
+            const mergedTemplateWithoutLockedKeys = getEditorTemplateAndLockedKeys(
+                mergedTemplate,
+                state.lockedConfigKeysWithLockType.config,
+            )
+
+            const baseOperationObject = {
+                isLoadingMergedTemplate: false,
+                mergedTemplateError: null,
+                mergedTemplateObject,
+                mergedTemplate,
+                mergedTemplateWithoutLockedKeys: mergedTemplateWithoutLockedKeys.editorTemplate,
+            }
+
+            if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                acc[editorState] = {
+                    ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
+                    ...baseOperationObject,
+                }
+            } else {
+                acc[editorState] = {
+                    ...(editorStateData as DeploymentTemplateConfigState),
+                    ...baseOperationObject,
+                }
+            }
+
+            return acc
+        },
+        {},
+    )
+
 export const deploymentTemplateReducer = (
     state: DeploymentTemplateStateType,
     action: DeploymentTemplateActionState,
@@ -379,7 +453,6 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
-                envId,
             } = action.payload
 
             return {
@@ -389,10 +462,6 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
-                configHeaderTab:
-                    envId && !publishedTemplateData.isOverridden
-                        ? ConfigHeaderTabType.INHERITED
-                        : ConfigHeaderTabType.VALUES,
                 isLoadingInitialData: false,
                 initialLoadError: null,
             }
@@ -417,7 +486,6 @@ export const deploymentTemplateReducer = (
                 lockedConfigKeysWithLockType,
                 draftTemplateData,
                 currentEditorTemplateData,
-                configHeaderTab: ConfigHeaderTabType.VALUES,
                 selectedProtectionViewTab,
                 areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
@@ -563,25 +631,33 @@ export const deploymentTemplateReducer = (
             return handleReApplyLockedKeys(state)
         }
 
-        case DeploymentTemplateActionType.CHANGE_TO_GUI_MODE:
+        case DeploymentTemplateActionType.CHANGE_TO_GUI_MODE: {
+            const isOverriddenWithPatchStrategy =
+                state.currentEditorTemplateData.isOverridden &&
+                state.currentEditorTemplateData.mergeStrategy === OverrideMergeStrategyType.PATCH
+
+            const baseState = isOverriddenWithPatchStrategy ? handleReApplyLockedKeys(state) : state
+
             return {
-                ...state,
+                ...baseState,
                 editMode: ConfigurationType.GUI,
             }
+        }
 
         case DeploymentTemplateActionType.CHANGE_TO_YAML_MODE:
             return handleSwitchToYAMLMode(state)
 
         case DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB:
             return {
-                ...state,
+                ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
-                configHeaderTab: action.payload.configHeaderTab,
+                shouldMergeTemplateWithPatches: false,
             }
 
         case DeploymentTemplateActionType.TOGGLE_SHOW_COMPARISON_WITH_MERGED_PATCHES:
             return {
                 ...state,
+                ...handleUnResolveScopedVariables(),
                 shouldMergeTemplateWithPatches: !state.shouldMergeTemplateWithPatches,
             }
 
@@ -590,6 +666,7 @@ export const deploymentTemplateReducer = (
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 selectedProtectionViewTab: action.payload.selectedProtectionViewTab,
+                shouldMergeTemplateWithPatches: false,
             }
 
         case DeploymentTemplateActionType.UPDATE_DRY_RUN_EDITOR_MODE:
@@ -655,14 +732,31 @@ export const deploymentTemplateReducer = (
                 },
             }
 
-        case DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY:
-            return {
-                ...state,
-                currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
-                    mergeStrategy: action.payload.mergeStrategy,
-                },
+        case DeploymentTemplateActionType.UPDATE_MERGE_STRATEGY: {
+            const { mergeStrategy } = action.payload
+
+            const stateWithReAppliedLockedKeys = handleReApplyLockedKeys(state)
+            const currentEditorTemplateData: typeof state.currentEditorTemplateData = structuredClone(
+                stateWithReAppliedLockedKeys.currentEditorTemplateData,
+            )
+
+            currentEditorTemplateData.mergeStrategy = mergeStrategy
+
+            if (
+                mergeStrategy === OverrideMergeStrategyType.REPLACE &&
+                !stateWithReAppliedLockedKeys.publishedTemplateData?.isOverridden &&
+                !stateWithReAppliedLockedKeys.currentEditorTemplateData.editorTemplate
+            ) {
+                currentEditorTemplateData.editorTemplate =
+                    stateWithReAppliedLockedKeys.publishedTemplateData?.mergedTemplate || ''
             }
+
+            return {
+                ...stateWithReAppliedLockedKeys,
+                ...handleUnResolveScopedVariables(),
+                currentEditorTemplateData,
+            }
+        }
 
         case DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG:
             return {
@@ -678,8 +772,12 @@ export const deploymentTemplateReducer = (
             return {
                 ...state,
                 currentEditorTemplateData: {
-                    ...state.currentEditorTemplateData,
+                    ...state[ConfigEditorStatesType.CURRENT_EDITOR],
                     isOverridden: true,
+                    editorTemplate:
+                        state[ConfigEditorStatesType.CURRENT_EDITOR].mergeStrategy === OverrideMergeStrategyType.REPLACE
+                            ? state[ConfigEditorStatesType.BASE_EDITOR].editorTemplate
+                            : state[ConfigEditorStatesType.CURRENT_EDITOR].editorTemplate,
                 },
             }
 
@@ -755,6 +853,83 @@ export const deploymentTemplateReducer = (
             return {
                 ...state,
                 areCommentsPresent: action.payload.areCommentsPresent,
+            }
+
+        case DeploymentTemplateActionType.INITIATE_LOADING_CURRENT_EDITOR_MERGED_TEMPLATE: {
+            const { editorStates, currentEditorParsedObject } = action.payload
+            const isCurrentEditorLoading = editorStates.includes(ConfigEditorStatesType.CURRENT_EDITOR)
+
+            // This means for current editor the mergeStrategy is not patch
+            const currentEditorStateWithMergedTemplate = !isCurrentEditorLoading
+                ? getEditorStatesFromMergedTemplates(
+                      state,
+                      [ConfigEditorStatesType.CURRENT_EDITOR],
+                      [currentEditorParsedObject],
+                  )
+                : {}
+
+            return {
+                ...state,
+                ...editorStates.reduce<Partial<Pick<DeploymentTemplateStateType, ConfigEditorStatesType>>>(
+                    (acc, editorState) => {
+                        const editorStateData = state[editorState]
+                        const baseOperationObject = {
+                            isLoadingMergedTemplate: true,
+                            mergedTemplateError: null,
+                        }
+
+                        // Since currentEditorState has different typing had to do this
+                        if (editorState === ConfigEditorStatesType.CURRENT_EDITOR) {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateStateType['currentEditorTemplateData']),
+                                ...baseOperationObject,
+                            }
+                        } else {
+                            acc[editorState] = {
+                                ...(editorStateData as DeploymentTemplateConfigState),
+                                ...baseOperationObject,
+                            }
+                        }
+
+                        return acc
+                    },
+                    {},
+                ),
+                ...currentEditorStateWithMergedTemplate,
+            }
+        }
+
+        case DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR: {
+            // We will only show error in case of current editor, since we have stale data for other editors
+            // TODO: Need to re-confirm
+            return {
+                ...state,
+                currentEditorTemplateData: {
+                    ...state.currentEditorTemplateData,
+                    isLoadingMergedTemplate: false,
+                    mergedTemplateError: action.payload.mergedTemplateError,
+                },
+            }
+        }
+
+        case DeploymentTemplateActionType.LOAD_CURRENT_EDITOR_MERGED_TEMPLATE: {
+            const { mergedTemplates: mergedTemplateObjects, baseDeploymentTemplateData, editorStates } = action.payload
+
+            return {
+                ...state,
+                baseDeploymentTemplateData,
+                ...getEditorStatesFromMergedTemplates(state, editorStates, mergedTemplateObjects),
+            }
+        }
+
+        case DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API:
+            return {
+                ...state,
+                showSaveChangesModal: false,
+                lockedDiffModalState: {
+                    showLockedTemplateDiffModal: true,
+                    showLockedDiffForApproval: false,
+                },
             }
 
         default:

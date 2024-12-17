@@ -27,6 +27,8 @@ import {
     PipelineFormType,
     MandatoryPluginDataType,
     CiPipeline,
+    UploadFileDTO,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
@@ -232,14 +234,14 @@ export interface PipelineFormDataErrorType {
     containerRegistryError?: { isValid: boolean; message?: string }
     repositoryError?: { isValid: boolean; message?: string }
     preBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     buildStage: {
         isValid: boolean
     }
     postBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     customTag?: {
@@ -274,7 +276,14 @@ export interface PipelineContext {
     }
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
-    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+    validateTask: (
+        taskData: StepType,
+        taskErrorobj: TaskErrorObj,
+        options?: {
+            isSaveAsPlugin?: boolean
+            validateVariableDataTable?: boolean
+        },
+    ) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (
         stageName: string,
@@ -327,6 +336,7 @@ export interface PipelineContext {
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
     mandatoryPluginData: MandatoryPluginDataType
+    uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 
 export interface SourceTypeCardProps {

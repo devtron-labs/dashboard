@@ -98,7 +98,7 @@ const getIcon = (
                 className: 'default-tt',
             },
             props: {
-                className: `p-2 ${configState === ResourceConfigState.Draft ? 'scv-5' : ''}`,
+                className: `p-2 dc__no-shrink ${configState === ResourceConfigState.Draft ? 'scv-5' : ''}`,
             },
         }
     }
@@ -158,6 +158,7 @@ export const getEnvConfiguration = (
                               ],
                           ),
                           subtitle: SUBTITLE[configStage],
+                          clearQueryParamsOnNavigation: true,
                       })),
         }),
         {

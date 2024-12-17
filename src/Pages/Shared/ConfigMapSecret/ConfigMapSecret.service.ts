@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MutableRefObject } from 'react'
 import {
     get,
     post,
@@ -27,13 +28,14 @@ import {
     ConfigResourceType,
     getIsRequestAborted,
     DraftMetadataDTO,
+    showError,
+    ConfigMapSecretDataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import {
-    CMSecretDTO,
     CMSecretComponentType,
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,
@@ -42,6 +44,8 @@ import {
     DeleteEnvConfigMapSecretProps,
     OverrideConfigMapSecretProps,
     GetCMSecretProps,
+    ConfigMapSecretManifestProps,
+    ConfigMapSecretManifestDTO,
 } from './types'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -109,7 +113,7 @@ export const getCMSecret = ({
     envId,
     name,
     signal,
-}: GetCMSecretProps): Promise<ResponseType<CMSecretDTO>> => {
+}: GetCMSecretProps): Promise<ResponseType<Omit<ConfigMapSecretDataDTO['data'], 'isDeletable'>>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -206,3 +210,34 @@ export const getConfigMapSecretResolvedValues = (
         },
         signal,
     )
+
+export const getConfigMapSecretManifest = async (
+    params: ConfigMapSecretManifestProps,
+    abortControllerRef?: MutableRefObject<AbortController>,
+) => {
+    try {
+        const { result } = await post<
+            ConfigMapSecretManifestDTO,
+            Omit<ConfigMapSecretManifestProps, 'resourceType'> & { resourceType: ConfigResourceType }
+        >(
+            Routes.CONFIG_MANIFEST,
+            {
+                ...params,
+                resourceType:
+                    params.resourceType === CMSecretComponentType.ConfigMap
+                        ? ConfigResourceType.ConfigMap
+                        : ConfigResourceType.Secret,
+            },
+            { abortControllerRef },
+        )
+
+        return result
+    } catch (error) {
+        if (getIsRequestAborted(error)) {
+            return null
+        }
+
+        showError(error)
+        throw error
+    }
+}

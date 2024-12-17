@@ -210,7 +210,6 @@ const AppComposeRouter = () => {
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                     <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
-                        isUnSet={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate],

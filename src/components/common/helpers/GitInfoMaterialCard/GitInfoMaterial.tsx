@@ -76,6 +76,7 @@ export const GitInfoMaterial = ({
     handleSidebarTabChange,
     runtimeParams,
     handleRuntimeParamChange,
+    runtimeParamsErrorState,
     handleRuntimeParamError,
     isBulkCIWebhook,
     webhookPayloads,
@@ -83,6 +84,7 @@ export const GitInfoMaterial = ({
     setIsWebhookBulkCI,
     isBulk = false,
     appId,
+    uploadFile,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
@@ -157,6 +159,9 @@ export const GitInfoMaterial = ({
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}
+                            hasError={{
+                                [CIMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 ) : (
@@ -248,38 +253,42 @@ export const GitInfoMaterial = ({
         triggerViewContext.getFilteredMaterial(+pipelineId, selectedMaterial.gitMaterialId, !showAllCommits)
     }
 
-    const renderExcludedCommitsOption = () => (
-        <div className="dc__position-rel cursor">
-            <div className="mw-18" onClick={toggleShowExcludePopUp}>
-                {showAllCommits ? (
-                    <ShowIconFilter data-testid="show-icon-filter" className="icon-dim-20" />
-                ) : (
-                    <ShowIconFilterApplied data-testid="show-icon-filter-applied" className="icon-dim-20" />
-                )}
-            </div>
-            {showExcludePopUp && (
-                <div
-                    className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bcn-0 br-4 dc__zi-20"
-                    style={{
-                        boxShadow: '0 2px 4px 0 rgba(21, 21, 21, 0.3)',
-                    }}
-                    onClick={toggleExclude}
-                >
+    const renderExcludedCommitsOption = () => {
+        const hideShowIconClass = 'icon-dim-16 scn-8 mr-10 dc__no-shrink'
+
+        return (
+            <div className="dc__position-rel cursor">
+                <div className="mw-18" onClick={toggleShowExcludePopUp}>
                     {showAllCommits ? (
-                        <>
-                            <Hide data-testid="hide-excluded-commits" className="icon-dim-16 mr-10" />
-                            Hide excluded commits
-                        </>
+                        <ShowIconFilter data-testid="show-icon-filter" className="icon-dim-20" />
                     ) : (
-                        <>
-                            <Show data-testid="show-excluded-commits" className="icon-dim-16 mr-10" />
-                            Show excluded commits
-                        </>
+                        <ShowIconFilterApplied data-testid="show-icon-filter-applied" className="icon-dim-20" />
                     )}
                 </div>
-            )}
-        </div>
-    )
+                {showExcludePopUp && (
+                    <div
+                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bcn-0 br-4 dc__zi-20"
+                        style={{
+                            boxShadow: '0 2px 4px 0 rgba(21, 21, 21, 0.3)',
+                        }}
+                        onClick={toggleExclude}
+                    >
+                        {showAllCommits ? (
+                            <>
+                                <Hide data-testid="hide-excluded-commits" className={hideShowIconClass} />
+                                Hide excluded commits
+                            </>
+                        ) : (
+                            <>
+                                <Show data-testid="show-excluded-commits" className={hideShowIconClass} />
+                                Show excluded commits
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+        )
+    }
 
     const renderMaterialHistoryHeader = (_selectedMaterial: CIMaterialType) => {
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
@@ -370,10 +379,13 @@ export const GitInfoMaterial = ({
                 <RuntimeParameters
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
+                    appId={+appId}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}
-                    onError={handleRuntimeParamError}
+                    errorState={runtimeParamsErrorState}
+                    handleError={handleRuntimeParamError}
+                    uploadFile={uploadFile}
                 />
             )
         }

@@ -48,3 +48,10 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
 }
 
 export const NO_SCOPED_VARIABLES_MESSAGE = 'No valid variable found on this page'
+
+export const CHART_NAME_TO_DOC_SEGMENT: Readonly<Record<string, string>> = {
+    Deployment: 'deployment',
+    'Job & CronJob': 'cronjob',
+    'Rollout Deployment': 'reference',
+    StatefulSet: 'statefulset',
+}
