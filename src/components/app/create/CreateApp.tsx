@@ -39,7 +39,7 @@ import {
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
-import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
+import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType, APP_TYPE } from '../../../config'
 import { ValidationRules } from './validationRules'
 import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
@@ -506,6 +506,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 {MandatoryTagsContainer ? (
                     <MandatoryTagsContainer
                         isCreateApp
+                        appType={this.props.isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS}
                         projectId={this.state.form.projectId}
                         tags={this.state.tags}
                         setTags={this.setTags}
@@ -514,6 +515,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     />
                 ) : (
                     <TagsContainer
+                        appType={this.props.isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS}
                         isCreateApp
                         rows={this.state.tags}
                         setRows={this.setTags}

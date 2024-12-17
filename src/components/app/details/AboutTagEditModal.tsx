@@ -146,6 +146,7 @@ export default function AboutTagEditModal({
                 >
                     {MandatoryTagsContainer ? (
                         <MandatoryTagsContainer
+                            appType={appType}
                             tags={labelTags}
                             setTags={setLabelTags}
                             projectId={appMetaInfo.projectId}
@@ -156,6 +157,7 @@ export default function AboutTagEditModal({
                         />
                     ) : (
                         <TagsContainer
+                            appType={appType}
                             rows={labelTags}
                             setRows={setLabelTags}
                             hidePropagateTags={appType === APP_TYPE.HELM_CHART}
