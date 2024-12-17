@@ -22,6 +22,7 @@ import {
     PipelineFormType,
     SelectPicker,
     ResourceKindType,
+    WORKFLOW_CACHE_CONFIG_ENUM,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
@@ -37,6 +38,7 @@ import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
+const CacheConfiguration = importComponentFromFELibrary('CacheConfiguration', null, 'function')
 
 export const Sidebar = ({
     isJobView,
@@ -60,6 +62,7 @@ export const Sidebar = ({
         isVirtualEnvironment,
         getPrePostStageInEnv,
         mandatoryPluginData,
+        isBlobStorageConfigured,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -310,6 +313,35 @@ export const Sidebar = ({
         )
     }
 
+    const handleSetIsInheriting = () => {
+        // MOTE: don't do anything if in oss
+        if (!formData.workflowCacheConfig) {
+            return
+        }
+        
+        const newWorkflowCacheConfigType =
+            formData.workflowCacheConfig.type === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT
+                ? WORKFLOW_CACHE_CONFIG_ENUM.OVERRIDE
+                : WORKFLOW_CACHE_CONFIG_ENUM.INHERIT
+
+        setFormData({ ...formData, workflowCacheConfig: {
+            ...formData.workflowCacheConfig,
+            type: newWorkflowCacheConfigType,
+            ...(newWorkflowCacheConfigType === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT ? {
+                value: formData.workflowCacheConfig.globalValue
+            } : {}),
+        }})
+    }
+
+    const handleSetUseRemoteCache = () => {
+        // MOTE: don't do anything if in oss
+        if (!formData.workflowCacheConfig) {
+            return
+        }
+        
+        setFormData({ ...formData, workflowCacheConfig: { ...formData.workflowCacheConfig, value: !formData.workflowCacheConfig.value } })
+    }
+
     return (
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
@@ -378,6 +410,18 @@ export const Sidebar = ({
                 </div>
             )}
             {isCdPipeline && activeStageName !== BuildStageVariable.Build && renderConfigSecret()}
+
+            {!isCdPipeline && CacheConfiguration && activeStageName === BuildStageVariable.Build && formData.workflowCacheConfig && (
+                <div className='sidebar-action-container sidebar-action-container-border dc__border-top-n1'>
+                    <CacheConfiguration
+                        isInheriting={formData.workflowCacheConfig.type === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT}
+                        handleSetIsInheriting={handleSetIsInheriting}
+                        useRemoteCache={formData.workflowCacheConfig.value}
+                        handleSetUseRemoteCache={handleSetUseRemoteCache}
+                        isBlobStorageConfigured={isBlobStorageConfigured}
+                    />
+                </div>
+            )}
 
             {!isCdPipeline && (
                 <div className="sidebar-action-container pr-20">

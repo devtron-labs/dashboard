@@ -23,6 +23,8 @@ import {
     PluginType,
     RefVariableType,
     PipelineBuildStageType,
+    getModuleConfigured,
+    ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -170,7 +172,8 @@ export function getInitDataWithCIPipeline(
     return Promise.all([
         getCIPipeline(appId, ciPipelineId),
         getPipelineMetaConfiguration(appId, includeWebhookData, false),
-    ]).then(([ciPipelineRes, pipelineMetaConfig]) => {
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    ]).then(([ciPipelineRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const ciPipeline = ciPipelineRes?.result
         const pipelineMetaConfigResult = pipelineMetaConfig?.result
         return parseCIResponse(
@@ -180,6 +183,7 @@ export function getInitDataWithCIPipeline(
             pipelineMetaConfigResult.gitHost,
             pipelineMetaConfigResult.webhookEvents,
             pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
+            isBlobStorageConfigured,
         )
     })
 }
@@ -304,6 +308,9 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
         isManual: formData.triggerType == TriggerType.Manual,
+        ...(formData.workflowCacheConfig ? {
+            workflowCacheConfig: formData.workflowCacheConfig,
+        } : {}),
         ciMaterial: formData.materials
             .filter((mat) => mat.isSelected)
             .map((mat) => {
@@ -472,6 +479,7 @@ function parseCIResponse(
     gitHost,
     webhookEvents,
     ciPipelineSourceTypeOptions,
+    isBlobStorageConfigured?: boolean,
 ) {
     if (ciPipeline) {
         if (ciPipeline.beforeDockerBuildScripts) {
@@ -535,10 +543,12 @@ function parseCIResponse(
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
                 enableCustomTag: ciPipeline.enableCustomTag,
+                workflowCacheConfig: ciPipeline.workflowCacheConfig ?? null,
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
+            isBlobStorageConfigured: isBlobStorageConfigured ?? false,
         }
     }
 }

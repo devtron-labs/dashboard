@@ -128,6 +128,8 @@ export default function CIPipeline({
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [selectedEnv, setSelectedEnv] = useState<EnvironmentWithSelectPickerType>()
     const [environments, setEnvironments] = useState<EnvironmentWithSelectPickerType[]>([])
+    // NOTE: don't want to show the warning until fetch; therefore true by default
+    const [isBlobStorageConfigured, setIsBlobStorageConfigured] = useState(true)
     const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         args: [],
@@ -485,6 +487,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.Build, ciPipelineResponse.form)
                     validateStage(BuildStageVariable.PostBuild, ciPipelineResponse.form)
                     setFormData(ciPipelineResponse.form)
+                    setIsBlobStorageConfigured(ciPipelineResponse.isBlobStorageConfigured)
                     setCIPipeline(ciPipelineResponse.ciPipeline)
                     await getInitialPlugins(ciPipelineResponse.form)
                     await getEnvironments(ciPipelineResponse.ciPipeline.environmentId)
@@ -810,6 +813,7 @@ export default function CIPipeline({
             handleDisableParentModalCloseUpdate,
             handleValidateMandatoryPlugins,
             mandatoryPluginData,
+            isBlobStorageConfigured,
         }),
         [
             formData,
@@ -823,6 +827,7 @@ export default function CIPipeline({
             pluginDataStore,
             availableTags,
             mandatoryPluginData,
+            isBlobStorageConfigured,
         ],
     )
 
