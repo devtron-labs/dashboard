@@ -65,6 +65,7 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 
 // Monaco Editor worker initialization
@@ -72,6 +73,9 @@ self.MonacoEnvironment = {
     getWorker(_, label) {
         if (label === MODES.YAML) {
             return new YamlWorker()
+        }
+        if (label === MODES.JSON) {
+            return new JsonWorker()
         }
         return new editorWorker()
     },
