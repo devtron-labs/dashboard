@@ -273,13 +273,11 @@ export const getValColumnRowProps = ({
             props: {
                 placeholder: 'Enter value or variable',
                 options: optionsForValColumn,
-                selectPickerProps: {
-                    isCreatable:
-                        format !== VariableTypeFormat.BOOL &&
-                        (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
-                    formatCreateLabel: (inputValue) => `Use ${inputValue}`,
-                },
-                Icon:
+                isCreatable:
+                    format !== VariableTypeFormat.BOOL &&
+                    (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
+                formatCreateLabel: (inputValue) => `Use ${inputValue}`,
+                icon:
                     refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
                         <SystemVariableIcon />
                     ) : null,
@@ -309,7 +307,8 @@ export const getValColumnRowValue = (
     valColumnSelectedValue: VariableDataTableSelectPickerOptionType,
 ) => {
     const isSystemVariable = checkForSystemVariable(valColumnSelectedValue)
-    const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
+    const isDateFormat =
+        !isSystemVariable && value && valColumnSelectedValue.description && format === VariableTypeFormat.DATE
 
     return isDateFormat ? getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value) : value
 }
