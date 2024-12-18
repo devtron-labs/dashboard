@@ -18,6 +18,7 @@ import {
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import {
     FILE_MOUNT_DIR,
@@ -50,6 +51,8 @@ import {
 
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTableProps) => {
     // CONTEXTS
@@ -528,7 +531,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     onRowEdit={handleRowEdit}
                     onRowDelete={handleRowDelete}
                     onRowAdd={handleRowAdd}
-                    {...(isInputPluginVariable
+                    {...(isFELibAvailable && isInputPluginVariable
                         ? {
                               actionButtonConfig: {
                                   renderer: actionButtonRenderer,
