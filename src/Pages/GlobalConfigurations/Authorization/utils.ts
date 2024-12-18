@@ -378,11 +378,9 @@ export const validateDirectPermissionForm = (
     setDirectPermission: PermissionConfigurationFormContext['setDirectPermission'],
     showErrorToast: boolean = true,
 ): {
-    isComplete: boolean
+    isValid: boolean
     accessTypeToErrorMap: AccessTypeToErrorMapType
 } => {
-    let isComplete = true
-
     const accessTypeToErrorMap: Record<
         PermissionConfigurationFormContext['directPermission'][number]['accessType'],
         boolean
@@ -411,7 +409,6 @@ export const validateDirectPermissionForm = (
 
             if (isErrorInCurrentItem) {
                 accessTypeToErrorMap[curr.accessType] = isErrorInCurrentItem
-                isComplete = !isErrorInCurrentItem
             }
 
             agg.push(curr)
@@ -420,7 +417,9 @@ export const validateDirectPermissionForm = (
         [],
     )
 
-    if (!isComplete && showErrorToast) {
+    const isFormValid = Object.values(accessTypeToErrorMap).every((val) => !val)
+
+    if (!isFormValid && showErrorToast) {
         ToastManager.showToast({
             variant: ToastVariantType.error,
             description: REQUIRED_FIELDS_MISSING,
@@ -428,7 +427,7 @@ export const validateDirectPermissionForm = (
         setDirectPermission(tempPermissions)
     }
 
-    return { isComplete, accessTypeToErrorMap }
+    return { isValid: isFormValid, accessTypeToErrorMap }
 }
 
 const isRoleCustom = (roleValue: string) =>

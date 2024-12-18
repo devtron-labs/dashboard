@@ -163,7 +163,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isComplete) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
             return
         }
 
