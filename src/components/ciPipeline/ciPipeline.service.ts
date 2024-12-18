@@ -23,12 +23,14 @@ import {
     PluginType,
     RefVariableType,
     PipelineBuildStageType,
+    getModuleConfigured,
+    ModuleNameMap,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { PatchAction } from './types'
+import { CIPipelineBuildType, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
 
@@ -54,18 +56,19 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
 export function getInitData(
     appId: string | number,
     includeWebhookData: boolean = false,
-    preFillName: boolean = true,
+    isJobCard: boolean
 ): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
-        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
-    ]).then(([pipelineNameRes, pipelineMetaConfig]) => {
+        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard),
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    ]).then(([pipelineNameRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const scanEnabled =
             window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
         return {
             result: {
                 form: {
-                    name: preFillName ? pipelineNameRes.result : '',
+                    name: !isJobCard ? pipelineNameRes.result : '',
                     args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,
@@ -79,9 +82,11 @@ export function getInitData(
                     postBuildStage: emptyStepsData(),
                     scanEnabled,
                     ciPipelineEditable: true,
+                    workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null
                 },
                 loadingData: false,
                 isAdvanced: false,
+                isBlobStorageConfigured,
             },
         }
     })
@@ -92,8 +97,11 @@ export function getCIPipeline(appId: string, ciPipelineId: string): Promise<any>
     return get(URL)
 }
 
-function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
-    return getSourceConfig(appId).then((response) => {
+function getPipelineBaseMetaConfiguration(
+    appId: string,
+    queryParams: Record<'pipelineType', CIPipelineBuildType.CI_BUILD | CIPipelineBuildType.CI_JOB>
+): Promise<any> {
+    return getSourceConfig(appId, queryParams).then((response) => {
         const materials = response?.result?.material?.map((mat) => {
             return {
                 id: 0,
@@ -116,6 +124,7 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
                 ciPipelineSourceTypeOptions: _baseCiPipelineSourceTypeOptions,
+                workflowCacheConfig: response?.result?.workflowCacheConfig ?? null
             },
         }
     })
@@ -125,8 +134,13 @@ export function getPipelineMetaConfiguration(
     appId: string,
     includeWebhookData: boolean = false,
     isNewPipeline: boolean = true,
+    isJobCard = false,
 ): Promise<any> {
-    return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
+    return getPipelineBaseMetaConfiguration(appId, {
+        // NOTE: need to send pipelineType to get corresponding workflowCacheConfig;
+        // this queryParam will be ignored in oss
+        pipelineType: isJobCard ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
+    }).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         const _materials = baseResponse.result.materials || []
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
@@ -170,8 +184,12 @@ export function getInitDataWithCIPipeline(
 ): Promise<any> {
     return Promise.all([
         getCIPipeline(appId, ciPipelineId),
-        getPipelineMetaConfiguration(appId, includeWebhookData, false),
-    ]).then(([ciPipelineRes, pipelineMetaConfig]) => {
+        // NOTE: isJobCard parameter does not matter in this case
+        // isJobCard is only relevant to fetch workflowCacheConfig in meta config
+        // by default BE will send global cache config for that pipelineType (JOB or CI_BUILD)
+        getPipelineMetaConfiguration(appId, includeWebhookData, false, false),
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    ]).then(([ciPipelineRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
         const ciPipeline = ciPipelineRes?.result
         const pipelineMetaConfigResult = pipelineMetaConfig?.result
         return parseCIResponse(
@@ -181,6 +199,7 @@ export function getInitDataWithCIPipeline(
             pipelineMetaConfigResult.gitHost,
             pipelineMetaConfigResult.webhookEvents,
             pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
+            isBlobStorageConfigured,
         )
     })
 }
@@ -305,6 +324,9 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
         isManual: formData.triggerType == TriggerType.Manual,
+        ...(formData.workflowCacheConfig ? {
+            workflowCacheConfig: formData.workflowCacheConfig,
+        } : {}),
         ciMaterial: formData.materials
             .filter((mat) => mat.isSelected)
             .map((mat) => {
@@ -480,6 +502,7 @@ function parseCIResponse(
     gitHost,
     webhookEvents,
     ciPipelineSourceTypeOptions,
+    isBlobStorageConfigured?: boolean,
 ) {
     if (ciPipeline) {
         if (ciPipeline.beforeDockerBuildScripts) {
@@ -544,10 +567,12 @@ function parseCIResponse(
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
                 enableCustomTag: ciPipeline.enableCustomTag,
+                workflowCacheConfig: ciPipeline.workflowCacheConfig ?? null,
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
+            isBlobStorageConfigured: isBlobStorageConfigured ?? false,
         }
     }
 }

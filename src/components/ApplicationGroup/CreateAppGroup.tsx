@@ -189,7 +189,7 @@ export default function CreateAppGroup({
             <GenericEmptyState
                 title={title}
                 image={Info}
-                imageClassName="h-20"
+                imageClassName="h-20 scn-6"
                 styles={{ height: 'calc(100vh - 420px)' }}
             />
         )

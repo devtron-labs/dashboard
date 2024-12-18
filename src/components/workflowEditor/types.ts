@@ -338,6 +338,7 @@ export interface PipelineContext {
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
     mandatoryPluginData: MandatoryPluginDataType
+    isBlobStorageConfigured?: boolean
     uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 

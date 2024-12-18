@@ -1677,7 +1677,7 @@ const DeploymentTemplate = ({
 
         return (
             <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
-                <ICInfoOutlineGrey className="flex icon-dim-16 p-2 dc__no-shrink" />
+                <ICInfoOutlineGrey className="flex icon-dim-16 dc__no-shrink scn-6" />
                 <div className="flexbox">
                     <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">
                         Application metrics is {!baseDeploymentTemplateData?.isAppMetricsEnabled ? 'not' : ''} enabled
