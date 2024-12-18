@@ -394,17 +394,14 @@ export const validateDirectPermissionForm = (
             if (updatedPermission.team) {
                 if (updatedPermission.entityName.length === 0) {
                     isErrorInCurrentItem = true
-                    // eslint-disable-next-line no-param-reassign
                     updatedPermission.entityNameError = `${updatedPermission.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
                 }
                 if (updatedPermission.environment.length === 0) {
                     isErrorInCurrentItem = true
-                    // eslint-disable-next-line no-param-reassign
                     updatedPermission.environmentError = 'Environments are mandatory'
                 }
                 if (updatedPermission.entity === EntityTypes.JOB && updatedPermission.workflow?.length === 0) {
                     isErrorInCurrentItem = true
-                    // eslint-disable-next-line no-param-reassign
                     updatedPermission.workflowError = 'Workflows are mandatory'
                 }
             }
