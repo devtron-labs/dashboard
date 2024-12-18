@@ -386,33 +386,34 @@ export const validateDirectPermissionForm = (
         boolean
     > = structuredClone(DEFAULT_ACCESS_TYPE_TO_ERROR_MAP)
 
-    const tempPermissions = directPermission.reduce<PermissionConfigurationFormContext['directPermission']>(
-        (agg, curr) => {
+    const tempPermissions = directPermission.map<PermissionConfigurationFormContext['directPermission'][number]>(
+        (permission) => {
             let isErrorInCurrentItem = false
-            if (curr.team) {
-                if (curr.entityName.length === 0) {
+            const updatedPermission = structuredClone(permission)
+
+            if (updatedPermission.team) {
+                if (updatedPermission.entityName.length === 0) {
                     isErrorInCurrentItem = true
                     // eslint-disable-next-line no-param-reassign
-                    curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
+                    updatedPermission.entityNameError = `${updatedPermission.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
                 }
-                if (curr.environment.length === 0) {
+                if (updatedPermission.environment.length === 0) {
                     isErrorInCurrentItem = true
                     // eslint-disable-next-line no-param-reassign
-                    curr.environmentError = 'Environments are mandatory'
+                    updatedPermission.environmentError = 'Environments are mandatory'
                 }
-                if (curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
+                if (updatedPermission.entity === EntityTypes.JOB && updatedPermission.workflow?.length === 0) {
                     isErrorInCurrentItem = true
                     // eslint-disable-next-line no-param-reassign
-                    curr.workflowError = 'Workflows are mandatory'
+                    updatedPermission.workflowError = 'Workflows are mandatory'
                 }
             }
 
             if (isErrorInCurrentItem) {
-                accessTypeToErrorMap[curr.accessType] = isErrorInCurrentItem
+                accessTypeToErrorMap[updatedPermission.accessType] = isErrorInCurrentItem
             }
 
-            agg.push(curr)
-            return agg
+            return updatedPermission
         },
         [],
     )
