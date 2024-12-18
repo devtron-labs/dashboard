@@ -76,6 +76,7 @@ export const GitInfoMaterial = ({
     handleSidebarTabChange,
     runtimeParams,
     handleRuntimeParamChange,
+    runtimeParamsErrorState,
     handleRuntimeParamError,
     isBulkCIWebhook,
     webhookPayloads,
@@ -83,6 +84,7 @@ export const GitInfoMaterial = ({
     setIsWebhookBulkCI,
     isBulk = false,
     appId,
+    uploadFile,
 }: GitInfoMaterialProps) => {
     const { push } = useHistory()
     const location = useLocation()
@@ -157,6 +159,9 @@ export const GitInfoMaterial = ({
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}
+                            hasError={{
+                                [CIMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 ) : (
@@ -374,10 +379,13 @@ export const GitInfoMaterial = ({
                 <RuntimeParameters
                     // Have to add key for appId since key value config would not be updated incase of app change
                     key={`runtime-parameters-${appId}`}
+                    appId={+appId}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}
-                    onError={handleRuntimeParamError}
+                    errorState={runtimeParamsErrorState}
+                    handleError={handleRuntimeParamError}
+                    uploadFile={uploadFile}
                 />
             )
         }
