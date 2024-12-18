@@ -463,7 +463,13 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    const fetchResourceTree = () =>
+    const fetchResourceTree = () => {
+        if (appDetailsAbortRef.current) {
+            appDetailsAbortRef.current.abort()
+        }
+
+        appDetailsAbortRef.current = new AbortController()
+        
         fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then((response) => {
                 if (
@@ -490,6 +496,7 @@ export const Details: React.FC<DetailsType> = ({
             .finally(() => {
                 setLoadingResourceTree(false)
             })
+    }
 
     function _getDeploymentStatusDetail(
         deploymentAppType: DeploymentAppTypes,
@@ -662,6 +669,7 @@ export const Details: React.FC<DetailsType> = ({
                 isDevtronApp
                 isDeploymentBlocked={isDeploymentBlocked}
                 isVirtualEnvironment={isVirtualEnvRef.current}
+                handleFetchResourceTree={fetchResourceTree}
             />
         )
     }

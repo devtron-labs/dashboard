@@ -23,11 +23,26 @@ import { ApplicationObject, NodeTreeTabListProps, NodeType } from '../appDetails
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, useSearchString, ALL_RESOURCE_KIND_FILTER } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    useSearchString,
+    ALL_RESOURCE_KIND_FILTER,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+    ButtonComponentType
+} from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
 
-export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
+export default function NodeTreeTabList({
+    logSearchTerms,
+    setLogSearchTerms,
+    tabRef,
+    handleFetchResourceTree = null,
+}: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
     const filterType = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
@@ -117,7 +132,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
     return (
         <div
             data-testid="resource-tree-wrapper"
-            className="resource-tree-wrapper flexbox px-12 dc__position-sticky dc__zi-10"
+            className="resource-tree-wrapper flexbox dc__content-space px-12 dc__position-sticky dc__zi-10"
             style={{ outline: 'none', top: '77px' }}
             tabIndex={0}
             ref={tabRef}
@@ -178,6 +193,19 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                     )
                 })}
             </ul>
+
+            {handleFetchResourceTree && (
+                <Button
+                    dataTestId='reload-resource-tree-button'
+                    icon={<ICArrowClockwise className='scn-6' />}
+                    onClick={handleFetchResourceTree}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.small}
+                    style={ButtonStyleType.neutral}
+                    component={ButtonComponentType.button}
+                    ariaLabel={"Reload resource tree details"}
+                />
+            )}
         </div>
     )
 }

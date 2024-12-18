@@ -404,6 +404,7 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
     appType?: string
     isExternalApp?: boolean
+    handleFetchResourceTree?: () => void
 }
 
 export interface OptionsBase {
@@ -505,7 +506,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pi
     manifestGUIFormRef: FormProps['ref']
 }
 
-export interface NodeTreeDetailTabProps {
+export interface NodeTreeDetailTabProps extends Pick<NodeTreeTabListProps, 'handleFetchResourceTree'> {
     appDetails: AppDetails
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
