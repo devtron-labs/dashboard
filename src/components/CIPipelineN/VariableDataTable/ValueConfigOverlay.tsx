@@ -133,7 +133,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
             // MULTIPLIER IS SWITCHING BETWEEN 'KB' and 'MB'
             const unitMultiplier = unit.label === FilePropertyTypeSizeUnit.MB ? 1 / 1024 : 1024
             const maxSize = fileInfo.maxUploadSize
-                ? (parseFloat(fileInfo.maxUploadSize) * unitMultiplier).toString()
+                ? (parseFloat(fileInfo.maxUploadSize) * unitMultiplier).toFixed(3)
                 : fileInfo.maxUploadSize
 
             handleFilePropertyChange({ maxUploadSize: maxSize, sizeUnit: unit })
