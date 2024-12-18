@@ -200,6 +200,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                                 size={ComponentSizeType.large}
                                 menuSize={ComponentSizeType.xs}
                                 isDisabled={!!fileSize.error}
+                                menuPortalTarget={document.getElementById('visible-modal')}
                             />
                         </div>
                     </div>
@@ -295,7 +296,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
             onClose={handlePopupClose}
             showIconDot={showIconDot}
             disableClose={
-                (row.data.format.value === VariableTypeFormat.FILE && hasFileMountError) ||
+                (row.data.format.value === VariableTypeFormat.FILE && (hasFileMountError || !!fileSize.error)) ||
                 (row.data.format.value === VariableTypeFormat.NUMBER && hasChoicesError)
             }
             placement="left"
