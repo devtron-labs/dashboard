@@ -314,7 +314,7 @@ export const Sidebar = ({
     }
 
     const handleSetIsInheriting = () => {
-        // MOTE: don't do anything if in oss
+        // NOTE: don't do anything if in oss
         if (!formData.workflowCacheConfig) {
             return
         }
@@ -334,7 +334,7 @@ export const Sidebar = ({
     }
 
     const handleSetUseRemoteCache = () => {
-        // MOTE: don't do anything if in oss
+        // NOTE: don't do anything if in oss
         if (!formData.workflowCacheConfig) {
             return
         }

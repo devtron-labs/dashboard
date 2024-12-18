@@ -27,15 +27,12 @@ import {
     ModuleNameMap,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType } from '../workflowEditor/types'
-
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -139,11 +136,11 @@ export function getPipelineMetaConfiguration(
     isNewPipeline: boolean = true,
     isJobCard = false,
 ): Promise<any> {
-    return getPipelineBaseMetaConfiguration(appId, isFELibAvailable ? {
+    return getPipelineBaseMetaConfiguration(appId, {
         // NOTE: need to send pipelineType to get corresponding workflowCacheConfig;
-        // since its enterprise only feature, will send queryParams only if fe-lib is present
+        // this queryParam will be ignored in oss
         pipelineType: isJobCard ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
-    } : null).then((baseResponse) => {
+    }).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         const _materials = baseResponse.result.materials || []
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
