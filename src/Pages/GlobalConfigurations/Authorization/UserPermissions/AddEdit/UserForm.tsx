@@ -43,7 +43,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
+import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getCreatableChipStyle } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
@@ -138,9 +138,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
+        if (!validateForm() || !validateDirectPermissionForm(directPermission, setDirectPermission).isComplete) {
             return
         }
+
         setSubmitting(true)
 
         const payload = createUserPermissionPayload({
