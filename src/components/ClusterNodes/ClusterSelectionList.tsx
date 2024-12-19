@@ -22,10 +22,8 @@ import {
     useUrlFilters,
     Tooltip,
     ClusterFiltersType,
-    ClusterStatusType,
     ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
-    SegmentedBarChart,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -55,14 +53,6 @@ const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'f
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
-
-const getClusterMapData = (data: ClusterDetail[]) =>
-    data.map(({ name, id, nodeCount, status }) => ({
-        name,
-        status,
-        href: `${URLS.RESOURCE_BROWSER}/${id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-        value: nodeCount ?? 0,
-    }))
 
 const parseSearchParams = (searchParams: URLSearchParams) => ({
     clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
@@ -108,110 +98,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
     }, [searchKey, clusterOptions, `${clusterFilter}`, sortBy, sortOrder])
-
-    let healthyCount = 0
-    let unhealthyCount = 0
-    let connectionFailedCount = 0
-    let prodCount = 0
-
-    filteredList.forEach((dataItem) => {
-        if (dataItem.isProd) {
-            prodCount += 1
-        }
-        switch (
-            dataItem.status // Replace 'status' with the property to check
-        ) {
-            case 'healthy':
-                healthyCount += 1
-                break
-            case 'unhealthy':
-                unhealthyCount += 1
-                break
-            case 'connection failed':
-                connectionFailedCount += 1
-                break
-            default:
-                // Handle cases for unexpected or missing properties, if needed
-                break
-        }
-    })
-
-    const entities = [
-        {
-            value: healthyCount,
-            label: 'Healthy',
-            color: 'var(--G500)',
-            proportionalValue: `${healthyCount}/${filteredList.length}`,
-        },
-        {
-            value: unhealthyCount,
-            label: 'Unhealthy',
-            color: 'var(--Y500)',
-            proportionalValue: `${unhealthyCount}/${filteredList.length}`,
-        },
-        {
-            value: connectionFailedCount,
-            label: 'Connection Failed',
-            color: 'var(--R500)',
-            proportionalValue: `${connectionFailedCount}/${filteredList.length}`,
-        },
-    ]
-
-    const prodEntity = [
-        {
-            value: prodCount,
-            label: 'Production',
-            color: 'var(--B300)',
-            proportionalValue: `${prodCount}/${filteredList.length}`,
-        },
-        {
-            value: filteredList.length - prodCount,
-            label: 'Non-Production',
-            color: 'var(--N300',
-            proportionalValue: `${filteredList.length - prodCount}/${filteredList.length}`,
-        },
-    ]
-
-    const treeMapData = useMemo(() => {
-        const { prodClusters, nonProdClusters } = filteredList.reduce(
-            (acc, curr) => {
-                if (curr.status && curr.status !== ClusterStatusType.CONNECTION_FAILED) {
-                    if (curr.isProd) {
-                        acc.prodClusters.push(curr)
-                    } else {
-                        acc.nonProdClusters.push(curr)
-                    }
-                }
-
-                return acc
-            },
-            { prodClusters: [], nonProdClusters: [] },
-        )
-
-        const productionClustersData = getClusterMapData(prodClusters)
-        const nonProductionClustersData = getClusterMapData(nonProdClusters)
-
-        return [
-            ...(productionClustersData.length
-                ? [
-                      {
-                          id: 0,
-                          label: 'Production Clusters',
-                          data: productionClustersData,
-                      },
-                  ]
-                : []),
-            ...(nonProductionClustersData.length
-                ? [
-                      {
-                          id: 1,
-                          label: 'Non-Production Clusters',
-                          data: nonProductionClustersData,
-                      },
-                  ]
-                : []),
-        ]
-    }, [filteredList])
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
@@ -368,28 +254,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            <div className="cluster-map pb-16 px-20">
-                <div
-                    className="w-100 p-12 dc__border-n1 br-8 dc__grid dc__align-items-center dc__gap-6"
-                    style={{
-                        gridTemplateColumns: `repeat(${clusterListLoader ? 1 : treeMapData.length}, 1fr)`,
-                    }}
-                >
-                    <SegmentedBarChart
-                        entities={entities}
-                        rootClassName="p-16 fs-13"
-                        countClassName="fw-6 fs-20 lh-26"
-                        labelClassName=""
-                    />
-                    <SegmentedBarChart
-                        entities={prodEntity}
-                        rootClassName="p-16 fs-13"
-                        countClassName="fw-6 fs-20 lh-26"
-                    />
-                </div>
-            </div>
             {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
-                <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+                <ClusterMap
+                    isLoading={clusterListLoader}
+                    filteredList={filteredList}
+                    clusterListLoader={clusterListLoader}
+                    isPropotional
+                />
             )}
             {!filteredList.length ? (
                 <div className="flex-grow-1">
