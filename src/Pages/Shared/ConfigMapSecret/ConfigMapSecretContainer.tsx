@@ -24,13 +24,14 @@ import {
     useAsync,
     useForm,
     usePrompt,
+    checkIfPathIsMatching,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { checkIfPathIsMatching, FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import {

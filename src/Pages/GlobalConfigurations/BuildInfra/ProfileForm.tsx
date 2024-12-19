@@ -86,7 +86,7 @@ const ProfileForm: FunctionComponent = () => {
                         profileInput={profileInput}
                         profileInputErrors={profileInputErrors}
                         handleProfileInputChange={handleProfileInputChange}
-                        isDefaultProfile
+                        isGlobalProfile
                         unitsMap={profileResponse?.configurationUnits}
                     />
                 </APIResponseHandler>

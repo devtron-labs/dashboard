@@ -15,12 +15,13 @@ import {
     hasHashiOrAWS,
     MODES,
     useAsync,
+    checkIfPathIsMatching,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { checkIfPathIsMatching, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
