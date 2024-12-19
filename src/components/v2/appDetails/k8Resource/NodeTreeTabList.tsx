@@ -41,7 +41,8 @@ export default function NodeTreeTabList({
     logSearchTerms,
     setLogSearchTerms,
     tabRef,
-    handleFetchResourceTree = null,
+    handleReloadResourceTree,
+    isReloadResourceTreeInProgress,
 }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
@@ -50,6 +51,8 @@ export default function NodeTreeTabList({
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
+
+    const isK8sResourceTabSelected = applicationObjectTabs.some((tab) => tab.name === AppDetailsTabs.k8s_Resources && tab.isSelected)
 
     const clearLogSearchTerm = (tabIdentifier: string): void => {
         if (logSearchTerms) {
@@ -194,16 +197,17 @@ export default function NodeTreeTabList({
                 })}
             </ul>
 
-            {handleFetchResourceTree && (
+            {isK8sResourceTabSelected && (
                 <Button
-                    dataTestId='reload-resource-tree-button'
-                    icon={<ICArrowClockwise className='scn-6' />}
-                    onClick={handleFetchResourceTree}
+                    dataTestId="reload-resource-tree-button"
+                    icon={<ICArrowClockwise className="scn-6" />}
+                    onClick={handleReloadResourceTree}
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.small}
                     style={ButtonStyleType.neutral}
                     component={ButtonComponentType.button}
-                    ariaLabel={"Reload resource tree details"}
+                    ariaLabel="Refetch resources"
+                    isLoading={isReloadResourceTreeInProgress}
                 />
             )}
         </div>

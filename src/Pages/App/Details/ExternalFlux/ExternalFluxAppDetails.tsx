@@ -23,6 +23,7 @@ import {
     noop,
     DeploymentAppTypes,
     Progressing,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -40,6 +41,7 @@ const ExternalFluxAppDetails = () => {
     const [isPublishing, setIsPublishing] = useState<boolean>(true)
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
+    const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
     const [isAppDetailsLoading, appDetailsResult, appDetailsError, reloadAppDetails] = useAsync(
         () => getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization),
@@ -58,19 +60,37 @@ const ExternalFluxAppDetails = () => {
         [],
     )
 
+    const handleUpdateIndexStoreWithDetails = (response: typeof appDetailsResult) => {
+        const genericAppDetail: AppDetails = {
+            ...response.result,
+            appStatus: getAppStatus(response.result.appStatus),
+            deploymentAppType: DeploymentAppTypes.FLUX,
+            fluxTemplateType: templateType,
+        }
+
+        IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+    }
+
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
             initTimer = setTimeout(reloadAppDetails, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
-            const genericAppDetail: AppDetails = {
-                ...appDetailsResult.result,
-                appStatus: getAppStatus(appDetailsResult.result.appStatus),
-                deploymentAppType: DeploymentAppTypes.FLUX,
-                fluxTemplateType: templateType,
-            }
-            IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+            handleUpdateIndexStoreWithDetails(appDetailsResult)
             setIsPublishing(false)
         }
     }, [appDetailsResult])
+
+    const handleReloadResourceTree = () => {
+        setIsReloadResourceTreeInProgress(true)
+
+        getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization)
+            .then(handleUpdateIndexStoreWithDetails)
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setIsReloadResourceTreeInProgress(false)
+            })
+    }
 
     if (!isSuperAdmin) {
         return <ErrorScreenManager code={403} />
@@ -93,6 +113,8 @@ const ExternalFluxAppDetails = () => {
             _init={noop}
             loadingDetails={isLoadingOnMount}
             loadingResourceTree={isLoadingOnMount}
+            handleReloadResourceTree={handleReloadResourceTree}
+            isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
         />
     )
 }

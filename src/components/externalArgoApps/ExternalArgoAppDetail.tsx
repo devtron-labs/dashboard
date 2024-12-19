@@ -34,6 +34,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const location = useLocation()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
+    const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
 
     let initTimer = null
@@ -70,6 +71,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
 
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
+        setIsReloadResourceTreeInProgress(true)
         getArgoAppDetail(appName, clusterId, namespace)
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
@@ -85,6 +87,9 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 setErrorResponseCode(errors.code)
                 setIsLoading(false)
                 isAPICallInProgress = false
+            })
+            .finally(() => {
+                setIsReloadResourceTreeInProgress(false)
             })
     }
 
@@ -109,6 +114,8 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
             loadingDetails={false}
             _init={_init}
             loadingResourceTree={false}
+            handleReloadResourceTree={_getAndSetAppDetail}
+            isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
         />
     )
 }
