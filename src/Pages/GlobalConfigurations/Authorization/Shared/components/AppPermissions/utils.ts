@@ -24,26 +24,32 @@ import { DirectPermissionRow } from './types'
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
     [
         {
+            // Access type is applicable for direct permissions only
+            accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
             tabName: 'devtron-apps',
             label: 'Devtron Apps',
             isHidden: serverMode === SERVER_MODE.EA_ONLY,
         },
         {
+            accessType: ACCESS_TYPE_MAP.HELM_APPS,
             tabName: 'helm-apps',
             label: 'Helm Apps',
             isHidden: false,
         },
         {
+            accessType: ACCESS_TYPE_MAP.JOBS,
             tabName: 'jobs',
             label: 'Jobs',
             isHidden: serverMode === SERVER_MODE.EA_ONLY,
         },
         {
+            accessType: null,
             tabName: 'kubernetes-objects',
             label: 'Kubernetes Resources',
             isHidden: !superAdmin,
         },
         {
+            accessType: null,
             tabName: 'chart-groups',
             label: 'Chart Groups',
             isHidden: serverMode === SERVER_MODE.EA_ONLY,

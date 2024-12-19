@@ -51,11 +51,16 @@ import {
     PermissionType,
     ViewChartGroupPermission,
     TERMINAL_EXEC_ACTION,
+    DEFAULT_ACCESS_TYPE_TO_ERROR_MAP,
 } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
+import {
+    AccessTypeToErrorMapType,
+    PermissionConfigurationFormContext,
+} from './Shared/components/PermissionConfigurationForm/types'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -368,31 +373,51 @@ export const createUserPermissionPayload = ({
     userGroups,
 })
 
-export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
-    let isComplete = true
-    const tempPermissions = directPermission.reduce((agg, curr) => {
-        if (curr.team) {
-            if (curr.entityName.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
-            }
-            if (curr.environment.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.environmentError = 'Environments are mandatory'
-            }
-            if (curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.workflowError = 'Workflows are mandatory'
-            }
-        }
-        agg.push(curr)
-        return agg
-    }, [])
+export const validateDirectPermissionForm = (
+    directPermission: PermissionConfigurationFormContext['directPermission'],
+    setDirectPermission: PermissionConfigurationFormContext['setDirectPermission'],
+    showErrorToast: boolean = true,
+): {
+    isValid: boolean
+    accessTypeToErrorMap: AccessTypeToErrorMapType
+} => {
+    const accessTypeToErrorMap: Record<
+        PermissionConfigurationFormContext['directPermission'][number]['accessType'],
+        boolean
+    > = structuredClone(DEFAULT_ACCESS_TYPE_TO_ERROR_MAP)
 
-    if (!isComplete) {
+    const tempPermissions = directPermission.map<PermissionConfigurationFormContext['directPermission'][number]>(
+        (permission) => {
+            let isErrorInCurrentItem = false
+            const updatedPermission = structuredClone(permission)
+
+            if (updatedPermission.team) {
+                if (updatedPermission.entityName.length === 0) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.entityNameError = `${updatedPermission.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
+                }
+                if (updatedPermission.environment.length === 0) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.environmentError = 'Environments are mandatory'
+                }
+                if (updatedPermission.entity === EntityTypes.JOB && updatedPermission.workflow?.length === 0) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.workflowError = 'Workflows are mandatory'
+                }
+            }
+
+            if (isErrorInCurrentItem) {
+                accessTypeToErrorMap[updatedPermission.accessType] = isErrorInCurrentItem
+            }
+
+            return updatedPermission
+        },
+        [],
+    )
+
+    const isFormValid = Object.values(accessTypeToErrorMap).every((val) => !val)
+
+    if (!isFormValid && showErrorToast) {
         ToastManager.showToast({
             variant: ToastVariantType.error,
             description: REQUIRED_FIELDS_MISSING,
@@ -400,7 +425,7 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
         setDirectPermission(tempPermissions)
     }
 
-    return isComplete
+    return { isValid: isFormValid, accessTypeToErrorMap }
 }
 
 const isRoleCustom = (roleValue: string) =>
