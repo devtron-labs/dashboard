@@ -17,12 +17,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
 import {
-    ConditionalWrap,
     VisibleModal,
     DetailsProgressing,
+    Button,
+    ComponentSizeType,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { CSV_HEADERS, ExportToCsvProps, FILE_NAMES } from './constants'
 import { ReactComponent as ExportIcon } from '../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
@@ -33,7 +35,6 @@ import './exportToCsv.scss'
 export default function ExportToCsv({
     apiPromise,
     fileName,
-    className = '',
     disabled = false,
     showOnlyIcon = false,
 }: ExportToCsvProps) {
@@ -94,24 +95,22 @@ export default function ExportToCsv({
 
     const renderModalCTA = () => {
         return (
-            <div className="modal__CTA flex right dc__border-top">
-                <button
-                    type="button"
-                    className="flex cta cancel h-32"
+            <div className="modal__CTA flex right dc__gap-12 dc__border-top">
+                <Button
+                    dataTestId="close-export-csv-button"
+                    text={exportingData ? 'Cancel' : 'Close'}
                     onClick={handleCancelAction}
-                    data-testid="close-export-csv-button"
-                >
-                    {exportingData ? 'Cancel' : 'Close'}
-                </button>
+                    variant={ButtonVariantType.secondary}
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                />
                 {!exportingData && errorExportingData && (
-                    <button
-                        type="button"
-                        className="flex cta ml-12 h-32"
+                    <Button
+                        dataTestId="retry-export-csv-button"
+                        text="Retry"
                         onClick={generateDataToExport}
-                        data-testid="retry-export-csv-button"
-                    >
-                        Retry
-                    </button>
+                        size={ComponentSizeType.medium}
+                    />
                 )}
             </div>
         )
@@ -154,28 +153,28 @@ export default function ExportToCsv({
     }
 
     return (
-        <div
-            className={`export-to-csv-button ${showOnlyIcon ? 'w-32' : ''} h-32 ${className}`}
-        >
-            <ConditionalWrap
-                condition={disabled}
-                wrap={(children) => (
-                    <Tippy className="default-tt" arrow={false} placement="top" content="Nothing to export">
-                        {children}
-                    </Tippy>
-                )}
-            >
-                <button
-                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'w-32 mw-none' : 'w-100'} h-32 ${
-                        disabled ? 'nothing-to-export' : ''
-                    }`}
-                    onClick={generateDataToExport}
-                    data-testid="export-csv-button"
-                >
-                    <ExportIcon className="icon-dim-16" />
-                    {!showOnlyIcon && <span>Export CSV</span>}
-                </button>
-            </ConditionalWrap>
+        <div>
+            <Button
+                {...(showOnlyIcon
+                    ? {
+                          icon: <ExportIcon />,
+                          ariaLabel: 'Export CSV',
+                          showAriaLabelInTippy: false,
+                      }
+                    : {
+                          text: 'Export CSV',
+                          startIcon: <ExportIcon />,
+                      })}
+                onClick={generateDataToExport}
+                size={ComponentSizeType.medium}
+                variant={ButtonVariantType.secondary}
+                dataTestId="export-csv-button"
+                disabled={disabled}
+                showTooltip={disabled}
+                tooltipProps={{
+                    content: 'Nothing to export',
+                }}
+            />
             <CSVLink
                 ref={csvRef}
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}

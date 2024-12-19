@@ -14,35 +14,6 @@
  * limitations under the License.
  */
 
-.export-to-csv-button {
-    width: 120px;
-
-    .cta.ghosted {
-        padding: 0;
-        border: 1px solid var(--N200);
-
-        &:hover,
-        &:active,
-        &:focus {
-            color: var(--B500);
-            background: white;
-            border: 1px solid var(--B500);
-        }
-
-        &.nothing-to-export {
-            opacity: 0.5;
-            user-select: none;
-            cursor: not-allowed;
-
-            &:hover,
-            &:active,
-            &:focus {
-                border: 1px solid var(--N200);
-            }
-        }
-    }
-}
-
 .export-to-csv-modal {
     .modal__body {
         margin-top: 0;
