@@ -72,7 +72,7 @@ export interface BulkCDDetailTypeResponse {
 export interface BulkCDDetailType
     extends BulkTriggerAppDetailType,
         Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>,
-        Partial<Pick<CommonNodeAttr, 'showPluginWarning'>> {
+        Partial<Pick<CommonNodeAttr, 'showPluginWarning' | 'triggerBlockedInfo'>> {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
@@ -612,5 +612,12 @@ export enum AppGroupUrlFilters {
 }
 
 export interface AppGroupUrlFiltersType extends Record<AppGroupUrlFilters, string[]> {}
+
+export interface SetFiltersInLocalStorageParamsType {
+    filterParentType: FilterParentType
+    resourceId: string
+    resourceList: MultiValue<OptionType>
+    groupList: MultiValue<GroupOptionType>
+}
 
 export type AppEnvLocalStorageKeyType = `${string}__filter`

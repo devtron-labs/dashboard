@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { DeploymentAppTypes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
@@ -23,7 +23,7 @@ import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
-import { DO_NOT_DEPLOY } from '../../Constants'
+import { getNodeSideHeadingAndClass } from './workflow.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
@@ -89,30 +89,6 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
         this.handleShowGitOpsRepoConfiguredWarning()
     }
 
-    getNodeSideHeadingContainerClassName = (): string => {
-        if (this.props.isTriggerBlocked) {
-            return 'bcr-1 er-2 bw-1 cr-5 dc__opacity-1'
-        }
-
-        if (this.props.isDeploymentBlocked ) {
-            return 'bcy-5 cn-9 dc__opacity-1'
-        }
-
-        return ''
-    }
-
-    getNodeSideHeadingText = (): string => {
-        if (this.props.isTriggerBlocked) {
-            return 'BLOCKED'
-        }
-
-        if (this.props.isDeploymentBlocked) {
-            return DO_NOT_DEPLOY
-        }
-
-        return this.props.triggerType
-    }
-
     renderCardContent() {
         const status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
         const stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
@@ -124,6 +100,11 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
+                    const { heading, className: nodeSideClass } = getNodeSideHeadingAndClass(
+                        this.props.isTriggerBlocked,
+                        this.props.isDeploymentBlocked,
+                        this.props.triggerType,
+                    )
                     return (
                         <>
                             <div
@@ -135,9 +116,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 }}
                             >
                                 <div
-                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.getNodeSideHeadingContainerClassName()}`}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd flex fw-6 ${nodeSideClass}`}
                                 >
-                                    {this.getNodeSideHeadingText()}
+                                    <span>{heading}</span>
                                 </div>
                                 <div className="workflow-node__title flex">
                                     <div className="workflow-node__full-width-minus-Icon">

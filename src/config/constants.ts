@@ -772,11 +772,6 @@ export enum MANIFEST_KEY_FIELDS {
     DATA = 'data',
 }
 
-export enum KEY_VALUE {
-    KEY = 'key',
-    VALUE = 'value',
-}
-
 export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',

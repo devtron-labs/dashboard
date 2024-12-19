@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
+import { DO_NOT_DEPLOY } from '../../Constants'
 
 export const envDescriptionTippy = (environmentName: string, description: string) => {
     return (
@@ -33,4 +33,23 @@ export const envDescriptionTippy = (environmentName: string, description: string
             <span className="dc__ellipsis-right">{environmentName}</span>
         </Tippy>
     )
+}
+
+export const getNodeSideHeadingAndClass = (
+    isTriggerBlocked: boolean,
+    isDeploymentBlocked: boolean,
+    triggerType: string,
+): {
+    heading: string
+    className: string
+} => {
+    if (isTriggerBlocked) {
+        return { heading: 'BLOCKED', className: 'bcr-1 er-2 bw-1 cr-5 dc__opacity-1' }
+    }
+
+    if (isDeploymentBlocked) {
+        return { heading: DO_NOT_DEPLOY, className: 'bcy-5 cn-9 dc__opacity-1' }
+    }
+
+    return { heading: triggerType, className: '' }
 }
