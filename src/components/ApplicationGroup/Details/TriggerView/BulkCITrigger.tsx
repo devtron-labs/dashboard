@@ -90,7 +90,11 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
 )
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
-const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 const BulkCITrigger = ({
     appList,

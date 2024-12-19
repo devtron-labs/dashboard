@@ -960,6 +960,7 @@ export const ConfigMapSecretContainer = ({
                         userApprovalMetadata={draftData?.userApprovalMetadata}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                         hidePatchOption={isJob || formData.external}
+                        isMergeStrategySelectorDisabled={resolveScopedVariables}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
                         isDraftPresent={!!draftData}

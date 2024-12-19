@@ -82,6 +82,7 @@ const ConfigToolbar = ({
     mergeStrategy,
     handleMergeStrategyChange,
     hidePatchOption,
+    isMergeStrategySelectorDisabled,
 
     showEnableReadMeButton,
     handleEnableReadmeView,
@@ -293,7 +294,7 @@ const ConfigToolbar = ({
                         <SelectMergeStrategy
                             mergeStrategy={mergeStrategy}
                             handleMergeStrategyChange={handleMergeStrategyChange}
-                            isDisabled={isDisabled}
+                            isDisabled={isDisabled || isMergeStrategySelectorDisabled}
                             variant={isEditView ? 'dropdown' : 'text'}
                             hidePatchOption={hidePatchOption}
                         />
