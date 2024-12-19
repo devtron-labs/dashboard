@@ -36,6 +36,8 @@ import {
     getEmptyTagTableRow,
     validateTagKeyValue,
     validateTagValue,
+    DynamicDataTableCellErrorType,
+    TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -175,31 +177,28 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         e.preventDefault()
         const labelTags = []
         let invalidLabels = false
+        const updatedTagsError: DynamicDataTableCellErrorType<TagsTableColumnsType> = {}
         for (let index = 0; index < this.state.tags.length; index++) {
             const currentTag = this.state.tags[index]
             const currentKey = currentTag.data.tagKey.value
             const currentVal = currentTag.data.tagValue.value
+            updatedTagsError[currentTag.id] = {
+                tagKey: { isValid: true, errorMessages: [] },
+                tagValue: { isValid: true, errorMessages: [] },
+            }
             if (!currentKey && !currentVal) {
                 continue
             }
-            const {isValid: isKeyValid, errorMessages: keyErrorMessages} = validateTagKeyValue(currentKey)
-            const {isValid: isValueValid, errorMessages: valueErrorMessages} = validateTagValue(currentVal, currentKey)
+            const { isValid: isKeyValid, errorMessages: keyErrorMessages } = validateTagKeyValue(currentKey)
+            const { isValid: isValueValid, errorMessages: valueErrorMessages } = validateTagValue(
+                currentVal,
+                currentKey,
+            )
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
-                this.setTagsError({
-                    ...this.state.tagsError,
-                    [currentTag.id]: {
-                        tagKey: {
-                            isValid: isKeyValid,
-                            errorMessages: keyErrorMessages
-                        },
-                        tagValue: {
-                            isValid: isValueValid,
-                            errorMessages: valueErrorMessages
-                        },
-                    },
-                })
-            } else if (currentKey && currentVal) {
+                updatedTagsError[currentTag.id].tagKey = { isValid: isKeyValid, errorMessages: keyErrorMessages }
+                updatedTagsError[currentTag.id].tagValue = { isValid: isValueValid, errorMessages: valueErrorMessages }
+            } else if (isKeyValid && isValueValid) {
                 labelTags.push({
                     key: currentKey,
                     value: currentVal,
@@ -207,6 +206,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 })
             }
         }
+        this.setTagsError(updatedTagsError)
         this.setState({ showErrors: true, appNameErrors: true })
         const allKeys = Object.keys(this.state.isValid)
         const isFormValid = allKeys.reduce((valid, key) => {

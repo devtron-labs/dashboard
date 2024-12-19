@@ -692,7 +692,7 @@ function cdPipelineToNode(
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
-            isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
+            isTriggerBlocked: preDeployStageFallback?.isTriggerBlocked,
             triggerBlockedInfo: preDeployStageFallback?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
         }
@@ -788,7 +788,7 @@ function cdPipelineToNode(
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
-            isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
+            isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked || cdPipeline.postStage?.isTriggerBlocked,
             triggerBlockedInfo:
                 cdPipeline.postDeployStage?.triggerBlockedInfo || cdPipeline.postStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),

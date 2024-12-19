@@ -68,10 +68,15 @@ export default function AboutTagEditModal({
         e.preventDefault()
         const customLabelTags = []
         let invalidLabels = false
+        const updatedTagsError: DynamicDataTableCellErrorType<TagsTableColumnsType> = {}
         for (let index = 0; index < labelTags.length; index++) {
             const element = labelTags[index]
             const currentKey = element.data.tagKey.value
             const currentVal = element.data.tagValue.value
+            updatedTagsError[element.id] = {
+                tagKey: { isValid: true, errorMessages: [] },
+                tagValue: { isValid: true, errorMessages: [] },
+            }
             if (!currentKey && !currentVal) {
                 continue
             }
@@ -79,19 +84,8 @@ export default function AboutTagEditModal({
             const {isValid: isValueValid, errorMessages: valueErrorMessages} = validateTagValue(currentVal, currentKey)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
-                setTagErrors({
-                    ...tagsError,
-                    [element.id]: {
-                        tagKey: {
-                            isValid: isKeyValid,
-                            errorMessages: keyErrorMessages
-                        },
-                        tagValue: {
-                            isValid: isValueValid,
-                            errorMessages: valueErrorMessages
-                        },
-                    },
-                })
+                updatedTagsError[element.id].tagKey = { isValid: isKeyValid, errorMessages: keyErrorMessages }
+                updatedTagsError[element.id].tagValue = { isValid: isValueValid, errorMessages: valueErrorMessages }
             } else if (currentKey && currentVal) {
                 customLabelTags.push({
                     key: currentKey,
@@ -100,6 +94,7 @@ export default function AboutTagEditModal({
                 })
             }
         }
+        setTagErrors(updatedTagsError)
         if (invalidLabels) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
