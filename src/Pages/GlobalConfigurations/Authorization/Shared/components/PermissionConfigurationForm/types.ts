@@ -57,3 +57,8 @@ export interface PermissionConfigurationFormContext {
      */
     showStatus: boolean
 }
+
+export type AccessTypeToErrorMapType = Record<
+    PermissionConfigurationFormContext['directPermission'][number]['accessType'],
+    boolean
+>
