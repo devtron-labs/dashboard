@@ -37,7 +37,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
+import { getIsSuperAdminPermission, getRoleFilters, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
@@ -93,7 +93,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isSuperAdminPermission && !isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
+        if (!isSuperAdminPermission && !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
             return
         }
         setSubmitting(true)
