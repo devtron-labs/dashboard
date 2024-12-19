@@ -31,13 +31,13 @@ import {
     PluginDataStoreType,
     getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { PluginDetailHeader } from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
 import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
+import { VariableDataTable } from './VariableDataTable'
 
 export const TaskDetailComponent = () => {
     const {
@@ -273,10 +273,10 @@ export const TaskDetailComponent = () => {
                 </div>
                 <hr />
                 {selectedStep.stepType === PluginType.INLINE ? (
-                    <CustomInputOutputVariables type={PluginVariableType.INPUT} />
+                    <VariableDataTable key={selectedTaskIndex} type={PluginVariableType.INPUT} isCustomTask />
                 ) : (
                     <VariableContainer type={PluginVariableType.INPUT} />
-                )}{' '}
+                )}
                 <hr />
                 {selectedStep[currentStepTypeVariable]?.inputVariables?.length > 0 && (
                     <>
@@ -289,7 +289,7 @@ export const TaskDetailComponent = () => {
                         <TaskTypeDetailComponent />
                         {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                             ScriptType.CONTAINERIMAGE && (
-                            <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
+                            <VariableDataTable key={selectedTaskIndex} type={PluginVariableType.OUTPUT} isCustomTask />
                         )}
                     </>
                 ) : (

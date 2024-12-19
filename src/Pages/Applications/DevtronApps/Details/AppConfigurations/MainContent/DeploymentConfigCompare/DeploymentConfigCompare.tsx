@@ -14,6 +14,9 @@ import {
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
     EnvResourceType,
+    useMainContext,
+    getCompareSecretsData,
+    getAppEnvDeploymentConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
@@ -39,8 +42,10 @@ import {
     getAppAndEnvIds,
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
+    getAppEnvDeploymentConfigPayload,
+    getIdentifierIdBasedOnConfiguration,
 } from './utils'
-import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
+import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
 
 export const DeploymentConfigCompare = ({
@@ -58,6 +63,7 @@ export const DeploymentConfigCompare = ({
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
     const location = useLocation()
+    const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
@@ -155,7 +161,7 @@ export const DeploymentConfigCompare = ({
         updateSearchParams({
             [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
                 AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
-            compareWithIdentifierId: previousDeploymentData.deploymentTemplateHistoryId,
+            compareWithIdentifierId: previousDeploymentData.wfrId,
             compareWithPipelineId: previousDeploymentData.pipelineId,
             compareWithManifestChartRefId: isManifestView ? previousDeploymentData.chartRefId : null,
         })
@@ -232,8 +238,9 @@ export const DeploymentConfigCompare = ({
             }
         }
 
-        const appConfigData = await Promise.all([
-            getConfigDiffData({
+        // NOTE: ensure order of compare_to (rhs) and compare_with (lhs)
+        const payloads = [
+            getAppEnvDeploymentConfigPayload({
                 type,
                 appName,
                 envName,
@@ -242,7 +249,7 @@ export const DeploymentConfigCompare = ({
                 identifierId,
                 pipelineId,
             }),
-            getConfigDiffData({
+            getAppEnvDeploymentConfigPayload({
                 type,
                 appName,
                 envName,
@@ -251,7 +258,23 @@ export const DeploymentConfigCompare = ({
                 identifierId: chartRefId || compareWithIdentifierId,
                 pipelineId: compareWithPipelineId,
             }),
+        ] as const
+
+        const [secretsData, ...appConfigData] = await Promise.all([
+            !isSuperAdmin ? getCompareSecretsData([...payloads]) : null,
+            getAppEnvDeploymentConfig({
+                params: payloads[0],
+            }),
+            getAppEnvDeploymentConfig({
+                params: payloads[1],
+            }),
         ])
+
+        secretsData?.forEach((data, index) => {
+            if (!appConfigData[index].result.isAppAdmin) {
+                appConfigData[index].result.secretsData = data.secretsData
+            }
+        })
 
         return {
             isManifestComparison: false,
@@ -514,20 +537,41 @@ export const DeploymentConfigCompare = ({
         // NOTE: need to find the corresponding chartRefId(s) for compareWith and compareTo
         // and set/delete them based on _isManifestView
         const _compareWithManifestChartRefId =
-            currentSearchParams.has('compareWithIdentifierId') && _isManifestView
+            chartRefId ??
+            (currentSearchParams.has('compareWithIdentifierId') && _isManifestView
                 ? compareEnvOptions.previousDeployments.find(
-                      (prev) =>
-                          prev.deploymentTemplateHistoryId ===
-                          Number(currentSearchParams.get('compareWithIdentifierId')),
+                      (prev) => prev.wfrId === Number(currentSearchParams.get('compareWithIdentifierId')),
                   )?.chartRefId ?? null
-                : null
+                : null)
 
         const _manifestChartRefId =
             currentSearchParams.has('identifierId') && _isManifestView
                 ? currentEnvOptions.previousDeployments.find(
-                      (prev) => prev.deploymentTemplateHistoryId === Number(currentSearchParams.get('identifierId')),
+                      (prev) => prev.wfrId === Number(currentSearchParams.get('identifierId')),
                   )?.chartRefId ?? null
                 : null
+
+        if (identifierId) {
+            currentSearchParams.set(
+                'identifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: currentEnvOptions.previousDeployments,
+                }),
+            )
+        }
+
+        if (compareWithIdentifierId) {
+            currentSearchParams.set(
+                'compareWithIdentifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId: compareWithIdentifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: compareEnvOptions.previousDeployments,
+                }),
+            )
+        }
 
         if (_compareWithManifestChartRefId) {
             currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))

@@ -19,12 +19,12 @@ import {
     get,
     post,
     ResponseType,
-    ApiResourceGroupType,
     convertJSONPointerToJSONPath,
     getK8sResourceList,
     getIsRequestAborted,
     showError,
     getUrlWithSearchParams,
+    getK8sResourceListPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getManifestResource,
@@ -36,15 +36,8 @@ import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { RefObject } from 'react'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import {
-    CreateResourcePayload,
-    CreateResourceResponse,
-    GetResourceDataType,
-    NodeRowDetail,
-    ResourceListPayloadType,
-    URLParams,
-} from './Types'
-import { ALL_NAMESPACE_OPTION, SIDEBAR_KEYS } from './Constants'
+import { ResourceListPayloadType, ResourceType, GetResourceDataType, NodeRowDetail, URLParams } from './Types'
+import { SIDEBAR_KEYS } from './Constants'
 import { parseNodeList } from './Utils'
 
 export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
@@ -57,31 +50,10 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
         signal,
     })
 
-export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> =>
-    post(Routes.K8S_RESOURCE_CREATE, resourceListPayload)
-
 export const deleteResource = (
     resourceListPayload: ResourceListPayloadType,
     signal?: AbortSignal,
-): Promise<CreateResourceResponse> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
-
-export const getResourceListPayload = (
-    clusterId: string,
-    namespace: string,
-    selectedResource: ApiResourceGroupType,
-    filters: object,
-) => ({
-    clusterId: +clusterId,
-    k8sRequest: {
-        resourceIdentifier: {
-            groupVersionKind: selectedResource.gvk,
-            ...(selectedResource.namespaced && {
-                namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
-            }),
-        },
-    },
-    ...filters,
-})
+): Promise<ResponseType<ResourceType[]>> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
 
 export const restartWorkload = async (resource: SelectedResourceType, signal: AbortSignal) => {
     const {
@@ -177,7 +149,7 @@ export const getResourceData = async ({
         }
 
         return await getK8sResourceList(
-            getResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
             abortControllerRef.current.signal,
         )
     } catch (err) {

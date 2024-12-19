@@ -46,7 +46,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
             if (initTimer) {
                 clearTimeout(initTimer)
             }
-            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_ARGO_APP) // Cleared out the data on unmount
+            IndexStore.clearAppDetails() // Cleared out the data on unmount
         }
     }, [])
 

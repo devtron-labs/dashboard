@@ -47,6 +47,12 @@ import BranchRegexModal from './BranchRegexModal'
 import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
+
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
@@ -64,7 +70,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             savingRegexValue: false,
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
-            runtimeParamsErrorState: false,
+            runtimeParamsErrorState: {
+                isValid: true,
+                cellError: {},
+            },
         }
     }
 
@@ -88,21 +97,13 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         } catch (error) {}
     }
 
-    handleRuntimeParamError = (errorState: boolean) => {
+    handleRuntimeParamError = (updatedRuntimeParamsErrorState: typeof this.state.runtimeParamsErrorState) => {
         this.setState({
-            runtimeParamsErrorState: errorState,
+            runtimeParamsErrorState: updatedRuntimeParamsErrorState,
         })
     }
 
     handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (this.state.runtimeParamsErrorState) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please resolve all the errors before switching tabs',
-            })
-            return
-        }
-
         this.setState({
             currentSidebarTab: e.target.value as CIMaterialSidebarType,
         })
@@ -187,7 +188,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleStartBuildAction = (e) => {
-        if (this.state.runtimeParamsErrorState) {
+        const runtimeParamsErrorState = validateRuntimeParameters(this.props.runtimeParams)
+        this.handleRuntimeParamError(runtimeParamsErrorState)
+
+        if (!runtimeParamsErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please resolve all the errors before starting the build',
@@ -212,15 +216,15 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    renderCTAButtonWithIcon = (canTrigger, isCTAActionable: boolean = true ) => (
+    renderCTAButtonWithIcon = (canTrigger, isCTAActionable: boolean = true) => (
         <Button
             dataTestId="ci-trigger-start-build-button"
-            text={this.props.isJobView ? 'Run Job' : 'Start Build'}
+            text={this.props.isJobView || this.props.isJobCI ? 'Run Job' : 'Start Build'}
             disabled={!canTrigger}
             isLoading={this.props.isLoading}
             onClick={isCTAActionable ? this.handleStartBuildAction : noop}
             size={ComponentSizeType.large}
-            startIcon={this.props.isJobView ? <RunIcon /> : <Play />}
+            startIcon={this.props.isJobView || this.props.isJobCI ? <RunIcon /> : <Play />}
         />
     )
 
@@ -307,8 +311,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         handleSidebarTabChange={this.handleSidebarTabChange}
                         runtimeParams={this.props.runtimeParams}
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
+                        runtimeParamsErrorState={this.state.runtimeParamsErrorState}
                         handleRuntimeParamError={this.handleRuntimeParamError}
                         appId={this.props.appId}
+                        uploadFile={this.props.uploadFile}
                     />
                     {this.props.isCITriggerBlocked ? null : this.renderMaterialStartBuild(canTrigger)}
                     <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />

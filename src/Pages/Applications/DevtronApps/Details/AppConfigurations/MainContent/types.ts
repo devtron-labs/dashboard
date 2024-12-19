@@ -8,9 +8,11 @@ import {
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 
 export interface ConfigHeaderProps {
     configHeaderTab: ConfigHeaderTabType
@@ -96,6 +98,8 @@ export type ConfigToolbarProps = {
 
     mergeStrategy: OverrideMergeStrategyType
     handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
+    hidePatchOption?: boolean
+    isMergeStrategySelectorDisabled?: boolean
 
     /**
      * Used to place toggle editor view and chart selectors in deployment template
@@ -165,6 +169,8 @@ export interface GetConfigToolbarPopupConfigProps {
     isProtected?: boolean
     isDeletable?: boolean
     isDeleteOverrideDraftPresent?: boolean
+    isDeleteDisabled?: boolean
+    deleteDisabledTooltip?: string
 }
 
 type ConfigDryRunManifestProps =
@@ -175,6 +181,16 @@ type ConfigDryRunManifestProps =
     | {
           showManifest?: never
           manifestAbortController?: never
+      }
+
+type ConfigErrorHandlingProps =
+    | {
+          errorInfo: ServerErrors
+          handleErrorReload: () => void
+      }
+    | {
+          errorInfo?: never
+          handleErrorReload?: never
       }
 
 export type ConfigDryRunProps = {
@@ -191,7 +207,13 @@ export type ConfigDryRunProps = {
     isDraftPresent: boolean
     isApprovalPending: boolean
     isPublishedConfigPresent: boolean
-} & ConfigDryRunManifestProps
+    mergeStrategy: OverrideMergeStrategyType
+    /**
+     * Is current view overridden
+     */
+    isOverridden: boolean
+} & ConfigDryRunManifestProps &
+    ConfigErrorHandlingProps
 
 export interface ToggleResolveScopedVariablesProps {
     resolveScopedVariables: boolean
@@ -233,6 +255,7 @@ type CMSecretDiffViewConfigType = {
     externalSubpathValues: DeploymentHistorySingleValue
     filePermission: DeploymentHistorySingleValue
     roleARN: DeploymentHistorySingleValue
+    mergeStrategy: DeploymentHistorySingleValue
 }
 
 type DeploymentTemplateDiffViewConfigType =
@@ -254,13 +277,12 @@ type DeploymentTemplateDiffViewConfigType =
           applicationMetrics?: never
           chartName?: never
           chartVersion?: never
-          mergeStrategy?: never
           isOverride?: never
       }
 
 export type CompareConfigViewEditorConfigType = DeploymentTemplateDiffViewConfigType | CMSecretDiffViewConfigType
 
-export interface CompareConfigViewProps {
+export type CompareConfigViewProps = {
     compareFromSelectedOptionValue: CompareFromApprovalOptionsValuesType
     handleCompareFromOptionSelection: (value: SelectPickerOptionType) => void
     isApprovalView: boolean
@@ -277,7 +299,11 @@ export interface CompareConfigViewProps {
      */
     editorKey?: string
     className?: string
-}
+    /**
+     * @default 'Data'
+     */
+    displayName?: string
+} & ConfigErrorHandlingProps
 
 export interface BaseConfigurationNavigationProps {
     baseConfigurationURL: string
@@ -287,8 +313,39 @@ export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
 }
 
-export interface SelectMergeStrategyProps {
+export type SelectMergeStrategyProps = {
     mergeStrategy: OverrideMergeStrategyType
-    handleMergeStrategyChange: (value: OverrideMergeStrategyType) => void
-    isDisabled: boolean
+    /**
+     * @default `noop`
+     */
+    handleMergeStrategyChange?: (value: OverrideMergeStrategyType) => void
+    /**
+     * @default false
+     */
+    isDisabled?: boolean
+    /**
+     * @default `dropdown`
+     */
+    variant: 'dropdown' | 'text'
+    /**
+     * Boolean to hide the `OverrideMergeStrategy.PATCH` option.
+     */
+    hidePatchOption?: boolean
 }
+
+export type EnvOverrideEditorCommonStateType = Required<
+    Pick<
+        DeploymentTemplateStateType['draftTemplateData'],
+        | 'originalTemplate'
+        | 'editorTemplate'
+        | 'editorTemplateWithoutLockedKeys'
+        | 'environmentConfig'
+        | 'mergeStrategy'
+        | 'mergedTemplate'
+        | 'mergedTemplateObject'
+        | 'mergedTemplateWithoutLockedKeys'
+        | 'isLoadingMergedTemplate'
+        | 'mergedTemplateError'
+        | 'isOverridden'
+    >
+>

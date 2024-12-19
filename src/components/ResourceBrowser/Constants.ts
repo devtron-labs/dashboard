@@ -24,7 +24,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
-        zIndex: 9999,
+        zIndex: 5,
         textAlign: 'left',
     }),
     control: (base, state) => ({
@@ -105,7 +105,6 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
-export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' } as const
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',

@@ -65,7 +65,6 @@ import {
     useDownload,
     SearchBar,
     CDMaterialSidebarType,
-    RuntimeParamsListItemType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
@@ -78,6 +77,8 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    RuntimePluginVariables,
+    uploadCDPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -88,6 +89,7 @@ import {
     TriggerViewContextType,
     BulkSelectionEvents,
     RenderCTAType,
+    RuntimeParamsErrorState,
 } from './types'
 import close from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
@@ -139,19 +141,16 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
-const getSecurityScan: ({
-    appId,
-    envId,
-    installedAppId,
-}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
-    'getSecurityScan',
-    null,
-    'function',
-)
+const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> =
+    importComponentFromFELibrary('getSecurityScan', null, 'function')
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 const CDMaterial = ({
     materialType,
@@ -180,12 +179,14 @@ const CDMaterial = ({
     selectedAppName,
     bulkRuntimeParams,
     handleBulkRuntimeParamChange,
+    bulkRuntimeParamErrorState,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
     showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
     consequence,
     configurePluginURL,
     isTriggerBlockedDueToPlugin,
+    bulkUploadFile,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -270,8 +271,11 @@ const CDMaterial = ({
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
     // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
-    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
+    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimePluginVariables[]>([])
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
+        isValid: true,
+        cellError: {},
+    })
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -385,7 +389,7 @@ const CDMaterial = ({
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                    setRuntimeParamsList(materialsResult.runtimeParams || [])
+                    setRuntimeParamsList(materialsResult.runtimeParams)
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
@@ -405,7 +409,7 @@ const CDMaterial = ({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                setRuntimeParamsList(materialsResult.runtimeParams || [])
+                setRuntimeParamsList(materialsResult.runtimeParams)
 
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
@@ -561,15 +565,23 @@ const CDMaterial = ({
         }))
     }
 
-    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (
-        updatedRuntimeParams: RuntimeParamsListItemType[],
-    ) => {
+    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (updatedRuntimeParams) => {
         setRuntimeParamsList(updatedRuntimeParams)
     }
 
-    const handleRuntimeParamError = (errorState: boolean) => {
-        setRuntimeParamsErrorState(errorState)
+    const onRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
     }
+
+    const handleUploadFile: typeof bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId, envId })
+
+    // RUNTIME PARAMETERS PROPS
+    const parameters = bulkRuntimeParams || runtimeParamsList
+    const errorState = bulkRuntimeParamErrorState || runtimeParamsErrorState
+    const handleRuntimeParamsChange = handleBulkRuntimeParamChange || handleRuntimeParamChange
+    const handleRuntimeParamsError = handleBulkRuntimeParamError || onRuntimeParamsError
+    const uploadRuntimeParamsFile = bulkUploadFile || handleUploadFile
 
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
@@ -701,14 +713,6 @@ const CDMaterial = ({
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (runtimeParamsErrorState) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please resolve all the errors before switching tabs',
-            })
-            return
-        }
-
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
@@ -799,7 +803,8 @@ const CDMaterial = ({
             serverError instanceof ServerErrors &&
             Array.isArray(serverError.errors) &&
             serverError.code !== 403 &&
-            serverError.code !== 408
+            serverError.code !== 408 &&
+            !getIsRequestAborted(searchParams)
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 ToastManager.showToast(
@@ -865,7 +870,9 @@ const CDMaterial = ({
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => {
-        if (runtimeParamsErrorState) {
+        const updatedRuntimeParamsErrorState = validateRuntimeParameters(parameters)
+        handleRuntimeParamsError(updatedRuntimeParamsErrorState)
+        if (!updatedRuntimeParamsErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please resolve all the errors before deploying',
@@ -1463,6 +1470,9 @@ const CDMaterial = ({
                             tabs={CD_MATERIAL_SIDEBAR_TABS}
                             initialTab={currentSidebarTab}
                             onChange={areTabsDisabled ? noop : handleSidebarTabChange}
+                            hasError={{
+                                [CDMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 )}
@@ -1543,11 +1553,13 @@ const CDMaterial = ({
                         </>
                     ) : (
                         <RuntimeParameters
-                            rootClassName=""
-                            parameters={bulkRuntimeParams || runtimeParamsList}
-                            handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
-                            onError={handleBulkRuntimeParamError || handleRuntimeParamError}
-                            headingClassName="pb-14 flexbox dc__gap-4"
+                            appId={appId}
+                            parameters={parameters}
+                            handleChange={handleRuntimeParamsChange}
+                            errorState={errorState}
+                            handleError={handleRuntimeParamsError}
+                            uploadFile={uploadRuntimeParamsFile}
+                            isCD
                         />
                     )}
                 </ConditionalWrap>
@@ -1712,8 +1724,7 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    {AllowedWithWarningTippy &&
-                    showPluginWarningBeforeTrigger ? (
+                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
                         <AllowedWithWarningTippy
                             consequence={consequence}
                             configurePluginURL={configurePluginURL}

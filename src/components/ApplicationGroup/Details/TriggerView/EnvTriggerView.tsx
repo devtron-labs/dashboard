@@ -42,11 +42,12 @@ import {
     ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
-    RuntimeParamsListItemType,
     preventBodyScroll,
     ToastManager,
     ToastVariantType,
     BlockedStateData,
+    RuntimePluginVariables,
+    uploadCIPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -64,6 +65,7 @@ import {
     CIMaterialRouterProps,
     CIPipelineNodeType,
     MATERIAL_TYPE,
+    RuntimeParamsErrorState,
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
@@ -139,6 +141,11 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -185,8 +192,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
-    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimeParamsListItemType[]>>({})
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, boolean>>({})
+    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
@@ -1416,9 +1423,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const validateBulkRuntimeParams = (): boolean => {
-        const isRuntimeParamErrorPresent = Object.keys(runtimeParamsErrorState).some(
-            (key) => runtimeParamsErrorState[key],
-        )
+        let isRuntimeParamErrorPresent = false
+
+        const updatedRuntimeParamsErrorState = Object.keys(runtimeParams).reduce((acc, key) => {
+            const validationState = validateRuntimeParameters(runtimeParams[key])
+            acc[key] = validationState
+            isRuntimeParamErrorPresent = !isRuntimeParamErrorPresent && !validationState.isValid
+            return acc
+        }, {})
+        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
 
         if (isRuntimeParamErrorPresent) {
             setCDLoading(false)
@@ -1982,9 +1995,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (selectedCINode?.id) {
             return (
                 <Switch>
-                     <Route
-                        path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}
-                    >
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
                         <WebhookReceivedPayloadModal
                             workflowId={workflowID}
                             webhookPayloads={webhookPayloads}

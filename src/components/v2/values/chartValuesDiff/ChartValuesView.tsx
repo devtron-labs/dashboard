@@ -98,7 +98,6 @@ import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-lef
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import {
     ChartDeploymentHistoryResponse,
@@ -1069,7 +1068,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
                 })
-                IndexStore.publishAppDetails({} as AppDetails, null)
+                IndexStore.clearAppDetails()
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 ToastManager.showToast({
@@ -1253,7 +1252,7 @@ const ChartValuesView = ({
                 {commonState.openComparison ? (
                     <Close className="option-close__icon icon-dim-16 mr-8" />
                 ) : (
-                    <Arrows className="option-open__icon icon-dim-16 mr-8" />
+                    <Arrows className="scn-7 icon-dim-16 mr-8 dc__no-shrink" />
                 )}
                 {commonState.openComparison
                     ? COMPARISON_OPTION_LABELS.HideComparison
