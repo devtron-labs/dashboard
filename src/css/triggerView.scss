@@ -141,7 +141,7 @@
 .material-history__top {
     display: grid;
     grid-template-columns: repeat(3, auto) 1fr;
-    grid-column-gap: 24px;
+    grid-column-gap: 10px;
     justify-content: space-between;
     align-items: center;
     background-color: var(--white);

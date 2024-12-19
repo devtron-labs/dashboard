@@ -26,6 +26,7 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -38,7 +39,6 @@ import {
     AppStageUnlockedType,
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
-    ConfigProtection,
 } from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
@@ -47,13 +47,12 @@ import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/con
 import { AppNavigation } from './Navigation/AppNavigation'
 import { AppConfigStatusItemType } from '../../service.types'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
-import { AppOtherEnvironment } from '../../../../../services/service.types'
 import { deleteApp } from './AppConfig.service'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
 import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
+const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
+    importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
@@ -79,8 +78,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         canDeleteApp: false,
         workflowsRes: null,
         environmentList: [],
-        isBaseConfigProtected: false,
-        configProtectionData: [],
+        envIdToEnvApprovalConfigurationMap: {} as ResourceIdToResourceApprovalPolicyConfigMapType,
         envConfig: {
             isLoading: true,
             config: null,
@@ -98,7 +96,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      *
      * The function performs the following steps:
      * 1. Calls `getAppOtherEnvironmentMin` or `getJobOtherEnvironmentMin` (if resource kind is `job` (isJob)) with the application ID (`appId`) to fetch the environment configurations.
-     * 2. Calls `getConfigProtections` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
+     * 2. Calls `getApprovalPolicyConfigForApp` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
      * 3. Creates a map (`envProtectMap`) to store protection states for each environment based on the configuration protections response.
      * 4. Filters the environment configurations based on `filteredEnvIds`, if provided, and marks them as protected if they are found in the protection map.
      * 5. Sorts the filtered and updated environments by their names.
@@ -106,47 +104,28 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      *
      * The promise resolves to an object with the following properties:
      * - `updatedEnvs`: An array of updated environment configurations, each marked with a protection status.
-     * - `isBaseConfigProtectionEnabled`: A boolean flag indicating if the base configuration protection is enabled.
      * - `configProtections`: An array of configuration protection objects.
      */
     const fetchEnvironments = (): Promise<{
-        updatedEnvs: AppOtherEnvironment['result']
-        isBaseConfigProtectionEnabled: boolean
-        configProtections: ConfigProtection[]
+        updatedEnvs: AppConfigState['environmentList']
+        envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     }> =>
         Promise.all([
             isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
-        ]).then(([envResult, configProtectionsResp]) => {
-            let envProtectMap: Record<number, boolean> = {}
-
-            if (configProtectionsResp?.result) {
-                envProtectMap = configProtectionsResp.result.reduce((acc, config) => {
-                    acc[config.envId] = config.state === 1
-                    return acc
-                }, {})
-            }
-
+            typeof getApprovalPolicyConfigForApp === 'function' && !isJob
+                ? getApprovalPolicyConfigForApp(Number(appId))
+                : null,
+        ]).then(([envResult, envIdToEnvApprovalConfigurationMap]) => {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
-            const updatedEnvs =
+            const updatedEnvs: AppConfigState['environmentList'] =
                 envResult.result
                     ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    .map((env) => {
-                        const envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    })
                     ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
-
-            const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
 
             return {
                 updatedEnvs,
-                isBaseConfigProtectionEnabled,
-                configProtections: configProtectionsResp?.result ?? [],
+                envIdToEnvApprovalConfigurationMap,
             }
         })
 
@@ -271,7 +250,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }
     }
 
-    const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
+    const processConfigStatusData = (
+        configStatusRes: AppConfigStatusItemType[],
+        envIdToEnvApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap'],
+    ) => {
         const _isGitOpsConfigurationRequired = configStatusRes.find(
             ({ stageName }) => stageName === STAGE_NAME.GITOPS_CONFIG,
         )?.required
@@ -279,7 +261,13 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             configStatusRes,
             _isGitOpsConfigurationRequired,
         )
-        const { navItems } = getNavItems(configs, appId, resourceKind, _isGitOpsConfigurationRequired)
+        const { navItems } = getNavItems({
+            _isUnlocked: configs,
+            appId,
+            resourceKind,
+            isGitOpsConfigurationRequired: _isGitOpsConfigurationRequired,
+            envIdToEnvApprovalConfigurationMap,
+        })
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
         if (index < 0) {
@@ -294,10 +282,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     useEffect(() => {
         if (appConfigData) {
             // SET APP CONFIG DATA IN STATE
-            const [configStatusRes, workflowRes, { updatedEnvs, configProtections, isBaseConfigProtectionEnabled }] =
-                appConfigData
+            const [configStatusRes, workflowRes, { updatedEnvs, envIdToEnvApprovalConfigurationMap }] = appConfigData
             const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl, lastConfiguredStage } =
-                processConfigStatusData(configStatusRes.result)
+                processConfigStatusData(configStatusRes.result, envIdToEnvApprovalConfigurationMap)
 
             setState({
                 ...state,
@@ -314,8 +301,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 canDeleteApp: workflowRes.result.workflows.length === 0,
                 workflowsRes: workflowRes.result,
                 environmentList: updatedEnvs,
-                isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                configProtectionData: configProtections,
+                envIdToEnvApprovalConfigurationMap,
             })
             if (location.pathname === match.url) {
                 history.replace(redirectUrl)
@@ -370,6 +356,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             .then((configStatusRes) => {
                 const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl } = processConfigStatusData(
                     configStatusRes.result,
+                    state.envIdToEnvApprovalConfigurationMap,
                 )
                 setState((prevState) => ({
                     ...prevState,
@@ -394,12 +381,11 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const reloadEnvironments = () => {
         fetchEnvironments()
-            .then(({ updatedEnvs, isBaseConfigProtectionEnabled, configProtections }) => {
+            .then(({ updatedEnvs, envIdToEnvApprovalConfigurationMap }) => {
                 setState((prevState) => ({
                     ...prevState,
                     environmentList: updatedEnvs,
-                    isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                    configProtectionData: configProtections,
+                    envIdToEnvApprovalConfigurationMap,
                 }))
             })
             .catch((errors) => {
@@ -477,9 +463,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 : 'app-compose-with-no-gitops-config__nav'
         } ${isJob ? 'job-compose__side-nav' : ''} ${
             !showCannotDeleteTooltip ? 'dc__position-rel' : ''
-        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''} ${
-            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJob ? 'config-protection__side-nav' : ''
-        }`
+        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}`
     }
 
     const toggleRepoSelectionTippy = () => {

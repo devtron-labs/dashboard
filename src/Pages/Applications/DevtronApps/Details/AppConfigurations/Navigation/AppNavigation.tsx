@@ -30,7 +30,6 @@ import {
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
 
@@ -38,8 +37,6 @@ import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { renderNavItem } from './Navigation.helper'
 import { EnvConfigurationsNav } from './EnvConfigurationsNav'
-
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 
 export const AppNavigation = () => {
     // HOOKS
@@ -52,18 +49,17 @@ export const AppNavigation = () => {
         deleteApp,
         canShowExternalLinks,
         showCannotDeleteTooltip,
-        isWorkflowEditorUnlocked,
         toggleRepoSelectionTippy,
         getRepo,
         isJobView,
         hideConfigHelp,
-        isBaseConfigProtected,
         isGitOpsConfigurationRequired,
         environments,
         envConfig,
         fetchEnvConfig,
         isUnlocked,
         lastUnlockedStage,
+        envIdToEnvApprovalConfigurationMap,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -137,18 +133,17 @@ export const AppNavigation = () => {
                         key={`env-configurations-nav-${match.params.envId}`}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
-                        environments={environments.map(({ environmentName, environmentId, isProtected }) => ({
+                        environments={environments.map(({ environmentName, environmentId }) => ({
                             id: environmentId,
-                            isProtected,
                             name: environmentName,
                         }))}
-                        isBaseConfigProtected={isBaseConfigProtected}
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
+                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                     />
                 )}
             </Route>
@@ -177,18 +172,6 @@ export const AppNavigation = () => {
                             )
                         }
 
-                        if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                            return (
-                                isWorkflowEditorUnlocked &&
-                                ConfigProtectionView && (
-                                    <div key={item.stage}>
-                                        {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
-                                        {renderNavItem(item)}
-                                    </div>
-                                )
-                            )
-                        }
-
                         if (
                             item.stage !== STAGE_NAME.ENV_OVERRIDE ||
                             (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
@@ -199,12 +182,17 @@ export const AppNavigation = () => {
                                     condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
                                     wrap={getEnvOverrideTippy}
                                 >
-                                    {item.required && renderNavItem(item, isBaseConfigProtected)}
+                                    {item.required && renderNavItem(item, isJobView)}
                                 </ConditionalWrap>
                             )
                         }
 
-                        return <EnvironmentOverrideRouter key={item.stage} />
+                        return (
+                            <EnvironmentOverrideRouter
+                                key={item.stage}
+                                envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            />
+                        )
                     })}
                     {isJobView && <div className="h-100" />}
                     <div className="dc__align-self-end">

@@ -131,7 +131,7 @@ export interface CMSecretWrapperProps
     parentState?: ComponentStates
     setParentState?: Dispatch<SetStateAction<ComponentStates>>
     clusterId?: string
-    isProtected?: boolean
+    isApprovalPolicyConfigured?: boolean
     envName: string
     appName: string
 }
@@ -145,7 +145,9 @@ export interface CMSecretConfigData extends ConfigDatum {
 }
 
 export interface ConfigMapSecretFormProps
-    extends Required<Pick<ConfigMapSecretContainerProps, 'isJob' | 'isProtected' | 'componentType' | 'appChartRef'>> {
+    extends Required<
+        Pick<ConfigMapSecretContainerProps, 'isJob' | 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
+    > {
     id: number
     configMapSecretData: CMSecretConfigData
     inheritedConfigMapSecretData: CMSecretConfigData
@@ -235,7 +237,7 @@ export type ConfigMapSecretDryRunProps = Pick<
     ConfigMapSecretFormProps,
     | 'cmSecretStateLabel'
     | 'componentType'
-    | 'isProtected'
+    | 'isApprovalPolicyConfigured'
     | 'isSubmitting'
     | 'onSubmit'
     | 'isJob'

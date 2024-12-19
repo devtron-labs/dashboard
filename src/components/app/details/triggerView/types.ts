@@ -20,7 +20,6 @@ import {
     CDModalTabType,
     CommonNodeAttr,
     DeploymentNodeType,
-    UserApprovalConfigType,
     CIBuildConfigType,
     ReleaseTag,
     ImageComment,
@@ -131,7 +130,6 @@ export type CDMaterialProps = {
     appId?: number
     pipelineId?: number
     isFromBulkCD?: boolean
-    userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
     triggerType?: string
     isVirtualEnvironment?: boolean

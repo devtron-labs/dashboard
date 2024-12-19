@@ -25,7 +25,6 @@ import {
     ComponentSizeType,
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
-    getIsManualApprovalConfigured,
     handleUTCTime,
     ReleaseMode,
     Tooltip,
@@ -121,19 +120,9 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const getIsApprovalConfigured = (): boolean => {
-        try {
-            const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
-            const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
-            return getIsManualApprovalConfigured(parsedUserApprovalConfig)
-        } catch (error) {
-            return false
-        }
-    }
-
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
-        const isApprovalConfigured = getIsApprovalConfigured()
+        const isApprovalConfigured = appDetails?.isApprovalPolicyApplicable ?? false
         const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
             ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
             : ''

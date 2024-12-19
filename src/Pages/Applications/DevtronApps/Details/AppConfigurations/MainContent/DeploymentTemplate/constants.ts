@@ -1,6 +1,5 @@
 import { DOCUMENTATION } from '@Config/constants'
 
-export const BASE_DEPLOYMENT_TEMPLATE_ENV_ID = -1
 export const PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO = 'BaseDeploymentTemplate' as const
 
 export const CHART_TYPE_TAB_KEYS = { DEVTRON_CHART: 'devtronChart', CUSTOM_CHARTS: 'customCharts' }
