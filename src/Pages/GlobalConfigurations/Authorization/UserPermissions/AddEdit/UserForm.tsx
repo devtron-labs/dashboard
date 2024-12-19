@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
     showError,
     DeleteDialog,
-    ClearIndicator,
-    MultiValueRemove,
-    MultiValueChipContainer,
     ServerErrors,
     OptionType,
     UserStatus,
@@ -33,8 +30,9 @@ import {
     ButtonComponentType,
     ButtonVariantType,
     ButtonStyleType,
+    SelectPicker,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Creatable from 'react-select/creatable'
 import { Link, useHistory } from 'react-router-dom'
 import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
@@ -49,15 +47,12 @@ import {
 } from '../../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
-import { getCreatableChipStyle } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 const UserGroupSelector = importComponentFromFELibrary('UserGroupSelector', null, 'function')
-
-const creatableChipStyle = getCreatableChipStyle()
 
 const createOption = (label: string) => ({
     label,
@@ -94,17 +89,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [submitting, setSubmitting] = useState(false)
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
 
-    const creatableRef = useRef(null)
-    const groupPermissionsRef = useRef(null)
     const { push } = useHistory()
-
-    useEffect(() => {
-        if (creatableRef.current) {
-            creatableRef.current.focus()
-        } else if (groupPermissionsRef.current) {
-            groupPermissionsRef.current.focus()
-        }
-    }, [])
 
     const _redirectToUserPermissionList = () => {
         push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
@@ -128,13 +113,15 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             emailState.emails.length !==
             emailState.emails.map((email) => email.value).filter((email) => validateEmail(email)).length
         ) {
+            const errorMessage = 'One or more emails could not be verified to be correct.'
+
             setEmailState((prevEmailState) => ({
                 ...prevEmailState,
-                emailError: 'One or more emails could not be verified to be correct.',
+                emailError: errorMessage,
             }))
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'One or more emails could not be verified to be correct.',
+                description: errorMessage,
             })
             return false
         }
@@ -280,18 +267,8 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         })
     }
 
-    const CreatableComponents = useMemo(
-        () => ({
-            DropdownIndicator: null,
-            ClearIndicator,
-            MultiValueRemove,
-            // eslint-disable-next-line react/no-unstable-nested-components
-            MultiValueContainer: (props) => <MultiValueChipContainer {...props} validator={validateEmail} />,
-            IndicatorSeparator: null,
-            Menu: () => null,
-        }),
-        [],
-    )
+    const getIsEmailInputValid: SelectPickerProps<string, true>['multiSelectProps']['getIsOptionValid'] = ({ value }) =>
+        validateEmail(value)
 
     return (
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
@@ -334,38 +311,28 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     {isAddMode && (
                         <>
                             {isAutoAssignFlowEnabled && <UserPermissionsInfoBar />}
-                            <div>
-                                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                                <label htmlFor="email-addresses" className="fs-13 fw-4 lh-20 cn-7 mb-8">
-                                    Email addresses
-                                    <span className="cr-5">&nbsp;*</span>
-                                </label>
-                                <Creatable
-                                    ref={creatableRef}
-                                    options={[]}
-                                    components={CreatableComponents}
-                                    styles={creatableChipStyle}
-                                    autoFocus
-                                    isMulti
-                                    isClearable
-                                    inputValue={emailState.inputEmailValue}
-                                    placeholder="Type email and press enter"
-                                    isValidNewOption={() => false}
-                                    backspaceRemovesValue
-                                    value={emailState.emails}
-                                    onBlur={handleCreatableBlur}
-                                    onInputChange={handleInputChange}
-                                    onKeyDown={handleKeyDown}
-                                    onChange={handleEmailChange}
-                                    id="email-addresses"
-                                />
-                                {emailState.emailError && (
-                                    <span className="form__error">
-                                        <Error className="form__icon form__icon--error" />
-                                        {emailState.emailError}
-                                    </span>
-                                )}
-                            </div>
+                            <SelectPicker
+                                required
+                                label="Email addresses"
+                                isMulti
+                                options={[]}
+                                autoFocus
+                                isClearable
+                                placeholder="Type email and press enter"
+                                inputValue={emailState.inputEmailValue}
+                                value={emailState.emails}
+                                onBlur={handleCreatableBlur}
+                                onInputChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                onChange={handleEmailChange}
+                                inputId="email-addresses"
+                                error={emailState.emailError}
+                                multiSelectProps={{
+                                    getIsOptionValid: getIsEmailInputValid,
+                                }}
+                                shouldHideMenu
+                                size={ComponentSizeType.large}
+                            />
                             <div className="dc__border-top" />
                         </>
                     )}
