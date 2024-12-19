@@ -36,7 +36,7 @@ export type VariableDataCustomState = {
     fileInfo: Pick<VariableType, 'fileReferenceId' | 'fileMountDir'> & {
         allowedExtensions: string
         maxUploadSize: string
-        unit: SelectPickerOptionType<number>
+        sizeUnit: SelectPickerOptionType<number>
     }
 }
 
@@ -97,16 +97,13 @@ type VariableDataTableActionPropsMap = {
         actionValue: string[]
     }
     [VariableDataTableActionType.UPDATE_FILE_MOUNT]: {
-        actionValue: string
+        actionValue: VariableDataCustomState['fileInfo']['fileMountDir']
     }
     [VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS]: {
         actionValue: string
     }
     [VariableDataTableActionType.UPDATE_FILE_MAX_SIZE]: {
-        actionValue: {
-            size: string
-            unit: SelectPickerOptionType<number>
-        }
+        actionValue: Pick<VariableDataCustomState['fileInfo'], 'maxUploadSize' | 'sizeUnit'>
     }
 
     [VariableDataTableActionType.UPDATE_VARIABLE_DESCRIPTION]: {
