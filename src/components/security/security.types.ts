@@ -265,6 +265,7 @@ export interface SecurityPolicyEditState {
     showWhitelistModal: boolean
     view: string
     isCveError: boolean
+    showLoadingOverlay: boolean
 }
 
 export interface AddCveModalProps extends Pick<SecurityPolicyEditState, 'isCveError'> {
