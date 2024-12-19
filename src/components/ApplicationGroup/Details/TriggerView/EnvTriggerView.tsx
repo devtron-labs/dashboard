@@ -142,7 +142,11 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     'function',
 )
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer

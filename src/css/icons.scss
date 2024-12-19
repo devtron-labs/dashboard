@@ -334,25 +334,33 @@
 }
 
 @mixin dot-icon-size($size) {
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(50%, -50%);
-    width: 0.625em;
-    height: 0.625em;
+    width: calc(0.625 * #{$size}px);
+    height: calc(0.625 * #{$size}px);
 
     > circle {
-        stroke-width: 0.125em;
+        stroke-width: calc(0.125 * #{$size}px);
     }
 }
 
-@each $size in 16, 24, 32, 48 {
-    .show-icon-dot-#{$size} {
+@each $size in 14, 16, 18, 20, 22, 24, 30, 32, 48 {
+    .icon-dot-#{$size} {
         position: relative;
-        font-size: #{$size}px;
         display: flex;
 
-        & .ic-dot {
+        & > svg:first-child {
+            width: #{$size}px;
+            height: #{$size}px;
+        }
+
+        &:not(.visible) > svg:last-child {
+            display: none;
+        }
+
+        &.visible > svg:last-child {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
             @include dot-icon-size($size);
         }
     }

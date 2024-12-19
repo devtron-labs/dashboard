@@ -81,7 +81,11 @@ const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlock
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
 const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
-const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
