@@ -401,6 +401,8 @@ export interface TerminalComponentProps {
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
+    isReloadResourceTreeInProgress: boolean
+    handleReloadResourceTree: () => void
     tabRef?: MutableRefObject<HTMLDivElement>
     appType?: string
     isExternalApp?: boolean
@@ -505,7 +507,8 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pi
     manifestGUIFormRef: FormProps['ref']
 }
 
-export interface NodeTreeDetailTabProps {
+export interface NodeTreeDetailTabProps extends
+    Pick<NodeTreeTabListProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
     appDetails: AppDetails
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -536,7 +539,8 @@ export interface NodeComponentProps {
     isDeploymentBlocked?: boolean
     isExternalApp: boolean
 }
-export interface AppDetailsComponentType {
+export interface AppDetailsComponentType extends
+    Pick<NodeTreeTabListProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean
