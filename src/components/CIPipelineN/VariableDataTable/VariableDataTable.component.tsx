@@ -18,8 +18,10 @@ import {
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import {
+    FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
     VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
@@ -49,6 +51,8 @@ import {
 
 import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTableProps) => {
     // CONTEXTS
@@ -174,7 +178,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                                 fileProperty: getUploadFileConstraints({
                                     allowedExtensions: customState.fileInfo.allowedExtensions,
                                     maxUploadSize: customState.fileInfo.maxUploadSize,
-                                    unit: customState.fileInfo.unit.label as string,
+                                    sizeUnit: customState.fileInfo.sizeUnit,
                                 }),
                             },
                             blockCustomValue,
@@ -244,8 +248,8 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
             case VariableDataTableActionType.UPDATE_FILE_MAX_SIZE:
                 if (selectedRow) {
-                    selectedRow.customState.fileInfo.maxUploadSize = rowAction.actionValue.size
-                    selectedRow.customState.fileInfo.unit = rowAction.actionValue.unit
+                    selectedRow.customState.fileInfo.maxUploadSize = rowAction.actionValue.maxUploadSize
+                    selectedRow.customState.fileInfo.sizeUnit = rowAction.actionValue.sizeUnit
                 }
                 break
 
@@ -353,8 +357,8 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             fileReferenceId: null,
                             allowedExtensions: '',
                             maxUploadSize: '',
-                            fileMountDir: '/devtroncd',
-                            unit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
+                            fileMountDir: FILE_MOUNT_DIR,
+                            sizeUnit: FILE_UPLOAD_SIZE_UNIT_OPTIONS[0],
                         },
                     }
                 }
@@ -429,7 +433,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     const { id, name } = await uploadFile({
                         file: extraData.files,
                         ...getUploadFileConstraints({
-                            unit: updatedRow.customState.fileInfo.unit.label as string,
+                            sizeUnit: updatedRow.customState.fileInfo.sizeUnit,
                             allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
                             maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
                         }),
@@ -527,7 +531,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     onRowEdit={handleRowEdit}
                     onRowDelete={handleRowDelete}
                     onRowAdd={handleRowAdd}
-                    {...(isInputPluginVariable
+                    {...(isFELibAvailable && isInputPluginVariable
                         ? {
                               actionButtonConfig: {
                                   renderer: actionButtonRenderer,
