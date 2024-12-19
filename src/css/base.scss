@@ -2661,12 +2661,16 @@ button.anchor {
     border-radius: 50% !important;
 }
 
-.dc__border-radius-8-imp {
-    border-radius: 8px !important;
+.dc__border-radius-2 {
+    border-radius: 2px;
 }
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-8-imp {
+    border-radius: 8px !important;
 }
 
 .dc__border-radius-40 {
@@ -3072,6 +3076,10 @@ textarea,
 
 .w-auto-imp {
     width: auto !important;
+}
+
+.w-4 {
+    width: 4px;
 }
 
 .w-8 {
