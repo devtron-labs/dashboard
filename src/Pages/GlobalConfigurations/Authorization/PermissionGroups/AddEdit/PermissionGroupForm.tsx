@@ -17,13 +17,17 @@
 import { useState, useEffect } from 'react'
 import {
     showError,
-    Progressing,
     DeleteDialog,
     ResizableTextarea,
     CustomInput,
     useMainContext,
     ToastVariantType,
     ToastManager,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { deepEqual } from '../../../../../components/common'
@@ -209,19 +213,29 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
-                    <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>
-                        {submitting ? <Progressing /> : 'Save'}
-                    </button>
-                    <Link
-                        to={URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}
-                        role="button"
-                        aria-disabled={submitting}
-                        className={`cta cancel flex h-32 anchor ${
-                            submitting ? 'dc__disable-click disabled-opacity' : ''
-                        }`}
-                    >
-                        Cancel
-                    </Link>
+                    <Button
+                        dataTestId="submit-user-form"
+                        text="Save"
+                        onClick={handleSubmit}
+                        size={ComponentSizeType.medium}
+                        disabled={submitting}
+                        isLoading={submitting}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                    <Button
+                        dataTestId="cancel-user-form"
+                        text="Cancel"
+                        component={ButtonComponentType.link}
+                        linkProps={{
+                            to: URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS,
+                        }}
+                        variant={ButtonVariantType.secondary}
+                        size={ComponentSizeType.medium}
+                        style={ButtonStyleType.neutral}
+                        disabled={submitting}
+                    />
                     {!isAddMode &&
                         !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                             <span className="flex cy-7 dc__gap-4">
