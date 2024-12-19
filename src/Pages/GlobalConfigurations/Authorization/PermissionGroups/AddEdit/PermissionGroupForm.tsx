@@ -168,17 +168,16 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     </span>
                 </div>
                 {!isAddMode && (
-                    <div>
-                        <button
-                            disabled={submitting}
-                            type="button"
-                            className="cta delete override-button flex dc__gap-6 h-32"
-                            onClick={toggleDeleteConfirmationModal}
-                        >
-                            <PlusIcon className="icon-dim-14 mw-14" />
-                            Delete
-                        </button>
-                    </div>
+                    <Button
+                        disabled={submitting}
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        size={ComponentSizeType.medium}
+                        dataTestId="delete-group"
+                        text="Delete"
+                        startIcon={<PlusIcon />}
+                        onClick={toggleDeleteConfirmationModal}
+                    />
                 )}
             </div>
             <div className="flexbox-col dc__content-space flex-grow-1 w-100">

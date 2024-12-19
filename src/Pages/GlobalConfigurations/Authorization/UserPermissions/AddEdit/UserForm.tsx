@@ -315,15 +315,16 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             />
                         )}
                         {!isAddMode && (
-                            <button
+                            <Button
                                 disabled={submitting}
-                                type="button"
-                                className="cta delete override-button flex dc__gap-6 h-32"
+                                variant={ButtonVariantType.secondary}
+                                style={ButtonStyleType.negative}
+                                size={ComponentSizeType.medium}
+                                dataTestId="delete-user"
+                                text="Delete"
+                                startIcon={<PlusIcon />}
                                 onClick={toggleDeleteConfirmationModal}
-                            >
-                                <PlusIcon className="icon-dim-14 mw-14" />
-                                Delete
-                            </button>
+                            />
                         )}
                     </div>
                 )}
