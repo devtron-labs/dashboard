@@ -29,8 +29,9 @@ import {
     TagsContainer,
     DynamicDataTableRowType,
     TagsTableColumnsType,
-    PATTERNS,
     DynamicDataTableCellErrorType,
+    validateTagKeyValue,
+    validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps } from '../types'
@@ -74,8 +75,8 @@ export default function AboutTagEditModal({
             if (!currentKey && !currentVal) {
                 continue
             }
-            const isKeyValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentKey)
-            const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
+            const {isValid: isKeyValid, errorMessages: keyErrorMessages} = validateTagKeyValue(currentKey)
+            const {isValid: isValueValid, errorMessages: valueErrorMessages} = validateTagValue(currentVal, currentKey)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
                 setTagErrors({
@@ -83,19 +84,15 @@ export default function AboutTagEditModal({
                     [element.id]: {
                         tagKey: {
                             isValid: isKeyValid,
-                            errorMessages: isKeyValid
-                                ? []
-                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                            errorMessages: keyErrorMessages
                         },
                         tagValue: {
                             isValid: isValueValid,
-                            errorMessages: isValueValid
-                                ? []
-                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                            errorMessages: valueErrorMessages
                         },
                     },
                 })
-            } else if (element.data.tagKey.value) {
+            } else if (currentKey && currentVal) {
                 customLabelTags.push({
                     key: currentKey,
                     value: currentVal,

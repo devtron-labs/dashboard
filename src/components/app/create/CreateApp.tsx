@@ -34,7 +34,8 @@ import {
     Button,
     TagsContainer,
     getEmptyTagTableRow,
-    PATTERNS,
+    validateTagKeyValue,
+    validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -181,8 +182,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             if (!currentKey && !currentVal) {
                 continue
             }
-            const isKeyValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentKey)
-            const isValueValid = new RegExp(PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR).test(currentVal)
+            const {isValid: isKeyValid, errorMessages: keyErrorMessages} = validateTagKeyValue(currentKey)
+            const {isValid: isValueValid, errorMessages: valueErrorMessages} = validateTagValue(currentVal, currentKey)
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
                 this.setTagsError({
@@ -190,19 +191,15 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     [currentTag.id]: {
                         tagKey: {
                             isValid: isKeyValid,
-                            errorMessages: isKeyValid
-                                ? []
-                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                            errorMessages: keyErrorMessages
                         },
                         tagValue: {
                             isValid: isValueValid,
-                            errorMessages: isValueValid
-                                ? []
-                                : ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+                            errorMessages: valueErrorMessages
                         },
                     },
                 })
-            } else if (currentKey) {
+            } else if (currentKey && currentVal) {
                 labelTags.push({
                     key: currentKey,
                     value: currentVal,
