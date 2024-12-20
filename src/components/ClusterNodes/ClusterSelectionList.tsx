@@ -24,6 +24,7 @@ import {
     ClusterFiltersType,
     ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
+    ClusterDetail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -32,7 +33,6 @@ import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
-import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
