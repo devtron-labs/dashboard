@@ -46,7 +46,7 @@ import {
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import { importComponentFromFELibrary } from '../../../../components/common'
 
@@ -163,7 +163,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
             return
         }
 
