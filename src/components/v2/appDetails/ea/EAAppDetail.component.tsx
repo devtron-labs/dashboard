@@ -47,6 +47,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         externalLinks: [],
         monitoringTools: [],
     })
+    const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
     let initTimer = null
     let isAPICallInProgress = false
@@ -116,8 +117,9 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = async () => {
+    const _getAndSetAppDetail = () => {
         isAPICallInProgress = true
+        setIsReloadResourceTreeInProgress(true)
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(
@@ -162,6 +164,9 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 setIsLoading(false)
                 isAPICallInProgress = false
             })
+            .finally(() => {
+                setIsReloadResourceTreeInProgress(false)
+            })
     }
 
     return (
@@ -185,6 +190,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                     isExternalApp={isExternalApp}
                     loadingDetails={false}
                     loadingResourceTree={false}
+                    isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
+                    handleReloadResourceTree={_getAndSetAppDetail}
                 />
             )}
         </>
