@@ -43,6 +43,7 @@ import {
     isConfigTypeNonDraftOrPublished,
     isConfigTypePublished,
     getAppEnvDeploymentConfigPayload,
+    getIdentifierIdBasedOnConfiguration,
 } from './utils'
 import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
@@ -549,6 +550,28 @@ export const DeploymentConfigCompare = ({
                       (prev) => prev.wfrId === Number(currentSearchParams.get('identifierId')),
                   )?.chartRefId ?? null
                 : null
+
+        if (identifierId) {
+            currentSearchParams.set(
+                'identifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: currentEnvOptions.previousDeployments,
+                }),
+            )
+        }
+
+        if (compareWithIdentifierId) {
+            currentSearchParams.set(
+                'compareWithIdentifierId',
+                getIdentifierIdBasedOnConfiguration({
+                    identifierId: compareWithIdentifierId,
+                    isManifestView: _isManifestView,
+                    previousDeployments: compareEnvOptions.previousDeployments,
+                }),
+            )
+        }
 
         if (_compareWithManifestChartRefId) {
             currentSearchParams.set('compareWithManifestChartRefId', String(_compareWithManifestChartRefId))

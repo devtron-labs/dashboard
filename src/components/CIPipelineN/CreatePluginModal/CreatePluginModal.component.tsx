@@ -27,6 +27,7 @@ import {
     abortPreviousRequests,
     ToastManager,
     ToastVariantType,
+    RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
@@ -315,6 +316,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             inputVariables:
                 inputVariables?.map((inputVariable) => ({
                     ...inputVariable,
+                    variableType: RefVariableType.NEW,
                     value: pluginFormInputVariableMap[inputVariable.name] || '',
                 })) || [],
             outputVariables: outputVariables || [],

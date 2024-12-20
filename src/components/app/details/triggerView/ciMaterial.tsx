@@ -49,7 +49,11 @@ import BranchRegexModal from './BranchRegexModal'
 import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
-const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext

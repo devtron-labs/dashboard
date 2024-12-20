@@ -52,7 +52,7 @@ import {
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
@@ -107,7 +107,7 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
             return
         }
 
