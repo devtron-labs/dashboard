@@ -43,7 +43,7 @@ import {
     ARTIFACT_PROMOTER_ACTION,
     TERMINAL_EXEC_ACTION,
 } from '../../../constants'
-import { AppOption, ClusterValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
+import { ClusterValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
     allApplicationsOption,
     ALL_ENVIRONMENTS_OPTION,
@@ -56,6 +56,7 @@ import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
+import { getAppOrJobDisplayText } from './utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -104,7 +105,6 @@ const DirectPermission = ({
     const [applications, setApplications] = useState([])
     const [clusterInput, setClusterInput] = useState('')
     const [envInput, setEnvInput] = useState('')
-    const [appInput, setAppInput] = useState('')
     const [workflowInput, setWorkflowInput] = useState('')
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
@@ -282,7 +282,7 @@ const DirectPermission = ({
                 ? _applications
                 : sortBySelected(permission.entityName, _applications, 'value'),
         )
-    }, [openMenu, permission.environment, permission.entityName, projectId])
+    }, [openMenu, permission.environment, projectId])
 
     const formatOptionLabelClusterEnv = (option, { inputValue }) => (
         <div
@@ -458,48 +458,32 @@ const DirectPermission = ({
                 </div>
             )}
             <div style={{ order: isAccessTypeJob ? 1 : 0 }}>
-                <Select
-                    classNamePrefix="dropdown-for-appOrJob"
+                <SelectPicker
+                    inputId="dropdown-for-appOrJob"
                     value={permission.entityName}
                     isMulti
-                    components={{
-                        ClearIndicator: null,
-                        ValueContainer,
-                        IndicatorSeparator: null,
-                        // eslint-disable-next-line react/no-unstable-nested-components
-                        Option: (props) => <AppOption props={props} permission={permission} />,
-                        GroupHeading,
-                        LoadingIndicator,
-                    }}
                     isLoading={projectId && listForAccessType.get(projectId)?.loading}
                     isDisabled={!permission.team || (projectId && listForAccessType.get(projectId)?.loading)}
-                    styles={authorizationSelectStyles}
-                    closeMenuOnSelect={false}
                     name={isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps}
-                    onFocus={() =>
-                        onFocus(isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps)
-                    }
-                    onMenuClose={onMenuClose}
                     placeholder={isAccessTypeJob ? 'Select Job' : 'Select applications'}
                     options={[allApplicationsOption(permission.entity), ...applications]}
                     onChange={handleDirectPermissionChange}
-                    hideSelectedOptions={false}
-                    inputValue={appInput}
-                    menuPlacement="auto"
                     onBlur={() => {
-                        setAppInput('') // send selected options to setWorkflowsForJobs function
                         if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading) {
                             // eslint-disable-next-line @typescript-eslint/no-floating-promises
                             setWorkflowsForJobs(permission)
                         }
                     }}
-                    onInputChange={(value, action) => {
-                        if (action.action === ReactSelectInputAction.inputChange) {
-                            setAppInput(value)
-                        }
+                    multiSelectProps={{
+                        customDisplayText: getAppOrJobDisplayText(
+                            isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps,
+                            [allApplicationsOption(permission.entity), ...applications],
+                            permission.entityName,
+                        ),
                     }}
+                    error={permission.entityNameError}
+                    size={ComponentSizeType.large}
                 />
-                {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
             </div>
             {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>

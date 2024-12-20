@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
@@ -22,9 +22,10 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
-export const allApplicationsOption = (entity) => ({
+export const allApplicationsOption = (entity): SelectPickerOptionType => ({
     label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
     value: SELECT_ALL_VALUE,
+    description: `Allow access to existing and new ${entity === EntityTypes.JOB ? 'jobs' : 'apps'} for this project`,
 })
 
 export const SELECT_ALL_OPTION = {

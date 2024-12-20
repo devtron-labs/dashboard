@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { OptionType, ACCESS_TYPE_MAP, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
 import { DirectPermissionRow } from './types'
 
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
@@ -148,4 +148,24 @@ export const getEnvironmentOptions = (environmentsList, entity: DirectPermission
         return [defaultEnv, ...filteredEnvOptions]
     }
     return envOptions
+}
+
+export const getAppOrJobDisplayText = (
+    name: string,
+    options: SelectPickerOptionType[],
+    selectedOptions: SelectPickerOptionType[],
+) => {
+    const selectedOptionsLength = selectedOptions?.length
+    const count = selectedOptionsLength === options?.length ? 'All' : selectedOptionsLength
+
+    let Item
+    if (name === DirectPermissionFieldName.apps) {
+        Item = 'application'
+    } else if (name === DirectPermissionFieldName.jobs) {
+        Item = 'job'
+    } else {
+        Item = name
+    }
+
+    return `${count} ${Item}${selectedOptionsLength !== 1 ? 's' : ''}`
 }
