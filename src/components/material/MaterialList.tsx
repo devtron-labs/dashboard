@@ -29,7 +29,7 @@ import { CreateMaterial } from './CreateMaterial'
 import { UpdateMaterial } from './UpdateMaterial'
 import { MaterialListProps, MaterialListState } from './material.types'
 import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg'
-import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
+import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-outline.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
 import './material.scss'
 
@@ -181,7 +181,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             className="flex left dc__link"
                             href={DEVTRON_NODE_DEPLOY_VIDEO}
                         >
-                            <PlayMedia className="icon-dim-16 mr-4" />
+                            <PlayMedia className="icon-dim-16 scb-5 mr-4" />
                             Watch how to configure sample application
                         </a>
                     </div>

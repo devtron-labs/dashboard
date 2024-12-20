@@ -44,11 +44,14 @@ import {
     RuntimePluginVariables,
     uploadCDPipelineFile,
     UploadFileProps,
+    Button,
+    ComponentSizeType,
+    AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as PlayIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
@@ -837,29 +840,23 @@ export default function BulkCDTrigger({
     }
 
     const renderFooterSection = (): JSX.Element => {
+        const isDeployButtonDisabled: boolean = isDeployDisabled()
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
                 <div className="dc__position-rel tippy-over">
-                    <button
-                        className="cta flex h-36"
-                        data-testid="deploy-button"
-                        onClick={onClickStartDeploy}
-                        disabled={isDeployDisabled()}
-                        type="button"
-                    >
-                        {isLoading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                {stage === DeploymentNodeType.CD ? (
-                                    <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                ) : (
-                                    <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
-                                )}
-                                {BUTTON_TITLE[stage]}
-                            </>
-                        )}
-                    </button>
+                    {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
+                        <AnimatedDeployButton onButtonClick={onClickStartDeploy} />
+                    ) : (
+                        <Button
+                            dataTestId="deploy-button"
+                            text={BUTTON_TITLE[stage]}
+                            startIcon={stage === DeploymentNodeType.CD ? <DeployIcon /> : <PlayIcon />}
+                            isLoading={isLoading}
+                            size={ComponentSizeType.large}
+                            onClick={onClickStartDeploy}
+                            disabled={isDeployButtonDisabled}
+                        />
+                    )}
                 </div>
             </div>
         )
