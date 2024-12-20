@@ -1753,6 +1753,26 @@ button.anchor {
     }
 }
 
+.dc__opacity-hover {
+    .dc__opacity-hover--child {
+        opacity: 0;
+
+        &:focus {
+            opacity: 1;
+        }
+    }
+
+    &.dc__opacity-hover--parent:hover {
+        .dc__opacity-hover {
+
+            // If we give this class then the element will be visible on hover
+            &--child {
+                opacity: 1;
+            }
+        }
+    }
+}
+
 .dc__hover-icon {
     .dc__show-first--icon {
         display: inherit;
