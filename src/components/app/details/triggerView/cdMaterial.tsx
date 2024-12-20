@@ -141,18 +141,16 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const getSecurityScan: ({
-    appId,
-    installedAppId,
-}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
-    'getSecurityScan',
-    null,
-    'function',
-)
+const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> =
+    importComponentFromFELibrary('getSecurityScan', null, 'function')
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
-const validateRuntimeParameters = importComponentFromFELibrary('validateRuntimeParameters', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
+    'function',
+)
 
 const CDMaterial = ({
     materialType,

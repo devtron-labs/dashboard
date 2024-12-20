@@ -28,7 +28,7 @@ import {
     ACCESS_TYPE_MAP,
     EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ActionTypes } from '../../../constants'
+import { ActionTypes, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
@@ -61,11 +61,12 @@ import {
     getEnvironmentOptions,
     getNavLinksConfig,
 } from './utils'
-import { getWorkflowOptions } from '../../../utils'
+import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
+import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
 
 const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
 
@@ -88,6 +89,9 @@ const AppPermissions = () => {
     const [appsList, setAppsList] = useState<AppPermissionsDetailType['appsList']>(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState<AppPermissionsDetailType['appsListHelmApps']>(new Map())
     const [jobsList, setJobsList] = useState<AppPermissionsDetailType['jobsList']>(new Map())
+    const [accessTypeToErrorMap, setAccessTypeToErrorMap] = useState<AccessTypeToErrorMapType>(
+        structuredClone(DEFAULT_ACCESS_TYPE_TO_ERROR_MAP),
+    )
 
     // To store the mapping and minimize the number of API calls
     const projectToJobListRef = useRef<
@@ -861,6 +865,16 @@ const AppPermissions = () => {
         pathname: `${url}/${tabName}`,
     })
 
+    const handleNavLinkClick = () => {
+        // Validate the direct permission form on tab switch to show the error state
+        const { accessTypeToErrorMap: _accessTypeToErrorMap } = validateDirectPermissionForm(
+            directPermission,
+            setDirectPermission,
+            false,
+        )
+        setAccessTypeToErrorMap(_accessTypeToErrorMap)
+    }
+
     useEffect(() => {
         if (!isDataLoading) {
             if (!data) {
@@ -895,7 +909,7 @@ const AppPermissions = () => {
         <div className="flexbox-col dc__gap-12">
             <div className="dc__border-bottom-n1">
                 <TabGroup
-                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName }) =>
+                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName, accessType }) =>
                         !isHidden
                             ? {
                                   id: tabName,
@@ -904,7 +918,9 @@ const AppPermissions = () => {
                                   props: {
                                       to: _getNavLinkUrl(tabName),
                                       'data-testid': tabName,
+                                      onClick: handleNavLinkClick,
                                   },
+                                  showError: accessTypeToErrorMap[accessType],
                               }
                             : [],
                     )}
