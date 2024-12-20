@@ -21,7 +21,6 @@ import {
     showError,
     Option,
     getIsRequestAborted,
-    LoadingIndicator,
     ReactSelectInputAction,
     ACCESS_TYPE_MAP,
     EntityTypes,
@@ -43,7 +42,7 @@ import {
     ARTIFACT_PROMOTER_ACTION,
     TERMINAL_EXEC_ACTION,
 } from '../../../constants'
-import { ClusterValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
+import { ClusterValueContainer, ValueContainer } from './common'
 import {
     allApplicationsOption,
     ALL_ENVIRONMENTS_OPTION,
@@ -56,7 +55,7 @@ import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
-import { getAppOrJobDisplayText } from './utils'
+import { getDisplayTextByName } from './utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -105,7 +104,6 @@ const DirectPermission = ({
     const [applications, setApplications] = useState([])
     const [clusterInput, setClusterInput] = useState('')
     const [envInput, setEnvInput] = useState('')
-    const [workflowInput, setWorkflowInput] = useState('')
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -475,7 +473,7 @@ const DirectPermission = ({
                         }
                     }}
                     multiSelectProps={{
-                        customDisplayText: getAppOrJobDisplayText(
+                        customDisplayText: getDisplayTextByName(
                             isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps,
                             [allApplicationsOption(permission.entity), ...applications],
                             permission.entityName,
@@ -487,47 +485,28 @@ const DirectPermission = ({
             </div>
             {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>
-                    <Select
-                        classNamePrefix="dropdown-for-workflow-for-job"
+                    <SelectPicker
+                        inputId="dropdown-for-workflow-for-job"
                         value={permission.workflow}
                         isMulti
                         closeMenuOnSelect={false}
                         name={DirectPermissionFieldName.workflow}
-                        onFocus={() => onFocus(DirectPermissionFieldName.workflow)}
-                        onMenuClose={onMenuClose}
                         placeholder="Select workflow"
-                        options={[
-                            { label: '', options: [{ label: 'All Workflows', value: SELECT_ALL_VALUE }] },
-                            ...workflowList.options,
-                        ]}
-                        className="basic-multi-select"
-                        menuPlacement="auto"
-                        hideSelectedOptions={false}
-                        styles={authorizationSelectStyles}
+                        options={[{ label: 'All Workflows', value: SELECT_ALL_VALUE }, ...workflowList.options]}
                         isLoading={workflowList.loading}
                         isDisabled={!permission.team || workflowList.loading}
-                        components={{
-                            ClearIndicator: null,
-                            ValueContainer,
-                            IndicatorSeparator: null,
-                            Option,
-                            GroupHeading: WorkflowGroupHeading,
-                            LoadingIndicator,
-                        }}
                         onChange={(value, actionMeta) => {
                             handleDirectPermissionChange(value, actionMeta, workflowList)
                         }}
-                        inputValue={workflowInput}
-                        onBlur={() => {
-                            setWorkflowInput('')
-                        }}
-                        onInputChange={(value, action) => {
-                            if (action.action === ReactSelectInputAction.inputChange) {
-                                setWorkflowInput(value)
-                            }
+                        error={permission.workflowError}
+                        multiSelectProps={{
+                            customDisplayText: getDisplayTextByName(
+                                DirectPermissionFieldName.workflow,
+                                [{ label: 'All Workflows', value: SELECT_ALL_VALUE }, ...workflowList.options],
+                                permission.workflow,
+                            ),
                         }}
                     />
-                    {permission.workflowError && <span className="form__error">{permission.workflowError}</span>}
                 </div>
             )}
             <div style={{ order: isAccessTypeJob ? 4 : 0 }}>

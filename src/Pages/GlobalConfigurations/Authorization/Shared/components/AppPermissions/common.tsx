@@ -16,49 +16,10 @@
 
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
-import { Checkbox, CHECKBOX_VALUE, noop, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { components } from 'react-select'
-import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
-
-// TODO: Clean this file
-export const WorkflowGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
-
-export const AppOption = ({ props, permission }) => {
-    const { selectOption, data } = props
-
-    const _selectOption = () => {
-        selectOption(data)
-    }
-
-    return (
-        <div
-            onClick={_selectOption}
-            className="flex left pt-6 pb-6 pl-8 pr-8 dc__gap-8"
-            style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
-        >
-            <Checkbox
-                isChecked={props.isSelected}
-                rootClassName="mb-0"
-                value={CHECKBOX_VALUE.CHECKED}
-                // No on change as the state is being controlled on the button itself
-                onChange={noop}
-            />
-            <div className="flex left column w-100">
-                <components.Option className="w-100 p-0-imp" {...props} />
-                {data.value === SELECT_ALL_VALUE && (
-                    <span className="fs-12 cn-6">
-                        {`Allow access to existing and new ${
-                            permission.entity === EntityTypes.JOB ? 'jobs' : 'apps'
-                        } for this project`}
-                    </span>
-                )}
-            </div>
-        </div>
-    )
-}
 
 export const ValueContainer = (props) => {
     const { length } = props.getValue()

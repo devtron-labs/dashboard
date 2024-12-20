@@ -15,6 +15,7 @@
  */
 
 import { OptionType, ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionsOrGroups, GroupBase } from 'react-select'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
@@ -150,13 +151,20 @@ export const getEnvironmentOptions = (environmentsList, entity: DirectPermission
     return envOptions
 }
 
-export const getAppOrJobDisplayText = (
-    name: string,
-    options: SelectPickerOptionType[],
+export const getDisplayTextByName = (
+    name: DirectPermissionFieldName,
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>[],
     selectedOptions: SelectPickerOptionType[],
 ) => {
     const selectedOptionsLength = selectedOptions?.length
-    const count = selectedOptionsLength === options?.length ? 'All' : selectedOptionsLength
+    const optionsLength =
+        options?.reduce(
+            (acc, option) =>
+                acc + (('options' in option && Array.isArray(option.options) ? option.options?.length : 1) ?? 0),
+            0,
+        ) ?? 0
+
+    const count = selectedOptionsLength === optionsLength ? 'All' : selectedOptionsLength
 
     let Item
     if (name === DirectPermissionFieldName.apps) {
