@@ -259,7 +259,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     isLoading={clusterListLoader}
                     filteredList={filteredList}
                     clusterListLoader={clusterListLoader}
-                    isPropotional
+                    isProportional
                 />
             )}
             {!filteredList.length ? (
