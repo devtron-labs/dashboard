@@ -22,9 +22,9 @@ import {
     useUrlFilters,
     Tooltip,
     ClusterFiltersType,
-    ClusterStatusType,
     ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
+    ClusterDetail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -33,7 +33,6 @@ import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
-import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
@@ -54,14 +53,6 @@ const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'f
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
-
-const getClusterMapData = (data: ClusterDetail[]) =>
-    data.map(({ name, id, nodeCount, status }) => ({
-        name,
-        status,
-        href: `${URLS.RESOURCE_BROWSER}/${id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-        value: nodeCount ?? 0,
-    }))
 
 const parseSearchParams = (searchParams: URLSearchParams) => ({
     clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
@@ -107,47 +98,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
     }, [searchKey, clusterOptions, `${clusterFilter}`, sortBy, sortOrder])
-
-    const treeMapData = useMemo(() => {
-        const { prodClusters, nonProdClusters } = filteredList.reduce(
-            (acc, curr) => {
-                if (curr.status && curr.status !== ClusterStatusType.CONNECTION_FAILED) {
-                    if (curr.isProd) {
-                        acc.prodClusters.push(curr)
-                    } else {
-                        acc.nonProdClusters.push(curr)
-                    }
-                }
-
-                return acc
-            },
-            { prodClusters: [], nonProdClusters: [] },
-        )
-
-        const productionClustersData = getClusterMapData(prodClusters)
-        const nonProductionClustersData = getClusterMapData(nonProdClusters)
-
-        return [
-            ...(productionClustersData.length
-                ? [
-                      {
-                          id: 0,
-                          label: 'Production Clusters',
-                          data: productionClustersData,
-                      },
-                  ]
-                : []),
-            ...(nonProductionClustersData.length
-                ? [
-                      {
-                          id: 1,
-                          label: 'Non-Production Clusters',
-                          data: nonProductionClustersData,
-                      },
-                  ]
-                : []),
-        ]
-    }, [filteredList])
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
@@ -305,7 +255,12 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 </div>
             </div>
             {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
-                <ClusterMap isLoading={clusterListLoader} treeMapData={treeMapData} />
+                <ClusterMap
+                    isLoading={clusterListLoader}
+                    filteredList={filteredList}
+                    clusterListLoader={clusterListLoader}
+                    isProportional
+                />
             )}
             {!filteredList.length ? (
                 <div className="flex-grow-1">

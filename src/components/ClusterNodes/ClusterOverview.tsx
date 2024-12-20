@@ -25,6 +25,7 @@ import {
     ResourceKindType,
     getUrlWithSearchParams,
     showError,
+    ClusterCapacityType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -32,7 +33,6 @@ import {
     DescriptionDataType,
     ERROR_TYPE,
     ClusterDetailsType,
-    ClusterCapacityType,
     ClusterDescriptionResponse,
     ClusterCapacityResponse,
 } from './types'

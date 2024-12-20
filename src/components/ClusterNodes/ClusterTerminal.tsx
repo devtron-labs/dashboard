@@ -27,6 +27,7 @@ import {
     TabGroup,
     ComponentSizeType,
     TabProps,
+    NodeTaintType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
@@ -43,7 +44,7 @@ import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ClusterTerminalType, NodeTaintType } from './types'
+import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,
     clusterImageSelect,

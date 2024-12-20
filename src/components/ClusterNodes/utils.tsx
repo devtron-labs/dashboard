@@ -1,11 +1,11 @@
 import {
+    ClusterDetail,
     numberComparatorBySortOrder,
     SortingOrder,
     stringComparatorBySortOrder,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys } from './constants'
-import { ClusterDetail } from './types'
 
 export const getSortedClusterList = (
     updatedClusterOptions: ClusterDetail[],

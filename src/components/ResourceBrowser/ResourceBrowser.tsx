@@ -22,12 +22,12 @@ import {
     PageHeader,
     ErrorScreenManager,
     getIsRequestAborted,
+    ClusterDetail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
-import { ClusterDetail } from '../ClusterNodes/types'
 import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
