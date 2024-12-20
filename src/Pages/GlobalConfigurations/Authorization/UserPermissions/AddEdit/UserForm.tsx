@@ -289,6 +289,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                                 userEmail={_userData?.emailId ?? ''}
                                 handleChange={handleUserStatusUpdate}
                                 disabled={submitting}
+                                size={ComponentSizeType.medium}
                             />
                         )}
                         {!isAddMode && (
