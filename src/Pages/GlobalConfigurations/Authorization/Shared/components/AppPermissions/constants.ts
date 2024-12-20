@@ -71,14 +71,6 @@ export enum DirectPermissionFieldName {
     status = 'status',
 }
 
-export const projectSelectStyles = {
-    ...authorizationSelectStyles,
-    valueContainer: (base) => ({
-        ...authorizationSelectStyles.valueContainer(base),
-        display: 'flex',
-    }),
-}
-
 export const roleSelectStyles = {
     ...authorizationSelectStyles,
     valueContainer: (base) => ({

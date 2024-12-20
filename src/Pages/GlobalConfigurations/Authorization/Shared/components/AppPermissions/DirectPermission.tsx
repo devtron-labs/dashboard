@@ -25,6 +25,9 @@ import {
     ReactSelectInputAction,
     ACCESS_TYPE_MAP,
     EntityTypes,
+    SelectPicker,
+    ComponentSizeType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -32,7 +35,7 @@ import { sortBySelected, importComponentFromFELibrary } from '../../../../../../
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
+import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import {
     CONFIG_APPROVER_ACTION,
@@ -40,13 +43,12 @@ import {
     ARTIFACT_PROMOTER_ACTION,
     TERMINAL_EXEC_ACTION,
 } from '../../../constants'
-import { AppOption, ClusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
+import { AppOption, ClusterValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
     allApplicationsOption,
     ALL_ENVIRONMENTS_OPTION,
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
-    projectSelectStyles,
     roleSelectStyles,
 } from './constants'
 import { getPrimaryRoleIndex, getWorkflowOptions, parseData } from '../../../utils'
@@ -100,7 +102,6 @@ const DirectPermission = ({
 
     const [openMenu, setOpenMenu] = useState<DirectPermissionFieldName | ''>('')
     const [applications, setApplications] = useState([])
-    const [projectInput, setProjectInput] = useState('')
     const [clusterInput, setClusterInput] = useState('')
     const [envInput, setEnvInput] = useState('')
     const [appInput, setAppInput] = useState('')
@@ -329,18 +330,6 @@ const DirectPermission = ({
         </div>
     )
 
-    const formatOptionLabelProject = (option) => (
-        <div className="flex left column">
-            <span>{option.label}</span>
-            {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
-                <>
-                    <small>Apps without an assigned project</small>
-                    <div className="unassigned-project-border" />
-                </>
-            )}
-        </div>
-    )
-
     const customFilter = (option, searchText: string) =>
         option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
         option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
@@ -369,37 +358,28 @@ const DirectPermission = ({
         )
     }
 
+    const projectOptions: SelectPickerOptionType[] = [
+        ...(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+            ? [
+                  {
+                      name: HELM_APP_UNASSIGNED_PROJECT,
+                      description: 'Apps without an assigned project',
+                  },
+              ]
+            : []),
+        ...projectsList,
+    ].map((project) => ({ label: project.name, value: project.name, description: project.description }))
+
     return (
         <>
-            <Select
-                classNamePrefix="dropdown-for-project"
+            <SelectPicker
+                inputId="dropdown-for-project"
                 value={permission.team}
                 name={DirectPermissionFieldName.team}
-                isMulti={false}
                 placeholder="Select project"
-                options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...(projectsList || [])]
-                    : projectsList
-                )?.map((project) => ({ label: project.name, value: project.name }))}
+                options={projectOptions}
                 onChange={handleDirectPermissionChange}
-                components={{
-                    ClearIndicator: null,
-                    IndicatorSeparator: null,
-                    Option: singleOption,
-                    ValueContainer: ProjectValueContainer,
-                }}
-                menuPlacement="auto"
-                styles={projectSelectStyles}
-                formatOptionLabel={formatOptionLabelProject}
-                inputValue={projectInput}
-                onBlur={() => {
-                    setProjectInput('')
-                }}
-                onInputChange={(value, action) => {
-                    if (action.action === ReactSelectInputAction.inputChange) {
-                        setProjectInput(value)
-                    }
-                }}
+                size={ComponentSizeType.large}
             />
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
                 <div>

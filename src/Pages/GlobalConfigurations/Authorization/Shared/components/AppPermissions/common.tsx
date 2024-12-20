@@ -23,6 +23,7 @@ import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
 
+// TODO: Clean this file
 export const WorkflowGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
 
 export const AppOption = ({ props, permission }) => {
@@ -117,22 +118,6 @@ export const ClusterValueContainer = (props) => {
         <components.ValueContainer {...props}>
             {!props.selectProps.menuIsOpen && (length > 0 ? count : props.selectProps.placeholder)}
             {React.cloneElement(props.children[1])}
-        </components.ValueContainer>
-    )
-}
-
-export const ProjectValueContainer = (props) => {
-    const value = props.getValue()
-    return (
-        <components.ValueContainer {...props}>
-            {value[0] ? (
-                <>
-                    {!props.selectProps.menuIsOpen && value[0].value}
-                    {React.cloneElement(props.children[1])}
-                </>
-            ) : (
-                props.children
-            )}
         </components.ValueContainer>
     )
 }
