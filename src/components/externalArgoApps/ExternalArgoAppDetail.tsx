@@ -80,15 +80,14 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 }
                 IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_ARGO_APP)
                 setErrorResponseCode(undefined)
-                setIsLoading(false)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 setErrorResponseCode(errors.code)
-                setIsLoading(false)
-                isAPICallInProgress = false
             })
             .finally(() => {
+                setIsLoading(false)
+                isAPICallInProgress = false
                 setIsReloadResourceTreeInProgress(false)
             })
     }
