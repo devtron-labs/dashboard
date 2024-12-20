@@ -47,6 +47,8 @@ export const IGNORE_CACHE_INFO = {
     IgnoreCache: {
         title: 'Ignore Cache',
         infoText: 'Ignoring cache will lead to longer build time.',
+        infoTooltipContent:
+            'Ignores existing Docker layer caches. A new cache will be generated and stored for future pipeline runs.',
     },
 }
 export const BRANCH_REGEX_MODAL_MESSAGING = {
