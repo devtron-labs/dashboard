@@ -1660,10 +1660,11 @@ const CDMaterial = ({
     }
 
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
+        const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
         if (
             stageType === DeploymentNodeType.CD &&
             !disableDeployButton &&
-            deploymentWindowMetadata?.userActionState === ACTION_STATE.ALLOWED &&
+            (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
             !(deploymentLoading || isSaveLoading)
         ) {
             return <AnimatedDeployButton onButtonClick={onClickDeploy} />
@@ -1674,14 +1675,12 @@ const CDMaterial = ({
                 startIcon={getDeployButtonIcon()}
                 isLoading={deploymentLoading || isSaveLoading}
                 text={`${
-                    deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
-                        ? 'Deployment is blocked'
-                        : CDButtonLabelMap[stageType]
+                    userActionState === ACTION_STATE.BLOCKED ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
                 }${isVirtualEnvironment ? ' to isolated env' : ''}`}
-                endIcon={deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
+                endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
                 onClick={(e) => onClickDeploy(e, disableDeployButton)}
                 size={ComponentSizeType.large}
-                style={getDeployButtonStyle(deploymentWindowMetadata.userActionState)}
+                style={getDeployButtonStyle(userActionState)}
                 disabled={disableDeployButton}
             />
         )
