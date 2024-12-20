@@ -81,12 +81,12 @@ const ExternalFluxAppDetails = () => {
                 })
         })
 
-    const _init = (isReload = true) => {
-        handleFetchExternalFluxCDAppDetails(isReload)
+    const initializePageDetails = () => {
+        handleFetchExternalFluxCDAppDetails(false)
             .then(() => {
-                // NOTE: using timeouts instead of intervals due since we want api calls after the last one finishes
+                // NOTE: using timeouts instead of intervals since we want the next api call after the last one finishes
                 // https://stackoverflow.com/questions/729921/whats-the-difference-between-recursive-settimeout-versus-setinterval
-                initTimer = setTimeout(_init, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+                initTimer = setTimeout(initializePageDetails, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
             })
             .catch(noop)
     }
@@ -101,7 +101,7 @@ const ExternalFluxAppDetails = () => {
 
     useEffect(() => {
         if (isSuperAdmin) {
-            _init(false)
+            initializePageDetails()
         }
 
         return () => {
@@ -122,7 +122,9 @@ const ExternalFluxAppDetails = () => {
     return (
         <AppDetailsComponent
             isExternalApp
-            _init={_init}
+            // NOTE: in case of DA & Helm Apps, when we delete that app _init is called
+            // since we can't delete flux app, sending in noop
+            _init={noop}
             loadingDetails={initialLoading}
             loadingResourceTree={initialLoading}
             handleReloadResourceTree={handleReloadResourceTree}
