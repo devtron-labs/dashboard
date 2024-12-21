@@ -19,7 +19,6 @@ import {
     get,
     post,
     trash,
-    ResponseType,
     getResolvedDeploymentTemplate,
     ValuesAndManifestFlagDTO,
     GetResolvedDeploymentTemplateProps,
@@ -29,7 +28,7 @@ import {
     getIsRequestAborted,
     DraftMetadataDTO,
     showError,
-    ConfigMapSecretDataDTO,
+    JobCMSecretDataDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
@@ -106,14 +105,14 @@ export const overRideSecret = ({ appId, envId, payload, signal }: OverrideConfig
         { signal },
     )
 
-export const getCMSecret = ({
+export const getJobCMSecret = ({
     componentType,
     id,
     appId,
     envId,
     name,
     signal,
-}: GetCMSecretProps): Promise<ResponseType<Omit<ConfigMapSecretDataDTO['data'], 'isDeletable'>>> => {
+}: GetCMSecretProps): Promise<JobCMSecretDataDTO> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -140,7 +139,7 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
 }: GetConfigMapSecretConfigDataProps<IsJob>) => {
     try {
         const { result } = await (isJob
-            ? getCMSecret({
+            ? getJobCMSecret({
                   componentType,
                   id: resourceId,
                   appId,
