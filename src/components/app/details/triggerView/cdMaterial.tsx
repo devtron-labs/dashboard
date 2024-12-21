@@ -1667,7 +1667,7 @@ const CDMaterial = ({
             (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
             !(deploymentLoading || isSaveLoading)
         ) {
-            return <AnimatedDeployButton onButtonClick={onClickDeploy} />
+            return <AnimatedDeployButton onButtonClick={onClickDeploy} isVirtualEnvironment={isVirtualEnvironment} />
         }
         return (
             <Button
