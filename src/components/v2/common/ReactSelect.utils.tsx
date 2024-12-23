@@ -196,40 +196,11 @@ export const formatOptionLabel = (option): JSX.Element => {
     )
 }
 
-export const CustomValueContainer = (props): JSX.Element => {
-    return (
-        <components.ValueContainer {...props}>
-            {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
-                (props.selectProps.value?.label ? (
-                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>
-                        {props.selectProps.value.label}
-                    </span>
-                ) : (
-                    <span className="dc__position-abs cn-5 ml-4">{props.selectProps.placeholder}</span>
-                ))}
-            {React.cloneElement(props.children[1])}
-        </components.ValueContainer>
-    )
-}
-
 export const menuComponentForImage = (props) => {
     return (
         <components.MenuList {...props}>
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
                 {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
-            </div>
-            {props.children}
-        </components.MenuList>
-    )
-}
-
-export const menuComponent = (props) => {
-    /* FIXME: not good practice but can be solved once & for all by unifying react-select */
-    const { text } = props.selectProps
-    return (
-        <components.MenuList {...props}>
-            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
-                {`Type to enter custom ${text}`}
             </div>
             {props.children}
         </components.MenuList>
