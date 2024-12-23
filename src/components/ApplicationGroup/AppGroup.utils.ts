@@ -25,7 +25,8 @@ import {
     CIMaterialType,
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
+import { getParsedBranchValuesForPlugin } from '@Components/common'
+import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
 import {
     AppGroupUrlFilters,
@@ -33,7 +34,6 @@ import {
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
 } from './AppGroup.types'
-import { getParsedBranchValuesForPlugin } from '@Components/common'
 
 let timeoutId
 
@@ -295,3 +295,17 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppGroupUrlFilters.cluster]: searchParams.getAll(AppGroupUrlFilters.cluster),
 })
+
+export const getAppGroupDeploymentHistoryLink = (
+    appId: number,
+    pipelineId: string,
+    envId: string,
+    redirectToAppGroup: boolean = true,
+) => {
+    if (redirectToAppGroup) {
+        // It will redirect to application group deployment history in case of same environment
+        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}/`
+    }
+    // It will redirect to application deployment history in case of other environments
+    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}/`
+}

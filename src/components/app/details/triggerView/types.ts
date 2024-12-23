@@ -246,7 +246,7 @@ interface InputMaterials {
 }
 
 export interface TriggerCDNodeProps
-    extends RouteComponentProps<{ appId: string }>,
+    extends RouteComponentProps<{ appId: string; envId?: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
     x: number
     y: number

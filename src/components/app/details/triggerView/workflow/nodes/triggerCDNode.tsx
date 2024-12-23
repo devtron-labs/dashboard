@@ -33,6 +33,7 @@ import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
+import { getAppGroupDeploymentHistoryLink } from '@Components/ApplicationGroup/AppGroup.utils'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -48,15 +49,20 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
     }
 
     getCDNodeDetailsURL(): string {
-        return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
-            this.props.environmentId
-        }`
+         if (this.props.fromAppGrouping) {
+             return getAppGroupDeploymentHistoryLink(
+                 this.props.appId,
+                 this.props.id,
+                 this.props.environmentId,
+                 this.props.match.params.envId === this.props.environmentId.toString(),
+             )
+         }
+         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
+             this.props.environmentId
+         }`
     }
 
     redirectToCDDetails() {
-        if (this.props.fromAppGrouping) {
-            return
-        }
         this.props.history.push(this.getCDNodeDetailsURL())
     }
 
@@ -94,18 +100,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             >
                 <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                 <span>{statusText}</span>
-                {!this.props.fromAppGrouping && (
-                    <>
-                        {statusText && <span className="mr-5 ml-5">/</span>}
-                        <Link
-                            data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
-                            to={url}
-                            className="workflow-node__details-link"
-                        >
-                            Details
-                        </Link>
-                    </>
-                )}
+                <>
+                    {statusText && <span className="mr-5 ml-5">/</span>}
+                    <Link
+                        data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                        to={url}
+                        className="workflow-node__details-link"
+                    >
+                        Details
+                    </Link>
+                </>
             </div>
         )
     }

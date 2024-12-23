@@ -44,9 +44,6 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
     }
 
     redirectToCDDetails(e) {
-        if (this.props.fromAppGrouping) {
-            return
-        }
         this.props.history.push(this.getCDDetailsURL())
     }
 
@@ -58,14 +55,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
                         {this.props.status}
                     </span>
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            {this.props.status && <span className="mr-5 ml-5">/</span>}
-                            <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
+                    <>
+                        {this.props.status && <span className="mr-5 ml-5">/</span>}
+                        <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
+                    </>
                 </div>
             )
         }
