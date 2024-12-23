@@ -138,7 +138,7 @@ const ExportToCsv = <ConfigValueType extends string = string>({
                         onClick={generateDataToExport}
                         text="Download"
                         dataTestId="retry-export-csv-button"
-                        startIcon={<ICDownload />}
+                        endIcon={<ICDownload />}
                         disabled={!Object.values(selectedConfig).some((value) => value)}
                     />
                 </>
