@@ -34,6 +34,7 @@ import { CSV_HEADERS, FILE_NAMES } from './constants'
 import { Moment12HourExportFormat } from '../../../config'
 import { ExportToCsvProps } from './types'
 import { ExportConfiguration } from './ExportConfiguration'
+import { getDefaultValueFromConfiguration } from './utils'
 
 const ExportToCsv = <ConfigValueType extends string = string>({
     apiPromise,
@@ -43,7 +44,7 @@ const ExportToCsv = <ConfigValueType extends string = string>({
     configuration,
 }: ExportToCsvProps<ConfigValueType>) => {
     const [selectedConfig, setSelectedConfig] = useState<Record<ConfigValueType, boolean>>(
-        {} as Record<ConfigValueType, boolean>,
+        getDefaultValueFromConfiguration(configuration),
     )
     const [showConfiguration, setShowConfiguration] = useState(false)
     const [exportingData, setExportingData] = useState(false)
@@ -247,7 +248,7 @@ const ExportToCsv = <ConfigValueType extends string = string>({
                     <div className="modal__body mt-40 p-0">
                         <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom px-20 py-12">Export to CSV</h2>
                         <div
-                            className={`py-16 px-20 flex ${isConfigurationAvailable ? 'top left dc__overflow-auto mxh-350' : ''}`}
+                            className={`py-16 flex ${isConfigurationAvailable ? 'top left dc__overflow-auto mxh-350 px-12' : 'px-20'}`}
                         >
                             {renderExportStatus()}
                         </div>

@@ -17,6 +17,7 @@
 import { ChangeEvent, useEffect } from 'react'
 import { Checkbox, CHECKBOX_VALUE, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ExportConfigurationProps } from './types'
+import { getDefaultValueFromConfiguration } from './utils'
 
 export const ExportConfiguration = <ConfigValueType extends string>({
     selectedConfig,
@@ -34,7 +35,7 @@ export const ExportConfiguration = <ConfigValueType extends string>({
 
     useEffect(
         () => () => {
-            setSelectedConfig({} as Record<ConfigValueType, boolean>)
+            setSelectedConfig(getDefaultValueFromConfiguration(configuration))
         },
         [],
     )
@@ -45,7 +46,7 @@ export const ExportConfiguration = <ConfigValueType extends string>({
             <div>
                 {options.map(({ label, value, description }) => (
                     <label
-                        className={`m-0 py-6 flex left dc__gap-8 ${description ? 'top' : ''} dc__hover-n50 br-4 cursor`}
+                        className={`m-0 py-6 px-8 flex left dc__gap-8 ${description ? 'top' : ''} dc__hover-n50 br-4 cursor`}
                         key={value}
                         htmlFor={value}
                     >
