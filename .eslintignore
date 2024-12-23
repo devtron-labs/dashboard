@@ -247,7 +247,6 @@ src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
 src/components/common/DynamicTabs/__tests__/DynamicTabs.test.tsx
-src/components/common/ExportToCsv/ExportToCsv.tsx
 src/components/common/FloatingVariablesSuggestions/FloatingVariablesSuggestions.tsx
 src/components/common/FloatingVariablesSuggestions/SuggestionItem.tsx
 src/components/common/FloatingVariablesSuggestions/Suggestions.tsx

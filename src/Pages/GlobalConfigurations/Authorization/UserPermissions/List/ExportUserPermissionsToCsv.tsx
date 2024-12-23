@@ -15,6 +15,8 @@
  */
 
 import moment from 'moment'
+import { UserTypeToFetchType } from '@devtron-labs/devtron-fe-common-lib'
+import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
 import { Moment12HourExportFormat } from '../../../../../config'
 
 import { UserPermissionListHeaderProps } from './types'
@@ -26,6 +28,11 @@ import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 
 const getStatusExportText = importComponentFromFELibrary('getStatusExportText', null, 'function')
+const getUserExportToCsvConfiguration = importComponentFromFELibrary(
+    'getUserExportToCsvConfiguration',
+    null,
+    'function',
+)
 const showStatus = !!getStatusExportText
 
 const ExportUserPermissionsToCsv = ({
@@ -37,8 +44,8 @@ const ExportUserPermissionsToCsv = ({
     /**
      * Returns the list of users which have permission to devtron applications
      */
-    const getUsersDataToExport = async () => {
-        const { users } = await getDataToExport()
+    const getUsersDataToExport: ExportToCsvProps<UserTypeToFetchType>['apiPromise'] = async (selectedConfig) => {
+        const { users } = await getDataToExport(selectedConfig)
         const userList = users.reduce((_usersList, _user) => {
             let isRowAdded = false
 
@@ -51,6 +58,10 @@ const ExportUserPermissionsToCsv = ({
                 isRowAdded = true
             }
 
+            const updatedOn = _user.updatedOn
+                ? `${moment.utc(_user.updatedOn).format(Moment12HourExportFormat)} (UTC)`
+                : '-'
+
             const _userData = {
                 emailId: _user.emailId,
                 userId: _user.id,
@@ -58,6 +69,11 @@ const ExportUserPermissionsToCsv = ({
                     ? {
                           status: getStatusExportText(_user.userStatus, _user.timeToLive),
                           permissionStatus: '-',
+                          createdOn: _user.createdOn
+                              ? `${moment.utc(_user.createdOn).format(Moment12HourExportFormat)} (UTC)`
+                              : '-',
+                          updatedOn,
+                          deletedOn: _user.isDeleted ? updatedOn : '-',
                       }
                     : {}),
                 lastLoginTime:
@@ -106,6 +122,10 @@ const ExportUserPermissionsToCsv = ({
                         },
                     )
                 }
+
+                if (!isRowAdded) {
+                    _pushToUserList(_userData)
+                }
             }
 
             return _usersList
@@ -115,7 +135,15 @@ const ExportUserPermissionsToCsv = ({
     }
 
     return (
-        <ExportToCsv disabled={disabled} apiPromise={getUsersDataToExport} fileName={FILE_NAMES.Users} showOnlyIcon />
+        <ExportToCsv
+            disabled={disabled}
+            apiPromise={getUsersDataToExport}
+            fileName={FILE_NAMES.Users}
+            showOnlyIcon
+            {...(getUserExportToCsvConfiguration && {
+                configuration: getUserExportToCsvConfiguration(),
+            })}
+        />
     )
 }
 

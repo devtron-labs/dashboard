@@ -25,14 +25,6 @@ export enum FILE_NAMES {
     Jobs = 'Devtron Jobs Data',
 }
 
-export interface ExportToCsvProps {
-    apiPromise: any
-    fileName: FILE_NAMES
-    className?: string
-    disabled?: boolean
-    showOnlyIcon?: boolean
-}
-
 export const APPLIST_EXPORT_HEADERS = [
     { label: 'App Name', key: 'appName' },
     { label: 'App ID', key: 'appId' },
@@ -59,7 +51,14 @@ export const USER_EXPORT_HEADERS = [
     { label: 'Environment', key: 'environment' },
     { label: 'Application', key: 'application' },
     { label: 'Role', key: 'role' },
-    ...(showStatus ? [{ label: 'Permission Status', key: 'permissionStatus' }] : []),
+    ...(showStatus
+        ? [
+              { label: 'Permission Status', key: 'permissionStatus' },
+              { label: 'Added on', key: 'createdOn' },
+              { label: 'Updated on', key: 'updatedOn' },
+              { label: 'Deleted on', key: 'deletedOn' },
+          ]
+        : []),
 ]
 
 export const USER_EXPORT_HEADER_ROW = {
@@ -80,6 +79,9 @@ export const USER_EXPORT_HEADER_ROW = {
     ...(showStatus
         ? {
               permissionStatus: 'Permission Status',
+              createdOn: 'Added on',
+              updatedOn: 'Updated on',
+              deletedOn: 'Deleted on',
           }
         : {}),
 }
