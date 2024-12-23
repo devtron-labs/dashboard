@@ -54,7 +54,7 @@ export const ExportConfiguration = <ConfigValueType extends string>({
                             name={value}
                             dataTestId={`check-${label}`}
                             id={value}
-                            isChecked={selectedConfig[value]}
+                            isChecked={selectedConfig[value] ?? false}
                             onChange={handleConfigSelectionChange}
                             rootClassName="m-0 w-20 h-20"
                         />

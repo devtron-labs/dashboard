@@ -74,6 +74,7 @@ const ExportUserPermissionsToCsv = ({
                               : '-',
                           updatedOn,
                           deletedOn: _user.isDeleted ? updatedOn : '-',
+                          isDeleted: _user.isDeleted,
                       }
                     : {}),
                 lastLoginTime:

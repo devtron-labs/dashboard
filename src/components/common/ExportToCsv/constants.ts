@@ -54,9 +54,10 @@ export const USER_EXPORT_HEADERS = [
     ...(showStatus
         ? [
               { label: 'Permission Status', key: 'permissionStatus' },
+              { label: 'Deleted', key: 'isDeleted' },
+              { label: 'Deleted on', key: 'deletedOn' },
               { label: 'Added on', key: 'createdOn' },
               { label: 'Updated on', key: 'updatedOn' },
-              { label: 'Deleted on', key: 'deletedOn' },
           ]
         : []),
 ]
@@ -79,9 +80,10 @@ export const USER_EXPORT_HEADER_ROW = {
     ...(showStatus
         ? {
               permissionStatus: 'Permission Status',
+              isDeleted: 'Deleted',
+              deletedOn: 'Deleted on',
               createdOn: 'Added on',
               updatedOn: 'Updated on',
-              deletedOn: 'Deleted on',
           }
         : {}),
 }
