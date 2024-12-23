@@ -36,18 +36,14 @@ import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../..
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, ARTIFACT_PROMOTER_ACTION, TERMINAL_EXEC_ACTION } from '../../../constants'
-import {
-    allApplicationsOption,
-    ALL_ENVIRONMENTS_OPTION,
-    DirectPermissionFieldName,
-    roleSelectStyles,
-} from './constants'
+import { allApplicationsOption, DirectPermissionFieldName, roleSelectStyles } from './constants'
 import { getPrimaryRoleIndex, getWorkflowOptions, parseData } from '../../../utils'
 import { DirectPermissionRowProps } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
-import { getDisplayTextByName, getEnvironmentDisplayText } from './utils'
+import { getDisplayTextByName } from './utils'
+import EnvironmentSelector from './EnvironmentSelector'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -62,7 +58,7 @@ const DirectPermission = ({
     appsListHelmApps,
     projectsList,
     getEnvironmentOptions,
-    environmentClusterOptions: envClusters,
+    environmentClusterOptions,
     getListForAccessType,
 }: DirectPermissionRowProps) => {
     const { customRoles } = useAuthorizationContext()
@@ -98,7 +94,6 @@ const DirectPermission = ({
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const environments = getEnvironmentOptions(permission.entity)
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
     const possibleRoles = useMemo(
         () =>
@@ -312,43 +307,11 @@ const DirectPermission = ({
             />
 
             <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
-                <SelectPicker
-                    inputId="dropdown-for-environment"
-                    value={permission.environment}
-                    isMulti
-                    name={DirectPermissionFieldName.environment}
-                    placeholder="Select environments"
-                    isDisabled={!permission.team}
-                    onChange={handleDirectPermissionChange}
-                    error={permission.environmentError}
-                    size={ComponentSizeType.large}
-                    {...(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                        ? {
-                              options: envClusters.map((groupOption) => ({
-                                  label: groupOption.label,
-                                  options: groupOption.options.map((option) => ({
-                                      label: option.label,
-                                      value: option.value,
-                                      description:
-                                          option.clusterName +
-                                          (option.clusterName && option.namespace ? '/' : '') +
-                                          (option.namespace || ''),
-                                  })),
-                              })),
-                              multiSelectProps: {
-                                  customDisplayText: getEnvironmentDisplayText(envClusters, permission.environment),
-                              },
-                          }
-                        : {
-                              options: [ALL_ENVIRONMENTS_OPTION, ...environments],
-                              multiSelectProps: {
-                                  customDisplayText: getDisplayTextByName(
-                                      DirectPermissionFieldName.environment,
-                                      [ALL_ENVIRONMENTS_OPTION, ...environments],
-                                      permission.environment,
-                                  ),
-                              },
-                          })}
+                <EnvironmentSelector
+                    environmentClusterOptions={environmentClusterOptions}
+                    getEnvironmentOptions={getEnvironmentOptions}
+                    handleDirectPermissionChange={handleDirectPermissionChange}
+                    permission={permission}
                 />
             </div>
             <div style={{ order: isAccessTypeJob ? 1 : 0 }}>
