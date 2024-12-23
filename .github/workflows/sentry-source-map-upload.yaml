@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'hotfix-v**'
+      - 'fix/source-map-upload'
 
 jobs:
   upload-source-map:
