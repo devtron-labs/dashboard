@@ -15,7 +15,7 @@
  */
 
 import { ChangeEvent, useEffect } from 'react'
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ExportConfigurationProps } from './types'
 
 export const ExportConfiguration = <ConfigValueType extends string>({
@@ -59,11 +59,15 @@ export const ExportConfiguration = <ConfigValueType extends string>({
                             rootClassName="m-0 w-20 h-20"
                         />
                         <p className="m-0 flexbox-col">
-                            <span className="fs-13 fw-4 lh-20 cn-9 dc__truncate">{label}</span>
+                            <Tooltip content={label}>
+                                <span className="fs-13 fw-4 lh-20 cn-9 dc__truncate">{label}</span>
+                            </Tooltip>
                             {description && (
-                                <span className="fs-12 fw-4 lh-18 cn-7 dc__ellipsis-right__2nd-line">
-                                    {description}
-                                </span>
+                                <Tooltip content={description}>
+                                    <span className="fs-12 fw-4 lh-18 cn-7 dc__ellipsis-right__2nd-line">
+                                        {description}
+                                    </span>
+                                </Tooltip>
                             )}
                         </p>
                     </label>

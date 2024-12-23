@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import moment from 'moment'
-import { UserTypeToFetchType } from '@devtron-labs/devtron-fe-common-lib'
+import { getFormattedUTCTimeForExport, UserTypeToFetchType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
-import { Moment12HourExportFormat } from '../../../../../config'
 
 import { UserPermissionListHeaderProps } from './types'
 import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
@@ -58,9 +56,7 @@ const ExportUserPermissionsToCsv = ({
                 isRowAdded = true
             }
 
-            const updatedOn = _user.updatedOn
-                ? `${moment(_user.updatedOn).utc().format(Moment12HourExportFormat)} (UTC)`
-                : '-'
+            const updatedOn = getFormattedUTCTimeForExport(_user.updatedOn)
 
             const _userData = {
                 emailId: _user.emailId,
@@ -69,9 +65,7 @@ const ExportUserPermissionsToCsv = ({
                     ? {
                           status: getStatusExportText(_user.userStatus, _user.timeToLive),
                           permissionStatus: '-',
-                          createdOn: _user.createdOn
-                              ? `${moment(_user.createdOn).utc().format(Moment12HourExportFormat)} (UTC)`
-                              : '-',
+                          createdOn: getFormattedUTCTimeForExport(_user.createdOn),
                           updatedOn,
                           deletedOn: _user.isDeleted ? updatedOn : '-',
                           isDeleted: _user.isDeleted,
@@ -80,7 +74,7 @@ const ExportUserPermissionsToCsv = ({
                 lastLoginTime:
                     _user.lastLoginTime === LAST_LOGIN_TIME_NULL_STATE
                         ? _user.lastLoginTime
-                        : `${moment(_user.lastLoginTime).utc().format(Moment12HourExportFormat)} (UTC)`,
+                        : getFormattedUTCTimeForExport(_user.lastLoginTime),
                 superAdmin: _user.superAdmin,
                 group: '-',
                 project: '-',
