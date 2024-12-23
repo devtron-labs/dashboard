@@ -177,3 +177,29 @@ export const getDisplayTextByName = (
 
     return `${count} ${Item}${selectedOptionsLength !== 1 ? 's' : ''}`
 }
+
+export const getEnvironmentDisplayText = (
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>[],
+    selectedOptions: SelectPickerOptionType[],
+) => {
+    const selectedOptionsLength = selectedOptions.filter(
+        (opt) =>
+            opt.value &&
+            !(opt.value as string).startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE) &&
+            !(opt.value as string).startsWith(SELECT_ALL_VALUE),
+    ).length
+    let count = ''
+    // 2 represents all existing cluster option and all existing + future cluster option
+    const totalEnvironments = options.reduce(
+        (len, cluster) =>
+            len + ('options' in cluster && Array.isArray(cluster.options) ? cluster.options.length - 2 : 1),
+        0,
+    )
+    if (selectedOptionsLength === totalEnvironments) {
+        count = 'All environments'
+    } else {
+        count = `${selectedOptionsLength} environment${selectedOptionsLength !== 1 ? 's' : ''}`
+    }
+
+    return count
+}

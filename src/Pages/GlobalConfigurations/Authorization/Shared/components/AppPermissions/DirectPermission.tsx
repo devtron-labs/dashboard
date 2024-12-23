@@ -19,34 +19,26 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
-    Option,
     getIsRequestAborted,
-    ReactSelectInputAction,
     ACCESS_TYPE_MAP,
     EntityTypes,
     SelectPicker,
     ComponentSizeType,
     SelectPickerOptionType,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
-import Tippy from '@tippyjs/react'
-import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
+import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import {
-    CONFIG_APPROVER_ACTION,
-    authorizationSelectStyles,
-    ARTIFACT_PROMOTER_ACTION,
-    TERMINAL_EXEC_ACTION,
-} from '../../../constants'
-import { ClusterValueContainer, ValueContainer } from './common'
+import { CONFIG_APPROVER_ACTION, ARTIFACT_PROMOTER_ACTION, TERMINAL_EXEC_ACTION } from '../../../constants'
 import {
     allApplicationsOption,
     ALL_ENVIRONMENTS_OPTION,
-    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
     roleSelectStyles,
 } from './constants'
@@ -55,7 +47,7 @@ import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
-import { getDisplayTextByName } from './utils'
+import { getDisplayTextByName, getEnvironmentDisplayText } from './utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -100,10 +92,8 @@ const DirectPermission = ({
         terminalExec: doesTerminalAccessRoleExist || permission.action.terminalExec,
     }
 
-    const [openMenu, setOpenMenu] = useState<DirectPermissionFieldName | ''>('')
+    // const [openMenu] = useState<DirectPermissionFieldName | ''>('')
     const [applications, setApplications] = useState([])
-    const [clusterInput, setClusterInput] = useState('')
-    const [envInput, setEnvInput] = useState('')
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -270,76 +260,17 @@ const DirectPermission = ({
         }
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
-    useEffect(() => {
-        if (openMenu || !projectId || (environments && environments.length === 0) || applications.length === 0) {
-            return
-        }
+    // useEffect(() => {
+    //     if (openMenu || !projectId || (environments && environments.length === 0) || applications.length === 0) {
+    //         return
+    //     }
 
-        setApplications((_applications) =>
-            openMenu === DirectPermissionFieldName.apps || openMenu === DirectPermissionFieldName.jobs
-                ? _applications
-                : sortBySelected(permission.entityName, _applications, 'value'),
-        )
-    }, [openMenu, permission.environment, projectId])
-
-    const formatOptionLabelClusterEnv = (option, { inputValue }) => (
-        <div
-            className={`flex left column ${
-                option.value &&
-                (option.value.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE) ||
-                    option.value.startsWith(SELECT_ALL_VALUE)) &&
-                'fs-13 fw-6 cn-9'
-            }`}
-        >
-            {!inputValue ? (
-                <>
-                    <span>{option.label}</span>
-                    <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
-                        {option.clusterName +
-                            (option.clusterName && option.namespace ? '/' : '') +
-                            (option.namespace || '')}
-                    </small>
-                </>
-            ) : (
-                <>
-                    <span
-                        // eslint-disable-next-line react/no-danger
-                        dangerouslySetInnerHTML={{
-                            __html: option.label.replace(
-                                new RegExp(inputValue, 'gi'),
-                                (highlighted) => `<mark>${highlighted}</mark>`,
-                            ),
-                        }}
-                    />
-                    {option.clusterName && option.namespace && (
-                        <small
-                            className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}
-                            // eslint-disable-next-line react/no-danger
-                            dangerouslySetInnerHTML={{
-                                __html: `${option.clusterName}/${option.namespace}`.replace(
-                                    new RegExp(inputValue, 'gi'),
-                                    (highlighted) => `<mark>${highlighted}</mark>`,
-                                ),
-                            }}
-                        />
-                    )}
-                </>
-            )}
-        </div>
-    )
-
-    const customFilter = (option, searchText: string) =>
-        option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
-        option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
-        option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
-
-    const onFocus = (name: DirectPermissionFieldName) => {
-        setOpenMenu(name)
-    }
-
-    const onMenuClose = () => {
-        setOpenMenu('')
-    }
+    //     setApplications((_applications) =>
+    //         openMenu === DirectPermissionFieldName.apps || openMenu === DirectPermissionFieldName.jobs
+    //             ? _applications
+    //             : sortBySelected(permission.entityName, _applications, 'value'),
+    //     )
+    // }, [permission.environment, projectId])
 
     const handleStatusChange = (
         status: DirectPermissionsRoleFilter['status'],
@@ -379,82 +310,47 @@ const DirectPermission = ({
                 onChange={handleDirectPermissionChange}
                 size={ComponentSizeType.large}
             />
-            {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
-                <div>
-                    <Select
-                        classNamePrefix="dropdown-for-environment"
-                        value={permission.environment}
-                        isMulti
-                        closeMenuOnSelect={false}
-                        name={DirectPermissionFieldName.environment}
-                        onFocus={() => onFocus(DirectPermissionFieldName.environment)}
-                        onMenuClose={onMenuClose}
-                        placeholder="Select environments"
-                        options={envClusters}
-                        formatOptionLabel={formatOptionLabelClusterEnv}
-                        filterOption={customFilter}
-                        hideSelectedOptions={false}
-                        menuPlacement="auto"
-                        styles={authorizationSelectStyles}
-                        components={{
-                            ClearIndicator: null,
-                            ValueContainer: ClusterValueContainer,
-                            IndicatorSeparator: null,
-                            Option,
-                            GroupHeading,
-                        }}
-                        isDisabled={!permission.team}
-                        onChange={handleDirectPermissionChange}
-                        blurInputOnSelect={false}
-                        inputValue={clusterInput}
-                        onBlur={() => {
-                            setClusterInput('')
-                        }}
-                        onInputChange={(value, action) => {
-                            if (action.action === ReactSelectInputAction.inputChange) {
-                                setClusterInput(value)
-                            }
-                        }}
-                    />
-                    {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
-                </div>
-            ) : (
-                <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
-                    <Select
-                        classNamePrefix="dropdown-for-environment"
-                        value={permission.environment}
-                        isMulti
-                        closeMenuOnSelect={false}
-                        name={DirectPermissionFieldName.environment}
-                        onFocus={() => onFocus(DirectPermissionFieldName.environment)}
-                        onMenuClose={onMenuClose}
-                        placeholder="Select environments"
-                        options={[{ label: '', options: [ALL_ENVIRONMENTS_OPTION] }, ...environments]}
-                        menuPlacement="auto"
-                        hideSelectedOptions={false}
-                        styles={authorizationSelectStyles}
-                        components={{
-                            ClearIndicator: null,
-                            ValueContainer,
-                            IndicatorSeparator: null,
-                            Option,
-                            GroupHeading,
-                        }}
-                        isDisabled={!permission.team}
-                        onChange={handleDirectPermissionChange}
-                        inputValue={envInput}
-                        onBlur={() => {
-                            setEnvInput('')
-                        }}
-                        onInputChange={(value, action) => {
-                            if (action.action === ReactSelectInputAction.inputChange) {
-                                setEnvInput(value)
-                            }
-                        }}
-                    />
-                    {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
-                </div>
-            )}
+
+            <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
+                <SelectPicker
+                    inputId="dropdown-for-environment"
+                    value={permission.environment}
+                    isMulti
+                    name={DirectPermissionFieldName.environment}
+                    placeholder="Select environments"
+                    isDisabled={!permission.team}
+                    onChange={handleDirectPermissionChange}
+                    error={permission.environmentError}
+                    size={ComponentSizeType.large}
+                    {...(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+                        ? {
+                              options: envClusters.map((groupOption) => ({
+                                  label: groupOption.label,
+                                  options: groupOption.options.map((option) => ({
+                                      label: option.label,
+                                      value: option.value,
+                                      description:
+                                          option.clusterName +
+                                          (option.clusterName && option.namespace ? '/' : '') +
+                                          (option.namespace || ''),
+                                  })),
+                              })),
+                              multiSelectProps: {
+                                  customDisplayText: getEnvironmentDisplayText(envClusters, permission.environment),
+                              },
+                          }
+                        : {
+                              options: [ALL_ENVIRONMENTS_OPTION, ...environments],
+                              multiSelectProps: {
+                                  customDisplayText: getDisplayTextByName(
+                                      DirectPermissionFieldName.environment,
+                                      [ALL_ENVIRONMENTS_OPTION, ...environments],
+                                      permission.environment,
+                                  ),
+                              },
+                          })}
+                />
+            </div>
             <div style={{ order: isAccessTypeJob ? 1 : 0 }}>
                 <SelectPicker
                     inputId="dropdown-for-appOrJob"
@@ -545,17 +441,16 @@ const DirectPermission = ({
                     />
                 </div>
             )}
-            <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                <button
-                    type="button"
-                    className="dc__transparent flex p-4 icon-delete h-36"
+            <div style={{ order: showStatus ? 6 : 5 }}>
+                <Button
+                    icon={<TrashIcon />}
+                    ariaLabel="Delete"
+                    dataTestId={`delete-row-${index}`}
                     onClick={() => removeRow(index)}
-                    aria-label="Delete row"
-                    style={{ order: showStatus ? 6 : 5 }}
-                >
-                    <TrashIcon className="scn-6 icon-dim-16" />
-                </button>
-            </Tippy>
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.negativeGrey}
+                />
+            </div>
         </>
     )
 }
