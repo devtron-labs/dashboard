@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Build the library
+    - name: Build app
       run: yarn build
 
     - name: Set SENTRY_RELEASE_VERSION
