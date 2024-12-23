@@ -24,12 +24,12 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     logExceptionToSentry,
+    GenericSectionErrorState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as ExportIcon } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as Success } from '@Icons/ic-success.svg'
 import { ReactComponent as ICDownload } from '@Icons/ic-download.svg'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { CSV_HEADERS, FILE_NAMES } from './constants'
 import { Moment12HourExportFormat } from '../../../config'
 import { ExportToCsvProps } from './types'
@@ -179,14 +179,13 @@ const ExportToCsv = <ConfigValueType extends string = string>({
 
         if (errorExportingData) {
             return (
-                <div className="export-error bcn-0 flex column cn-9 h-100">
-                    <Error className="icon-dim-32" />
-                    <span className="fs-14 fw-6 mt-8">Unable to export data</span>
-                    <span className="fs-13 fw-4 dc__align-center">
-                        Encountered an error while trying to export. Please try again. If error persists then try after
-                        some time.
-                    </span>
-                </div>
+                <GenericSectionErrorState
+                    title="Unable to export data"
+                    description="Encountered an error while trying to export. Please try again. If error persists then try after
+                        some time."
+                    buttonText=""
+                    subTitle=""
+                />
             )
         }
 
@@ -199,13 +198,17 @@ const ExportToCsv = <ConfigValueType extends string = string>({
         }
 
         return (
-            <div className="export-success bcn-0 flex column cn-9 h-100">
+            <div className="export-success bcn-0 flex column cn-9 h-100 lh-20">
                 <Success className="icon-dim-32" />
                 <span className="fs-14 fw-6 mt-8">Your export is ready</span>
                 <span className="fs-13 fw-4"> If download does not start automatically,</span>
-                <span className="fs-13 fw-4 cb-5 pointer" onClick={initiateDownload}>
-                    click here to download manually.
-                </span>
+                <Button
+                    text="click here to download manually."
+                    onClick={initiateDownload}
+                    dataTestId="manual-download"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.medium}
+                />
             </div>
         )
     }
