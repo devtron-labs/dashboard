@@ -30,12 +30,12 @@ import {
     Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
+import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { deepEqual } from '../../../../../components/common'
 
 import { URLS } from '../../../../../config'
-import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import {
     PermissionConfigurationForm,
@@ -175,7 +175,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         size={ComponentSizeType.medium}
                         dataTestId="delete-group"
                         text="Delete"
-                        startIcon={<PlusIcon />}
+                        startIcon={<ICDeleteInteractive />}
                         onClick={toggleDeleteConfirmationModal}
                     />
                 )}
@@ -238,7 +238,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     {!isAddMode &&
                         !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                             <span className="flex cy-7 dc__gap-4">
-                                <Warning className="icon-dim-20 warning-icon-y7" />
+                                <ICWarning className="icon-dim-20 warning-icon-y7" />
                                 Unsaved changes
                             </span>
                         )}
