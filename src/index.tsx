@@ -168,7 +168,7 @@ if (!window || !window._env_) {
         FEATURE_PROMO_EMBEDDED_IFRAME_URL: '',
         FEATURE_DEFAULT_MERGE_STRATEGY: OverrideMergeStrategyType.PATCH,
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
-        FEATURE_CLUSTER_MAP_ENABLE: false,
+        FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
     }
 }

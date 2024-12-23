@@ -20,26 +20,29 @@ import {
     showError,
     Progressing,
     Drawer,
-    TagType,
-    TagLabelSelect,
     getTeamListMin,
-    DEFAULT_TAG_DATA,
     multiSelectStyles,
     Reload,
     RadioGroup,
     RadioGroupItem,
     noop,
     CustomInput,
-    ButtonWithLoader,
     SelectPicker,
     OptionType,
     ToastManager,
     ToastVariantType,
+    Button,
+    TagsContainer,
+    getEmptyTagTableRow,
+    validateTagKeyValue,
+    validateTagValue,
+    DynamicDataTableCellErrorType,
+    TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
-import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
+import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType, APP_TYPE } from '../../../config'
 import { ValidationRules } from './validationRules'
 import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
@@ -52,7 +55,7 @@ import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
 
-const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
+const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -76,7 +79,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneId: 0,
                 appCreationType: AppCreationType.Blank,
             },
-            tags: [DEFAULT_TAG_DATA],
+            tags: [getEmptyTagTableRow()],
+            tagsError: {},
             isValid: {
                 projectId: false,
                 appName: false,
@@ -98,7 +102,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         try {
             const { result } = await getTeamListMin()
             sortObjectArrayAlphabetically(result, 'name')
-            const _projects: OptionType[] = result.map((project) => ({ value: project.id.toString(), label: project.name }))
+            const _projects: OptionType[] = result.map((project) => ({
+                value: project.id.toString(),
+                label: project.name,
+            }))
             this.setState({ view: ViewType.FORM, projects: _projects })
         } catch (err) {
             this.setState({ view: ViewType.ERROR })
@@ -162,19 +169,44 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
+    setTagsError = (updatedTagsError: typeof this.state.tagsError): void => {
+        this.setState({ tagsError: updatedTagsError })
+    }
+
     createApp(e): void {
         e.preventDefault()
         const labelTags = []
         let invalidLabels = false
+        const updatedTagsError: DynamicDataTableCellErrorType<TagsTableColumnsType> = {}
         for (let index = 0; index < this.state.tags.length; index++) {
             const currentTag = this.state.tags[index]
-            if (currentTag.isInvalidKey || currentTag.isInvalidValue) {
+            const currentKey = currentTag.data.tagKey.value
+            const currentVal = currentTag.data.tagValue.value
+            updatedTagsError[currentTag.id] = {
+                tagKey: { isValid: true, errorMessages: [] },
+                tagValue: { isValid: true, errorMessages: [] },
+            }
+            if (!currentKey && !currentVal) {
+                continue
+            }
+            const { isValid: isKeyValid, errorMessages: keyErrorMessages } = validateTagKeyValue(currentKey)
+            const { isValid: isValueValid, errorMessages: valueErrorMessages } = validateTagValue(
+                currentVal,
+                currentKey,
+            )
+            if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
-                break
-            } else if (currentTag.key) {
-                labelTags.push({ key: currentTag.key, value: currentTag.value, propagate: currentTag.propagate })
+                updatedTagsError[currentTag.id].tagKey = { isValid: isKeyValid, errorMessages: keyErrorMessages }
+                updatedTagsError[currentTag.id].tagValue = { isValid: isValueValid, errorMessages: valueErrorMessages }
+            } else if (isKeyValid && isValueValid) {
+                labelTags.push({
+                    key: currentKey,
+                    value: currentVal,
+                    propagate: currentTag.customState.propagateTag,
+                })
             }
         }
+        this.setTagsError(updatedTagsError)
         this.setState({ showErrors: true, appNameErrors: true })
         const allKeys = Object.keys(this.state.isValid)
         const isFormValid = allKeys.reduce((valid, key) => {
@@ -222,7 +254,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             disableForm: false,
                             showErrors: false,
                             appNameErrors: false,
-                            tags: response.result?.labels?.tags,
                             createAppLoader: false,
                         },
                         () => {
@@ -281,7 +312,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    setTags = (tags: TagType[]): void => {
+    setTags = (tags: typeof this.state.tags): void => {
         this.setState({ tags })
     }
 
@@ -398,6 +429,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
+
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
                         <div
@@ -446,6 +478,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         </div>
                     </>
                 )}
+
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
                     <SelectPicker
@@ -466,33 +499,45 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagsContainer
-                    isCreateApp
-                    labelTags={this.state.tags}
-                    setLabelTags={this.setTags}
-                    tabIndex={5}
-                    selectedProjectId={this.state.form.projectId}
-                />
+
+                {MandatoryTagsContainer ? (
+                    <MandatoryTagsContainer
+                        isCreateApp
+                        appType={this.props.isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS}
+                        projectId={this.state.form.projectId}
+                        tags={this.state.tags}
+                        setTags={this.setTags}
+                        tagsError={this.state.tagsError}
+                        setTagErrors={this.setTagsError}
+                    />
+                ) : (
+                    <TagsContainer
+                        appType={this.props.isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS}
+                        isCreateApp
+                        rows={this.state.tags}
+                        setRows={this.setTags}
+                        tagsError={this.state.tagsError}
+                        setTagErrors={this.setTagsError}
+                    />
+                )}
             </div>
         )
     }
 
     renderFooterSection = (): JSX.Element => {
         return (
-            <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <ButtonWithLoader
-                    rootClassName="flex cta h-36"
+            <div className="w-800 dc__border-top flex right px-20 py-16 dc__position-fixed dc__bottom-0">
+                <Button
                     onClick={this.createApp}
                     dataTestId={`${this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'}-${
                         this.props.isJobView ? 'job' : 'app'
                     }-button-on-drawer`}
                     disabled={this.state.createAppLoader}
                     isLoading={this.state.createAppLoader}
-                >
-                    {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
+                    text={`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}
-                </ButtonWithLoader>
+                />
             </div>
         )
     }

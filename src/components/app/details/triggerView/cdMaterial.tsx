@@ -77,6 +77,9 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    GetPolicyConsequencesProps,
+    PolicyConsequencesDTO,
+    PipelineStageBlockInfo,
     RuntimePluginVariables,
     uploadCDPipelineFile,
     Button,
@@ -150,6 +153,9 @@ const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
+    importComponentFromFELibrary('getPolicyConsequences', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -224,40 +230,59 @@ const CDMaterial = ({
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = (cdPolicyConsequences: PipelineStageBlockInfo) => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return cdPolicyConsequences.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return cdPolicyConsequences.post.isBlocked
+            case DeploymentNodeType.CD:
+                return cdPolicyConsequences.node.isBlocked
+            default:
+                return false
+        }
+    }
+
+    const getMaterialResponseList = async (): Promise<[CDMaterialResponseType, any, PolicyConsequencesDTO]> => {
+        const response = await Promise.all([
+            genericCDMaterialsService(
+                materialType === MATERIAL_TYPE.rollbackMaterialList
+                    ? CDMaterialServiceEnum.ROLLBACK
+                    : CDMaterialServiceEnum.CD_MATERIALS,
+                pipelineId,
+                // Don't think need to set stageType to approval in case of approval node
+                stageType ?? DeploymentNodeType.CD,
+                abortControllerRef.current.signal,
+                // It is meant to fetch the first 20 materials
+                {
+                    offset: 0,
+                    size: 20,
+                    search: searchImageTag,
+                    // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
+                    // So there should'nt be any additional api call
+                    // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
+                    // filter:
+                    //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
+                    //         ? CDMaterialFilterQuery.RESOURCE
+                    //         : null,
+                },
+            ),
+            getDeploymentWindowProfileMetaData && !isFromBulkCD
+                ? getDeploymentWindowProfileMetaData(appId, envId)
+                : null,
+            getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
+        ])
+
+        if (getIsTriggerBlocked(response[2].cd)) {
+            return [null, null, response[2]]
+        }
+        return response
+    }
+
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        genericCDMaterialsService(
-                            materialType === MATERIAL_TYPE.rollbackMaterialList
-                                ? CDMaterialServiceEnum.ROLLBACK
-                                : CDMaterialServiceEnum.CD_MATERIALS,
-                            pipelineId,
-                            // Don't think need to set stageType to approval in case of approval node
-                            stageType ?? DeploymentNodeType.CD,
-                            abortControllerRef.current.signal,
-                            // It is meant to fetch the first 20 materials
-                            {
-                                offset: 0,
-                                size: 20,
-                                search: searchImageTag,
-                                // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
-                                // So there should'nt be any additional api call
-                                // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
-                                // filter:
-                                //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
-                                //         ? CDMaterialFilterQuery.RESOURCE
-                                //         : null,
-                            },
-                        ),
-                        getDeploymentWindowProfileMetaData && !isFromBulkCD
-                            ? getDeploymentWindowProfileMetaData(appId, envId)
-                            : null,
-                    ]),
-                abortControllerRef,
-            ),
+        () => abortPreviousRequests(() => getMaterialResponseList(), abortControllerRef),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
         !!pipelineId && !isTriggerBlockedDueToPlugin,
@@ -1095,6 +1120,10 @@ const CDMaterial = ({
             )
         }
 
+        if (TriggerBlockEmptyState && getIsTriggerBlocked(responseList?.[2]?.cd)) {
+            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
+        }
+
         if (
             resourceFilters?.length &&
             noEligibleImages &&
@@ -1173,7 +1202,9 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 ||
+                        materialData.deploymentBlockedState?.isBlocked ||
+                        materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
@@ -1187,6 +1218,7 @@ const CDMaterial = ({
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
                             isFilterApplied={materialData.appliedFilters?.length > 0}
+                            triggerBlockedInfo={materialData.deploymentBlockedState}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1952,7 +1984,7 @@ const CDMaterial = ({
     return (
         <>
             <div className="trigger-modal__header">
-                <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                <h2 className="modal__title">{renderCDModalHeader()}</h2>
                 <button type="button" className="dc__transparent" onClick={closeCDModal}>
                     <img alt="close" src={close} />
                 </button>
