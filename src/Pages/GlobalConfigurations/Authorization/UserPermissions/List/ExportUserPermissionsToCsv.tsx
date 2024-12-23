@@ -59,7 +59,7 @@ const ExportUserPermissionsToCsv = ({
             }
 
             const updatedOn = _user.updatedOn
-                ? `${moment.utc(_user.updatedOn).format(Moment12HourExportFormat)} (UTC)`
+                ? `${moment(_user.updatedOn).utc().format(Moment12HourExportFormat)} (UTC)`
                 : '-'
 
             const _userData = {
@@ -70,7 +70,7 @@ const ExportUserPermissionsToCsv = ({
                           status: getStatusExportText(_user.userStatus, _user.timeToLive),
                           permissionStatus: '-',
                           createdOn: _user.createdOn
-                              ? `${moment.utc(_user.createdOn).format(Moment12HourExportFormat)} (UTC)`
+                              ? `${moment(_user.createdOn).utc().format(Moment12HourExportFormat)} (UTC)`
                               : '-',
                           updatedOn,
                           deletedOn: _user.isDeleted ? updatedOn : '-',
@@ -79,7 +79,7 @@ const ExportUserPermissionsToCsv = ({
                 lastLoginTime:
                     _user.lastLoginTime === LAST_LOGIN_TIME_NULL_STATE
                         ? _user.lastLoginTime
-                        : `${moment.utc(_user.lastLoginTime).format(Moment12HourExportFormat)} (UTC)`,
+                        : `${moment(_user.lastLoginTime).utc().format(Moment12HourExportFormat)} (UTC)`,
                 superAdmin: _user.superAdmin,
                 group: '-',
                 project: '-',

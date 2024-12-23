@@ -44,9 +44,10 @@ export const ExportConfiguration = <ConfigValueType extends string>({
             <h3 className="fw-6 cn-9 m-0 fs-13 lh-20 dc__truncate">{title}</h3>
             <div>
                 {options.map(({ label, value, description }) => (
-                    <div
-                        className={`py-6 flex left dc__gap-8 ${description ? 'top' : ''} dc__hover-n50 br-4`}
+                    <label
+                        className={`m-0 py-6 flex left dc__gap-8 ${description ? 'top' : ''} dc__hover-n50 br-4 cursor`}
                         key={value}
+                        htmlFor={value}
                     >
                         <Checkbox
                             value={CHECKBOX_VALUE.CHECKED}
@@ -57,15 +58,15 @@ export const ExportConfiguration = <ConfigValueType extends string>({
                             onChange={handleConfigSelectionChange}
                             rootClassName="m-0 w-20 h-20"
                         />
-                        <label className="m-0 flexbox-col cursor" htmlFor={value}>
+                        <p className="m-0 flexbox-col">
                             <span className="fs-13 fw-4 lh-20 cn-9 dc__truncate">{label}</span>
                             {description && (
                                 <span className="fs-12 fw-4 lh-18 cn-7 dc__ellipsis-right__2nd-line">
                                     {description}
                                 </span>
                             )}
-                        </label>
-                    </div>
+                        </p>
+                    </label>
                 ))}
             </div>
         </div>
