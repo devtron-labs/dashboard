@@ -31,19 +31,18 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
 
     constructor(props) {
         super(props)
-        this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
         this.state = {
             showGitOpsRepoConfiguredWarning: false,
         }
     }
 
     getCDDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
+        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.fromAppGrouping ? this.props.appId : this.props.environmentId}/${
             this.props.id
         }?type=${this.props.type}`
     }
 
-    redirectToCDDetails(e) {
+    redirectToCDDetails = () => {
         this.props.history.push(this.getCDDetailsURL())
     }
 
@@ -106,7 +105,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
                                 onClick={(e) => {
                                     if (isClickable) {
-                                        this.redirectToCDDetails(e)
+                                        this.redirectToCDDetails()
                                     }
                                 }}
                             >

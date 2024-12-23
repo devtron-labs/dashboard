@@ -298,14 +298,19 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
 
 export const getAppGroupDeploymentHistoryLink = (
     appId: number,
-    pipelineId: string,
     envId: string,
+    pipelineId: string,
     redirectToAppGroup: boolean = true,
+    status: string = '',
 ) => {
+    if (status === 'Progressing') {
+        //If deployment is in progress then it will redirect to app details page
+        return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/`
+    }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
         return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}/`
+        // It will redirect to application deployment history in case of other environments
     }
-    // It will redirect to application deployment history in case of other environments
     return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}/`
 }

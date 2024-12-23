@@ -238,7 +238,7 @@ export const ClusterEnvironmentDrawer = ({
                     </button>
                 </div>
                 <form
-                    className="flex-grow-1 flexbox-col"
+                    className="flex-grow-1 flexbox-col h-100"
                     onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 >
                     <div className="dc__overflow-scroll p-20 flex-grow-1">

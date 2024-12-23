@@ -310,6 +310,7 @@ export interface TriggerPrePostCDNodeProps
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
     isDeploymentBlocked?: boolean
+    appId: number
 }
 export interface TriggerPrePostCDNodeState {
     showGitOpsRepoConfiguredWarning: boolean

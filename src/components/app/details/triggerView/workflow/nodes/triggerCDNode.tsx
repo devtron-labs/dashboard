@@ -23,10 +23,11 @@ import {
     triggerStatus,
     statusColor,
     statusIcon,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
-import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import { DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {
@@ -38,7 +39,6 @@ import { getAppGroupDeploymentHistoryLink } from '@Components/ApplicationGroup/A
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
         super(props)
-        this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
         this.state = {
             showGitOpsRepoConfiguredWarning: false,
             gitopsConflictLoading: false,
@@ -48,22 +48,19 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         }
     }
 
-    getCDNodeDetailsURL(): string {
+    getCDNodeDetailsURL = (): string => {
          if (this.props.fromAppGrouping) {
              return getAppGroupDeploymentHistoryLink(
                  this.props.appId,
-                 this.props.id,
                  this.props.environmentId,
+                 this.props.id,
                  this.props.match.params.envId === this.props.environmentId.toString(),
+                 this.props.status,
              )
          }
          return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
              this.props.environmentId
          }`
-    }
-
-    redirectToCDDetails() {
-        this.props.history.push(this.getCDNodeDetailsURL())
     }
 
     componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>, prevState: Readonly<TriggerCDNodeState>): void {
