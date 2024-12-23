@@ -34,6 +34,7 @@ import {
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    ResourceDetail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -61,7 +62,6 @@ import {
     NodeDetail,
     NodeDetailResponse,
     PodType,
-    ResourceDetail,
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
