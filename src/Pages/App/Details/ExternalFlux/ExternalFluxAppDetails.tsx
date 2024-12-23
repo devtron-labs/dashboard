@@ -56,19 +56,15 @@ const ExternalFluxAppDetails = () => {
         setAppDetailsError(null)
     }
 
-    const handleFetchExternalFluxCDAppDetails = (isReload?: boolean) =>
+    const handleFetchExternalFluxCDAppDetails = () =>
         // NOTE: returning a promise so that we can trigger the next timeout after this api call completes
         new Promise<void>((resolve) => {
-            if (isReload) {
-                setIsReloadResourceTreeInProgress(true)
-            } else {
-                setInitialLoading(true)
-            }
+            setIsReloadResourceTreeInProgress(true)
 
             getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization)
                 .then(handleUpdateIndexStoreWithDetails)
                 .catch((error) => {
-                    if (isReload) {
+                    if (!initialLoading) {
                         showError(error)
                     } else {
                         setAppDetailsError(error)
@@ -82,7 +78,7 @@ const ExternalFluxAppDetails = () => {
         })
 
     const initializePageDetails = () => {
-        handleFetchExternalFluxCDAppDetails(false)
+        handleFetchExternalFluxCDAppDetails()
             .then(() => {
                 // NOTE: using timeouts instead of intervals since we want the next api call after the last one finishes
                 // https://stackoverflow.com/questions/729921/whats-the-difference-between-recursive-settimeout-versus-setinterval
@@ -92,15 +88,12 @@ const ExternalFluxAppDetails = () => {
     }
 
     const handleReloadResourceTree = async () => {
-        await handleFetchExternalFluxCDAppDetails(true)
-    }
-
-    const handleReloadPageOnError = async () => {
         await handleFetchExternalFluxCDAppDetails()
     }
 
     useEffect(() => {
         if (isSuperAdmin) {
+            setInitialLoading(true)
             initializePageDetails()
         }
 
@@ -114,7 +107,7 @@ const ExternalFluxAppDetails = () => {
         return (
             <ErrorScreenManager
                 code={appDetailsError?.code ?? ERROR_STATUS_CODE.PERMISSION_DENIED}
-                reload={handleReloadPageOnError}
+                reload={handleReloadResourceTree}
             />
         )
     }
