@@ -16,7 +16,7 @@
 
 import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
-import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenManager, DetailsProgressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
 import ValuesComponent from './values/ChartValues.component'
@@ -53,6 +53,11 @@ const RouterComponent = ({ envType }) => {
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [loadingResourceTree, setLoadingResourceTree] = useState(false)
     const [helmAppPackageName, setHelmAppPackageName] = useState('')
+    // NOTE: this might seem like a duplicate of loadingResourceTree
+    // but its not since loadingResourceTree runs a loader on the whole page
+    // maybe we can rename loadingResourceTree
+    // this variable actually tells us if resource tree call is in progress
+    const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const appDetailsRef = useRef({} as AppDetails)
     const isVirtualRef = useRef(false)
 
@@ -154,6 +159,21 @@ const RouterComponent = ({ envType }) => {
         }
     }
 
+    const handleReloadResourceTree = () => {
+        if (envType === EnvType.CHART) {
+            setIsReloadResourceTreeInProgress(true)
+            getInstalledChartResourceTree(+params.appId, +params.envId)
+                .then(handlePublishAppDetails)
+                .catch((err) => {
+                    showError(err)
+                })
+                .finally(() => {
+                    setLoadingResourceTree(false)
+                    setIsReloadResourceTreeInProgress(false)
+                })
+        }
+    }
+
     const getExternalLinksAndTools = (clusterId) => {
         if (clusterId) {
             getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronInstalledApp)
@@ -220,6 +240,8 @@ const RouterComponent = ({ envType }) => {
                                     _init={_init}
                                     loadingDetails={loadingDetails}
                                     loadingResourceTree={loadingResourceTree}
+                                    handleReloadResourceTree={handleReloadResourceTree}
+                                    isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>

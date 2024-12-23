@@ -289,6 +289,11 @@ export const Details: React.FC<DetailsType> = ({
         externalLinks: [],
         monitoringTools: [],
     })
+
+    // NOTE: this might seem like a duplicate of loadingResourceTree
+    // but its not since loadingResourceTree runs a loader on the whole page
+    const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
+
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
     // State to track the loading state for the timeline data when the detailed status modal opens
@@ -463,7 +468,14 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    const fetchResourceTree = () =>
+    const fetchResourceTree = () => {
+        if (appDetailsAbortRef.current) {
+            appDetailsAbortRef.current.abort()
+        }
+
+        appDetailsAbortRef.current = new AbortController()
+
+        setIsReloadResourceTreeInProgress(true)
         fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then((response) => {
                 if (
@@ -489,7 +501,9 @@ export const Details: React.FC<DetailsType> = ({
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingResourceTree(false)
+                setIsReloadResourceTreeInProgress(false)
             })
+    }
 
     function _getDeploymentStatusDetail(
         deploymentAppType: DeploymentAppTypes,
@@ -662,6 +676,8 @@ export const Details: React.FC<DetailsType> = ({
                 isDevtronApp
                 isDeploymentBlocked={isDeploymentBlocked}
                 isVirtualEnvironment={isVirtualEnvRef.current}
+                handleReloadResourceTree={fetchResourceTree}
+                isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
             />
         )
     }
