@@ -24,11 +24,11 @@
 :root {
     --modal-index: 20;
     --full-screen-modal-index: 10;
-    --page-header-index: 12;
+    --page-header-index: 13;
     --filter-menu-index: 7;
     --transparent-div-index: 6;
     --app-list-header-index: 3;
-    --navigation-index: 13;
+    --navigation-index: 14;
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
@@ -3708,6 +3708,10 @@ textarea,
     max-height: 210px;
 }
 
+.mxh-220 {
+    max-height: 220px;
+}
+
 .mxh-250 {
     max-height: 250px;
 }
@@ -4582,8 +4586,8 @@ textarea::placeholder {
     z-index: 11;
 }
 
-.dc__zi-13 {
-    z-index: 13;
+.dc__zi-12 {
+    z-index: 12;
 }
 
 .dc__zi-20 {
