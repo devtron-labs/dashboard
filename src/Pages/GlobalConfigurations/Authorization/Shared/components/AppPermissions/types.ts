@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { GroupBase } from 'react-select'
 import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
@@ -58,6 +59,6 @@ export interface DirectPermissionRowProps
 }
 
 export interface WorkflowListType {
-    options: SelectPickerOptionType[]
+    options: GroupBase<SelectPickerOptionType>[]
     loading: boolean
 }
