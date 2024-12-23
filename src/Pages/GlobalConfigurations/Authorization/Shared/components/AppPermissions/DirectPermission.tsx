@@ -16,7 +16,7 @@
 
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
     showError,
     getIsRequestAborted,
@@ -29,23 +29,21 @@ import {
     ButtonVariantType,
     ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { components } from 'react-select'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { CONFIG_APPROVER_ACTION, ARTIFACT_PROMOTER_ACTION, TERMINAL_EXEC_ACTION } from '../../../constants'
-import { allApplicationsOption, DirectPermissionFieldName, roleSelectStyles } from './constants'
-import { getPrimaryRoleIndex, getWorkflowOptions, parseData } from '../../../utils'
+import { allApplicationsOption, DirectPermissionFieldName } from './constants'
+import { getWorkflowOptions } from '../../../utils'
 import { DirectPermissionRowProps } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
 import { getDisplayTextByName } from './utils'
 import EnvironmentSelector from './EnvironmentSelector'
+import WorkflowSelector from './WorkflowSelector'
+import RoleSelector from './RoleSelector'
 
-const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
 const DirectPermission = ({
@@ -61,160 +59,20 @@ const DirectPermission = ({
     environmentClusterOptions,
     getListForAccessType,
 }: DirectPermissionRowProps) => {
-    const { customRoles } = useAuthorizationContext()
     const { showStatus, userStatus } = usePermissionConfiguration()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    // creating a multiRole array since we receive , binded values from the backend and after one action, we reset that
-    const multiRole = permission.action.value.split(',')
-    const doesConfigApproverRoleExist = multiRole.includes(CONFIG_APPROVER_ACTION.value)
-    const doesArtifactPromoterRoleExist = multiRole.includes(ARTIFACT_PROMOTER_ACTION.value)
-    const doesTerminalAccessRoleExist = multiRole.includes(TERMINAL_EXEC_ACTION.value)
-
-    const primaryActionRoleIndex = getPrimaryRoleIndex(multiRole, [
-        CONFIG_APPROVER_ACTION.value,
-        ARTIFACT_PROMOTER_ACTION.value,
-        TERMINAL_EXEC_ACTION.value,
-    ])
-
-    const primaryActionRole = {
-        label: multiRole[primaryActionRoleIndex],
-        value: multiRole[primaryActionRoleIndex],
-        configApprover: doesConfigApproverRoleExist || permission.action.configApprover,
-        artifactPromoter: doesArtifactPromoterRoleExist || permission.action.artifactPromoter,
-        terminalExec: doesTerminalAccessRoleExist || permission.action.terminalExec,
-    }
-
-    // const [openMenu] = useState<DirectPermissionFieldName | ''>('')
     const [applications, setApplications] = useState([])
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
-    const possibleRoles = useMemo(
-        () =>
-            customRoles.customRoles.map(({ roleDisplayName, roleName, roleDescription, entity, accessType }) => ({
-                label: roleDisplayName,
-                value: roleName,
-                description: roleDescription,
-                entity,
-                accessType,
-            })),
-        [customRoles],
-    )
 
-    const _getMetaRolesForAccessType = () => {
-        switch (permission.accessType) {
-            case ACCESS_TYPE_MAP.DEVTRON_APPS:
-                return customRoles.possibleRolesMeta
-            case ACCESS_TYPE_MAP.HELM_APPS:
-                return customRoles.possibleRolesMetaForHelm
-            case ACCESS_TYPE_MAP.JOBS:
-                return customRoles.possibleRolesMetaForJob
-            default:
-                throw new Error(`Unknown access type ${permission.accessType}`)
-        }
-    }
-
-    const getSelectedRolesDisplay = (selectedPermissions: string[]) =>
-        selectedPermissions.filter((selectedVal) => !!selectedVal).join(', ')
-
-    const metaRolesForAccessType = _getMetaRolesForAccessType()
     const listForAccessType = getListForAccessType(permission.accessType)
-
-    // eslint-disable-next-line react/no-unstable-nested-components
-    const RoleValueContainer = ({
-        children,
-        getValue,
-        clearValue,
-        cx,
-        getStyles,
-        hasValue,
-        isMulti,
-        options,
-        selectOption,
-        selectProps,
-        setValue,
-        isDisabled,
-        isRtl,
-        theme,
-        getClassNames,
-        ...props
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }: any) => {
-        const [{ value }] = getValue()
-        return (
-            <components.ValueContainer
-                {...{
-                    getValue,
-                    clearValue,
-                    cx,
-                    getStyles,
-                    hasValue,
-                    isMulti,
-                    options,
-                    selectOption,
-                    selectProps,
-                    setValue,
-                    isDisabled,
-                    isRtl,
-                    theme,
-                    getClassNames,
-                    ...props,
-                }}
-            >
-                {getSelectedRolesDisplay([
-                    value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value,
-                    ...(ApproverPermission
-                        ? [
-                              (permission.approver ||
-                                  primaryActionRole.configApprover ||
-                                  primaryActionRole.artifactPromoter) &&
-                                  'Approver',
-                              primaryActionRole.terminalExec && 'Terminal',
-                          ]
-                        : []),
-                ])}
-                {React.cloneElement(children[1])}
-            </components.ValueContainer>
-        )
-    }
-
-    const formatOptionLabel = ({ value }) => (
-        <div className="flex left column">
-            <span>{metaRolesForAccessType[value]?.value}</span>
-            <small className="light-color">{metaRolesForAccessType[value]?.description}</small>
-        </div>
-    )
-
-    // eslint-disable-next-line react/no-unstable-nested-components
-    const RoleMenuList = (props) => (
-        <components.MenuList {...props}>
-            {props.children}
-            {ApproverPermission &&
-                (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ||
-                    permission.accessType === ACCESS_TYPE_MAP.HELM_APPS) && (
-                    <ApproverPermission
-                        optionProps={props}
-                        approver={permission.approver}
-                        configApprover={primaryActionRole.configApprover}
-                        artifactPromoter={primaryActionRole.artifactPromoter}
-                        terminalExec={primaryActionRole.terminalExec}
-                        handleDirectPermissionChange={(...rest) => {
-                            props.selectOption(props.selectProps.value)
-                            handleDirectPermissionChange(...rest)
-                        }}
-                        formatOptionLabel={formatOptionLabel}
-                        accessType={permission.accessType}
-                        customRoles={customRoles}
-                    />
-                )}
-        </components.MenuList>
-    )
 
     const setWorkflowsForJobs = async (_permission: DirectPermissionsRoleFilter) => {
         if (abortControllerRef.current) {
@@ -254,18 +112,6 @@ const DirectPermission = ({
             setWorkflowsForJobs(permission)
         }
     }, [appsList, appsListHelmApps, projectId, jobsList])
-
-    // useEffect(() => {
-    //     if (openMenu || !projectId || (environments && environments.length === 0) || applications.length === 0) {
-    //         return
-    //     }
-
-    //     setApplications((_applications) =>
-    //         openMenu === DirectPermissionFieldName.apps || openMenu === DirectPermissionFieldName.jobs
-    //             ? _applications
-    //             : sortBySelected(permission.entityName, _applications, 'value'),
-    //     )
-    // }, [permission.environment, projectId])
 
     const handleStatusChange = (
         status: DirectPermissionsRoleFilter['status'],
@@ -344,51 +190,15 @@ const DirectPermission = ({
             </div>
             {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>
-                    <SelectPicker
-                        inputId="dropdown-for-workflow-for-job"
-                        value={permission.workflow}
-                        isMulti
-                        closeMenuOnSelect={false}
-                        name={DirectPermissionFieldName.workflow}
-                        placeholder="Select workflow"
-                        options={[{ label: 'All Workflows', value: SELECT_ALL_VALUE }, ...workflowList.options]}
-                        isLoading={workflowList.loading}
-                        isDisabled={!permission.team || workflowList.loading}
-                        onChange={(value, actionMeta) => {
-                            handleDirectPermissionChange(value, actionMeta, workflowList)
-                        }}
-                        error={permission.workflowError}
-                        multiSelectProps={{
-                            customDisplayText: getDisplayTextByName(
-                                DirectPermissionFieldName.workflow,
-                                [{ label: 'All Workflows', value: SELECT_ALL_VALUE }, ...workflowList.options],
-                                permission.workflow,
-                            ),
-                        }}
-                        size={ComponentSizeType.large}
+                    <WorkflowSelector
+                        permission={permission}
+                        handleDirectPermissionChange={handleDirectPermissionChange}
+                        workflowList={workflowList}
                     />
                 </div>
             )}
             <div style={{ order: isAccessTypeJob ? 4 : 0 }}>
-                <Select
-                    classNamePrefix="dropdown-for-role"
-                    value={primaryActionRole}
-                    name="action"
-                    placeholder="Select role"
-                    options={parseData(possibleRoles, permission.entity, permission.accessType)}
-                    formatOptionLabel={formatOptionLabel}
-                    onChange={handleDirectPermissionChange}
-                    isDisabled={!permission.team}
-                    menuPlacement="auto"
-                    blurInputOnSelect
-                    styles={roleSelectStyles}
-                    components={{
-                        ClearIndicator: null,
-                        IndicatorSeparator: null,
-                        ValueContainer: RoleValueContainer,
-                        MenuList: RoleMenuList,
-                    }}
-                />
+                <RoleSelector permission={permission} handleDirectPermissionChange={handleDirectPermissionChange} />
             </div>
             {showStatus && (
                 <div className="h-36 flexbox flex-align-center" style={{ order: 5 }}>
