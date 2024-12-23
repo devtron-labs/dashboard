@@ -43,7 +43,12 @@ export const APPLIST_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADERS = [
     { label: 'Email address', key: 'emailId' },
     { label: 'User ID', key: 'userId' },
-    ...(showStatus ? [{ label: 'User status', key: 'status' }] : []),
+    ...(showStatus
+        ? [
+              { label: 'User status', key: 'status' },
+              { label: 'Deleted', key: 'isDeleted' },
+          ]
+        : []),
     { label: 'Last login time', key: 'lastLoginTime' },
     { label: 'Super admin', key: 'superAdmin' },
     { label: 'Group permissions', key: 'group' },
@@ -54,10 +59,9 @@ export const USER_EXPORT_HEADERS = [
     ...(showStatus
         ? [
               { label: 'Permission Status', key: 'permissionStatus' },
-              { label: 'Deleted', key: 'isDeleted' },
-              { label: 'Deleted on', key: 'deletedOn' },
               { label: 'Added on', key: 'createdOn' },
               { label: 'Updated on', key: 'updatedOn' },
+              { label: 'Deleted on', key: 'deletedOn' },
           ]
         : []),
 ]
@@ -68,6 +72,7 @@ export const USER_EXPORT_HEADER_ROW = {
     ...(showStatus
         ? {
               status: 'User status',
+              isDeleted: 'Deleted',
           }
         : {}),
     lastLoginTime: 'Last login time',
@@ -80,10 +85,9 @@ export const USER_EXPORT_HEADER_ROW = {
     ...(showStatus
         ? {
               permissionStatus: 'Permission Status',
-              isDeleted: 'Deleted',
-              deletedOn: 'Deleted on',
               createdOn: 'Added on',
               updatedOn: 'Updated on',
+              deletedOn: 'Deleted on',
           }
         : {}),
 }
